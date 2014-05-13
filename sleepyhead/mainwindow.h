@@ -312,6 +312,11 @@ class MainWindow : public QMainWindow
     void on_reportModeStandard_clicked();
 
 private:
+    int importCPAP(const QString &path, const QString &message);
+    void importCPAPBackups();
+    void finishCPAPImport();
+    QStringList detectCPAPCards();
+
     QString getWelcomeHTML();
     void FreeSessions();
 

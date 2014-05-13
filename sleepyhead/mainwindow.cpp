@@ -351,49 +351,66 @@ void MainWindow::Startup()
 
     if (PROFILE.p_preferences[STR_PREF_ReimportBackup].toBool()) {
         PROFILE.p_preferences[STR_PREF_ReimportBackup]=false;
-        QList<Machine *> machlist = PROFILE.GetMachines(MT_CPAP);
+    }
 
-        QStringList paths;
-        Q_FOREACH(Machine *m, machlist) {
-            if (m->properties.contains("BackupPath")) {
-                paths.push_back(PROFILE.Get(m->properties["BackupPath"]));
-            }
-        }
-        if (paths.size() > 0) {
-            if (QMessageBox::question(this,"Question","Recently CPAP data was purged.\n\nWould you like to automatically reimport from Backup folder?",QMessageBox::Yes, QMessageBox::No)==QMessageBox::Yes) {
-                Q_FOREACH(QString path, paths) {
-                    QDialog popup(this, Qt::SplashScreen);
-                    QLabel waitmsg(tr("Please wait, importing from backup folder(s)..."));
-                    QVBoxLayout waitlayout(&popup);
-                    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
-                    waitlayout.addWidget(qprogress,1);
-                    qprogress->setVisible(true);
-                    popup.show();
-                    int c=PROFILE.Import(path);
-                    popup.hide();
-                    ui->statusbar->insertWidget(2,qprogress,1);
-                    qprogress->setVisible(false);
-                    if (c>0) {
-                        PROFILE.Save();
+}
 
-                        GenerateStatistics();
+int MainWindow::importCPAP(const QString &path, const QString &message)
+{
+    QDialog popup(this, Qt::SplashScreen);
+    QLabel waitmsg(message);
+    QVBoxLayout waitlayout(&popup);
+    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
+    waitlayout.addWidget(qprogress,1);
+    qprogress->setVisible(true);
+    popup.show();
+    int c=PROFILE.Import(path);
+    popup.hide();
+    ui->statusbar->insertWidget(2,qprogress,1);
+    qprogress->setVisible(false);
 
-                        if (overview) { overview->ReloadGraphs(); }
-                        if (daily) { daily->ReloadGraphs(); }
+    return c;
+}
 
-                        QString str=tr("Data successfully imported from the following locations\n\n");
-                        for (int i=0; i<paths.size(); i++) {
-                            str += paths.at(i) + "\n";
-                        }
-                        mainwin->Notify(str);
-                    } else {
-                        mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
-                    }
-                }
-            }
+void MainWindow::finishCPAPImport()
+{
+    PROFILE.Save();
+    GenerateStatistics();
+
+    if (overview) { overview->ReloadGraphs(); }
+    if (daily) { daily->ReloadGraphs(); }
+}
+
+void MainWindow::importCPAPBackups()
+{
+
+    // Get BackupPaths for all CPAP machines
+    QList<Machine *> machlist = PROFILE.GetMachines(MT_CPAP);
+    QStringList paths;
+    Q_FOREACH(Machine *m, machlist) {
+        if (m->properties.contains(STR_PROP_BackupPath)) {
+            paths.push_back(PROFILE.Get(m->properties[STR_PROP_BackupPath]));
         }
     }
 
+    if (paths.size() > 0) {
+        if (QMessageBox::question(this,"Question","Recently CPAP data was purged.\n\nWould you like to automatically reimport from Backup folder?",QMessageBox::Yes, QMessageBox::No)==QMessageBox::Yes) {
+            int c=0;
+            Q_FOREACH(QString path, paths) {
+                c+=importCPAP(path,tr("Please wait, importing from backup folder(s)..."));
+            }
+            if (c>0) {
+                QString str=tr("Data successfully imported from the following locations\n\n");
+                for (int i=0; i<paths.size(); i++) {
+                    str += paths.at(i) + "\n";
+                }
+                mainwin->Notify(str);
+                finishCPAPImport();
+            } else {
+                mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
+            }
+        }
+    }
 }
 
 #ifdef Q_OS_UNIX
@@ -469,6 +486,60 @@ QStringList getDriveList()
     return drivelist;
 }
 
+QStringList MainWindow::detectCPAPCards()
+{
+    const int timeout = 20000;
+
+    QStringList datapaths;
+
+    QList<MachineLoader *>loaders = GetLoaders();
+    QTime time;
+    time.start();
+
+    // Create dialog
+    QDialog popup(this, Qt::SplashScreen);
+    QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
+    QProgressBar progress;
+    QVBoxLayout waitlayout(&popup);
+    QPushButton skipbtn("Click here to choose a folder");
+    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
+    waitlayout.addWidget(&progress,1);
+    waitlayout.addWidget(&skipbtn);
+    popup.connect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
+    progress.setValue(0);
+    progress.setMaximum(timeout);
+    progress.setVisible(true);
+    popup.show();
+    QApplication::processEvents();
+
+    do {
+        // Rescan in case card inserted
+        QStringList AutoScannerPaths = getDriveList();
+
+        Q_FOREACH(const QString &path, AutoScannerPaths) {
+            qDebug() << "Scanning" << path;
+            // Scan through available machine loaders and test if this folder contains valid folder structure
+            Q_FOREACH(MachineLoader * loader, loaders) {
+                if (loader->Detect(path)) {
+                    datapaths.push_back(path);
+
+                    qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
+                }
+            }
+        }
+        int el=time.elapsed();
+        progress.setValue(el);
+        QApplication::processEvents();
+        if (el > timeout) break;
+        if (!popup.isVisible()) break;
+        // needs a slight delay here
+
+    } while (datapaths.size() == 0);
+    popup.hide();
+    popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
+
+    return datapaths;
+}
 
 void MainWindow::on_action_Import_Data_triggered()
 {
@@ -477,75 +548,36 @@ void MainWindow::on_action_Import_Data_triggered()
         return;
     }
 
-    QHash<QString,QString> datacard;
-
-    QString datacard_path = QString();
-    MachineLoader * datacard_loader = nullptr;
+    QStringList datapaths = detectCPAPCards();
 
     QList<MachineLoader *>loaders = GetLoaders();
 
     QTime time;
     time.start();
     QDialog popup(this, Qt::FramelessWindowHint);
+    popup.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
     QVBoxLayout waitlayout(&popup);
-    QPushButton skipbtn("Click here to choose a folder");
     waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
     waitlayout.addWidget(qprogress,1);
-    waitlayout.addWidget(&skipbtn);
-    popup.connect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
-    qprogress->setValue(0);
-    const int timeout = 20000;
-    qprogress->setMaximum(timeout);
-    qprogress->setVisible(true);
-    popup.show();
-    QApplication::processEvents();
-    do {
-        QStringList AutoScannerPaths = getDriveList();
-        Q_FOREACH(const QString &path, AutoScannerPaths) {
-            qDebug() << "Scanning" << path;
-            // Scan through available machine loaders and test if this folder contains valid folder structure
-            Q_FOREACH(MachineLoader * loader, loaders) {
-                if (loader->Detect(path)) {
-                    datacard[loader->ClassName()] = path;
 
-                    qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
-                    if (datacard_path.isEmpty()) {
-                        datacard_loader = loader;
-                        datacard_path = path;
-                    }
-                }
-            }
-        }
-        int el=time.elapsed();
-        qprogress->setValue(el);
-        QApplication::processEvents();
-        if (el > timeout) break;
-        if (!popup.isVisible()) break;
-    } while (datacard.size() == 0);
-    popup.hide();
-    popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
-
-    skipbtn.setVisible(false);
-    popup.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QStringList importFrom;
     bool asknew = false;
     qprogress->setVisible(false);
 
-    if (datacard.size() > 0) {
-        if (datacard.size() > 1) {
-            qWarning() << "User has more than detected datacard folder structure in scan path, only using the first one found.";
-        }
-
-        int res = QMessageBox::question(this, tr("Datacard Located"),
-            QString(tr("A %1 datacard structure was detected at\n%2\n\nWould you like to import from this location?")).
-                arg(datacard_loader->ClassName()).arg(datacard_path), tr("Yes"),
-            tr("Select another folder"), tr("Cancel"), 0, 2);
+    if (datapaths.size() > 0) {
+        int res = QMessageBox::question(this,
+                                        tr("CPAP Data Located"),
+                                        QString((tr("CPAP Datacard structures were detected at the following locations:")+
+                                                   "\n\n%1\n\n"+
+                                                   tr("Would you like to import from the path(s) shown above?"))).arg(datapaths.join("\n")),
+                                        tr("Yes"),
+                                        tr("Select another folder"),
+                                        tr("Cancel"),
+                                        0, 2);
         if (res == 1) {
             waitmsg.setText(tr("Please wait, launching file dialog..."));
+            datapaths.clear();
             asknew = true;
-        } else {
-            importFrom.push_back(datacard_path);
         }
 
         if (res == 2) {
@@ -574,20 +606,18 @@ void MainWindow::on_action_Import_Data_triggered()
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
 
-#if defined(Q_OS_MAC) && (QT_VERSION_CHECK(4,8,0) > QT_VERSION)
+#if defined(Q_OS_MAC) && (QT_VERSION < QT_VERSION_CHECK(4,8,0))
         // Fix for tetragon, 10.6 barfs up Qt's custom dialog
         w.setOption(QFileDialog::DontUseNativeDialog, true);
 #else
         w.setOption(QFileDialog::DontUseNativeDialog, false);
 
         QListView *l = w.findChild<QListView *>("listView");
-
         if (l) {
             l->setSelectionMode(QAbstractItemView::MultiSelection);
         }
 
         QTreeView *t = w.findChild<QTreeView *>();
-
         if (t) {
             t->setSelectionMode(QAbstractItemView::MultiSelection);
         }
@@ -603,12 +633,7 @@ void MainWindow::on_action_Import_Data_triggered()
         popup.hide();
 
         for (int i = 0; i < w.selectedFiles().size(); i++) {
-            QString newdir = w.selectedFiles().at(i);
-
-            if (!importFrom.contains(newdir)) {
-                importFrom.append(newdir);
-                //addnew=true;
-            }
+            datapaths.append(w.selectedFiles().at(i));
         }
     }
 
@@ -620,8 +645,8 @@ void MainWindow::on_action_Import_Data_triggered()
     qprogress->setVisible(true);
 
     popup.show();
-    for (int i = 0; i < importFrom.size(); i++) {
-        QString dir = importFrom[i];
+    for (int i = 0; i < datapaths.size(); i++) {
+        QString dir = datapaths[i];
 
         if (!dir.isEmpty()) {
             qprogress->setValue(0);
@@ -645,12 +670,7 @@ void MainWindow::on_action_Import_Data_triggered()
     ui->statusbar->insertWidget(2,qprogress,1);
 
     if (successful) {
-        PROFILE.Save();
-
-        GenerateStatistics();
-
-        if (overview) { overview->ReloadGraphs(); }
-        if (daily) { daily->ReloadGraphs(); }
+        finishCPAPImport();
 
         QString str=tr("Data successfully imported from the following locations\n\n");
         for (int i=0; i<goodlocations.size(); i++) {
@@ -1660,17 +1680,21 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
             return;
         }
 
-        PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
-        if (QMessageBox::question(this, tr("Are you sure?"),
+        if (QMessageBox::question(this,
+                                  tr("Are you sure?"),
                                   tr("Are you sure you want to purge all CPAP data for the following machine:\n") +
                                   m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
                                   m->properties[STR_PROP_ModelNumber] + " (" + m->properties[STR_PROP_Serial] + ")",
-                                  QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No) == QMessageBox::Yes) {
 
 
-            m->Purge(3478216);
-           // PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
-            PROFILE.Save();
+            if (m->Purge(3478216)) {
+                // Turn on automatic re-import
+                // Note: I deliberately haven't added a Profile help for this
+                PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
+                PROFILE.Save();
+            }
             // delete or not to delete.. this needs to delete later.. :/
             //delete m;
             RestartApplication();

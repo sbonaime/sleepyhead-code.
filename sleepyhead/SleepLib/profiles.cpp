@@ -119,17 +119,23 @@ void Profile::DataFormatError(Machine *m)
     msg = msg +
           QObject::tr("Would you like me to purge this data this for you so you can run the new version?");
 
-    if (QMessageBox::warning(nullptr, QObject::tr("Machine Database Changes"), msg,
+    if (QMessageBox::warning(nullptr,
+                             QObject::tr("Machine Database Changes"),
+                             msg,
                              QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes) {
 
-        if (!m->Purge(
-                    3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
+
+        if (!m->Purge(3478216)) {
+            // Do not copy this line without thinking.. You will be eaten by a Grue if you do
 
             QMessageBox::critical(nullptr, QObject::tr("Purge Failed"),
                                   QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")
                                   + PREF[STR_GEN_DataFolder].toString(), QMessageBox::Ok);
             QApplication::exit(-1);
         }
+        // Note: I deliberately haven't added a Profile help for this
+        PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
+        PROFILE.Save();
     } else {
         QApplication::exit(-1);
     }
