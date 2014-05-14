@@ -292,9 +292,6 @@ bool EDFParser::Parse()
         sig.pos = 0;
     }
 
-    if (num_signals == 2) {
-        int i=5;
-    }
     for (int x = 0; x < num_data_records; x++) {
         for (int i = 0; i < num_signals; i++) {
             EDFSignal &sig = edfsignals[i];
@@ -304,7 +301,7 @@ bool EDFParser::Parse()
             sig.pos += sig.nr;
             pos += sig.nr * 2;
 #else
-            // ARM, PPC, etc..
+            // Big endian safe
             for (int j=0;j<sig.nr;j++) {
                 qint16 t=Read16();
                 sig.data[sig.pos++]=t;
@@ -759,11 +756,24 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     SessionID sessionid;
     QDateTime date;
     QString fullname;
+    QString edftypestr;
     bool gz;
     int size;
     QMap<SessionID, QStringList>::iterator si;
 
     sessfiles.clear();
+
+    QMap<SessionID, EDFGroup> filegroups;
+    QMap<SessionID, EDFGroup>::iterator fgit;
+
+
+    QStringList files;
+
+    enum EDF_Type {
+        ET_ERR=0, BRP, EVE, PLD, SAD
+    } edftype;
+
+    SessionID lastsession = 0;
 
     for (int dc = 0; dc < dirs.size(); dc++) {
 
@@ -809,67 +819,69 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                 continue;
             }
 
+            edftypestr = filename.section("_", 2).section(".", 0, 0);
+
+            // Could always just compare first letter, seeing date is already checked..
+            if (edftypestr.compare("BRP", Qt::CaseInsensitive) == 0) edftype = BRP;
+            else if (edftypestr.compare("EVE", Qt::CaseInsensitive) == 0) edftype = EVE;
+            else if (edftypestr.compare("PLD", Qt::CaseInsensitive) == 0) edftype = PLD;
+            else if (edftypestr.compare("SAD", Qt::CaseInsensitive) == 0) edftype = SAD;
+            else edftype = ET_ERR;
+
             // convert this date to UNIX epoch to form the sessionID
             sessionid = date.toTime_t();
 
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            // Resmed bugs up on the session filenames.. More than these 3 seconds
+            fgit = filegroups.find(sessionid);
+            if (fgit == filegroups.end()) {
+                if ((edftype == EVE) || (edftype == BRP)) {
+                    fgit = filegroups.insert(sessionid,EDFGroup());
+                    lastsession = sessionid;
+                } else {
+                    ////////////////////////////////////////////////////////////////////////////////////////////
+                    // Resmed bugs up on the session filenames.. Biggest observed delay so far of 14 seconds
+                    // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
+                    // and provide firmware updates for free to your customers.
+                    ////////////////////////////////////////////////////////////////////////////////////////////
 
-            // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
-            // and provide firmware updates for free to your customers.
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            si = sessfiles.find(sessionid);
-
-            if (si == sessfiles.end()) {
-                // Scan 3 seconds either way for sessions..
-                for (int j = 1; j < 3; j++) {
-
-                    if ((si = sessfiles.find(sessionid + j)) != sessfiles.end()) {
-                        sessionid += j;
-                        break;
-                    } else if ((si = sessfiles.find(sessionid - j)) != sessfiles.end()) {
-                        sessionid -= j;
-                        break;
+                    // Check how long since last EVE/BRP session
+                    if ((sessionid - lastsession) < 30) {
+                        fgit = filegroups.find(lastsession);
+                    } else {
+                        // It appears we have a lonely PLD or SAD file...
+                        fgit = filegroups.insert(sessionid,EDFGroup());
                     }
                 }
             }
 
             fullname = backup(fullname, backup_path);
 
-            // Push current filename to ordered-by-sessionid list
-            if (si != sessfiles.end()) {
-                // Ignore if already compressed version of the same file exists.. (just in case)
-
-                bool skip = false;
-
-                // check for any other versions of the same file.
-                for (int i = 0; i < si.value().size(); i++) {
-                    QString st = si.value().at(i).section("/", -1);
-
-                    if (st.endsWith(STR_ext_gz)) {
-                        st.chop(3);
-                    }
-
-                    if (st == filename) {
-                        skip = true;
-                    }
-                }
-
-                if (!skip) {
-                    si.value().push_back(fullname);
-                }
-            } else {
-                sessfiles[sessionid].push_back(fullname);
+            switch (edftype) {
+            case BRP:
+                fgit.value().BRP = fullname;
+                break;
+            case EVE:
+                fgit.value().EVE = fullname;
+                break;
+            case PLD:
+                fgit.value().PLD = fullname;
+                break;
+            case SAD:
+                fgit.value().SAD = fullname;
+                break;
+            default:
+                break;
+                // No such thing..
             }
 
-            //  if ((i % 10)==0) {
-            // Update the progress bar
-            if (qprogress) { qprogress->setValue((float(i + 1) / float(size) * 10.0)); }
-
-            QApplication::processEvents();
-            //  }
+            if (qprogress) {
+                if ((i % 5) == 0) {
+                    qprogress->setValue((float(i + 1) / float(size) * 10.0));
+                    QApplication::processEvents();
+                }
+            }
         }
     }
+
 
     QString fn;
     Session *sess;
@@ -1305,8 +1317,8 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
     /////////////////////////////////////////////////////////////////////////////
-    for (QMap<SessionID, QStringList>::iterator si = sessfiles.begin(); si != sessfiles.end(); si++) {
-        sessionid = si.key();
+    for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
+        sessionid = fgit.key();
 
         // Skip file if already imported
         if (m->SessionExists(sessionid)) {
@@ -1316,92 +1328,21 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         // Create the session
         sess = new Session(m, sessionid);
 
-        QString oldbkfile;
-
-        // Process EDF File List
-        for (int i = 0; i < si.value().size(); ++i) {
-            fullname = si.value()[i];
-            filename = fullname.section("/", -1);
-            gz = (filename.right(3).toLower() == STR_ext_gz);
-
-
-            //            yearstr=filename.left(4);
-            //            bkuppath=backup_path;
-            //            int year=yearstr.toInt(&ok,10);
-            //            if (ok) {
-            //                bkuppath+=yearstr+"/";
-            //                dir.mkpath(bkuppath);
-            //            }
-
-            //            // Copy the EDF file to the backup folder
-            //            if (create_backups) {
-            //                oldbkfile=backup_path+filename;
-            //                backupfile=bkuppath+filename;
-
-            //                bool dobackup=true;
-
-            //                if (QFile::exists(oldbkfile+STR_ext_gz))
-            //                    QFile::remove(oldbkfile+STR_ext_gz);
-            //                if (QFile::exists(oldbkfile))
-            //                    QFile::remove(oldbkfile);
-
-            //                if (!gz && QFile::exists(backupfile+STR_ext_gz)) {
-            //                    dobackup=false; // gzipped edf.. assume it's already a backup
-            //                } else if (QFile::exists(backupfile)) {
-            //                    if (gz) {
-            //                        // don't bother, it's already there and compressed.
-            //                        dobackup=false;
-            //                    } else {
-            //                        // non compressed file is there..
-            //                        if (compress_backups) {
-            //                            // remove old edf file, as we are writing a compressed one
-            //                            QFile::remove(backupfile);
-            //                        } else { // don't bother copying it.
-            //                            dobackup=false;
-            //                        }
-            //                    }
-            //                }
-            //                if (dobackup) {
-            //                    if (!gz) {
-            //                        compress_backups ?
-            //                            compressFile(fullname, backupfile)
-            //                        :
-            //                            QFile::copy(fullname, backupfile);
-            //                    } else {
-            //                        // already compressed, just copy it.
-            //                        QFile::copy(fullname, backupfile);
-            //                    }
-            //                }
-
-            //                if (!gz) {
-            //                    backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
-            //                } else {
-            //                    backfile=filename.replace(".edf.gz",".crc",Qt::CaseInsensitive);
-            //                }
-
-            //                backupfile=bkuppath+backfile;
-            //                crcfile=newpath+backfile;
-            //                QFile::copy(crcfile, backupfile);
-            //            }
-
-            EDFParser edf(fullname);
-
-            // Parse the actual file
-            if (!edf.Parse()) {
-                continue;
-            }
-
-            // Give a warning if doesn't match the machine serial number in Identification.tgt
-            if (edf.serialnumber != serial) {
-                qDebug() << "edf Serial number doesn't match Identification.tgt";
-            }
-
-            fn = filename.section("_", -1).section(".", 0, 0).toLower();
-
-            if (fn == "eve") { LoadEVE(sess, edf); }
-            else if (fn == "pld") { LoadPLD(sess, edf); }
-            else if (fn == "brp") { LoadBRP(sess, edf); }
-            else if (fn == "sad") { LoadSAD(sess, edf); }
+        if (!fgit.value().EVE.isEmpty()) {
+            EDFParser edf(fgit.value().EVE);
+            if (edf.Parse()) LoadEVE(sess,edf);
+        }
+        if (!fgit.value().BRP.isEmpty()) {
+            EDFParser edf(fgit.value().BRP);
+            if (edf.Parse()) LoadBRP(sess,edf);
+        }
+        if (!fgit.value().PLD.isEmpty()) {
+            EDFParser edf(fgit.value().PLD);
+            if (edf.Parse()) LoadPLD(sess,edf);
+        }
+        if (!fgit.value().SAD.isEmpty()) {
+            EDFParser edf(fgit.value().SAD);
+            if (edf.Parse()) LoadSAD(sess,edf);
         }
 
         if ((++cnt % 10) == 0) {
