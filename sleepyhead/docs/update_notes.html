@@ -2,20 +2,18 @@
 <body>
 <div align=center>
 <h2><image src='qrc:/docs/sheep.png' width=64 height=64>SleepyHead <b>BETA</b></h2>
-<h3><b>Update Notes for v0.9.4-5</b></h3>
+<h3><b>Update Notes for v0.9.6</b></h3>
 
 </div>
 <b>Changes in this version</b><br/>
 <list>
-<li>Added ability to pin graphs to keep them on screen</li>
-<li>Fixed tranlation loading on Mac</li>
-<li>Updated Dutch Tranlsations (Thanks Arie)</li>
-<li>Fixed overview graph legends showing wrong details</li>
-<li>F12 to Screenshot restored on Apple Mac platform</li>
-<li>Added CSV importer for Somnopose iOS Sleep Position application data</li>
-<li>Added user information to Statistics page</li>
-<li>Datacard autodetection ability</li>
-<li>Philips Respironics 60 series fixes</li>
+<li>Switched from OpenGL to Qt QPainter backend</li>
+<li>Switched to Qt's pixmap caching engine</li>
+<li>Fix ResMed session grouping bug that caused session double-ups</li>
+<li>Fix EDF importer glitch on windows builds that led to faulty graph displays</li>
+<li>Fixed CPAP card autoscanner on Windows platform</li>
+<li>Added timeout dialog to CPAP card autoscanner</li>
+<li>Microsoft compiler fixes</li>
 </list>
 
 <p>Sleep Well!</p>

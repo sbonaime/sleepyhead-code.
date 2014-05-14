@@ -289,7 +289,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         y = yh;
         x = fm.width(title());
         //GetTextExtent(title(),x,y,mediumfont);
-        title_x = yh * 2;
+        title_x = float(yh) * 1.5;
 
         QString & txt = title();
         graphView()->AddTextQue(txt, marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
