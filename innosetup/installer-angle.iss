@@ -2,8 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SleepyHead"
-#define MyAppVersion "0.9.3"
-#define MyAppPublisher "SleepyHead"
+#define MyAppVersion "0.9.6"
+#define MyAppPublisher "Jedimark"
 #define MyAppURL "http://sleepyhead.sourceforge.net"
 #define MyAppExeName "SleepyHead.exe"
 
@@ -11,7 +11,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{429228B9-3CB2-47DA-A772-E6FBD05FD3D2}
+AppId={{AF23DDE0-E745-456E-AA06-014BB6DEB63F}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -21,30 +21,27 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-AllowNoIcons=yes
-LicenseFile=C:\Users\rich\Desktop\SleepyHead-source\rich0-sleepyhead\LICENSE.txt
-OutputDir=C:\Users\rich\Desktop\SleepyHead-source\Installer
-OutputBaseFilename=setup
+LicenseFile=C:\Users\Mark\Documents\src\COPYING.txt
+OutputDir=C:\Users\Mark\Documents\src\sleepyhead-code\innosetup
+OutputBaseFilename=SleepyHead-{#MyAppVersion}-ANGLE-Setup-32bit
+SetupIconFile=C:\Users\Mark\Documents\src\sleepyhead-code\sleepyhead\icons\bob-v3.0.ico
 Compression=lzma
 SolidCompression=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "dutch"; MessagesFile: "compiler:Languages\Dutch.isl"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\rich\Desktop\SleepyHead-source\SleepyHeadQT-build-desktop-Qt_4_8_1_for_Desktop_-_MinGW__Qt_SDK__Release\release\SleepyHead.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Mark\Desktop\SleepyHead-0.9.6-testing-Qt5.2.1-MSVC2012-ANGLE-32bit\SleepyHead.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Mark\Desktop\SleepyHead-0.9.6-testing-Qt5.2.1-MSVC2012-ANGLE-32bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Mark\Desktop\SleepyHead-0.9.6-testing-Qt5.2.1-MSVC2012-ANGLE-32bit\Translations\*.qm"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: "C:\QtSDK\mingw\bin\LIBGCC_S_DW2-1.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\mingw\bin\MINGWM10.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTCORE4.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTGUI4.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTNETWORK4.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTOPENGL4.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTWEBKIT4.DLL"; DestDir: "{app}";
-Source: "C:\QtSDK\Desktop\Qt\4.8.1\mingw\lib\QTXML4.DLL"; DestDir: "{app}";
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

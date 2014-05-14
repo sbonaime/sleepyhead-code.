@@ -246,19 +246,28 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-win32|mac {
+bundlelibs = $$cat($$PWD/../Bundle3rdParty)
+
+#QExtSerialPort will be replaced soon with Qt5's QSerialPort
+include($$PWD/../3rdparty/qextserialport/src/qextserialport.pri)
+INCLUDEPATH += $$PWD/../3rdparty/qextserialport/src
+DEPENDPATH += $$PWD/../3rdparty/qextserialport/src
+
+contains(bundlelibs, true) {
     include(../3rdparty/quazip/quazip/quazip.pri)
     INCLUDEPATH += $$PWD/../3rdparty/quazip
     DEPENDPATH += $$PWD/../3rdparty/quazip
-} else:unix {
-    QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
-    INCLUDEPATH += /usr/local/include
-    INCLUDEPATH += /usr/include
-    DEPENDPATH += /usr/local/include/quazip
-    DEPENDPATH += /usr/include/quazip
+} else {
+    unix {
+        message("Attempting to build with system quazip.");
+        QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
+        INCLUDEPATH += /usr/local/include
+        INCLUDEPATH += /usr/include
+        DEPENDPATH += /usr/local/include/quazip
+        DEPENDPATH += /usr/include/quazip
+    } else {
+        #Configure it if you need it...
+        warning("Building with externally linked quazip is unsupported on this platform");
+    }
     LIBS += -lquazip
 }
-
-# Most Linux distros can use "CONFIG += extserialport",
-# but Fedora does not yet provide qextserialport for Qt5.
-include(../3rdparty/qextserialport/src/qextserialport.pri)
