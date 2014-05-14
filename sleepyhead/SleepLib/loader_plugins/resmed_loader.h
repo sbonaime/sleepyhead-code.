@@ -23,7 +23,7 @@
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int resmed_data_version = 6;
+const int resmed_data_version = 7;
 //
 //********************************************************************************************
 
@@ -238,10 +238,10 @@ struct EDFGroup {
         SAD = sad;
     }
     EDFGroup(const EDFGroup & copy) {
-        BRP=copy.BRP;
-        EVE=copy.EVE;
-        PLD=copy.PLD;
-        SAD=copy.SAD;
+        BRP = copy.BRP;
+        EVE = copy.EVE;
+        PLD = copy.PLD;
+        SAD = copy.SAD;
     }
     QString BRP;
     QString EVE;

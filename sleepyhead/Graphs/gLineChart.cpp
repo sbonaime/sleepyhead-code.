@@ -522,6 +522,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         lastpx = xst + ((time - minx) * xmult);
                         lastpy = yst - ((data - miny) * ymult);
 
+                        siz--;
                         for (int i = idx; i < siz; i += sam) {
                             ptr += sam;
                             time += rate;
@@ -556,6 +557,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     int idx = 0;
 
                     if (siz > 15) {
+
                         for (; idx < siz; ++idx) {
                             time = start + *tptr++;
 
@@ -566,7 +568,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                         if (idx > 0) {
                             idx--;
-                            //tptr--;
                         }
                     }
 
@@ -609,16 +610,16 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                lines.append(QLine(lastpx, lastpy, px, lastpy));
-                                lines.append(QLine(px, lastpy, px, py));
-                            } else {
+//                                lines.append(QLine(lastpx, lastpy, px, lastpy));
+//                                lines.append(QLine(px, lastpy, px, py));
+                            } // else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
 
                                 lines.append(QLine(lastpx, lastpy, px, lastpy));
                                 lines.append(QLine(px, lastpy, px, py));
-                            }
+//                            }
 
                             lastpx = px;
                             lastpy = py;
@@ -645,13 +646,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                lines.append(QLine(lastpx, lastpy, px, py));
-                            } else {
+                              //  lines.append(QLine(lastpx, lastpy, px, py));
+                            } //else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
                                 lines.append(QLine(lastpx, lastpy, px, py));
-                            }
+                            //}
 
                             lastpx = px;
                             lastpy = py;
@@ -662,11 +663,17 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             }
                         }
                     }
+                    painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+                    painter.drawLines(lines);
+                    w.graphView()->lines_drawn_this_frame+=lines.count();
+                    lines.clear();
+
                 }
 
                 if (done) { break; }
             }
         }
+
         painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
         painter.drawLines(lines);
         w.graphView()->lines_drawn_this_frame+=lines.count();
