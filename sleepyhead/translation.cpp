@@ -31,20 +31,12 @@
 
 void initTranslations(QSettings & settings) {
 
-    QStringList welcome;
-    welcome.push_back("Welcome");
-    welcome.push_back("Welkom");
-    welcome.push_back("Willkommen");
-    welcome.push_back("Bienvenue");
-    welcome.push_back("歡迎");
-    welcome.push_back("ようこそ！");
-
     // (Ordinary character sets will just use the name before the first '.' in the filename.)
     // (This u8 stuff deliberately kills Qt4.x build support - if you know another way feel free to
     //  change it, but Qt4 support is still going to die sooner or later)
     // Add any languages with special character set needs to this list
     QHash<QString, QString> langNames;
-    langNames["cn"]="漢語繁體字";
+    langNames["cn"] = "漢語繁體字";
     langNames["es"] = "Español";
     langNames["bg"] = "български";
     langNames["fr"] = "Français";
@@ -68,13 +60,12 @@ void initTranslations(QSettings & settings) {
     QFileInfoList list = dir.entryInfoList();
     QString language = settings.value("Settings/Language").toString();
 
-    QString langfile, langname, langcode;
+    QString langfile, langname;
 
     // Add default language (English)
     const QString en="en";
     langFiles[en]="";
     langNames[en]="English";
-
 
     // Scan through available translations, and add them to the list
     for (int i = 0; i < list.size(); ++i) {
@@ -93,10 +84,11 @@ void initTranslations(QSettings & settings) {
         langFiles[code]=fi.fileName();
 
     }
+
     if (language.isEmpty() || !langNames.contains(language)) {
         QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
         QFont font;
-        font.setPointSize(25);
+        font.setPointSize(20);
         langsel.setFont(font);
         langsel.setWindowTitle("Language / Taal / Sprache / Langue / 语言 / ... ");
         QHBoxLayout lang_layout(&langsel);
@@ -111,6 +103,10 @@ void initTranslations(QSettings & settings) {
         QVBoxLayout layout1;
         QVBoxLayout layout2;
 
+        layout2.setMargin(6);
+        lang_layout.setContentsMargins(4,4,4,4);
+        lang_layout.setMargin(6);
+        layout2.setSpacing(6);
         QListWidget langlist;
 
         lang_layout.addLayout(&layout1);
