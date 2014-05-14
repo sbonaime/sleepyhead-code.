@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QSettings>
 #include <QTranslator>
+#include <QListWidget>
 
 #ifndef nullptr
 #define nullptr NULL
@@ -92,7 +93,6 @@ void initTranslations(QSettings & settings) {
         langFiles[code]=fi.fileName();
 
     }
-
     if (language.isEmpty() || !langNames.contains(language)) {
         QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
         QFont font;
@@ -106,39 +106,43 @@ void initTranslations(QSettings & settings) {
 
         // hard coded non translatable
 
-        QComboBox lang_combo(&langsel);
         QPushButton lang_okbtn("->", &langsel);
 
         QVBoxLayout layout1;
         QVBoxLayout layout2;
 
+        QListWidget langlist;
+
         lang_layout.addLayout(&layout1);
         lang_layout.addLayout(&layout2);
 
         layout1.addWidget(&img);
+        layout2.addWidget(&langlist, 1);
 
-        for (int i=0;i<welcome.size(); i++) {
-            QLabel *welcomeLabel = new QLabel(welcome[i]);
-            layout2.addWidget(welcomeLabel);
-        }
-
-        QWidget spacer;
-        layout2.addWidget(&spacer,1);
-        layout2.addWidget(&lang_combo, 1);
-        layout2.addWidget(&lang_okbtn);
-
+        langlist.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        int row = 0;
         for (QHash<QString, QString>::iterator it = langNames.begin(); it != langNames.end(); ++it) {
             const QString & code = it.key();
             const QString & name = it.value();
-            lang_combo.addItem(name, code);
+            QListWidgetItem *item = new QListWidgetItem(name);
+            item->setData(Qt::UserRole, code);
+            langlist.insertItem(row++, item);
+            // Todo: Use base system language code
+            if (code.compare("en")==0) {
+                langlist.setCurrentItem(item);
+            }
         }
+        langlist.sortItems();
+        layout2.addWidget(&lang_okbtn);
 
+        langsel.connect(&langlist, SIGNAL(itemDoubleClicked(QListWidgetItem*)), &langsel, SLOT(close()));
         langsel.connect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
 
         langsel.exec();
         langsel.disconnect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
-        langname = lang_combo.currentText();
-        language = lang_combo.itemData(lang_combo.currentIndex()).toString();
+        langsel.disconnect(&langlist, SIGNAL(itemDoubleClicked(QListWidgetItem*)), &langsel, SLOT(close()));
+        langname = langlist.currentItem()->text();
+        language = langlist.currentItem()->data(Qt::UserRole).toString();
         settings.setValue("Settings/Language", language);
     }
 
