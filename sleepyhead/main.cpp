@@ -129,30 +129,6 @@ void release_notes()
     relnotes.exec();
 }
 
-void build_notes()
-{
-    QDialog relnotes;
-    relnotes.setWindowTitle(STR_TR_SleepyHead + " " + QObject::tr("SleepyHead Update Notes"));
-    QVBoxLayout layout(&relnotes);
-    QWebView web(&relnotes);
-    relnotes.setWindowTitle(STR_TR_SleepyHead + " v" + FullVersionString + QObject::tr(" Update"));
-    // Language???
-
-    web.load(QUrl("qrc:/docs/update_notes.html"));
-    //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
-
-    relnotes.setLayout(&layout);
-    layout.insertWidget(0, &web, 1);
-    QPushButton okbtn(QObject::tr("&Ok, get on with it.."), &relnotes);
-    relnotes.connect(&okbtn, SIGNAL(clicked()), SLOT(accept()));
-    layout.insertWidget(1, &okbtn, 1);
-    layout.setMargin(0);
-    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
-
-    relnotes.setFixedSize(500, 400);
-    relnotes.exec();
-}
-
 void sDelay(int s)
 {
     // QThread::msleep() is exposed in Qt5
@@ -162,6 +138,8 @@ void sDelay(int s)
     sleep(s);
 #endif
 }
+
+int compareVersion(QString version);
 
 int main(int argc, char *argv[])
 {
@@ -326,17 +304,9 @@ retry_directory:
         release_notes();
     } else {
         if (PREF.contains(STR_PREF_VersionString)) {
-            QString V = PREF[STR_PREF_VersionString].toString();
 
-            if (FullVersionString > V) {
-                QString V2 = V.section("-", 0, 0);
-
-                if (VersionString > V2) {
-                    release_notes();
-                    //QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the "+AppRoot+" folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
-                } else {
-                    build_notes();
-                }
+            if (compareVersion(PREF[STR_PREF_VersionString].toString()) < 0) {
+                release_notes();
 
                 check_updates = false;
             }

@@ -4,10 +4,22 @@
 
 <p><h2><b>Release Notes</b></h2></p>
 <p>Greetings!</p>
-<p>A long time in the making, but better late than never, here is a new and hopefully improved SleepyHead build.</p>
+<p>Here is a new and hopefully improved SleepyHead build.</p>
+<p>This build features rework to the graphing code which should hopefully increase compatability a little, at the cost of a little performance.</p>
 
-<b>New features & bugs fixes in this Update:</b><br/>
-
+<b>New features & bugs fixes in v0.9.6</b><br/>
+<list>
+<li>Switched from OpenGL to Qt QPainter backend</li>
+<li>Switched to Qt's pixmap caching engine</li>
+<li>Fix ResMed session grouping bug that caused session double-ups</li>
+<li>Fix EDF importer glitch on windows builds that led to faulty graph displays</li>
+<li>Fixed CPAP card autoscanner on Windows platform</li>
+<li>Added timeout dialog to CPAP card autoscanner</li>
+<li>Microsoft compiler fixes</li>
+<li>Fisher & Paykel Icon timestamp fix</li>
+</list>
+<br/>
+<b>New features & bugs fixes since v0.9.5</b><br/>
 <list>
 <li>Added ability to pin graphs to keep them on screen</li>
 <li>Fixed tranlation loading on Mac</li>
@@ -18,6 +30,11 @@
 <li>Added user information to Statistics page</li>
 <li>Datacard autodetection ability</li>
 <li>Philips Respironics 60 series fixes</li>
+</list>
+
+<br/>
+<b>New features & bugs fixes since v0.9.3</b><br/>
+<list>
 <li>Retina display fixes for Mac platform</li>
 <li>Introduced yAxis Scaling modes</li>
 <li>Cleaned up mouse handling underneath</li>
