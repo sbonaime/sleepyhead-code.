@@ -266,6 +266,7 @@ extern QString STR_TR_Off;
 
 extern QString STR_TR_Min;    // Minimum
 extern QString STR_TR_Max;    // Maximum
+extern QString STR_TR_Med;    // Median
 
 extern QString STR_TR_Average;
 extern QString STR_TR_Median;

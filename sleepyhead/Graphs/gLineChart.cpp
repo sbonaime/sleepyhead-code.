@@ -706,7 +706,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     if (!total_points) { // No Data?
 
         if (m_report_empty) {
-            QString msg = "No Waveform Available";
+            QString msg = QObject::tr("No Waveform Available");
             int x, y;
             GetTextExtent(msg, x, y, bigfont);
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);

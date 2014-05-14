@@ -508,7 +508,7 @@ QStringList MainWindow::detectCPAPCards()
     QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
     QProgressBar progress;
     QVBoxLayout waitlayout(&popup);
-    QPushButton skipbtn("Click here to choose a folder");
+    QPushButton skipbtn(tr("Click here to choose a folder"));
     waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
     waitlayout.addWidget(&progress,1);
     waitlayout.addWidget(&skipbtn);
@@ -984,7 +984,7 @@ void MainWindow::on_action_About_triggered()
 
     QString gitrev = QString(GIT_REVISION);
 
-    if (!gitrev.isEmpty()) { gitrev = "Revision: " + gitrev + " (" + QString(GIT_BRANCH) + " branch)"; }
+    if (!gitrev.isEmpty()) { gitrev = tr("Revision:")+" " + gitrev + " (" + QString(GIT_BRANCH) + " " + tr("branch") + ")"; }
 
     //    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
     QString msg = QString("<html>"

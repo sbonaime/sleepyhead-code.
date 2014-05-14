@@ -831,27 +831,27 @@ jumpnext:
             break;
 
         case ST_PERC:
-            if (tval >= 0.99) { b = "Max"; }
-            else if (tval == 0.5) { b = "Med"; }
+            if (tval >= 0.99) { b = STR_TR_Max; }
+            else if (tval == 0.5) { b = STR_TR_Med; }
             else { b = QString("%1%").arg(tval * 100.0, 0, 'f', 0); }
 
             break;
 
         //b=QString("%1%").arg(tval*100.0,0,'f',0); break;
         case ST_MIN:
-            b = "Min";
+            b = STR_TR_Min;
             break;
 
         case ST_MAX:
-            b = "Max";
+            b = STR_TR_Max;
             break;
 
         case ST_SETMIN:
-            b = "Min";
+            b = STR_TR_Min;
             break;
 
         case ST_SETMAX:
-            b = "Max";
+            b = STR_TR_Max;
             break;
 
         case ST_CPH:
@@ -867,7 +867,7 @@ jumpnext:
             break;
 
         case ST_SESSIONS:
-            b = "Sessions";
+            b = STR_TR_Sessions;
             break;
 
         default:
@@ -943,13 +943,13 @@ jumpnext:
             //
         }
     }*/
-    a += "Days=" + QString::number(total_days, 'f', 0);
+    a += QString(QObject::tr("Days=%1")).arg(total_days, 0);
 
     if (PROFILE.cpap->showComplianceInfo()) {
         if (ishours && incompliant > 0) {
-            a += " Low Usage Days=" + QString::number(incompliant, 'f',
-                    0) + " (%" + QString::number((1.0 / daynum) * (total_days - incompliant) * 100.0, 'f',
-                                                 2) + " compliant, defined as >" + QString::number(compliance_hours, 'f', 1) + " hours)";
+            a += " "+QString(QObject::tr("Low Usage Days=%1")).arg(incompliant, 0)+
+                 " "+QString(QObject::tr("(%%1 compliant, defined as > %2 hours)")).
+                    arg((1.0 / daynum) * (total_days - incompliant) * 100.0, 0, 'f', 2).arg(compliance_hours, 0, 'f', 1);
         }
     }
 
@@ -1061,7 +1061,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                 z += "\r\n" + m_label + "=" + val;
 
                 if (m_type[1] == ST_SESSIONS) {
-                    z += " (Sess=" + QString::number(day->size(), 'f', 0) + ")";
+                    z += " "+QString(QObject::tr("(Sess=%1)")).arg(day->size(), 0);
                 }
 
                 EventDataType v = m_times[zd][0];
@@ -1069,9 +1069,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
                 if (lastt < 0) { lastt = 0; }
 
-                z += "\r\nBedtime=" + formatTime(v, false, false, true);
+                z += "\r\n"+QString(QObject::tr("Bedtime=%1")).arg(formatTime(v, false, false, true));
                 v = m_times[zd][lastt] + m_values[zd][lastt];
-                z += "\r\nWaketime=" + formatTime(v, false, false, true);
+                z += "\r\n"+QString(QObject::tr("Waketime=%1")).arg(formatTime(v, false, false, true));
 
             } else if (m_graphtype == GT_BAR) {
                 if (m_type[0] == ST_HOURS) {
@@ -1103,30 +1103,30 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
                     switch (m_type[i]) {
                     case ST_WAVG:
-                        a = "W-avg";
+                        a = STR_TR_WAvg;
                         break;
 
                     case ST_AVG:
-                        a = "Avg";
+                        a = STR_TR_Avg;
                         break;
 
                     case ST_90P:
-                        a = "90%";
+                        a = QObject::tr("90%");
                         break;
 
                     case ST_PERC:
-                        if (tval >= 0.99) { a = "Max"; }
-                        else if (tval == 0.5) { a = "Med"; }
+                        if (tval >= 0.99) { a = STR_TR_Max; }
+                        else if (tval == 0.5) { a = STR_TR_Med; }
                         else { a = QString("%1%").arg(tval * 100.0, 0, 'f', 0); }
 
                         break;
 
                     case ST_MIN:
-                        a = "Min";
+                        a = STR_TR_Min;
                         break;
 
                     case ST_MAX:
-                        a = "Max";
+                        a = STR_TR_Max;
                         break;
 
                     case ST_CPH:
@@ -1142,15 +1142,15 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                         break;
 
                     case ST_SESSIONS:
-                        a = "Sessions";
+                        a = STR_TR_Sessions;
                         break;
 
                     case ST_SETMIN:
-                        a = "Min";
+                        a = STR_TR_Min;
                         break;
 
                     case ST_SETMAX:
-                        a = "Max";
+                        a = STR_TR_Max;
                         break;
 
                     default:

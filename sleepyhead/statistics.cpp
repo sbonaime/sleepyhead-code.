@@ -610,13 +610,13 @@ QString Statistics::GenerateHTML()
                         arg(QString(tr("No %1 data available.")).arg(machine));
             } else if (value == 1) {
                 html+=QString("<tr><td colspan=%1 align=center>%2</td></tr>\n").arg(periods.size()+1).
-                        arg(QString("%1 day of %2 Data on %3")
+                        arg(QString(tr("%1 day of %2 Data on %3"))
                             .arg(value)
                             .arg(machine)
                             .arg(last.toString()));
             } else {
                 html+=QString("<tr><td colspan=%1 align=center>%2</td></tr>\n").arg(periods.size()+1).
-                        arg(QString("%1 days of %2 Data, between %3 and %4")
+                        arg(QString(tr("%1 days of %2 Data, between %3 and %4"))
                             .arg(value)
                             .arg(machine)
                             .arg(first.toString())
@@ -634,7 +634,7 @@ QString Statistics::GenerateHTML()
             if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
                 continue;
             }
-            name = calcnames[row.calc].arg(row.src);
+            name = calcnames[row.calc].arg(schema::channel[id].fullname());
         }
         html += QString("<tr><td>%1</td>").arg(name);
         for (int j=0; j < periods.size(); j++) {

@@ -253,6 +253,7 @@ QString STR_TR_Off;
 
 QString STR_TR_Min;    // Minimum
 QString STR_TR_Max;    // Maximum
+QString STR_TR_Med;    // Median
 
 QString STR_TR_Average;
 QString STR_TR_Median;
@@ -412,6 +413,7 @@ void initializeStrings()
 
     STR_TR_Min = QObject::tr("Min");  // Minimum
     STR_TR_Max = QObject::tr("Max");  // Maximum
+    STR_TR_Max = QObject::tr("Med");  // Median
 
     STR_TR_Average = QObject::tr("Average");
     STR_TR_Median = QObject::tr("Median");
