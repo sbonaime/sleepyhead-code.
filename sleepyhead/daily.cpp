@@ -1303,7 +1303,7 @@ void Daily::Load(QDate date)
                 { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
                 { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
                 { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
-                { CPAP_SensAwake,   COLOR_SensAwake,    Qt::white, sai=cpap->count(CPAP_SensAwake)/hours },
+                { CPAP_SensAwake,   COLOR_SensAwake,    Qt::black, sai=cpap->count(CPAP_SensAwake)/hours },
                 { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
                 { CPAP_RERA,        COLOR_RERA,         Qt::black, rei=cpap->count(CPAP_RERA)/hours },
                 { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },

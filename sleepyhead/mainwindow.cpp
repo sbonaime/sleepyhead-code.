@@ -759,9 +759,10 @@ QString MainWindow::getWelcomeHTML()
 
            "<h3>" + tr("Currenly supported machines:") + "</h3>"
            "<b>" + tr("CPAP") + "</b>"
-           "<li>" + tr("Philips Respironics System One (CPAP, Auto, BiPAP & ASV models)") + "</li>"
+           "<li>" + tr("Philips Respironics System One (CPAP Pro, Auto, BiPAP & ASV models)") + "</li>"
            "<li>" + tr("ResMed S9 models (CPAP, Auto, VPAP)") + "</li>"
            "<li>" + tr("DeVilbiss Intellipap (Auto)") + "</li>"
+           "<li>" + tr("Fisher & Paykel ICON (CPAP, Auto)") + "</li>"
            "<b>" + tr("Oximetry") + "</b>"
            "<li>" + tr("Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters") + "</li>"
            "<li>" + tr("ResMed S9 Oximeter Attachment") + "</li>"
@@ -1020,10 +1021,10 @@ void MainWindow::on_action_About_triggered()
                           // Credits section
                           "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
                           tr("Bugfixes, Patches and Platform Help:") + "</b> " +
-                          tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")
+                          tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl and Roy Stone.")
                           + "</p>"
 
-                          "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz (German).") +
+                          "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz (German), and others I've still to add here.") +
                           "</p>"
 
                           "<p><b>" + tr("3rd Party Libaries:") + "</b> " +

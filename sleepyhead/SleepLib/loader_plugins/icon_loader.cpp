@@ -845,44 +845,33 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
 
         idx = stidx * 15;
 
+        quint8 bitmask;
         for (int i = 0; i < rec; i++) {
             for (int j = 0; j < 3; j++) {
                 pressure = data[idx];
-                leak = data[idx + 1];
-                a1 = data[idx + 2];
-                a2 = data[idx + 3];
-                a3 = data[idx + 4];
-                sa1 = (a3 >> 6) & 1;  // Sense awake bit for first minutes
-                sa2 = (a3 >> 7) & 1;  // Sense awake bit for second minutes
                 PR->AddEvent(ti, pressure);
+
+                leak = data[idx + 1];
                 LK->AddEvent(ti, leak);
+
+                a1 = data[idx + 2];   // [0..5] Obstructive flag, [6..7] Unknown
+                a2 = data[idx + 3];   // [0..5] Hypopnea,         [6..7] Unknown
+                a3 = data[idx + 4];   // [0..5] Flow Limitation,  [6..7] SensAwake bitflags, 1 per minute
+
+                sa1 = (a3 >> 6) & 1;  // Sense awake bit for first minutes
+                sa2 = (a3 >> 7) & 1;  // Sense awake bit for second minute
+
+                if (sa1) { SA->AddEvent(ti, 1); }
+                if (sa2) { SA->AddEvent(ti + 60000L, 1); }
+
+                bitmask = 1;
                 for (int k = 0; k < 6; k++) {  // There are 6 flag sets per 2 minutes
-
-                    //if (a1 > 0) { OA->AddEvent(ti, a1); }
-                    if ((a1 & 1) == 1) { OA->AddEvent(ti, 1); }
-
-                    //if (a2 > 0) { H->AddEvent(ti, a2); }
-                    if ((a2 & 1) == 1) { H->AddEvent(ti, 1); }
-
-                    //if (a3 > 0) { FL->AddEvent(ti, a3); }
-                    if ((a3 & 1) == 1) { FL->AddEvent(ti, 1); }
-
-                    // These should be flags as above, but for now I re-used the redundant FLG graph
-                    if (k == 0) {
-                        if (sa1 == 1) {SA->AddEvent(ti, sa1); }
-                    }
-                    else if (k == 3) {
-                        if (sa2 == 1) { SA->AddEvent(ti, sa2); }
-                    }
-                   // else { FLG->AddEvent(ti, 0); }
-
-                    a1 = a1 >> 1;
-                    a2 = a2 >> 1;
-                    a3 = a3 >> 1;
+                    if (a1 & bitmask) { OA->AddEvent(ti, 1); }
+                    if (a2 & bitmask) { H->AddEvent(ti, 1); }
+                    if (a3 & bitmask) { FL->AddEvent(ti, 1); }
+                    bitmask <<= 1;
                     ti += 20000L;  // Increment 20 seconds
                 }
-                //FLG->AddEvent(ti, a3);
-                //ti += 120000L;
 
                 idx += 5;
             }
