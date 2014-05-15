@@ -309,6 +309,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     graphlist[schema::channel[CPAP_Snore].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
 
     graphlist[schema::channel[CPAP_PTB].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
+
+
     graphlist[schema::channel[CPAP_MaskPressure].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
     graphlist[schema::channel[CPAP_RespRate].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
 

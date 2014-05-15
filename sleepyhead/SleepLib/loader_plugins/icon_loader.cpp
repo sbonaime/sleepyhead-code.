@@ -286,27 +286,96 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path, Profile *profile)
     return true;
 }
 
-QDateTime FPIconLoader::readFPDateTime(quint8 *data)
+// !\brief Convert F&P 32bit date format to 32bit UNIX Timestamp
+quint32 convertDate(quint32 timestamp)
 {
-    quint32 ts = (data[3] << 24) | (data[2] << 16) | ((data[1] << 8) | data[0]); // ^ 0xc00000;
-    // 0x20a41b18
+    quint8 day, month,hour, minute, second;
+    quint16 year;
 
-    quint8 day = ts & 0x1f; // 0X18      24
-    ts >>= 5;               // 10520D8
-    quint8 month = ts & 0x0f; // 0X08      8
-    ts >>= 4;               // 10520D
-    quint8 year = ts & 0x3f; // 0X0D      13
-    ts >>= 6;               // 4148
-    quint8 second = ts & 0x3f; // 0X08      8
-    ts >>= 6;               // 20A
-    quint8 minute = ts & 0x3f; // 0A        10
-    ts >>= 6;               // 10
-    quint8 hour = ts & 0x1f; // 10        16
-    QDate date = QDate(2000 + year, month, day);
-    QTime time = QTime(hour, minute, second);
-    QDateTime datetime = QDateTime(date, time, Qt::UTC);
-    return datetime;
+
+    day = timestamp & 0x1f;
+    month = (timestamp  >> 5) & 0x0f;
+    year = 2000 + ((timestamp  >> 9) & 0x3f);
+    timestamp >>= 15;
+    timestamp |= (timestamp >> 15) & 1;
+
+    // Okay, why did I swap the first and last bits of the time field?
+    // What am I forgetting?? This seems to work properly like this
+    // Was I looking at older data that worked like this?
+
+    second = timestamp  & 0x3f;
+    minute = (timestamp >> 6) & 0x3f;
+    hour = (timestamp >> 12) & 0x1f;
+
+    //        in >> a1;
+    //        in >> a2;
+    //        t1 = a2 << 8 | a1;
+
+    //        if (t1 == 0xfafe) {
+    //            break;
+    //        }
+
+    //        day = t1 & 0x1f;
+    //        month = (t1 >> 5) & 0x0f;
+    //        year = 2000 + ((t1 >> 9) & 0x3f);
+
+    //        in >> a1;
+    //        in >> a2;
+
+    //        ts = ((a2 << 8) | a1) << 1;
+    //        ts |= (t1 >> 15) & 1;
+
+    //        second = (ts & 0x3f);
+    //        minute = (ts >> 6) & 0x3f;
+    //        hour = (ts >> 12) & 0x1f;
+    QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
+
+    return dt.toTime_t();
 }
+
+quint32 convertFLWDate(quint32 timestamp)
+{
+    quint8 day, month, hour, minute, second;
+    quint16 year;
+
+    day = timestamp & 0x1f;
+    month = (timestamp  >> 5) & 0x0f;
+    year = 2000 + ((timestamp  >> 9) & 0x3f);
+    timestamp >>= 15;
+
+    // Okay, why did I swap the first and last bits of the time field?
+    // What am I forgetting?? This seems to work properly like this
+    // Was I looking at older data that worked like this?
+
+    second = timestamp  & 0x3f;
+    minute = (timestamp >> 6) & 0x3f;
+    hour = (timestamp >> 12) & 0x1f;
+    QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
+
+    return dt.toTime_t();
+}
+
+//QDateTime FPIconLoader::readFPDateTime(quint8 *data)
+//{
+//    quint32 ts = (data[3] << 24) | (data[2] << 16) | ((data[1] << 8) | data[0]); // ^ 0xc00000;
+//    // 0x20a41b18
+
+//    quint8 day = ts & 0x1f; // 0X18      24
+//    ts >>= 5;               // 10520D8
+//    quint8 month = ts & 0x0f; // 0X08      8
+//    ts >>= 4;               // 10520D
+//    quint8 year = ts & 0x3f; // 0X0D      13
+//    ts >>= 6;               // 4148
+//    quint8 second = ts & 0x3f; // 0X08      8
+//    ts >>= 6;               // 20A
+//    quint8 minute = ts & 0x3f; // 0A        10
+//    ts >>= 6;               // 10
+//    quint8 hour = ts & 0x1f; // 10        16
+//    QDate date = QDate(2000 + year, month, day);
+//    QTime time = QTime(hour, minute, second);
+//    QDateTime datetime = QDateTime(date, time, Qt::UTC);
+//    return datetime;
+//}
 
 /*
  *in >> a1;
@@ -348,19 +417,13 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 {
     Q_UNUSED(mach);
     Q_UNUSED(profile);
-    QByteArray data;
-    quint16 t1;
+
     quint32 ts;
     double ti;
 
-    EventList *flow = nullptr, * pressure = nullptr, *leak = nullptr;
-    QDateTime datetime;
-
-    unsigned char *buf, *endbuf;
-
+    EventList *flow = nullptr, * pressure = nullptr;
 
     qDebug() << filename;
-    QByteArray header;
     QFile file(filename);
 
     if (!file.open(QFile::ReadOnly)) {
@@ -368,19 +431,14 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         return false;
     }
 
-    header = file.read(0x200);
-
+    QByteArray header = file.read(0x200);
     if (header.size() != 0x200) {
         qDebug() << "Short file" << filename;
         return false;
     }
 
-    unsigned char hsum = 0xff;
-
-    for (int i = 0; i < 0x1ff; i++) {
-        hsum += header[i];
-    }
-
+    unsigned char hsum = 0x0;
+    for (int i = 0; i < 0x1ff; i++) { hsum ^= header[i]; }
     if (hsum != header[0x1ff]) {
         qDebug() << "Header checksum mismatch" << filename;
     }
@@ -399,40 +457,20 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
     }
 
     fname.chop(4);
-    QString num = fname.right(4);
-    int filenum = num.toInt();
+   // QString num = fname.right(4);
+ //   int filenum = num.toInt();
 
-    data = file.readAll();
 
-    buf = (unsigned char *)data.data();
-    endbuf = buf + data.size();
+    QByteArray buf = file.read(4);
+    unsigned char * data = (unsigned char *)buf.data();
 
-    t1 = buf[1] << 8 | buf[0];
+    ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
 
-    if (t1 == 0xfafe) { // End of file marker..
-        qDebug() << "FaFE observed in" << filename;
+    if (ts == 0xffffffff)
         return false;
-    }
 
-    datetime = readFPDateTime(buf);
-    buf += 4;
-
-
-    QDate date;
-    QTime time;
-
-    if (!datetime.isValid()) {
-        qDebug() << "DateTime invalid in OpenFLW:" << filename;
-        return false;
-    }  else {
-        date = datetime.date();
-        time = datetime.time();
-        ts = datetime.toTime_t();
-    }
-
+    ts = convertFLWDate(ts);
     ti = qint64(ts) * 1000L;
-
-    EventStoreType pbuf[256];
 
     QMap<SessionID, Session *>::iterator sit = Sessions.find(ts);
 
@@ -442,8 +480,9 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 
     if (sit != Sessions.end()) {
         sess = sit.value();
-        qDebug() << filenum << ":" << date << sess->session() << ":" << sess->hours() * 60.0;
+//        qDebug() << filenum << ":" << date << sess->session() << ":" << sess->hours() * 60.0;
     } else {
+        // Create a session
         qint64 k = -1;
         Session *s1 = nullptr;
         sess = nullptr;
@@ -470,7 +509,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
             sess->setFirst(CPAP_FlowRate, ti);
             sess->setFirst(CPAP_MaskPressure, ti);
             newsess = true;
-            qDebug() << filenum << ":" << date << "couldn't find matching session for" << ts;
+//            qDebug() << filenum << ":" << date << "couldn't find matching session for" << ts;
         }
     }
 
@@ -479,72 +518,65 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 
     // F&P Overwrites this file, not appends to it.
     flow = new EventList(EVL_Waveform, 1.0F, 0, 0, 0, rate);
-    //leak=new EventList(EVL_Event,1.0,0,0,0,rate*double(samples_per_block)); // 1 per second
-    pressure = new EventList(EVL_Event, 0.01F, 0, 0, 0,
-                             rate * double(samples_per_block)); // 1 per second
+    pressure = new EventList(EVL_Event, 0.01F, 0, 0, 0, rate * double(samples_per_block));
 
     flow->setFirst(ti);
-    //leak->setFirst(ti);
     pressure->setFirst(ti);
 
-    qint16 pr;
-    quint16 lkaj;
+    quint16 endMarker;
+    quint8 offset;         // offset from center for this block
+    quint16 pres;       // mask pressure
+
+    qint16 tmp;
+    QByteArray block;
+    qint16 samples[samples_per_block];
 
     EventDataType val;
-    qint16 tmp;
 
+    // Each block represents 1 second of data.. therefore Flow waveform is at 50hz, and Pressure is at 1hz
     do {
-        quint8 *p = buf;
-
-        // Scan ahead looking for end of block, marked by ff ff
-        do {
-            p++;
-
-            if (p >= endbuf) {
-                delete flow;
-                delete leak;
-                delete pressure;
-                return false;
-            }
-        } while (!((p[0] == 0xff) && (p[1] == 0xff)));
-
-        // The Pressure and lkaj codes are before the end of block marker
-        p -= 3;
-        pr = p[1] << 8 | p[0];
-        lkaj = p[2];
-        int i = 0;
-
-        pressure->AddEvent(ti, pr);
-        //leak->AddEvent(ti,lkaj);
-
-        do {
-            tmp = buf[1] << 8 | buf[0];
-            val = (EventDataType(tmp) / 100.0) - lkaj;
-
-            if (val < -128) { val = -128; }
-            else if (val > 128) { val = 128; }
-
-            buf += 2;
-
-            pbuf[i++] = val;
-        } while (buf < p);
-
-        flow->AddWaveform(ti, pbuf, i, rate);
-        ti += i * rate;
-
-        buf = p + 5;
-
-        if (buf >= endbuf) {
+        block = file.read(105);
+        if (block.size() != 105) {
             break;
         }
-    } while (!((buf[0] == 0xff) && (buf[1] == 0x7f)));
+        data = (unsigned char *)block.data();
+        endMarker = data[1] << 8 | data[0];
+        if (endMarker == 0x7fff) {
+            // Reached end of file
+            break;
+        }
+        pres = data[101] << 8 | data[100];
 
+        offset = data[102];
+
+        pressure->AddEvent(ti, pres);
+
+        for (int i=0; i < samples_per_block; i++) {
+            tmp = ((char *)data)[(i<<1) + 1] << 8 | data[(i << 1)];
+
+            // Assuming Litres per hour, converting to litres per minute and applying offset?
+            // As in should be 60.0?
+            val = (EventDataType(tmp) / 100.0) - offset;
+
+//            if (val < -128) { val = -128; }
+//            else if (val > 128) { val = 128; }
+
+            samples[i]=val;
+        }
+        flow->AddWaveform(ti, samples, samples_per_block, rate);
+
+        endMarker = data[103] << 8 | data[104];
+        ti += samples_per_block * rate;
+    } while (endMarker == 0xffff);
+
+    if (endMarker != 0x7fff) {
+        qDebug() << fname << "waveform does not end with the corrent marker";
+    }
 
     if (sess) {
         sess->setLast(CPAP_FlowRate, ti);
         sess->setLast(CPAP_MaskPressure, ti);
         sess->eventlist[CPAP_FlowRate].push_back(flow);
-        // sess->eventlist[CPAP_Leak].push_back(leak);
         sess->eventlist[CPAP_MaskPressure].push_back(pressure);
     }
 
@@ -554,6 +586,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 
     return true;
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Open Summary file
@@ -620,32 +653,11 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
     QDate date;
 
     do {
-        in >> a1;
-        in >> a2;
-        t1 = a2 << 8 | a1;
+        in >> ts;
+        if (ts == 0xffffffff) break;
+        if ((ts & 0xfafe) == 0xfafe) break;
 
-        if (t1 == 0xfafe) {
-            break;
-        }
-
-        day = t1 & 0x1f;
-        month = (t1 >> 5) & 0x0f;
-        year = 2000 + ((t1 >> 9) & 0x3f);
-
-        in >> a1;
-        in >> a2;
-
-        ts = ((a2 << 8) | a1) << 1;
-        ts |= (t1 >> 15) & 1;
-
-        second = (ts & 0x3f);
-        minute = (ts >> 6) & 0x3f;
-        hour = (ts >> 12) & 0x1f;
-
-        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
-
-        date = datetime.date();
-        ts = datetime.toTime_t();
+        ts = convertDate(ts);
 
         // the following two quite often match in value
         in >> a1;  // 0x04 Run Time
@@ -733,8 +745,8 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         return false;
     }
 
+    // Calculate and test checksum
     unsigned char hsum = 0;
-
     for (int i = 0; i < 0x1ff; i++) {
         hsum += header[i];
     }
@@ -743,64 +755,29 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         qDebug() << "Header checksum mismatch" << filename;
     }
 
-    QByteArray index;
-    index = file.read(0x800);
-    //long size=index.size(),pos=0;
+    QByteArray index = file.read(0x800);
     QDataStream in(index);
 
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
     quint32 ts;
-    QDateTime datetime;
-    QDate date;
-    QTime time;
-    //FPDetIdx *idx=(FPDetIdx *)index.data();
-
 
     QVector<quint32> times;
     QVector<quint16> start;
     QVector<quint8> records;
 
-    quint16 t1;
     quint16 strt;
-    quint8 recs, z1, z2;
-
-    int day, month, year, hour, minute, second;
+    quint8 recs;
 
     int totalrecs = 0;
 
     do {
-        in >> z1;
-        in >> z2;
-        t1 = z2 << 8 | z1;
+        in >> ts;
+        if (ts == 0xffffffff) break;
+        if ((ts & 0xfafe) == 0xfafe) break;
 
-        if (t1 == 0xfafe) {
-            break;
-        }
+        ts = convertDate(ts);
 
-        day = t1 & 0x1f;
-        month = (t1 >> 5) & 0x0f;
-        year = 2000 + ((t1 >> 9) & 0x3f);
-
-        in >> z1;
-        in >> z2;
-        //
-
-        ts = ((z2 << 8) | z1) << 1;
-        ts |= (t1 >> 15) & 1;
-
-        //
-        second = (ts & 0x3f);
-        minute = (ts >> 6) & 0x3f;
-        hour = (ts >> 12) & 0x1f;
-
-        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
-        //datetime=datetime.toTimeSpec(Qt::UTC);
-
-        ts = datetime.toTime_t();
-
-        date = datetime.date();
-        time = datetime.time();
         in >> strt;
         in >> recs;
         totalrecs += recs;
@@ -816,13 +793,14 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
 
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::BigEndian);
+
     // 5 byte repeating patterns
 
     quint8 *data = (quint8 *)databytes.data();
 
     qint64 ti;
-    quint8 pressure, leak, a1, a2, a3;
-    quint8 sa1, sa2;  // The two sense awake bits per 2 minutes
+    quint8 pressure, leak, a1, a2, a3, a4;
+//    quint8 sa1, sa2;  // The two sense awake bits per 2 minutes
     SessionID sessid;
     Session *sess;
     int idx;
@@ -834,7 +812,6 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         sess->really_set_first(ti);
         EventList *LK = sess->AddEventList(CPAP_LeakTotal, EVL_Event, 1);
         EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
-//        EventList *FLG = sess->AddEventList(CPAP_FLG, EVL_Event);
         EventList *OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
         EventList *H = sess->AddEventList(CPAP_Hypopnea, EVL_Event);
         EventList *FL = sess->AddEventList(CPAP_FlowLimit, EVL_Event);
@@ -846,8 +823,8 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         idx = stidx * 15;
 
         quint8 bitmask;
-        for (int i = 0; i < rec; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < rec; ++i) {
+            for (int j = 0; j < 3; ++j) {
                 pressure = data[idx];
                 PR->AddEvent(ti, pressure);
 
@@ -858,17 +835,19 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
                 a2 = data[idx + 3];   // [0..5] Hypopnea,         [6..7] Unknown
                 a3 = data[idx + 4];   // [0..5] Flow Limitation,  [6..7] SensAwake bitflags, 1 per minute
 
-                sa1 = (a3 >> 6) & 1;  // Sense awake bit for first minutes
-                sa2 = (a3 >> 7) & 1;  // Sense awake bit for second minute
+                // Sure there isn't 6 SenseAwake bits?
+                a4 = (a1 >> 6) << 4 | ((a2 >> 6) << 2) | (a3 >> 6);
 
-                if (sa1) { SA->AddEvent(ti, 1); }
-                if (sa2) { SA->AddEvent(ti + 60000L, 1); }
+                // this does the same thing as behaviour
+                //a4 = (a3 >> 7) << 3 | ((a3 >> 6)&1);
 
                 bitmask = 1;
                 for (int k = 0; k < 6; k++) {  // There are 6 flag sets per 2 minutes
                     if (a1 & bitmask) { OA->AddEvent(ti, 1); }
                     if (a2 & bitmask) { H->AddEvent(ti, 1); }
                     if (a3 & bitmask) { FL->AddEvent(ti, 1); }
+                    if (a4 & bitmask) { SA->AddEvent(ti, 1); }
+
                     bitmask <<= 1;
                     ti += 20000L;  // Increment 20 seconds
                 }

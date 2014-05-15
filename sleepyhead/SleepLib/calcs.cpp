@@ -223,7 +223,7 @@ void FlowParser::openFlow(Session *session, EventList *flow)
     EventStoreType *eptr = inraw + m_samples;
 
     // Convert from store type to floats..
-    for (; inraw < eptr; inraw++) {
+    for (; inraw < eptr; ++inraw) {
         *buf++ = EventDataType(*inraw) * m_gain;
     }
 
@@ -437,10 +437,19 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
     qint32 timeval = 0; // Time relative to start
 
-    for (idx = 0; idx < nm; idx++) {
-        bs = breaths[idx].start;
-        bm = breaths[idx].middle;
-        be = breaths[idx].end;
+
+
+    BreathPeak * bpstr = breaths.data();
+    BreathPeak * bpend = bpstr + nm;
+    for (BreathPeak * bp = bpstr; bp != bpend; ++bp) {
+        bs = bp->start;
+        bm = bp->middle;
+        be = bp->end;
+
+//    for (idx = 0; idx < nm; idx++) {
+//        bs = breaths[idx].start;
+//        bm = breaths[idx].middle;
+//        be = breaths[idx].end;
 
         // Calculate start, middle and end time of this breath
         st = start + bs * m_rate;
@@ -524,9 +533,13 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
             //et2=et;
 
             // Step back through last minute and count breaths
-            for (int i = idx; i >= 0; i--) {
-                st2 = start + double(breaths[i].start) * m_rate;
-                et2 = start + double(breaths[i].end) * m_rate;
+            BreathPeak *bpstr1 = bpstr-1;
+            for (BreathPeak *p = bp; p != bpstr1; --p) {
+                st2 = start + double(p->start) * m_rate;
+                et2 = start + double(p->end) * m_rate;
+//            for (int i = idx; i >= 0; i--) {
+//                st2 = start + double(breaths[i].start) * m_rate;
+//                et2 = start + double(breaths[i].end) * m_rate;
 
                 if (et2 < stmin) {
                     break;
@@ -631,12 +644,20 @@ void FlowParser::flagEvents()
 
     bool allowDuplicates = PROFILE.cpap->userEventDuplicates();
 
-    for (int i = 0; i < numbreaths; i++) {
-        mx = breaths[i].max;
-        mn = breaths[i].min;
-        br.push_back(qAbs(mx));
-        br.push_back(qAbs(mn));
+    BreathPeak *bpstr = breaths.data();
+    BreathPeak *bpend = bpstr + numbreaths;
+
+    for (BreathPeak *p = bpstr; p != bpend; ++p) {
+        br.push_back(qAbs(p->max));
+        br.push_back(qAbs(p->min));
     }
+
+//    for (int i = 0; i < numbreaths; i++) {
+//        mx = breaths[i].max;
+//        mn = breaths[i].min;
+//        br.push_back(qAbs(mx));
+//        br.push_back(qAbs(mn));
+//    }
 
     //EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
     //EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
@@ -651,13 +672,19 @@ void FlowParser::flagEvents()
 
     int bs, bm, be, bs1, bm1, be1;
 
-    for (int i = 0; i < numbreaths; i++) {
-        bs = breaths[i].start;
-        bm = breaths[i].middle;
-        be = breaths[i].end;
+    for (BreathPeak *p = bpstr; p != bpend; ++p) {
+        bs = p->start;
+        bm = p->middle;
+        be = p->end;
+        mx = p->max;
+        mn = p->min;
+//    for (int i = 0; i < numbreaths; i++) {
+//        bs = breaths[i].start;
+//        bm = breaths[i].middle;
+//        be = breaths[i].end;
 
-        mx = breaths[i].max;
-        mn = breaths[i].min;
+//        mx = breaths[i].max;
+//        mn = breaths[i].min;
         val = mx - mn;
 
         //        if (qAbs(mx) > cutoffval) {
@@ -779,8 +806,8 @@ void calcRespRate(Session *session, FlowParser *flowparser)
         }
 
         QVector<EventList *> &list = session->eventlist[CPAP_RespRate];
-
-        for (int i = 0; i < list.size(); i++) {
+        int size = list.size();
+        for (int i = 0; i < size; ++i) {
             delete list[i];
         }
 
@@ -788,7 +815,8 @@ void calcRespRate(Session *session, FlowParser *flowparser)
 
         QVector<EventList *> &list2 = session->eventlist[CPAP_TidalVolume];
 
-        for (int i = 0; i < list2.size(); i++) {
+        size = list2.size();
+        for (int i = 0; i < size; ++i) {
             delete list2[i];
         }
 
@@ -796,7 +824,8 @@ void calcRespRate(Session *session, FlowParser *flowparser)
 
         QVector<EventList *> &list3 = session->eventlist[CPAP_MinuteVent];
 
-        for (int i = 0; i < list3.size(); i++) {
+        size = list3.size();
+        for (int i = 0; i < size; ++i) {
             delete list3[i];
         }
 
@@ -813,8 +842,11 @@ void calcRespRate(Session *session, FlowParser *flowparser)
     //flowparser->addFilter(FilterXPass,0.5);
     EventList *flow;
 
-    for (int ws = 0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
-        flow = session->eventlist[CPAP_FlowRate][ws];
+    QVector<EventList *> &EVL = session->eventlist[CPAP_FlowRate];
+    int size = EVL.size();
+
+    for (int ws = 0; ws < size; ++ws) {
+        flow = EVL[ws];
 
         if (flow->count() > 20) {
             flowparser->openFlow(session, flow);
@@ -1157,23 +1189,26 @@ void zMaskProfile::scanPressure(Session *session)
         prescnt = session->count(CPAP_Pressure);
         Pressure.reserve(prescnt);
 
-        for (int j = 0; j < session->eventlist[CPAP_Pressure].size(); j++) {
-            QVector<EventList *> &el = session->eventlist[CPAP_Pressure];
+        // WTF IS THIS DOING??? WHY THE HECK DID I PUT AN INNER LOOP HERE??
+        QVector<EventList *> &EVL=session->eventlist[CPAP_Pressure];
+        int size = EVL.size();
+        for (int j = 0; j < size; ++j) {
+            scanPressureList(EVL[j]);
+//            QVector<EventList *> &el = session->eventlist[CPAP_Pressure];
 
-            for (int e = 0; e < el.size(); e++) {
-                scanPressureList(el[e]);
-            }
+//            for (int e = 0; e < el.size(); e++) {
+//                scanPressureList(el[e]);
+//            }
         }
     } else if (session->eventlist.contains(CPAP_IPAP)) {
         prescnt = session->count(CPAP_IPAP);
         Pressure.reserve(prescnt);
 
-        for (int j = 0; j < session->eventlist[CPAP_IPAP].size(); j++) {
-            QVector<EventList *> &el = session->eventlist[CPAP_IPAP];
+        QVector<EventList *> &EVL=session->eventlist[CPAP_IPAP];
+        int size = EVL.size();
 
-            for (int e = 0; e < el.size(); e++) {
-                scanPressureList(el[e]);
-            }
+        for (int j = 0; j < size; ++j) {
+            scanPressureList(EVL[j]);
         }
     }
 
@@ -1195,6 +1230,12 @@ void zMaskProfile::scanLeakList(EventList *el)
     qint64 ti;
     bool found;
 
+    int psize = Pressure.size();
+    if (psize == 0) return;
+    TimeValue *tvstr = Pressure.data();
+    TimeValue *tvend = tvstr + (psize - 1);
+    TimeValue *p1, *p2;
+
     for (; dptr < eptr; dptr++) {
         leak = *dptr;
         ti = start + *tptr++;
@@ -1202,20 +1243,34 @@ void zMaskProfile::scanLeakList(EventList *el)
         found = false;
         pressure = Pressure[0].value;
 
-        if (Pressure.size() > 1) {
-            for (int i = 0; i < Pressure.size() - 1; i++) {
-                const TimeValue &p1 = Pressure[i];
-                const TimeValue &p2 = Pressure[i + 1];
+        if (psize > 1) {
+            for (p1 = tvstr; p1 != tvend; ++p1) {
+                p2 = p1+1;
 
-                if ((p2.time > ti) && (p1.time <= ti)) {
-                    pressure = p1.value;
+                if ((p2->time > ti) && (p1->time <= ti)) {
+                    pressure = p1->value;
                     found = true;
                     break;
-                } else if (p2.time == ti) {
-                    pressure = p2.value;
+                } else if (p2->time == ti) {
+                    pressure = p2->value;
                     found = true;
                     break;
                 }
+
+
+//            for (int i = 0; i < Pressure.size() - 1; i++) {
+//                const TimeValue &p1 = Pressure[i];
+//                const TimeValue &p2 = Pressure[i + 1];
+
+//                if ((p2.time > ti) && (p1.time <= ti)) {
+//                    pressure = p1.value;
+//                    found = true;
+//                    break;
+//                } else if (p2.time == ti) {
+//                    pressure = p2.value;
+//                    found = true;
+//                    break;
+//                }
             }
         } else {
             found = true;
@@ -1245,8 +1300,14 @@ void zMaskProfile::scanLeaks(Session *session)
 {
     QVector<EventList *> &elv = session->eventlist[CPAP_LeakTotal];
 
-    for (int i = 0; i < elv.size(); i++) {
-        scanLeakList(elv[i]);
+    int size=elv.size();
+    if (!size)
+        return;
+
+    QVector<EventList *>::iterator end = elv.end();
+    QVector<EventList *>::iterator it;
+    for (it = elv.begin(); it != end; ++it) {
+        scanLeakList(*it);
     }
 }
 void zMaskProfile::updatePressureMin()
@@ -1266,14 +1327,19 @@ void zMaskProfile::updatePressureMin()
 
     int sum1, sum2, w1, w2, N, k;
 
-    for (it = pressureleaks.begin(); it != pressureleaks.end(); it++) {
+
+    QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator plend = pressureleaks.end();
+
+    QMap<EventStoreType, quint32>::iterator lmend;
+    for (it = pressureleaks.begin(); it != plend; it++) {
         pressure = it.key();
         QMap<EventStoreType, quint32> &leakmap = it.value();
         lks = leakmap.size();
         SN = 0;
 
         // First sum total counts of all leaks
-        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != leakmap.end(); lit++) {
+        lmend = leakmap.end();
+        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != lmend; ++lit) {
             SN += lit.value();
         }
 
@@ -1292,15 +1358,14 @@ void zMaskProfile::updatePressureMin()
         bool found = false;
         double total = 0;
 
-        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != leakmap.end();
-                lit++, k++) {
+        // why do this effectively twice? and k = size
+        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != lmend; ++lit, ++k) {
             total += lit.value();
         }
 
         pressuretotal[pressure] = total;
 
-        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != leakmap.end();
-                lit++, k++) {
+        for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != lmend; ++lit, ++k) {
             //for (k=0;k < N;k++) {
             v1 = lit.key();
             w1 = lit.value();
@@ -1379,8 +1444,13 @@ void zMaskProfile::updateProfile(Session *session)
 
     EventDataType maxcnt, maxval, lastval, lastcnt;
 
-    for (QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator it = pressureleaks.begin();
-            it != pressureleaks.end(); it++)  {
+
+    QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator plend = pressureleaks.end();
+    QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator it = pressureleaks.begin();
+
+    QMap<EventStoreType, quint32>::iterator lit;
+    QMap<EventStoreType, quint32>::iterator lvend;
+    for (; it != plend; ++it) {
         p = it.key();
         l = pressuremin[p];
         QMap<EventStoreType, quint32> &leakval = it.value();
@@ -1391,7 +1461,8 @@ void zMaskProfile::updateProfile(Session *session)
 
         maxcnt = 0, maxval = 0, lastval = 0, lastcnt = 0;
 
-        for (QMap<EventStoreType, quint32>::iterator lit = leakval.begin(); lit != leakval.end(); lit++) {
+        lvend = leakval.end();
+        for (lit = leakval.begin(); lit != lvend; ++lit) {
             cnt += lit.value();
 
             if (lit.value() > maxcnt) {
@@ -1418,7 +1489,7 @@ void zMaskProfile::updateProfile(Session *session)
         pressuremax[p] = lastval;
         sum = 0;
 
-        for (QMap<EventStoreType, quint32>::iterator lit = leakval.begin(); lit != leakval.end(); lit++) {
+        for (lit = leakval.begin(); lit != lvend; lit++) {
             tmp = lit.key() - mean;
             sum += tmp * tmp;
         }
@@ -1435,16 +1506,16 @@ void zMaskProfile::updateProfile(Session *session)
     QMap<EventStoreType, EventDataType> pressureval2;
     EventDataType max = 0, tmp2, tmp3;
 
-    for (QMap<EventStoreType, EventDataType>::iterator it = pressuretotal.begin();
-            it != pressuretotal.end(); it++) {
-        if (max < it.value()) { max = it.value(); }
+    QMap<EventStoreType, EventDataType>::iterator ptit;
+    QMap<EventStoreType, EventDataType>::iterator ptend = pressuretotal.end();
+    for (ptit = pressuretotal.begin(); ptit != ptend; ++ptit) {
+        if (max < ptit.value()) { max = ptit.value(); }
     }
 
-    for (QMap<EventStoreType, EventDataType>::iterator it = pressuretotal.begin();
-            it != pressuretotal.end(); it++) {
-        p = it.key();
+    for (ptit = pressuretotal.begin(); ptit != pressuretotal.end(); ptit++) {
+        p = ptit.key();
         tmp = pressurecount[p];
-        tmp2 = it.value();
+        tmp2 = ptit.value();
 
         tmp3 = (tmp / tmp2) * (tmp2 / max);
 
@@ -1546,8 +1617,18 @@ int calcLeaks(Session *session)
 
     EventList *leak = session->AddEventList(CPAP_Leak, EVL_Event, 1);
 
-    for (int i = 0; i < session->eventlist[CPAP_LeakTotal].size(); i++) {
-        EventList &el = *session->eventlist[CPAP_LeakTotal][i];
+    QVector<EventList *> & EVL = session->eventlist[CPAP_LeakTotal];
+    int evlsize = EVL.size();
+
+    TimeValue *p2, *pstr, *pend;
+
+    // can this go out of the loop?
+    int mppressize = maskProfile->Pressure.size();
+    pstr = maskProfile->Pressure.data();
+    pend = maskProfile->Pressure.data()+(mppressize-1);
+
+    for (int i = 0; i < evlsize; ++i) {
+        EventList &el = *EVL[i];
         EventDataType gain = el.gain(), tmp, val;
         int count = el.count();
         EventStoreType *dptr = el.rawData();
@@ -1560,27 +1641,40 @@ int calcLeaks(Session *session)
 
         bool found;
 
-        for (; dptr < eptr; dptr++) {
+        for (; dptr < eptr; ++dptr) {
             tmp = EventDataType(*dptr) * gain;
             ti = start + *tptr++;
 
             found = false;
-            pressure = maskProfile->Pressure[0].value;
+            pressure = pstr->value;
 
-            for (int i = 0; i < maskProfile->Pressure.size() - 1; i++) {
-                const TimeValue &p1 = maskProfile->Pressure[i];
-                const TimeValue &p2 = maskProfile->Pressure[i + 1];
-
-                if ((p2.time > ti) && (p1.time <= ti)) {
-                    pressure = p1.value;
+            for (TimeValue *p1 = pstr; p1 != pend; ++p1) {
+                p2 = p1+1;
+                if ((p2->time > ti) && (p1->time <= ti)) {
+                    pressure = p1->value;
                     found = true;
                     break;
-                } else if (p2.time == ti) {
-                    pressure = p2.value;
+                } else if (p2->time == ti) {
+                    pressure = p2->value;
                     found = true;
                     break;
                 }
             }
+
+//            for (int i = 0; i < mppressize - 1; ++i) {
+//                const TimeValue &p1 = &maskProfile->Pressure[i];
+//                const TimeValue &p2 = maskProfile->Pressure[i + 1];
+
+//                if ((p2.time > ti) && (p1.time <= ti)) {
+//                    pressure = p1.value;
+//                    found = true;
+//                    break;
+//                } else if (p2.time == ti) {
+//                    pressure = p2.value;
+//                    found = true;
+//                    break;
+//                }
+//            }
 
             if (found) {
                 val = tmp - maskProfile->calcLeak(pressure);
@@ -1622,10 +1716,12 @@ int calcPulseChange(Session *session)
 
     int max;
 
-    for (int e = 0; e < it.value().size(); e++) {
+    int size = it.value().size();
+    for (int e = 0; e < size; ++e) {
         EventList &el = *(it.value()[e]);
 
-        for (unsigned i = 0; i < el.count(); i++) {
+        int elcount=el.count();
+        for (int i = 0; i < elcount; ++i) {
             val = el.data(i);
             time = el.time(i);
 
@@ -1634,7 +1730,7 @@ int calcPulseChange(Session *session)
             lv = change;
             max = 0;
 
-            for (unsigned j = i + 1; j < el.count(); j++) { // scan ahead in the window
+            for (int j = i + 1; j < elcount; ++j) { // scan ahead in the window
                 time2 = el.time(j);
 
                 if (time2 > time + window) { break; }
@@ -1709,10 +1805,12 @@ int calcSPO2Drop(Session *session)
     // Calculate median baseline
     QList<EventDataType> med;
 
-    for (int e = 0; e < it.value().size(); e++) {
+    int evsize = it.value().size();
+    for (int e = 0; e < evsize; ++e) {
         EventList &el = *(it.value()[e]);
 
-        for (unsigned i = 0; i < el.count(); i++) {
+        int elcount = el.count();
+        for (int i = 0; i < elcount; i++) {
             val = el.data(i);
             time = el.time(i);
 
@@ -1746,10 +1844,11 @@ int calcSPO2Drop(Session *session)
     EventDataType current;
     qDebug() << "Calculated baseline" << baseline;
 
-    for (int e = 0; e < it.value().size(); e++) {
+    for (int e = 0; e < evsize; ++e) {
         EventList &el = *(it.value()[e]);
 
-        for (unsigned i = 0; i < el.count(); i++) {
+        int elcount = el.count();
+        for (int i = 0; i < elcount; ++i) {
             current = el.data(i);
 
             if (!current) { continue; }
@@ -1785,7 +1884,7 @@ int calcSPO2Drop(Session *session)
 
             min = val;
 
-            for (unsigned j = i; j < el.count(); j++) { // scan ahead in the window
+            for (int j = i; j < elcount; ++j) { // scan ahead in the window
                 time2 = el.time(j);
                 //if (time2 > time+window) break;
                 val2 = el.data(j);
