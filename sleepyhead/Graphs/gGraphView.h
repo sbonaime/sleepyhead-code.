@@ -176,6 +176,8 @@ class gGraphView : public QGLWidget
         */
     explicit gGraphView(QWidget *parent = 0, gGraphView *shared = 0);
     virtual ~gGraphView();
+    virtual void closeEvent(QCloseEvent * event);
+
 
     //! \brief Add gGraph g to this gGraphView, in the requested graph-linkage group
     void addGraph(gGraph *g, short group = 0);

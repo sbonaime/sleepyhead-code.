@@ -297,14 +297,24 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_dpr = 1;
 #endif
 }
-
-gGraphView::~gGraphView()
+void gGraphView::closeEvent(QCloseEvent * event)
 {
     timer->stop();
     redrawtimer->stop();
-
     disconnect(redrawtimer, 0, 0, 0);
     disconnect(timer, 0, 0, 0);
+    timer->deleteLater();
+    redrawtimer->deleteLater();
+    pixmapcache.clear();
+    if (m_scrollbar) {
+        this->disconnect(m_scrollbar, SIGNAL(sliderMoved(int)), 0, 0);
+    }
+
+}
+
+gGraphView::~gGraphView()
+{
+    doneCurrent();
 
 #ifdef ENABLE_THREADED_DRAWING
 
@@ -323,13 +333,6 @@ gGraphView::~gGraphView()
 
     delete m_tooltip;
     m_graphs.clear();
-
-    if (m_scrollbar) {
-        this->disconnect(m_scrollbar, SIGNAL(sliderMoved(int)), 0, 0);
-    }
-
-    delete timer;
-    delete redrawtimer;
 }
 
 bool gGraphView::usePixmapCache()
