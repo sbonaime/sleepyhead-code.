@@ -67,10 +67,10 @@ class Channel
     const QString &label() { return m_label; }
     const QString &units() { return m_unit; }
 
-    inline const EventDataType &upperThreshold() { return m_upperThreshold; }
-    inline const EventDataType &lowerThreshold() { return m_lowerThreshold; }
-    inline QColor &upperThresholdColor() { return m_upperThresholdColor; }
-    inline QColor &lowerThresholdColor() { return m_lowerThresholdColor; }
+    const EventDataType &upperThreshold() { return m_upperThreshold; }
+    const EventDataType &lowerThreshold() { return m_lowerThreshold; }
+    const QColor &upperThresholdColor() { return m_upperThresholdColor; }
+    const QColor &lowerThresholdColor() { return m_lowerThresholdColor; }
 
     const int &linkid() { return m_link; }
 

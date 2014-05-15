@@ -612,12 +612,6 @@ QString Statistics::GenerateHTML()
             name = ahitxt;
         } else if ((row.calc == SC_HOURS) || (row.calc == SC_COMPLIANCE)) {
             name = row.src;
-        } else if ((row.calc == SC_ABOVE) || (row.calc == SC_BELOW)) {
-            ChannelID id = schema::channel[row.src].id();
-            if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
-                continue;
-            }
-            name = calcnames[row.calc].arg(schema::channel[id].fullname()); //.arg(tr("threshold"));
         } else if (row.calc == SC_COLUMNHEADERS) {
             html += QString("<tr><td><b>%1</b></td>\n").arg(tr("Details"));
             for (int j=0; j < periods.size(); j++) {
@@ -656,17 +650,23 @@ QString Statistics::GenerateHTML()
         } else if (row.calc == SC_UNDEFINED) {
             continue;
         } else {
+            if (row.calc == SC_ABOVE) {
+                int i=5;
+            }
             ChannelID id = schema::channel[row.src].id();
             if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
                 continue;
             }
             name = calcnames[row.calc].arg(schema::channel[id].fullname());
         }
-        html += QString("<tr><td>%1</td>").arg(name);
+        QString line;
+        line += QString("<tr><td>%1</td>").arg(name);
         for (int j=0; j < periods.size(); j++) {
-            html += QString("<td>%2</td>")
-                .arg(row.value(periods.at(j).start,periods.at(j).end));
+            QString val=row.value(periods.at(j).start,periods.at(j).end);
+            line += QString("<td>%2</td>")
+                .arg(val);
         }
+        html += line;
         html += "</tr>\n";
     }
 
@@ -1230,7 +1230,7 @@ QString Statistics::GenerateHTML()
 QString StatisticsRow::value(QDate start, QDate end)
 {
     const int decimals=2;
-    QString value = "";
+    QString value;
     float days = PROFILE.countDays(type, start, end);
 
     // Handle special data sources first
@@ -1255,7 +1255,7 @@ QString StatisticsRow::value(QDate start, QDate end)
                 break;
             case SC_WAVG:
                 value = QString("%1").arg(p_profile->calcWavg(code, type, start, end), 0, 'f', decimals);
-                    break;
+                break;
             case SC_MEDIAN:
                 value = QString("%1").arg(p_profile->calcPercentile(code, 0.5F, type, start, end), 0, 'f', decimals);
                 break;

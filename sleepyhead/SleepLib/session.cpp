@@ -1660,6 +1660,9 @@ EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
             }
         }
     }
+    if (started) {
+        total += ti-started;
+    }
     EventDataType time = double(total) / 60000.0;
     return time;
 }
@@ -1697,6 +1700,11 @@ EventDataType Session::timeBelowThreshold(ChannelID id, EventDataType threshold)
             }
         }
     }
+
+    if (started) {
+        total += ti-started;
+    }
+
     EventDataType time = double(total) / 60000.0;
     return time;
 }

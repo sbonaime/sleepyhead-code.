@@ -371,6 +371,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         it.value()->AddLayer(new gXAxis(),LayerBottom,0,20);
     }
 
+    if (PROFILE.cpap->showLeakRedline()) {
+        schema::channel[CPAP_Leak].setUpperThreshold(PROFILE.cpap->leakRedline());
+    } else {
+        schema::channel[CPAP_Leak].setUpperThreshold(0); // switch it off
+    }
+
     layout->layout();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
