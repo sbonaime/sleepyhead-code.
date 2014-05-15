@@ -1155,7 +1155,7 @@ QString Statistics::GenerateHTML()
                 tooltiphide = "tooltip.hide();";
             }
 
-            html += QString("<tr foo=1 bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"'%1\")); %3' onclick='alert(\"overview=%4,%5\");'>")
+            html += QString("<tr bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"%1\"); %3' onclick='alert(\"overview=%4,%5\");'>")
                     .arg(color)
                     .arg(tooltipshow)
                     .arg(tooltiphide)
