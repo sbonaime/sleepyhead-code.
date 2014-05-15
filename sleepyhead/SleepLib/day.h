@@ -97,6 +97,13 @@ class Day
     //! \brief Returns the Maximum of all Sessions setting 'code' for this day
     EventDataType settings_max(ChannelID code);
 
+    //! \brief Returns the amount of time (in decimal minutes) the Channel spent above the threshold
+    EventDataType timeAboveThreshold(ChannelID id, EventDataType threshold);
+
+    //! \brief Returns the amount of time (in decimal minutes) the Channel spent below the threshold
+    EventDataType timeBelowThreshold(ChannelID id, EventDataType threshold);
+
+
     //! \brief Returns the first session time of this day
     qint64 first();
 

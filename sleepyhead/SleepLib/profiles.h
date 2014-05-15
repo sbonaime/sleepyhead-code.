@@ -124,6 +124,12 @@ class Profile : public Preferences
     EventDataType calcSettingsMax(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                                   QDate end = QDate());
 
+    EventDataType calcAboveThreshold(ChannelID code, EventDataType threshold, MachineType mt = MT_CPAP,
+                                     QDate start = QDate(), QDate end = QDate());
+
+    EventDataType calcBelowThreshold(ChannelID code, EventDataType threshold, MachineType mt = MT_CPAP,
+                                     QDate start = QDate(), QDate end = QDate());
+
     virtual void ExtraLoad(QDomElement &root);
     virtual QDomElement ExtraSave(QDomDocument &doc);
 

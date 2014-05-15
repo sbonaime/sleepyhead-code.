@@ -727,6 +727,7 @@ double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
 
     return val;
 }
+
 EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
@@ -757,6 +758,72 @@ EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
 
     return val;
 }
+
+EventDataType Profile::calcAboveThreshold(ChannelID code, EventDataType threshold, MachineType mt,
+                                 QDate start, QDate end)
+{
+    if (!start.isValid()) {
+        start = LastGoodDay(mt);
+    }
+
+    if (!end.isValid()) {
+        end = LastGoodDay(mt);
+    }
+
+    QDate date = start;
+
+    if (date.isNull()) {
+        return 0;
+    }
+
+    double val = 0;
+
+    do {
+        Day *day = GetGoodDay(date, mt);
+
+        if (day) {
+            val += day->timeAboveThreshold(code, threshold);
+        }
+
+        date = date.addDays(1);
+    } while (date <= end);
+
+    return val;
+}
+
+EventDataType Profile::calcBelowThreshold(ChannelID code, EventDataType threshold, MachineType mt,
+                                 QDate start, QDate end)
+{
+    if (!start.isValid()) {
+        start = LastGoodDay(mt);
+    }
+
+    if (!end.isValid()) {
+        end = LastGoodDay(mt);
+    }
+
+    QDate date = start;
+
+    if (date.isNull()) {
+        return 0;
+    }
+
+    double val = 0;
+
+    do {
+        Day *day = GetGoodDay(date, mt);
+
+        if (day) {
+            val += day->timeBelowThreshold(code, threshold);
+        }
+
+        date = date.addDays(1);
+    } while (date <= end);
+
+    return val;
+}
+
+
 EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
@@ -944,6 +1011,7 @@ EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate sta
 
     return min;
 }
+
 EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {

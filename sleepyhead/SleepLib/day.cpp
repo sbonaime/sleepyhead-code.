@@ -55,6 +55,39 @@ void Day::AddSession(Session *s)
     sessions.push_back(s);
 }
 
+EventDataType Day::timeAboveThreshold(ChannelID code, EventDataType threshold)
+{
+    EventDataType val = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            val += sess.timeAboveThreshold(code,threshold);
+        }
+    }
+
+    return val;
+}
+
+EventDataType Day::timeBelowThreshold(ChannelID code, EventDataType threshold)
+{
+    EventDataType val = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            val += sess.timeBelowThreshold(code,threshold);
+        }
+    }
+
+    return val;
+}
+
+
 EventDataType Day::settings_sum(ChannelID code)
 {
     EventDataType val = 0;

@@ -258,6 +258,12 @@ class Session
     //! \brief Returns (without caching) the requested Percentile of all events of type id
     EventDataType percentile(ChannelID id, EventDataType percentile);
 
+    //! \brief Returns the amount of time (in decimal minutes) the Channel spent above the threshold
+    EventDataType timeAboveThreshold(ChannelID id, EventDataType threshold);
+
+    //! \brief Returns the amount of time (in decimal minutes) the Channel spent below the threshold
+    EventDataType timeBelowThreshold(ChannelID id, EventDataType threshold);
+
     //! \brief Returns true if the channel has events loaded, or a record of a count for when they are not
     bool channelExists(ChannelID name);
 

@@ -254,6 +254,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     if (m_threshold > 0) {
+        m_threshold_color.setAlpha(80);
         painter.setPen(m_threshold_color);
         int xst = left + 1;
         int yst = top + height + 1;

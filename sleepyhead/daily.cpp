@@ -1140,6 +1140,14 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
     }
+    if (cpap && PROFILE.cpap->showLeakRedline()) {
+        float rlt = cpap->timeAboveThreshold(CPAP_Leak, PROFILE.cpap->leakRedline()) / 60.0;
+        float pc = 100.0 / cpap->hours() * rlt;
+        html+="<tr><td colspan=5>&nbsp;</td></tr>";
+        html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
+                QString("</b></td><td colspan=2 bgcolor='white'>%1%</td></tr>").arg(pc, 0, 'f', 3);
+    }
+
     html+="</table>\n";
     html+="<hr/>\n";
     return html;
@@ -1391,6 +1399,7 @@ void Daily::Load(QDate date)
     if ((cpap && !isBrick && (cpap->hours()>0)) || oxi || posit) {
 
         html+=getStatisticsInfo(cpap,oxi,posit);
+
     } else {
         if (cpap && cpap->hours()==0) {
         } else {

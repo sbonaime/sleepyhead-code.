@@ -1627,6 +1627,81 @@ EventDataType Session::sph(ChannelID id) // sum per hour, assuming id is a time 
     return val;
 }
 
+EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
+{
+    QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
+    if (j == eventlist.end()) {
+        return 0.0f;
+    }
+
+    QVector<EventList *> &evec = j.value();
+    int evec_size=evec.size();
+
+    qint64 ti, started=0, total=0;
+    EventDataType data;
+    int elsize;
+    for (int i = 0; i < evec_size; ++i) {
+        EventList &ev = *(evec[i]);
+        elsize = ev.count();
+
+        for (int j=0; j < elsize; ++j) {
+            ti=ev.time(j);
+            data=ev.data(j);
+
+            if (started == 0) {
+                if (data >= threshold) {
+                    started=ti;
+                }
+            } else {
+                if (data < threshold) {
+                    total += ti-started;
+                    started = 0;
+                }
+            }
+        }
+    }
+    EventDataType time = double(total) / 60000.0;
+    return time;
+}
+
+EventDataType Session::timeBelowThreshold(ChannelID id, EventDataType threshold)
+{
+    QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
+    if (j == eventlist.end()) {
+        return 0.0f;
+    }
+
+    QVector<EventList *> &evec = j.value();
+    int evec_size=evec.size();
+
+    qint64 ti, started=0, total=0;
+    EventDataType data;
+    int elsize;
+    for (int i = 0; i < evec_size; ++i) {
+        EventList &ev = *(evec[i]);
+        elsize = ev.count();
+
+        for (int j=0; j < elsize; ++j) {
+            ti=ev.time(j);
+            data=ev.data(j);
+
+            if (started == 0) {
+                if (data <= threshold) {
+                    started=ti;
+                }
+            } else {
+                if (data > threshold) {
+                    total += ti-started;
+                    started = 0;
+                }
+            }
+        }
+    }
+    EventDataType time = double(total) / 60000.0;
+    return time;
+}
+
+
 bool sortfunction(EventStoreType i, EventStoreType j) { return (i < j); }
 
 EventDataType Session::percentile(ChannelID id, EventDataType percent)
