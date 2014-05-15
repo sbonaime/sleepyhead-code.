@@ -45,6 +45,7 @@ Statistics::Statistics(QObject *parent) :
     rows.push_back(StatisticsRow("ClearAirway",   SC_CPH,     MT_CPAP));
     rows.push_back(StatisticsRow("FlowLimit",  SC_CPH,     MT_CPAP));
     rows.push_back(StatisticsRow("RERA",       SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("SensAwake",       SC_CPH,     MT_CPAP));
     rows.push_back(StatisticsRow("CSR", SC_SPH, MT_CPAP));
 
     rows.push_back(StatisticsRow(tr("Leak Statistics"),  SC_SUBHEADING, MT_CPAP));
@@ -609,9 +610,9 @@ QString Statistics::GenerateHTML()
         } else if ((row.calc == SC_HOURS) || (row.calc == SC_COMPLIANCE)) {
             name = row.src;
         } else if (row.calc == SC_COLUMNHEADERS) {
-            html += QString("<tr><td><b>%1</b></td>").arg(tr("Details"));
+            html += QString("<tr><td><b>%1</b></td>\n").arg(tr("Details"));
             for (int j=0; j < periods.size(); j++) {
-                html += QString("<td onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=%1,%2\");'><b>%3</b></td>").arg(periods.at(j).start.toString(Qt::ISODate)).arg(periods.at(j).end.toString(Qt::ISODate)).arg(periods.at(j).header);
+                html += QString("<td onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=%1,%2\");'><b>%3</b></td>\n").arg(periods.at(j).start.toString(Qt::ISODate)).arg(periods.at(j).end.toString(Qt::ISODate)).arg(periods.at(j).header);
             }
             html += "</tr>\n";
             continue;
@@ -1022,20 +1023,29 @@ QString Statistics::GenerateHTML()
         qSort(rxchange.begin(),rxchange.end());*/
         html += "<div align=center><br/>";
         html += QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
-        html += "<tr bgcolor='"+heading_color+"'><td colspan=9 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></td></tr>";
+        html += "<tr bgcolor='"+heading_color+"'><td colspan=10 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></td></tr>";
         QString extratxt;
 
         QString tooltip;
-        html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</b></td><td><b>%8</b></td><td><b>%9</b></td></tr>")
-                .arg(STR_TR_First)
-                .arg(STR_TR_Last)
-                .arg(tr("Days"))
-                .arg(ahitxt)
-                .arg(tr("FL"))
-                .arg(STR_TR_Machine)
-                .arg(tr("Pr. Rel."))
-                .arg(STR_TR_Mode)
-                .arg(tr("Pressure Settings"));
+        QStringList hdrlist;
+        hdrlist.push_back(STR_TR_First);
+        hdrlist.push_back(STR_TR_Last);
+        hdrlist.push_back(tr("Days"));
+        hdrlist.push_back(ahitxt);
+        hdrlist.push_back(STR_TR_FL);
+        if (PROFILE.hasChannel(CPAP_SensAwake)) {
+            hdrlist.push_back(STR_TR_SA);
+        }
+        hdrlist.push_back(STR_TR_Machine);
+        hdrlist.push_back(tr("Pr. Rel."));
+        hdrlist.push_back(STR_TR_Mode);
+        hdrlist.push_back(tr("Pressure Settings"));
+
+        html+="<tr>\n";
+        for (int i=0; i < hdrlist.size(); ++i) {
+            html+=QString(" <td><b>%1</b></td>\n").arg(hdrlist.at(i));
+        }
+        html+="</tr>\n";
 
         for (int i = 0; i < rxchange.size(); i++) {
             RXChange rx = rxchange.at(i);
@@ -1136,23 +1146,27 @@ QString Statistics::GenerateHTML()
                 tooltiphide = "tooltip.hide();";
             }
 
-            html += QString("<tr bgcolor='" + color +
-                            "' onmouseover='ChangeColor(this, \"#eeeeee\"); %12' onmouseout='ChangeColor(this, \"" + color +
-                            "\"); %13' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td><td>%11</td></tr>")
-                    .arg(rx.first.toString(Qt::ISODate))
-                    .arg(rx.last.toString(Qt::ISODate))
-                    .arg(rx.first.toString(Qt::SystemLocaleShortDate))
-                    .arg(rx.last.toString(Qt::SystemLocaleShortDate))
-                    .arg(rx.days)
-                    .arg(rx.ahi, 0, 'f', decimals)
-                    .arg(rx.fl, 0, 'f', decimals) // Not the best way to do this.. Todo: Add an extra field for data..
-                    .arg(rx.sa, 0, 'f', decimals) // Not the best way to do this.. Todo: Add an extra field for data..
-                    .arg(rx.machine->GetClass())
-                    .arg(presrel)
-                    .arg(schema::channel[CPAP_Mode].option(int(rx.mode) - 1))
-                    .arg(extratxt)
+            html += QString("<tr foo=1 bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"'%1\")); %3' onclick='alert(\"overview=%4,%5\");'>")
+                    .arg(color)
                     .arg(tooltipshow)
-                    .arg(tooltiphide);
+                    .arg(tooltiphide)
+                    .arg(rx.first.toString(Qt::ISODate))
+                    .arg(rx.last.toString(Qt::ISODate));
+
+            html += QString("<td>%1</td>").arg(rx.first.toString(Qt::SystemLocaleShortDate));
+            html += QString("<td>%1</td>").arg(rx.last.toString(Qt::SystemLocaleShortDate));
+            html += QString("<td>%1</td>").arg(rx.days);
+            html += QString("<td>%1</td>").arg(rx.ahi, 0, 'f', decimals);
+            html += QString("<td>%1</td>").arg(rx.fl, 0, 'f', decimals); // Not the best way to do this.. Todo: Add an extra field for data..
+
+            if (PROFILE.hasChannel(CPAP_SensAwake)) {
+                html += QString("<td>%1</td>").arg(rx.sa, 0, 'f', decimals);
+            }
+            html += QString("<td>%1</td>").arg(rx.machine->GetClass());
+            html += QString("<td>%1</td>").arg(presrel);
+            html += QString("<td>%1</td>").arg(schema::channel[CPAP_Mode].option(int(rx.mode) - 1));
+            html += QString("<td>%1</td>").arg(extratxt);
+            html += "</tr>";
         }
 
         html += "</table>";
