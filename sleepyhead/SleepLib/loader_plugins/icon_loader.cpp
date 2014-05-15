@@ -834,10 +834,11 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         sess->really_set_first(ti);
         EventList *LK = sess->AddEventList(CPAP_LeakTotal, EVL_Event, 1);
         EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
-        EventList *FLG = sess->AddEventList(CPAP_FLG, EVL_Event);
+//        EventList *FLG = sess->AddEventList(CPAP_FLG, EVL_Event);
         EventList *OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
         EventList *H = sess->AddEventList(CPAP_Hypopnea, EVL_Event);
         EventList *FL = sess->AddEventList(CPAP_FlowLimit, EVL_Event);
+        EventList *SA = sess->AddEventList(CPAP_SensAwake, EVL_Event);
 
         unsigned stidx = start[r];
         int rec = records[r];
@@ -867,9 +868,13 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
                     if ((a3 & 1) == 1) { FL->AddEvent(ti, 1); }
 
                     // These should be flags as above, but for now I re-used the redundant FLG graph
-                    if (k == 0) { FLG->AddEvent(ti, sa1); }
-                    else if (k == 3) { FLG->AddEvent(ti, sa2); }
-                    else { FLG->AddEvent(ti, 0); }
+                    if (k == 0) {
+                        if (sa1 == 1) {SA->AddEvent(ti, sa1); }
+                    }
+                    else if (k == 3) {
+                        if (sa2 == 1) { SA->AddEvent(ti, sa2); }
+                    }
+                   // else { FLG->AddEvent(ti, 0); }
 
                     a1 = a1 >> 1;
                     a2 = a2 >> 1;

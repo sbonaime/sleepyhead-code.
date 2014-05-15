@@ -210,6 +210,10 @@ void init()
                         QObject::tr("Expiratory Puff"),
                         QObject::tr("Intellipap event where you breathe out your mouth."),
                         QObject::tr("EP"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark magenta")));
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_SensAwake     = 0x100d, DATA,    SESSION,
+                        "SensAwake",      QObject::tr("SensAwake"),
+                        QObject::tr("SensAwake feature will reduce pressure when waking is detected."),
+                        QObject::tr("SA"),       QObject::tr("events/hr"),    DEFAULT,    QColor("#404040")));
     schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag1     = 0x101e, DATA,    SESSION,
                         "UserFlag1",      QObject::tr("User Flag #1"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),

@@ -157,6 +157,7 @@ QString STR_TR_OA;      // Short form of Obstructive Apnea
 QString STR_TR_UA;      // Short form of Unspecified Apnea
 QString STR_TR_CA;      // Short form of Clear Airway Apnea
 QString STR_TR_FL;      // Short form of Flow Limitation
+QString STR_TR_SA;      // Short form of SensAwake
 QString STR_TR_LE;      // Short form of Leak Event
 QString STR_TR_EP;      // Short form of Expiratory Puff
 QString STR_TR_VS;      // Short form of Vibratory Snore
@@ -183,6 +184,7 @@ QString STR_TR_HI;     // Short form of Hypopnea Index
 QString STR_TR_UAI;    // Short form of Uncatagorized Apnea Index
 QString STR_TR_CAI;    // Short form of Clear Airway Index
 QString STR_TR_FLI;    // Short form of Flow Limitation Index
+//QString STR_TR_SAI;    // Short form of SensAwake Index
 QString STR_TR_REI;    // Short form of RERA Index
 QString STR_TR_EPI;    // Short form of Expiratory Puff Index
 QString STR_TR_CSR;    // Short form of Cheyne Stokes Respiration
@@ -196,6 +198,8 @@ QString STR_TR_ExpTime;         // Expiratory Time
 QString STR_TR_RespEvent;       // Respiratory Event
 QString STR_TR_FlowLimitation;
 QString STR_TR_FlowLimit;
+//QString STR_TR_FlowLimitation;
+QString STR_TR_SensAwake;
 QString STR_TR_PatTrigBreath;   // Patient Triggered Breath
 QString STR_TR_TgtMinVent;      // Target Minute Ventilation
 QString STR_TR_TargetVent;      // Target Ventilation
@@ -313,6 +317,7 @@ void initializeStrings()
     STR_TR_UA = QObject::tr("A");     // Short form of Unspecified Apnea
     STR_TR_CA = QObject::tr("CA");    // Short form of Clear Airway Apnea
     STR_TR_FL = QObject::tr("FL");    // Short form of Flow Limitation
+    STR_TR_SA = QObject::tr("SA");    // Short form of Flow Limitation
     STR_TR_LE = QObject::tr("LE");    // Short form of Leak Event
     STR_TR_EP = QObject::tr("EP");    // Short form of Expiratory Puff
     STR_TR_VS = QObject::tr("VS");    // Short form of Vibratory Snore
@@ -340,6 +345,7 @@ void initializeStrings()
     STR_TR_UAI = QObject::tr("UAI");  // Short form of Uncatagorized Apnea Index
     STR_TR_CAI = QObject::tr("CAI");  // Short form of Clear Airway Index
     STR_TR_FLI = QObject::tr("FLI");  // Short form of Flow Limitation Index
+//    STR_TR_SAI = QObject::tr("SAI");  // Short form of SleepAwake Index
     STR_TR_REI = QObject::tr("REI");  // Short form of RERA Index
     STR_TR_EPI = QObject::tr("EPI");  // Short form of Expiratory Puff Index
     STR_TR_CSR = QObject::tr("ÇSR");  // Short form of Cheyne Stokes Respiration
@@ -353,6 +359,7 @@ void initializeStrings()
     STR_TR_RespEvent = QObject::tr("Resp. Event");  // Respiratory Event
     STR_TR_FlowLimitation = QObject::tr("Flow Limitation");
     STR_TR_FlowLimit = QObject::tr("Flow Limit");
+    STR_TR_SensAwake = QObject::tr("SensAwake");
     STR_TR_PatTrigBreath = QObject::tr("Pat. Trig. Breath"); // Patient Triggered Breath
     STR_TR_TgtMinVent = QObject::tr("Tgt. Min. Vent");      // Target Minute Ventilation
     STR_TR_TargetVent = QObject::tr("Target Vent.");        // Target Ventilation

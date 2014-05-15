@@ -189,6 +189,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),STR_TR_RE);
     evseg->AddSlice(CPAP_NRI,QColor(0x00,0x80,0x40,0xff),STR_TR_NR);
     evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),STR_TR_FL);
+    evseg->AddSlice(CPAP_SensAwake,QColor(0x40,0xC0,0x40,0xff),STR_TR_SA);
     //evseg->AddSlice(CPAP_UserFlag1,QColor(0x40,0x40,0x40,0xff),tr("UF"));
 
     GAHI->AddLayer(AddCPAP(evseg));
@@ -208,6 +209,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     fg->AddLayer((new gFlagsLine(CPAP_LeakFlag, COLOR_LeakFlag, STR_TR_LE,false)));
     fg->AddLayer((new gFlagsLine(CPAP_NRI, COLOR_NRI, STR_TR_NRI,false)));
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+    fg->AddLayer((new gFlagsLine(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
     fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
@@ -268,6 +270,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
     if (PROFILE.cpap->userEventFlagging()) {
@@ -572,6 +575,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=PRS1_10)
                 && (code!=CPAP_ExP)
                 && (code!=CPAP_FlowLimit)
+                && (code!=CPAP_SensAwake)
                 && (code!=CPAP_PressurePulse)
                 && (code!=CPAP_VSnore2)
                 && (code!=CPAP_VSnore)) continue;
@@ -1268,7 +1272,7 @@ void Daily::Load(QDate date)
         EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
         if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
         ahi/=hours;
-        EventDataType csr,uai,oai,hi,cai,rei,fli,nri,lki,vs,vs2,exp,lk2;
+        EventDataType csr,uai,oai,hi,cai,rei,fli,sai,nri,lki,vs,vs2,exp,lk2;
 
         if (!isBrick && hours>0) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -1299,6 +1303,7 @@ void Daily::Load(QDate date)
                 { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
                 { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
                 { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
+                { CPAP_SensAwake,   COLOR_SensAwake,    Qt::white, sai=cpap->count(CPAP_SensAwake)/hours },
                 { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
                 { CPAP_RERA,        COLOR_RERA,         Qt::black, rei=cpap->count(CPAP_RERA)/hours },
                 { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
@@ -1327,7 +1332,7 @@ void Daily::Load(QDate date)
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             // Show Event Breakdown pie chart
             if ((hours > 0) && PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
-                if ((oai+hi+cai+uai+rei+fli)>0) {
+                if ((oai+hi+cai+uai+rei+fli+sai)>0) {
                     html+="<tr><td align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     eventBreakdownPie()->setShowTitle(false);

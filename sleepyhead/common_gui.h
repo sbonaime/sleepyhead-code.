@@ -28,6 +28,7 @@ extern QColor COLOR_ClearAirway;
 extern QColor COLOR_RERA;
 extern QColor COLOR_VibratorySnore;
 extern QColor COLOR_FlowLimit;
+extern QColor COLOR_SensAwake;
 extern QColor COLOR_LeakFlag;
 extern QColor COLOR_NRI;
 extern QColor COLOR_ExP;

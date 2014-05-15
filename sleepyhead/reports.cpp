@@ -238,6 +238,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             float rei = cpap->count(CPAP_RERA) / cpap->hours();
             float vsi = cpap->count(CPAP_VSnore) / cpap->hours();
             float fli = cpap->count(CPAP_FlowLimit) / cpap->hours();
+//            float sai = cpap->count(CPAP_SensAwake) / cpap->hours();
             float nri = cpap->count(CPAP_NRI) / cpap->hours();
             float lki = cpap->count(CPAP_LeakFlag) / cpap->hours();
             float exp = cpap->count(CPAP_ExP) / cpap->hours();

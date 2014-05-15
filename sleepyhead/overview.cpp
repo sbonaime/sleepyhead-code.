@@ -146,6 +146,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     SES = createGraph(STR_TR_Sessions, STR_TR_Sessions + tr("\n(count)"));
     PULSE = createGraph(STR_TR_PulseRate, STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
     SPO2 = createGraph(STR_TR_SpO2, tr("Oxygen Saturation\n(%)"));
+    SA = createGraph(STR_TR_SensAwake, tr("SensAwake\n(count)"));
 
     WEIGHT = createGraph(STR_TR_Weight, STR_TR_Weight, YT_Weight);
     BMI = createGraph(STR_TR_BMI, tr("Body\nMass\nIndex"));
@@ -192,6 +193,10 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     fl = new SummaryChart(STR_TR_FL, GT_POINTS);
     fl->addSlice(CPAP_FlowLimit, COLOR_Brown, ST_CPH);
     FL->AddLayer(fl);
+
+    sa = new SummaryChart(STR_TR_SA, GT_POINTS);
+    sa->addSlice(CPAP_SensAwake, COLOR_Brown, ST_CNT);
+    SA->AddLayer(sa);
 
     us = new SummaryChart(STR_UNIT_Hours, GT_SESSIONS);
     us->addSlice(NoChannel, COLOR_DarkBlue, ST_HOURS);

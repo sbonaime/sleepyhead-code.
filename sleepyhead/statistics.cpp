@@ -201,6 +201,20 @@ EventDataType calcFL(QDate start, QDate end)
     return val;
 }
 
+EventDataType calcSA(QDate start, QDate end)
+{
+    EventDataType val = (p_profile->calcCount(CPAP_SensAwake, MT_CPAP, start, end));
+    EventDataType hours = p_profile->calcHours(MT_CPAP, start, end);
+
+    if (hours > 0) {
+        val /= hours;
+    } else {
+        val = 0;
+    }
+
+    return val;
+}
+
 
 struct RXChange {
     RXChange() { highlight = 0; machine = nullptr; }
@@ -210,6 +224,7 @@ struct RXChange {
         days = copy.days;
         ahi = copy.ahi;
         fl = copy.fl;
+        sa = copy.sa;
         mode = copy.mode;
         min = copy.min;
         max = copy.max;
@@ -229,6 +244,7 @@ struct RXChange {
     int days;
     EventDataType ahi;
     EventDataType fl;
+    EventDataType sa;
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
@@ -737,6 +753,7 @@ QString Statistics::GenerateHTML()
                         rx.days = days;
                         rx.ahi = calcAHI(first, last);
                         rx.fl = calcFL(first, last);
+                        rx.sa = calcSA(first, last);
                         rx.mode = cmode;
                         rx.min = cmin;
                         rx.max = cmax;
@@ -795,6 +812,7 @@ QString Statistics::GenerateHTML()
             rx.days = days;
             rx.ahi = calcAHI(first, last);
             rx.fl = calcFL(first, last);
+            rx.sa = calcSA(first, last);
             rx.mode = mode;
             rx.min = min;
             rx.max = max;
@@ -1128,6 +1146,7 @@ QString Statistics::GenerateHTML()
                     .arg(rx.days)
                     .arg(rx.ahi, 0, 'f', decimals)
                     .arg(rx.fl, 0, 'f', decimals) // Not the best way to do this.. Todo: Add an extra field for data..
+                    .arg(rx.sa, 0, 'f', decimals) // Not the best way to do this.. Todo: Add an extra field for data..
                     .arg(rx.machine->GetClass())
                     .arg(presrel)
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode) - 1))

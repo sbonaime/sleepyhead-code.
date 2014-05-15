@@ -73,6 +73,7 @@ QColor COLOR_ClearAirway    = QColor("#b254cd");
 QColor COLOR_RERA           = COLOR_Gold;
 QColor COLOR_VibratorySnore = QColor("#ff4040");
 QColor COLOR_FlowLimit      = QColor("#404040");
+QColor COLOR_SensAwake      = QColor("#40C040");
 QColor COLOR_LeakFlag       = QColor("#40c0c0"); // Qt::darkBlue;
 QColor COLOR_NRI            = COLOR_ClearAirway;
 QColor COLOR_ExP            = Qt::darkCyan;

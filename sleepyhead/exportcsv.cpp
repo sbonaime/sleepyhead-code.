@@ -175,6 +175,7 @@ void ExportCSV::on_exportButton_clicked()
     countlist.append(CPAP_VSnore2);
     countlist.append(CPAP_RERA);
     countlist.append(CPAP_FlowLimit);
+    countlist.append(CPAP_SensAwake);
     countlist.append(CPAP_NRI);
     countlist.append(CPAP_ExP);
     countlist.append(CPAP_LeakFlag);

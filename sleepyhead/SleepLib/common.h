@@ -169,6 +169,7 @@ extern QString STR_TR_OA;      // Short form of Obstructive Apnea
 extern QString STR_TR_UA;      // Short form of Unspecified Apnea
 extern QString STR_TR_CA;      // Short form of Clear Airway Apnea
 extern QString STR_TR_FL;      // Short form of Flow Limitation
+extern QString STR_TR_SA;      // Short form of SensAwake
 extern QString STR_TR_LE;      // Short form of Leak Event
 extern QString STR_TR_EP;      // Short form of Expiratory Puff
 extern QString STR_TR_VS;      // Short form of Vibratory Snore
@@ -228,6 +229,7 @@ extern QString STR_TR_SleepStage;
 extern QString STR_TR_Usage;
 extern QString STR_TR_Sessions;
 extern QString STR_TR_PrRelief; // Pressure Relief
+extern QString STR_TR_SensAwake;
 
 extern QString STR_TR_NoData;
 extern QString STR_TR_Bookmarks;
