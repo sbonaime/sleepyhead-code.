@@ -37,7 +37,7 @@ gXGrid::~gXGrid()
 void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
+    int top = region.boundingRect().top()+1;
     int width = region.boundingRect().width();
     int height = region.boundingRect().height();
 
@@ -161,7 +161,7 @@ gYAxis::~gYAxis()
 void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
+    int top = region.boundingRect().top()+1;
     int width = region.boundingRect().width();
     int height = region.boundingRect().height();
 

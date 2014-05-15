@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -643,23 +643,7 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_11">
-         <item row="1" column="0" colspan="2">
-          <widget class="QCheckBox" name="AddRERAtoAHI">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</string>
-           </property>
-           <property name="text">
-            <string>Use RDI instead of AHI (PRS1 only)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
+         <item row="3" column="0" colspan="2">
           <widget class="QGroupBox" name="complianceGroupbox">
            <property name="toolTip">
             <string>Don't show any compliance information</string>
@@ -734,7 +718,69 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item row="3" column="0" colspan="2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_44">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>CPAP Clock Drift</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QCheckBox" name="AddRERAtoAHI">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</string>
+           </property>
+           <property name="text">
+            <string>Use RDI instead of AHI (PRS1 only)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="clockDrift">
+           <property name="toolTip">
+            <string>Don't touch this unless you know your CPAP clock is out.
+Try to sync it to your PC's clock (which should be synced to a timeserver)</string>
+           </property>
+           <property name="suffix">
+            <string> seconds</string>
+           </property>
+           <property name="minimum">
+            <number>-7200</number>
+           </property>
+           <property name="maximum">
+            <number>7200</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="0" colspan="2">
           <widget class="QGroupBox" name="customEventGroupbox">
            <property name="toolTip">
             <string>Enable/disable experimental event flagging enhancements. 
@@ -870,7 +916,7 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item row="4" column="0" colspan="2">
+         <item row="5" column="0" colspan="2">
           <widget class="QGroupBox" name="ahiGraphGroupbox">
            <property name="title">
             <string>AHI/Hour Graph Settings</string>
@@ -943,49 +989,32 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
            </layout>
           </widget>
          </item>
-         <item row="5" column="0">
-          <spacer name="verticalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="leakRedlineSpinbox">
+           <property name="toolTip">
+            <string>User definable threshold considered large leak</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
+           <property name="suffix">
+            <string> L/min</string>
            </property>
-          </spacer>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_44">
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="showLeakRedline">
            <property name="font">
             <font>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
-           <property name="text">
-            <string>CPAP Clock Drift</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSpinBox" name="clockDrift">
            <property name="toolTip">
-            <string>Don't touch this unless you know your CPAP clock is out.
-Try to sync it to your PC's clock (which should be synced to a timeserver)</string>
+            <string>Whether to show the leak redline in the leak graph</string>
            </property>
-           <property name="suffix">
-            <string> seconds</string>
-           </property>
-           <property name="minimum">
-            <number>-7200</number>
-           </property>
-           <property name="maximum">
-            <number>7200</number>
-           </property>
-           <property name="value">
-            <number>0</number>
+           <property name="text">
+            <string>Show Leak Redline</string>
            </property>
           </widget>
          </item>

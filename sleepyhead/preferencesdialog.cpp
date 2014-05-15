@@ -110,6 +110,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     //ui->timeZoneCombo->setCurrentIndex(i);
 
+    ui->showLeakRedline->setChecked(profile->cpap->showLeakRedline());
+    ui->leakRedlineSpinbox->setValue(profile->cpap->leakRedline());
+
     ui->spo2Drop->setValue(profile->oxi->spO2DropPercentage());
     ui->spo2DropTime->setValue(profile->oxi->spO2DropDuration());
     ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
@@ -401,6 +404,9 @@ bool PreferencesDialog::Save()
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
     profile->cpap->setMaskDescription(ui->maskDescription->text());
     profile->appearance->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
+
+    profile->cpap->setShowLeakRedline(ui->showLeakRedline->isChecked());
+    profile->cpap->setLeakRedline(ui->leakRedlineSpinbox->value());
 
     profile->cpap->setShowComplianceInfo(ui->complianceGroupbox->isChecked());
     profile->cpap->setComplianceHours(ui->complianceHours->value());

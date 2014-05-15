@@ -343,6 +343,8 @@ private:
     MyWebView * webView;
     Day * lastcpapday;
 
+    gLineChart *leakchart;
+
     bool ZombieMeterMoved;
     bool BookmarksChanged;
 };

@@ -222,6 +222,8 @@ const QString STR_CS_UserEventDuplicates = "UserEventDuplicates";
 const QString STR_CS_AHIWindow = "AHIWindow";
 const QString STR_CS_AHIReset = "AHIReset";
 const QString STR_CS_ClockDrift = "ClockDrift";
+const QString STR_CS_LeakRedline = "LeakRedline";
+const QString STR_CS_ShowLeakRedline = "ShowLeakRedline";
 
 // ImportSettings Strings
 const QString STR_IS_DaySplitTime = "DaySplitTime";
@@ -270,15 +272,15 @@ class ProfileSettings
       : m_profile(profile)
     { }
 
-    void setPref(QString name, QVariant value) {
+    inline void setPref(QString name, QVariant value) {
         (*m_profile)[name] = value;
     }
 
-    void initPref(QString name, QVariant value) {
+    inline void initPref(QString name, QVariant value) {
         m_profile->init(name, value);
     }
 
-    QVariant getPref(QString name) const {
+    inline QVariant getPref(QString name) const {
         return (*m_profile)[name];
     }
 
@@ -456,6 +458,8 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_UserEventFlagging, false);
         initPref(STR_CS_AHIWindow, 60.0);
         initPref(STR_CS_AHIReset, false);
+        initPref(STR_CS_LeakRedline, 24.0);
+        initPref(STR_CS_ShowLeakRedline, true);
 
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
@@ -481,6 +485,8 @@ class CPAPSettings : public ProfileSettings
     bool AHIReset() const { return getPref(STR_CS_AHIReset).toBool(); }
     bool userEventFlagging() const { return getPref(STR_CS_UserEventFlagging).toBool(); }
     int clockDrift() const { return m_clock_drift; }
+    EventDataType leakRedline() const { return getPref(STR_CS_LeakRedline).toFloat(); }
+    bool showLeakRedline() const { return getPref(STR_CS_ShowLeakRedline).toBool(); }
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
@@ -506,6 +512,8 @@ class CPAPSettings : public ProfileSettings
     void setClockDrift(int seconds) {
         setPref(STR_CS_ClockDrift, m_clock_drift = (int)seconds);
     }
+    void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, value); }
+    void setShowLeakRedline(bool reset) { setPref(STR_CS_ShowLeakRedline, reset); }
 
   public:
     int m_clock_drift;

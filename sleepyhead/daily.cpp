@@ -300,10 +300,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI, COLOR_AHI, square)));
     }
 
-    gLineChart *lc=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
-    lc->addPlot(CPAP_Leak, COLOR_Leak, square);
-    lc->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
-    graphlist[schema::channel[CPAP_Leak].label()]->AddLayer(AddCPAP(lc));
+    // this is class wide because the leak redline can be reset in preferences..
+    // Better way would be having a search for linechart layers in graphlist[...]
+    leakchart=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
+    leakchart->addPlot(CPAP_Leak, COLOR_Leak, square);
+    leakchart->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
+    leakchart->setThresholdColor(Qt::red);
+    leakchart->setThreshold(PROFILE.cpap->leakRedline());
+
+    graphlist[schema::channel[CPAP_Leak].label()]->AddLayer(AddCPAP(leakchart));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak, COLOR_MaxLeak,square)));
     graphlist[schema::channel[CPAP_Snore].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
@@ -311,6 +316,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     graphlist[schema::channel[CPAP_PTB].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
 
 
+    gLineChart *lc = nullptr;
     graphlist[schema::channel[CPAP_MaskPressure].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
     graphlist[schema::channel[CPAP_RespRate].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
 
@@ -1760,6 +1766,13 @@ void Daily::UpdateOXIGraphs(Day *day)
 
 void Daily::RedrawGraphs()
 {
+    // setting this here, because it needs to be done when preferences change
+    if (PROFILE.cpap->showLeakRedline()) {
+        leakchart->setThreshold(PROFILE.cpap->leakRedline());
+    } else {
+        leakchart->setThreshold(0); // switch it off
+    }
+
     GraphView->redraw();
 }
 

@@ -314,7 +314,7 @@ void gGraphView::closeEvent(QCloseEvent * event)
 
 gGraphView::~gGraphView()
 {
-    doneCurrent();
+    doneCurrent(); // Fix for QTBUG-35363
 
 #ifdef ENABLE_THREADED_DRAWING
 

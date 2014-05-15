@@ -29,6 +29,7 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     m_line_color = col;
     m_report_empty = false;
     lines.reserve(50000);
+    m_threshold = 0.0;
 }
 gLineChart::~gLineChart()
 {
@@ -251,6 +252,15 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
     painter.setRenderHint(QPainter::Antialiasing, true);
+
+    if (m_threshold > 0) {
+        painter.setPen(m_threshold_color);
+        int xst = left + 1;
+        int yst = top + height + 1;
+
+        EventDataType y=yst - ((m_threshold - miny) * ymult);
+        painter.drawLine(xst, y, xst+width, y);
+    }
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];

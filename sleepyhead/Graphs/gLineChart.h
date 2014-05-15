@@ -78,6 +78,9 @@ class gLineChart: public Layer
     //! \brief Enable or Disable the subplot identified by code.
     void setPlotEnabled(ChannelID code, bool b) { m_enabled[code] = b; }
 
+    void setThreshold(EventDataType value) { m_threshold = value; }
+    void setThresholdColor(QColor color)  { m_threshold_color = color; }
+
   protected:
     bool m_report_empty;
     bool m_square_plot;
@@ -98,6 +101,9 @@ class gLineChart: public Layer
     QHash<ChannelID, bool> m_enabled;
 
     QVector<QLine> lines;
+
+    float m_threshold;
+    QColor m_threshold_color;
 };
 
 #endif // GLINECHART_H
