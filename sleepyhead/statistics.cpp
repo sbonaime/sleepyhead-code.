@@ -51,6 +51,7 @@ Statistics::Statistics(QObject *parent) :
     rows.push_back(StatisticsRow(tr("Leak Statistics"),  SC_SUBHEADING, MT_CPAP));
     rows.push_back(StatisticsRow("Leak",       SC_WAVG,    MT_CPAP));
     rows.push_back(StatisticsRow("Leak",       SC_90P,     MT_CPAP));
+    rows.push_back(StatisticsRow("Leak",       SC_ABOVE,   MT_CPAP));
 
     rows.push_back(StatisticsRow(tr("Pressure Statistics"),  SC_SUBHEADING, MT_CPAP));
     rows.push_back(StatisticsRow("Pressure",   SC_WAVG,    MT_CPAP));
@@ -90,6 +91,8 @@ Statistics::Statistics(QObject *parent) :
     calcnames[SC_MAX] = tr("Max %1");
     calcnames[SC_CPH] = tr("%1 Index");
     calcnames[SC_SPH] = tr("% of time in %1");
+    calcnames[SC_ABOVE] = tr("% of time above %1 threshold");
+    calcnames[SC_BELOW] = tr("% of time below %1 threshold");
 
     machinenames[MT_UNKNOWN] = STR_TR_Unknown;
     machinenames[MT_CPAP] = STR_TR_CPAP;
@@ -609,6 +612,12 @@ QString Statistics::GenerateHTML()
             name = ahitxt;
         } else if ((row.calc == SC_HOURS) || (row.calc == SC_COMPLIANCE)) {
             name = row.src;
+        } else if ((row.calc == SC_ABOVE) || (row.calc == SC_BELOW)) {
+            ChannelID id = schema::channel[row.src].id();
+            if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
+                continue;
+            }
+            name = calcnames[row.calc].arg(schema::channel[id].fullname()); //.arg(tr("threshold"));
         } else if (row.calc == SC_COLUMNHEADERS) {
             html += QString("<tr><td><b>%1</b></td>\n").arg(tr("Details"));
             for (int j=0; j < periods.size(); j++) {
@@ -1267,7 +1276,15 @@ QString StatisticsRow::value(QDate start, QDate end)
                 value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
                      * p_profile->calcSum(code, type, start, end)
                      / 3600.0, 0, 'f', decimals);
-
+                break;
+            case SC_ABOVE:
+                value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
+                    * (p_profile->calcAboveThreshold(code, schema::channel[code].upperThreshold(), type, start, end) / 60.0), 0, 'f', decimals);
+                break;
+            case SC_BELOW:
+                value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
+                    * (p_profile->calcBelowThreshold(code, schema::channel[code].lowerThreshold(), type, start, end) / 60.0), 0, 'f', decimals);
+                break;
             default:
                 break;
             };

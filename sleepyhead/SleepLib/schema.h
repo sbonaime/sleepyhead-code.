@@ -52,7 +52,7 @@ extern Channel EmptyChannel;
 class Channel
 {
   public:
-    Channel() { m_id = 0; }
+    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0;}
     Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
             QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
             int link = 0);
@@ -66,11 +66,23 @@ class Channel
     const QString &description() { return m_description; }
     const QString &label() { return m_label; }
     const QString &units() { return m_unit; }
+
+    inline const EventDataType &upperThreshold() { return m_upperThreshold; }
+    inline const EventDataType &lowerThreshold() { return m_lowerThreshold; }
+    inline QColor &upperThresholdColor() { return m_upperThresholdColor; }
+    inline QColor &lowerThresholdColor() { return m_lowerThresholdColor; }
+
     const int &linkid() { return m_link; }
+
 
     void setLabel(QString label) { m_label = label; }
     void setUnit(QString unit) { m_unit = unit; }
     void setDescription(QString desc) { m_description = desc; }
+    void setUpperThreshold(EventDataType value) { m_upperThreshold = value; }
+    void setUpperThresholdColor(QColor color) { m_upperThresholdColor = color; }
+    void setLowerThreshold(EventDataType value) { m_lowerThreshold = value; }
+    void setLowerThresholdColor(QColor color) { m_lowerThresholdColor = color; }
+
     QString option(int i) {
         if (m_options.contains(i)) {
             return m_options[i];
@@ -98,6 +110,11 @@ class Channel
     QColor m_defaultcolor;
 
     int m_link;
+
+    EventDataType m_upperThreshold;
+    EventDataType m_lowerThreshold;
+    QColor m_upperThresholdColor;
+    QColor m_lowerThresholdColor;
 };
 
 /*! \class ChannelList

@@ -776,7 +776,7 @@ EventDataType Profile::calcAboveThreshold(ChannelID code, EventDataType threshol
         return 0;
     }
 
-    double val = 0;
+    EventDataType val = 0;
 
     do {
         Day *day = GetGoodDay(date, mt);
@@ -808,7 +808,7 @@ EventDataType Profile::calcBelowThreshold(ChannelID code, EventDataType threshol
         return 0;
     }
 
-    double val = 0;
+    EventDataType val = 0;
 
     do {
         Day *day = GetGoodDay(date, mt);

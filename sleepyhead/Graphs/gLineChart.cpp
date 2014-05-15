@@ -29,7 +29,6 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     m_line_color = col;
     m_report_empty = false;
     lines.reserve(50000);
-    m_threshold = 0.0;
 }
 gLineChart::~gLineChart()
 {
@@ -253,18 +252,27 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipping(true);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    if (m_threshold > 0) {
-        m_threshold_color.setAlpha(80);
-        painter.setPen(m_threshold_color);
-        int xst = left + 1;
-        int yst = top + height + 1;
-
-        EventDataType y=yst - ((m_threshold - miny) * ymult);
-        painter.drawLine(xst, y, xst+width, y);
-    }
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
+        schema::Channel &chan = schema::channel[code];
+
+        if (chan.upperThreshold() > 0) {
+            QColor color = chan.upperThresholdColor();
+            color.setAlpha(100);
+            painter.setPen(color);
+
+            EventDataType y=top + height + 1 - ((chan.upperThreshold() - miny) * ymult);
+            painter.drawLine(left + 1, y, left + 1 + width, y);
+        }
+        if (chan.lowerThreshold() > 0) {
+            QColor color = chan.lowerThresholdColor();
+            color.setAlpha(100);
+            painter.setPen(color);
+
+            EventDataType y=top + height + 1 - ((chan.lowerThreshold() - miny) * ymult);
+            painter.drawLine(left+1, y, left + 1 + width, y);
+        }
 
         lines.clear();
 

@@ -302,11 +302,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     // this is class wide because the leak redline can be reset in preferences..
     // Better way would be having a search for linechart layers in graphlist[...]
-    leakchart=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
+    gLineChart *leakchart=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
     leakchart->addPlot(CPAP_Leak, COLOR_Leak, square);
     leakchart->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
-    leakchart->setThresholdColor(Qt::red);
-    leakchart->setThreshold(PROFILE.cpap->leakRedline());
+    schema::channel[CPAP_Leak].setUpperThresholdColor(Qt::red);
+    schema::channel[CPAP_Leak].setLowerThresholdColor(Qt::green);
 
     graphlist[schema::channel[CPAP_Leak].label()]->AddLayer(AddCPAP(leakchart));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));
@@ -425,6 +425,11 @@ Daily::~Daily()
     delete ui;
     delete icon_on;
     delete icon_off;
+}
+
+void Daily::showEvent(QShowEvent *)
+{
+    RedrawGraphs();
 }
 
 void Daily::closeEvent(QCloseEvent *event)
@@ -1777,9 +1782,9 @@ void Daily::RedrawGraphs()
 {
     // setting this here, because it needs to be done when preferences change
     if (PROFILE.cpap->showLeakRedline()) {
-        leakchart->setThreshold(PROFILE.cpap->leakRedline());
+        schema::channel[CPAP_Leak].setUpperThreshold(PROFILE.cpap->leakRedline());
     } else {
-        leakchart->setThreshold(0); // switch it off
+        schema::channel[CPAP_Leak].setUpperThreshold(0); // switch it off
     }
 
     GraphView->redraw();
