@@ -456,7 +456,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         mach->properties[STR_PROP_Model] = model + " " + type;
     }
 
-    fname.chop(4);
+//    fname.chop(4);
    // QString num = fname.right(4);
  //   int filenum = num.toInt();
 
@@ -470,6 +470,17 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         return false;
 
     ts = convertFLWDate(ts);
+
+    if (profile->session->backupCardData()) {
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("FLW%1.FPH").arg(ts);
+        dir.mkpath(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
+    }
+
     ti = qint64(ts) * 1000L;
 
     QMap<SessionID, Session *>::iterator sit = Sessions.find(ts);
@@ -629,6 +640,16 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
     htxt >> type;
     mach->properties[STR_PROP_Model] = model + " " + type;
 
+    if (profile->session->backupCardData()) {
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("SUM%1.FPH").arg(QDate::currentDate().year(),4,10,QChar('0'));
+        dir.mkpath(backup);
+        dir.cd(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
+    }
 
     QByteArray data;
     data = file.readAll();
@@ -644,12 +665,8 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
 
     quint16 d1, d2, d3;
 
-
-    QDateTime datetime;
-
     int runtime, usage;
 
-    int day, month, year, hour, minute, second;
     QDate date;
 
     do {
@@ -755,12 +772,36 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         qDebug() << "Header checksum mismatch" << filename;
     }
 
+    QTextStream htxt(&header);
+    QString h1, version, fname, serial, model, type;
+    htxt >> h1;
+    htxt >> version;
+    htxt >> fname;
+    htxt >> serial;
+    htxt >> model;
+    htxt >> type;
+
     QByteArray index = file.read(0x800);
     QDataStream in(index);
+    quint32 ts;
+
+    if (profile->session->backupCardData()) {
+        unsigned char *data = (unsigned char *)index.data();
+        ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
+        ts = convertDate(ts);
+
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("DET%1.FPH").arg(ts);
+        dir.mkpath(backup);
+        dir.cd(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
+    }
 
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
-    quint32 ts;
 
     QVector<quint32> times;
     QVector<quint16> start;

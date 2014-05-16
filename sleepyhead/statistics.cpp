@@ -650,9 +650,6 @@ QString Statistics::GenerateHTML()
         } else if (row.calc == SC_UNDEFINED) {
             continue;
         } else {
-            if (row.calc == SC_ABOVE) {
-                int i=5;
-            }
             ChannelID id = schema::channel[row.src].id();
             if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
                 continue;
