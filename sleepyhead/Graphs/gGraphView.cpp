@@ -289,7 +289,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 
    // pixmapcache.setCacheLimit(10240*2);
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    m_dpr = this->windowHandle()->devicePixelRatio();
+    m_dpr = devicePixelRatio(); // this->windowHandle()->devicePixelRatio();
 #else
     m_dpr = 1;
 #endif
