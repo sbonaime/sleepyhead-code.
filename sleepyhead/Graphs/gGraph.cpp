@@ -249,12 +249,6 @@ void gGraph::setZoomY(short zoom)
     redraw();
 }
 
-
-void gGraph::qglColor(QColor col)
-{
-    m_graphview->qglColor(col);
-}
-
 void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font, bool antialias)
 {
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
@@ -455,9 +449,6 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     sg->addGraph(this);
 
     sg->setScaleY(1.0);
-
-
-    sg->makeCurrent(); // has to be current for fbo creation
 
     float dpr = sg->devicePixelRatio();
     sg->setDevicePixelRatio(1);

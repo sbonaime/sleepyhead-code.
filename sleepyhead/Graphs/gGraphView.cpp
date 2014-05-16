@@ -13,8 +13,6 @@
 
 #include <QDir>
 #include <QFontMetrics>
-#include <QGLFramebufferObject>
-#include <QGLPixelBuffer>
 #include <QLabel>
 #include <QPixmapCache>
 #include <QTimer>
@@ -235,7 +233,7 @@ gGraph *gGraphView::popGraph()
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
-  : QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer), parent, shared),
+  : QWidget(parent),
     m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
@@ -246,7 +244,6 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_minx = m_maxx = 0;
     m_day = nullptr;
     m_selected_graph = nullptr;
-    cubetex = 0;
 
     horizScrollTime.start();
     vertScrollTime.start();
@@ -314,7 +311,6 @@ void gGraphView::closeEvent(QCloseEvent * event)
 
 gGraphView::~gGraphView()
 {
-    doneCurrent(); // Fix for QTBUG-35363
 
 #ifdef ENABLE_THREADED_DRAWING
 
@@ -560,7 +556,7 @@ float gGraphView::scaleHeight()
 
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
-    QGLWidget::resizeEvent(e); // This ques a redraw event..
+    QWidget::resizeEvent(e); // This ques a redraw event..
 
     updateScale();
 
@@ -766,229 +762,6 @@ void gGraphView::setScrollBar(MyScrollBar *sb)
     updateScrollBar();
     this->connect(m_scrollbar, SIGNAL(valueChanged(int)), SLOT(scrollbarValueChanged(int)));
 }
-void gGraphView::initializeGL()
-{
-    setAutoFillBackground(false);
-    setAutoBufferSwap(false);
-//    glDisable(GL_LIGHTING);
-//    glDisable(GL_DEPTH_TEST);
-//    glDisable(GL_TEXTURE_2D);
-
-    if (cubeimg.size() > 0) {
-        cubetex = bindTexture(*cubeimg[0]);
-    }
-
-    //    texid.resize(images.size());
-    //    for(int i=0;i<images.size();i++) {
-    //        texid[i]=bindTexture(*images[i]);
-    //    }
-
-//    glBindTexture(GL_TEXTURE_2D, 0);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-}
-
-//void gGraphView::resizeGL(int w, int h)
-//{
-
-//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-//    float dpr = devicePixelRatio();
-//#else
-//    float dpr = 1;
-//#endif
-
-//    glViewport(0, 0, w / dpr, h / dpr);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-
-//    glOrtho(0, w / dpr, h / dpr, 0, -1, 1);
-
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-//}
-
-void gGraphView::renderCube(QPainter &painter, float alpha)
-{
-
-    if (cubeimg.size() == 0) { return; }
-
-    //    glPushMatrix();
-    float w = width();
-    float h = height();
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = devicePixelRatio();
-    w *= dpr;
-    h *= dpr;
-#endif
-
-    painter.beginNativePainting();
-
-//    glViewport(0, 0, w, h);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-
-//    /*glShadeModel(GL_SMOOTH);
-//    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-//    glClearDepth(1.0f); */
-//    glEnable(GL_DEPTH_TEST);
-//    glDepthFunc(GL_LEQUAL);
-//    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-//    // This code has been shamelessly pinched of the interwebs..
-//    // When I'm feeling more energetic, I'll change it to a textured sheep or something.
-//    static float rotqube = 0;
-
-//    static float xpos = 0, ypos = 7;
-
-//    glLoadIdentity();
-
-//    glAlphaFunc(GL_GREATER, 0.1F);
-//    glEnable(GL_ALPHA_TEST);
-//    glEnable(GL_CULL_FACE);
-//    glDisable(GL_COLOR_MATERIAL);
-
-//    //int imgcount=cubeimg.size();
-
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//    double xx = 0.0, yy = 0.0;
-
-//    // set this to 0 to make the cube stay in the center of the screen
-//    if (1) {
-//        xx = sin(M_PI / 180.0 * xpos) * 2; // ((4.0/width()) * m_mouse.rx())-2.0;
-//        yy = cos(M_PI / 180.0 * ypos) * 2; //2-((4.0/height()) * m_mouse.ry());
-//        xpos += 1;
-//        ypos += 1.32F;
-
-//        if (xpos > 360) { xpos -= 360.0F; }
-
-//        if (ypos > 360) { ypos -= 360.0F; }
-//    }
-
-
-//    //m_mouse.x();
-//    glTranslatef(xx, 0.0f, -7.0f + yy);
-//    glRotatef(rotqube, 0.0f, 1.0f, 0.0f);
-//    glRotatef(rotqube, 1.0f, 1.0f, 1.0f);
-
-
-//    int i = 0;
-//    glEnable(GL_TEXTURE_2D);
-//    cubetex = bindTexture(*cubeimg[0]);
-
-//    //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
-//    i++;
-//    glColor4f(1, 1, 1, alpha);
-
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
-//    glEnd();
-//    // Back Face
-//    //bindTexture(*cubeimg[i % imgcount]);
-//    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-//    i++;
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
-//    glEnd();
-//    // Top Face
-//    //bindTexture(*cubeimg[i % imgcount]);
-//    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-//    i++;
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(1.0f,  1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-//    glEnd();
-//    // Bottom Face
-//    //bindTexture(*cubeimg[i % imgcount]);
-//    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-//    i++;
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Top Right Of The Texture and Quad
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(1.0f, -1.0f, -1.0f);	// Top Left Of The Texture and Quad
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-//    glEnd();
-//    // Right face
-//    //bindTexture(*cubeimg[i % imgcount]);
-//    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-//    i++;
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-//    glEnd();
-//    // Left Face
-//    //GLuint tex=bindTexture(*images["mask"]);
-//    //glBindTexture(GL_TEXTURE_2D, tex);
-//    i++;
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(0.0f, 0.0f);
-//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
-//    glTexCoord2f(1.0f, 0.0f);
-//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-//    glTexCoord2f(1.0f, 1.0f);
-//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
-//    glTexCoord2f(0.0f, 1.0f);
-//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-//    glEnd();
-
-//    glDisable(GL_BLEND);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-
-//    glDisable(GL_ALPHA_TEST);
-//    glDisable(GL_TEXTURE_2D);
-//    glDisable(GL_CULL_FACE);
-
-//    glDisable(GL_DEPTH_TEST);
-
-//    rotqube += 0.9f;
-
-//    // Restore boring 2D reality..
-//    glViewport(0, 0, w, h);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-
-//    glOrtho(0, width(), height(), 0, -1, 1);
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-
-    //  glPopMatrix();
-    painter.endNativePainting();
-
-}
 
 bool gGraphView::renderGraphs(QPainter &painter)
 {
@@ -1168,8 +941,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     return numgraphs > 0;
 }
 
-
-void gGraphView::paintGL()
+void gGraphView::paintEvent(QPaintEvent * event)
 {
 #ifdef DEBUG_EFFICIENCY
     QElapsedTimer time;
@@ -1207,7 +979,7 @@ void gGraphView::paintGL()
         int tp;
 
         if (render_cube && this->isVisible()) {
-            renderCube(painter);
+//            renderCube(painter);
 
             tp = height() - (y / 2);
         } else {
@@ -1261,25 +1033,13 @@ void gGraphView::paintGL()
     }
 
 #endif
-
-    swapBuffers(); // Dump to screen.
-
+    painter.end();
     if (this->isVisible() && !graphs_drawn && render_cube) { // keep the cube spinning
         redrawtimer->setInterval(1000.0 / 50); // 50 FPS
         redrawtimer->setSingleShot(true);
         redrawtimer->start();
     }
 }
-
-void gGraphView::setCubeImage(QImage *img)
-{
-    cubeimg.clear();
-    cubeimg.push_back(img);
-
-    //cubetex=bindTexture(*img);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 
 // For manual scrolling
 void gGraphView::setOffsetY(int offsetY)
@@ -1976,7 +1736,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        updateGL();
+        repaint(rect());
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
@@ -1985,7 +1745,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        updateGL();
+        repaint(rect());
         return;
         //        redraw();
     }
@@ -2251,6 +2011,6 @@ int gGraphView::visibleGraphs()
 void gGraphView::redraw()
 {
     if (!m_inAnimation) {
-        updateGL();
+        repaint(rect());
     }
 }

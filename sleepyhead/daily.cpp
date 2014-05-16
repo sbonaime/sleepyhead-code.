@@ -415,7 +415,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
-    GraphView->setCubeImage(images["nodata"]);
     GraphView->setEmptyText(STR_TR_NoData);
     previous_date=QDate();
 }
@@ -1285,7 +1284,6 @@ void Daily::Load(QDate date)
         float hours=cpap->hours();
         if (GraphView->isEmpty() && (hours>0)) {
             if (!PROFILE.hasChannel(CPAP_Obstructive) && !PROFILE.hasChannel(CPAP_Hypopnea)) {
-                GraphView->setCubeImage(images["brick"]);
                 GraphView->setEmptyText(tr("No Graphs :("));
 
                 isBrick=true;
@@ -2187,15 +2185,10 @@ void Daily::updateCube()
 
         if (ui->graphCombo->count()>0) {
             GraphView->setEmptyText(tr("No Graphs On!"));
-            GraphView->setCubeImage(images["nographs"]);
-
         } else {
             GraphView->setEmptyText(STR_TR_NoData);
-            GraphView->setCubeImage(images["nodata"]);
         }
     } else {
-        GraphView->setCubeImage(images["sheep"]);
-
         ui->toggleGraphs->setArrowType(Qt::DownArrow);
         ui->toggleGraphs->setToolTip(tr("Hide all graphs"));
         ui->toggleGraphs->blockSignals(true);

@@ -12,7 +12,6 @@
 #ifndef GGRAPHVIEW_H
 #define GGRAPHVIEW_H
 
-#include <QGLWidget>
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <QThread>
@@ -141,7 +140,6 @@ class gToolTip : public QObject
     bool m_visible;
     int m_spacer;
     QImage m_image;
-    GLuint m_textureID;
     bool m_invalidate;
 
   protected slots:
@@ -161,7 +159,7 @@ class gToolTip : public QObject
     It led to quite a performance increase over the old Qt method.
 
     */
-class gGraphView : public QGLWidget
+class gGraphView : public QWidget
 {
     Q_OBJECT
   public:
@@ -285,14 +283,8 @@ class gGraphView : public QGLWidget
     //! \brief Sets the message displayed when there are no graphs to draw
     void setEmptyText(QString s) { m_emptytext = s; }
 
-    void setCubeImage(QImage *);
-
     inline const float &devicePixelRatio() { return m_dpr; }
     void setDevicePixelRatio(float dpr) { m_dpr = dpr; }
-
-    // Cube fun
-    QVector<QImage *> cubeimg;
-    GLuint cubetex;
 
 #ifdef ENABLE_THREADED_DRAWING
     QMutex text_mutex;
@@ -335,14 +327,9 @@ class gGraphView : public QGLWidget
     int strings_cached_this_frame;
 
   protected:
-    //! \brief Set up the OpenGL basics for the QGLWidget underneath
-    virtual void initializeGL();
-
-    // //! \brief Resize the OpenGL ViewPort prior to redrawing
-    //virtual void resizeGL(int width, int height);
 
     //! \brief The heart of the OpenGL drawing code
-    virtual void paintGL();
+    virtual void paintEvent(QPaintEvent * event);
 
     //! \brief Calculates the sum of all graph heights
     float totalHeight();
@@ -374,9 +361,6 @@ class gGraphView : public QGLWidget
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *, int originX, int originY, int width, int height);
-
-    //! \brief Render the annoying spinning graph empty cube
-    void renderCube(QPainter &painter, float alpha = 1);
 
     Day *m_day;
 

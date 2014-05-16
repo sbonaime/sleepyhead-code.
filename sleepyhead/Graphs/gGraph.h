@@ -110,8 +110,6 @@ class gGraph : public QObject
                   short pixelsX = 0, short pixelsY = 0, short order = 0,
                   bool movable = false, short x = 0, short y = 0);
 
-    void qglColor(QColor col);
-
     //! \brief Queues text for gGraphView object to draw it.
     void renderText(QString text, int x, int y, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);

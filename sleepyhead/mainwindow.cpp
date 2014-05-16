@@ -326,7 +326,7 @@ void MainWindow::Startup()
     SnapshotGraph->setUsePixmapCache(false);
 #endif
 
-    SnapshotGraph->setFormat(daily->graphView()->format());
+   // SnapshotGraph->setFormat(daily->graphView()->format());
     //SnapshotGraph->setMaximumSize(1024,512);
     //SnapshotGraph->setMinimumSize(1024,512);
     SnapshotGraph->hide();
@@ -602,7 +602,7 @@ void MainWindow::on_action_Import_Data_triggered()
         popup.show();
         mainwin->Notify(tr("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder."),tr("Import Reminder"),8000);
 
-        QFileDialog w;
+        QFileDialog w(this);
 #if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
         const QString documentsFolder = QDesktopServices::storageLocation(
                                       QDesktopServices::DocumentsLocation);
@@ -612,24 +612,24 @@ void MainWindow::on_action_Import_Data_triggered()
         w.setDirectory(documentsFolder);
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
+        w.setOption(QFileDialog::DontUseNativeDialog,true);
+//#if defined(Q_OS_MAC) && (QT_VERSION < QT_VERSION_CHECK(4,8,0))
+//        // Fix for tetragon, 10.6 barfs up Qt's custom dialog
+//        w.setOption(QFileDialog::DontUseNativeDialog, true);
+//#else
+//        w.setOption(QFileDialog::DontUseNativeDialog, false);
 
-#if defined(Q_OS_MAC) && (QT_VERSION < QT_VERSION_CHECK(4,8,0))
-        // Fix for tetragon, 10.6 barfs up Qt's custom dialog
-        w.setOption(QFileDialog::DontUseNativeDialog, true);
-#else
-        w.setOption(QFileDialog::DontUseNativeDialog, false);
+//        QListView *l = w.findChild<QListView *>("listView");
+//        if (l) {
+//            l->setSelectionMode(QAbstractItemView::MultiSelection);
+//        }
 
-        QListView *l = w.findChild<QListView *>("listView");
-        if (l) {
-            l->setSelectionMode(QAbstractItemView::MultiSelection);
-        }
+//        QTreeView *t = w.findChild<QTreeView *>();
+//        if (t) {
+//            t->setSelectionMode(QAbstractItemView::MultiSelection);
+//        }
 
-        QTreeView *t = w.findChild<QTreeView *>();
-        if (t) {
-            t->setSelectionMode(QAbstractItemView::MultiSelection);
-        }
-
-#endif
+//#endif
 
         if (w.exec() != QDialog::Accepted) {
             popup.hide();

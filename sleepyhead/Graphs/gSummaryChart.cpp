@@ -708,8 +708,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                         py -= h;
                     } else if (graphtype == GT_LINE) { // if (m_graphtype==GT_BAR
-                        GLuint col1 = col.rgba();
-                        GLuint col2 = m_colors[j].rgba();
+                        QColor col1 = col;
+                        QColor col2 = m_colors[j];
                         px2 = px + barw;
                         py2 = (top + height - 1) - h;
 
