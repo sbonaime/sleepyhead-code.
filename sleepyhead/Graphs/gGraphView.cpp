@@ -233,7 +233,7 @@ gGraph *gGraphView::popGraph()
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
-  : QWidget(parent),
+  : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering | QGL::HasOverlay | QGL::Rgba),parent,shared),
     m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
@@ -272,12 +272,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     print_scaleY = print_scaleX = 1.0;
 
     redrawtimer = new QTimer(this);
-    //redrawtimer->setInterval(80);
-    //redrawtimer->start();
-    connect(redrawtimer, SIGNAL(timeout()), SLOT(repaint()));
-
-    //cubeimg.push_back(images["brick"]);
-    //cubeimg.push_back(images[""]);
+    connect(redrawtimer, SIGNAL(timeout()), SLOT(updateGL()));
 
     m_fadingOut = false;
     m_fadingIn = false;
@@ -288,11 +283,14 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     use_pixmap_cache = true;
 
    // pixmapcache.setCacheLimit(10240*2);
+
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    m_dpr = devicePixelRatio(); // this->windowHandle()->devicePixelRatio();
-#else
+    m_dpr = devicePixelRatio();
     m_dpr = 1;
 #endif
+
+    setAutoFillBackground(false);
+    setAutoBufferSwap(false);
 }
 void gGraphView::closeEvent(QCloseEvent * event)
 {
@@ -941,7 +939,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     return numgraphs > 0;
 }
 
-void gGraphView::paintEvent(QPaintEvent * event)
+void gGraphView::paintGL()
 {
 #ifdef DEBUG_EFFICIENCY
     QElapsedTimer time;
@@ -1034,6 +1032,7 @@ void gGraphView::paintEvent(QPaintEvent * event)
 
 #endif
     painter.end();
+    swapBuffers();
     if (this->isVisible() && !graphs_drawn && render_cube) { // keep the cube spinning
         redrawtimer->setInterval(1000.0 / 50); // 50 FPS
         redrawtimer->setSingleShot(true);
@@ -1736,7 +1735,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        repaint();
+        updateGL();
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
@@ -1745,7 +1744,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        repaint();
+        updateGL();
         return;
         //        redraw();
     }
@@ -2012,6 +2011,6 @@ int gGraphView::visibleGraphs()
 void gGraphView::redraw()
 {
     if (!m_inAnimation) {
-        repaint();
+        updateGL();
     }
 }

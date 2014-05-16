@@ -21,6 +21,7 @@
 #include <QPixmap>
 #include <QRect>
 #include <QPixmapCache>
+#include <QGLWidget>
 
 #include <Graphs/gGraph.h>
 #include <Graphs/glcommon.h>
@@ -159,7 +160,7 @@ class gToolTip : public QObject
     It led to quite a performance increase over the old Qt method.
 
     */
-class gGraphView : public QWidget
+class gGraphView : public QGLWidget
 {
     Q_OBJECT
   public:
@@ -329,7 +330,7 @@ class gGraphView : public QWidget
   protected:
 
     //! \brief The heart of the OpenGL drawing code
-    virtual void paintEvent(QPaintEvent * event);
+    virtual void paintGL();
 
     //! \brief Calculates the sum of all graph heights
     float totalHeight();
