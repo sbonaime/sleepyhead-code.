@@ -233,8 +233,12 @@ gGraph *gGraphView::popGraph()
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
-  : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering | QGL::HasOverlay | QGL::Rgba),parent,shared),
-    m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
+#ifdef BROKEN_OPENGL_BUILD
+    : QWidget(parent)
+#else
+    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering | QGL::HasOverlay | QGL::Rgba),parent,shared),
+#endif
+      m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
@@ -272,7 +276,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     print_scaleY = print_scaleX = 1.0;
 
     redrawtimer = new QTimer(this);
-    connect(redrawtimer, SIGNAL(timeout()), SLOT(updateGL()));
+    connect(redrawtimer, SIGNAL(timeout()), SLOT(redraw()));
 
     m_fadingOut = false;
     m_fadingIn = false;
@@ -289,8 +293,10 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_dpr = 1;
 #endif
 
+#ifndef BROKEN_OPENGL_BUILD
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
+#endif
 }
 void gGraphView::closeEvent(QCloseEvent * event)
 {
@@ -309,6 +315,9 @@ void gGraphView::closeEvent(QCloseEvent * event)
 
 gGraphView::~gGraphView()
 {
+#ifndef BROKEN_OPENGL_BUILD
+    doneCurrent();
+#endif
 
 #ifdef ENABLE_THREADED_DRAWING
 
@@ -1735,7 +1744,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        updateGL();
+        redraw();
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
@@ -1744,7 +1753,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        updateGL();
+        redraw();
         return;
         //        redraw();
     }
@@ -2010,7 +2019,9 @@ int gGraphView::visibleGraphs()
 
 void gGraphView::redraw()
 {
-    if (!m_inAnimation) {
-        updateGL();
-    }
+#ifdef BROKEN_OPENGL_BUILD
+    repaint();
+#else
+    updateGL();
+#endif
 }

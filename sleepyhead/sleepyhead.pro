@@ -4,12 +4,23 @@
 #
 #-------------------------------------------------
 
-QT += core gui opengl network xml
+QT += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets
 } else { # qt4
     QT += webkit
+}
+
+
+#Windows XP with older intel cards needs the following variable defined
+#It slows other platforms down way too much
+DEFINES += BROKEN_OPENGL_BUILD
+contains(DEFINES, BROKEN_OPENGL_BUILD) {
+    message("Building with QWidget gGraphView")
+} else {
+    message("Building with QGLWidget gGraphView")
+    QT += opengl
 }
 
 #CONFIG += c++11

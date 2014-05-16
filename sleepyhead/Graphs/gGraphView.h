@@ -21,7 +21,10 @@
 #include <QPixmap>
 #include <QRect>
 #include <QPixmapCache>
+
+#ifdef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
+#endif
 
 #include <Graphs/gGraph.h>
 #include <Graphs/glcommon.h>
@@ -160,7 +163,12 @@ class gToolTip : public QObject
     It led to quite a performance increase over the old Qt method.
 
     */
-class gGraphView : public QGLWidget
+class gGraphView
+#ifdef BROKEN_OPENGL_BUILD
+        :public QWidget
+#else
+        :public QGLWidget
+#endif
 {
     Q_OBJECT
   public:
@@ -233,9 +241,6 @@ class gGraphView : public QGLWidget
 
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
-
-    //! \brief Call UpdateGL unless animation is in progress
-    void redraw();
 
     gGraph *m_selected_graph;
     gToolTip *m_tooltip;
@@ -436,6 +441,10 @@ class gGraphView : public QGLWidget
 
     //! \brief Simply refreshes the GL view, called when timeout expires.
     void refreshTimeout();
+
+    //! \brief Call UpdateGL unless animation is in progress
+    void redraw();
+
 };
 
 #endif // GGRAPHVIEW_H
