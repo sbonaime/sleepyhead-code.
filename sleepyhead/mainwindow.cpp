@@ -310,7 +310,7 @@ void MainWindow::Startup()
              "on" << __DATE__ << __TIME__;
 
 #ifdef BROKEN_OPENGL_BUILD
-    qDebug() << "This build has been created especially for computers with older graphics hardware.\n"
+    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
 #endif
 
     qstatus->setText(tr("Loading Data"));
