@@ -274,7 +274,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     redrawtimer = new QTimer(this);
     //redrawtimer->setInterval(80);
     //redrawtimer->start();
-    connect(redrawtimer, SIGNAL(timeout()), SLOT(updateGL()));
+    connect(redrawtimer, SIGNAL(timeout()), SLOT(repaint()));
 
     //cubeimg.push_back(images["brick"]);
     //cubeimg.push_back(images[""]);
@@ -1736,7 +1736,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        repaint(rect());
+        repaint();
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
@@ -1745,7 +1745,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
         m_scrollbar->setValue(m_offsetY);
         m_offsetY = m_scrollbar->value();
-        repaint(rect());
+        repaint();
         return;
         //        redraw();
     }
@@ -2008,9 +2008,10 @@ int gGraphView::visibleGraphs()
 
     return cnt;
 }
+
 void gGraphView::redraw()
 {
     if (!m_inAnimation) {
-        repaint(rect());
+        repaint();
     }
 }
