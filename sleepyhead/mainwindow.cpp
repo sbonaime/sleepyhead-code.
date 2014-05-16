@@ -308,6 +308,11 @@ void MainWindow::Startup()
 {
     qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
              "on" << __DATE__ << __TIME__;
+
+#ifdef BROKEN_OPENGL_BUILD
+    qDebug() << "This build has been created especially for computers with older graphics hardware.\n"
+#endif
+
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);

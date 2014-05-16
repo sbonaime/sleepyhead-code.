@@ -22,7 +22,7 @@
 #include <QRect>
 #include <QPixmapCache>
 
-#ifdef BROKEN_OPENGL_BUILD
+#ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
 #endif
 
