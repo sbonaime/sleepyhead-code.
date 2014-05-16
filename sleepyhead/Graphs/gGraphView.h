@@ -334,9 +334,12 @@ class gGraphView
 
   protected:
 
-    //! \brief The heart of the OpenGL drawing code
+    //! \brief The heart of the drawing code
+#ifdef BROKEN_OPENGL_BUILD
+    virtual void paintEvent(QPaintEvent *);
+#else
     virtual void paintGL();
-
+#endif
     //! \brief Calculates the sum of all graph heights
     float totalHeight();
 

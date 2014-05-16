@@ -234,7 +234,7 @@ gGraph *gGraphView::popGraph()
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 #ifdef BROKEN_OPENGL_BUILD
-    : QWidget(parent)
+    : QWidget(parent),
 #else
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering | QGL::HasOverlay | QGL::Rgba),parent,shared),
 #endif
@@ -948,7 +948,11 @@ bool gGraphView::renderGraphs(QPainter &painter)
     return numgraphs > 0;
 }
 
+#ifdef BROKEN_OPENGL_BUILD
+void gGraphView::paintEvent(QPaintEvent *)
+#else
 void gGraphView::paintGL()
+#endif
 {
 #ifdef DEBUG_EFFICIENCY
     QElapsedTimer time;
@@ -1041,7 +1045,10 @@ void gGraphView::paintGL()
 
 #endif
     painter.end();
+
+#ifndef BROKEN_OPENGL_BUILD
     swapBuffers();
+#endif
     if (this->isVisible() && !graphs_drawn && render_cube) { // keep the cube spinning
         redrawtimer->setInterval(1000.0 / 50); // 50 FPS
         redrawtimer->setSingleShot(true);
