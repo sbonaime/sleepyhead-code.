@@ -250,7 +250,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, PROFILE.appearance->antiAliasing());
 
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
