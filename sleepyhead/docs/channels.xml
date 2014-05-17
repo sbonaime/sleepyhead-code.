@@ -14,15 +14,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x111e" class="data" name="TestChan1" details="Respiratory Rate" label="Mark's Resp. Rate" unit="breaths/min" color="black"/>
   <channel id="0x111f" class="data" name="TestChan2" details="Tidal Volume" label="Tidal Volume" unit="L/min" color="blue"/>
 
-  <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="?" color="black"/>
-  <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="?" color="black"/>
-  <channel id="0x1152" class="data" name="PRS1_08" details="Unknown 08" label="U08" unit="?" color="black"/>
-  <channel id="0x1153" class="data" name="PRS1_09" details="Unknown 09" label="U09" unit="?" color="black"/>
-  <channel id="0x1154" class="data" name="PRS1_0A" details="Unknown 0A" label="U0A" unit="?" color="black"/>
-  <channel id="0x1155" class="data" name="PRS1_0B" details="Unknown 0B" label="U0B" unit="?" color="light blue"/>
-  <channel id="0x1156" class="data" name="PRS1_0C" details="Unknown 0C" label="U0C" unit="?" color="black"/>
-  <channel id="0x1157" class="data" name="PRS1_0E" details="Unknown 0E" label="U0E" unit="?" color="dark green"/>
-  <channel id="0x1159" class="data" name="PRS1_12" details="PRS1 Unknown 12" label="U12" unit="" color="black"/>
   <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
   <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="E02" unit="" color="black"/>
   <channel id="0x1162" class="data" name="SetPressure" details="Set Pressure" label="Pressure" unit="" color="black"/>

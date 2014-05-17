@@ -551,33 +551,39 @@ void CMS50Serial::import_process()
     QDateTime seltime = oxitime;
 
     if (!cpaptime.isNull()) {
-        if (QMessageBox::question(mainwin, tr("Question"),
+        if (QMessageBox::question(mainwin, STR_MessageBox_Question,
                                   tr("Did you remember to start your oximeter recording at exactly the same time you started your CPAP machine?"),
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
             if (!cms50dplus) {
                 // Oximeter has a clock.. Hopefully the user remembered to set their clock on the device..
-                QMessageBox::information(mainwin, "Information",
-                                         "That's ok, I will use the time provided by your oximeter, however it will sync better next time if you start your oximeter recording at the same time your CPAP machine starts up.\n(Please note: If you haven't set your oximeter clock you will have to manually edit this time before saving this oximetry session.)",
+                QMessageBox::information(mainwin, STR_MessageBox_Information,
+                                         tr("That's ok, I will use the time provided by your oximeter, however it will sync better next time if you start your oximeter recording at the same time your CPAP machine starts up.")+
+                                         "\n\n"+
+                                         STR_MessageBox_PleaseNote+": "+tr("If you haven't set your oximeter clock you will have to manually edit this time before saving this oximetry session."),
                                          QMessageBox::Ok);
             } else {
                 //CMS50D+, and the user didn't start at the same time.. Kludge it because they likely turned it on around about the same time anyway.
-                QMessageBox::information(mainwin, "Information",
-                                         "It looks like your oximeter doesn't provide a valid start time, I'm going to set this oximetry session starting time to the CPAP starting time anyway.\nYou may have to adjust it manually if you remember the real start time before saving this session. (Also, did you remember to import todays CPAP data first?)",
+                QMessageBox::information(mainwin, STR_MessageBox_Information,
+                                         tr("It looks like your oximeter doesn't provide a valid start time, I'm going to set this oximetry session starting time to the CPAP starting time anyway.")+"\n\n"+
+                                         tr("You may have to adjust it manually if you remember the real start time before saving this session.")+"\n\n"+
+                                         tr("(Also, did you remember to import todays CPAP data first?)"),
                                          QMessageBox::Ok);
                 seltime = cpaptime;
             }
         } else {
             // The best solution.. the user (hopefully) started both devices at the same time, so we pick the cpap sessions start time for optimal sync.
-            QMessageBox::information(mainwin, tr("Information"),
-                                     tr("The most recent CPAP Session time has been selected as the start of your oximetry session.\nIf you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter."),
+            QMessageBox::information(mainwin, STR_MessageBox_Information,
+                                     tr("The most recent CPAP Session time has been selected as the start of your oximetry session.")+"\n\n"+
+                                     tr("If you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter."),
                                      QMessageBox::Ok);
             seltime = cpaptime;
         }
     } else {
         if (cms50dplus) {
             // Worst case, CMS50D+ and no CPAP data.. the time is basically set to midnight the current day.
-            QMessageBox::information(mainwin, tr("Information"),
-                                     tr("No valid start time was provided for this oximeter session. You will likely have to adjust your oximeter sessions start time before saving."),
+            QMessageBox::information(mainwin, STR_MessageBox_Information,
+                                     tr("No valid start time was provided for this oximeter session.")+"\n\n"+
+                                     tr("You will likely have to adjust your oximeter sessions start time before saving."),
                                      QMessageBox::Ok);
         } else {
             // No point nagging the user at all in this case.. they don't have any CPAP data loaded, so they are just using SleepyHead with the oximeter
@@ -891,8 +897,8 @@ void CMS50Serial::ReadyRead()
                     emit(importAborted());
                     mainwin->getOximetry()->graphView()->setEmptyText(
                         tr("Import Failed. Wait for oximeter and try again."));
-                    mainwin->Notify("Something went wrong with reading from the Oximeter.\nPlease wait for oximeter to finish tranmitting than try restarting import again.",
-                                    "Import Failed");
+                    mainwin->Notify(tr("Something went wrong with reading from the Oximeter.")+"\n"+tr("Please wait for oximeter to finish tranmitting than try restarting import again."),
+                                    tr("Import Failed"));
                     mainwin->getOximetry()->graphView()->timedRedraw(50);
                     break;
                 }
@@ -1443,16 +1449,11 @@ void Oximetry::on_RunButton_toggled(bool checked)
         //CONTROL->setVisible(true);
     } else {
         if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-            int res = QMessageBox::question(this, tr("Save Session?"),
-                                            tr("Creating a new oximetry session will destroy the old one.\nWould you like to save it first?"),
-                                            tr("Save"), tr("Destroy It"), tr("Cancel"), 0, 2);
-
+            int res=askSaveSession();
             if (res == 0) {
-                ui->RunButton->setChecked(false);
                 on_saveButton_clicked();
                 return;
             } else if (res == 2) {
-                ui->RunButton->setChecked(false);
                 return;
             }
         } // else it's already saved.
@@ -1594,8 +1595,7 @@ void Oximetry::oximeter_running_check()
 {
     if (!oximeter->isOpen()) {
         if (oximeter->callbacks() == 0) {
-            qDebug() <<
-                     "Not sure how oximeter_running_check gets called with a closed oximeter.. Restarting import process";
+            qDebug() << "Not sure how oximeter_running_check gets called with a closed oximeter.. Restarting import process";
             //mainwin->Notify(tr("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2"));
             on_ImportButton_clicked();
             return;
@@ -1603,8 +1603,7 @@ void Oximetry::oximeter_running_check()
     }
 
     if (oximeter->callbacks() == 0) {
-        mainwin->Notify(
-            tr("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on."));
+        mainwin->Notify(tr("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on."));
 
         if (oximeter->mode() == SO_IMPORT) { oximeter->stopImport(); }
 
@@ -1972,10 +1971,7 @@ bool Oximetry::openSPORFile(QString filename)
 void Oximetry::on_openButton_clicked()
 {
     if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res = QMessageBox::question(this, tr("Save Session?"),
-                                        tr("Opening this oximetry file will destroy the current session.\nWould you like to keep it?"),
-                                        tr("Save"), tr("Destroy It"), tr("Cancel"), 0, 2);
-
+        int res=askSaveSession();
         if (res == 0) {
             on_saveButton_clicked();
             return;
@@ -2037,13 +2033,19 @@ void Oximetry::on_dateEdit_dateTimeChanged(const QDateTime &date)
     updateGraphs();
 }
 
+int Oximetry::askSaveSession()
+{
+    return QMessageBox::question(this, STR_MessageBox_Question,
+        tr("Current oximetry session still has unsaved data in it.")+"\n\n"+
+        tr("Would you like to save it first?"),
+        STR_MessageBox_Save, STR_MessageBox_Destroy, STR_MessageBox_Cancel, 0, 2);
+
+}
+
 void Oximetry::openSession(Session *session)
 {
     if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res = QMessageBox::question(this, tr("Save Session?"),
-                                        tr("Opening this oximetry session will destroy the unsavedsession in the oximetry tab.\nWould you like to store it first?"),
-                                        tr("Save"), tr("Destroy It"), tr("Cancel"), 0, 2);
-
+        int res=askSaveSession();
         if (res == 0) {
             on_saveButton_clicked();
             return;

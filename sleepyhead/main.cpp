@@ -192,9 +192,9 @@ int main(int argc, char *argv[])
     }
 
     if (!havefolder && !force_data_dir) {
-        if (QMessageBox::question(nullptr, QObject::tr("Question"),
-                                  QObject::tr("No SleepyHead data folder was found.\n\nWould you like SleepyHead to use the default location for storing its data?\n\n")
-                                  + GetAppRoot(), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+        if (QMessageBox::question(nullptr, STR_MessageBox_Question,
+                                  QObject::tr("No SleepyHead data folder was found.")+"\n\n"+QObject::tr("Would you like SleepyHead to use the default location for storing its data?")+"\n\n"+
+                                  QDir::toNativeSeparators(GetAppRoot()), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
             settings.setValue("Settings/AppRoot", GetAppRoot());
             change_data_dir = false;
         }
@@ -210,12 +210,12 @@ retry_directory:
         if (datadir.isEmpty()) {
             if (!havefolder) {
                 QMessageBox::information(nullptr, QObject::tr("Exiting"),
-                                         QObject::tr("As you did not select a data folder, SleepyHead will exit.\n\nNext time you run, you will be asked again."));
+                                         QObject::tr("As you did not select a data folder, SleepyHead will exit.")+"\n\n"+QObject::tr("Next time you run, you will be asked again."));
                 return 0;
             } else {
-                QMessageBox::information(nullptr, QObject::tr("No Directory"),
-                                         QObject::tr("You did not select a directory.\n\nSleepyHead will now start with your old one.\n\n")
-                                         + GetAppRoot(), QMessageBox::Ok);
+                QMessageBox::information(nullptr, STR_MessageBox_Warning,
+                                         QObject::tr("You did not select a directory.")+"\n\n"+QObject::tr("SleepyHead will now start with your old one.")+"\n\n"+
+                                         QDir::toNativeSeparators(GetAppRoot()), QMessageBox::Ok);
             }
         } else {
             QDir dir(datadir);
@@ -224,8 +224,9 @@ retry_directory:
             if (!file.exists()) {
                 if (dir.count() > 2) {
                     // Not a new directory.. nag the user.
-                    if (QMessageBox::question(nullptr, QObject::tr("Warning"),
-                                              QObject::tr("The folder you chose is not empty, nor does it already contain valid SleepyHead data.\n\nAre you sure you want to use this folder?\n\n")
+                    if (QMessageBox::question(nullptr, STR_MessageBox_Warning,
+                                              QObject::tr("The folder you chose is not empty, nor does it already contain valid SleepyHead data.")
+                                              + "\n\n"+QObject::tr("Are you sure you want to use this folder?")+"\n\n"
                                               + datadir, QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
                         goto retry_directory;
                     }

@@ -380,6 +380,26 @@ badfile:
     return false;
 }
 
+struct EDFGroup {
+    EDFGroup() { }
+    EDFGroup(QString brp, QString eve, QString pld, QString sad) {
+        BRP = brp;
+        EVE = eve;
+        PLD = pld;
+        SAD = sad;
+    }
+    EDFGroup(const EDFGroup & copy) {
+        BRP = copy.BRP;
+        EVE = copy.EVE;
+        PLD = copy.PLD;
+        SAD = copy.SAD;
+    }
+    QString BRP;
+    QString EVE;
+    QString PLD;
+    QString SAD;
+};
+
 ResmedLoader::ResmedLoader()
 {
 }

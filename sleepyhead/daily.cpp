@@ -199,7 +199,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF->AddLayer(AddCPAP(fg));
     // Spans
     fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
-    fg->AddLayer((new gFlagsLine(PRS1_10, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
     // Flags
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
@@ -249,7 +249,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     // Draw layer is important... spans first..
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
 
     // Then the graph itself
     FRW->AddLayer(l);
@@ -339,8 +339,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     graphlist[schema::channel[ZEO_SleepStage].label()]->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, COLOR_SleepStage, true)));
 
-    gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
-    gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    gLineOverlaySummary *los1=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
+    gLineOverlaySummary *los2=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
     graphlist[schema::channel[OXI_Pulse].label()]->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
     graphlist[schema::channel[OXI_Pulse].label()]->AddLayer(AddOXI(los1));
     graphlist[schema::channel[OXI_SPO2].label()]->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
@@ -352,11 +352,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 
     // Fix me
-    gLineOverlaySummary *los3=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    gLineOverlaySummary *los3=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
     graphlist["INTPULSE"]->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
     graphlist["INTPULSE"]->AddLayer(AddCPAP(los3));
     graphlist["INTPULSE"]->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
-    gLineOverlaySummary *los4=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    gLineOverlaySummary *los4=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
     graphlist["INTSPO2"]->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
     graphlist["INTSPO2"]->AddLayer(AddCPAP(los4));
     graphlist["INTSPO2"]->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
@@ -590,7 +590,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_UserFlag3)
                 && (code!=CPAP_NRI)
                 && (code!=CPAP_LeakFlag)
-                && (code!=PRS1_10)
+                && (code!=CPAP_LargeLeak)
                 && (code!=CPAP_ExP)
                 && (code!=CPAP_FlowLimit)
                 && (code!=CPAP_SensAwake)
@@ -1148,7 +1148,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     }
     if (GraphView->isEmpty() && (ccnt>0)) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
-        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
+        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
     }
     if (cpap && PROFILE.cpap->showLeakRedline()) {
         float rlt = cpap->timeAboveThreshold(CPAP_Leak, PROFILE.cpap->leakRedline()) / 60.0;
@@ -1334,7 +1334,7 @@ void Daily::Load(QDate date)
                 { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
                 { CPAP_VSnore2,     COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
                 { CPAP_LeakFlag,    COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
-                { PRS1_10,          COLOR_LargeLeak,    Qt::black, lk2=(100.0/cpap->hours())*(cpap->sum(PRS1_10)/3600.0) },
+                { CPAP_LargeLeak,   COLOR_LargeLeak,    Qt::black, lk2=(100.0/cpap->hours())*(cpap->sum(CPAP_LargeLeak)/3600.0) },
                 { CPAP_CSR,         COLOR_CSR,          Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
             };
             int numchans=sizeof(chans)/sizeof(ChannelInfo);

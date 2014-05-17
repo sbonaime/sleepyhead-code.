@@ -131,9 +131,9 @@ void ProfileSelect::editProfile()
                 break;
             } else {
                 if (tries < 3) {
-                    QMessageBox::warning(this, STR_MESSAGE_ERROR, tr("Incorrect Password"), QMessageBox::Ok);
+                    QMessageBox::warning(this, STR_MessageBox_Error, tr("Incorrect Password"), QMessageBox::Ok);
                 } else {
-                    QMessageBox::warning(this, STR_MESSAGE_ERROR, tr("You entered the password wrong too many times."),
+                    QMessageBox::warning(this, STR_MessageBox_Error, tr("You entered the password wrong too many times."),
                                          QMessageBox::Ok);
                     reject();
                 }
@@ -153,76 +153,88 @@ void ProfileSelect::deleteProfile()
 {
     QString name = ui->listView->currentIndex().data().toString();
 
-    if (QMessageBox::question(this, tr("Question"),
-                              tr("Are you sure you want to trash the profile \"%1\"?").arg(name), QMessageBox::Yes,
-                              QMessageBox::No) == QMessageBox::Yes) {
-        if (QMessageBox::question(this, tr("Question"),
-                                  tr("Double Checking:\n\nDo you really want \"%1\" profile to be obliterated?").arg(name),
-                                  QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
-            if (QMessageBox::question(this, tr("Question"),
-                                      tr("Okay, I am about to totally OBLITERATE the profile \"%1\" and all it's contained data..\n\nDon't say you weren't warned. :-p").arg(
-                                          name), QMessageBox::Cancel, QMessageBox::Ok) == QMessageBox::Ok) {
-                bool reallydelete = false;
-                Profile *profile = Profiles::profiles[name];
+    QDialog confirmdlg;
+    QVBoxLayout layout(&confirmdlg);
+    QLabel message(QString("<b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to destroy profile '%1'.")+"<br/><br/>"+tr("Enter the word DELETE below to confirm.")).arg(name), &confirmdlg);
+    layout.insertWidget(0,&message,1);
+    QLineEdit lineedit(&confirmdlg);
+    layout.insertWidget(1, &lineedit, 1);
+    QHBoxLayout layout2;
+    layout.insertLayout(2,&layout2,1);
+    QPushButton cancel(QString("&Cancel"), &confirmdlg);
+    QPushButton accept(QString("&Delete Profile"), &confirmdlg);
+    layout2.addWidget(&cancel);
+    layout2.addStretch(1);
+    layout2.addWidget(&accept);
+    confirmdlg.connect(&cancel, SIGNAL(clicked()), &confirmdlg, SLOT(reject()));
+    confirmdlg.connect(&accept, SIGNAL(clicked()), &confirmdlg, SLOT(accept()));
+    confirmdlg.connect(&lineedit, SIGNAL(returnPressed()), &confirmdlg, SLOT(accept()));
 
-                if (!profile) {
-                    QMessageBox::warning(this, tr("WTH???"),
-                                         tr("If you can read this you need to delete this profile directory manually (It's under %1)").arg(
-                                             GetAppRoot() + "/Profiles/" + PROFILE.user->userName()), QMessageBox::Ok);
-                    return;
-                }
+    if (confirmdlg.exec() != QDialog::Accepted)
+        return;
 
-                if (profile->user->hasPassword()) {
-                    QDialog dialog(this, Qt::Dialog);
-                    QLineEdit *e = new QLineEdit(&dialog);
-                    e->setEchoMode(QLineEdit::Password);
-                    dialog.connect(e, SIGNAL(returnPressed()), &dialog, SLOT(accept()));
-                    dialog.setWindowTitle(tr("Enter Password for %1").arg(name));
-                    dialog.setMinimumWidth(300);
-                    QVBoxLayout *lay = new QVBoxLayout();
-                    dialog.setLayout(lay);
-                    lay->addWidget(e);
-                    int tries = 0;
+    if (lineedit.text().compare("DELETE")!=0) {
+        QMessageBox::information(NULL, tr("Sorry"), tr("You need to enter DELETE in capital letters."), QMessageBox::Ok);
+        return;
+    }
 
-                    do {
-                        e->setText("");
+    Profile *profile = Profiles::profiles[name];
+    profile->Open();
+    if (!profile) {
+        QMessageBox::warning(this, STR_MessageBox_Error,
+            QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
+            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + PROFILE.user->userName())), QMessageBox::Ok);
+            return;
+    }
+    bool reallydelete = false;
+    if (profile->user->hasPassword()) {
+        QDialog dialog(this, Qt::Dialog);
+        QLineEdit *e = new QLineEdit(&dialog);
+        e->setEchoMode(QLineEdit::Password);
+        dialog.connect(e, SIGNAL(returnPressed()), &dialog, SLOT(accept()));
+        dialog.setWindowTitle(tr("Enter Password for %1").arg(name));
+        dialog.setMinimumWidth(300);
+        QVBoxLayout *lay = new QVBoxLayout();
+        dialog.setLayout(lay);
+        lay->addWidget(e);
+        int tries = 0;
 
-                        if (dialog.exec() != QDialog::Accepted) { break; }
+        do {
+            e->setText("");
 
-                        tries++;
+            if (dialog.exec() != QDialog::Accepted) { break; }
 
-                        if (profile->user->checkPassword(e->text())) {
-                            reallydelete = true;
-                            break;
-                        } else {
-                            if (tries < 3) {
-                                QMessageBox::warning(this, STR_MESSAGE_ERROR, tr("Incorrect Password"), QMessageBox::Ok);
-                            } else {
-                                QMessageBox::warning(this, STR_MESSAGE_ERROR,
-                                                     tr("Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.\n\nSigned: Nasty Programmer"),
-                                                     QMessageBox::Ok);
-                            }
-                        }
-                    } while (tries < 3);
-                } else { reallydelete = true; }
+            tries++;
 
-                if (reallydelete) {
-                    QString path = profile->Get(PrefMacro(STR_GEN_DataFolder));
-
-                    if (!path.isEmpty()) {
-                        if (!removeDir(path)) {
-                            QMessageBox::information(this, tr("Whoops."),
-                                                     tr("There was an error deleting the profile directory.. You need to manually remove %1").arg(path),
-                                                     QMessageBox::Ok);
-                        }
-                    }
-
-                    model->removeRow(ui->listView->currentIndex().row());
-
-                    qDebug() << "Delete" << path;
+            if (profile->user->checkPassword(e->text())) {
+                reallydelete = true;
+                break;
+            } else {
+                if (tries < 3) {
+                    QMessageBox::warning(this, STR_MessageBox_Error, tr("You entered an incorrect password"), QMessageBox::Ok);
+                } else {
+                    QMessageBox::warning(this, STR_MessageBox_Error,
+                                         tr("If you're trying to delete because you forgot the password, you need to delete it manually."),
+                                         QMessageBox::Ok);
                 }
             }
+        } while (tries < 3);
+    } else { reallydelete = true; }
+
+    if (reallydelete) {
+        QString path = profile->Get(PrefMacro(STR_GEN_DataFolder));
+
+        if (!path.isEmpty()) {
+            if (!removeDir(path)) {
+                QMessageBox::information(this, STR_MessageBox_Error,
+                                         tr("There was an error deleting the profile directory, you need to manually remove it.")+QString("\n\n%1").arg(path),
+                                         QMessageBox::Ok);
+            }
+            qDebug() << "Delete" << path;
+            QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
         }
+
+        model->removeRow(ui->listView->currentIndex().row());
     }
 }
 
@@ -294,9 +306,9 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             tries++;
 
             if (tries < 3) {
-                QMessageBox::warning(this, STR_MESSAGE_ERROR, tr("Incorrect Password"), QMessageBox::Ok);
+                QMessageBox::warning(this, STR_MessageBox_Error, tr("Incorrect Password"), QMessageBox::Ok);
             } else {
-                QMessageBox::warning(this, STR_MESSAGE_ERROR,
+                QMessageBox::warning(this, STR_MessageBox_Error,
                                      tr("You entered an Incorrect Password too many times. Exiting!"), QMessageBox::Ok);
             }
         } while (tries < 3);

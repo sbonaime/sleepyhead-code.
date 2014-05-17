@@ -64,192 +64,189 @@ void init()
     DataTypes["time"] = TIME;
 
     if (!schema::channel.Load(":/docs/channels.xml")) {
-        QMessageBox::critical(0, QObject::tr("Error"),
+        QMessageBox::critical(0, STR_MessageBox_Error,
                               QObject::tr("Couldn't parse Channels.xml, this build is seriously borked, no choice but to abort!!"),
                               QMessageBox::Ok);
         QApplication::exit(-1);
     }
 
-    //    <channel id="0x110c" class="data" name="Pressure" details="Pressure" label="Pressure" unit="cmH20" color="dark green"/>
-    //    <channel id="0x110d" class="data" name="IPAP" details="Inspiratory Pressure" label="IPAP" unit="cmH20" color="orange"/>
-    //    <channel id="0x110e" class="data" name="EPAP" details="Expiratory Pressure" label="EPAP" unit="cmH20" color="light blue"/>
-    //    <channel id="0x110f" class="data" name="PS" details="Pressure Support" label="PS" unit="cmH20" color="dark blue"/>
-    //    <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP Lo" unit="cmH20" color="grey"/>
-    //    <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP Hi" unit="cmH20" color="grey"/>
-    //    <channel id="0x111a" class="setting" name="PSMin" details="Pressure Support Min" label="PS Min" unit="cmH20" color="dark cyan"/>
-    //    <channel id="0x111b" class="setting" name="PSMax" details="Pressure Support Max" label="PS Max" unit="cmH20" color="dark magenta"/>
-    //    <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="Pressure" color="black"/>
-    //    <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="Pressure" color="black"/>
-    //    <channel id="0x1022" class="data" name="RampTime" details="Ramp Time" label="Ramp Time" color="black"/>
-    //    <channel id="0x1023" class="data" name="RampPressure" details="Ramp Starting Pressure" label="Ramp Pr." color="black"/>
-
-    QString GRP_CPAP = "CPAP";
-    QString GRP_POS = "POS";
-    QString GRP_OXI = "OXI";
-    // Pressure Related Settings
 
     // Lookup Code strings are used internally and not meant to be tranlsated
 
     //                  Group                ChannelID            Code    Type     Scope    Lookup Code      Translable Name                 Description                                   Shortened Name              Units String            FieldType   Default Color
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Pressure      = 0x110C, DATA,    SESSION,
-                        "Pressure",      STR_TR_Pressure,                QObject::tr("Therapy Pressure"),
-                        STR_TR_Pressure,            STR_UNIT_CMH2O,         DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAP          = 0x110D, DATA,    SESSION, "IPAP",
+
+    // Pressure Related Settings
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Pressure      = 0x110C, WAVEFORM,    SESSION, "Pressure",
+                        STR_TR_Pressure,                QObject::tr("Therapy Pressure"),              STR_TR_Pressure,
+                        STR_UNIT_CMH2O,         DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAP          = 0x110D, WAVEFORM,    SESSION, "IPAP",
                         STR_TR_IPAP,                    QObject::tr("Inspiratory Pressure"),          STR_TR_IPAP,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("orange")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAPLo        = 0x1110, DATA,    SESSION, "IPAPLo",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAPLo        = 0x1110, WAVEFORM,    SESSION, "IPAPLo",
                         STR_TR_IPAPLo,                  QObject::tr("Lower Inspiratory Pressure"),    STR_TR_IPAPLo,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("orange")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAPHi        = 0x1111, DATA,    SESSION, "IPAPHi",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAPHi        = 0x1111, WAVEFORM,    SESSION, "IPAPHi",
                         STR_TR_IPAPHi,                  QObject::tr("Higher Inspiratory Pressure"),   STR_TR_IPAPHi,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("orange")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAP          = 0x110E, DATA,    SESSION, "EPAP",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAP          = 0x110E, WAVEFORM,    SESSION, "EPAP",
                         STR_TR_EPAP,                    QObject::tr("Expiratory Pressure"),           STR_TR_EPAP,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("light blue")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAPLo        = 0x111C, DATA,    SESSION, "EPAPLo",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAPLo        = 0x111C, WAVEFORM,    SESSION, "EPAPLo",
                         STR_TR_EPAPLo,                  QObject::tr("Lower Expiratory Pressure"),     STR_TR_EPAPLo,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("light blue")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAPHi        = 0x111D, DATA,    SESSION, "EPAPHi",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAPHi        = 0x111D, WAVEFORM,    SESSION, "EPAPHi",
                         STR_TR_EPAPHi,                  QObject::tr("Higher Expiratory Pressure"),    STR_TR_EPAPHi,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("aqua")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_PS            = 0x110F, DATA,    SESSION, "PS",
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_PS            = 0x110F, WAVEFORM,    SESSION, "PS",
                         STR_TR_PS,                      QObject::tr("Pressure Support"),              STR_TR_PS,
                         STR_UNIT_CMH2O,         DEFAULT,    QColor("grey")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PSMin         = 0x111A, SETTING, SESSION, "PSMin",
                         QObject::tr("PS Min") ,         QObject::tr("Pressure Support Minimum"),
                         QObject::tr("PS Min"),      STR_UNIT_CMH2O,         DEFAULT,    QColor("dark cyan")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PSMax         = 0x111B, SETTING, SESSION, "PSMax",
                         QObject::tr("PS Max"),          QObject::tr("Pressure Support Maximum"),
                         QObject::tr("PS Max"),      STR_UNIT_CMH2O,         DEFAULT,    QColor("dark magenta")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMin   = 0x1020, SETTING, SESSION,
                         "PressureMin",   QObject::tr("Min Pressure") ,   QObject::tr("Minimum Therapy Pressure"),
                         QObject::tr("Pr. Min"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMax   = 0x1021, SETTING, SESSION,
                         "PressureMax",   QObject::tr("Max Pressure"),    QObject::tr("Maximum Therapy Pressure"),
                         QObject::tr("Pr. Max"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RampTime      = 0x1022, SETTING, SESSION,
                         "RampTime",      QObject::tr("Ramp Time") ,      QObject::tr("Ramp Delay Period"),
-                        QObject::tr("Ramp Time"),   QObject::tr("minutes"), DEFAULT,    QColor("black")));
+                        QObject::tr("Ramp Time"),   STR_UNIT_Minutes, DEFAULT,    QColor("black")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RampPressure  = 0x1023, SETTING, SESSION,
                         "RampPressure",  QObject::tr("Ramp Pressure"),   QObject::tr("Starting Ramp Pressure"),
                         QObject::tr("Ramp Pr."),    STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
 
-    //      <channel id="0x1000" class="data" name="CSR" details="Periodic Breathing" label="PB" unit="% of night" color="light green"/>
-    //      <channel id="0x1001" class="data" name="ClearAirway" details="Clear Airway Apnea" label="CA" unit="events/hour" color="purple"/>
-    //      <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="OA" unit="events/hour" color="#40c0ff"/>
-    //      <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" unit="events/hour" color="blue"/>
-    //      <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="UA" unit="events/hour" color="dark green"/>
-    //      <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" unit="events/hour" color="#404040"/>
-    //      <channel id="0x1006" class="data" name="RERA" details="Resp. Effort Related Arousal" unit="events/hour" label="RERA" color="gold"/>
-    //      <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="events/hour" color="red"/>
-    //      <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore #2" label="VS2" unit="events/hour" color="orange"/>
-    //      <channel id="0x1009" class="data" name="PressurePulse" details="Pressure Pulse" label="PP" unit="events/hour" color="dark red"/>
-    //      <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="events/hour" color="dark blue"/>
-    //      <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="events/hour" color="orange"/>
-    //      <channel id="0x100c" class="data" name="ExP" details="Exhale Puff" label="EP" unit="events/hour" color="dark magenta"/>
-    //      <channel id="0x101e" class="data" name="UserFlag1" details="User Flag #1" label="UF1" unit="events/hour" color="dark cyan"/>
-    //      <channel id="0x101f" class="data" name="UserFlag2" details="User Flag #2" label="UF2" unit="events/hour" color="dark blue"/>
-    //      <channel id="0x1024" class="data" name="UserFlag3" details="User Flag #3" label="UF3" unit="events/hour" color="dark grey"/>
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, DATA,    SESSION, "CSR",
+
+    // Flags
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, SPAN,    SESSION, "CSR",
                         QObject::tr("Periodic Breathing"),
                         QObject::tr("A period of periodic breathing"),
-                        QObject::tr("PB"),       QObject::tr("%"),            DEFAULT,    QColor("light green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, DATA,    SESSION,
+                        QObject::tr("PB"),       STR_UNIT_Percentage,            DEFAULT,    QColor("light green")));
+
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, FLAG,    SESSION,
                         "ClearAirway",    QObject::tr("Clear Airway Apnea"),
                         QObject::tr("An apnea where the airway is open"),
-                        QObject::tr("CA"),       QObject::tr("events/hr"),    DEFAULT,    QColor("purple")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Obstructive   = 0x1002, DATA,    SESSION,
+                        QObject::tr("CA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("purple")));
+
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Obstructive   = 0x1002, FLAG,    SESSION,
                         "Obstructive",    QObject::tr("Obstructive Apnea"),
                         QObject::tr("An apnea caused by airway obstruction"),
-                        QObject::tr("OA"),       QObject::tr("events/hr"),    DEFAULT,    QColor("#40c0ff")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Hypopnea      = 0x1003, DATA,    SESSION,
+                        QObject::tr("OA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("#40c0ff")));
+
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Hypopnea      = 0x1003, FLAG,    SESSION,
                         "Hypopnea",       QObject::tr("Hypopnea"),
                         QObject::tr("A partially obstructed airway"),
-                        QObject::tr("H"),        QObject::tr("events/hr"),    DEFAULT,    QColor("blue")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Apnea         = 0x1004, DATA,    SESSION, "Apnea",
+                        QObject::tr("H"),        STR_UNIT_EventsPerHour,    DEFAULT,    QColor("blue")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Apnea         = 0x1004, FLAG,    SESSION, "Apnea",
                         QObject::tr("Unclassified Apnea"),
                         QObject::tr("An apnea that could not fit into a category"),
-                        QObject::tr("UA"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_FlowLimit     = 0x1005, DATA,    SESSION,
+                        QObject::tr("UA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_FlowLimit     = 0x1005, FLAG,    SESSION,
                         "FlowLimit",      QObject::tr("Flow Limitation"),
                         QObject::tr("An restriction in breathing from normal, causing a flattening of the flow waveform."),
-                        QObject::tr("FL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("#404040")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_RERA          = 0x1006, DATA,    SESSION, "RERA",
+                        QObject::tr("FL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("#404040")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_RERA          = 0x1006, FLAG,    SESSION, "RERA",
                         QObject::tr("Respiratory Effort Related Arousal"),
                         QObject::tr("An restriction in breathing that causes an either an awakening or sleep disturbance."),
-                        QObject::tr("RE"),       QObject::tr("events/hr"),    DEFAULT,    QColor("gold")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore        = 0x1007, DATA,    SESSION, "VSnore",
+                        QObject::tr("RE"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("gold")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore        = 0x1007, FLAG,    SESSION, "VSnore",
                         QObject::tr("Vibratory Snore"),                       QObject::tr("A vibratory snore"),
-                        QObject::tr("VS"),       QObject::tr("events/hr"),    DEFAULT,    QColor("red")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore2       = 0x1008, DATA,    SESSION, "VSnore2",
+                        QObject::tr("VS"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("red")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore2       = 0x1008, FLAG,    SESSION, "VSnore2",
                         QObject::tr("Vibratory Snore"),
                         QObject::tr("A vibratory snore as detcted by a System One machine"),
-                        QObject::tr("VS2"),      QObject::tr("events/hr"),    DEFAULT,    QColor("red")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_PressurePulse = 0x1009, DATA,    SESSION,
-                        "PressurePulse",  QObject::tr("Pressure Pulse"),
-                        QObject::tr("A pulse of pressure 'pinged' to detect a closed airway."),
-                        QObject::tr("PP"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark red")));
+                        QObject::tr("VS2"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("red")));
 
     // This Large Leak record is just a flag marker, used by Intellipap for one
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakFlag      = 0x100a, DATA,    SESSION,
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakFlag      = 0x100a, FLAG,    SESSION,
                         "LeakFlag",       QObject::tr("Large Leak"),
                         QObject::tr("A large mask leak affecting machine performance."),
-                        QObject::tr("LL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("light gray")));
+                        QObject::tr("LL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light gray")));
 
     // The following is a Large Leak record that references a waveform span
-    schema::channel.add(GRP_CPAP, new Channel(PRS1_10 = 0x1158, DATA,    SESSION,
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_LargeLeak = 0x1158,      SPAN,    SESSION,
                         "LeakFlagSpan",       QObject::tr("Large Leak"),
                         QObject::tr("A large mask leak affecting machine performance."),
-                        QObject::tr("LL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("light gray")));
+                        QObject::tr("LL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light gray")));
 
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_NRI           = 0x100b, DATA,    SESSION, "NRI",
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_NRI           = 0x100b, FLAG,    SESSION, "NRI",
                         QObject::tr("Non Responding Event"),
                         QObject::tr("A type of respiratory event that won't respond to a pressure increase."),
-                        QObject::tr("NR"),       QObject::tr("events/hr"),    DEFAULT,    QColor("orange")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_ExP           = 0x100c, DATA,    SESSION, "ExP",
+                        QObject::tr("NR"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("orange")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_ExP           = 0x100c, FLAG,    SESSION, "ExP",
                         QObject::tr("Expiratory Puff"),
                         QObject::tr("Intellipap event where you breathe out your mouth."),
-                        QObject::tr("EP"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark magenta")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_SensAwake     = 0x100d, DATA,    SESSION,
+                        QObject::tr("EP"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark magenta")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_SensAwake     = 0x100d, FLAG,    SESSION,
                         "SensAwake",      QObject::tr("SensAwake"),
                         QObject::tr("SensAwake feature will reduce pressure when waking is detected."),
-                        QObject::tr("SA"),       QObject::tr("events/hr"),    DEFAULT,    QColor("gold")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag1     = 0x101e, DATA,    SESSION,
+                        QObject::tr("SA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("gold")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag1     = 0x101e, FLAG,    SESSION,
                         "UserFlag1",      QObject::tr("User Flag #1"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),
-                        QObject::tr("UF1"),      QObject::tr("events/hr"),    DEFAULT,    QColor("dark cyan")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag2     = 0x101f, DATA,    SESSION,
+                        QObject::tr("UF1"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark cyan")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag2     = 0x101f, FLAG,    SESSION,
                         "UserFlag2",      QObject::tr("User Flag #2"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),
-                        QObject::tr("UF2"),      QObject::tr("events/hr"),    DEFAULT,    QColor("dark blue")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag3     = 0x1024, DATA,    SESSION,
+                        QObject::tr("UF2"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark blue")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag3     = 0x1024, FLAG,    SESSION,
                         "UserFlag3",      QObject::tr("User Flag #3"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),
-                        QObject::tr("UF3"),      QObject::tr("events/hr"),    DEFAULT,    QColor("dark grey")));
+                        QObject::tr("UF3"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark grey")));
 
-    //    <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse Rate" unit="bpm" color="red"/>
-    //     <channel id="0x1801" class="data" name="SPO2" details="Oxygen Saturation" label="SpO2" unit="%" color="blue"/>
-    //     <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
-    //     <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="light gray"/>
-    //     <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="light blue"/>
-    schema::channel.add(GRP_OXI, new Channel(OXI_Pulse           = 0x1800, DATA,    SESSION, "Pulse",
+
+    // Oximetry
+    schema::channel.add(GRP_OXI, new Channel(OXI_Pulse           = 0x1800, WAVEFORM,    SESSION, "Pulse",
                         QObject::tr("Pulse Rate"),                    QObject::tr("Heart rate in beats per minute"),
-                        QObject::tr("Pulse Rate"), QObject::tr("%"),            DEFAULT,    QColor("red")));
-    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2            = 0x1801, DATA,    SESSION, "SPO2",
+                        QObject::tr("Pulse Rate"), STR_UNIT_BPM,     DEFAULT,    QColor("red")));
+
+    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2            = 0x1801, WAVEFORM,    SESSION, "SPO2",
                         QObject::tr("SpO2 %"),                        QObject::tr("Blood-oxygen saturation percentage"),
-                        QObject::tr("SpO2"),       QObject::tr("bpm"),          DEFAULT,    QColor("blue")));
-    schema::channel.add(GRP_OXI, new Channel(OXI_Plethy          = 0x1802, DATA,    SESSION, "Plethy",
+                        QObject::tr("SpO2"),       STR_UNIT_Percentage,          DEFAULT,    QColor("blue")));
+
+    schema::channel.add(GRP_OXI, new Channel(OXI_Plethy          = 0x1802, WAVEFORM,    SESSION, "Plethy",
                         QObject::tr("Plethysomogram"),
                         QObject::tr("An optical Photo-plethysomogram showing heart rhythm"),
-                        QObject::tr("Plethy"),     QObject::tr("hz"),           DEFAULT,    QColor("#404040")));
-    schema::channel.add(GRP_OXI, new Channel(OXI_PulseChange     = 0x1803, DATA,    SESSION,
+                        QObject::tr("Plethy"),     STR_UNIT_Hz,           DEFAULT,    QColor("#404040")));
+
+    schema::channel.add(GRP_OXI, new Channel(OXI_PulseChange     = 0x1803, FLAG,    SESSION,
                         "PulseChange",      QObject::tr("Pulse Change"),
                         QObject::tr("A sudden (user definable) change in heart rate"),
-                        QObject::tr("PC"),         QObject::tr("events/hr"),    DEFAULT,    QColor("light grey")));
-    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2Drop        = 0x1804, DATA,    SESSION,
+                        QObject::tr("PC"),         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light grey")));
+
+    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2Drop        = 0x1804, SPAN,    SESSION,
                         "SPO2Drop",         QObject::tr("SpO2 Drop"),
                         QObject::tr("A sudden (user definable) drop in blood oxygen saturation"),
-                        QObject::tr("SD"),         QObject::tr("events/hr"),    DEFAULT,    QColor("light blue")));
+                        QObject::tr("SD"),         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light blue")));
 
     //      <channel id="0x1100" class="data" name="FlowRate" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
     //      <channel id="0x1101" class="data" name="MaskPressure" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
@@ -273,92 +270,114 @@ void init()
     //      <channel id="0x1118" class="data" name="LeakMedian" details="Median Leak Rate" label="Median Leaks" unit="L/min" color="dark green"/>
     //      <channel id="0x1119" class="data" name="RDI" details="Respiratory Disturbance Index" label="RDI" unit="events/hr" color="dark red"/>
 
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_FlowRate          = 0x1100, DATA,    SESSION,
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_FlowRate          = 0x1100, WAVEFORM,    SESSION,
                         "FlowRate",          QObject::tr("Flow Rate"),
                         QObject::tr("Breathing flow rate waveform"),                 QObject::tr("Flow Rate"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("black")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressure      = 0x1101, DATA,    SESSION,
+                        STR_UNIT_LPM,    DEFAULT,    QColor("black")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressure      = 0x1101, WAVEFORM,    SESSION,
                         "MaskPressure",      QObject::tr("Mask Pressure"),
                         QObject::tr("Mask Pressure"),                                QObject::tr("Mask Pressure"),
-                        QObject::tr("cmH2O"),    DEFAULT,    QColor("black")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressureHi    = 0x1102, DATA,    SESSION,
+                        STR_UNIT_CMH2O,    DEFAULT,    QColor("black")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressureHi    = 0x1102, WAVEFORM,    SESSION,
                         "MaskPressureHi",    QObject::tr("Mask Pressure"),
                         QObject::tr("Mask Pressure (High resolution)"),              QObject::tr("Mask Pressure"),
-                        QObject::tr("cmH2O"),    DEFAULT,    QColor("black"), 0x1101)); // linked to CPAP_MaskPressure
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_TidalVolume       = 0x1103, DATA,    SESSION,
+                        STR_UNIT_CMH2O,    DEFAULT,    QColor("black"), 0x1101)); // linked to CPAP_MaskPressure
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_TidalVolume       = 0x1103, WAVEFORM,    SESSION,
                         "TidalVolume",       QObject::tr("Tidal Volume"),
                         QObject::tr("Amount of air displaced per breath"),           QObject::tr("Tidal Volume"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("magenta")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Snore             = 0x1104, DATA,    SESSION,
+                        STR_UNIT_LPM,    DEFAULT,    QColor("magenta")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Snore             = 0x1104, WAVEFORM,    SESSION,
                         "Snore",             QObject::tr("Snore"),
                         QObject::tr("Graph displaying snore volume"),                QObject::tr("Snore"),
-                        QObject::tr("??"),       DEFAULT,    QColor("grey")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_MinuteVent        = 0x1105, DATA,    SESSION,
+                        STR_UNIT_Unknown,       DEFAULT,    QColor("grey")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_MinuteVent        = 0x1105, WAVEFORM,    SESSION,
                         "MinuteVent",        QObject::tr("Minute Ventilation"),
                         QObject::tr("Amount of air displaced per minute"),           QObject::tr("Minute Vent."),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("dark cyan")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_RespRate          = 0x1106, DATA,    SESSION,
+                        STR_UNIT_LPM,    DEFAULT,    QColor("dark cyan")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_RespRate          = 0x1106, WAVEFORM,    SESSION,
                         "RespRate",          QObject::tr("Respiratory Rate"),
                         QObject::tr("Rate of breaths per minute"),                   QObject::tr("Resp. Rate"),
-                        QObject::tr("Bpm"),      DEFAULT,    QColor("dark magenta")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_PTB               = 0x1107, DATA,    SESSION, "PTB",
+                        STR_UNIT_BreathsPerMinute,      DEFAULT,    QColor("dark magenta")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_PTB               = 0x1107, WAVEFORM,    SESSION, "PTB",
                         QObject::tr("Patient Triggered Breaths"),
                         QObject::tr("Percentage of breaths triggered by patient"),   QObject::tr("Pat. Trig. Breaths"),
-                        QObject::tr("%"),        DEFAULT,    QColor("dark grey")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Leak              = 0x1108, DATA,    SESSION,
+                        STR_UNIT_Percentage,        DEFAULT,    QColor("dark grey")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Leak              = 0x1108, WAVEFORM,    SESSION,
                         "Leak",              QObject::tr("Leak Rate"),
                         QObject::tr("Rate of detected mask leakage"),                QObject::tr("Leak Rate"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_IE                = 0x1109, DATA,    SESSION, "IE",
+                        STR_UNIT_LPM,    DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_IE                = 0x1109, WAVEFORM,    SESSION, "IE",
                         QObject::tr("I:E Ratio"),
                         QObject::tr("Ratio between Inspiratory and Expiratory time"), QObject::tr("I:E Ratio"),
-                        QObject::tr("ratio"),    DEFAULT,    QColor("dark red")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Te                = 0x110A, DATA,    SESSION, "Te",
+                        STR_UNIT_Ratio,    DEFAULT,    QColor("dark red")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Te                = 0x110A, WAVEFORM,    SESSION, "Te",
                         QObject::tr("Expiratory Time"),                    QObject::tr("Time taken to breathe out"),
-                        QObject::tr("Exp. Time"),          QObject::tr("seconds"),  DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_Ti                = 0x110B, DATA,    SESSION, "Ti",
+                        QObject::tr("Exp. Time"),          STR_UNIT_Seconds,  DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Ti                = 0x110B, WAVEFORM,    SESSION, "Ti",
                         QObject::tr("Inspiratory Time"),                   QObject::tr("Time taken to breathe in"),
-                        QObject::tr("Insp. Time"),         QObject::tr("seconds"),  DEFAULT,    QColor("dark blue")));
+                        QObject::tr("Insp. Time"),         STR_UNIT_Seconds,  DEFAULT,    QColor("dark blue")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RespEvent         = 0x1112, DATA,    SESSION,
                         "RespEvent",         QObject::tr("Respiratory Event"),
                         QObject::tr("A ResMed data source showing Respiratory Events"),  QObject::tr("Resp. Event"),
-                        QObject::tr("events"),   DEFAULT,    QColor("black")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_FLG               = 0x1113, DATA,    SESSION, "FLG",
+                        STR_UNIT_EventsPerHour,   DEFAULT,    QColor("black")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_FLG               = 0x1113, WAVEFORM,    SESSION, "FLG",
                         QObject::tr("Flow Limitation"),
                         QObject::tr("Graph showing severity of flow limitations"),   QObject::tr("Flow Limit."),
-                        QObject::tr("0-1"),      DEFAULT,    QColor("dark gray")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_TgMV              = 0x1114, DATA,    SESSION,
+                        STR_UNIT_Severety,      DEFAULT,    QColor("dark gray")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_TgMV              = 0x1114, WAVEFORM,    SESSION,
                         "TgMV",              QObject::tr("Target Minute Ventilation"),
                         QObject::tr("Target Minute Ventilation?"),                   QObject::tr("Target Vent."),
-                        QObject::tr("??"),       DEFAULT,    QColor("dark cyan")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaxLeak           = 0x1115, DATA,    SESSION,
+                        STR_UNIT_LPM,       DEFAULT,    QColor("dark cyan")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_MaxLeak           = 0x1115, WAVEFORM,    SESSION,
                         "MaxLeak",           QObject::tr("Maximum Leak"),
                         QObject::tr("The maximum rate of mask leakage"),             QObject::tr("Max Leaks"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("dark red")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_AHI               = 0x1116, DATA,    SESSION, "AHI",
+                        STR_UNIT_LPM,    DEFAULT,    QColor("dark red")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_AHI               = 0x1116, WAVEFORM,    SESSION, "AHI",
                         QObject::tr("Apnea Hypopnea Index"),
                         QObject::tr("Graph showing running AHI for the past hour"),  QObject::tr("AHI"),
-                        QObject::tr("events/hour"), DEFAULT,  QColor("dark red")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakTotal         = 0x1117, DATA,    SESSION,
+                        STR_UNIT_EventsPerHour, DEFAULT,  QColor("dark red")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakTotal         = 0x1117, WAVEFORM,    SESSION,
                         "LeakTotal",         QObject::tr("Total Leak Rate"),
                         QObject::tr("Detected mask leakage including natural Mask leakages"),  QObject::tr("Total Leaks"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakMedian        = 0x1118, DATA,    SESSION,
+                        STR_UNIT_LPM,    DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakMedian        = 0x1118, WAVEFORM,    SESSION,
                         "LeakMedian",        QObject::tr("Median Leak Rate"),
                         QObject::tr("Median rate of detected mask leakage"),         QObject::tr("Median Leaks"),
-                        QObject::tr("L/min"),    DEFAULT,    QColor("dark green")));
-    schema::channel.add(GRP_CPAP, new Channel(CPAP_RDI               = 0x1119, DATA,    SESSION, "RDI",
+                        STR_UNIT_LPM,    DEFAULT,    QColor("dark green")));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_RDI               = 0x1119, WAVEFORM,    SESSION, "RDI",
                         QObject::tr("Respiratory Disturbance Index"),
                         QObject::tr("Graph showing running RDI for the past hour"),  QObject::tr("RDI"),
-                        QObject::tr("events/hour"), DEFAULT,  QColor("dark red")));
+                        STR_UNIT_EventsPerHour, DEFAULT,  QColor("dark red")));
 
+    // Positional sensors
     schema::channel.add(GRP_POS, new Channel(POS_Orientation         = 0x2990, DATA,    SESSION,
                         "Orientation",      QObject::tr("Orientation"),
-                        QObject::tr("Sleep position in degrees"),  QObject::tr("Orientation"),  QObject::tr("degrees"),
+                        QObject::tr("Sleep position in degrees"),  QObject::tr("Orientation"),  STR_UNIT_Degrees,
                         DEFAULT,  QColor("dark blue")));
+
     schema::channel.add(GRP_POS, new Channel(POS_Inclination         = 0x2991, DATA,    SESSION,
                         "Inclination",      QObject::tr("Inclination"),
-                        QObject::tr("Upright angle in degrees"),  QObject::tr("Inclination"),  QObject::tr("degrees"),
+                        QObject::tr("Upright angle in degrees"),  QObject::tr("Inclination"),  STR_UNIT_Degrees,
                         DEFAULT,  QColor("dark magenta")));
 
 
@@ -425,15 +444,6 @@ void init()
     RMS9_EPR = schema::channel["EPR"].id();
     RMS9_EPRSet = schema::channel["EPRSet"].id();
     RMS9_SetPressure = schema::channel["SetPressure"].id();
-    PRS1_00 = schema::channel["PRS1_00"].id();
-    PRS1_01 = schema::channel["PRS1_01"].id();
-    PRS1_08 = schema::channel["PRS1_08"].id();
-    PRS1_0A = schema::channel["PRS1_0A"].id();
-    PRS1_0B = schema::channel["PRS1_0B"].id();
-    PRS1_0C = schema::channel["PRS1_0C"].id();
-    PRS1_0E = schema::channel["PRS1_0E"].id();
-    PRS1_0F = schema::channel["PRS1_0F"].id();
-    PRS1_12 = schema::channel["PRS1_12"].id();
     PRS1_FlexMode = schema::channel["FlexMode"].id();
     PRS1_FlexSet = schema::channel["FlexSet"].id();
     PRS1_HumidStatus = schema::channel["HumidStat"].id();

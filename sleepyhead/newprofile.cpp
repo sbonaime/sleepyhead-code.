@@ -157,7 +157,7 @@ void NewProfile::on_nextButton_clicked()
 
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
-            QMessageBox::information(this, STR_MESSAGE_ERROR, tr("Empty Username"), QMessageBox::Ok);
+            QMessageBox::information(this, STR_MessageBox_Error, tr("Empty Username"), QMessageBox::Ok);
             return;
         }
 
@@ -167,7 +167,7 @@ void NewProfile::on_nextButton_clicked()
 
         if (ui->passwordGroupBox->isChecked()) {
             if (ui->passwordEdit1->text() != ui->passwordEdit2->text()) {
-                QMessageBox::information(this, STR_MESSAGE_ERROR, tr("Passwords don't match"), QMessageBox::Ok);
+                QMessageBox::information(this, STR_MessageBox_Error, tr("Passwords don't match"), QMessageBox::Ok);
                 return;
             }
 

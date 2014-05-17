@@ -102,7 +102,7 @@ extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CP
 
 extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 extern ChannelID INTP_SmartFlex;
-extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10,
+extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, CPAP_LargeLeak,
        PRS1_12,
        PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, CPAP_HumidSetting, PRS1_SysLock,
        PRS1_SysOneResistStat,
@@ -123,5 +123,10 @@ extern ChannelID ZEO_SleepStage, ZEO_ZQ, ZEO_TotalZ, ZEO_TimeToZ, ZEO_TimeInWake
        ZEO_RiseTime;
 
 extern ChannelID POS_Orientation, POS_Inclination;
+
+const QString GRP_CPAP = "CPAP";
+const QString GRP_POS = "POS";
+const QString GRP_OXI = "OXI";
+
 
 #endif // MACHINE_COMMON_H

@@ -149,9 +149,9 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     WEIGHT = createGraph(STR_TR_Weight, STR_TR_Weight, YT_Weight);
     BMI = createGraph(STR_TR_BMI, tr("Body\nMass\nIndex"));
-    ZOMBIE = createGraph(STR_TR_Zombie, tr("How you felt\n(0-10)")); // Rename this Energy?
+    ZOMBIE = createGraph(STR_TR_Zombie, tr("How you felt\n(0-10)"));
 
-    ahihr = new SummaryChart(tr("Events/Hr"), GT_POINTS);
+    ahihr = new SummaryChart(STR_UNIT_EventsPerHour, GT_POINTS);
     ahihr->addSlice(ahicode, COLOR_Blue, ST_MAX);
     ahihr->addSlice(ahicode, COLOR_Orange, ST_WAVG);
     AHIHR->AddLayer(ahihr);

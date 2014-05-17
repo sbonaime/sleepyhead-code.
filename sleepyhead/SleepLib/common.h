@@ -29,6 +29,9 @@ typedef float EventDataType;
 
 struct ValueCount {
     ValueCount() { value = 0; count = 0; p = 0; }
+    ValueCount( EventDataType val, qint64 cnt, double pp)
+        :value(val), count(cnt), p(pp) {}
+
     ValueCount(const ValueCount &copy) {
         value = copy.value;
         count = copy.count;
@@ -124,11 +127,32 @@ extern QString STR_UNIT_OUNCE;
 extern QString STR_UNIT_KG;
 extern QString STR_UNIT_CMH2O;
 extern QString STR_UNIT_Hours;
+extern QString STR_UNIT_Minutes;
+extern QString STR_UNIT_Seconds;
 extern QString STR_UNIT_BPM;       // Beats per Minute
 extern QString STR_UNIT_LPM;       // Litres per Minute
+extern QString STR_UNIT_Hz;
+extern QString STR_UNIT_EventsPerHour;
+extern QString STR_UNIT_Percentage;
+extern QString STR_UNIT_BreathsPerMinute;
+extern QString STR_UNIT_Unknown;
+extern QString STR_UNIT_Ratio;
+extern QString STR_UNIT_Severety;
+extern QString STR_UNIT_Degrees;
 
-extern QString STR_MESSAGE_ERROR;
-extern QString STR_MESSAGE_WARNING;
+extern QString STR_MessageBox_Question;
+extern QString STR_MessageBox_Information;
+extern QString STR_MessageBox_Error;
+extern QString STR_MessageBox_Warning;
+extern QString STR_MessageBox_Busy;
+extern QString STR_MessageBox_PleaseNote;
+
+extern QString STR_MessageBox_Yes;
+extern QString STR_MessageBox_No;
+extern QString STR_MessageBox_Cancel;
+extern QString STR_MessageBox_Destroy;
+extern QString STR_MessageBox_Save;
+
 
 extern QString STR_TR_BMI;         // Short form of Body Mass Index
 extern QString STR_TR_Weight;
@@ -265,6 +289,7 @@ extern QString STR_TR_Start;
 extern QString STR_TR_End;
 extern QString STR_TR_On;
 extern QString STR_TR_Off;
+
 
 extern QString STR_TR_Min;    // Minimum
 extern QString STR_TR_Max;    // Maximum

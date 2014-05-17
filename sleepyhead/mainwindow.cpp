@@ -402,7 +402,7 @@ void MainWindow::importCPAPBackups()
     if (paths.size() > 0) {
         if (QMessageBox::question(
                     this,
-                    tr("Question"),
+                    STR_MessageBox_Question,
                     tr("CPAP data was recently purged and needs to be re-imported.")+"\n\n"+
                     tr("Would you like this done automatically from the Backup Folder?")+"\n\n"+
                     QDir::toNativeSeparators(paths.join("\n")),
@@ -414,12 +414,12 @@ void MainWindow::importCPAPBackups()
                 c+=importCPAP(path,tr("Please wait, importing from backup folder(s)..."));
             }
             if (c>0) {
-                QString str=tr("Data successfully imported from the following locations\n\n")+
+                QString str=tr("Data successfully imported from the following locations:")+"\n\n"+
                         QDir::toNativeSeparators(paths.join("\n"));
                 mainwin->Notify(str);
                 finishCPAPImport();
             } else {
-                mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
+                mainwin->Notify(tr("Couldn't find any new Machine Data at the locations given."),tr("Import Problem"));
             }
         }
     }
@@ -555,7 +555,7 @@ QStringList MainWindow::detectCPAPCards()
 void MainWindow::on_action_Import_Data_triggered()
 {
     if (m_inRecalculation) {
-        Notify(tr("Access to Import has been blocked while recalculations are in progress."));
+        Notify(tr("Access to Import has been blocked while recalculations are in progress."),STR_MessageBox_Busy);
         return;
     }
 
@@ -582,9 +582,9 @@ void MainWindow::on_action_Import_Data_triggered()
                                                    "\n\n%1\n\n"+
                                                    tr("Would you like to import from the path(s) shown above?"))).
                                             arg(QDir::toNativeSeparators(datapaths.join("\n"))),
-                                        tr("Yes"),
+                                        STR_MessageBox_Yes,
                                         tr("Select another folder"),
-                                        tr("Cancel"),
+                                        STR_MessageBox_Cancel,
                                         0, 2);
         if (res == 1) {
             waitmsg.setText(tr("Please wait, launching file dialog..."));
@@ -1165,7 +1165,7 @@ void MainWindow::on_oximetryButton_clicked()
 
     if (!oximetry) {
         if (!PROFILE.oxi->oximetryEnabled()) {
-            if (QMessageBox::question(this, tr("Question"),
+            if (QMessageBox::question(this, STR_MessageBox_Question,
                                       tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."), QMessageBox::Yes,
                                       QMessageBox::No) == QMessageBox::No) { return; }
 

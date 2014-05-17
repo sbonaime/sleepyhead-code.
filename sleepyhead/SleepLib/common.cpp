@@ -111,11 +111,31 @@ QString STR_UNIT_OUNCE;
 QString STR_UNIT_KG;
 QString STR_UNIT_CMH2O;
 QString STR_UNIT_Hours;
+QString STR_UNIT_Minutes;
+QString STR_UNIT_Seconds;
 QString STR_UNIT_BPM;       // Beats per Minute
 QString STR_UNIT_LPM;       // Litres per Minute
+QString STR_UNIT_Hz;
+QString STR_UNIT_EventsPerHour;
+QString STR_UNIT_BreathsPerMinute;
+QString STR_UNIT_Percentage;
+QString STR_UNIT_Unknown;
+QString STR_UNIT_Ratio;
+QString STR_UNIT_Severety;
+QString STR_UNIT_Degrees;
 
-QString STR_MESSAGE_ERROR;
-QString STR_MESSAGE_WARNING;
+QString STR_MessageBox_Question;
+QString STR_MessageBox_Error;
+QString STR_MessageBox_Warning;
+QString STR_MessageBox_Information;
+QString STR_MessageBox_Busy;
+QString STR_MessageBox_PleaseNote;
+QString STR_MessageBox_Yes;
+QString STR_MessageBox_No;
+QString STR_MessageBox_Cancel;
+QString STR_MessageBox_Destroy;
+QString STR_MessageBox_Save;
+
 
 QString STR_TR_BMI;         // Short form of Body Mass Index
 QString STR_TR_Weight;
@@ -274,12 +294,32 @@ void initializeStrings()
     STR_UNIT_KG = QObject::tr("Kg");
     STR_UNIT_CMH2O = QObject::tr("cmH2O");
     STR_UNIT_Hours = QObject::tr("Hours");
-
+    STR_UNIT_Minutes = QObject::tr("Minutes");
+    STR_UNIT_Seconds = QObject::tr("Seconds");
+    STR_UNIT_EventsPerHour = QObject::tr("Events/hr"); // Events per hour
+    STR_UNIT_Percentage = QObject::tr("%");
+    STR_UNIT_Hz = QObject::tr("Hz");          // Hertz
     STR_UNIT_BPM = QObject::tr("bpm");        // Beats per Minute
-    STR_UNIT_LPM = QObject::tr("L/m");        // Litres per Minute
+    STR_UNIT_LPM = QObject::tr("L/min");      // Litres per Minute
+    STR_UNIT_BreathsPerMinute = QObject::tr("Breaths/min"); // Breaths per minute
+    STR_UNIT_Unknown = QObject::tr("??");
+    STR_UNIT_Ratio = QObject::tr("ratio");
+    STR_UNIT_Severety = QObject::tr("Severety (0-1)");
+    STR_UNIT_Degrees = QObject::tr("Degrees");
 
-    STR_MESSAGE_ERROR = QObject::tr("Error");
-    STR_MESSAGE_WARNING = QObject::tr("Warning");
+    STR_MessageBox_Question = QObject::tr("Question");
+    STR_MessageBox_Error = QObject::tr("Error");
+    STR_MessageBox_Warning = QObject::tr("Warning");
+    STR_MessageBox_Information = QObject::tr("Information");
+    STR_MessageBox_Busy = QObject::tr("Busy");
+    STR_MessageBox_PleaseNote = QObject::tr("Please Note");
+
+    // Dialog box options
+    STR_MessageBox_Yes = QObject::tr("&Yes");
+    STR_MessageBox_No = QObject::tr("&No");
+    STR_MessageBox_Cancel = QObject::tr("&Cancel");
+    STR_MessageBox_Destroy = QObject::tr("&Destroy");;
+    STR_MessageBox_Save = QObject::tr("&Save");
 
     STR_TR_BMI = QObject::tr("BMI");              // Short form of Body Mass Index
     STR_TR_Weight = QObject::tr("Weight");
@@ -334,8 +374,6 @@ void initializeStrings()
     STR_TR_UF1 = QObject::tr("UF1");    // Short form for User Flag 1
     STR_TR_UF2 = QObject::tr("UF2");    // Short form for User Flag 2
     STR_TR_UF3 = QObject::tr("UF3");    // Short form for User Flag 3
-
-
 
     STR_TR_PS = QObject::tr("PS");    // Short form of Pressure Support
     STR_TR_AHI = QObject::tr("AHI");  // Short form of Apnea Hypopnea Index

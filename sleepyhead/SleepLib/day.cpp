@@ -214,6 +214,7 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
 
     QHash<EventStoreType, qint64> wmap; // weight map
 
+    QHash<EventStoreType, qint64>::iterator wmapit;
     qint64 SN = 0;
 
     EventDataType lastgain = 0, gain = 0;
@@ -221,7 +222,7 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     bool timeweight;
 
     QList<Session *>::iterator sess_end = sessions.end();
-    for (QList<Session *>::iterator sess_it = sessions.begin(); sess_it != sess_end; sess_it++) {
+    for (QList<Session *>::iterator sess_it = sessions.begin(); sess_it != sess_end; ++sess_it) {
         Session &sess = *(*sess_it);
         if (!sess.enabled()) { continue; }
 
@@ -249,37 +250,37 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
         //qint64 tval;
         if (timeweight) {
             QHash<EventStoreType, quint32>::iterator teival_end = tei.value().end();
+            wmap.reserve(wmap.size() + tei.value().size());
+
             for (QHash<EventStoreType, quint32>::iterator it = tei.value().begin(); it != teival_end; ++it) {
-                value = it.key();
                 weight = it.value();
                 SN += weight;
-                wmap[value] += weight;
+
+                wmap[it.key()] += weight;
             }
         } else {
             QHash<EventStoreType, EventStoreType>::iterator eival_end = ei.value().end();
 
+            wmap.reserve(wmap.size() + ei.value().size());
             for (QHash<EventStoreType, EventStoreType>::iterator it = ei.value().begin(); it != eival_end; ++it) {
-                value = it.key();
                 weight = it.value();
 
                 SN += weight;
 
-                wmap[value] += weight;
+                wmap[it.key()] += weight;
             }
         }
     }
 
     QVector<ValueCount> valcnt;
 
+    valcnt.resize(wmap.size());
     // Build sorted list of value/counts
-    ValueCount vc;
 
     QHash<EventStoreType, qint64>::iterator wmap_end = wmap.end();
-    for (QHash<EventStoreType, qint64>::iterator it = wmap.begin(); it != wmap_end; it++) {
-        vc.value = EventDataType(it.key()) * gain;
-        vc.count = it.value();
-        vc.p = 0;
-        valcnt.push_back(vc);
+    int ii=0;
+    for (QHash<EventStoreType, qint64>::iterator it = wmap.begin(); it != wmap_end; ++it) {
+        valcnt[ii++]=ValueCount(EventDataType(it.key()) * gain, it.value(), 0);
     }
 
     // sort by weight, then value
@@ -299,8 +300,8 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     int k = 0;
 
     for (k = 0; k < N; k++) {
-        v1 = valcnt[k].value;
-        w1 = valcnt[k].count;
+        v1 = valcnt.at(k).value;
+        w1 = valcnt.at(k).count;
         sum1 += w1;
 
         if (sum1 > nthi) {

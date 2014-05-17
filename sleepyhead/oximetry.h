@@ -419,6 +419,9 @@ class Oximetry : public QWidget
     bool secondPulseUpdate;
     bool secondSPO2Update;
     bool dont_update_date;
+
+    int askSaveSession();
+
 };
 
 #endif // OXIMETRY_H

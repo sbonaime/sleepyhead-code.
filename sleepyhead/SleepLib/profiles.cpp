@@ -128,9 +128,11 @@ void Profile::DataFormatError(Machine *m)
         if (!m->Purge(3478216)) {
             // Do not copy this line without thinking.. You will be eaten by a Grue if you do
 
-            QMessageBox::critical(nullptr, QObject::tr("Purge Failed"),
-                                  QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")
-                                  + PREF[STR_GEN_DataFolder].toString(), QMessageBox::Ok);
+            QMessageBox::critical(nullptr, STR_MessageBox_Error,
+                                  QObject::tr("Sorry, the purge operation failed, which means this version of SleepyHead can't start.")+"\n\n"+
+                                  QObject::tr("The machine data folder needs to be removed manually.")+"\n\n"+
+                                  QObject::tr("This folder currently resides at the following location:\n\n")+
+                                  QDir::toNativeSeparators(PREF[STR_GEN_DataFolder].toString()), QMessageBox::Ok);
             QApplication::exit(-1);
         }
         // Note: I deliberately haven't added a Profile help for this
