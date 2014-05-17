@@ -5974,9 +5974,7 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="134"/>
-        <source>This folder currently resides at the following location:
-
-</source>
+        <source>This folder currently resides at the following location:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7416,7 +7414,7 @@ er zijn enkele opties die de import beinvloeden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="39"/>
-        <source>Compliancy</source>
+        <source>Compliance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

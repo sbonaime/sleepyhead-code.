@@ -4607,9 +4607,7 @@ The Day records overlap with already existing content.</source>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="134"/>
-        <source>This folder currently resides at the following location:
-
-</source>
+        <source>This folder currently resides at the following location:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5586,9 +5584,13 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/statistics.cpp" line="39"/>
         <source>Compliancy</source>
-        <translation type="unfinished">Compliance</translation>
+        <translation type="obsolete">Compliance</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/statistics.cpp" line="39"/>
+        <source>Compliance</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="41"/>
