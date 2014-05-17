@@ -91,6 +91,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //        sessbar->setMinimumHeight(sessbar->height());
 //    }
 
+
+    ui->calNavWidget->setMaximumHeight(ui->calNavWidget->height());
+    ui->calNavWidget->setMinimumHeight(ui->calNavWidget->height());
     sessbar=nullptr;
 
     webView=new MyWebView(this);
@@ -99,12 +102,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     ui->tabWidget->insertTab(0,webView,QIcon(),"Details");
 
-    ui->graphMainArea->setLayout(layout);
+    ui->graphFrame->setLayout(layout);
     //ui->graphMainArea->setLayout(layout);
 
     ui->graphMainArea->setAutoFillBackground(false);
 
-    GraphView=new gGraphView(ui->graphMainArea,shared);
+    GraphView=new gGraphView(ui->graphFrame,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     snapGV=new gGraphView(GraphView); //ui->graphMainArea);
@@ -112,7 +115,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     snapGV->hideSplitter();
     snapGV->hide();
 
-    scrollbar=new MyScrollBar(ui->graphMainArea);
+    scrollbar=new MyScrollBar(ui->graphFrame);
     scrollbar->setOrientation(Qt::Vertical);
     scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
     scrollbar->setMaximumWidth(20);
@@ -1876,11 +1879,14 @@ void Daily::on_nextDayButton_clicked()
 
 void Daily::on_calButton_toggled(bool checked)
 {
-    //bool b=!ui->calendar->isVisible();
     bool b=checked;
-    ui->calendar->setVisible(b);
-    if (!b) ui->calButton->setArrowType(Qt::DownArrow);
-    else ui->calButton->setArrowType(Qt::UpArrow);
+    ui->calendarFrame->setVisible(b);
+
+    if (!b) {
+        ui->calButton->setArrowType(Qt::DownArrow);
+    } else {
+        ui->calButton->setArrowType(Qt::UpArrow);
+    }
 }
 
 

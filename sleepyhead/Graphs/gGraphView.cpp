@@ -1041,8 +1041,14 @@ void gGraphView::paintGL()
         AddTextQue(ss, width(), w / 2, 90, QColor(Qt::black), defaultfont);
         DrawTextQue(painter);
     }
+//    painter.setPen(Qt::lightGray);
+//    painter.drawLine(0, 0, 0, height());
+//    painter.drawLine(0, 0, width(), 0);
+//    painter.setPen(Qt::darkGray);
+    //painter.drawLine(width(), 0, width(), height());
 
 #endif
+
     painter.end();
 
 #ifndef BROKEN_OPENGL_BUILD

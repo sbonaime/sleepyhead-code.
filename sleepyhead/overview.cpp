@@ -69,13 +69,22 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     connect(ui->dateEnd->calendarWidget(), SIGNAL(currentPageChanged(int, int)),
             SLOT(dateEnd_currentPageChanged(int, int)));
 
+    QVBoxLayout *framelayout = new QVBoxLayout(ui->graphArea);
+    ui->graphArea->setLayout(framelayout);
+
+    QFrame *border = new QFrame(ui->graphArea);
+
+    framelayout->setMargin(1);
+    border->setFrameShape(QFrame::StyledPanel);
+    framelayout->addWidget(border,1);
+
     // Create the horizontal layout to hold the GraphView object and it's scrollbar
-    layout = new QHBoxLayout(ui->graphArea);
+    layout = new QHBoxLayout(border);
     layout->setSpacing(0); // remove the ugly margins/spacing
     layout->setMargin(0);
     layout->setContentsMargins(0, 0, 0, 0);
-    ui->graphArea->setLayout(layout);
-    ui->graphArea->setAutoFillBackground(false);
+    border->setLayout(layout);
+    border->setAutoFillBackground(false);
 
     // Create the GraphView Object
     GraphView = new gGraphView(ui->graphArea, m_shared);
