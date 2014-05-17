@@ -1063,9 +1063,9 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     const EventDataType maxperc=0.995F;
 
     QString midname;
-    if (ST_mid==ST_WAVG) midname=tr("Avg");
-    else if (ST_mid==ST_AVG) midname=tr("Avg");
-    else if (ST_mid==ST_PERC) midname=tr("Med");
+    if (ST_mid==ST_WAVG) midname=STR_TR_WAvg;
+    else if (ST_mid==ST_AVG) midname=STR_TR_Avg;
+    else if (ST_mid==ST_PERC) midname=STR_TR_Med;
 
     QString html;
 
@@ -1075,7 +1075,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             .arg(STR_TR_Channel)
             .arg(STR_TR_Min)
             .arg(midname)
-            .arg(tr("%1%").arg(percentile*100,0,'f',0))
+            .arg(tr("%1%2").arg(percentile*100,0,'f',0).arg(STR_UNIT_Percentage))
             .arg(STR_TR_Max);
 
     ChannelID chans[]={
@@ -1116,19 +1116,19 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             mn=day->Min(code);
             perc=day->percentile(code,percentile);
 
-            if (ST_mid==ST_PERC) {
+            if (ST_mid == ST_PERC) {
                 med=day->percentile(code,0.5);
                 tmp=day->wavg(code);
                 if (tmp>0 || mx==0) {
                     tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
                 }
-            } else if (ST_mid==ST_WAVG) {
+            } else if (ST_mid == ST_WAVG) {
                 med=day->wavg(code);
                 tmp=day->percentile(code,0.5);
                 if (tmp>0 || mx==0) {
                     tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
                 }
-            } else if (ST_mid==ST_AVG) {
+            } else if (ST_mid == ST_AVG) {
                 med=day->avg(code);
                 tmp=day->percentile(code,0.5);
                 if (tmp>0 || mx==0) {
