@@ -840,11 +840,11 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
             if (m_showsplitter) {
                 // draw the splitter handle
-                painter.setPen(QColor(128,128,128,255));
+                painter.setPen(QColor(158,158,158,255));
                 painter.drawLine(0, py + h, w, py + h);
-                painter.setPen(QColor(192, 192, 192, 255));
+                painter.setPen(QColor(220, 220, 220, 255));
                 painter.drawLine(0, py + h + 1, w, py + h + 1);
-                painter.setPen(QColor(90, 90, 90, 255));
+                painter.setPen(QColor(140, 140, 140, 255));
                 painter.drawLine(0, py + h + 2, w, py + h + 2);
             }
 
@@ -898,11 +898,11 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
             if (m_showsplitter) {
                 // draw the splitter handle
-                painter.setPen(QColor(128, 128, 128, 255));
+                painter.setPen(QColor(220, 220, 220, 255));
                 painter.drawLine(0, py + h, w, py + h);
-                painter.setPen(QColor(192, 192, 192, 255));
+                painter.setPen(QColor(128, 128, 128, 255));
                 painter.drawLine(0, py + h + 1, w, py + h + 1);
-                painter.setPen(QColor(90, 90, 90, 255));
+                painter.setPen(QColor(190, 190, 190, 255));
                 painter.drawLine(0, py + h + 2, w, py + h + 2);
             }
 
