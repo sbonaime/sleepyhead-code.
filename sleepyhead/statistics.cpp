@@ -36,7 +36,7 @@ Statistics::Statistics(QObject *parent) :
     rows.push_back(StatisticsRow("", SC_COLUMNHEADERS, MT_CPAP));
     rows.push_back(StatisticsRow(tr("CPAP Usage"),  SC_SUBHEADING, MT_CPAP));
     rows.push_back(StatisticsRow(tr("Average Hours per Night"),      SC_HOURS,     MT_CPAP));
-    rows.push_back(StatisticsRow(tr("Compliancy"),  SC_COMPLIANCE,  MT_CPAP));
+    rows.push_back(StatisticsRow(tr("Compliance"),  SC_COMPLIANCE,  MT_CPAP));
 
     rows.push_back(StatisticsRow(tr("Therapy Efficiacy"),  SC_SUBHEADING, MT_CPAP));
     rows.push_back(StatisticsRow("AHI",        SC_AHI,     MT_CPAP));

@@ -131,7 +131,7 @@ void Profile::DataFormatError(Machine *m)
             QMessageBox::critical(nullptr, STR_MessageBox_Error,
                                   QObject::tr("Sorry, the purge operation failed, which means this version of SleepyHead can't start.")+"\n\n"+
                                   QObject::tr("The machine data folder needs to be removed manually.")+"\n\n"+
-                                  QObject::tr("This folder currently resides at the following location:\n\n")+
+                                  QObject::tr("This folder currently resides at the following location:")+\n\n"+
                                   QDir::toNativeSeparators(PREF[STR_GEN_DataFolder].toString()), QMessageBox::Ok);
             QApplication::exit(-1);
         }
