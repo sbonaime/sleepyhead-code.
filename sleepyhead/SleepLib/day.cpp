@@ -767,7 +767,7 @@ int Day::count(ChannelID code)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
 
-        if (sess.enabled() && sess.channelDataExists(code)) {
+        if (sess.enabled() && sess.channelExists(code)) {
             sum += sess.count(code);
         }
     }

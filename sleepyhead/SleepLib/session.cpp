@@ -1044,10 +1044,10 @@ EventDataType Session::Max(ChannelID id)
     int evec_size=evec.size();
 
     for (int i = 0; i < evec_size; ++i) {
-        if (evec[i]->count() != 0) {
-            t1 = evec[i]->Max();
+        if (evec.at(i)->count() != 0) {
+            t1 = evec.at(i)->Max();
 
-            if (t1 == 0 && t1 == evec[i]->Min()) { continue; }
+            if (t1 == 0 && t1 == evec.at(i)->Min()) { continue; }
 
             if (first) {
                 max = t1;
@@ -1522,7 +1522,7 @@ int Session::count(ChannelID id)
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
 
     if (j == eventlist.end()) {
-        m_cnt[id] = 0;
+//        m_cnt[id] = 0;
         return 0;
     }
 

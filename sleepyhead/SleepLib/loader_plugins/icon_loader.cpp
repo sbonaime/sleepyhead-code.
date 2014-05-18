@@ -471,16 +471,6 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 
     ts = convertFLWDate(ts);
 
-    if (profile->session->backupCardData()) {
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
-        QDir dir;
-        QString newname = QString("FLW%1.FPH").arg(ts);
-        dir.mkpath(backup);
-        if (!dir.exists(newname)) {
-            file.copy(backup+newname);
-        }
-    }
-
     ti = qint64(ts) * 1000L;
 
     QMap<SessionID, Session *>::iterator sit = Sessions.find(ts);
@@ -595,6 +585,17 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         mach->AddSession(sess, profile);
     }
 
+    if (profile->session->backupCardData()) {
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("FLW%1.FPH").arg(ts);
+        dir.mkpath(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
+    }
+
+
     return true;
 }
 
@@ -639,17 +640,6 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
     htxt >> model;
     htxt >> type;
     mach->properties[STR_PROP_Model] = model + " " + type;
-
-    if (profile->session->backupCardData()) {
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
-        QDir dir;
-        QString newname = QString("SUM%1.FPH").arg(QDate::currentDate().year(),4,10,QChar('0'));
-        dir.mkpath(backup);
-        dir.cd(backup);
-        if (!dir.exists(newname)) {
-            file.copy(backup+newname);
-        }
-    }
 
     QByteArray data;
     data = file.readAll();
@@ -738,6 +728,17 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
         }
     } while (!in.atEnd());
 
+    if (profile->session->backupCardData()) {
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("SUM%1.FPH").arg(QDate::currentDate().year(),4,10,QChar('0'));
+        dir.mkpath(backup);
+        dir.cd(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
+    }
+
     return true;
 }
 
@@ -784,21 +785,6 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
     QByteArray index = file.read(0x800);
     QDataStream in(index);
     quint32 ts;
-
-    if (profile->session->backupCardData()) {
-        unsigned char *data = (unsigned char *)index.data();
-        ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
-        ts = convertDate(ts);
-
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
-        QDir dir;
-        QString newname = QString("DET%1.FPH").arg(ts);
-        dir.mkpath(backup);
-        dir.cd(backup);
-        if (!dir.exists(newname)) {
-            file.copy(backup+newname);
-        }
-    }
 
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -877,10 +863,10 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
                 a3 = data[idx + 4];   // [0..5] Flow Limitation,  [6..7] SensAwake bitflags, 1 per minute
 
                 // Sure there isn't 6 SenseAwake bits?
-                a4 = (a1 >> 6) << 4 | ((a2 >> 6) << 2) | (a3 >> 6);
+                //  a4 = (a1 >> 6) << 4 | ((a2 >> 6) << 2) | (a3 >> 6);
 
                 // this does the same thing as behaviour
-                //a4 = (a3 >> 7) << 3 | ((a3 >> 6)&1);
+                a4 = (a3 >> 7) << 3 | ((a3 >> 6) & 1);
 
                 bitmask = 1;
                 for (int k = 0; k < 6; k++) {  // There are 6 flag sets per 2 minutes
@@ -900,6 +886,20 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         //  sess->really_set_last(ti-360000L);
         //        sess->SetChanged(true);
         //       mach->AddSession(sess,profile);
+    }
+    if (profile->session->backupCardData()) {
+        unsigned char *data = (unsigned char *)index.data();
+        ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
+        ts = convertDate(ts);
+
+        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QDir dir;
+        QString newname = QString("DET%1.FPH").arg(ts);
+        dir.mkpath(backup);
+        dir.cd(backup);
+        if (!dir.exists(newname)) {
+            file.copy(backup+newname);
+        }
     }
 
     return 1;

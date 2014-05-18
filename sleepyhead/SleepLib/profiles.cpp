@@ -1287,7 +1287,7 @@ QDate Profile::FirstGoodDay(MachineType mt)
 }
 QDate Profile::LastGoodDay(MachineType mt)
 {
-    if (mt == MT_UNKNOWN) { //|| (!m_last.isValid()) || (!m_first.isValid()))
+    if (mt == MT_UNKNOWN) {
         return FirstDay();
     }
 
@@ -1306,7 +1306,7 @@ QDate Profile::LastGoodDay(MachineType mt)
         d = d.addDays(-1);
     } while (d >= f);
 
-    return f; //m_first;
+    return f;
 }
 bool Profile::hasChannel(ChannelID code)
 {

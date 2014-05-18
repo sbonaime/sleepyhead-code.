@@ -228,7 +228,6 @@ struct RXChange {
         days = copy.days;
         ahi = copy.ahi;
         fl = copy.fl;
-        sa = copy.sa;
         mode = copy.mode;
         min = copy.min;
         max = copy.max;
@@ -248,7 +247,6 @@ struct RXChange {
     int days;
     EventDataType ahi;
     EventDataType fl;
-    EventDataType sa;
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
@@ -760,7 +758,6 @@ QString Statistics::GenerateHTML()
                         rx.days = days;
                         rx.ahi = calcAHI(first, last);
                         rx.fl = calcFL(first, last);
-                        rx.sa = calcSA(first, last);
                         rx.mode = cmode;
                         rx.min = cmin;
                         rx.max = cmax;
@@ -819,7 +816,6 @@ QString Statistics::GenerateHTML()
             rx.days = days;
             rx.ahi = calcAHI(first, last);
             rx.fl = calcFL(first, last);
-            rx.sa = calcSA(first, last);
             rx.mode = mode;
             rx.min = min;
             rx.max = max;
@@ -1166,7 +1162,7 @@ QString Statistics::GenerateHTML()
             html += QString("<td>%1</td>").arg(rx.fl, 0, 'f', decimals); // Not the best way to do this.. Todo: Add an extra field for data..
 
             if (PROFILE.hasChannel(CPAP_SensAwake)) {
-                html += QString("<td>%1</td>").arg(rx.sa, 0, 'f', decimals);
+                html += QString("<td>%1</td>").arg(calcSA(rx.first, rx.last), 0, 'f', decimals);
             }
             html += QString("<td>%1</td>").arg(rx.machine->GetClass());
             html += QString("<td>%1</td>").arg(presrel);

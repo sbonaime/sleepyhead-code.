@@ -261,9 +261,20 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     R.epr_set = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
                 if ((sig = str.lookupSignal(CPAP_Mode))) {
-                    int mode = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    // convert this
+                    int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    CPAPMode mode;
+
+                    if (mod >= 7) {
+                        mode = MODE_ASV;
+                    } else if (mod >= 5) {
+                        mode = MODE_BIPAP;
+                    } else if (mod >= 1) {
+                        mode = MODE_APAP;
+                    } else {
+                        mode = MODE_CPAP;
+                    }
                     R.mode = mode;
+
                 }
                 if ((sig = str.lookupLabel("AHI"))) {
                     R.ahi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
