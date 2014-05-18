@@ -85,7 +85,7 @@ enum MCDataType
 { MC_bool = 0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
 
-extern ChannelID NoChannel, SESSION_ENABLED;
+extern ChannelID NoChannel, SESSION_ENABLED, CPAP_SummaryOnly;
 extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi,
        CPAP_Pressure, CPAP_PS, CPAP_PSMin, CPAP_PSMax,
        CPAP_Mode, CPAP_AHI,
@@ -100,7 +100,7 @@ extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CP
        CPAP_UserFlag1, CPAP_UserFlag2, CPAP_UserFlag3, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
        CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_Test1, CPAP_Test2;
 
-extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
+extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure, RMS9_MaskOnTime;
 extern ChannelID INTP_SmartFlex;
 extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, CPAP_LargeLeak,
        PRS1_12,

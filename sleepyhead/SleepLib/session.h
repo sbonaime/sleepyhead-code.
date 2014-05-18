@@ -72,6 +72,7 @@ class Session
         return s_session;
     }
 
+
     //! \brief Returns whether or not session is being used.
     bool enabled();
 
@@ -134,11 +135,20 @@ class Session
         return s_changed;
     }
 
+
     //! \brief Contains all the EventLists, indexed by ChannelID
     QHash<ChannelID, QVector<EventList *> > eventlist;
 
     //! \brief Sessions Settings List, contianing single settings for this session.
     QHash<ChannelID, QVariant> settings;
+
+    QVariant setting(ChannelID) {
+        QHash<ChannelID, QVariant>::iterator it = settings.find(CPAP_SummaryOnly);
+        if (it != settings.end()) {
+            return (*it);
+        }
+        return QVariant();
+    }
 
     // Session caches
     QHash<ChannelID, int> m_cnt;
@@ -300,7 +310,19 @@ class Session
 
     //! \brief Returns this sessions MachineID
     Machine *machine() { return s_machine; }
-  protected:
+
+    bool Destroy();
+
+    void wipeSummary() {
+        s_first = s_last = 0;
+        s_enabled = true;
+        m_cph.clear();
+        m_sum.clear();
+        m_cnt.clear();
+    }
+
+    const QString & eventFile() { return s_eventfile; }
+protected:
     SessionID s_session;
 
     Machine *s_machine;
@@ -314,6 +336,8 @@ class Session
     bool s_events_loaded;
     char s_enabled;
     QString s_eventfile;
+
+
 };
 
 

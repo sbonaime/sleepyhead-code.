@@ -257,9 +257,6 @@ class MainWindow : public QMainWindow
     //! \brief Destroy the CPAP data for the currently selected day, so it can be freshly imported again
     void on_actionPurge_Current_Day_triggered();
 
-    //! \brief Destroy ALL the CPAP data for the currently selected machine, so it can be freshly imported again
-    void on_actionAll_Data_for_current_CPAP_machine_triggered();
-
     void on_action_Sidebar_Toggle_toggled(bool arg1);
 
     void on_recordsBox_linkClicked(const QUrl &arg1);
@@ -311,6 +308,9 @@ class MainWindow : public QMainWindow
 
     void on_reportModeStandard_clicked();
 
+    void on_actionPurgeMachine(QAction *action);
+
+
 private:
     int importCPAP(const QString &path, const QString &message);
     void importCPAPBackups();
@@ -335,6 +335,13 @@ private:
     QString bookmarkFilter;
     bool m_restartRequired;
     volatile bool m_inRecalculation;
+
+    void PopulatePurgeMenu();
+
+    //! \brief Destroy ALL the CPAP data for the selected machine
+    void purgeMachine(Machine *);
+
+
 };
 
 #endif // MAINWINDOW_H

@@ -68,16 +68,12 @@ EDFSignal *EDFParser::lookupSignal(ChannelID ch)
         return nullptr;
     }
 
+    // This is bad, because ResMed thinks it was a cool idea to use two channels with the same name.
+
     // Scan through EDF's list of signals to see if any match
     for (int i = 0; i < channames.value().size(); i++) {
-        QHash<QString, EDFSignal *>::iterator jj = lookup.find(channames.value()[i]);
-
-        if (jj == lookup.end()) {
-            continue;
-        }
-
-        // return the EDFSignal record
-        return jj.value();
+        EDFSignal *sig = lookupLabel(channames.value()[i]);
+        if (sig) return sig;
     }
 
     // Failed
@@ -105,13 +101,12 @@ bool matchSignal(ChannelID ch, const QString & name)
     return false;
 }
 
-EDFSignal *EDFParser::lookupName(QString name)
+EDFSignal *EDFParser::lookupLabel(QString name)
 {
-    QHash<QString, EDFSignal *>::iterator i = lookup.find(name);
+    int idx = signal_labels.indexOf(name);
+    if (idx < 0) return nullptr;
 
-    if (i != lookup.end()) { return i.value(); }
-
-    return nullptr;
+    return signal[idx];
 }
 
 EDFParser::EDFParser(QString name)
@@ -126,6 +121,182 @@ EDFParser::~EDFParser()
     }
 
     if (buffer) { delete [] buffer; }
+}
+
+void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
+{
+    QStringList::iterator strend = strfiles.end();
+    for (QStringList::iterator it = strfiles.begin(); it != strend; ++it) {
+        EDFParser str(*it);
+        if (!str.Parse()) continue;
+        if (mach->properties[STR_PROP_Serial] != str.serialnumber) {
+            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->properties[STR_PROP_Serial] << str.serialnumber;
+            qDebug() << (*it);
+            continue;
+        }
+
+        QDateTime start = QDateTime::fromMSecsSinceEpoch(str.startdate);
+        QDate date = start.date();
+        quint32 timestamp = start.toTime_t();
+
+        qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
+
+        EDFSignal *maskon = str.lookupLabel("Mask On");
+        EDFSignal *maskoff = str.lookupLabel("Mask Off");
+        EDFSignal *sig = nullptr;
+        quint32 laston = 0;
+
+        bool skipday;
+
+        int size = str.GetNumDataRecords();
+        int cnt=0;
+
+        // For each data record, representing 1 day each
+        for (int rec = 0; rec < str.GetNumDataRecords(); ++rec) {
+            int recstart = rec * maskon->nr;
+
+            skipday = false;
+            if ((++cnt % 10) == 0) {
+                // TODO: Change me to emit once MachineLoader is QObjectified...
+                if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
+
+                QApplication::processEvents();
+            }
+
+            // Scan the mask on/off events
+            for (int s = 0; s < maskon->nr; ++s) {
+                qint32 on = maskon->data[recstart+s];
+                qint32 off = maskoff->data[recstart+s];
+                quint32 ontime = timestamp + on * 60;
+                quint32 offtime = timestamp + off * 60;
+
+                // -1 marks empty record, but can start with mask off, if sleep crosses noon
+                if (on < 0) {
+                    if (off < 0) continue;  // Both are -1, skip the rest of this day
+                    // laston stops on this record
+
+                    QMap<quint32, STRRecord>::iterator si = strsess.find(laston);
+                    if (si != strsess.end()) {
+                        if (si.value().maskoff == 0) {
+                            si.value().maskoff = offtime;
+                        } else {
+                            if (si.value().maskoff != offtime) {
+                                // not sure why this happens.
+                                qDebug() << "WTF??" << si.value().maskoff << "!=" << offtime;
+                            }
+                            //Q_ASSERT(si.value().maskoff == offtime);
+                        }
+                    }
+                    continue;
+                }
+                bool skip = false;
+                QMap<quint32, STRRecord>::iterator sid = strsess.find(ontime);
+                if (sid != strsess.end()) {
+                    skip=true;
+                }
+
+                // For every mask on, there will be a session within 1 minute either way
+                // We can use that for data matching
+                STRRecord R;
+
+                R.maskon = ontime;
+                if (offtime > 0) {
+                    R.maskoff = offtime;
+                }
+
+                if (sig = str.lookupLabel("Mask Dur")) {
+                    R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (sig == str.lookupLabel("Leak Med")) {
+                    R.leakmed = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (sig == str.lookupLabel("Leak Max")) {
+                    R.leakmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (sig == str.lookupLabel("Leak 95")) {
+                    R.leak95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+
+                if ((sig = str.lookupSignal(CPAP_PressureMax))) {
+                    R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_PressureMin))) {
+                    R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(RMS9_SetPressure))) {
+                    R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_EPAP))) {
+                    R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_EPAPHi))) {
+                    R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
+                    R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_IPAP))) {
+                    R.ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
+                    R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
+                    R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_PS))) {
+                    R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_PSMax))) {
+                    R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_PSMin))) {
+                    R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(RMS9_EPR))) {
+                    R.epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(RMS9_EPRSet))) {
+                    R.epr_set = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_Mode))) {
+                    int mode = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    // convert this
+                    R.mode = mode;
+                }
+                if ((sig = str.lookupLabel("AHI"))) {
+                    R.ahi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("AI"))) {
+                    R.ai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("HI"))) {
+                    R.hi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("UAI"))) {
+                    R.uai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("CAI"))) {
+                    R.cai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                laston = ontime;
+                if (skip) continue;
+
+
+                QDateTime dontime = QDateTime::fromTime_t(ontime);
+                date = dontime.date();
+                R.date = date;
+                strsess[ontime] = R;
+                strdate[date].push_back(&strsess[ontime]);
+                QDateTime dofftime = QDateTime::fromTime_t(offtime);
+                qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
+
+            }
+            timestamp += 86400;
+        }
+    }
 }
 
 // Read a 16 bits integer
@@ -248,10 +419,11 @@ bool EDFParser::Parse()
     edfsignals.resize(num_signals);
 
     for (int i = 0; i < num_signals; i++) {
-        EDFSignal &signal = edfsignals[i];
-        signal.data = nullptr;
-        signal.label = Read(16);
-        lookup[signal.label] = &signal; // Safe: edfsignals won't move.
+        EDFSignal &sig = edfsignals[i];
+        sig.data = nullptr;
+        sig.label = Read(16);
+        signal_labels.push_back(sig.label);
+        signal.push_back(&sig);
     }
 
     for (int i = 0; i < num_signals; i++) { edfsignals[i].transducer_type = Read(80); }
@@ -599,6 +771,23 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     // Open and Parse STR.edf file
     ///////////////////////////////////////////////////////////////////////////////////
+    QStringList strfiles;
+    strfiles.push_back(strpath);
+    QDir dir(path + "STR_Backup");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
+    QFileInfoList flist = dir.entryInfoList();
+
+    for (int i = 0; i < flist.size(); i++) {
+        QFileInfo fi = flist.at(i);
+        filename = fi.fileName();
+        if (filename.startsWith("STR", Qt::CaseInsensitive)) {
+            strfiles.push_back(fi.filePath());
+        }
+    }
+
+    strsess.clear();
+    ParseSTR(m, strfiles);
+
     EDFParser stredf(strpath);
 
     if (!stredf.Parse()) {
@@ -612,7 +801,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
 
     // Creating early as we need the object
-    QDir dir(newpath);
+    dir.setPath(newpath);
 
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -691,60 +880,8 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
     QVector<qint8> dayused;
     dayused.resize(days);
-    QList<SessionID> strfirst;
-    QList<SessionID> strlast;
-    QList<int> strday;
-    QList<bool> dayfoo;
 
-    QHash<qint16, QList<time_t> > daystarttimes;
-    QHash<qint16, QList<time_t> > dayendtimes;
-    //qint16 on,off;
-    //qint16 o1[10],o2[10];
-    //time_t st,et;
     time_t time = stredf.startdate / 1000L; // == 12pm on first day
-    //    for (int i=0;i<days;i++) {
-    //        EDFSignal *maskon=stredf.lookup["Mask On"];
-    //        EDFSignal *maskoff=stredf.lookup["Mask Off"];
-    //        int j=i*10;
-
-    //        // Counts for on and off don't line up, and I'm not sure why
-    //        // The extra 'off' always seems to start with a 1 at the beginning
-    //        // A signal it's carried over from the day before perhaps? (noon boundary)
-    //        int ckon=0,ckoff=0;
-    //        for (int k=0;k<10;k++) {
-    //            on=maskon->data[j+k];
-    //            off=maskoff->data[j+k];
-    //            o1[k]=on;
-    //            o2[k]=off;
-    //            if (on >= 0) ckon++;
-    //            if (off >= 0) ckoff++;
-    //        }
-
-    //        // set to true if day starts with machine running
-    //        int offset=ckoff-ckon;
-    //        dayfoo.push_back(offset>0);
-
-    //        st=0,et=0;
-    //        time_t l,f;
-
-    //        // Find the Min & Max times for this day
-    //        for (int k=0;k<ckon;k++) {
-    //            on=o1[k];
-    //            off=o2[k+offset];
-    //            f=time+on*60;
-    //            l=time+off*60;
-    //            daystarttimes[i].push_back(f);
-    //            dayendtimes[i].push_back(l);
-
-    //            if (!st || (st > f)) st=f;
-    //            if (!et || (et < l)) et=l;
-    //        }
-    //        strfirst.push_back(st);
-    //        strlast.push_back(et);
-    //        strday.push_back(i);
-    //        dayused[i]=ckon;
-    //        time+=86400;
-    //    }
 
     // reset time to first day
     time = stredf.startdate / 1000;
@@ -756,7 +893,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     QStringList dirs;
     dirs.push_back(newpath);
     dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    QFileInfoList flist = dir.entryInfoList();
+    flist = dir.entryInfoList();
     bool ok;
 
     for (int i = 0; i < flist.size(); i++) {
@@ -906,432 +1043,20 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     QString fn;
     Session *sess;
     int cnt = 0;
-    size = sessfiles.size();
+    size = filegroups.size();
 
     QHash<SessionID, int> sessday;
 
-
-    /////////////////////////////////////////////////////////////////////////////
-    // Scan over file list and knock out of dayused list
-    /////////////////////////////////////////////////////////////////////////////
-    //int dn;
-    //    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
-    //        sessionid=si.key();
-
-    //        // Earliest possible day number
-    //        int edn=((sessionid-time)/86400)-1;
-    //        if (edn<0) edn=0;
-
-    //        // Find real day number from str.edf mask on/off data.
-    //        dn=-1;
-    //        for (int j=edn;j<strfirst.size();j++){
-    //            st=strfirst.at(j);
-    //            if (sessionid>=st) {
-    //                et=strlast.at(j);
-    //                if (sessionid<(et+300)) {
-    //                    dn=j;
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //        // If found, mark day off so STR.edf summary data isn't used instead of the real thing.
-    //        if (dn>=0) {
-    //            dayused[dn]=0;
-    //        }
-    //    }
-
     EDFSignal *sig;
 
-    /////////////////////////////////////////////////////////////////////////////
-    // For all days not in session lists, (to get at days without data records)
-    /////////////////////////////////////////////////////////////////////////////
-    //    for (dn=0;dn<days;dn++) {
-    //        // Skip days with loadable data.
-    //        if (!dayused[dn])
-    //            continue;
-
-    //        if (!daystarttimes.contains(dn))
-    //            continue;
-
-    //        sess=nullptr;
-
-    //        int scnt=daystarttimes[dn].size(); // count of sessions for this day
-
-    //        // Create a new session for each mask on/off segment in a day
-    //        // But only populate the last one with summary data.
-    //        for (int j=0;j<scnt;j++) {
-    //            st=daystarttimes[dn].at(j);
-
-    //            // Skip if session already exists
-    //            if (m->SessionExists(st))
-    //                continue;
-
-    //            et=dayendtimes[dn].at(j);
-
-    //            // Create the session
-    //            sess=new Session(m,st);
-    //            sess->really_set_first(qint64(st)*1000L);
-    //            sess->really_set_last(qint64(et)*1000L);
-    //            sess->SetChanged(true);
-    //            m->AddSession(sess,profile);
-    //        }
-    //        // Add the actual data to the last session
-    //        EventDataType tmp,dur;
-    //        if (sess) {
-    //            /////////////////////////////////////////////////////////////////////
-    //            // CPAP Mode
-    //            /////////////////////////////////////////////////////////////////////
-    //            int mode;
-    //            sig=stredf.lookupSignal(CPAP_Mode);
-    //            if (sig) {
-    //                mode=sig->data[dn];
-    //            } else mode=0;
-
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // EPR Settings
-    //            /////////////////////////////////////////////////////////////////////
-    //            sess->settings[CPAP_PresReliefType]=PR_EPR;
-
-    //            // Note: AutoSV machines don't have both fields
-    //            sig=stredf.lookupSignal(RMS9_EPR);
-    //            if (sig) {
-    //                sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
-    //            }
-    //            sig=stredf.lookupSignal(RMS9_EPRSet);
-    //            if (sig)  {
-    //                sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
-    //            }
-
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Set Min & Max pressures depending on CPAP mode
-    //            /////////////////////////////////////////////////////////////////////
-    //            if (mode==0) {
-    //                sess->settings[CPAP_Mode]=MODE_CPAP;
-    //                sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
-    //                if (sig) {
-    //                    EventDataType pressure=sig->data[dn]*sig->gain;
-    //                    sess->settings[CPAP_Pressure]=pressure;
-    //                }
-    //            } else { // VPAP or Auto
-    //                if (mode>5) {
-    //                    if (mode>=7)
-    //                        sess->settings[CPAP_Mode]=MODE_ASV;
-    //                    else
-    //                        sess->settings[CPAP_Mode]=MODE_BIPAP;
-
-    //                    EventDataType tmp,epap=0,ipap=0;
-    //                    if ((sig=stredf.lookupName("EPAP"))) {
-    //                        epap=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_EPAP]=epap;
-    //                        sess->setMin(CPAP_EPAP,epap);
-    //                    }
-    //                    if ((sig=stredf.lookupName("IPAP"))) {
-    //                        ipap=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_IPAP]=ipap;
-    //                    }
-    //                    if ((sig=stredf.lookupName("PS"))) {
-    //                        tmp=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
-    //                        if (!ipap) {
-    //                            // not really possible. but anyway, just in case..
-    //                            sess->settings[CPAP_IPAP]=epap+tmp;
-    //                        }
-    //                    }
-    //                    if ((sig=stredf.lookupName("Min PS"))) {
-    //                        tmp=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_PSMin]=tmp;
-    //                        sess->settings[CPAP_IPAPLo]=epap+tmp;
-    //                        sess->setMin(CPAP_IPAP,epap+tmp);
-    //                    }
-    //                    if ((sig=stredf.lookupName("Max PS"))) {
-    //                        tmp=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_PSMax]=tmp;
-    //                        sess->settings[CPAP_IPAPHi]=epap+tmp;
-    //                    }
-    //                    if ((sig=stredf.lookupName("RR"))) { // Is this a setting to force respiratory rate on S/T machines?
-    //                        tmp=sig->data[dn];
-    //                        sess->settings[CPAP_RespRate]=tmp*sig->gain;
-    //                    }
-
-    //                    if ((sig=stredf.lookupName("Easy-Breathe"))) {
-    //                        tmp=sig->data[dn]*sig->gain;
-
-    //                        sess->settings[CPAP_PresReliefSet]=tmp;
-    //                        sess->settings[CPAP_PresReliefType]=(int)PR_EASYBREATHE;
-    //                        sess->settings[CPAP_PresReliefMode]=(int)PM_FullTime;
-    //                    }
-
-    //                } else {
-    //                    sess->settings[CPAP_Mode]=MODE_APAP;
-    //                    sig=stredf.lookupSignal(CPAP_PressureMin);
-    //                    if (sig) {
-    //                        EventDataType pressure=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_PressureMin]=pressure;
-    //                        //sess->setMin(CPAP_Pressure,pressure);
-    //                    }
-    //                    sig=stredf.lookupSignal(CPAP_PressureMax);
-    //                    if (sig) {
-    //                        EventDataType pressure=sig->data[dn]*sig->gain;
-    //                        sess->settings[CPAP_PressureMax]=pressure;
-    //                        //sess->setMax(CPAP_Pressure,pressure);
-    //                    }
-    //                }
-    //            }
-
-    //            EventDataType valmed=0,valmax=0,val95=0;
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Leak Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Leak Med"))) {
-    //                valmed=sig->data[dn];
-    //                if (valmed>=0) {
-    //                    sess->m_gain[CPAP_Leak]=sig->gain*60.0;
-
-    //                    sess->m_valuesummary[CPAP_Leak][valmed]=51;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Leak 95"))) {
-    //                val95=sig->data[dn];
-    //                if (val95>=0)
-    //                    sess->m_valuesummary[CPAP_Leak][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("Leak Max"))) {
-    //                valmax=sig->data[dn];
-    //                if (valmax>=0) {
-    //                    sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
-    //                    sess->m_valuesummary[CPAP_Leak][valmax]=4;
-    //                }
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Minute Ventilation Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Min Vent Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_MinuteVent]=sig->gain;
-    //                sess->m_valuesummary[CPAP_MinuteVent][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("Min Vent 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_MinuteVent][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("Min Vent Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
-    //                sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
-    //            }
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Respiratory Rate Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("RR Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_RespRate]=sig->gain;
-    //                sess->m_valuesummary[CPAP_RespRate][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("RR 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_RespRate][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("RR Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_RespRate,valmax*sig->gain);
-    //                sess->m_valuesummary[CPAP_RespRate][valmax]=4;
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Tidal Volume Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Tid Vol Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
-    //                sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("Tid Vol 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_TidalVolume][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("Tid Vol Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_TidalVolume,valmax*sig->gain*1000.0);
-    //                sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Target Minute Ventilation Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Targ Vent Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_TgMV]=sig->gain;
-    //                sess->m_valuesummary[CPAP_TgMV][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("Targ Vent 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_TgMV][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("Targ Vent Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_TgMV,valmax*sig->gain);
-    //                sess->m_valuesummary[CPAP_TgMV][valmax]=4;
-    //            }
-
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // I:E Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("I:E Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_IE]=sig->gain;
-    //                sess->m_valuesummary[CPAP_IE][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("I:E 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_IE][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("I:E Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_IE,valmax*sig->gain);
-    //                sess->m_valuesummary[CPAP_IE][valmax]=4;
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Mask Pressure Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Mask Pres Med"))) {
-    //                valmed=sig->data[dn];
-    //                if (valmed >= 0) {
-    //                    sess->m_gain[CPAP_Pressure]=sig->gain;
-    //                    sess->m_valuesummary[CPAP_Pressure][valmed]=51;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Mask Pres 95"))) {
-    //                val95=sig->data[dn];
-    //                if (val95 >= 0) {
-    //                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Mask Pres Max"))) {
-    //                valmax=sig->data[dn];
-    //                if (valmax >= 0) {
-    //                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
-    //                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
-    //                }
-    //            }
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Therapy Pressure Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Therapy Pres Me"))) {
-    //                valmed=sig->data[dn];
-    //                if (valmed >= 0) {
-    //                    //sess->m_gain[CPAP_Pressure]=sig->gain;
-    //                    //sess->m_valuesummary[CPAP_Pressure][valmed]=51;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Therapy Pres 95"))) {
-    //                val95=sig->data[dn];
-    //                if (val95 >= 0) {
-    ////                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Therapy Pres Ma"))) {
-    //                valmax=sig->data[dn];
-    //                if (valmax >= 0) {
-    ////                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
-    ////                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
-    //                }
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Inspiratory Pressure (IPAP) Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Insp Pres Med"))) {
-    //                valmed=sig->data[dn];
-    //                sess->m_gain[CPAP_IPAP]=sig->gain;
-    //                sess->m_valuesummary[CPAP_IPAP][valmed]=51;
-    //            }
-    //            if ((sig=stredf.lookupName("Insp Pres 95"))) {
-    //                val95=sig->data[dn];
-    //                sess->m_valuesummary[CPAP_IPAP][val95]=45;
-    //            }
-    //            if ((sig=stredf.lookupName("Insp Pres Max"))) {
-    //                valmax=sig->data[dn];
-    //                sess->setMax(CPAP_IPAP,valmax*sig->gain);
-    //                sess->m_valuesummary[CPAP_IPAP][valmax]=4;
-    //            }
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Expiratory Pressure (EPAP) Summary
-    //            /////////////////////////////////////////////////////////////////////
-    //            if ((sig=stredf.lookupName("Exp Pres Med"))) {
-    //                valmed=sig->data[dn];
-    //                if (valmed>=0) {
-    //                    sess->m_gain[CPAP_EPAP]=sig->gain;
-    //                    sess->m_valuesummary[CPAP_EPAP][valmed]=51;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Exp Pres 95"))) {
-    //                if (val95>=0) {
-    //                    val95=sig->data[dn];
-    //                    sess->m_valuesummary[CPAP_EPAP][val95]=45;
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("Exp Pres Max"))) {
-    //                valmax=sig->data[dn];
-    //                if (valmax>=0) {
-    //                    sess->setMax(CPAP_EPAP,valmax*sig->gain);
-    //                    sess->m_valuesummary[CPAP_EPAP][valmax]=4;
-    //                }
-    //            }
-
-    //            /////////////////////////////////////////////////////////////////////
-    //            // Duration and Event Indices
-    //            /////////////////////////////////////////////////////////////////////
-    //            dur=0;
-    //            if ((sig=stredf.lookupName("Mask Dur"))) {
-    //                dur=sig->data[dn]*sig->gain;
-    //                dur/=60.0f; // convert to hours.
-    //            }
-    //            if ((sig=stredf.lookupName("OAI"))) { // Obstructive Apnea Index
-    //                tmp=sig->data[dn]*sig->gain;
-    //                if (tmp>=0) {
-    //                    sess->setCph(CPAP_Obstructive,tmp);
-    //                    sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("HI"))) { // Hypopnea Index
-    //                tmp=sig->data[dn]*sig->gain;
-    //                if (tmp>=0) {
-    //                    sess->setCph(CPAP_Hypopnea,tmp);
-    //                    sess->setCount(CPAP_Hypopnea,tmp*dur);
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("UAI"))) { // Unspecified Apnea Index
-    //                tmp=sig->data[dn]*sig->gain;
-    //                if (tmp>=0) {
-    //                    sess->setCph(CPAP_Apnea,tmp);
-    //                    sess->setCount(CPAP_Apnea,tmp*dur);
-    //                }
-    //            }
-    //            if ((sig=stredf.lookupName("CAI"))) { // "Central" Apnea Index
-    //                tmp=sig->data[dn]*sig->gain;
-    //                if (tmp>=0) {
-    //                    sess->setCph(CPAP_ClearAirway,tmp);
-    //                    sess->setCount(CPAP_ClearAirway,tmp*dur);
-    //                }
-    //            }
-
-    //        }
-
-    //    }
     backup_path += RMS9_STR_datalog + "/";
-
-    QString backupfile, backfile, crcfile, yearstr, bkuppath;
 
     // Have to sacrifice these features to get access to summary data.
     p_profile->session->setCombineCloseSessions(0);
     p_profile->session->setDaySplitTime(QTime(12,0,0));
     p_profile->session->setIgnoreShortSessions(false);
+
+    QList<STRRecord *> trashstr; // list of strsess records to destroy afterwards
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -1340,13 +1065,29 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
         sessionid = fgit.key();
 
-        // Skip file if already imported
-        if (m->SessionExists(sessionid)) {
-            continue;
+        sess = m->SessionExists(sessionid);
+        if (sess) {
+            if (sess->setting(CPAP_SummaryOnly).toBool()) {
+                // Reuse this session
+                sess->wipeSummary();
+            } else {
+                continue;
+            }
+        } else {
+            // Could be importing from an older backup.. if so, destroy the summary only records
+            quint32 key = int(sessionid / 60) * 60;
+            sess = m->SessionExists(key);
+            if (sess) {
+                if (sess->setting(CPAP_SummaryOnly).toBool()) {
+                    sess->Destroy();
+                    delete sess;
+                }
+            }
+
+            // Create the session
+            sess = new Session(m, sessionid);
         }
 
-        // Create the session
-        sess = new Session(m, sessionid);
 
         if (!fgit.value().EVE.isEmpty()) {
             EDFParser edf(fgit.value().EVE);
@@ -1382,169 +1123,73 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         if (!sess->first()) {
             delete sess;
             continue;
-        } else {
+        }
+        sess->settings[CPAP_SummaryOnly] = false;
+        sess->SetChanged(true);
 
-            sess->SetChanged(true);
-
-            dif = sess->first() - stredf.startdate;
-
-            dn = dif / 86400000L;
-
-            if ((dn >= 0) && (dn < days)) {
-                sig = stredf.lookupSignal(CPAP_Mode);
-
-                if (sig) {
-                    mode = sig->data[dn];
-                } else { mode = 0; }
-
-                // Ramp, Fulltime
-                // AutoSV machines don't have both fields
-                sig = stredf.lookupSignal(RMS9_EPR);
-
-                if (sig) {
-                    sess->settings[CPAP_PresReliefType] = PR_EPR;
-                    prmode = EventDataType(sig->data[dn]) * sig->gain;
-
-                    // Off,
-                    if (prmode < 0) {
-                        // Kaart's data has -1 here.. Not sure what it means.
-                        prmode = 0;
-                    } else if (prmode > sig->physical_maximum) {
-                        prmode = sig->physical_maximum;
-                    }
-
-                    // My VPAP (using EasyBreathe) and JM's Elite (using none) have 0
-                    sess->settings[CPAP_PresReliefMode] = prmode;
-                }
-
-                sig = stredf.lookupSignal(RMS9_EPRSet);
-
-                if (sig)  {
-                    prset = EventDataType(sig->data[dn]) * sig->gain;
-
-                    if (prset > sig->physical_maximum) {
-                        prset = sig->physical_maximum;
-                    } else if (prset < sig->physical_minimum) {
-                        prset = sig->physical_minimum;
-                    }
-
-                    sess->settings[CPAP_PresReliefSet] = prset;
-                }
+        /////////////////////////////////////////////////////////////////////////////////
+        // Process STR.edf now all valid Session data is imported
+        /////////////////////////////////////////////////////////////////////////////////
 
 
-                if (mode == 0) {
-                    sess->settings[CPAP_Mode] = MODE_CPAP;
-                    sig = stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
+        QMap<quint32, STRRecord>::iterator strsess_end = strsess.end();
+        quint32 key = int(sessionid / 60) * 60; // round to 1 minute
+        QMap<quint32, STRRecord>::iterator it = strsess.find(key);
 
-                    if (sig) {
-                        EventDataType pressure = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_Pressure] = pressure;
-                    }
-                } else if (mode > 5) {
-                    if (mode >= 7) {
-                        sess->settings[CPAP_Mode] =
-                            MODE_ASV;    // interestingly, last digit of model number matches these when in full mode.
-                    } else {
-                        sess->settings[CPAP_Mode] = MODE_BIPAP;
-                    }
+        if (it == strsess_end) {
+            // ResMed merges mask on/off groups that are less than a minute apart
+            // this means have to jump back to the last session closest.
 
-                    // All S9 machines have Set Pressure
-                    // Elite has Min Pressure and Max Pressure
-                    // VPAP Auto has EPAP, Min EPAP, IPAP and Max IPAP, and PS
-                    // VPAP Adapt 36007 has just EPAP and PSLo/Hi,
-                    // VPAP Adapt 36037 has EPAPLo, EPAPHi and PSLo/Hi
-                    QHash<ChannelID, QString> hash;
-                    hash[CPAP_EPAP] = "EPAP";
-                    hash[CPAP_IPAP] = "IPAP";
-                    hash[CPAP_EPAPLo] = "Min EPAP";
-                    hash[CPAP_EPAPHi] = "Max EPAP";
-                    hash[CPAP_IPAPLo] = "Min IPAP";
-                    hash[CPAP_IPAPHi] = "Max IPAP";
-                    hash[CPAP_PS] = "PS";
-                    hash[CPAP_PSMin] = "Min PS";
-                    hash[CPAP_PSMax] = "Max PS";
-                    hash[CPAP_RespRate] = "RR"; // Is this a setting to force respiratory rate on S/T machines? or an average
-                    hash[CPAP_PresReliefSet] = "Easy-Breathe";
+            QMap<quint32, STRRecord>::iterator sit;
+            int min = 86400;
 
-                    for (QHash<ChannelID, QString>::iterator it = hash.begin(); it != hash.end(); ++it) {
-                        QHash<QString, EDFSignal *>::iterator a = stredf.lookup.find(it.value());
-                        if (a != stredf.lookup.end()) {
-                            sig = a.value();
-                            sess->settings[it.key()] = EventDataType(sig->data[dn] * sig->gain);
+            // Look for the closest matching str record that starts before sessionid.
+            for (sit = strsess.begin(); sit != strsess_end; ++sit) {
+                STRRecord & R = *sit;
 
-                            if (it.key() == CPAP_PresReliefSet) {
-                                // this is not a setting on any machine I've played with, I think it's just an indication of the type of motor
-                                sess->settings[CPAP_PresReliefType] = (int)PR_EASYBREATHE;
-                                sess->settings[CPAP_PresReliefMode] = (int)PM_FullTime;
-                            }
-                        }
-                    }
+                if (R.maskon > sessionid)
+                    break;
 
+                int t = sessionid - R.maskon;
 
-                } else {
-                    sess->settings[CPAP_Mode] = MODE_APAP;
-                    sig = stredf.lookupSignal(CPAP_PressureMin);
-
-                    if (sig) {
-                        EventDataType pressure = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_PressureMin] = pressure;
-                        //sess->setMin(CPAP_Pressure,pressure);
-                    }
-
-                    sig = stredf.lookupSignal(CPAP_PressureMax);
-
-                    if (sig) {
-                        EventDataType pressure = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_PressureMax] = pressure;
-                        //sess->setMax(CPAP_Pressure,pressure);
-                    }
-
+                if (qAbs(t) < min) {
+                    it = sit;
+                    min = t;
                 }
             }
+        }
+        if (it != strsess_end) {
+                // This is the right session ID
+            STRRecord & R = it.value();
 
+            QDateTime dt = QDateTime::fromTime_t(sessionid);
+            QDateTime rt = QDateTime::fromTime_t(R.maskon);
+            qDebug() << "Closest matching STR record for" << dt << (sess->length() / 1000L) << "is" << rt;
 
-            // The following only happens when the STR.edf file is not up to date..
-            // This will only happen when the user fails to back up their SDcard properly.
-            // Basically takes a guess.
-            //            bool dodgy=false;
-            //            if (!sess->settings.contains(CPAP_Mode)) {
-            //                //The following is a lame assumption if 50th percentile == max, then it's CPAP
-            //                EventDataType max=sess->Max(CPAP_Pressure);
-            //                EventDataType p50=sess->percentile(CPAP_Pressure,0.60);
-            //                EventDataType p502=sess->percentile(CPAP_MaskPressure,0.60);
-            //                p50=qMax(p50, p502);
-            //                if (max==0) {
-            //                    dodgy=true;
-            //                } else if (qAbs(max-p50)<1.8) {
-            //                    max=round(max*10.0)/10.0;
-            //                    sess->settings[CPAP_Mode]=MODE_CPAP;
-            //                    if (max<1) {
-            //                        int i=5;
-            //                    }
-            //                    sess->settings[CPAP_PressureMin]=max;
-            //                    EventDataType epr=round(sess->Max(CPAP_EPAP)*10.0)/10.0;
-            //                    int i=max-epr;
-            //                    sess->settings[CPAP_PresReliefType]=PR_EPR;
-            //                    prmode=(i>0) ? 0 : 1;
-            //                    sess->settings[CPAP_PresReliefMode]=prmode;
-            //                    sess->settings[CPAP_PresReliefSet]=i;
+            // Claim this session
+            R.sessionid = sessionid;
 
+            // Save maskon time in session setting so we can use it later to avoid doubleups.
+            sess->settings[RMS9_MaskOnTime]=R.maskon;
 
-            //                } else {
-            //                    // It's not cpap, so just take the highest setting for this machines history.
-            //                    // This may fail if the missing str data is at the beginning of a fresh import.
-            //                    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,sess->machine()->FirstDay(),sess->machine()->LastDay());
-            //                    if (mode<MODE_APAP) mode=MODE_APAP;
-            //                    sess->settings[CPAP_Mode]=mode;
-            //                    // Assuming 10th percentile should cover for ramp/warmup
-            //                    sess->settings[CPAP_PressureMin]=sess->percentile(CPAP_Pressure,0.10);
-            //                    sess->settings[CPAP_PressureMax]=sess->Max(CPAP_Pressure);
-            //                }
-            //            }
-            //Rather than take a dodgy guess, EPR settings can take a hit, and this data can simply be missed..
+            // Grab all the system settings
+            if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
+            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+            if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
+            if (R.epr >= 0) sess->settings[RMS9_EPR] = R.epr;
+            if (R.epr_set >= 0) sess->settings[RMS9_EPRSet] = R.epr_set;
 
-            // Add the session to the machine & profile objects
-            //if (!dodgy)
+            // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
 
             if (sess->length() > 0) {
                 m->AddSession(sess, profile);
@@ -1556,209 +1201,141 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////
-    // Process STR.edf now all valid Session data is imported
-    /////////////////////////////////////////////////////////////////////////////////
-    /*
-        qint64 tt=stredf.startdate;
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(tt);
-        QDateTime mt;
-        QDate d;
+    // Now look for any new summary data that can be extracted from STR.edf records
+    QMap<quint32, STRRecord>::iterator it;
+    QMap<quint32, STRRecord>::iterator end = strsess.end();
 
-        EDFSignal *maskon=stredf.lookup["Mask On"];
-        EDFSignal *maskoff=stredf.lookup["Mask Off"];
-        int nr1=maskon->nr;
-        int nr2=maskoff->nr;
+    QHash<SessionID, Session *>::iterator sessit;
+    QHash<SessionID, Session *>::iterator sessend = m->sessionlist.end();;
 
-        qint64 mon, moff;
+    size = m->sessionlist.size();
+    cnt=0;
+    // Scan through all sessions, and remove any strsess records that have a matching session already
+    for (sessit = m->sessionlist.begin(); sessit != sessend; ++sessit) {
+        sess = *sessit;
+        quint32 key = sess->settings[RMS9_MaskOnTime].toUInt();
+        if ((++cnt % 10) == 0) {
+            // TODO: Change me to emit once MachineLoader is QObjectified...
+            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
 
-        int mode;
-        EventDataType prset, prmode;
-
-        SessionID sid;
-        for (int dn=0; dn < days; dn++, tt+=86400000L) {
-            dt=QDateTime::fromMSecsSinceEpoch(tt);
-            d=dt.date();
-            Day * day=PROFILE.GetDay(d, MT_CPAP);
-            if (day) {
-                continue;
-            }
-            QString a;
-            // Todo: check session start times.
-            // mask time is in minutes per day, assuming starting from 12 noon
-            // Also to think about: users who are too lazy to set their clocks, or who have flat clock batteries.
-
-            int nr=maskon->nr;
-            int j=dn * nr;
-            qint16 m_on=-1, m_off=-1, m_off2=0;
-            for (int i=0;i<10;i++) {
-                m_on=maskon->data[j+i];
-                if ((i>0) && (m_on >=0) && (m_on < m_off)) {
-                    qDebug() << "Mask on before previous off";
-                }
-                m_off=maskoff->data[j+i];
-                m_off2=m_off;
-
-
-                if ((m_on >= 0) && (m_off < 0)) {
-                    // valid session.. but machine turned off the next day
-                    // look ahead and pinch the end time from tomorrows record
-                    if ((dn+1) > days) {
-                        qDebug() << "Last record should have contained a mask off event :(";
-                        continue;
-                    }
-                    m_off=maskoff->data[j + nr];
-
-                    if (maskon->data[j + nr] < 0) {
-                        qDebug() << dn << "Looking ahead maskon should be < 0";
-                        continue;
-                    }
-                    if (m_off < 0) {
-                        qDebug() << dn << "Looking ahead maskoff should be > 0";
-                        continue;
-                    }
-
-                    // It's in the next day, so add one day in minutes..
-                    m_off+=1440;
-
-                    // Valid
-
-                } else if ((m_off >= 0) && (m_on < 0)) {
-
-                    if (i>0) {
-                        qDebug() << "WTH!??? Mask off but no on";
-                    }
-                    // first record of day.. might already be on (crossing noon)
-                    // Safely ignore because they are picked up on the other day.
-                    continue;
-                } else if ((m_off < 0) && (m_on < 0))
-                    continue;
-
-                mon=tt + m_on * 60000L;
-                moff=tt + m_off * 60000L;
-
-                sid=mon/1000L;
-                QDateTime on=QDateTime::fromMSecsSinceEpoch(mon);
-                QDateTime off=QDateTime::fromMSecsSinceEpoch(moff);
-
-                sess=new Session(m,sid);
-                sess->set_first(mon);
-                sess->set_last(moff);
-
-                sig=stredf.lookupSignal(CPAP_Mode);
-                if (sig) {
-                    mode=sig->data[dn];
-                } else mode=0;
-
-                sess->settings[CPAP_PresReliefType]=PR_EPR;
-
-                // AutoSV machines don't have both fields
-                sig=stredf.lookupSignal(RMS9_EPR);
-                if (sig) {
-                    prmode=EventDataType(sig->data[dn])*sig->gain;
-                    if (prmode>sig->physical_maximum) {
-                        int i=5;
-                    }
-                    sess->settings[CPAP_PresReliefMode]=prmode;
-                }
-
-                sig=stredf.lookupSignal(RMS9_EPRSet);
-                if (sig)  {
-                    prset=EventDataType(sig->data[dn])*sig->gain;
-                    if (prset>sig->physical_maximum) {
-                        int i=5;
-                    }
-                    sess->settings[CPAP_PresReliefSet]=prset;
-                }
-
-
-                if (mode==0) {
-                    sess->settings[CPAP_Mode]=MODE_CPAP;
-                    sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
-                    if (sig) {
-                        EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_Pressure]=pressure;
-                    }
-                } else if (mode>5) {
-                    if (mode>=7)
-                        sess->settings[CPAP_Mode]=MODE_ASV;
-                    else
-                        sess->settings[CPAP_Mode]=MODE_BIPAP;
-
-                    EventDataType tmp,epap=0,ipap=0;
-                    if (stredf.lookup.contains("EPAP")) {
-                        sig=stredf.lookup["EPAP"];
-                        epap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_EPAP]=epap;
-                    }
-                    if (stredf.lookup.contains("IPAP")) {
-                        sig=stredf.lookup["IPAP"];
-                        ipap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_IPAP]=ipap;
-                    }
-                    if (stredf.lookup.contains("PS")) {
-                        sig=stredf.lookup["PS"];
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
-                        if (!ipap) {
-                            // not really possible. but anyway, just in case..
-                            sess->settings[CPAP_IPAP]=epap+tmp;
-                        }
-                    }
-                    if (stredf.lookup.contains("Min PS")) {
-                        sig=stredf.lookup["Min PS"];
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PSMin]=tmp;
-                        sess->settings[CPAP_IPAPLo]=epap+tmp;
-                        sess->setMin(CPAP_IPAP,epap+tmp);
-                    }
-                    if (stredf.lookup.contains("Max PS")) {
-                        sig=stredf.lookup["Max PS"];
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PSMax]=tmp;
-                        sess->settings[CPAP_IPAPHi]=epap+tmp;
-                    }
-                    if (stredf.lookup.contains("RR")) { // Is this a setting to force respiratory rate on S/T machines?
-                        sig=stredf.lookup["RR"];
-                        tmp=sig->data[dn];
-                        sess->settings[CPAP_RespRate]=tmp*sig->gain;
-                    }
-
-                    if (stredf.lookup.contains("Easy-Breathe")) {
-                        sig=stredf.lookup["Easy-Breathe"];
-                        tmp=sig->data[dn]*sig->gain;
-
-                        sess->settings[CPAP_PresReliefSet]=tmp;
-                        sess->settings[CPAP_PresReliefType]=(int)PR_EASYBREATHE;
-                        sess->settings[CPAP_PresReliefMode]=(int)PM_FullTime;
-                    }
-
-                } else {
-                    sess->settings[CPAP_Mode]=MODE_APAP;
-                    sig=stredf.lookupSignal(CPAP_PressureMin);
-                    if (sig) {
-                        EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PressureMin]=pressure;
-                        //sess->setMin(CPAP_Pressure,pressure);
-                    }
-                    sig=stredf.lookupSignal(CPAP_PressureMax);
-                    if (sig) {
-                        EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PressureMax]=pressure;
-                        //sess->setMax(CPAP_Pressure,pressure);
-                    }
-
-                }
-
-                m->AddSession(sess,profile);
-
-                a=QString("[%3] %1:%2, ").arg(on.toString()).arg(off.toString()).arg(sid);
-                qDebug() << a.toStdString().data();
-            }
-
-
+            QApplication::processEvents();
         }
-    */
+
+        QMap<quint32, STRRecord>::iterator e = strsess.find(key);
+        if (e != end) {
+            strsess.erase(e);
+        }
+    }
+
+
+    size = strsess.size();
+    cnt=0;
+    // Look for the nearest matching str record
+    for (it = strsess.begin(); it != end; ++it) {
+        STRRecord &R = *it;
+        Q_ASSERT(R.sessionid == 0);
+        //if (R.sessionid > 0) continue;
+
+
+        if ((++cnt % 10) == 0) {
+            // TODO: Change me to emit once MachineLoader is QObjectified...
+            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
+
+            QApplication::processEvents();
+        }
+
+        sess = new Session(m, R.maskon);
+
+        sess->really_set_first(qint64(R.maskon) * 1000L);
+        sess->really_set_last(qint64(R.maskoff) * 1000L);
+
+        // Claim this record for future imports
+        sess->settings[RMS9_MaskOnTime] = R.maskon;
+        sess->settings[CPAP_SummaryOnly] = true;
+
+        sess->SetChanged(true);
+
+        // First take the settings
+        if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
+        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+        if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
+        if (R.epr >= 0) sess->settings[RMS9_EPR] = R.epr;
+        if (R.epr_set >= 0) sess->settings[RMS9_EPRSet] = R.epr_set;
+        if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
+        if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
+
+
+        // Find the matching date group for this record
+        QMap<QDate, QList<STRRecord *> >::iterator dtit = strdate.find(R.date);
+
+        // should not be possible, but my brain hurts...
+        Q_ASSERT(dtit != strdate.end());
+
+
+        if (dtit != strdate.end()) {
+            QList<STRRecord *> & dayrecs = dtit.value();
+            int entries = dayrecs.count();
+            bool hasdatasess=false;
+            EventDataType ai=0, hi=0, uai=0, time=0, totaltime=0;
+
+            for (int c=0; c < dayrecs.size(); ++c) {
+                STRRecord *r = dayrecs[c];
+                if (r->sessionid > 0) {
+                    // get complicated.. calculate all the counts for valid sessions, and use the summary to make up the rest
+                    hasdatasess = true;
+                }
+                totaltime += r->maskoff - r->maskon;
+            }
+
+
+            if (!hasdatasess) {
+                for (int c=0; c < dayrecs.size(); ++c) {
+                    STRRecord *r = dayrecs[c];
+                    time = r->maskoff - r->maskon;
+                    float ratio = time / totaltime;
+
+                    // Add the time weighted proportion of the events counts
+                    if (r->ai >= 0) {
+                        sess->setCount(CPAP_Obstructive, r->ai / ratio);
+                        sess->setCph(CPAP_Obstructive, (r->ai / ratio) / (time / 3600.0));
+                    }
+                    if (r->uai >= 0) {
+                        sess->setCount(CPAP_Apnea, r->uai / ratio);
+                        sess->setCph(CPAP_Apnea, (r->uai / ratio) / (time / 3600.0));
+                    }
+                    if (r->hi >= 0) {
+                        sess->setCount(CPAP_Hypopnea, r->hi / ratio);
+                        sess->setCph(CPAP_Hypopnea, (r->hi / ratio) / (time / 3600.0));
+                    }
+                    if (r->cai >= 0) {
+                        sess->setCount(CPAP_ClearAirway, r->cai / ratio);
+                        sess->setCph(CPAP_ClearAirway, (r->ai / ratio) / (time / 3600.0));
+                    }
+                    if ((r->leakmed >= 0) && (r->leak95 >= 0) && (r->leakmax >= 0)) {
+                        sess->m_valuesummary[CPAP_Leak][(short)r->leakmax]=100;
+                        sess->m_valuesummary[CPAP_Leak][(short)r->leak95]=90;
+                        sess->m_valuesummary[CPAP_Leak][(short)r->leakmed]=50;
+                    }
+
+                }
+
+            }
+        }
+
+
+
+        m->AddSession(sess, profile);
+    }
 
 #ifdef DEBUG_EFFICIENCY
     {
@@ -2417,7 +1994,18 @@ void ResInitModelMap()
     resmed_codes[CPAP_RespEvent].push_back("Resp Event");
     resmed_codes[CPAP_Pressure].push_back("Therapy Pres");
     resmed_codes[CPAP_IPAP].push_back("Insp Pres");
+    resmed_codes[CPAP_IPAP].push_back("IPAP");
     resmed_codes[CPAP_EPAP].push_back("Exp Pres");
+    resmed_codes[CPAP_EPAP].push_back("EPAP");
+    resmed_codes[CPAP_EPAPHi].push_back("Max EPAP");
+    resmed_codes[CPAP_EPAPLo].push_back("Min EPAP");
+    resmed_codes[CPAP_IPAPHi].push_back("Max IPAP");
+    resmed_codes[CPAP_IPAPLo].push_back("Min IPAP");
+
+    resmed_codes[CPAP_PS].push_back("PS");
+    resmed_codes[CPAP_PSMin].push_back("Min PS");
+    resmed_codes[CPAP_PSMax].push_back("Max PS");
+
     resmed_codes[CPAP_Leak].push_back("Leak");
     resmed_codes[CPAP_Leak].push_back("Leck");
     resmed_codes[CPAP_Leak].push_back("Lekk");

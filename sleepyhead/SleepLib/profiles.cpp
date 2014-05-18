@@ -482,10 +482,16 @@ void Profile::RemoveSession(Session *sess)
                     }
                 }
 
+                if (day->size() == 0) {
+                    di.value().removeAll(day);
+                    delete day;
+                }
+
                 // day->setFirst(first);
                 // day->setLast(last);
                 return;
             }
+
         }
     }
 }

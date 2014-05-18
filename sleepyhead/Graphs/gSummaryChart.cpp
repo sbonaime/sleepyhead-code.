@@ -256,7 +256,7 @@ void SummaryChart::SetDay(Day *nullday)
                             break;
 
                         case ST_CPH:
-                            tmp = day->cph(code);
+                            tmp = day->count(code) / day->hours();
                             break;
 
                         case ST_SPH:

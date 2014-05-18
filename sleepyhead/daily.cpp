@@ -1219,6 +1219,10 @@ void Daily::Load(QDate date)
 
     if (!PROFILE.session->cacheSessions()) {
         // Getting trashed on purge last day...
+
+        // lastcpapday can get purged and be invalid
+
+
         if (lastcpapday && (lastcpapday!=cpap)) {
             for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
                 (*s)->TrashEvents();

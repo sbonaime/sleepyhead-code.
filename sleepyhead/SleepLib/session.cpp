@@ -103,6 +103,24 @@ bool Session::OpenEvents()
     return s_events_loaded = true;
 }
 
+bool Session::Destroy()
+{
+    QString path = PROFILE.Get(s_machine->properties[STR_PROP_Path]);
+
+    PROFILE.RemoveSession(this);
+    s_machine->sessionlist.erase(s_machine->sessionlist.find(s_session));
+
+    QDir dir(path);
+    QString base;
+    base.sprintf("%08lx", s_session);
+    base = path + "/" + base;
+
+    dir.remove(base + ".000");
+    dir.remove(base + ".001");
+
+    return !dir.exists(base + ".000") && !dir.exists(base + ".001");
+}
+
 bool Session::Store(QString path)
 // Storing Session Data in our format
 // {DataDir}/{MachineID}/{SessionID}.{ext}
@@ -866,7 +884,9 @@ void Session::UpdateSummaries()
     for (; c != ev_end; c++) {
         id = c.key();
 
-        if (schema::channel[id].type() == schema::DATA) {
+
+        schema::ChanType ctype = schema::channel[id].type();
+        if (ctype != schema::SETTING) {
             //sum(id); // avg calculates this and cnt.
             if (c.value().size() > 0) {
                 EventList *el = c.value()[0];
@@ -1510,9 +1530,11 @@ int Session::count(ChannelID id)
 
     int sum = 0;
     int evec_size=evec.size();
+    if (evec_size == 0)
+        return 0;
 
-    for (int i = 0; i < evec_size; i++) {
-        sum += evec[i]->count();
+    for (int i = 0; i < evec_size; ++i) {
+        sum += evec.at(i)->count();
     }
 
     m_cnt[id] = sum;

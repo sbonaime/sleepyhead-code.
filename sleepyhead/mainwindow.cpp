@@ -304,6 +304,26 @@ void MainWindow::Notify(QString s, QString title, int ms)
     }
 }
 
+void MainWindow::PopulatePurgeMenu()
+{
+    QList<QAction *> actions = ui->menu_Purge_CPAP_Data->actions();
+    for (int i=0; i < actions.size(); i++) {
+        ui->menu_Purge_CPAP_Data->disconnect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
+    }
+    ui->menu_Purge_CPAP_Data->clear();
+    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
+    for (int i=0; i < machines.size(); ++i) {
+        Machine *mach = machines.at(i);
+        QString name =  mach->properties[STR_PROP_Brand]+" "+
+                        mach->properties[STR_PROP_Model]+" "+
+                        mach->properties[STR_PROP_Serial];
+        QAction * action = new QAction(name, ui->menu_Purge_CPAP_Data);
+        action->setData(mach->GetClass()+":"+mach->properties[STR_PROP_Serial]);
+        ui->menu_Purge_CPAP_Data->addAction(action);
+        ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
+    }
+}
+
 void MainWindow::Startup()
 {
     qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
@@ -319,6 +339,8 @@ void MainWindow::Startup()
 
     // profile is a global variable set in main after login
     PROFILE.LoadMachineData();
+
+    PopulatePurgeMenu();
 
     SnapshotGraph = new gGraphView(this, daily->graphView());
 
@@ -614,13 +636,28 @@ void MainWindow::on_action_Import_Data_triggered()
 #else
         const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #endif
+
+
         w.setDirectory(documentsFolder);
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
-        w.setOption(QFileDialog::DontUseNativeDialog,true);
-//#if defined(Q_OS_MAC) && (QT_VERSION < QT_VERSION_CHECK(4,8,0))
-//        // Fix for tetragon, 10.6 barfs up Qt's custom dialog
-//        w.setOption(QFileDialog::DontUseNativeDialog, true);
+
+        // This doesn't work on WinXP
+
+#ifdef Q_OS_MAC
+#if (QT_VERSION < QT_VERSION_CHECK(4,8,0))
+        // Fix for tetragon, 10.6 barfs up Qt's custom dialog
+        w.setOption(QFileDialog::DontUseNativeDialog, true);
+#else
+        w.setOption(QFileDialog::DontUseNativeDialog,false);
+#endif // version check
+
+#elif Q_OS_UNIX
+        w.setOption(QFileDialog::DontUseNativeDialog,false);
+#elif Q_OS_WIN
+        // check the Os version.. winxp chokes
+        w.setOption(QFileDialog::DontUseNativeDialog, true);
+#endif
 //#else
 //        w.setOption(QFileDialog::DontUseNativeDialog, false);
 
@@ -692,6 +729,7 @@ void MainWindow::on_action_Import_Data_triggered()
     } else {
         mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
     }
+    PopulatePurgeMenu();
 }
 QMenu *MainWindow::CreateMenu(QString title)
 {
@@ -1659,8 +1697,6 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             delete sess;
         }
 
-
-
         QList<Day *> &dl = PROFILE.daylist[date];
         QList<Day *>::iterator it;//=dl.begin();
 
@@ -1679,39 +1715,99 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     getDaily()->LoadDate(date);
 }
 
-void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
+void MainWindow::on_actionPurgeMachine(QAction *action)
 {
-    QDate date = getDaily()->getDate();
-    Day *day = PROFILE.GetDay(date, MT_CPAP);
-    Machine *m;
-
-    if (day) {
-        m = day->machine;
-
-        if (!m) {
-            qDebug() << "Gah!! no machine to purge";
-            return;
-        }
-
-        if (QMessageBox::question(this,
-                                  tr("Are you sure?"),
-                                  tr("Are you sure you want to purge all CPAP data for the following machine:\n\n") +
-                                  m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
-                                  m->properties[STR_PROP_ModelNumber] + " (" + m->properties[STR_PROP_Serial] + ")",
-                                  QMessageBox::Yes | QMessageBox::No,
-                                  QMessageBox::No) == QMessageBox::Yes) {
-
-
-            if (m->Purge(3478216)) {
-                // Turn on automatic re-import
-                // Note: I deliberately haven't added a Profile help for this
-                PROFILE.Save();
-            }
-            // delete or not to delete.. this needs to delete later.. :/
-            //delete m;
-            RestartApplication();
+    QString data = action->data().toString();
+    QString cls = data.section(":",0,0);
+    QString serial = data.section(":", 1);
+    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
+    Machine * mach = nullptr;
+    for (int i=0; i < machines.size(); ++i) {
+        Machine * m = machines.at(i);
+        if ((m->GetClass() == cls) && (m->properties[STR_PROP_Serial] == serial)) {
+            mach = m;
+            break;
         }
     }
+    if (!mach) return;
+    purgeMachine(mach);
+}
+
+void MainWindow::purgeMachine(Machine * mach)
+{
+
+    if (QMessageBox::question(this,
+                              STR_MessageBox_Question,
+                              tr("Are you sure you want to purge all CPAP data for the following machine:\n\n") +
+                              mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
+                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")",
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::No) == QMessageBox::No) {
+        return;
+    }
+
+    QHash<SessionID, Session *>::iterator it;
+    QHash<SessionID, Session *>::iterator s_end = mach->sessionlist.end();
+    QList<Session *> sessions;
+    for (it = mach->sessionlist.begin(); it != s_end; ++it) {
+        Session * sess = *it;
+        sessions.push_back(sess);
+    }
+    bool success = true;
+    for (int i=0; i < sessions.size(); ++i) {
+        Session * sess = sessions[i];
+        if (!sess->Destroy()) {
+            qDebug() << "Could not destroy "+mach->GetClass()+" ("+mach->properties[STR_PROP_Serial]+") session" << sess->session();
+            success = false;
+        } else {
+            mach->sessionlist.erase(mach->sessionlist.find(sess->session()));
+        }
+        delete sess;
+    }
+    if (success) {
+        mach->sessionlist.clear();
+        mach->day.clear();
+
+    } else {
+        QMessageBox::warning(this, STR_MessageBox_Error,
+                             tr("Not all session data could be removed, you have to delete the following folder manually.")
+                             +"\n\n"+
+                             QDir::toNativeSeparators(PROFILE.Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
+        if (overview) { overview->ReloadGraphs(); }
+        if (daily) {
+            daily->clearLastDay(); // otherwise Daily will crash
+            daily->LoadDate(daily->getDate());
+        }
+        GenerateStatistics();
+        return;
+    }
+
+    if (overview) { overview->ReloadGraphs(); }
+    if (daily) {
+        daily->clearLastDay(); // otherwise Daily will crash
+        daily->LoadDate(daily->getDate());
+    }
+    GenerateStatistics();
+    QApplication::processEvents();
+
+    if (QMessageBox::question(this,
+                              STR_MessageBox_Question,
+                              tr("Machine data has been successfully purged.") + "\n\n" +
+                              tr("Would you like to reimport from the backup folder?") + "\n\n" +
+                              QDir::toNativeSeparators(PROFILE.Get(mach->properties[STR_PROP_BackupPath])),
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::Yes) == QMessageBox::No) {
+        PROFILE.machlist.erase(PROFILE.machlist.find(mach->id()));
+        delete mach;
+    } else {
+        importCPAP(PROFILE.Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
+        if (overview) { overview->ReloadGraphs(); }
+        if (daily) {
+            daily->LoadDate(daily->getDate());
+        }
+    }
+    GenerateStatistics();
+    PROFILE.Save();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

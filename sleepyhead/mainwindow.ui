@@ -3125,18 +3125,16 @@ border-radius: 10px;
       <property name="title">
        <string>&amp;Purge CPAP Data</string>
       </property>
-      <addaction name="actionPurge_Current_Day"/>
       <addaction name="separator"/>
-      <addaction name="actionAll_Data_for_current_CPAP_machine"/>
      </widget>
      <addaction name="menu_Purge_CPAP_Data"/>
+     <addaction name="actionPurge_Current_Day"/>
     </widget>
     <addaction name="actionImport_ZEO_Data"/>
     <addaction name="actionImport_Somnopose_Data"/>
     <addaction name="actionImport_RemStar_MSeries_Data"/>
     <addaction name="separator"/>
     <addaction name="action_Rebuild_Oximetry_Index"/>
-    <addaction name="separator"/>
     <addaction name="menu_Advanced"/>
     <addaction name="separator"/>
    </widget>
@@ -3304,7 +3302,7 @@ border-radius: 10px;
   </action>
   <action name="actionPurge_Current_Day">
    <property name="text">
-    <string>&amp;Current Selected Day</string>
+    <string>Purge &amp;Current Selected Day</string>
    </property>
   </action>
   <action name="actionAll_Data_for_current_CPAP_machine">

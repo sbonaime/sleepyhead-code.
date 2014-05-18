@@ -101,6 +101,103 @@ struct EDFSignal {
     int pos;
 };
 
+struct STRRecord
+{
+    STRRecord() {
+        maskon = 0;
+        maskoff = 0;
+        maskdur = 0;
+        maskevents = -1;
+        mode = -1;
+        set_pressure = -1;
+        epap = -1;
+        max_pressure = -1;
+        min_pressure = -1;
+        max_epap = -1;
+        min_epap = -1;
+        max_ps = -1;
+        min_ps = -1;
+        ps = -1;
+        ipap = -1;
+        max_ipap = -1;
+        min_ipap = -1;
+        epr = -1;
+        epr_set = -1;
+        sessionid = 0;
+
+        ahi = -1;
+        ai = -1;
+        hi = -1;
+        uai = -1;
+        cai = -1;
+
+        leakmed = -1;
+        leak95 = -1;
+        leakmax = -1;
+        date=QDate();
+    }
+    STRRecord(const STRRecord & copy) {
+        maskon = copy.maskon;
+        maskoff = copy.maskoff;
+        maskdur = copy.maskdur;
+        maskevents = copy.maskevents;
+        mode = copy.mode;
+        set_pressure = copy.set_pressure;
+        epap = copy.epap;
+        max_pressure = copy.max_pressure;
+        min_pressure = copy.min_pressure;
+        max_ps = copy.max_ps;
+        min_ps = copy.min_ps;
+        ps = copy.ps;
+        max_epap = copy.max_epap;
+        min_epap = copy.min_epap;
+        ipap = copy.ipap;
+        max_ipap = copy.max_ipap;
+        min_ipap = copy.min_ipap;
+        epr = copy.epr;
+        epr_set = copy.epr_set;
+        sessionid = copy.sessionid;
+        ahi = copy.ahi;
+        ai = copy.ai;
+        hi = copy.hi;
+        uai = copy.uai;
+        cai = copy.cai;
+        date = copy.date;
+        leakmed = copy.leakmed;
+        leak95 = copy.leak95;
+        leakmax = copy.leakmax;
+    }
+    quint32 maskon;
+    quint32 maskoff;
+    EventDataType maskdur;
+    EventDataType maskevents;
+    EventDataType mode;
+    EventDataType set_pressure;
+    EventDataType max_pressure;
+    EventDataType min_pressure;
+    EventDataType epap;
+    EventDataType max_ps;
+    EventDataType min_ps;
+    EventDataType ps;
+    EventDataType max_epap;
+    EventDataType min_epap;
+    EventDataType ipap;
+    EventDataType max_ipap;
+    EventDataType min_ipap;
+    EventDataType epr;
+    EventDataType epr_set;
+    quint32 sessionid;
+    EventDataType ahi;
+    EventDataType ai;
+    EventDataType hi;
+    EventDataType uai;
+    EventDataType cai;
+    EventDataType leakmed;
+    EventDataType leak95;
+    EventDataType leakmax;
+    QDate date;
+};
+
 /*! \class EDFParser
     \author Mark Watkins <jedimark64_at_users.sourceforge.net>
     \brief Parse an EDF+ data file into a list of EDFSignal's
@@ -127,11 +224,13 @@ class EDFParser
     QVector<EDFSignal> edfsignals;
 
     //! \brief An by-name indexed into the EDFSignal data
-    QHash<QString, EDFSignal *> lookup;
+    QStringList signal_labels;
+
+    QList<EDFSignal *> signal;
 
     //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
     EDFSignal *lookupSignal(ChannelID);
-    EDFSignal *lookupName(QString name);
+    EDFSignal *lookupLabel(QString name);
 
     //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }
@@ -220,9 +319,15 @@ class ResmedLoader : public MachineLoader
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
     bool LoadPLD(Session *sess, EDFParser &edf);
 
+    void ParseSTR(Machine *mach, QStringList strfiles);
+
+
     QString backup(QString file, QString backup_path, bool compress = false);
 
     QMap<SessionID, QStringList> sessfiles;
+    QMap<quint32, STRRecord> strsess;
+    QMap<QDate, QList<STRRecord *> > strdate;
+
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;
     QHash<ChannelID, qint64> channel_time;

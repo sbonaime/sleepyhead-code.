@@ -528,7 +528,7 @@ PositionSensor::~PositionSensor()
 }
 
 
-ChannelID NoChannel, SESSION_ENABLED;
+ChannelID NoChannel, SESSION_ENABLED, CPAP_SummaryOnly;
 ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_Pressure,
           CPAP_PS, CPAP_Mode, CPAP_AHI,
           CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive,
@@ -544,7 +544,7 @@ ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAP
           CPAP_Test2;
 
 
-ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
+ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure, RMS9_MaskOnTime;
 ChannelID INTP_SmartFlex;
 ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 

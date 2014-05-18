@@ -380,6 +380,15 @@ void init()
                         QObject::tr("Upright angle in degrees"),  QObject::tr("Inclination"),  STR_UNIT_Degrees,
                         DEFAULT,  QColor("dark magenta")));
 
+    schema::channel.add(GRP_CPAP, new Channel(RMS9_MaskOnTime = 0x1025, SETTING,    SESSION,
+                        "MaskOnTime",      QObject::tr("Mask On Time"),
+                        QObject::tr("Time started according to str.edf"),  QObject::tr("Mask On Time"),  STR_UNIT_Unknown,
+                        DEFAULT,  Qt::black));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_SummaryOnly = 0x1026, SETTING,    SESSION,
+                        "SummaryOnly",      QObject::tr("Summary Only"),
+                        QObject::tr("CPAP Session contains summary data onlyf"),  QObject::tr("Summary Only"),  STR_UNIT_Unknown,
+                        DEFAULT,  Qt::black));
 
 
     NoChannel = 0;
