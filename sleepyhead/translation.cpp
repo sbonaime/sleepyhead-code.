@@ -40,7 +40,7 @@ void initTranslations(QSettings & settings) {
     langNames["es"] = "Español";
     langNames["bg"] = "български";
     langNames["fr"] = "Français";
-    langNames["en_US"] = "English US";
+    langNames["en_UK"] = "English UK";
     // CHECK: Will the above break with MS VisualC++ compiler?
 
     QHash<QString, QString> langFiles;

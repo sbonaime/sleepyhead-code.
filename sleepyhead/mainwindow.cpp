@@ -1738,7 +1738,7 @@ void MainWindow::purgeMachine(Machine * mach)
 
     if (QMessageBox::question(this,
                               STR_MessageBox_Question,
-                              tr("Are you sure you want to purge all CPAP data for the following machine:\n\n") +
+                              tr("Are you sure you want to purge all CPAP data for the following machine:")+ "\n\n" +
                               mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
                               mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")",
                               QMessageBox::Yes | QMessageBox::No,
@@ -1746,28 +1746,10 @@ void MainWindow::purgeMachine(Machine * mach)
         return;
     }
 
-    QHash<SessionID, Session *>::iterator it;
-    QHash<SessionID, Session *>::iterator s_end = mach->sessionlist.end();
-    QList<Session *> sessions;
-    for (it = mach->sessionlist.begin(); it != s_end; ++it) {
-        Session * sess = *it;
-        sessions.push_back(sess);
-    }
-    bool success = true;
-    for (int i=0; i < sessions.size(); ++i) {
-        Session * sess = sessions[i];
-        if (!sess->Destroy()) {
-            qDebug() << "Could not destroy "+mach->GetClass()+" ("+mach->properties[STR_PROP_Serial]+") session" << sess->session();
-            success = false;
-        } else {
-            mach->sessionlist.erase(mach->sessionlist.find(sess->session()));
-        }
-        delete sess;
-    }
-    if (success) {
+    // Technicially the above won't sessions under short session limit.. Using Purge to clean up the rest.
+    if (mach->Purge(3478216)) {
         mach->sessionlist.clear();
         mach->day.clear();
-
     } else {
         QMessageBox::warning(this, STR_MessageBox_Error,
                              tr("Not all session data could be removed, you have to delete the following folder manually.")

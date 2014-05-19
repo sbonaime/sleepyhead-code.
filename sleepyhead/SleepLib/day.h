@@ -139,6 +139,9 @@ class Day
     //! \brief Return the end session record as a QVector<Session*>::iterator
     QList<Session *>::iterator end() { return sessions.end(); }
 
+    //! \brief Check if day contains SummaryOnly records
+    bool summaryOnly();
+
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
     int find(Session *sess) { return sessions.indexOf(sess); }
 

@@ -775,6 +775,20 @@ int Day::count(ChannelID code)
     return sum;
 }
 
+bool Day::summaryOnly()
+{
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session & sess = *(*it);
+        QVariant v = sess.setting(CPAP_SummaryOnly);
+        if (!v.isNull()) {
+            if (v.toBool())
+                return true;
+        }
+    }
+    return false;
+}
+
 bool Day::settingExists(ChannelID id)
 {
     QList<Session *>::iterator end = sessions.end();

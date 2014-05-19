@@ -215,18 +215,12 @@ QDate Machine::AddSession(Session *s, Profile *p)
 }
 
 // This functions purpose is murder and mayhem... It deletes all of a machines data.
-// Therefore this is the most dangerous function in this software..
 bool Machine::Purge(int secret)
 {
     // Boring api key to stop this function getting called by accident :)
     if (secret != 3478216) { return false; }
 
-    // FIXME: should really clear out the majority of the machine properties here
-
-    // It would be joyous if this function screwed up..
-
-    QString path = profile->Get(properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_";
-    //if (properties.contains(STR_PROP_Serial)) path+=properties[STR_PROP_Serial]; else path+=hexid();
+    QString path = profile->Get(properties[STR_PROP_Path]);
 
     QDir dir(path);
 
@@ -239,37 +233,58 @@ bool Machine::Purge(int secret)
     }
 
 
-    qDebug() << "Purging " << QDir::toNativeSeparators(path);
+    qDebug() << "Purging" << m_class << properties[STR_PROP_Serial] << dir.absoluteFilePath(path);
 
+    // Create a copy of the list so the hash can be manipulated
+    QList<Session *> sessions = sessionlist.values();
+
+    // Clean up any loaded sessions from memory first..
+    bool success = true;
+    for (int i=0; i < sessions.size(); ++i) {
+        Session * sess = sessions[i];
+        if (!sess->Destroy()) {
+            qDebug() << "Could not destroy "+ m_class+" ("+properties[STR_PROP_Serial]+") session" << sess->session();
+            success = false;
+        } else {
+            sessionlist.erase(sessionlist.find(sess->session()));
+        }
+        delete sess;
+    }
+
+    // Clean up any straggling files (like from short sessions not being loaded...)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
 
     QFileInfoList list = dir.entryInfoList();
     int could_not_kill = 0;
 
-    for (int i = 0; i < list.size(); ++i) {
+    int size = list.size();
+    for (int i = 0; i < size; ++i) {
         QFileInfo fi = list.at(i);
         QString fullpath = fi.canonicalFilePath();
-        //int j=fullpath.lastIndexOf(".");
 
-        QString ext_s = fullpath.section('.', -1); //right(j);
+        QString ext_s = fullpath.section('.', -1);
         bool ok;
         ext_s.toInt(&ok, 10);
 
         if (ok) {
             qDebug() << "Deleting " << QDir::toNativeSeparators(fullpath);
-            dir.remove(fullpath);
-        } else { could_not_kill++; }
+            if (!dir.remove(fullpath)) {
+                qDebug() << "Could not purge file" << fullpath;
+                success=false;
+                could_not_kill++;
+            }
+        } else {
+            qDebug() << "Didn't bother deleting cruft file" << fullpath;
+            // cruft file..
+        }
 
     }
 
     if (could_not_kill > 0) {
-        //  qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
-        //    return false;
+        qWarning() << "Could not purge path" << could_not_kill << "files in " << path;
+        return false;
     }
-    // PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
-
-    PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
 
     return true;
 }

@@ -311,6 +311,10 @@ class Session
     //! \brief Returns this sessions MachineID
     Machine *machine() { return s_machine; }
 
+    //! \brief Returns true if session only contains summary data
+    bool summaryOnly();
+
+    //! \brief Completely purges Session from memory and disk.
     bool Destroy();
 
     void wipeSummary() {
