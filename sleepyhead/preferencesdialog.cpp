@@ -209,6 +209,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->compressSDBackups->setEnabled(bcd);
     ui->compressSDBackups->setChecked(profile->session->compressBackupData());
     ui->compressSessionData->setChecked(profile->session->compressSessionData());
+    ui->ignoreOlderSessionsCheck->setChecked(profile->session->ignoreOlderSessions());
+    ui->ignoreOlderSessionsDate->setDate(profile->session->ignoreOlderSessionsDate().date());
 
     ui->graphHeight->setValue(profile->appearance->graphHeight());
 
@@ -426,6 +428,8 @@ bool PreferencesDialog::Save()
     profile->session->setCombineCloseSessions(ui->combineSlider->value());
     profile->session->setIgnoreShortSessions(ui->IgnoreSlider->value());
     profile->session->setDaySplitTime(ui->timeEdit->time());
+    profile->session->setIgnoreOlderSessions(ui->ignoreOlderSessionsCheck->isChecked());
+    profile->session->setIgnoreOlderSessionsDate(ui->ignoreOlderSessionsDate->date());
 
     profile->cpap->setClockDrift(ui->clockDrift->value());
 

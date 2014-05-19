@@ -61,8 +61,8 @@ Layer::~Layer()
 
 void Layer::SetDay(Day *d)
 {
+    m_day = d;
     if (d) {
-        m_day = d;
         m_minx = d->first(m_code);
         m_maxx = d->last(m_code);
         m_miny = d->Min(m_code);

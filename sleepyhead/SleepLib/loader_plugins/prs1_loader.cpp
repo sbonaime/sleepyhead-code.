@@ -1547,6 +1547,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
     pos = 0;
     bool wasfaulty = false, faulty = false;
+    qint64 ignorebefore = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
 
     for (chunk = 0; pos < filesize; ++chunk, pos += size) {
         header = &m_buffer[pos];
@@ -1569,6 +1570,11 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
         sequence = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
         timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+
+        if (timestamp < ignorebefore) {
+            // Don't bother with this block
+            continue;
+        }
 
         qDebug() << "family: " << family << " familyversion: " << familyVersion;
 

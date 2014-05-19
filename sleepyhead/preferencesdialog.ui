@@ -301,6 +301,75 @@ p, li { white-space: pre-wrap; }
             </item>
            </layout>
           </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_18">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="ignoreOlderSessionsCheck">
+              <property name="text">
+               <string>Do not import sessions older than:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="ignoreOlderSessionsDate">
+              <property name="toolTip">
+               <string>Sessions older than this date will not be imported</string>
+              </property>
+              <property name="wrapping">
+               <bool>true</bool>
+              </property>
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+              <property name="maximumDate">
+               <date>
+                <year>2099</year>
+                <month>12</month>
+                <day>31</day>
+               </date>
+              </property>
+              <property name="minimumDate">
+               <date>
+                <year>1970</year>
+                <month>1</month>
+                <day>2</day>
+               </date>
+              </property>
+              <property name="currentSection">
+               <enum>QDateTimeEdit::DaySection</enum>
+              </property>
+              <property name="displayFormat">
+               <string>dd MMMM yyyy</string>
+              </property>
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
          </layout>
         </widget>
        </item>

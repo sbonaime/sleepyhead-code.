@@ -534,6 +534,8 @@ void Daily::Link_clicked(const QUrl &url)
 
 void Daily::ReloadGraphs()
 {
+    GraphView->setDay(nullptr);
+
     ui->splitter->setVisible(true);
     QDate d;
 
@@ -547,9 +549,12 @@ void Daily::ReloadGraphs()
     }
     on_calendar_currentPageChanged(d.year(),d.month());
     // this fires a signal which unloads the old and loads the new
+    ui->calendar->blockSignals(true);
     ui->calendar->setSelectedDate(d);
-    //Load(d);
+    ui->calendar->blockSignals(false);
+    Load(d);
 }
+
 void Daily::on_calendar_currentPageChanged(int year, int month)
 {
     QDate d(year,month,1);
@@ -560,6 +565,7 @@ void Daily::on_calendar_currentPageChanged(int year, int month)
         this->UpdateCalendarDay(d);
     }
 }
+
 void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 {
     tree->clear();

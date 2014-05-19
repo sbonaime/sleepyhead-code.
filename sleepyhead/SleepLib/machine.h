@@ -143,6 +143,9 @@ class Machine
     QMutex savelistMutex;
     QSemaphore *savelistSem;
 
+    void clearSkipped() { skipped_sessions = 0; }
+    int skippedSessions() { return skipped_sessions; }
+
   protected:
     QDate firstday, lastday;
     SessionID highest_sessionid;
@@ -153,6 +156,8 @@ class Machine
     Profile *profile;
     bool changed;
     bool firstsession;
+
+    int skipped_sessions;
 };
 
 

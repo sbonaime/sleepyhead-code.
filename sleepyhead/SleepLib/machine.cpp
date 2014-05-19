@@ -109,6 +109,15 @@ QDate Machine::AddSession(Session *s, Profile *p)
         return QDate();
     }
 
+    if (profile->session->ignoreOlderSessions()) {
+        qint64 ignorebefore = profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
+        if (s->last() < ignorebefore) {
+            skipped_sessions++;
+            delete s;
+            return QDate();
+        }
+    }
+
     if (s->session() > highest_sessionid) {
         highest_sessionid = s->session();
     }
@@ -165,7 +174,7 @@ QDate Machine::AddSession(Session *s, Profile *p)
     }
 
     if (session_length < ignore_sessions) {
-        //if (!closest_session || (closest_session>=60))
+        // keep the session to save importing it again, but don't add it to the day record this time
         return QDate();
     }
 

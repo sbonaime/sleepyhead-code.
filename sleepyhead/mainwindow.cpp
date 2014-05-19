@@ -1755,19 +1755,21 @@ void MainWindow::purgeMachine(Machine * mach)
                              tr("Not all session data could be removed, you have to delete the following folder manually.")
                              +"\n\n"+
                              QDir::toNativeSeparators(PROFILE.Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
-        if (overview) { overview->ReloadGraphs(); }
+        if (overview) overview->ReloadGraphs();
+
         if (daily) {
             daily->clearLastDay(); // otherwise Daily will crash
-            daily->LoadDate(daily->getDate());
+            daily->ReloadGraphs();
         }
         GenerateStatistics();
         return;
     }
 
-    if (overview) { overview->ReloadGraphs(); }
+    if (overview) overview->ReloadGraphs();
+
     if (daily) {
         daily->clearLastDay(); // otherwise Daily will crash
-        daily->LoadDate(daily->getDate());
+        daily->ReloadGraphs();
     }
     GenerateStatistics();
     QApplication::processEvents();
@@ -1783,9 +1785,10 @@ void MainWindow::purgeMachine(Machine * mach)
         delete mach;
     } else {
         importCPAP(PROFILE.Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
-        if (overview) { overview->ReloadGraphs(); }
+        if (overview) overview->ReloadGraphs();
         if (daily) {
-            daily->LoadDate(daily->getDate());
+            daily->clearLastDay(); // otherwise Daily will crash
+            daily->ReloadGraphs();
         }
     }
     GenerateStatistics();

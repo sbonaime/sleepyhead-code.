@@ -33,9 +33,9 @@ SummaryChart::SummaryChart(QString label, GraphType type)
 SummaryChart::~SummaryChart()
 {
 }
-void SummaryChart::SetDay(Day *nullday)
+void SummaryChart::SetDay(Day * nullday)
 {
-    Day *day = nullday;
+    Day *day = nullptr;
     Layer::SetDay(day);
 
     m_values.clear();

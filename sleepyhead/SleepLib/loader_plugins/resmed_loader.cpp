@@ -1203,7 +1203,9 @@ int ResmedLoader::Open(QString &path, Profile *profile)
             // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
 
             if (sess->length() > 0) {
-                m->AddSession(sess, profile);
+                if (m->AddSession(sess, profile).isNull()) {
+                    continue;
+                }
             } else {
                 // Hmm.. this means a ton of these could slow down import.
                 // I could instead set these to disabled by default, or implement a dodgy session marker
@@ -1241,11 +1243,16 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
     size = strsess.size();
     cnt=0;
+    quint32 ignoreolder = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
+
     // Look for the nearest matching str record
     for (it = strsess.begin(); it != end; ++it) {
         STRRecord &R = *it;
-        Q_ASSERT(R.sessionid == 0);
-        //if (R.sessionid > 0) continue;
+
+        if (R.maskon < ignoreolder) continue;
+
+        //Q_ASSERT(R.sessionid == 0);
+        if (R.sessionid > 0) continue;
 
 
         if ((++cnt % 10) == 0) {

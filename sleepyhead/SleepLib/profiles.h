@@ -240,6 +240,8 @@ const QString STR_IS_Multithreading = "EnableMultithreading";
 const QString STR_IS_BackupCardData = "BackupCardData";
 const QString STR_IS_CompressBackupData = "CompressBackupData";
 const QString STR_IS_CompressSessionData = "CompressSessionData";
+const QString STR_IS_IgnoreOlderSessions = "IgnoreOlderSessions";
+const QString STR_IS_IgnoreOlderSessionsDate = "IgnoreOlderSessionsDate";
 
 // AppearanceSettings Strings
 const QString STR_AS_GraphHeight = "GraphHeight";
@@ -542,6 +544,8 @@ class SessionSettings : public ProfileSettings
         initPref(STR_IS_BackupCardData, true);
         initPref(STR_IS_CompressBackupData, false);
         initPref(STR_IS_CompressSessionData, false);
+        initPref(STR_IS_IgnoreOlderSessions, false);
+        initPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(QDate::currentDate().addYears(-1), daySplitTime()) );
     }
 
     QTime daySplitTime() const { return getPref(STR_IS_DaySplitTime).toTime(); }
@@ -552,6 +556,8 @@ class SessionSettings : public ProfileSettings
     bool compressSessionData() const { return getPref(STR_IS_CompressSessionData).toBool(); }
     bool compressBackupData() const { return getPref(STR_IS_CompressBackupData).toBool(); }
     bool backupCardData() const { return getPref(STR_IS_BackupCardData).toBool(); }
+    bool ignoreOlderSessions() const { return getPref(STR_IS_IgnoreOlderSessions).toBool(); }
+    QDateTime ignoreOlderSessionsDate() const { return getPref(STR_IS_IgnoreOlderSessionsDate).toDateTime(); }
 
     void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, time); }
     void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
@@ -561,6 +567,8 @@ class SessionSettings : public ProfileSettings
     void setBackupCardData(bool enabled) { setPref(STR_IS_BackupCardData, enabled); }
     void setCompressBackupData(bool enabled) { setPref(STR_IS_CompressBackupData, enabled); }
     void setCompressSessionData(bool enabled) { setPref(STR_IS_CompressSessionData, enabled); }
+    void setIgnoreOlderSessions(bool enabled) { setPref(STR_IS_IgnoreOlderSessions, enabled); }
+    void setIgnoreOlderSessionsDate(QDate date) { setPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(date, daySplitTime())); }
 };
 
 /*! \class AppearanceSettings
