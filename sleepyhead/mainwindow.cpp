@@ -644,7 +644,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
         // This doesn't work on WinXP
 
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC)
 #if (QT_VERSION < QT_VERSION_CHECK(4,8,0))
         // Fix for tetragon, 10.6 barfs up Qt's custom dialog
         w.setOption(QFileDialog::DontUseNativeDialog, true);
@@ -652,9 +652,9 @@ void MainWindow::on_action_Import_Data_triggered()
         w.setOption(QFileDialog::DontUseNativeDialog,false);
 #endif // version check
 
-#elif Q_OS_UNIX
+#elif defined(Q_OS_UNIX)
         w.setOption(QFileDialog::DontUseNativeDialog,false);
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
         // check the Os version.. winxp chokes
         w.setOption(QFileDialog::DontUseNativeDialog, true);
 #endif
