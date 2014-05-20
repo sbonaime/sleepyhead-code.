@@ -196,7 +196,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
     w.roundY(miny, maxy);
 
-#define DEBUG_AUTOSCALER
+//#define DEBUG_AUTOSCALER
 #ifdef DEBUG_AUTOSCALER
     QString a = QString().sprintf("%.2f - %.2f",miny, maxy);
     w.renderText(a,width/2,top-5);
