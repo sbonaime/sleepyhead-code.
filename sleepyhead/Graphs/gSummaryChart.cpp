@@ -406,18 +406,10 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     qint64 xx = maxx - minx;
     float days = double(xx) / 86400000.0;
 
-    EventDataType maxy;
-    EventDataType miny;
+    EventDataType miny = m_physminy;
+    EventDataType maxy = m_physmaxy;
 
-    if (w.zoomY() == 0 && PROFILE.appearance->allowYAxisScaling()) {
-        maxy = m_physmaxy;
-        miny = m_physminy;
-        w.roundY(miny, maxy);
-    } else {
-        maxy = m_maxy;
-        miny = m_miny;
-        w.roundY(miny, maxy);
-    }
+    w.roundY(miny, maxy);
 
     EventDataType yy = maxy - miny;
     EventDataType ymult = float(height - 2) / yy;
