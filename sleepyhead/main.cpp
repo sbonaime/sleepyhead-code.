@@ -157,15 +157,17 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
 
+    QSettings settings(getDeveloperName(), getAppName());
+
     for (int i = 1; i < args.size(); i++) {
         if (args[i] == "-l") { force_login_screen = true; }
         else if (args[i] == "-d") { force_data_dir = true; }
-        else if (args[i] == "-p") {
+        else if (args[i] == "-language") {
+            settings.setValue("Settings/Language","");
+        } else if (args[i] == "-p") {
             sDelay(1);
         }
     }
-
-    QSettings settings(getDeveloperName(), getAppName());
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
