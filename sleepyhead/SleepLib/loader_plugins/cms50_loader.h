@@ -29,9 +29,9 @@ class CMS50Loader : public MachineLoader
     CMS50Loader();
     virtual ~CMS50Loader();
 
-    virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
-
+    virtual bool Detect(const QString &path);
     virtual int Open(QString &path, Profile *profile);
+
     static void Register();
 
     virtual int Version() { return cms50_data_version; }
@@ -42,7 +42,7 @@ class CMS50Loader : public MachineLoader
 
   protected:
     int OpenCMS50(QString &path, Profile *profile);
-    bool OpenSPORFile(QString path, Machine *machine, Profile *profile);
+//    bool OpenSPORFile(QString path, Machine *machine, Profile *profile);
 
   private:
     char *buffer;

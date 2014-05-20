@@ -9,17 +9,32 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
+#include <QProgressBar>
+#include <QApplication>
 #include <QFile>
 #include <QDir>
+#include <QThreadPool>
+
+extern QProgressBar *qprogress;
 
 #include "machine_loader.h"
 
 // This crap moves to Profile
 QList<MachineLoader *> m_loaders;
 
-QList<MachineLoader *> GetLoaders()
+QList<MachineLoader *> GetLoaders(MachineType mt)
 {
-    return m_loaders;
+    QList<MachineLoader *> list;
+    for (int i=0; i < m_loaders.size(); ++i) {
+        if (mt == MT_UNKNOWN) {
+            list.push_back(m_loaders.at(i));
+        } else {
+            if (m_loaders.at(i)->type() == mt) {
+                list.push_back(m_loaders.at(i));
+            }
+        }
+    }
+    return list;
 }
 
 void RegisterLoader(MachineLoader *loader)
@@ -35,7 +50,7 @@ void DestroyLoaders()
     m_loaders.clear();
 }
 
-MachineLoader::MachineLoader()
+MachineLoader::MachineLoader() :QObject(nullptr)
 {
 }
 
@@ -46,7 +61,7 @@ MachineLoader::~MachineLoader()
     }
 }
 
-bool MachineLoader::compressFile(QString inpath, QString outpath)
+bool compressFile(QString inpath, QString outpath)
 {
     if (outpath.isEmpty()) {
         outpath = inpath + ".gz";
@@ -90,6 +105,28 @@ bool MachineLoader::compressFile(QString inpath, QString outpath)
     gzclose(gz);
     delete buf;
     return true;
+}
+
+void MachineLoader::queTask(ImportTask * task)
+{
+    m_tasklist.push_back(task);
+}
+
+void MachineLoader::runTasks()
+{
+    QThreadPool * threadpool = QThreadPool::globalInstance();
+    m_totaltasks=m_tasklist.size();
+    m_currenttask=0;
+    while (!m_tasklist.isEmpty()) {
+        if (threadpool->tryStart(m_tasklist.at(0))) {
+            m_tasklist.pop_front();
+            float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
+            qprogress->setValue(f);
+            m_currenttask++;
+        }
+        QApplication::processEvents();
+    }
+    QThreadPool::globalInstance()->waitForDone(-1);
 }
 
 /*const QString machine_profile_name="MachineList.xml";

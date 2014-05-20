@@ -134,6 +134,8 @@ struct STRRecord
         leakmed = -1;
         leak95 = -1;
         leakmax = -1;
+        leakgain = 0;
+
         date=QDate();
     }
     STRRecord(const STRRecord & copy) {
@@ -166,6 +168,7 @@ struct STRRecord
         leakmed = copy.leakmed;
         leak95 = copy.leak95;
         leakmax = copy.leakmax;
+        leakgain = copy.leakgain;
     }
     quint32 maskon;
     quint32 maskoff;
@@ -195,8 +198,10 @@ struct STRRecord
     EventDataType leakmed;
     EventDataType leak95;
     EventDataType leakmax;
+    EventDataType leakgain;
     QDate date;
 };
+
 
 /*! \class EDFParser
     \author Mark Watkins <jedimark64_at_users.sourceforge.net>
@@ -270,11 +275,49 @@ class EDFParser
     QString reserved44;
 };
 
+class ResmedLoader;
+
+struct EDFGroup {
+    EDFGroup() { }
+    EDFGroup(QString brp, QString eve, QString pld, QString sad) {
+        BRP = brp;
+        EVE = eve;
+        PLD = pld;
+        SAD = sad;
+    }
+    EDFGroup(const EDFGroup & copy) {
+        BRP = copy.BRP;
+        EVE = copy.EVE;
+        PLD = copy.PLD;
+        SAD = copy.SAD;
+    }
+    QString BRP;
+    QString EVE;
+    QString PLD;
+    QString SAD;
+};
+
+class ResmedImport:public ImportTask
+{
+public:
+    ResmedImport(ResmedLoader * l, SessionID s, EDFGroup g, Machine * m): loader(l), sessionid(s), group(g), mach(m) {}
+    virtual ~ResmedImport() {}
+    virtual void run();
+
+protected:
+    ResmedLoader * loader;
+    SessionID sessionid;
+    EDFGroup group;
+    Machine * mach;
+};
+
+
 /*! \class ResmedLoader
     \brief Importer for ResMed S9 Data
     */
 class ResmedLoader : public MachineLoader
 {
+    friend class ResmedImport;
   public:
     ResmedLoader();
     virtual ~ResmedLoader();
@@ -300,24 +343,25 @@ class ResmedLoader : public MachineLoader
 
     //! \brief Register the ResmedLoader with the list of other machine loaders
     static void Register();
-  protected:
-    QHash<QString, Machine *> ResmedList;
 
     //! \brief Parse the EVE Event annotation data, and save to Session * sess
     //! This contains all Hypopnea, Obstructive Apnea, Central and Apnea codes
-    bool LoadEVE(Session *sess, EDFParser &edf);
+    bool LoadEVE(Session *sess, const QString & path);
 
     //! \brief Parse the BRP High Resolution data, and save to Session * sess
     //! This contains Flow Rate, Mask Pressure, and Resp. Event  data
-    bool LoadBRP(Session *sess, EDFParser &edf);
+    bool LoadBRP(Session *sess, const QString & path);
 
     //! \brief Parse the SAD Pulse oximetry attachment data, and save to Session * sess
     //! This contains Pulse Rate and SpO2 Oxygen saturation data
-    bool LoadSAD(Session *sess, EDFParser &edf);
+    bool LoadSAD(Session *sess, const QString & path);
 
     //! \brief Parse the PRD low resolution data, and save to Session * sess
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
-    bool LoadPLD(Session *sess, EDFParser &edf);
+    bool LoadPLD(Session *sess, const QString & path);
+
+protected:
+    QHash<QString, Machine *> ResmedList;
 
     void ParseSTR(Machine *mach, QStringList strfiles);
 
@@ -327,6 +371,8 @@ class ResmedLoader : public MachineLoader
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;
     QMap<QDate, QList<STRRecord *> > strdate;
+
+    QMutex saveMutex;
 
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;

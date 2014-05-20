@@ -516,15 +516,19 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
     int m, t;
     bool ymin_good = false, ymax_good = false;
 
+    // rec_miny/maxy are the graph settings defined in preferences
     if (rec_miny != rec_maxy) {
+        // Clip min
         if (miny > rec_miny) {
             miny = rec_miny;
         }
 
+        // Clip max
         if (maxy < rec_maxy) {
             maxy = rec_maxy;
         }
 
+        //
         if (miny == rec_miny) {
             ymin_good = true;
         }
@@ -534,6 +538,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         }
     }
 
+    // Have no minx/miny reference, have to create one
     if (maxy == miny) {
         m = ceil(maxy / 2.0);
         t = m * 2;
@@ -559,6 +564,13 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 
         if (!ymin_good) {
             miny = t;
+        }
+
+
+        if (miny < 0) {
+            EventDataType tmp = qMax(qAbs(miny), qAbs(maxy));
+            maxy = tmp;
+            miny = -tmp;
         }
 
         return;
@@ -608,6 +620,13 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
             //miny/=4.0;
         }
     }
+
+    if (miny < 0) {
+        EventDataType tmp = qMax(qAbs(miny), qAbs(maxy));
+        maxy = tmp;
+        miny = -tmp;
+    }
+
 
     //if (m_enforceMinY) { miny=f_miny; }
     //if (m_enforceMaxY) { maxy=f_maxy; }

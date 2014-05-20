@@ -190,9 +190,13 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     continue;
                 }
                 bool skip = false;
+
                 QMap<quint32, STRRecord>::iterator sid = strsess.find(ontime);
+                // Record already exists?
                 if (sid != strsess.end()) {
-                    skip=true;
+                    // then skip
+                    laston = ontime;
+                    continue;
                 }
 
                 // For every mask on, there will be a session within 1 minute either way
@@ -204,17 +208,23 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     R.maskoff = offtime;
                 }
 
-                if (sig = str.lookupLabel("Mask Dur")) {
+                if ((sig = str.lookupLabel("Mask Dur"))) {
                     R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
-                if (sig == str.lookupLabel("Leak Med")) {
-                    R.leakmed = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                if ((sig = str.lookupLabel("Leak Med"))) {
+                    float gain = sig->gain * 60.0;
+                    R.leakgain = gain;
+                    R.leakmed = EventDataType(sig->data[rec]) * gain + sig->offset;
                 }
-                if (sig == str.lookupLabel("Leak Max")) {
-                    R.leakmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                if ((sig = str.lookupLabel("Leak Max"))) {
+                    float gain = sig->gain * 60.0;
+                    R.leakgain = gain;
+                    R.leakmax = EventDataType(sig->data[rec]) * gain + sig->offset;
                 }
-                if (sig == str.lookupLabel("Leak 95")) {
-                    R.leak95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                if ((sig = str.lookupLabel("Leak 95"))) {
+                    float gain = sig->gain * 60.0;
+                    R.leakgain = gain;
+                    R.leak95 = EventDataType(sig->data[rec]) * gain + sig->offset;
                 }
 
 
@@ -293,14 +303,12 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 }
 
                 laston = ontime;
-                if (skip) continue;
-
 
                 QDateTime dontime = QDateTime::fromTime_t(ontime);
                 date = dontime.date();
                 R.date = date;
-                strsess[ontime] = R;
-                strdate[date].push_back(&strsess[ontime]);
+                strdate[date].push_back(&strsess.insert(ontime, R).value());
+
                 QDateTime dofftime = QDateTime::fromTime_t(offtime);
                 qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
 
@@ -563,25 +571,131 @@ badfile:
     return false;
 }
 
-struct EDFGroup {
-    EDFGroup() { }
-    EDFGroup(QString brp, QString eve, QString pld, QString sad) {
-        BRP = brp;
-        EVE = eve;
-        PLD = pld;
-        SAD = sad;
+
+void ResmedImport::run()
+{
+    Session * sess = mach->SessionExists(sessionid);
+    if (sess) {
+        if (sess->setting(CPAP_SummaryOnly).toBool()) {
+            // Reuse this session
+            sess->wipeSummary();
+        } else {
+            // Already imported
+            return;
+        }
+    } else {
+        // Could be importing from an older backup.. if so, destroy the summary only records
+        quint32 key = int(sessionid / 60) * 60;
+        sess = mach->SessionExists(key);
+        if (sess) {
+            if (sess->setting(CPAP_SummaryOnly).toBool()) {
+                sess->Destroy();
+                delete sess;
+            }
+        }
+
+        // Create the session
+        sess = new Session(mach, sessionid);
     }
-    EDFGroup(const EDFGroup & copy) {
-        BRP = copy.BRP;
-        EVE = copy.EVE;
-        PLD = copy.PLD;
-        SAD = copy.SAD;
+
+    if (!group.EVE.isEmpty()) {
+        loader->LoadEVE(sess, group.EVE);
     }
-    QString BRP;
-    QString EVE;
-    QString PLD;
-    QString SAD;
-};
+    if (!group.BRP.isEmpty()) {
+        loader->LoadBRP(sess, group.BRP);
+    }
+    if (!group.PLD.isEmpty()) {
+        loader->LoadPLD(sess, group.PLD);
+    }
+    if (!group.SAD.isEmpty()) {
+        loader->LoadSAD(sess, group.SAD);
+    }
+
+    if (!sess->first()) {
+        delete sess;
+        return;
+    }
+
+    sess->settings[CPAP_SummaryOnly] = false;
+    sess->SetChanged(true);
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Process STR.edf now all valid Session data is imported
+    /////////////////////////////////////////////////////////////////////////////////
+
+    quint32 key = quint32(sessionid / 60) * 60; // round to 1 minute
+
+    QMap<quint32, STRRecord>::iterator strsess_end = loader->strsess.end();
+    QMap<quint32, STRRecord>::iterator it = loader->strsess.find(key);
+
+    if (it == strsess_end) {
+        // ResMed merges mask on/off groups that are less than a minute apart
+        // this means have to jump back to the last session closest.
+
+        it = loader->strsess.lowerBound(key);
+        if (it != loader->strsess.begin()) it--;
+    }
+
+    if (it != strsess_end) {
+        STRRecord & R = it.value();
+
+        // calculate the time between session record and mask-on record.
+        int gap = sessionid - R.maskon;
+
+        if (gap > 3600*6) {
+            QDateTime dt = QDateTime::fromTime_t(sessionid);
+            QDateTime rt = QDateTime::fromTime_t(R.maskon);
+
+            qDebug() << "Warning: Closest matching STR record for" << dt << (sess->length() / 1000L) << "is" << rt << "by" << gap << "seconds";
+        }
+
+        // Claim this session
+        R.sessionid = sessionid;
+
+        // Save maskon time in session setting so we can use it later to avoid doubleups.
+        sess->settings[RMS9_MaskOnTime] = R.maskon;
+
+        // Grab all the system settings
+        if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
+        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+        if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
+        if (R.epr >= 0) sess->settings[RMS9_EPR] = R.epr;
+        if (R.epr_set >= 0) sess->settings[RMS9_EPRSet] = R.epr_set;
+
+        // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
+
+        if (sess->length() > 0) {
+            if (!mach->AddSession(sess, p_profile)) {
+                delete sess;
+                return;
+            }
+        } else {
+            delete sess;
+            return;
+        }
+    }
+
+    // Update indexes, process waveform and perform flagging
+    sess->UpdateSummaries();
+
+    // Save is not threadsafe
+    loader->saveMutex.lock();
+    sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+    loader->saveMutex.unlock();
+
+    // Free the memory used by this session
+    sess->TrashEvents();
+}
 
 ResmedLoader::ResmedLoader()
 {
@@ -634,6 +748,8 @@ Machine *ResmedLoader::CreateMachine(QString serial, Profile *profile)
 
     return m;
 }
+
+
 
 long event_cnt = 0;
 
@@ -788,19 +904,21 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
     QFileInfoList flist = dir.entryInfoList();
 
-    for (int i = 0; i < flist.size(); i++) {
+    {
+    int size = flist.size();
+    for (int i = 0; i < size; i++) {
         QFileInfo fi = flist.at(i);
         filename = fi.fileName();
         if (filename.startsWith("STR", Qt::CaseInsensitive)) {
             strfiles.push_back(fi.filePath());
         }
     }
+    }
 
     strsess.clear();
     ParseSTR(m, strfiles);
 
     EDFParser stredf(strpath);
-
     if (!stredf.Parse()) {
         qDebug() << "Faulty file" << RMS9_STR_strfile;
         return 0;
@@ -1043,7 +1161,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
             if (qprogress) {
                 if ((i % 5) == 0) {
-                    qprogress->setValue((float(i + 1) / float(size) * 10.0));
+                    qprogress->setValue((float(i + 1) / float(size) * 100.0));
                     QApplication::processEvents();
                 }
             }
@@ -1051,14 +1169,9 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     }
 
 
-    QString fn;
     Session *sess;
     int cnt = 0;
     size = filegroups.size();
-
-    QHash<SessionID, int> sessday;
-
-    EDFSignal *sig;
 
     backup_path += RMS9_STR_datalog + "/";
 
@@ -1067,152 +1180,14 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     p_profile->session->setDaySplitTime(QTime(12,0,0));
     p_profile->session->setIgnoreShortSessions(false);
 
-    QList<STRRecord *> trashstr; // list of strsess records to destroy afterwards
-
-
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
     /////////////////////////////////////////////////////////////////////////////
+    m_totaltasks = filegroups.size();
     for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
-        sessionid = fgit.key();
-
-        sess = m->SessionExists(sessionid);
-        if (sess) {
-            if (sess->setting(CPAP_SummaryOnly).toBool()) {
-                // Reuse this session
-                sess->wipeSummary();
-            } else {
-                continue;
-            }
-        } else {
-            // Could be importing from an older backup.. if so, destroy the summary only records
-            quint32 key = int(sessionid / 60) * 60;
-            sess = m->SessionExists(key);
-            if (sess) {
-                if (sess->setting(CPAP_SummaryOnly).toBool()) {
-                    sess->Destroy();
-                    delete sess;
-                }
-            }
-
-            // Create the session
-            sess = new Session(m, sessionid);
-        }
-
-
-        if (!fgit.value().EVE.isEmpty()) {
-            EDFParser edf(fgit.value().EVE);
-            if (edf.Parse()) LoadEVE(sess,edf);
-        }
-        if (!fgit.value().BRP.isEmpty()) {
-            EDFParser edf(fgit.value().BRP);
-            if (edf.Parse()) LoadBRP(sess,edf);
-        }
-        if (!fgit.value().PLD.isEmpty()) {
-            EDFParser edf(fgit.value().PLD);
-            if (edf.Parse()) LoadPLD(sess,edf);
-        }
-        if (!fgit.value().SAD.isEmpty()) {
-            EDFParser edf(fgit.value().SAD);
-            if (edf.Parse()) LoadSAD(sess,edf);
-        }
-
-        if ((++cnt % 10) == 0) {
-            // TODO: Change me to emit once MachineLoader is QObjectified...
-            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
-
-            QApplication::processEvents();
-        }
-
-        int mode = 0;
-        EventDataType prset = 0, prmode = 0;
-        qint64 dif;
-        int dn;
-
-        if (!sess) { continue; }
-
-        if (!sess->first()) {
-            delete sess;
-            continue;
-        }
-        sess->settings[CPAP_SummaryOnly] = false;
-        sess->SetChanged(true);
-
-        /////////////////////////////////////////////////////////////////////////////////
-        // Process STR.edf now all valid Session data is imported
-        /////////////////////////////////////////////////////////////////////////////////
-
-
-        QMap<quint32, STRRecord>::iterator strsess_end = strsess.end();
-        quint32 key = int(sessionid / 60) * 60; // round to 1 minute
-        QMap<quint32, STRRecord>::iterator it = strsess.find(key);
-
-        if (it == strsess_end) {
-            // ResMed merges mask on/off groups that are less than a minute apart
-            // this means have to jump back to the last session closest.
-
-            QMap<quint32, STRRecord>::iterator sit;
-            int min = 86400;
-
-            // Look for the closest matching str record that starts before sessionid.
-            for (sit = strsess.begin(); sit != strsess_end; ++sit) {
-                STRRecord & R = *sit;
-
-                if (R.maskon > sessionid)
-                    break;
-
-                int t = sessionid - R.maskon;
-
-                if (qAbs(t) < min) {
-                    it = sit;
-                    min = t;
-                }
-            }
-        }
-        if (it != strsess_end) {
-                // This is the right session ID
-            STRRecord & R = it.value();
-
-            QDateTime dt = QDateTime::fromTime_t(sessionid);
-            QDateTime rt = QDateTime::fromTime_t(R.maskon);
-            qDebug() << "Closest matching STR record for" << dt << (sess->length() / 1000L) << "is" << rt;
-
-            // Claim this session
-            R.sessionid = sessionid;
-
-            // Save maskon time in session setting so we can use it later to avoid doubleups.
-            sess->settings[RMS9_MaskOnTime]=R.maskon;
-
-            // Grab all the system settings
-            if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
-            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-            if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
-            if (R.epr >= 0) sess->settings[RMS9_EPR] = R.epr;
-            if (R.epr_set >= 0) sess->settings[RMS9_EPRSet] = R.epr_set;
-
-            // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
-
-            if (sess->length() > 0) {
-                if (m->AddSession(sess, profile).isNull()) {
-                    continue;
-                }
-            } else {
-                // Hmm.. this means a ton of these could slow down import.
-                // I could instead set these to disabled by default, or implement a dodgy session marker
-                delete sess;
-            }
-        }
+        queTask(new ResmedImport(this, fgit.key(), fgit.value(), m));
     }
+    runTasks();
 
     // Now look for any new summary data that can be extracted from STR.edf records
     QMap<quint32, STRRecord>::iterator it;
@@ -1223,16 +1198,11 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
     size = m->sessionlist.size();
     cnt=0;
+
     // Scan through all sessions, and remove any strsess records that have a matching session already
     for (sessit = m->sessionlist.begin(); sessit != sessend; ++sessit) {
         sess = *sessit;
         quint32 key = sess->settings[RMS9_MaskOnTime].toUInt();
-        if ((++cnt % 10) == 0) {
-            // TODO: Change me to emit once MachineLoader is QObjectified...
-            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
-
-            QApplication::processEvents();
-        }
 
         QMap<quint32, STRRecord>::iterator e = strsess.find(key);
         if (e != end) {
@@ -1245,22 +1215,37 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     cnt=0;
     quint32 ignoreolder = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
 
+    // strsess end can change above.
+    end = strsess.end();
+
+    m->lockSaveMutex();
+    m->setTotalTasks(m->totalTasks() + size);
+    m->unlockSaveMutex();
+
+
+    m->StartSaveThreads();
     // Look for the nearest matching str record
     for (it = strsess.begin(); it != end; ++it) {
-        STRRecord &R = *it;
+        STRRecord & R = it.value();
 
-        if (R.maskon < ignoreolder) continue;
+        if (R.maskon < ignoreolder) {
+            m->skipSaveTask();
+            continue;
+        }
 
         //Q_ASSERT(R.sessionid == 0);
-        if (R.sessionid > 0) continue;
-
-
-        if ((++cnt % 10) == 0) {
-            // TODO: Change me to emit once MachineLoader is QObjectified...
-            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
-
-            QApplication::processEvents();
+        if (R.sessionid > 0) {
+            m->skipSaveTask();
+            continue;
         }
+
+
+//        if ((++cnt % 5) == 0) {
+//            // TODO: Change me to emit once MachineLoader is QObjectified...
+//            if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
+
+//            QApplication::processEvents();
+//        }
 
         sess = new Session(m, R.maskon);
 
@@ -1291,6 +1276,12 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         if (R.epr_set >= 0) sess->settings[RMS9_EPRSet] = R.epr_set;
         if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
         if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
+        if ((R.leakmed >= 0) && (R.leak95 >= 0) && (R.leakmax >= 0)) {
+            sess->m_timesummary[CPAP_Leak][short(R.leakmax / R.leakgain)]=1;
+            sess->m_timesummary[CPAP_Leak][short(R.leak95 / R.leakgain)]=9;
+            sess->m_timesummary[CPAP_Leak][short(R.leakmed / R.leakgain)]=65;
+            sess->m_timesummary[CPAP_Leak][0]=25;
+        }
 
 
         // Find the matching date group for this record
@@ -1299,12 +1290,10 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         // should not be possible, but my brain hurts...
         Q_ASSERT(dtit != strdate.end());
 
-
         if (dtit != strdate.end()) {
             QList<STRRecord *> & dayrecs = dtit.value();
-            int entries = dayrecs.count();
             bool hasdatasess=false;
-            EventDataType ai=0, hi=0, uai=0, time=0, totaltime=0;
+            EventDataType time=0, totaltime=0;
 
             for (int c=0; c < dayrecs.size(); ++c) {
                 STRRecord *r = dayrecs[c];
@@ -1339,11 +1328,6 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                         sess->setCount(CPAP_ClearAirway, r->cai / ratio);
                         sess->setCph(CPAP_ClearAirway, (r->ai / ratio) / (time / 3600.0));
                     }
-                    if ((r->leakmed >= 0) && (r->leak95 >= 0) && (r->leakmax >= 0)) {
-                        sess->m_valuesummary[CPAP_Leak][(short)r->leakmax]=100;
-                        sess->m_valuesummary[CPAP_Leak][(short)r->leak95]=90;
-                        sess->m_valuesummary[CPAP_Leak][(short)r->leakmed]=50;
-                    }
 
                 }
 
@@ -1353,7 +1337,9 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
 
         m->AddSession(sess, profile);
+        m->queSaveList(sess);
     }
+    m->FinishSaveThreads();
 
 #ifdef DEBUG_EFFICIENCY
     {
@@ -1379,11 +1365,14 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     }
 #endif
 
-    if (m) {
-        m->Save();
-    }
-
     if (qprogress) { qprogress->setValue(100); }
+
+    sessfiles.clear();
+    strsess.clear();
+
+    strdate.clear();
+    channel_efficiency.clear();
+    channel_time.clear();
 
     qDebug() << "Total Events " << event_cnt;
     return 1;
@@ -1463,10 +1452,14 @@ QString ResmedLoader::backup(QString fullname, QString backup_path, bool compres
 }
 
 
-bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
+bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
 {
+    EDFParser edf(path);
+    if (!edf.Parse())
+        return false;
 
     QString t;
+
     long recs;
     double duration;
     char *data;
@@ -1604,8 +1597,13 @@ bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
 
     return true;
 }
-bool ResmedLoader::LoadBRP(Session *sess, EDFParser &edf)
+
+bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
 {
+    EDFParser edf(path);
+    if (!edf.Parse())
+        return false;
+
     sess->updateFirst(edf.startdate);
 
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
@@ -1799,8 +1797,12 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
 }
 
 // Load SAD Oximetry Signals
-bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
+bool ResmedLoader::LoadSAD(Session *sess, const QString & path)
 {
+    EDFParser edf(path);
+    if (!edf.Parse())
+        return false;
+
     sess->updateFirst(edf.startdate);
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
@@ -1819,21 +1821,21 @@ bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
                 break;
             }
         }
-        if (!hasdata) continue;
+        if (!hasdata) {
+            continue;
+        }
 
         if (matchSignal(OXI_Pulse, es.label)) {
             code = OXI_Pulse;
             ToTimeDelta(sess, edf, es, code, recs, duration);
             sess->setPhysMax(code, 180);
             sess->setPhysMin(code, 18);
-
         } else if (matchSignal(OXI_SPO2, es.label)) {
             code = OXI_SPO2;
             es.physical_minimum = 60;
             ToTimeDelta(sess, edf, es, code, recs, duration);
             sess->setPhysMax(code, 100);
             sess->setPhysMin(code, 60);
-
         } else {
             qDebug() << "Unobserved ResMed SAD Signal " << es.label;
         }
@@ -1843,8 +1845,12 @@ bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
 }
 
 
-bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
+bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
 {
+    EDFParser edf(path);
+    if (!edf.Parse())
+        return false;
+
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres = 0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
 
@@ -1967,6 +1973,7 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
             sess->setPhysMax(code, es.physical_maximum);
             a->setDimension(es.physical_dimension);
         }
+
     }
 
     return true;

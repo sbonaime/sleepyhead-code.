@@ -97,31 +97,22 @@ QDate Machine::pickDate(qint64 first)
     return date;
 }
 
-QDate Machine::AddSession(Session *s, Profile *p)
+bool Machine::AddSession(Session *s, Profile *p)
 {
-    if (!s) {
-        qWarning() << "Empty Session in Machine::AddSession()";
-        return QDate();
-    }
-
-    if (!p) {
-        qWarning() << "Empty Profile in Machine::AddSession()";
-        return QDate();
-    }
+    Q_ASSERT(s != nullptr);
+    Q_ASSERT(p != nullptr);
 
     if (profile->session->ignoreOlderSessions()) {
         qint64 ignorebefore = profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
         if (s->last() < ignorebefore) {
             skipped_sessions++;
-            delete s;
-            return QDate();
+            return false;
         }
     }
 
     if (s->session() > highest_sessionid) {
         highest_sessionid = s->session();
     }
-
 
     QTime split_time = PROFILE.session->daySplitTime();
     int combine_sessions = PROFILE.session->combineCloseSessions();
@@ -175,7 +166,7 @@ QDate Machine::AddSession(Session *s, Profile *p)
 
     if (session_length < ignore_sessions) {
         // keep the session to save importing it again, but don't add it to the day record this time
-        return QDate();
+        return true;
     }
 
     if (!firstsession) {
@@ -220,7 +211,7 @@ QDate Machine::AddSession(Session *s, Profile *p)
         day.erase(nextday);
     }
 
-    return date;
+    return true;
 }
 
 // This functions purpose is murder and mayhem... It deletes all of a machines data.
@@ -381,13 +372,127 @@ bool Machine::SaveSession(Session *sess)
     return true;
 }
 
+void Machine::queSaveList(Session * sess)
+{
+    if (!m_save_threads_running) {
+        // Threads aren't being used.. so run the actual immediately...
+        int i = (float(m_donetasks) / float(m_totaltasks) * 100.0);
+        qprogress->setValue(i);
+        QApplication::processEvents();
+
+        sess->UpdateSummaries();
+        sess->Store(profile->Get(properties[STR_PROP_Path]));
+
+        if (!PROFILE.session->cacheSessions()) {
+            sess->TrashEvents();
+        }
+
+    } else {
+        savelistMutex.lock();
+        m_savelist.append(sess);
+        savelistMutex.unlock();
+    }
+}
+
+Session *Machine::popSaveList()
+{
+    Session *sess = nullptr;
+    savelistMutex.lock();
+
+    if (!m_savelist.isEmpty()) {
+        sess = m_savelist.at(0);
+        m_savelist.pop_front();
+        m_donetasks++;
+    }
+
+    savelistMutex.unlock();
+    return sess;
+}
+
+// Call any time queing starts
+void Machine::StartSaveThreads()
+{
+    m_savelist.clear();
+
+    QString path = profile->Get(properties[STR_PROP_Path]);
+
+    int threads = QThread::idealThreadCount();
+    savelistSem = new QSemaphore(threads);
+    savelistSem->acquire(threads);
+
+    m_save_threads_running = true;
+    m_donetasks=0;
+    m_totaltasks=0;
+
+    for (int i = 0; i < threads; i++) {
+        thread.push_back(new SaveThread(this, path));
+        QObject::connect(thread[i], SIGNAL(UpdateProgress(int)), qprogress, SLOT(setValue(int)));
+        thread[i]->start();
+    }
+
+}
+
+// Call when all queing is completed
+void Machine::FinishSaveThreads()
+{
+    if (!m_save_threads_running)
+        return;
+
+    m_save_threads_running = false;
+
+    // Wait for all tasks to finish
+    while (!savelistSem->tryAcquire(thread.size(), 250)) {
+        if (qprogress) {
+            QApplication::processEvents();
+        }
+    }
+
+    for (int i = 0; i < thread.size(); ++i) {
+        while (thread[i]->isRunning()) {
+            SaveThread::msleep(250);
+            QApplication::processEvents();
+        }
+        QObject::disconnect(thread[i], SIGNAL(UpdateProgress(int)), qprogress, SLOT(setValue(int)));
+
+        delete thread[i];
+    }
+
+    delete savelistSem;
+}
+
+void SaveThread::run()
+{
+    bool running = true;
+    while (running) {
+        Session *sess = machine->popSaveList();
+        if (sess) {
+            if (machine->m_donetasks % 10 == 0) {
+                int i = (float(machine->m_donetasks) / float(machine->m_totaltasks) * 100.0);
+                emit UpdateProgress(i);
+            }
+            sess->UpdateSummaries();
+            sess->Store(path);
+
+            sess->TrashEvents();
+        } else {
+            if (!machine->m_save_threads_running) {
+                break; // done
+            } else {
+                yieldCurrentThread(); // go do something else for a while
+            }
+        }
+    }
+
+    machine->savelistSem->release(1);
+}
+
+
 bool Machine::Save()
 {
     //int size;
     int cnt = 0;
 
-    QString path = profile->Get(
-                       properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_"+hexid();
+    QString path = profile->Get(properties[STR_PROP_Path]);
     QDir dir(path);
 
     if (!dir.exists()) {
@@ -408,7 +513,6 @@ bool Machine::Save()
 
     savelistCnt = 0;
     savelistSize = m_savelist.size();
-    bool cachesessions = PROFILE.session->cacheSessions();
 
     if (!PROFILE.session->multithreading()) {
         for (int i = 0; i < savelistSize; i++) {
@@ -422,10 +526,7 @@ bool Machine::Save()
             Session *s = m_savelist.at(i);
             s->UpdateSummaries();
             s->Store(path);
-
-            if (!cachesessions) {
-                s->TrashEvents();
-            }
+            s->TrashEvents();
 
             savelistCnt++;
 
@@ -463,46 +564,6 @@ bool Machine::Save()
 
     delete savelistSem;
     return true;
-}
-
-/*SaveThread::SaveThread(Machine *m,QString p)
-{
-    machine=m;
-    path=p;
-} */
-
-void SaveThread::run()
-{
-    bool cachesessions = PROFILE.session->cacheSessions();
-
-    while (Session *sess = machine->popSaveList()) {
-        int i = (float(machine->savelistCnt) / float(machine->savelistSize) * 100.0);
-        emit UpdateProgress(i);
-        sess->UpdateSummaries();
-        sess->Store(path);
-
-        if (!cachesessions) {
-            sess->TrashEvents();
-        }
-    }
-
-    machine->savelistSem->release(1);
-}
-
-Session *Machine::popSaveList()
-{
-
-    Session *sess = nullptr;
-    savelistMutex.lock();
-
-    if (m_savelist.size() > 0) {
-        sess = m_savelist.at(0);
-        m_savelist.pop_front();
-        savelistCnt++;
-    }
-
-    savelistMutex.unlock();
-    return sess;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

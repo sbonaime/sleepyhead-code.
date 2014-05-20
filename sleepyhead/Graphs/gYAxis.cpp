@@ -69,12 +69,12 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
     double max_yticks = round(height / (y + 14.0)); // plus spacing between lines
     //double yt=1/max_yticks;
 
-    double mxy = MAX(fabs(maxy), fabs(miny));
+    double mxy = maxy; //MAX(fabs(maxy), fabs(miny));
     double mny = miny;
 
-    if (miny < 0) {
-        mny = -mxy;
-    }
+//    if (miny < 0) {
+//        mny = -mxy;
+//    }
 
     double rxy = mxy - mny;
 
@@ -304,13 +304,8 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             miny = w.physMinY();
             maxy = w.physMaxY();
         } else {
-
             miny = w.min_y;
             maxy = w.max_y;
-
-            if (miny < 0) { // even it up if it's starts negative
-                miny = -MAX(fabs(miny), fabs(maxy));
-            }
         }
 
         w.roundY(miny, maxy);
@@ -322,11 +317,11 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         double max_yticks = round(height / (y + 14.0)); // plus spacing between lines
 
-        double mxy = MAX(fabs(maxy), fabs(miny));
+        double mxy = maxy; // MAX(fabs(maxy), fabs(miny));
         double mny = miny;
 
         if (miny < 0) {
-            mny = -mxy;
+//            mny = -mxy;
         }
 
         double rxy = mxy - mny;

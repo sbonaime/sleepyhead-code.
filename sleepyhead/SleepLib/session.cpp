@@ -69,12 +69,18 @@ void Session::TrashEvents()
     for (i = eventlist.begin(); i != i_end; ++i) {
         j_end=i.value().end();
         for (j = i.value().begin(); j != j_end; ++j) {
-            delete *j;
+            EventList * ev = *j;
+            ev->clear();
+            ev->m_data.squeeze();
+            ev->m_data2.squeeze();
+            ev->m_time.squeeze();
+            delete ev;
         }
     }
 
     s_events_loaded = false;
     eventlist.clear();
+    eventlist.squeeze();
 }
 
 //const int max_pack_size=128;
@@ -150,7 +156,6 @@ bool Session::Store(QString path)
     s_changed = false;
     s_events_loaded = true;
 
-    //TrashEvents();
     //} else {
     //    qDebug() << "Session::Store() No event data saved" << s_session;
     //}

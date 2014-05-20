@@ -162,33 +162,43 @@ void EventList::AddWaveform(qint64 start, qint16 *data, int recs, qint64 duratio
     m_count += recs;
     m_data.resize(m_count);
 
-    EventStoreType *edata = m_data.data();
+  //  EventStoreType *edata = m_data.data();
 
     EventStoreType raw;
-    qint16 *ep = data + recs;
-    qint16 *sp;
-    EventStoreType *dp = &edata[r];
+//    qint16 *ep = data + recs;
+    qint16 *sp = data;
+//    EventStoreType *dp = &edata[r];
 
     if (m_update_minmax) {
         EventDataType min = m_min, max = m_max, val, gain = m_gain;
 
-        for (sp = data; sp < ep; ++sp) {
-            *dp++ = raw = *sp;
+        for (int i=0; i < recs; ++i ) {
+            m_data[i] = raw = *sp;
             val = EventDataType(raw) * gain + m_offset;
-
             if (min > val) { min = val; }
-
             if (max < val) { max = val; }
+            sp++;
         }
+//        for (sp = data; sp < ep; ++sp) {
+//            *dp++ = raw = *sp;
+//            val = EventDataType(raw) * gain + m_offset;
+
+//            if (min > val) { min = val; }
+
+//            if (max < val) { max = val; }
+//        }
 
         m_min = min;
         m_max = max;
     } else {
         //register EventDataType val,gain=m_gain;
-        for (sp = data; sp < ep; ++sp) {
-            *dp++ = *sp;
-            //val=EventDataType(raw)*gain;
+        for (int i=0; i < recs; ++i) {
+            m_data[i] = *sp++;
         }
+//        for (sp = data; sp < ep; ++sp) {
+//            *dp++ = *sp;
+//            //val=EventDataType(raw)*gain;
+//        }
     }
 
 }

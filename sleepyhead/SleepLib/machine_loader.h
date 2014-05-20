@@ -11,22 +11,37 @@
 
 #ifndef MACHINE_LOADER_H
 #define MACHINE_LOADER_H
+
+#include <QMutex>
+#include <QRunnable>
+
 #include "profiles.h"
 #include "machine.h"
 
+
 #include "zlib.h"
+
+class MachineLoader;
+
+class ImportTask:public QRunnable
+{
+public:
+    explicit ImportTask() {}
+    virtual ~ImportTask() {}
+    virtual void run() {}
+};
+
 
 /*! \class MachineLoader
     \brief Base class to derive a new Machine importer from
     */
-class MachineLoader
+class MachineLoader: public QObject
 {
+    Q_OBJECT
+    friend class ImportThread;
   public:
     MachineLoader();
     virtual ~MachineLoader();
-
-
-    //virtual Machine * CreateMachine() {};
 
     //! \brief Detect if the given path contains a valid folder structure
     virtual bool Detect(const QString & path) = 0;
@@ -39,41 +54,33 @@ class MachineLoader
 
     //! \brief Override to returns the class name of this MachineLoader
     virtual const QString &ClassName() = 0;
+    inline MachineType type() { return m_type; }
 
-    bool compressFile(QString inpath, QString outpath = "");
+    void queTask(ImportTask * task);
 
-
-    /*
-       MachineLoader(Profile *profile,QString & classname);
-       virtual void LoadMachineList();
-       virtual void SaveMachineList();
-       virtual bool LoadSummaries();
-       virtual bool LoadEvents();
-       virtual bool LoadWaveforms();
-       virtual bool Scan(QString &)=0;   // Scans for new content
-
-       virtual bool LoadAll();
-       virtual bool SaveAll();
-
-       virtual bool LoadSummary(Machine * m, QString & filename);
-       virtual bool LoadEvent(Machine * m, QString & filename);
-       virtual bool LoadWaveform(Machine * m, QString & filename);
-
-       virtual bool SaveSummary(Machine * m, QString & filename);
-       virtual bool SaveEvent(Machine * m, QString & filename);
-       virtual bool SaveWaveform(Machine * m, QString & filename);*/
-
+    //! \brief Process Task list using all available threads.
+    void runTasks();
   protected:
     //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
-    QString m_class;
+
     MachineType m_type;
+    QString m_class;
     Profile *m_profile;
+
+    int m_currenttask;
+    int m_totaltasks;
+
+  private:
+    QList<ImportTask *> m_tasklist;
 };
+
 
 // Put in machine loader class as static??
 void RegisterLoader(MachineLoader *loader);
 void DestroyLoaders();
-QList<MachineLoader *> GetLoaders();
+bool compressFile(QString inpath, QString outpath = "");
+
+QList<MachineLoader *> GetLoaders(MachineType mt = MT_UNKNOWN);
 
 #endif //MACHINE_LOADER_H

@@ -66,6 +66,8 @@ class SaveThread: public QThread
     */
 class Machine
 {
+    friend class SaveThread;
+
   public:
     /*! \fn Machine(Profile *p,MachineID id=0);
         \brief Constructs a Machine object in Profile p, and with MachineID id
@@ -99,7 +101,7 @@ class Machine
     Session *SessionExists(SessionID session);
 
     //! \brief Adds the session to this machine object, and the Master Profile list. (used during load)
-    QDate AddSession(Session *s, Profile *p);
+    bool AddSession(Session *s, Profile *p);
 
     //! \brief Find the date this session belongs in, according to profile settings
     QDate pickDate(qint64 start);
@@ -132,20 +134,39 @@ class Machine
     //! \brief Returns the date of the most recent loaded Session
     const QDate &LastDay() { return lastday; }
 
+    //! \brief Add a new task to the multithreaded save code
+    void queSaveList(Session * sess);
+
     //! \brief Grab the next task in the multithreaded save code
     Session *popSaveList();
 
+    //! \brief Start the save threads which handle indexing, file storage and waveform processing
+    void StartSaveThreads();
+
+    //! \brief Finish the save threads and safely close them
+    void FinishSaveThreads();
+
     //! \brief The list of sessions that need saving (for multithreaded save code)
     QList<Session *> m_savelist;
+
+    QVector<SaveThread *>thread;
+
 
     volatile int savelistCnt;
     int savelistSize;
     QMutex savelistMutex;
     QSemaphore *savelistSem;
 
+    void lockSaveMutex() { savelistMutex.lock(); }
+    void unlockSaveMutex() { savelistMutex.unlock(); }
+    void skipSaveTask() { lockSaveMutex(); m_donetasks++; unlockSaveMutex(); }
+
     void clearSkipped() { skipped_sessions = 0; }
     int skippedSessions() { return skipped_sessions; }
 
+    inline int totalTasks() { return m_totaltasks; }
+    inline void setTotalTasks(int value) { m_totaltasks = value; }
+    inline int doneTasks() { return m_donetasks; }
   protected:
     QDate firstday, lastday;
     SessionID highest_sessionid;
@@ -156,8 +177,11 @@ class Machine
     Profile *profile;
     bool changed;
     bool firstsession;
+    int m_totaltasks;
+    int m_donetasks;
 
     int skipped_sessions;
+    volatile bool m_save_threads_running;
 };
 
 

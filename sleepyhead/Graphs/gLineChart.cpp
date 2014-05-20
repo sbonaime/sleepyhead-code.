@@ -194,8 +194,16 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     } else {
         miny = w.min_y, maxy = w.max_y;
     }
-
     w.roundY(miny, maxy);
+
+#define DEBUG_AUTOSCALER
+#ifdef DEBUG_AUTOSCALER
+    QString a = QString().sprintf("%.2f - %.2f",miny, maxy);
+    w.renderText(a,width/2,top-5);
+#endif
+
+    // the middle of minx and maxy does not have to be the center...
+
 
     double xx = maxx - minx;
     double xmult = double(width) / xx;
