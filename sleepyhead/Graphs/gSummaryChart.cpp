@@ -720,15 +720,15 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                         if (lastdaygood) {
                             if (lastY[j] != py2) { // vertical line
-                                painter.setPen(col2);
+                                painter.setPen(QPen(col2,p_profile->appearance->lineThickness()));
                                 painter.drawLine(lastX[j], lastY[j], px, py2);
                             }
 
-                            painter.setPen(col1);
-                            painter.drawLine(px - 1, py2, px2 + 1, py2);
+                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.drawLine(px, py2, px2, py2);
                         } else {
-                            painter.setPen(col1);
-                            painter.drawLine(x1 - 1, py2, x2 + 1, py2);
+                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.drawLine(x1, py2, x2, py2);
                         }
 
                         lastX[j] = px2;
@@ -900,7 +900,7 @@ jumpnext:
             val = QString::number(f, 'f', 2);
         }
 
-        a += "=" + val;
+        a += ": " + val;
         //GetTextExtent(a,x,y);
         //float wt=20*w.printScaleX();
         //px-=wt+x;
@@ -928,7 +928,7 @@ jumpnext:
 
         if (m_type.size() > 1) {
             float val = total_val / float(total_hours);
-            a = m_label + "=" + QString::number(val, 'f', 2) + " ";
+            a = m_label + ": " + QString::number(val, 'f', 2) + " ";
             GetTextExtent(a, x, y);
             legendx -= x;
             w.renderText(a, legendx, py + 1);
@@ -939,16 +939,16 @@ jumpnext:
     /*if (m_graphtype==GT_BAR) {
         if (m_type.size()>1) {
             float val=total_val/float(total_days);
-            a+=m_label+"="+QString::number(val,'f',2)+" ";
+            a+=m_label+": "+QString::number(val,'f',2)+" ";
             //
         }
     }*/
-    a += QString(QObject::tr("Days=%1")).arg(total_days, 0);
+    a += QString(QObject::tr("Days: %1")).arg(total_days, 0);
 
     if (PROFILE.cpap->showComplianceInfo()) {
         if (ishours && incompliant > 0) {
-            a += " "+QString(QObject::tr("Low Usage Days=%1")).arg(incompliant, 0)+
-                 " "+QString(QObject::tr("(%%1 compliant, defined as > %2 hours)")).
+            a += " "+QString(QObject::tr("Low Usage Days: %1")).arg(incompliant, 0)+
+                 " "+QString(QObject::tr("(%1% compliant, defined as > %2 hours)")).
                     arg((1.0 / daynum) * (total_days - incompliant) * 100.0, 0, 'f', 2).arg(compliance_hours, 0, 'f', 1);
         }
     }
@@ -1058,10 +1058,10 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                     val = QString::number(d.value()[0], 'f', 2);
                 }
 
-                z += "\r\n" + m_label + "=" + val;
+                z += "\r\n" + m_label + ": " + val;
 
                 if (m_type[1] == ST_SESSIONS) {
-                    z += " "+QString(QObject::tr("(Sess=%1)")).arg(day->size(), 0);
+                    z += " "+QString(QObject::tr("(Sess: %1)")).arg(day->size(), 0);
                 }
 
                 EventDataType v = m_times[zd][0];
@@ -1069,9 +1069,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
                 if (lastt < 0) { lastt = 0; }
 
-                z += "\r\n"+QString(QObject::tr("Bedtime=%1")).arg(formatTime(v, false, false, true));
+                z += "\r\n"+QString(QObject::tr("Bedtime: %1")).arg(formatTime(v, false, false, true));
                 v = m_times[zd][lastt] + m_values[zd][lastt];
-                z += "\r\n"+QString(QObject::tr("Waketime=%1")).arg(formatTime(v, false, false, true));
+                z += "\r\n"+QString(QObject::tr("Waketime: %1")).arg(formatTime(v, false, false, true));
 
             } else if (m_graphtype == GT_BAR) {
                 if (m_type[0] == ST_HOURS) {
@@ -1084,7 +1084,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                     val = QString::number(d.value()[0], 'f', 2);
                 }
 
-                z += "\r\n" + m_label + "=" + val;
+                z += "\r\n" + m_label + ": " + val;
                 //z+="\r\nMode="+QString::number(day->settings_min("FlexSet"),'f',0);
 
             } else {
@@ -1160,7 +1160,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
                     if (m_type[i] == ST_SESSIONS) {
                         val = QString::number(d.value()[i + 1], 'f', 0);
-                        z += "\r\n" + a + "=" + val;
+                        z += "\r\n" + a + ": " + val;
                     } else {
                         //if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                         schema::Channel &chan = schema::channel[m_codes[i]];
@@ -1176,7 +1176,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                             val = QString::number(v, 'f', 2);
                         }
 
-                        z += "\r\n" + chan.label() + " " + a + "=" + val;
+                        z += "\r\n" + chan.label() + " " + a + ": " + val;
                         //}
                     }
                 }

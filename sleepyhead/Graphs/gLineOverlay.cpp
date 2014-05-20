@@ -287,9 +287,8 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
 
 
 
-    QString a = QObject::tr("Events") + "=" + QString::number(cnt) + " " + QObject::tr("Duration") +
-                " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " + m_text + "=" + QString::number(val,
-                        'f', 2);
+    QString a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
+                QObject::tr("Duration") + " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " + m_text + ": " + QString::number(val, 'f', 2);
 
     if (isSpan) {
         float sph;
@@ -301,8 +300,8 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
             if (sph > 100) { sph = 100; }
         }
 
-        a += " " + QObject::tr("(% %1 in events)").arg(sph, 0, 'f',
-                2); // eg: %num of time in a span, like Periodic Breathing
+        // eg: %num of time in a span, like Periodic Breathing
+        a += " " + QObject::tr("(% %1 in events)").arg(sph, 0, 'f', 2);
     }
 
     w.renderText(a, left + m_x, top + m_y);
