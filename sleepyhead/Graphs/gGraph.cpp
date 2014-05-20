@@ -513,6 +513,19 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 // YAxis Autoscaling code
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
+    if ((zoomY() == 0) && PROFILE.appearance->allowYAxisScaling()) {
+        if (rec_maxy > rec_miny) {
+            // Use graph preference settings only for this graph
+            miny = rec_miny;
+            maxy = rec_maxy;
+            return;
+        } // else use loader defined min/max settings
+
+    } else {
+        // Autoscale this graph
+        miny = min_y, maxy = max_y;
+    }
+
     int m, t;
     bool ymin_good = false, ymax_good = false;
 

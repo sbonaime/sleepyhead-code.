@@ -43,19 +43,8 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int x, y;
 
-    EventDataType miny, maxy;
-
-    if (w.zoomY() == 0 && PROFILE.appearance->allowYAxisScaling()) {
-        miny = w.physMinY();
-        maxy = w.physMaxY();
-    } else {
-        miny = w.min_y;
-        maxy = w.max_y;
-
-        if (miny < 0) { // even it up if it's starts negative
-            miny = -MAX(fabs(miny), fabs(maxy));
-        }
-    }
+    EventDataType miny = w.physMinY();
+    EventDataType maxy = w.physMaxY();
 
     w.roundY(miny, maxy);
 
@@ -297,16 +286,9 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         int labelW = 0;
 
-        EventDataType miny;
-        EventDataType maxy;
 
-        if (w.zoomY() == 0 && PROFILE.appearance->allowYAxisScaling()) {
-            miny = w.physMinY();
-            maxy = w.physMaxY();
-        } else {
-            miny = w.min_y;
-            maxy = w.max_y;
-        }
+        EventDataType miny = w.physMinY();
+        EventDataType maxy = w.physMaxY();
 
         w.roundY(miny, maxy);
 

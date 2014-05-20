@@ -821,10 +821,11 @@ void PreferencesDialog::on_resetGraphButton_clicked()
         return;
     }
 
-    gGraphView *views[3];
+    gGraphView *views[3] = {0};
     views[0] = mainwin->getDaily()->graphView();
     views[1] = mainwin->getOverview()->graphView();
-    views[2] = mainwin->getOximetry()->graphView();
+    if (mainwin->getOximetry())
+        views[2] = mainwin->getOximetry()->graphView();
 
     // Iterate over all graph containers.
     for (unsigned j = 0; j < 3; j++) {

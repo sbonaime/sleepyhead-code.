@@ -173,7 +173,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     top++;
 
-    EventDataType miny, maxy;
     double minx, maxx;
 
 
@@ -185,16 +184,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     // hmmm.. subtract_offset..
 
-    /*if (miny<0) {
-        miny=-MAX(fabs(miny),fabs(maxy));
-    }*/
+    EventDataType miny = m_physminy;
+    EventDataType maxy = m_physmaxy;
 
-    if (w.zoomY() == 0 && PROFILE.appearance->allowYAxisScaling()) {
-        miny = m_physminy, maxy = m_physmaxy;
-    } else {
-        miny = w.min_y, maxy = w.max_y;
-    }
     w.roundY(miny, maxy);
+
 
 //#define DEBUG_AUTOSCALER
 #ifdef DEBUG_AUTOSCALER
