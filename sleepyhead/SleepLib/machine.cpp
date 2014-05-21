@@ -15,6 +15,8 @@
 #include <QDebug>
 #include <QString>
 #include <QObject>
+#include <QThreadPool>
+
 #include <time.h>
 
 #include "machine.h"
@@ -388,16 +390,16 @@ void Machine::queSaveList(Session * sess)
         }
 
     } else {
-        savelistMutex.lock();
+        listMutex.lock();
         m_savelist.append(sess);
-        savelistMutex.unlock();
+        listMutex.unlock();
     }
 }
 
 Session *Machine::popSaveList()
 {
     Session *sess = nullptr;
-    savelistMutex.lock();
+    listMutex.lock();
 
     if (!m_savelist.isEmpty()) {
         sess = m_savelist.at(0);
@@ -405,7 +407,7 @@ Session *Machine::popSaveList()
         m_donetasks++;
     }
 
-    savelistMutex.unlock();
+    listMutex.unlock();
     return sess;
 }
 
@@ -471,7 +473,9 @@ void SaveThread::run()
                 emit UpdateProgress(i);
             }
             sess->UpdateSummaries();
+            machine->saveMutex.lock();
             sess->Store(path);
+            machine->saveMutex.unlock();
 
             sess->TrashEvents();
         } else {
@@ -486,6 +490,60 @@ void SaveThread::run()
     machine->savelistSem->release(1);
 }
 
+
+
+class SaveTask:public ImportTask
+{
+public:
+    SaveTask(Session * s, Machine * m): sess(s), mach(m) {}
+    virtual ~SaveTask() {}
+    virtual void run();
+
+protected:
+    Session * sess;
+    Machine * mach;
+};
+
+void SaveTask::run()
+{
+    sess->UpdateSummaries();
+    mach->saveMutex.lock();
+    sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+    mach->saveMutex.unlock();
+    sess->TrashEvents();
+}
+
+void Machine::queTask(ImportTask * task)
+{
+    if (PROFILE.session->multithreading()) {
+        m_tasklist.push_back(task);
+        return;
+    }
+
+    task->run();
+    return;
+}
+
+void Machine::runTasks()
+{
+    if (!PROFILE.session->multithreading()) {
+        Q_ASSERT(m_tasklist.isEmpty());
+        return;
+    }
+    QThreadPool * threadpool = QThreadPool::globalInstance();
+    int m_totaltasks=m_tasklist.size();
+    int m_currenttask=0;
+    while (!m_tasklist.isEmpty()) {
+        if (threadpool->tryStart(m_tasklist.at(0))) {
+            m_tasklist.pop_front();
+            float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
+            qprogress->setValue(f);
+            m_currenttask++;
+        }
+        QApplication::processEvents();
+    }
+    QThreadPool::globalInstance()->waitForDone(-1);
+}
 
 bool Machine::Save()
 {
@@ -507,62 +565,11 @@ bool Machine::Save()
         cnt++;
 
         if ((*s)->IsChanged()) {
-            m_savelist.push_back(*s);
+            queTask(new SaveTask(*s, this));
         }
     }
 
-    savelistCnt = 0;
-    savelistSize = m_savelist.size();
-
-    if (!PROFILE.session->multithreading()) {
-        for (int i = 0; i < savelistSize; i++) {
-
-            // Update progress bar
-            if ((i % 10) == 0) {
-                qprogress->setValue(0 + (float(savelistCnt) / float(savelistSize) * 100.0));
-                QApplication::processEvents();
-            }
-
-            Session *s = m_savelist.at(i);
-            s->UpdateSummaries();
-            s->Store(path);
-            s->TrashEvents();
-
-            savelistCnt++;
-
-        }
-
-        return true;
-    }
-
-    int threads = QThread::idealThreadCount();
-    savelistSem = new QSemaphore(threads);
-    savelistSem->acquire(threads);
-    QVector<SaveThread *>thread;
-
-    for (int i = 0; i < threads; i++) {
-        thread.push_back(new SaveThread(this, path));
-        QObject::connect(thread[i], SIGNAL(UpdateProgress(int)), qprogress, SLOT(setValue(int)));
-        thread[i]->start();
-    }
-
-    while (!savelistSem->tryAcquire(threads, 250)) {
-        if (qprogress) {
-            //    qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
-            QApplication::processEvents();
-        }
-    }
-
-    for (int i = 0; i < threads; i++) {
-        while (thread[i]->isRunning()) {
-            SaveThread::msleep(250);
-            QApplication::processEvents();
-        }
-
-        delete thread[i];
-    }
-
-    delete savelistSem;
+    runTasks();
     return true;
 }
 

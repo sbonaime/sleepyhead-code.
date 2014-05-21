@@ -142,6 +142,7 @@ bool Session::Store(QString path)
     base = path + "/" + base;
     //qDebug() << "Storing Session: " << base;
     bool a;
+
     a = StoreSummary(base + ".000"); // if actually has events
 
     //qDebug() << " Summary done";

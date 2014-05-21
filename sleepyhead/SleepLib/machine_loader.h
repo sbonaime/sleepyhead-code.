@@ -23,14 +23,6 @@
 
 class MachineLoader;
 
-class ImportTask:public QRunnable
-{
-public:
-    explicit ImportTask() {}
-    virtual ~ImportTask() {}
-    virtual void run() {}
-};
-
 
 /*! \class MachineLoader
     \brief Base class to derive a new Machine importer from

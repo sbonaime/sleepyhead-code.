@@ -183,6 +183,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path, Profile *profile)
     if (qprogress) { qprogress->setValue(0); }
 
     QStringList summary, log, flw, det;
+    Sessions.clear();
 
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
@@ -307,28 +308,8 @@ quint32 convertDate(quint32 timestamp)
     minute = (timestamp >> 6) & 0x3f;
     hour = (timestamp >> 12) & 0x1f;
 
-    //        in >> a1;
-    //        in >> a2;
-    //        t1 = a2 << 8 | a1;
-
-    //        if (t1 == 0xfafe) {
-    //            break;
-    //        }
-
-    //        day = t1 & 0x1f;
-    //        month = (t1 >> 5) & 0x0f;
-    //        year = 2000 + ((t1 >> 9) & 0x3f);
-
-    //        in >> a1;
-    //        in >> a2;
-
-    //        ts = ((a2 << 8) | a1) << 1;
-    //        ts |= (t1 >> 15) & 1;
-
-    //        second = (ts & 0x3f);
-    //        minute = (ts >> 6) & 0x3f;
-    //        hour = (ts >> 12) & 0x1f;
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
+    Q_ASSERT(dt.isValid());
 
     return dt.toTime_t();
 }
@@ -351,6 +332,7 @@ quint32 convertFLWDate(quint32 timestamp)
     minute = (timestamp >> 6) & 0x3f;
     hour = (timestamp >> 12) & 0x1f;
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
+    Q_ASSERT(dt.isValid());
 
     return dt.toTime_t();
 }
@@ -488,16 +470,20 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         Session *s1 = nullptr;
         sess = nullptr;
 
-        for (sit = Sessions.begin(); sit != Sessions.end(); sit++) {
-            s1 = sit.value();
-            qint64 z = qAbs(s1->first() - ti);
-
-            if (z < 3600000) {
-                if ((k < 0) || (k > z)) {
-                    k = z;
-                    sess = s1;
+        sit = Sessions.end();
+        int cnt=0;
+        if (Sessions.begin() != sit) {
+            do {
+                sit --;
+                s1 = sit.value();
+                qint64 z = qAbs(sit.key() - ts);
+                if (z < 3600) {
+                    if ((k < 0) || (k > z)) {
+                        k = z;
+                        sess = s1;
+                    }
                 }
-            }
+            } while (sit != Sessions.begin());
         }
 
         if (sess) {
@@ -590,6 +576,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         QDir dir;
         QString newname = QString("FLW%1.FPH").arg(ts);
         dir.mkpath(backup);
+        dir.cd(backup);
         if (!dir.exists(newname)) {
             file.copy(backup+newname);
         }
@@ -643,12 +630,11 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
 
     QByteArray data;
     data = file.readAll();
-    //long size=data.size(),pos=0;
+
     QDataStream in(data);
-    in.setVersion(QDataStream::Qt_4_6);
+    in.setVersion(QDataStream::Qt_4_8);
     in.setByteOrder(QDataStream::LittleEndian);
 
-    quint16 t1;//,t2;
     quint32 ts;
     //QByteArray line;
     unsigned char a1, a2, a3, a4, a5, p1, p2,  p3, p4, p5, j1, j2, j3 , j4, j5, j6, j7, x1, x2;
@@ -783,6 +769,10 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
     htxt >> type;
 
     QByteArray index = file.read(0x800);
+    if (index.size()!=0x800) {
+        // faulty file..
+        return false;
+    }
     QDataStream in(index);
     quint32 ts;
 
@@ -895,6 +885,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("DET%1.FPH").arg(ts);
+
         dir.mkpath(backup);
         dir.cd(backup);
         if (!dir.exists(newname)) {

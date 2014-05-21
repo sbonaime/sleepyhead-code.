@@ -16,6 +16,7 @@
 #include <QString>
 #include <QVariant>
 #include <QDateTime>
+#include <QRunnable>
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
@@ -59,6 +60,13 @@ class SaveThread: public QThread
     void UpdateProgress(int i);
 };
 
+class ImportTask:public QRunnable
+{
+public:
+    explicit ImportTask() {}
+    virtual ~ImportTask() {}
+    virtual void run() {}
+};
 
 /*! \class Machine
     \brief This Machine class is the Heart of SleepyLib, representing a single Machine and holding it's data
@@ -149,16 +157,15 @@ class Machine
     //! \brief The list of sessions that need saving (for multithreaded save code)
     QList<Session *> m_savelist;
 
+    //yuck
     QVector<SaveThread *>thread;
-
-
     volatile int savelistCnt;
     int savelistSize;
-    QMutex savelistMutex;
+    QMutex listMutex;
     QSemaphore *savelistSem;
 
-    void lockSaveMutex() { savelistMutex.lock(); }
-    void unlockSaveMutex() { savelistMutex.unlock(); }
+    void lockSaveMutex() { listMutex.lock(); }
+    void unlockSaveMutex() { listMutex.unlock(); }
     void skipSaveTask() { lockSaveMutex(); m_donetasks++; unlockSaveMutex(); }
 
     void clearSkipped() { skipped_sessions = 0; }
@@ -167,6 +174,12 @@ class Machine
     inline int totalTasks() { return m_totaltasks; }
     inline void setTotalTasks(int value) { m_totaltasks = value; }
     inline int doneTasks() { return m_donetasks; }
+
+
+    // much more simpler multithreading...
+    void queTask(ImportTask * task);
+    void runTasks();
+    QMutex saveMutex;
   protected:
     QDate firstday, lastday;
     SessionID highest_sessionid;
@@ -182,6 +195,9 @@ class Machine
 
     int skipped_sessions;
     volatile bool m_save_threads_running;
+
+    QList<ImportTask *> m_tasklist;
+
 };
 
 
