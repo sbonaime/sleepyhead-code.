@@ -23,15 +23,14 @@
 
 ZEOLoader::ZEOLoader()
 {
-    //ctor
+    m_type = MT_SLEEPSTAGE;
 }
 
 ZEOLoader::~ZEOLoader()
 {
-    //dtor
 }
 
-int ZEOLoader::Open(QString &path, Profile *profile)
+int ZEOLoader::Open(QString path, Profile *profile)
 {
     Q_UNUSED(path)
     Q_UNUSED(profile)

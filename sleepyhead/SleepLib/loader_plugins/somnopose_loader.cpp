@@ -23,14 +23,13 @@
 
 SomnoposeLoader::SomnoposeLoader()
 {
-    //ctor
+    m_type = MT_POSITION;
 }
 
 SomnoposeLoader::~SomnoposeLoader()
 {
-    //dtor
 }
-int SomnoposeLoader::Open(QString &path, Profile *profile)
+int SomnoposeLoader::Open(QString path, Profile *profile)
 {
     Q_UNUSED(path)
     Q_UNUSED(profile)

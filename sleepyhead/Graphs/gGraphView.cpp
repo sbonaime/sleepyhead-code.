@@ -248,6 +248,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_minx = m_maxx = 0;
     m_day = nullptr;
     m_selected_graph = nullptr;
+    m_scrollbar = nullptr;
 
     horizScrollTime.start();
     vertScrollTime.start();
@@ -1034,7 +1035,9 @@ void gGraphView::paintGL()
         GetTextExtent(ss, w, h);
         QColor col = Qt::white;
 
-        painter.fillRect(width() - m_graphs[0]->marginRight(), 0, m_graphs[0]->marginRight(), w, QBrush(col));
+        if (m_graphs.size() > 0) {
+            painter.fillRect(width() - m_graphs[0]->marginRight(), 0, m_graphs[0]->marginRight(), w, QBrush(col));
+        }
 #ifndef Q_OS_MAC
         //   if (usePixmapCache()) xx+=4; else xx-=3;
 #endif
@@ -1680,7 +1683,8 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                 return;
             }
 
-            m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+            if (m_scrollbar)
+                m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
             m_tooltip->cancel();
             vertScrollTime.start();
         } else { //Horizontal Panning
@@ -1753,19 +1757,23 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_PageUp) {
-        m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
-        m_scrollbar->setValue(m_offsetY);
-        m_offsetY = m_scrollbar->value();
-        redraw();
+        if (m_scrollbar) {
+            m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
+            m_scrollbar->setValue(m_offsetY);
+            m_offsetY = m_scrollbar->value();
+            redraw();
+        }
         return;
     } else if (event->key() == Qt::Key_PageDown) {
-        m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
+        if (m_scrollbar) {
+            m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
 
-        if (m_offsetY < 0) { m_offsetY = 0; }
+            if (m_offsetY < 0) { m_offsetY = 0; }
 
-        m_scrollbar->setValue(m_offsetY);
-        m_offsetY = m_scrollbar->value();
-        redraw();
+            m_scrollbar->setValue(m_offsetY);
+            m_offsetY = m_scrollbar->value();
+            redraw();
+        }
         return;
         //        redraw();
     }

@@ -51,7 +51,7 @@ class MSeriesLoader : public MachineLoader
     virtual bool Detect(const QString & path) { Q_UNUSED(path); return false; }
 
     //! \brief Opens M-Series block device
-    virtual int Open(QString &file, Profile *profile);
+    virtual int Open(QString file, Profile *profile);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return mseries_data_version; }

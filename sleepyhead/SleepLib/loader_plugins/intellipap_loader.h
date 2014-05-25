@@ -56,7 +56,7 @@ class IntellipapLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for Intellipap data signature, and Loads any new data
-    virtual int Open(QString &path, Profile *profile);
+    virtual int Open(QString path, Profile *profile);
 
     //! \brief Returns SleepLib database version of this IntelliPap loader
     virtual int Version() { return intellipap_data_version; }

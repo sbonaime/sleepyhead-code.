@@ -454,6 +454,8 @@ void Daily::closeEvent(QCloseEvent *event)
 void Daily::doToggleSession(Session * sess)
 {
     Q_UNUSED(sess)
+    sess->setEnabled(!sess->enabled());
+
    // sess->StoreSummary();
     Day *day=PROFILE.GetDay(previous_date,MT_CPAP);
     if (day) {
@@ -553,6 +555,8 @@ void Daily::ReloadGraphs()
     ui->calendar->setSelectedDate(d);
     ui->calendar->blockSignals(false);
     Load(d);
+    ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
+
 }
 
 void Daily::on_calendar_currentPageChanged(int year, int month)
@@ -1451,7 +1455,7 @@ void Daily::Load(QDate date)
     if (cpap) {
         sessbar=new SessionBar(this);
         sessbar->setMouseTracking(true);
-        connect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
+        connect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
         int c=0;
 
         for (i=cpap->begin();i!=cpap->end();++i) {

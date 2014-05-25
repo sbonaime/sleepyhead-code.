@@ -32,6 +32,9 @@
 #include <QTextDocument>
 #include <QTranslator>
 #include <QPushButton>
+#include <QCalendarWidget>
+#include "common_gui.h"
+
 #include <cmath>
 
 // Custom loaders that don't autoscan..
@@ -160,12 +163,33 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionDebug->setChecked(PROFILE.general->showDebug());
 
+    QTextCharFormat format = ui->statStartDate->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+    ui->statStartDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->statStartDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->statStartDate->calendarWidget()->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    ui->statStartDate->calendarWidget()->setFirstDayOfWeek(dow);
+    ui->statEndDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->statEndDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->statEndDate->calendarWidget()->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    ui->statEndDate->calendarWidget()->setFirstDayOfWeek(dow);
+
+    ui->statEndDate->setVisible(false);
+    ui->statStartDate->setVisible(false);
+
+    ui->reportModeRange->setVisible(false);
     switch(PROFILE.general->statReportMode()) {
         case 0:
             ui->reportModeStandard->setChecked(true);
             break;
         case 1:
             ui->reportModeMonthly->setChecked(true);
+            break;
+        case 2:
+            ui->reportModeRange->setChecked(true);
+            ui->statEndDate->setVisible(true);
+            ui->statStartDate->setVisible(true);
             break;
         default:
             PROFILE.general->setStatReportMode(0);
@@ -243,19 +267,16 @@ void MainWindow::closeEvent(QCloseEvent * event)
     if (daily) {
         daily->close();
         daily->deleteLater();
-//        delete daily;
     }
 
     if (overview) {
         overview->close();
         overview->deleteLater();
-//        delete overview;
     }
 
     if (oximetry) {
         oximetry->close();
         oximetry->deleteLater();
-//        delete oximetry;
     }
 
     // Shutdown and Save the current User profile
@@ -317,7 +338,8 @@ void MainWindow::PopulatePurgeMenu()
         QString name =  mach->properties[STR_PROP_Brand]+" "+
                         mach->properties[STR_PROP_Model]+" "+
                         mach->properties[STR_PROP_Serial];
-        QAction * action = new QAction(name, ui->menu_Purge_CPAP_Data);
+
+        QAction * action = new QAction(name.replace("&","&&"), ui->menu_Purge_CPAP_Data);
         action->setData(mach->GetClass()+":"+mach->properties[STR_PROP_Serial]);
         ui->menu_Purge_CPAP_Data->addAction(action);
         ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
@@ -368,6 +390,9 @@ void MainWindow::Startup()
 
     GenerateStatistics();
     ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+
+    ui->statStartDate->setDate(PROFILE.FirstDay());
+    ui->statEndDate->setDate(PROFILE.LastDay());
 
     if (daily) { daily->ReloadGraphs(); }
 
@@ -526,7 +551,7 @@ QStringList MainWindow::detectCPAPCards()
 
     QStringList datapaths;
 
-    QList<MachineLoader *>loaders = GetLoaders();
+    QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
     QTime time;
     time.start();
 
@@ -583,7 +608,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QStringList datapaths = detectCPAPCards();
 
-    QList<MachineLoader *>loaders = GetLoaders();
+    QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
     QTime time;
     time.start();
@@ -1197,30 +1222,66 @@ void MainWindow::selectOximetryTab()
     on_oximetryButton_clicked();
 }
 
+#include "oximeterimport.h"
+QDateTime datetimeDialog(QDateTime datetime, QString message);
+
 void MainWindow::on_oximetryButton_clicked()
 {
-    bool first = false;
+    OximeterImport oxiimp(this);
+    oxiimp.exec();
 
-    if (!oximetry) {
-        if (!PROFILE.oxi->oximetryEnabled()) {
-            if (QMessageBox::question(this, STR_MessageBox_Question,
-                                      tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."), QMessageBox::Yes,
-                                      QMessageBox::No) == QMessageBox::No) { return; }
+    return;
 
-            PROFILE.oxi->setOximetryEnabled(true);
-        }
+//    QDateTime current=QDateTime::currentDateTime();
+//    DateTimeDialog datedlg("Oximetry Session Start Time", this);
+//    current = datedlg.execute(current);
+//    return;
+//    bool first = false;
 
-        oximetry = new Oximetry(ui->tabWidget, daily->graphView());
-        ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
-        first = true;
-    }
+//    if (!oximetry) {
+//        if (!PROFILE.oxi->oximetryEnabled()) {
+//            if (QMessageBox::question(this, STR_MessageBox_Question,
+//                                      tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."), QMessageBox::Yes,
+//                                      QMessageBox::No) == QMessageBox::No) { return; }
+
+//            PROFILE.oxi->setOximetryEnabled(true);
+//        }
+
+//      //  oximetry = new Oximetry(ui->tabWidget, daily->graphView());
+//      //  ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
+//        first = true;
+//    }
+
+
+//    QDialog dlg(this, Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::Dialog);
+
+//    dlg.setWindowModality(Qt::ApplicationModal);
+//    dlg.setModal(true);
+
+//    QVBoxLayout layout(&dlg);
+//    QLabel msg("<h2>"+tr("Please connect your %1 oximeter.").arg(active)+"</h2>");
+//    QPushButton cancel(STR_MessageBox_Cancel);
+
+//    layout.addWidget(&msg,1);
+//    layout.addWidget(qprogress,1);
+//    layout.addWidget(&cancel);
+
+//    qprogress->setMaximum(PORTSCAN_TIMEOUT);
+//    qprogress->setVisible(true);
+
+//    dlg.connect(&cancel, SIGNAL(clicked()), &dlg, SLOT(hide()));
+//    dlg.show();
+
+//    QApplication::processEvents();
+
+
 
     // MW: Instead, how about starting a direct import?
-    oximetry->serialImport();
+//    oximetry->serialImport();
 
-    ui->tabWidget->setCurrentWidget(oximetry);
+//    ui->tabWidget->setCurrentWidget(oximetry);
 
-    if (!first) { oximetry->RedrawGraphs(); }
+//    if (!first) { oximetry->RedrawGraphs(); }
 
     qstatus2->setText(STR_TR_Oximetry);
 }
@@ -1346,10 +1407,14 @@ void MainWindow::on_actionPrint_Report_triggered()
 
 void MainWindow::on_action_Edit_Profile_triggered()
 {
-    NewProfile newprof(this);
-    newprof.edit(PREF[STR_GEN_Profile].toString());
-    newprof.exec();
-
+    NewProfile *newprof = new NewProfile(this);
+    QString name =PREF[STR_GEN_Profile].toString();
+    newprof->edit(name);
+    newprof->setWindowModality(Qt::ApplicationModal);
+    newprof->setModal(true);
+    newprof->exec();
+    qDebug()  << newprof;
+    delete newprof;
 }
 
 void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
@@ -2152,6 +2217,14 @@ void MainWindow::on_actionImport_Somnopose_Data_triggered()
 
 void MainWindow::GenerateStatistics()
 {
+    QDate first = PROFILE.FirstDay();
+    QDate last = PROFILE.LastDay();
+    ui->statStartDate->setMinimumDate(first);
+    ui->statStartDate->setMaximumDate(last);
+
+    ui->statEndDate->setMinimumDate(first);
+    ui->statEndDate->setMaximumDate(last);
+
     Statistics stats;
     QString html = stats.GenerateHTML();
 
@@ -2183,6 +2256,8 @@ void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
 
 void MainWindow::on_reportModeMonthly_clicked()
 {
+    ui->statStartDate->setVisible(false);
+    ui->statEndDate->setVisible(false);
     if (PROFILE.general->statReportMode() != 1) {
         PROFILE.general->setStatReportMode(1);
         GenerateStatistics();
@@ -2191,8 +2266,21 @@ void MainWindow::on_reportModeMonthly_clicked()
 
 void MainWindow::on_reportModeStandard_clicked()
 {
+    ui->statStartDate->setVisible(false);
+    ui->statEndDate->setVisible(false);
     if (PROFILE.general->statReportMode() != 0) {
         PROFILE.general->setStatReportMode(0);
+        GenerateStatistics();
+    }
+}
+
+
+void MainWindow::on_reportModeRange_clicked()
+{
+    ui->statStartDate->setVisible(true);
+    ui->statEndDate->setVisible(true);
+    if (PROFILE.general->statReportMode() != 2) {
+        PROFILE.general->setStatReportMode(2);
         GenerateStatistics();
     }
 }

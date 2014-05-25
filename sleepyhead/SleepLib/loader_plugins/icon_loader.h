@@ -58,7 +58,7 @@ class FPIconLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for F&P Icon data signature, and Loads any new data
-    virtual int Open(QString &path, Profile *profile);
+    virtual int Open(QString path, Profile *profile);
 
     int OpenMachine(Machine *mach, QString &path, Profile *profile);
 

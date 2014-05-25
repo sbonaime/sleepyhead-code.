@@ -56,7 +56,7 @@ class PRS1Loader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans directory path for valid PRS1 signature
-    virtual int Open(QString &path, Profile *profile);
+    virtual int Open(QString path, Profile *profile);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return prs1_data_version; }

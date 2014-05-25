@@ -245,11 +245,11 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     initialize();
     PRS1Loader::Register();
-    CMS50Loader::Register();
-    //ZEOLoader::Register(); // Use outside of directory importer..
     ResmedLoader::Register();
     IntellipapLoader::Register();
     FPIconLoader::Register();
+    CMS50Loader::Register();
+    //ZEOLoader::Register(); // Use outside of directory importer..
 
     p_pref = new Preferences("Preferences");
     p_layout = new Preferences("Layout");

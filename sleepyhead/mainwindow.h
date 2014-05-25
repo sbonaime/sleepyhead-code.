@@ -310,6 +310,7 @@ class MainWindow : public QMainWindow
 
     void on_actionPurgeMachine(QAction *action);
 
+    void on_reportModeRange_clicked();
 
 private:
     int importCPAP(const QString &path, const QString &message);

@@ -29,7 +29,8 @@ QList<MachineLoader *> GetLoaders(MachineType mt)
         if (mt == MT_UNKNOWN) {
             list.push_back(m_loaders.at(i));
         } else {
-            if (m_loaders.at(i)->type() == mt) {
+            MachineType mtype = m_loaders.at(i)->type();
+            if (mtype == mt) {
                 list.push_back(m_loaders.at(i));
             }
         }
@@ -52,6 +53,9 @@ void DestroyLoaders()
 
 MachineLoader::MachineLoader() :QObject(nullptr)
 {
+    m_importing = m_abort = m_streaming = false;
+    m_type = MT_UNKNOWN;
+    m_status = NEUTRAL;
 }
 
 MachineLoader::~MachineLoader()

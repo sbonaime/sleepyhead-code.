@@ -31,6 +31,8 @@ MSeries::~MSeries()
 
 MSeriesLoader::MSeriesLoader()
 {
+    m_type = MT_CPAP;
+
     epoch = QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0), Qt::UTC).toTime_t();
     epoch -= QDateTime(QDate(1970, 1, 1), QTime(0, 0, 0), Qt::UTC).toTime_t();
 }
@@ -113,7 +115,7 @@ blockLayoutOffsets   {
                     */
 
 
-int MSeriesLoader::Open(QString &path, Profile *profile)
+int MSeriesLoader::Open(QString path, Profile *profile)
 {
     Q_UNUSED(profile);
     // Until a smartcard reader is written, this is not an auto-scanner.. it just opens a block file..

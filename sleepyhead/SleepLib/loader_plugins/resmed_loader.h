@@ -326,7 +326,7 @@ class ResmedLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
-    virtual int Open(QString &path, Profile *profile);
+    virtual int Open(QString path, Profile *profile);
 
     //! \brief Returns the version number of this ResMed loader
     virtual int Version() { return resmed_data_version; }

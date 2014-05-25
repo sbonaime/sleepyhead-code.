@@ -121,9 +121,9 @@ PRS1Loader::PRS1Loader()
 {
     // Todo: Register PRS1 custom channels
 
-
     //genCRCTable();
     m_buffer = nullptr;
+    m_type = MT_CPAP;
 }
 
 PRS1Loader::~PRS1Loader()
@@ -225,7 +225,7 @@ bool PRS1Loader::Detect(const QString & path)
     return true;
 }
 
-int PRS1Loader::Open(QString &path, Profile *profile)
+int PRS1Loader::Open(QString path, Profile *profile)
 {
     QString newpath;
     path = path.replace("\\", "/");

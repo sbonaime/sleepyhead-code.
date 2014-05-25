@@ -1046,6 +1046,27 @@ color: yellow;</string>
               </widget>
              </item>
              <item>
+              <widget class="QRadioButton" name="reportModeRange">
+               <property name="text">
+                <string>Date Range</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDateEdit" name="statStartDate">
+               <property name="calendarPopup">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDateEdit" name="statEndDate">
+               <property name="calendarPopup">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="horizontalSpacer">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>

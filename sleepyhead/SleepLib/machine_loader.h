@@ -22,6 +22,7 @@
 #include "zlib.h"
 
 class MachineLoader;
+enum DeviceStatus { NEUTRAL, IMPORTING, LIVE };
 
 
 /*! \class MachineLoader
@@ -39,7 +40,7 @@ class MachineLoader: public QObject
     virtual bool Detect(const QString & path) = 0;
 
     //! \brief Override this to scan path and detect new machine data
-    virtual int Open(QString &path, Profile *) = 0; // Scans for new content
+    virtual int Open(QString path, Profile *) = 0; // Scans for new content
 
     //! \brief Override to returns the Version number of this MachineLoader
     virtual int Version() = 0;
@@ -48,10 +49,42 @@ class MachineLoader: public QObject
     virtual const QString &ClassName() = 0;
     inline MachineType type() { return m_type; }
 
+    virtual bool openDevice() { return false; }
+    virtual void closeDevice() {}
+    virtual bool scanDevice(QString keyword="", quint16 vendor_id=0, quint16 product_id=0) {
+        Q_UNUSED(keyword)
+        Q_UNUSED(vendor_id)
+        Q_UNUSED(product_id)
+        return false;
+    }
+
     void queTask(ImportTask * task);
 
     //! \brief Process Task list using all available threads.
     void runTasks();
+
+    inline bool isStreaming() { return m_streaming; }
+    inline bool isImporting() { return m_importing; }
+    inline bool isAborted() { return m_abort; }
+    void abort() { m_abort = true; }
+
+    virtual void process() {}
+
+    DeviceStatus status() { return m_status; }
+    void setStatus(DeviceStatus status) { m_status = status; }
+
+signals:
+    void updateProgress(int cnt, int total);
+
+protected slots:
+    virtual void dataAvailable() {}
+    virtual void resetImportTimeout() {}
+    virtual void startImportTimeout() {}
+
+protected:
+    virtual void killTimers(){}
+    virtual void resetDevice(){}
+
   protected:
     //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
@@ -62,6 +95,12 @@ class MachineLoader: public QObject
 
     int m_currenttask;
     int m_totaltasks;
+
+    bool m_streaming;
+    bool m_importing;
+    bool m_abort;
+
+    DeviceStatus m_status;
 
   private:
     QList<ImportTask *> m_tasklist;

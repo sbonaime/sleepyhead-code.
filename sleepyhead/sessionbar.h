@@ -43,13 +43,19 @@ class SessionBar : public QWidget
     //  SessionBar(const SessionBar &);
 
     virtual ~SessionBar();
-    void clear() { segments.clear(); }
+    void clear() { segments.clear(); m_selectIDX = -1; }
     void add(Session *sess, QColor col) { if (sess) { segments.push_back(SBSeg(sess, col)); } }
+    void setSelectMode(bool b) { m_selectMode = b; }
+    void setSelectColor(QColor col) { m_selectColor = col; }
+    int count() { return segments.size(); }
+    int selected() { return m_selectIDX; }
+    Session * session(int idx) { Q_ASSERT(idx < segments.size()); return segments[idx].session; }
+    void setSelected(int idx) { m_selectIDX = idx; }
 
   protected slots:
     void updateTimer();
   signals:
-    void toggledSession(Session *sess);
+    void sessionClicked(Session *sess);
   protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *);
@@ -59,6 +65,9 @@ class SessionBar : public QWidget
 
     QList<SBSeg> segments;
     QTimer timer;
+    int m_selectIDX;
+    bool m_selectMode;
+    QColor m_selectColor;
 };
 //Q_DECLARE_METATYPE(SessionBar)
 

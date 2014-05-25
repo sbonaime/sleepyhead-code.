@@ -699,6 +699,7 @@ void ResmedImport::run()
 
 ResmedLoader::ResmedLoader()
 {
+    m_type = MT_CPAP;
 }
 ResmedLoader::~ResmedLoader()
 {
@@ -778,7 +779,7 @@ bool ResmedLoader::Detect(const QString & givenpath)
     return true;
 }
 
-int ResmedLoader::Open(QString &path, Profile *profile)
+int ResmedLoader::Open(QString path, Profile *profile)
 {
 
     QString serial;                 // Serial number

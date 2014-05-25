@@ -43,6 +43,9 @@ SessionBar::SessionBar(QWidget *parent) :
     QWidget(parent)
 {
     timer.setParent(this);
+    m_selectIDX = -1;
+    m_selectColor = Qt::red;
+    m_selectMode = false;
 }
 //SessionBar::SessionBar(const SessionBar & copy)
 //    :QWidget(this)
@@ -129,7 +132,7 @@ void SessionBar::mousePressEvent(QMouseEvent *ev)
     }
 
     SegType total = mx - mn;
-    double px = double(width() - 5) / double(total);
+    double px = double(width() ) / double(total);
 
     double sx, ex;
     QList<SBSeg>::iterator i;
@@ -141,14 +144,14 @@ void SessionBar::mousePressEvent(QMouseEvent *ev)
         sx = double(sess->first() - mn) * px;
         ex = double(sess->last() - mn) * px;
 
-        if (ex > width() - 5) { ex = width() - 5; }
+        if (ex > width()) { ex = width(); }
 
         //ex-=sx;
 
-        if ((ev->x() > sx) && (ev->x() < ex)
+        if ((ev->x() >= sx) && (ev->x() < ex)
                 && (ev->y() > 0) && (ev->y() < height())) {
-            (*i).session->setEnabled(!(*i).session->enabled());
-            emit toggledSession((*i).session);
+            m_selectIDX = cnt;
+            emit sessionClicked((*i).session);
             break;
         }
 
@@ -217,7 +220,9 @@ void SessionBar::paintEvent(QPaintEvent *)
 
     double sx, ex;
     QList<SBSeg>::iterator i;
+    QRect selectRect;
 
+    int cnt = 0;
     for (i = segments.begin(); i != segments.end(); ++i) {
         SBSeg &seg = *i;
         qint64 mm = seg.session->first(), MM = seg.session->last(), L = MM - mm;
@@ -242,8 +247,9 @@ void SessionBar::paintEvent(QPaintEvent *)
             QLinearGradient linearGrad(QPointF(0, 0), QPointF(0, height() / 2));
             linearGrad.setSpread(QGradient::ReflectSpread);
             QColor col = seg.color;
-
-            if (seg.highlight) { col = brighten(col); }
+            if (m_selectMode && (cnt == m_selectIDX)) {
+//                col = m_selectColor;
+            } else if (seg.highlight) { col = brighten(col); }
 
             linearGrad.setColorAt(0, col);
             linearGrad.setColorAt(1, brighten(col));
@@ -261,10 +267,24 @@ void SessionBar::paintEvent(QPaintEvent *)
         QRect rect = painter.boundingRect(segrect, Qt::AlignCenter, msg);
 
         if (rect.width() < segrect.width()) {
+            painter.setPen(Qt::black);
             painter.drawText(segrect, Qt::AlignCenter, msg);
         }
 
-        painter.drawRect(segrect);
 
+        if (m_selectMode && (cnt == m_selectIDX)) {
+            painter.setPen(QPen(m_selectColor, 3));
+        } else {
+            painter.setPen(QPen(Qt::black, 1));
+        }
+        painter.drawRect(segrect);
+        cnt++;
+
+    }
+    if (!cnt) {
+        QString msg = tr("No Sessions Present");
+        QRect rct = painter.boundingRect(this->rect(), Qt::AlignCenter, msg);
+        painter.setPen(Qt::black);
+        painter.drawText(rct, Qt::AlignCenter, msg);
     }
 }

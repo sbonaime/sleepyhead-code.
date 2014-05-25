@@ -392,7 +392,7 @@ int Profile::Import(QString path)
         path.chop(1);
     }
 
-    QList<MachineLoader *>loaders = GetLoaders();
+    QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
     Q_FOREACH(MachineLoader * loader, loaders) {
         if (c += loader->Open(path, this)) {
@@ -405,7 +405,7 @@ int Profile::Import(QString path)
 
 MachineLoader *GetLoader(QString name)
 {
-    QList<MachineLoader *>loaders = GetLoaders();
+    QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
     Q_FOREACH(MachineLoader * loader, loaders) {
         if (loader->ClassName() == name) {

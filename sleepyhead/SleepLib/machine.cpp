@@ -515,7 +515,7 @@ void SaveTask::run()
 
 void Machine::queTask(ImportTask * task)
 {
-    if (PROFILE.session->multithreading()) {
+    if (0) { //PROFILE.session->multithreading()) {
         m_tasklist.push_back(task);
         return;
     }
@@ -526,7 +526,7 @@ void Machine::queTask(ImportTask * task)
 
 void Machine::runTasks()
 {
-    if (!PROFILE.session->multithreading()) {
+    if (0) { //!PROFILE.session->multithreading()) {
         Q_ASSERT(m_tasklist.isEmpty());
         return;
     }

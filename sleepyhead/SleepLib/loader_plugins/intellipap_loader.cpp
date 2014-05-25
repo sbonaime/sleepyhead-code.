@@ -30,6 +30,7 @@ Intellipap::~Intellipap()
 IntellipapLoader::IntellipapLoader()
 {
     m_buffer = nullptr;
+    m_type = MT_CPAP;
 }
 
 IntellipapLoader::~IntellipapLoader()
@@ -57,7 +58,7 @@ bool IntellipapLoader::Detect(const QString & givenpath)
     return true;
 }
 
-int IntellipapLoader::Open(QString &path, Profile *profile)
+int IntellipapLoader::Open(QString path, Profile *profile)
 {
     // Check for SL directory
     // Check for DV5MFirm.bin?

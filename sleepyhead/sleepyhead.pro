@@ -4,14 +4,13 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml
+QT += core gui network xml serialport
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets
 } else { # qt4
     QT += webkit
 }
-
 
 #Windows XP with older intel cards needs the following variable defined
 #It slows other platforms down way too much
@@ -143,7 +142,8 @@ SOURCES += \
     SleepLib/loader_plugins/somnopose_loader.cpp \
     SleepLib/loader_plugins/zeo_loader.cpp \
     translation.cpp \
-    statistics.cpp
+    statistics.cpp \
+    oximeterimport.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -194,7 +194,8 @@ HEADERS  += \
     SleepLib/loader_plugins/somnopose_loader.h \
     SleepLib/loader_plugins/zeo_loader.h \
     translation.h \
-    statistics.h
+    statistics.h \
+    oximeterimport.h
 
 FORMS += \
     daily.ui \
@@ -206,7 +207,8 @@ FORMS += \
     profileselect.ui \
     newprofile.ui \
     exportcsv.ui \
-    UpdaterWindow.ui
+    UpdaterWindow.ui \
+    oximeterimport.ui
 
 RESOURCES += \
     Resources.qrc
