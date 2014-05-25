@@ -143,7 +143,8 @@ SOURCES += \
     SleepLib/loader_plugins/zeo_loader.cpp \
     translation.cpp \
     statistics.cpp \
-    oximeterimport.cpp
+    oximeterimport.cpp \
+    SleepLib/serialoximeter.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -195,7 +196,8 @@ HEADERS  += \
     SleepLib/loader_plugins/zeo_loader.h \
     translation.h \
     statistics.h \
-    oximeterimport.h
+    oximeterimport.h \
+    SleepLib/serialoximeter.h
 
 FORMS += \
     daily.ui \

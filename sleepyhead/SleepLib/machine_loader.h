@@ -75,6 +75,7 @@ class MachineLoader: public QObject
 
 signals:
     void updateProgress(int cnt, int total);
+    void updateDisplay(MachineLoader *);
 
 protected slots:
     virtual void dataAvailable() {}

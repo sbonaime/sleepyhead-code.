@@ -12,6 +12,7 @@
 #include "SleepLib/loader_plugins/cms50_loader.h"
 
 Qt::DayOfWeek firstDayOfWeekFromLocale();
+QList<SerialOximeter *> GetOxiLoaders();
 
 OximeterImport::OximeterImport(QWidget *parent) :
     QDialog(parent),
@@ -31,10 +32,14 @@ OximeterImport::OximeterImport(QWidget *parent) :
     lvlayout->setMargin(0);
     ui->liveViewFrame->setLayout(lvlayout);
     lvlayout->addWidget(liveView);
-    PLETHY = new gGraph(liveView, STR_TR_Plethy, STR_UNIT_Hz);
-    PLETHY->AddLayer(new gYAxis(), LayerLeft, gYAxis::Margin);
-    PLETHY->AddLayer(new gXAxis(), LayerBottom, 0, 20);
-    PLETHY->AddLayer(plethyChart = new gLineChart(OXI_Plethy));
+    plethyGraph = new gGraph(liveView, STR_TR_Plethy, STR_UNIT_Hz);
+
+    plethyGraph->AddLayer(new gYAxis(), LayerLeft, gYAxis::Margin);
+    plethyGraph->AddLayer(new gXAxis(), LayerBottom, 0, 20);
+    plethyGraph->AddLayer(plethyChart = new gLineChart(OXI_Plethy));
+    plethyGraph->setVisible(true);
+    plethyGraph->setRecMinY(0);
+    plethyGraph->setRecMaxY(128);
 
     ui->calendarWidget->setFirstDayOfWeek(Qt::Sunday);
     QTextCharFormat format = ui->calendarWidget->weekdayTextFormat(Qt::Saturday);
@@ -48,7 +53,6 @@ OximeterImport::OximeterImport(QWidget *parent) :
     ui->dateTimeEdit->setMinimumHeight(ui->dateTimeEdit->height() + 10);
     ui->syncCPAPGroup->setVisible(false);
 
-
     QVBoxLayout * layout = new QVBoxLayout;
     layout->setMargin(0);
     ui->sessBarFrame->setLayout(layout);
@@ -58,10 +62,21 @@ OximeterImport::OximeterImport(QWidget *parent) :
     sessbar->setMinimumHeight(40);
     connect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(onSessionSelected(Session*)));
     layout->addWidget(sessbar, 1);
+
+    dummyday = nullptr;
+    session = nullptr;
+    ELplethy = nullptr;
 }
 
 OximeterImport::~OximeterImport()
 {
+    if (!dummyday) {
+        delete dummyday;
+    }
+    if (!session) {
+        delete session;
+    }
+
     disconnect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(onSessionSelected(Session*)));
     delete ui;
 }
@@ -96,7 +111,7 @@ void OximeterImport::updateStatus(QString msg)
 }
 
 
-MachineLoader * OximeterImport::detectOximeter()
+SerialOximeter * OximeterImport::detectOximeter()
 {
     const int PORTSCAN_TIMEOUT=30000;
     const int delay=100;
@@ -104,7 +119,7 @@ MachineLoader * OximeterImport::detectOximeter()
 
     ui->retryButton->setVisible(false);
 
-    QList<MachineLoader *> loaders = GetLoaders(MT_OXIMETER);
+    QList<SerialOximeter *> loaders = GetOxiLoaders();
 
 
     updateStatus(tr("Scanning for compatible oximeters"));
@@ -118,9 +133,9 @@ MachineLoader * OximeterImport::detectOximeter()
     int elapsed=0;
     do {
         for (int i=0; i < loaders.size(); ++i) {
-            MachineLoader * loader = loaders[i];
-            if (loader->openDevice()) {
-                oximodule = loader;
+            SerialOximeter * oxi = loaders[i];
+            if (oxi->openDevice()) {
+                oximodule = oxi;
                 break;
             }
          }
@@ -231,12 +246,12 @@ void OximeterImport::on_fileImportButton_clicked()
 
     if (filename.isEmpty())
         return;
-    QList<MachineLoader *> loaders = GetLoaders(MT_OXIMETER);
+    QList<SerialOximeter *> loaders = GetOxiLoaders();
 
     bool success = false;
 
     oximodule = nullptr;
-    Q_FOREACH(MachineLoader * loader, loaders) {
+    Q_FOREACH(SerialOximeter * loader, loaders) {
         if (loader->Open(filename,p_profile)) {
             success = true;
             oximodule = loader;
@@ -267,7 +282,7 @@ void OximeterImport::on_liveImportButton_clicked()
     liveView->setVisible(true);
     QApplication::processEvents();
 
-    MachineLoader * oximodule = detectOximeter();
+    SerialOximeter * oximodule = detectOximeter();
 
     if (!oximodule) {
         updateStatus("Couldn't access oximeter");
@@ -276,15 +291,53 @@ void OximeterImport::on_liveImportButton_clicked()
 
         return;
     }
+
+    Machine *mach = oximodule->CreateMachine(p_profile);
+
+    connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText("Live Oximetery Mode");
-    liveView->setEmptyText(tr("Still Under Construction"));  // Recording...
+    liveView->setEmptyText(tr("Recording..."));
     ui->progressBar->hide();
     liveView->update();
     oximodule->Open("live",p_profile);
     ui->stopButton->setVisible(true);
+
+    dummyday = new Day(mach);
+
+    quint32 starttime = QDateTime::currentDateTime().toTime_t();
+    ti = qint64(starttime) * 1000L;
+    start_ti = ti;
+
+    session = new Session(mach, starttime);
+
+    ELplethy = session->AddEventList(OXI_Plethy, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, 20);
+
+    ELplethy->setFirst(start_ti);
+    session->really_set_first(start_ti);
+    dummyday->AddSession(session);
+
+    plethyChart->setMinX(start_ti);
+    plethyGraph->SetMinX(start_ti);
+
+    liveView->setDay(dummyday);
+
+    QTime time;
+    time.start();
     while (oximodule->isStreaming() && !oximodule->isAborted()) {
         QThread::msleep(50);
         QApplication::processEvents();
+//        if (time.elapsed() > 100) {
+            time.restart();
+            updateLiveDisplay();
+//        }
+        if (!isVisible()) {
+            disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
+            oximodule->closeDevice();
+            delete dummyday;
+            session = nullptr;
+            dummyday = nullptr;
+            return;
+        }
     }
     ui->stopButton->setVisible(false);
     ui->liveConnectLabel->setText("Live Import Stopped");
@@ -292,6 +345,16 @@ void OximeterImport::on_liveImportButton_clicked()
     updateStatus(tr("Live Oximetery import has been stopped"));
 
     oximodule->closeDevice();
+    disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
+
+//    delete dummyday;
+
+    //ui->stackedWidget->setCurrentWidget(ui->syncPage);
+    ui->syncSaveButton->setVisible(true);
+
+    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
+    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
+
     // detect oximeter
 }
 
@@ -401,4 +464,53 @@ void OximeterImport::on_radioSyncManually_clicked()
 void OximeterImport::on_syncSaveButton_clicked()
 {
 
+}
+
+void OximeterImport::on_updatePlethy(QByteArray plethy)
+{
+    if (!session) {
+        return;
+    }
+    int size = plethy.size();
+    quint64 dur = qint64(size) * 20L;
+    ELplethy->AddWaveform(ti, plethy.data(), size, dur);
+    ti += dur;
+}
+
+void OximeterImport::updateLiveDisplay()
+{
+    if (!session) {
+        return;
+    }
+    qint64 sti = ti - 20000;
+    plethyChart->setMinY(ELplethy->Min());
+    plethyChart->setMaxY(ELplethy->Max());
+    plethyGraph->SetMinY(ELplethy->Min());
+    plethyGraph->SetMaxY(ELplethy->Max());
+    plethyGraph->SetMinX(start_ti);
+    plethyGraph->SetMaxX(ti);
+    ELplethy->setLast(ti);
+    session->really_set_last(ti);
+
+
+    //liveView->SetXBounds(sti, ti, 0, true);
+    session->setMin(OXI_Plethy, ELplethy->Min());
+    session->setMax(OXI_Plethy, ELplethy->Max());
+    session->setLast(OXI_Plethy, ti);
+    session->setCount(OXI_Plethy, session->count(OXI_Plethy));
+
+    for (int i = 0; i < liveView->size(); i++) {
+        (*liveView)[i]->SetXBounds(sti, ti);
+    }
+
+    liveView->updateScale();
+    liveView->timedRedraw(25);
+
+
+}
+
+
+void OximeterImport::on_cancelButton_clicked()
+{
+    reject();
 }

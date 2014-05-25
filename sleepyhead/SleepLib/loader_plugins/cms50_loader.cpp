@@ -29,8 +29,6 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 
-#include <QtSerialPort/QSerialPortInfo>
-
 using namespace std;
 
 #include "cms50_loader.h"
@@ -39,105 +37,75 @@ using namespace std;
 
 extern QProgressBar *qprogress;
 
-const int START_TIMEOUT = 30000;
-
-// Possibly need to replan this to include oximetry
-
-bool SerialLoader::scanDevice(QString keyword,quint16 vendor_id, quint16 product_id)
+CMS50Loader::CMS50Loader()
 {
-    QStringList ports;
-
-    //qDebug() << "Scanning for USB Serial devices";
-    QList<QSerialPortInfo> list=QSerialPortInfo::availablePorts();
-
-    // How does the mac detect this as a SPO2 device?
-    for (int i=0;i<list.size();i++) {
-        const QSerialPortInfo * info=&list.at(i);
-        QString name=info->portName();
-        QString desc=info->description();
-
-        if ((!keyword.isEmpty() && desc.contains(keyword)) ||
-            ((info->hasVendorIdentifier() && (info->vendorIdentifier()==vendor_id))
-                && (info->hasProductIdentifier() && (info->productIdentifier()==product_id))))
-        {
-            ports.push_back(name);
-            QString dbg=QString("Found Serial Port: %1 %2 %3 %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
-
-            if (info->hasProductIdentifier()) //60000
-                dbg+=QString(" PID: %1").arg(info->productIdentifier());
-            if (info->hasVendorIdentifier()) // 4292
-                dbg+=QString(" VID: %1").arg(info->vendorIdentifier());
-
-            qDebug() << dbg.toLocal8Bit().data();
-            break;
-        }
-    }
-    if (ports.isEmpty()) {
-        return false;
-    }
-    if (ports.size()>1) {
-        qDebug() << "More than one serial device matching these parameters was found, choosing the first by default";
-    }
-    port=ports.at(0);
-    return true;
-}
-
-void SerialLoader::closeDevice()
-{
-    killTimers();
-    disconnect(&serial,SIGNAL(readyRead()), this, SLOT(dataAvailable()));
-    serial.close();
+    m_type = MT_OXIMETER;
+    m_abort = false;
     m_streaming = false;
-    qDebug() << "Port" << port << "closed";
+    m_importing = false;
+    imp_callbacks = 0;
+
+    m_vendorID = 0x10c4;
+    m_productID = 0xea60;
+
+    startTimer.setParent(this);
+    resetTimer.setParent(this);
+
 }
 
-bool SerialLoader::openDevice()
+CMS50Loader::~CMS50Loader()
 {
-    if (port.isEmpty()) {
-        if (!scanDevice("",m_vendorID, m_productID))
-            return false;
-    }
-    serial.setPortName(port);
-    if (!serial.open(QSerialPort::ReadWrite))
-        return false;
+}
 
-    // forward this stuff
+bool CMS50Loader::Detect(const QString &path)
+{
+    Q_UNUSED(path);
+    return false;
+}
 
-    // Set up serial port attributes
-    serial.setBaudRate(QSerialPort::Baud19200);
-    serial.setParity(QSerialPort::OddParity);
-    serial.setStopBits(QSerialPort::OneStop);
-    serial.setDataBits(QSerialPort::Data8);
-    serial.setFlowControl(QSerialPort::NoFlowControl);
+int CMS50Loader::Open(QString path, Profile *profile)
+{
 
-    m_streaming = true;
+    // Only one active Oximeter module at a time, set in preferences
+    Q_UNUSED(profile)
+
+    m_itemCnt = 0;
+    m_itemTotal = 0;
+
     m_abort = false;
     m_importing = false;
 
-    // connect relevant signals
-    connect(&serial,SIGNAL(readyRead()), this, SLOT(dataAvailable()));
+    started_import = false;
+    started_reading = false;
+    finished_import = false;
 
-    return true;
-}
+    imp_callbacks = 0;
+    cb_reset = 0;
 
-void SerialLoader::dataAvailable()
-{
-    QByteArray bytes;
+    m_time.start();
 
-    int available = serial.bytesAvailable();
-    bytes.resize(available);
+    // Cheating using path for two serial oximetry modes
 
-    int bytesread = serial.read(bytes.data(), available);
-    if (bytesread == 0)
-        return;
+    if (path.compare("import") == 0) {
+        setStatus(IMPORTING);
 
-    if (m_abort) {
-        closeDevice();
-        return;
+        startTimer.stop();
+        startImportTimeout();
+        return 1;
+    } else if (path.compare("live") == 0) {
+        oxitime = QDateTime::currentDateTime();
+        setStatus(LIVE);
+        return 1;
+    }
+    QString ext = path.section(".",1);
+    if ((ext.compare("spo", Qt::CaseInsensitive)==0) || (ext.compare("spor", Qt::CaseInsensitive)==0)) {
+        // try to read and process SpoR file..
+        return readSpoRFile(path) ? 1 : 0;
     }
 
-    processBytes(bytes);
+    return 0;
 }
+
 
 void CMS50Loader::processBytes(QByteArray bytes)
 {
@@ -315,7 +283,9 @@ int CMS50Loader::doLiveMode()
 {
     int available = buffer.size();
     int idx = 0;
-    while (idx < available) {
+
+    QByteArray plethy;
+    while (idx < available-5) {
         if (((unsigned char)buffer.at(idx) & 0x80) != 0x80) {
             idx++;
             continue;
@@ -324,8 +294,20 @@ int CMS50Loader::doLiveMode()
         int pbeat=(unsigned char)buffer.at(idx + 2);
         int pulse=((unsigned char)buffer.at(idx + 3) & 0x7f) | ((pbeat & 0x40) << 1);
         int spo2=(unsigned char)buffer.at(idx + 4) & 0x7f;
+
+        oxirec.append(OxiRecord(pulse, spo2));
+        plethy.append(pwave);
+
+        int elapsed = m_time.elapsed();
+
+        // update the graph plots
+        if (elapsed > 1000) {
+            m_time.start();
+            emit updateDisplay(this);
+        }
         idx += 5;
     }
+    emit updatePlethy(plethy);
 
     return idx;
 }
@@ -435,80 +417,12 @@ void CMS50Loader::resetImportTimeout()
 
 
 
-CMS50Loader::CMS50Loader()
-{
-    m_type = MT_OXIMETER;
-    m_abort = false;
-    m_streaming = false;
-    m_importing = false;
-    imp_callbacks = 0;
-
-    m_vendorID = 0x10c4;
-    m_productID = 0xea60;
-
-    startTimer.setParent(this);
-    resetTimer.setParent(this);
-
-}
-
-CMS50Loader::~CMS50Loader()
-{
-}
-
-bool CMS50Loader::Detect(const QString &path)
-{
-    Q_UNUSED(path);
-    return false;
-}
-
-int CMS50Loader::Open(QString path, Profile *profile)
-{
-
-    // Only one active Oximeter module at a time, set in preferences
-    Q_UNUSED(profile)
-
-    m_itemCnt = 0;
-    m_itemTotal = 0;
-
-    m_abort = false;
-    m_importing = false;
-
-    started_import = false;
-    started_reading = false;
-    finished_import = false;
-
-    imp_callbacks = 0;
-    cb_reset = 0;
-
-    // Cheating using path for two serial oximetry modes
-
-    if (path.compare("import") == 0) {
-        setStatus(IMPORTING);
-
-        m_time.start();
-
-        startTimer.stop();
-        startImportTimeout();
-        return 1;
-    } else if (path.compare("live") == 0) {
-        setStatus(LIVE);
-        return 1;
-    }
-    // try to read and process SpoR file..
-    return readSpoRFile(path);
-}
 
 bool CMS50Loader::readSpoRFile(QString path)
 {
     QFile file(path);
     if (!file.exists() || !file.isReadable()) {
         return false;
-    }
-
-    QString ext = path.section(".",1);
-    if ((ext.compare("spo",Qt::CaseInsensitive)==0)
-       && (ext.compare("spor",Qt::CaseInsensitive)==0)) {
-       return false;
     }
 
     file.open(QFile::ReadOnly);
@@ -548,7 +462,6 @@ bool CMS50Loader::readSpoRFile(QString path)
     return true;
 }
 
-
 Machine *CMS50Loader::CreateMachine(Profile *profile)
 {
     if (!profile) {
@@ -582,222 +495,23 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     return m;
 }
 
-Qt::DayOfWeek firstDayOfWeekFromLocale();
-#include <QAction>
-
-DateTimeDialog::DateTimeDialog(QString message, QWidget * parent, Qt::WindowFlags flags)
-:QDialog(parent, flags)
-{
-    layout = new QVBoxLayout(this);
-    setModal(true);
-    font.setPointSize(25);
-    m_msglabel = new QLabel(message);
-
-    m_msglabel->setAlignment(Qt::AlignHCenter);
-    m_msglabel->setFont(font);
-    layout->addWidget(m_msglabel);
-
-    m_cal = new QCalendarWidget(this);
-    m_cal->setFirstDayOfWeek(Qt::Sunday);
-    QTextCharFormat format = m_cal->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
-    m_cal->setWeekdayTextFormat(Qt::Saturday, format);
-    m_cal->setWeekdayTextFormat(Qt::Sunday, format);
-    m_cal->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
-    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
-    m_cal->setFirstDayOfWeek(dow);
-
-    m_timeedit = new MyTimeEdit(this);
-    m_timeedit->setDisplayFormat("hh:mm:ss ap");
-    m_timeedit->setMinimumHeight(m_timeedit->height() + 10);
-    m_timeedit->setFont(font);
-    m_timeedit->setCurrentSectionIndex(0);
-    m_timeedit->editor()->setStyleSheet(
-    "selection-color: white;"
-    "selection-background-color: lightgray;"
-    );
-
-    layout->addWidget(m_cal);
-    m_bottomlabel = new QLabel(this);
-    m_bottomlabel->setVisible(false);
-    m_bottomlabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(m_bottomlabel);
-
-    sessbar = new SessionBar(this);
-    sessbar->setMinimumHeight(40);
-    sessbar->setSelectMode(true);
-    sessbar->setMouseTracking(true);
-    connect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(onSessionSelected(Session*)));
-    layout->addWidget(sessbar,1);
-
-    layout2 = new QHBoxLayout();
-    layout->addLayout(layout2);
-
-    acceptbutton = new QPushButton (QObject::tr("&Accept"));
-    resetbutton = new QPushButton (QObject::tr("&Abort"));
-
-    resetbutton->setShortcut(QKeySequence(Qt::Key_Escape));
-//    shortcutQuit = new QShortcut(, this, SLOT(reject()), SLOT(reject()));
-
-    layout2->addWidget(m_timeedit);
-    layout2->addWidget(acceptbutton);
-    layout2->addWidget(resetbutton);
-
-    connect(resetbutton, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(acceptbutton, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(m_cal, SIGNAL(clicked(QDate)), this, SLOT(onDateSelected(QDate)));
-    connect(m_cal, SIGNAL(activated(QDate)), this, SLOT(onDateSelected(QDate)));
-    connect(m_cal, SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
-    connect(m_cal, SIGNAL(currentPageChanged(int,int)), this, SLOT(onCurrentPageChanged(int,int)));
-
-}
-DateTimeDialog::~DateTimeDialog()
-{
-    disconnect(m_cal, SIGNAL(currentPageChanged(int,int)), this, SLOT(onCurrentPageChanged(int,int)));
-    disconnect(m_cal, SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
-    disconnect(m_cal, SIGNAL(activated(QDate)), this, SLOT(onDateSelected(QDate)));
-    disconnect(m_cal, SIGNAL(clicked(QDate)), this, SLOT(onDateSelected(QDate)));
-    disconnect(acceptbutton, SIGNAL(clicked()), this, SLOT(accept()));
-    disconnect(resetbutton, SIGNAL(clicked()), this, SLOT(reject()));
-    disconnect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(onSessionSelected(Session*)));
-}
-
-void DateTimeDialog::onCurrentPageChanged(int year, int month)
-{
-    Q_UNUSED(year);
-    Q_UNUSED(month);
-    onDateSelected(m_cal->selectedDate());
-}
-void DateTimeDialog::onSelectionChanged()
-{
-    onDateSelected(m_cal->selectedDate());
-}
-
-void DateTimeDialog::onDateSelected(QDate date)
-{
-    Day * day = PROFILE.GetGoodDay(date, MT_CPAP);
-
-    sessbar->clear();
-    if (day) {
-        QDateTime time=QDateTime::fromMSecsSinceEpoch(day->first());
-        sessbar->clear();
-        QList<QColor> colors;
-        colors.push_back("#ffffe0");
-        colors.push_back("#ffe0ff");
-        colors.push_back("#e0ffff");
-        QList<Session *>::iterator i;
-        int j=0;
-        for (i=day->begin(); i != day->end(); ++i) {
-            sessbar->add((*i),colors.at(j++ % colors.size()));
-        }
-        //sessbar->setVisible(true);
-        setBottomMessage(QString("%1 session(s), starting at %2").arg(day->size()).arg(time.time().toString("hh:mm:ssap")));
-    } else {
-        setBottomMessage("No CPAP Data available for this date");
-       // sessbar->setVisible(false);
-    }
-
-    sessbar->update();
-}
-
-void DateTimeDialog::onSessionSelected(Session * session)
-{
-    QDateTime time=QDateTime::fromMSecsSinceEpoch(session->first());
-    m_timeedit->setTime(time.time());
-}
-
-QDateTime DateTimeDialog::execute(QDateTime datetime)
-{
-    m_timeedit->setTime(datetime.time());
-    m_cal->setCurrentPage(datetime.date().year(), datetime.date().month());
-    m_cal->setSelectedDate(datetime.date());
-    m_cal->setMinimumDate(PROFILE.FirstDay());
-    m_cal->setMaximumDate(QDate::currentDate());
-    onDateSelected(datetime.date());
-    if (QDialog::exec() == QDialog::Accepted) {
-        return QDateTime(m_cal->selectedDate(), m_timeedit->time());
-    } else {
-        return datetime;
-    }
-}
-void DateTimeDialog::reject()
-{
-    if (QMessageBox::question(this,STR_MessageBox_Warning,
-        QObject::tr("Closing this dialog will leave this time unedited.")+"<br/><br/>"+
-        QObject::tr("Are you sure you want to do this?"),
-        QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
-        QDialog::reject();
-    }
-}
-
-
 void CMS50Loader::process()
 {
     int size=oxirec.size();
     if (size<10)
         return;
 
-        return;
 
-    QDateTime cpaptime;
-    Day *day = PROFILE.GetDay(PROFILE.LastDay(), MT_CPAP);
-
-    if (day) {
-        int ti = day->first() / 1000L;
-
-        cpaptime = QDateTime::fromTime_t(ti);
-
-        if (cms50dplus) {
-            if (QMessageBox::question(nullptr, STR_MessageBox_Question,
-            "<h2>"+tr("Oximeter import completed")+"</h2><br/><br/>"+
-                tr("Oximeter import completed successfully, but your device did not record a starting time.")+"<br/><br/>"+
-                tr("If you remembered to start your oximeter at exactly the same time as your CPAP session, you can sync to the first CPAP session of the day last recorded.")+
-                tr("Otherwise you can adjust the time yourself."), tr("Use CPAP"), tr("Set Manually"), "", 0, 1)==0) {
-                oxitime=cpaptime;
-            } else {
-                DateTimeDialog dlg(tr("Oximeter starting time"));
-                oxitime = dlg.execute(oxitime);
-            }
-        } else {
-            if (qAbs(oxitime.secsTo(cpaptime)) > 60) {
-                if (QMessageBox::question(nullptr, STR_MessageBox_Question,
-                    "<h2>"+tr("Oximeter import completed")+"</h2><br/>"+
-                    tr("Which devices starting time do you wish to use for this oximetry session?")+"<br/><br/>"+
-                    tr("If you started both devices at exactly the same time, or don't know if the clock is set correctly on either devices, choose CPAP."),STR_TR_CPAP, STR_TR_Oximeter, "", 0, -1)==0) {
-                        oxitime=cpaptime;
-                        qDebug() << "Chose CPAP starting time";
-                } else {
-                    DateTimeDialog dlg(tr("Oximeter starting time"));
-                    oxitime = dlg.execute(oxitime);
-                    qDebug() << "Chose Oximeter starting time";
-                }
-            } else {
-                // don't bother asking.. use CPAP
-                oxitime=cpaptime;
-            }
-        }
-    } else {
-        if (cms50dplus) {
-            QMessageBox::information(nullptr, STR_MessageBox_Information,
-                    "<h2>"+tr("Oximeter import completed")+"</h2><br/>"+
-                    tr("Your oximeter does not record a starting time, and no CPAP session is available to match it to")+"<br/><br/>"+
-                    tr("You will have to adjust the starting time of this oximetery session manually."),
-                    QMessageBox::Ok, QMessageBox::Ok);
-            DateTimeDialog dlg(tr("Oximeter starting time"));
-            oxitime = dlg.execute(oxitime);
-        }
-    }
-
-    EventList *PULSE=new EventList(EVL_Event);
-    EventList *SPO2=new EventList(EVL_Event);
+//    EventList *PULSE=new EventList(EVL_Event);
+//    EventList *SPO2=new EventList(EVL_Event);
 
 
-    quint64 ti = oxitime.toMSecsSinceEpoch();
+//    quint64 ti = oxitime.toMSecsSinceEpoch();
 
-    for (int i=0; i < size; ++i) {
-        //PULSE->AddWaveform
-    }
-    qDebug() << "Processing" << oxirec.size() << "oximetry records";
+//    for (int i=0; i < size; ++i) {
+//        //PULSE->AddWaveform
+//    }
+//    qDebug() << "Processing" << oxirec.size() << "oximetry records";
 }
 
 

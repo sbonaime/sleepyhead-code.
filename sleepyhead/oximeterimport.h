@@ -5,7 +5,7 @@
 
 #include "Graphs/gGraphView.h"
 #include "Graphs/gLineChart.h"
-#include "SleepLib/machine_loader.h"
+#include "SleepLib/serialoximeter.h"
 #include "sessionbar.h"
 
 namespace Ui {
@@ -51,18 +51,27 @@ private slots:
 
     void on_syncSaveButton_clicked();
 
+    void on_cancelButton_clicked();
+
+protected slots:
+    void on_updatePlethy(QByteArray plethy);
+
 protected:
-    MachineLoader * detectOximeter();
+    SerialOximeter * detectOximeter();
     void updateStatus(QString msg);
+    void updateLiveDisplay();
 
 private:
     Ui::OximeterImport *ui;
-    MachineLoader * oximodule;
+    SerialOximeter * oximodule;
     gGraphView * liveView;
-    gGraph * PLETHY;
+    gGraph * plethyGraph;
+    Session * session;
+    Day * dummyday;
     gLineChart * plethyChart;
     SessionBar * sessbar;
-
+    EventList * ELplethy;
+    qint64 start_ti, ti;
 };
 
 #endif // OXIMETERIMPORT_H

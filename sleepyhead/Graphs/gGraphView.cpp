@@ -839,7 +839,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
             queGraph(m_graphs[i], px + tw, py, width() - tw, h);
 
-            if (m_showsplitter) {
+            if ((m_graphs.size() > 1) && m_showsplitter) {
                 // draw the splitter handle
                 painter.setPen(QColor(158,158,158,255));
                 painter.drawLine(0, py + h, w, py + h);
@@ -897,7 +897,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
             queGraph(m_graphs[i], px + tw, py, width() - tw, h);
 
-            if (m_showsplitter) {
+            if ((m_graphs.size() > 1) && m_showsplitter) {
                 // draw the splitter handle
                 painter.setPen(QColor(220, 220, 220, 255));
                 painter.drawLine(0, py + h, w, py + h);

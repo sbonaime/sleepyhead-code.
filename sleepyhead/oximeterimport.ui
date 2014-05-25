@@ -1269,22 +1269,5 @@ p, li { white-space: pre-wrap; }
  <resources>
   <include location="Resources.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>cancelButton</sender>
-   <signal>clicked()</signal>
-   <receiver>OximeterImport</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>718</x>
-     <y>499</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>425</x>
-     <y>265</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

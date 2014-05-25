@@ -35,14 +35,14 @@ enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE, SO_WAIT };
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
     \brief Base class for Serial Oximeters
     */
-class SerialOximeter: public QObject
+class ZSerialOximeter: public QObject
 {
     Q_OBJECT
   public:
-    explicit SerialOximeter(QObject *parent, QString oxiname, QString portname = "",
+    explicit ZSerialOximeter(QObject *parent, QString oxiname, QString portname = "",
                             BaudRateType baud = BAUD19200, FlowType flow = FLOW_OFF, ParityType parity = PAR_ODD,
                             DataBitsType databits = DATA_8, StopBitsType stopbits = STOP_1);
-    virtual ~SerialOximeter();
+    virtual ~ZSerialOximeter();
 
     virtual void setSession(Session *sess) { session = sess; }
 
@@ -227,7 +227,7 @@ class SerialOximeter: public QObject
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
     \brief Serial Import & Live module
     */
-class CMS50Serial: public SerialOximeter
+class CMS50Serial: public ZSerialOximeter
 {
     Q_OBJECT
   public:
@@ -412,7 +412,7 @@ class Oximetry : public QWidget
     Layer *foobar;
     gGraphView *m_shared;
 
-    SerialOximeter *oximeter;
+    ZSerialOximeter *oximeter;
     qint64 saved_starttime;
     bool firstSPO2Update;
     bool firstPulseUpdate;

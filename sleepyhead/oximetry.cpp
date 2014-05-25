@@ -43,7 +43,7 @@ extern QLabel *qstatus2;
 extern MainWindow *mainwin;
 
 int lastpulse;
-SerialOximeter::SerialOximeter(QObject *parent, QString oxiname, QString portname,
+ZSerialOximeter::ZSerialOximeter(QObject *parent, QString oxiname, QString portname,
                                BaudRateType baud, FlowType flow, ParityType parity, DataBitsType databits,
                                StopBitsType stopbits) :
     QObject(parent),
@@ -76,7 +76,7 @@ SerialOximeter::SerialOximeter(QObject *parent, QString oxiname, QString portnam
     m_mode = SO_WAIT;
 }
 
-SerialOximeter::~SerialOximeter()
+ZSerialOximeter::~ZSerialOximeter()
 {
     if (m_opened) {
         if (m_port) { m_port->close(); }
@@ -86,14 +86,14 @@ SerialOximeter::~SerialOximeter()
     delete timer;
 }
 
-void SerialOximeter::Timeout()
+void ZSerialOximeter::Timeout()
 {
     qDebug() << "Timeout!";
 
     if (!import_mode) { emit(liveStopped(session)); }
 }
 
-bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
+bool ZSerialOximeter::Open(QextSerialPort::QueryMode mode)
 {
     if (m_portname.isEmpty()) {
         qDebug() << "Tried to open with empty portname";
@@ -134,7 +134,7 @@ bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
     }
 }
 
-void SerialOximeter::Close()
+void ZSerialOximeter::Close()
 {
     qDebug() << "Closing serial port" << m_portname;
 
@@ -154,7 +154,7 @@ void SerialOximeter::Close()
     m_opened = false;
 }
 
-void SerialOximeter::setPortName(QString portname)
+void ZSerialOximeter::setPortName(QString portname)
 {
     if (m_opened) {
         qDebug() << "Can't change serial PortName settings while port is open!";
@@ -164,7 +164,7 @@ void SerialOximeter::setPortName(QString portname)
     m_portname = portname;
 }
 
-void SerialOximeter::setBaudRate(BaudRateType baud)
+void ZSerialOximeter::setBaudRate(BaudRateType baud)
 {
     if (m_opened) {
         qDebug() << "Can't change serial BaudRate settings while port is open!";
@@ -174,7 +174,7 @@ void SerialOximeter::setBaudRate(BaudRateType baud)
     m_baud = baud;
 }
 
-void SerialOximeter::setFlowControl(FlowType flow)
+void ZSerialOximeter::setFlowControl(FlowType flow)
 {
     if (m_opened) {
         qDebug() << "Can't change serial FlowControl settings while port is open!";
@@ -184,7 +184,7 @@ void SerialOximeter::setFlowControl(FlowType flow)
     m_flow = flow;
 }
 
-void SerialOximeter::setParity(ParityType parity)
+void ZSerialOximeter::setParity(ParityType parity)
 {
     if (m_opened) {
         qDebug() << "Can't change serial Parity settings while port is open!";
@@ -194,7 +194,7 @@ void SerialOximeter::setParity(ParityType parity)
     m_parity = parity;
 }
 
-void SerialOximeter::setDataBits(DataBitsType databits)
+void ZSerialOximeter::setDataBits(DataBitsType databits)
 {
     if (m_opened) {
         qDebug() << "Can't change serial DataBit settings while port is open!";
@@ -204,7 +204,7 @@ void SerialOximeter::setDataBits(DataBitsType databits)
     m_databits = databits;
 }
 
-void SerialOximeter::setStopBits(StopBitsType stopbits)
+void ZSerialOximeter::setStopBits(StopBitsType stopbits)
 {
     if (m_opened) {
         qDebug() << "Can't change serial StopBit settings while port is open!";
@@ -214,7 +214,7 @@ void SerialOximeter::setStopBits(StopBitsType stopbits)
     m_stopbits = stopbits;
 }
 
-void SerialOximeter::addPulse(qint64 time, EventDataType pr)
+void ZSerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
     //EventDataType min=0,max=0;
     if (pr > 0) {
@@ -254,7 +254,7 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
     emit(updatePulse(pr));
 }
 
-void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
+void ZSerialOximeter::addSpO2(qint64 time, EventDataType o2)
 {
     //EventDataType min=0,max=0;
     if (o2 > 0) {
@@ -293,7 +293,7 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
     emit(updateSpO2(o2));
 }
 
-void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
+void ZSerialOximeter::addPlethy(qint64 time, EventDataType pleth)
 {
     if (!plethy) {
         plethy = new EventList(EVL_Event);
@@ -310,14 +310,14 @@ void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
     session->set_last(time);
     plethy->setLast(time);
 }
-void SerialOximeter::compactToWaveform(EventList *el)
+void ZSerialOximeter::compactToWaveform(EventList *el)
 {
     double rate = double(el->duration()) / double(el->count());
     el->setType(EVL_Waveform);
     el->setRate(rate);
     el->getTime().clear();
 }
-void SerialOximeter::compactToEvent(EventList *el)
+void ZSerialOximeter::compactToEvent(EventList *el)
 {
     if (el->count() < 2) { return; }
 
@@ -380,7 +380,7 @@ void SerialOximeter::compactToEvent(EventList *el)
     el->getTime() = nel.getTime();
 }
 
-void SerialOximeter::compactAll()
+void ZSerialOximeter::compactAll()
 {
     if (!session) { return; }
 
@@ -443,7 +443,7 @@ void SerialOximeter::compactAll()
     if (tmaxx > 0) { session->really_set_last(tmaxx); }
 }
 
-Session *SerialOximeter::createSession(QDateTime date)
+Session *ZSerialOximeter::createSession(QDateTime date)
 {
     if (session) {
         delete session;
@@ -475,7 +475,7 @@ Session *SerialOximeter::createSession(QDateTime date)
     return session;
 }
 
-bool SerialOximeter::startLive()
+bool ZSerialOximeter::startLive()
 {
     import_mode = false;
     killTimers();
@@ -491,7 +491,7 @@ bool SerialOximeter::startLive()
     return true;
 }
 
-void SerialOximeter::stopLive()
+void ZSerialOximeter::stopLive()
 {
     if (timer->isActive()) { timer->stop(); }
 
@@ -505,7 +505,7 @@ void SerialOximeter::stopLive()
 }
 
 CMS50Serial::CMS50Serial(QObject *parent, QString portname = "") :
-    SerialOximeter(parent, "CMS50", portname, BAUD19200, FLOW_OFF, PAR_ODD, DATA_8, STOP_1)
+    ZSerialOximeter(parent, "CMS50", portname, BAUD19200, FLOW_OFF, PAR_ODD, DATA_8, STOP_1)
 {
     cms50timer = new QTimer(this);
     cms50timer2 = new QTimer(this);
