@@ -620,7 +620,7 @@
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="welcomePage">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -968,51 +968,66 @@ p, li { white-space: pre-wrap; }
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="spacing">
-             <number>4</number>
+             <number>6</number>
             </property>
             <property name="leftMargin">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="topMargin">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="rightMargin">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="bottomMargin">
-             <number>0</number>
+             <number>6</number>
             </property>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QCheckBox" name="showLiveGraphs">
-                <property name="text">
-                 <string>Show Live Graphs</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
+             <widget class="QCheckBox" name="showLiveGraphs">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Show Live Graphs</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>139</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
               <item>
                <widget class="QLabel" name="label_4">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Duration</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
@@ -1021,21 +1036,34 @@ p, li { white-space: pre-wrap; }
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
-                  <height>0</height>
+                  <height>50</height>
                  </size>
                 </property>
                 <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
+                 <enum>QFrame::StyledPanel</enum>
                 </property>
                 <property name="digitCount">
                  <number>8</number>
                 </property>
                </widget>
               </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
                <widget class="QLabel" name="label_7">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>SpO2 %</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
@@ -1094,17 +1122,30 @@ p, li { white-space: pre-wrap; }
                  <enum>Qt::LeftToRight</enum>
                 </property>
                 <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
+                 <enum>QFrame::StyledPanel</enum>
                 </property>
                 <property name="digitCount">
                  <number>2</number>
                 </property>
                </widget>
               </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
               <item>
                <widget class="QLabel" name="label_8">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Pulse Rate</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
@@ -1160,7 +1201,7 @@ p, li { white-space: pre-wrap; }
                  </palette>
                 </property>
                 <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
+                 <enum>QFrame::StyledPanel</enum>
                 </property>
                 <property name="smallDecimalPoint">
                  <bool>false</bool>

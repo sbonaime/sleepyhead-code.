@@ -300,7 +300,10 @@ void OximeterImport::on_liveImportButton_clicked()
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText("Live Oximetery Mode");
+
+
     liveView->setEmptyText(tr("Starting up..."));
+    updateStatus(tr("If you can still read this after a few seconds, cancel and try again"));
     ui->progressBar->hide();
     liveView->update();
     oximodule->Open("live",p_profile);
@@ -529,16 +532,16 @@ void OximeterImport::updateLiveDisplay()
 
         bool datagood = oximodule->oxirec[size].pulse > 0;
 
-        QString STR_recording = tr("Recording...");
-        QString STR_nofinger = tr("Finger not detected");
 
         if (datagood & (pulse <= 0)) {
+            QString STR_recording = tr("Recording...");
             updateStatus(STR_recording);
             liveView->setEmptyText(STR_recording);
             if (!ui->showLiveGraphs->isChecked()) {
                 liveView->redraw();
             }
         } else if (!datagood & (pulse != 0)) {
+            QString STR_nofinger = tr("Finger not detected");
             updateStatus(STR_nofinger);
             liveView->setEmptyText(STR_nofinger);
             if (!ui->showLiveGraphs->isChecked()) {
@@ -574,6 +577,12 @@ void OximeterImport::on_cancelButton_clicked()
 
 void OximeterImport::on_showLiveGraphs_clicked(bool checked)
 {
+    if (checked) {
+        updateTimer.setInterval(50);
+    } else {
+        // Don't need to call the timer so often.. Save a little CPU..
+        updateTimer.setInterval(500);
+    }
     plethyGraph->setVisible(checked);
     liveView->redraw();
 }
