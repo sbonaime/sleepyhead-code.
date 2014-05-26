@@ -19,6 +19,7 @@
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include <QTimer>
+#include <QFontMetrics>
 #include <QDir>
 #include "ui_profileselect.h"
 #include "SleepLib/profiles.h"
@@ -39,11 +40,18 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
     QIcon icon(":/icons/moon.png");
 
+    int w=0;
+    QFont font("Sans Serif", 18, QFont::Bold, false);
+    ui->listView->setFont(font);
+
+    QFontMetrics fm(font);
     for (QMap<QString, Profile *>::iterator p = Profiles::profiles.begin();
             p != Profiles::profiles.end(); p++) {
         name = p.key();
 
-        QStandardItem *item = new QStandardItem(icon, name);
+        QStandardItem *item = new QStandardItem(name);
+        QRect rect = fm.boundingRect(name);
+        if (rect.width() > w) w = rect.width();
 
         if (PREF.contains(STR_GEN_Profile) && (name == PREF[STR_GEN_Profile].toString())) {
             sel = i;
@@ -53,15 +61,18 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
         item->setEditable(false);
 
         // Profile fonts arern't loaded yet.. Using generic font.
-        item->setFont(QFont("Sans Serif", 18, QFont::Bold, false));
+        item->setFont(font);
         model->appendRow(item);
         i++;
     }
+    w+=20;
+    ui->listView->setMinimumWidth(w);
 
-    ui->listView->setModel(model);
+    proxy = new QSortFilterProxyModel(this);
+    proxy->setSourceModel(model);
+    ui->listView->setModel(proxy);
     ui->listView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
-
     if (sel >= 0) { ui->listView->setCurrentIndex(model->item(sel)->index()); }
 
     m_tries = 0;
@@ -86,6 +97,15 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     //    else ui->labelBuild->setText(QString());
     ui->labelFolder->setText(GetAppRoot());
     ui->labelFolder->setToolTip("Current SleepyHead data folder\n" + GetAppRoot());
+
+    ui->listView->verticalScrollBar()->setStyleSheet("QScrollBar:vertical {border: 0px solid grey; background: transparent; }"
+    "QScrollBar::handle:vertical {"
+    "    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
+    "    stop: 0  rgb(230, 230, 230), stop: 0.5 rgb(255, 255, 255),  stop:1 rgb(230, 230, 230));"
+    "    min-height: 0px;"
+    "    border: 1px solid gray;"
+    "   border-radius: 5px;"
+    "}");
 }
 
 ProfileSelect::~ProfileSelect()
@@ -326,4 +346,10 @@ void ProfileSelect::on_listView_customContextMenuRequested(const QPoint &pos)
 void ProfileSelect::on_pushButton_clicked()
 {
     MainWindow::RestartApplication(false, true);
+}
+
+void ProfileSelect::on_filter_textChanged(const QString &arg1)
+{
+    QRegExp regExp("*"+arg1+"*", Qt::CaseInsensitive, QRegExp::Wildcard);
+    proxy->setFilterRegExp(regExp);
 }

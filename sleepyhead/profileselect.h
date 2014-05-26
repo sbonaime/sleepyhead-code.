@@ -15,6 +15,7 @@
 #include <QDialog>
 #include <QModelIndex>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 #include <QMenu>
 
 namespace Ui {
@@ -50,12 +51,15 @@ class ProfileSelect : public QDialog
 
     void on_pushButton_clicked();
 
-  private:
+    void on_filter_textChanged(const QString &arg1);
+
+private:
     Ui::ProfileSelect *ui;
     QString m_selectedProfile;
     int m_tries;
     QMenu *popupMenu;
     QStandardItemModel *model;
+    QSortFilterProxyModel *proxy;
 };
 
 #endif // PROFILESELECT_H
