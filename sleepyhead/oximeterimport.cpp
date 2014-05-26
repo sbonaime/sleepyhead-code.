@@ -66,6 +66,8 @@ OximeterImport::OximeterImport(QWidget *parent) :
     dummyday = nullptr;
     session = nullptr;
     ELplethy = nullptr;
+
+    pulse = spo2 = -1;
 }
 
 OximeterImport::~OximeterImport()
@@ -205,10 +207,13 @@ void OximeterImport::on_directImportButton_clicked()
 
     // Can't abort this bit or the oximeter will get confused...
     ui->cancelButton->setVisible(false);
-    while (oximodule->isImporting() && !oximodule->isAborted()) {
-        QThread::msleep(50);
-        QApplication::processEvents();
-    }
+
+    connect(oximodule, SIGNAL(importComplete(SerialOximeter*)), this, SLOT(finishedImport(SerialOximeter*)));
+}
+
+void OximeterImport::finishedImport(SerialOximeter * oxi)
+{
+    disconnect(ui->stopButton, SIGNAL(clicked()), this, SLOT(finishedImport()));
     ui->cancelButton->setVisible(true);
     updateStatus(tr("Oximeter import completed.. Processing data"));
     oximodule->process();
@@ -221,7 +226,6 @@ void OximeterImport::on_directImportButton_clicked()
     ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
 
     on_calendarWidget_clicked(PROFILE.LastDay());
-
 }
 
 void OximeterImport::doUpdateProgress(int v, int t)
@@ -296,7 +300,7 @@ void OximeterImport::on_liveImportButton_clicked()
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText("Live Oximetery Mode");
-    liveView->setEmptyText(tr("Recording..."));
+    liveView->setEmptyText(tr("Starting up..."));
     ui->progressBar->hide();
     liveView->update();
     oximodule->Open("live",p_profile);
@@ -304,7 +308,7 @@ void OximeterImport::on_liveImportButton_clicked()
 
     dummyday = new Day(mach);
 
-    quint32 starttime = QDateTime::currentDateTime().toTime_t();
+    quint32 starttime = oximodule->startTime().toTime_t();
     ti = qint64(starttime) * 1000L;
     start_ti = ti;
 
@@ -321,32 +325,28 @@ void OximeterImport::on_liveImportButton_clicked()
 
     liveView->setDay(dummyday);
 
-    QTime time;
-    time.start();
-    while (oximodule->isStreaming() && !oximodule->isAborted()) {
-        QThread::msleep(50);
-        QApplication::processEvents();
-//        if (time.elapsed() > 100) {
-            time.restart();
-            updateLiveDisplay();
-//        }
-        if (!isVisible()) {
-            disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
-            oximodule->closeDevice();
-            delete dummyday;
-            session = nullptr;
-            dummyday = nullptr;
-            return;
-        }
-    }
+    updateTimer.setParent(this);
+    updateTimer.setInterval(50);
+    updateTimer.start();
+    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateLiveDisplay()));
+    connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(finishedRecording()));
+}
+
+void OximeterImport::finishedRecording()
+{
+    updateTimer.stop();
+    oximodule->closeDevice();
+    disconnect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateLiveDisplay()));
+    disconnect(ui->stopButton, SIGNAL(clicked()), this, SLOT(finishedRecording()));
+
     ui->stopButton->setVisible(false);
     ui->liveConnectLabel->setText("Live Import Stopped");
     liveView->setEmptyText(tr("Live Oximetery Stopped"));
     updateStatus(tr("Live Oximetery import has been stopped"));
 
-    oximodule->closeDevice();
     disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
 
+// Remember to clear sessionlist before deleting dummyday. or it will destroy session.
 //    delete dummyday;
 
     //ui->stackedWidget->setCurrentWidget(ui->syncPage);
@@ -356,6 +356,7 @@ void OximeterImport::on_liveImportButton_clicked()
     ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
 
     plethyGraph->SetMinX(start_ti);
+    liveView->SetXBounds(start_ti, ti, 0, true);
 
     plethyGraph->setBlockZoom(false);
 
@@ -487,36 +488,92 @@ void OximeterImport::updateLiveDisplay()
     if (!session) {
         return;
     }
-    qint64 sti = ti - 20000;
-    plethyChart->setMinY(ELplethy->Min());
-    plethyChart->setMaxY(ELplethy->Max());
-    plethyGraph->SetMinY(ELplethy->Min());
-    plethyGraph->SetMaxY(ELplethy->Max());
-    plethyGraph->SetMinX(sti);
-    plethyGraph->SetMaxX(ti);
-    plethyGraph->setBlockZoom(true);
-    ELplethy->setLast(ti);
-    session->really_set_last(ti);
+
+    if (ui->showLiveGraphs->isChecked()) {
+        qint64 sti = ti - 20000;
+        plethyChart->setMinY(ELplethy->Min());
+        plethyChart->setMaxY(ELplethy->Max());
+        plethyGraph->SetMinY(ELplethy->Min());
+        plethyGraph->SetMaxY(ELplethy->Max());
+        plethyGraph->SetMinX(sti);
+        plethyGraph->SetMaxX(ti);
+        plethyGraph->setBlockZoom(true);
+        ELplethy->setLast(ti);
+        session->really_set_last(ti);
 
 
-    //liveView->SetXBounds(sti, ti, 0, true);
-    session->setMin(OXI_Plethy, ELplethy->Min());
-    session->setMax(OXI_Plethy, ELplethy->Max());
-    session->setLast(OXI_Plethy, ti);
-    session->setCount(OXI_Plethy, session->count(OXI_Plethy));
+        //liveView->SetXBounds(sti, ti, 0, true);
+        session->setMin(OXI_Plethy, ELplethy->Min());
+        session->setMax(OXI_Plethy, ELplethy->Max());
+        session->setLast(OXI_Plethy, ti);
+        session->setCount(OXI_Plethy, ELplethy->count());
 
-    for (int i = 0; i < liveView->size(); i++) {
-        (*liveView)[i]->SetXBounds(sti, ti);
+        for (int i = 0; i < liveView->size(); i++) {
+            (*liveView)[i]->SetXBounds(sti, ti);
+        }
+
+        liveView->updateScale();
+        liveView->redraw();
     }
 
-    liveView->updateScale();
-    liveView->timedRedraw(25);
+    int size = oximodule->oxirec.size();
 
+    if (size > 0) {
+        int i = oximodule->startTime().secsTo(QDateTime::currentDateTime());
 
+        int seconds = i % 60;
+        int minutes = (i / 60) % 60;
+        int hours = i / 3600;
+
+        size--;
+
+        bool datagood = oximodule->oxirec[size].pulse > 0;
+
+        QString STR_recording = tr("Recording...");
+        QString STR_nofinger = tr("Finger not detected");
+
+        if (datagood & (pulse <= 0)) {
+            updateStatus(STR_recording);
+            liveView->setEmptyText(STR_recording);
+            if (!ui->showLiveGraphs->isChecked()) {
+                liveView->redraw();
+            }
+        } else if (!datagood & (pulse != 0)) {
+            updateStatus(STR_nofinger);
+            liveView->setEmptyText(STR_nofinger);
+            if (!ui->showLiveGraphs->isChecked()) {
+                liveView->redraw();
+            }
+        }
+        pulse = oximodule->oxirec[size].pulse;
+        spo2 = oximodule->oxirec[size].spo2;
+        if (pulse > 0) {
+            ui->pulseDisplay->display(QString().sprintf("%3i", pulse));
+        } else {
+            ui->pulseDisplay->display("---");
+        }
+        if (spo2 > 0) {
+            ui->spo2Display->display(QString().sprintf("%2i", spo2));
+        } else {
+            ui->spo2Display->display("--");
+        }
+
+        ui->lcdDuration->display(QString().sprintf("%02i:%02i:%02i",hours, minutes, seconds));
+
+    }
 }
 
 
 void OximeterImport::on_cancelButton_clicked()
 {
+    if (oximodule && oximodule->isStreaming()) {
+        oximodule->closeDevice();
+    }
     reject();
+}
+
+void OximeterImport::on_showLiveGraphs_clicked(bool checked)
+{
+    plethyGraph->setVisible(checked);
+    liveView->redraw();
 }

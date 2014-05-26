@@ -49,22 +49,20 @@ class MachineLoader: public QObject
     virtual const QString &ClassName() = 0;
     inline MachineType type() { return m_type; }
 
-    virtual bool openDevice() { return false; }
-    virtual void closeDevice() {}
-    virtual bool scanDevice(QString keyword="", quint16 vendor_id=0, quint16 product_id=0) {
-        Q_UNUSED(keyword)
-        Q_UNUSED(vendor_id)
-        Q_UNUSED(product_id)
-        return false;
-    }
+//    virtual bool openDevice() { return false; }
+//    virtual void closeDevice() {}
+//    virtual bool scanDevice(QString keyword="", quint16 vendor_id=0, quint16 product_id=0) {
+//        Q_UNUSED(keyword)
+//        Q_UNUSED(vendor_id)
+//        Q_UNUSED(product_id)
+//        return false;
+//    }
 
     void queTask(ImportTask * task);
 
     //! \brief Process Task list using all available threads.
     void runTasks();
 
-    inline bool isStreaming() { return m_streaming; }
-    inline bool isImporting() { return m_importing; }
     inline bool isAborted() { return m_abort; }
     void abort() { m_abort = true; }
 
@@ -75,16 +73,16 @@ class MachineLoader: public QObject
 
 signals:
     void updateProgress(int cnt, int total);
-    void updateDisplay(MachineLoader *);
+//    void updateDisplay(MachineLoader *);
 
-protected slots:
-    virtual void dataAvailable() {}
-    virtual void resetImportTimeout() {}
-    virtual void startImportTimeout() {}
+//protected slots:
+//    virtual void dataAvailable() {}
+//    virtual void resetImportTimeout() {}
+//    virtual void startImportTimeout() {}
 
-protected:
-    virtual void killTimers(){}
-    virtual void resetDevice(){}
+//protected:
+//    virtual void killTimers(){}
+//    virtual void resetDevice(){}
 
   protected:
     //! \brief Contains a list of Machine records known by this loader
@@ -97,8 +95,6 @@ protected:
     int m_currenttask;
     int m_totaltasks;
 
-    bool m_streaming;
-    bool m_importing;
     bool m_abort;
 
     DeviceStatus m_status;

@@ -93,7 +93,7 @@ int CMS50Loader::Open(QString path, Profile *profile)
         startImportTimeout();
         return 1;
     } else if (path.compare("live") == 0) {
-        oxitime = QDateTime::currentDateTime();
+        m_startTime = oxitime = QDateTime::currentDateTime();
         setStatus(LIVE);
         return 1;
     }
@@ -111,7 +111,7 @@ void CMS50Loader::processBytes(QByteArray bytes)
 {
     // Sync to start of message type we are interested in
     quint8 c;
-    quint8 msgcode = (m_status == IMPORTING) ? 0xf0 : 0x80;
+    quint8 msgcode = 0x80;
 
     int idx=0;
     int bytesread = bytes.size();
@@ -157,17 +157,9 @@ void CMS50Loader::processBytes(QByteArray bytes)
 
 int CMS50Loader::doImportMode()
 {
-    if (finished_import) {
-        // CMS50E/F continue streaming after import, CMS50D+ stops dead
-        // there is a timer running at this stage that will kill the 50D
-        killTimers();
-        closeDevice();
-        m_importing = false;
-        imp_callbacks = 0;
-        return 0;
-    }
-    int hour,minute;
     int available = buffer.size();
+    Q_ASSERT(!finished_import);
+    int hour,minute;
     int idx = 0;
     while (idx < available) {
         unsigned char c=(unsigned char)buffer.at(idx);
@@ -256,16 +248,16 @@ int CMS50Loader::doImportMode()
             } else if (!started_reading) { // have not got a valid trio yet, skip...
                 idx += 1;
             } else {
-                // trio's are over.. finish up.
+                //Completed
+                finished_import = true;
                 killTimers();
                 closeDevice();
-
-                started_import = false;
-                started_reading = false;
-                finished_import = true;
                 m_importing = false;
-                break;
-                //Completed
+                m_status = NEUTRAL;
+                emit importComplete(this);
+                return available;
+                imp_callbacks = cb_reset = 0;
+                return available;
             }
         }
     }
@@ -298,13 +290,6 @@ int CMS50Loader::doLiveMode()
         oxirec.append(OxiRecord(pulse, spo2));
         plethy.append(pwave);
 
-        int elapsed = m_time.elapsed();
-
-        // update the graph plots
-        if (elapsed > 1000) {
-            m_time.start();
-            emit updateDisplay(this);
-        }
         idx += 5;
     }
     emit updatePlethy(plethy);
@@ -386,7 +371,7 @@ void CMS50Loader::resetImportTimeout()
 
     if (imp_callbacks != cb_reset) {
         // Still receiving data.. reset timer
-        qDebug() << "Still receiving data in resetImportTimeout()";
+        qDebug() << "Still receiving data in resetImportTimeout()" << imp_callbacks << cb_reset;
         if (resetTimer.isActive())
             resetTimer.stop();
 
@@ -403,9 +388,9 @@ void CMS50Loader::resetImportTimeout()
             resetDevice(); // Send Reset to CMS50D+
             //started_import = false;
             finished_import = true;
-            m_streaming=false;
+            //m_streaming=false;
 
-            closeDevice();
+            //closeDevice();
             //emit transferComplete();
             //doImportComplete();
             return;

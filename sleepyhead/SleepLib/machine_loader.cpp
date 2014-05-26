@@ -53,7 +53,7 @@ void DestroyLoaders()
 
 MachineLoader::MachineLoader() :QObject(nullptr)
 {
-    m_importing = m_abort = m_streaming = false;
+    m_abort = false;
     m_type = MT_UNKNOWN;
     m_status = NEUTRAL;
 }

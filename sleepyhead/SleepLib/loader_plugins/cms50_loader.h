@@ -17,15 +17,6 @@
 const QString cms50_class_name = "CMS50";
 const int cms50_data_version = 4;
 
-struct OxiRecord
-{
-    quint8 pulse;
-    quint8 spo2;
-    OxiRecord():pulse(0), spo2(0) {}
-    OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}
-    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2= copy.spo2; }
-};
-
 
 /*! \class CMS50Loader
     \brief Bulk Importer for CMS50 SPO2Review format.. Deprecated, as the Oximetry module does a better job
@@ -63,8 +54,6 @@ protected:
 
     int doImportMode();
     int doLiveMode();
-
-    QVector<OxiRecord> oxirec;
 
     virtual void killTimers();
 

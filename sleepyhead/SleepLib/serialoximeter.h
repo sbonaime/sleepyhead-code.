@@ -19,11 +19,25 @@
 
 const int START_TIMEOUT = 30000;
 
+
+struct OxiRecord
+{
+    quint8 pulse;
+    quint8 spo2;
+    OxiRecord():pulse(0), spo2(0) {}
+    OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}
+    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2= copy.spo2; }
+};
+
+
 class SerialOximeter : public MachineLoader
 {
 Q_OBJECT
 public:
-    SerialOximeter() : MachineLoader() {}
+    SerialOximeter() : MachineLoader() {
+        m_importing = m_streaming = false;
+        m_productID = m_vendorID = 0;
+    }
     virtual ~SerialOximeter() {}
 
     virtual bool Detect(const QString &path)=0;
@@ -40,20 +54,31 @@ public:
     virtual bool openDevice();
     virtual void closeDevice();
 
+    inline bool isStreaming() { return m_streaming; }
+    inline bool isImporting() { return m_importing; }
+
+
     virtual void process() {}
 
     virtual Machine *CreateMachine(Profile *profile)=0;
 
+    QVector<OxiRecord> oxirec;
+
+    QDateTime startTime() { return m_startTime; }
 
 signals:
     void noDeviceFound();
     void deviceDetected();
     void updatePlethy(QByteArray plethy);
+    void importComplete(SerialOximeter *);
 
 protected slots:
     virtual void dataAvailable();
     virtual void resetImportTimeout() {}
     virtual void startImportTimeout() {}
+
+    virtual void stopRecording();
+//    virtual void abortTask();
 
 protected:
     virtual void processBytes(QByteArray buffer) { Q_UNUSED(buffer) }
@@ -68,8 +93,14 @@ protected:
     QTimer startTimer;
     QTimer resetTimer;
 
+    QDateTime m_startTime;
+
     quint16 m_productID;
     quint16 m_vendorID;
+
+    bool m_streaming;
+    bool m_importing;
+
 };
 
 #endif // SERIALOXIMETER_H

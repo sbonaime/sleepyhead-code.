@@ -53,13 +53,17 @@ private slots:
 
     void on_cancelButton_clicked();
 
+    void on_showLiveGraphs_clicked(bool checked);
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
+    void finishedRecording();
+    void finishedImport(SerialOximeter*);
+    void updateLiveDisplay();
 
 protected:
     SerialOximeter * detectOximeter();
     void updateStatus(QString msg);
-    void updateLiveDisplay();
 
 private:
     Ui::OximeterImport *ui;
@@ -72,6 +76,11 @@ private:
     SessionBar * sessbar;
     EventList * ELplethy;
     qint64 start_ti, ti;
+    QTimer updateTimer;
+
+    int pulse;
+    int spo2;
+
 };
 
 #endif // OXIMETERIMPORT_H

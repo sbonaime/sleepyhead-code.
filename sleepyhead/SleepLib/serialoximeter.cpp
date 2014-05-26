@@ -124,4 +124,9 @@ void SerialOximeter::dataAvailable()
     processBytes(bytes);
 }
 
-
+void SerialOximeter::stopRecording()
+{
+    closeDevice();
+    m_status = NEUTRAL;
+    emit importComplete(this);
+}
