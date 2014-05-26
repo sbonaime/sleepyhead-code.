@@ -207,6 +207,8 @@ const QString STR_OS_SPO2DropDuration = "SPO2DropDuration";
 const QString STR_OS_SPO2DropPercentage = "SPO2DropPercentage";
 const QString STR_OS_PulseChangeDuration = "PulseChangeDuration";
 const QString STR_OS_PulseChangeBPM = "PulseChangeBPM";
+const QString STR_OS_SkipOxiIntroScreen = "SkipOxiIntroScreen";
+
 
 // CPAPSettings Strings
 const QString STR_CS_ComplianceHours = "ComplianceHours";
@@ -413,6 +415,7 @@ class OxiSettings : public ProfileSettings
         initPref(STR_OS_SPO2DropPercentage, 3.0);
         initPref(STR_OS_PulseChangeDuration, 8.0);
         initPref(STR_OS_PulseChangeBPM, 5.0);
+        initPref(STR_OS_SkipOxiIntroScreen, false);
     }
 
     bool oximetryEnabled() const { return getPref(STR_OS_EnableOximetry).toBool(); }
@@ -423,6 +426,8 @@ class OxiSettings : public ProfileSettings
     double spO2DropPercentage() const { return getPref(STR_OS_SPO2DropPercentage).toDouble(); }
     double pulseChangeDuration() const { return getPref(STR_OS_PulseChangeDuration).toDouble(); }
     double pulseChangeBPM() const { return getPref(STR_OS_PulseChangeBPM).toDouble(); }
+    bool skipOxiIntroScreen() const { return getPref(STR_OS_SkipOxiIntroScreen).toBool(); }
+
 
     void setOximetryEnabled(bool enabled) { setPref(STR_OS_EnableOximetry, enabled); }
     void setSyncOximetry(bool synced) { setPref(STR_OS_SyncOximetry, synced); }
@@ -430,6 +435,7 @@ class OxiSettings : public ProfileSettings
     void setOxiDiscardThreshold(double thresh) { setPref(STR_OS_OxiDiscardThreshold, thresh); }
     void setSpO2DropDuration(double duration) { setPref(STR_OS_SPO2DropDuration, duration); }
     void setPulseChangeBPM(double bpm) { setPref(STR_OS_PulseChangeBPM, bpm); }
+    void setSkipOxiIntroScreen(bool skip) { setPref(STR_OS_SkipOxiIntroScreen, skip); }
     void setSpO2DropPercentage(double percentage) {
         setPref(STR_OS_SPO2DropPercentage, percentage);
     }

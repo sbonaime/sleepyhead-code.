@@ -620,7 +620,7 @@
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>3</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="welcomePage">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -691,7 +691,7 @@ p, li { white-space: pre-wrap; }
               </spacer>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QCheckBox" name="skipWelcomeCheckbox">
                <property name="text">
                 <string>Skip this page next time.</string>
                </property>
@@ -1476,11 +1476,18 @@ p, li { white-space: pre-wrap; }
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <layout class="QHBoxLayout" name="buttonLayout">
       <item>
        <widget class="QPushButton" name="cancelButton">
         <property name="text">
          <string>&amp;Cancel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="informationButton">
+        <property name="text">
+         <string>&amp;Information Page</string>
         </property>
        </widget>
       </item>
@@ -1512,19 +1519,16 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="nextButton">
+       <widget class="QPushButton" name="syncSaveButton">
         <property name="text">
-         <string>&amp;Start</string>
-        </property>
-        <property name="default">
-         <bool>true</bool>
+         <string>&amp;Save and Finish</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="syncSaveButton">
+       <widget class="QPushButton" name="nextButton">
         <property name="text">
-         <string>&amp;Save and Finish</string>
+         <string>&amp;Start</string>
         </property>
        </widget>
       </item>

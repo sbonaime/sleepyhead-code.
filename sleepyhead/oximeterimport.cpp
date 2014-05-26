@@ -68,6 +68,18 @@ OximeterImport::OximeterImport(QWidget *parent) :
     ELplethy = nullptr;
 
     pulse = spo2 = -1;
+
+
+    ui->skipWelcomeCheckbox->setChecked(p_profile->oxi->skipOxiIntroScreen());
+    if (p_profile->oxi->skipOxiIntroScreen()) {
+        ui->stackedWidget->setCurrentWidget(ui->importSelectionPage);
+        ui->nextButton->setVisible(false);
+        ui->informationButton->setVisible(true);
+    } else {
+        ui->stackedWidget->setCurrentWidget(ui->welcomePage);
+        ui->nextButton->setVisible(true);
+        ui->informationButton->setVisible(false);
+    }
 }
 
 OximeterImport::~OximeterImport()
@@ -96,8 +108,12 @@ void OximeterImport::on_nextButton_clicked()
         break;
     case 1:
         ui->nextButton->setVisible(false);
+        ui->informationButton->setVisible(true);
+
         break;
     default:
+        ui->informationButton->setVisible(true);
+
         ui->nextButton->setVisible(true);
 
 
@@ -167,6 +183,7 @@ SerialOximeter * OximeterImport::detectOximeter()
 
 void OximeterImport::on_directImportButton_clicked()
 {
+    ui->informationButton->setVisible(false);
     ui->stackedWidget->setCurrentWidget(ui->directImportPage);
 
     oximodule = detectOximeter();
@@ -238,6 +255,7 @@ void OximeterImport::doUpdateProgress(int v, int t)
 
 void OximeterImport::on_fileImportButton_clicked()
 {
+
 #if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
         const QString documentsFolder = QDesktopServices::storageLocation(
                                       QDesktopServices::DocumentsLocation);
@@ -266,6 +284,7 @@ void OximeterImport::on_fileImportButton_clicked()
         QMessageBox::warning(this, STR_MessageBox_Warning, tr("No Oximetery module could parse the given file:")+QString("\n\n%1").arg(filename), QMessageBox::Ok);
         return;
     }
+    ui->informationButton->setVisible(false);
 
     ui->stackedWidget->setCurrentWidget(ui->syncPage);
     ui->syncSaveButton->setVisible(true);
@@ -278,6 +297,8 @@ void OximeterImport::on_fileImportButton_clicked()
 
 void OximeterImport::on_liveImportButton_clicked()
 {
+    ui->informationButton->setVisible(false);
+
     ui->stackedWidget->setCurrentWidget(ui->liveImportPage);
     ui->liveImportPage->layout()->addWidget(ui->progressBar);
     QApplication::processEvents();
@@ -585,4 +606,17 @@ void OximeterImport::on_showLiveGraphs_clicked(bool checked)
     }
     plethyGraph->setVisible(checked);
     liveView->redraw();
+}
+
+void OximeterImport::on_skipWelcomeCheckbox_clicked(bool checked)
+{
+    p_profile->oxi->setSkipOxiIntroScreen(checked);
+}
+
+void OximeterImport::on_informationButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->welcomePage);
+    ui->nextButton->setVisible(true);
+    ui->informationButton->setVisible(false);
+
 }

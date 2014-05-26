@@ -55,6 +55,10 @@ private slots:
 
     void on_showLiveGraphs_clicked(bool checked);
 
+    void on_skipWelcomeCheckbox_clicked(bool checked);
+
+    void on_informationButton_clicked();
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
     void finishedRecording();
