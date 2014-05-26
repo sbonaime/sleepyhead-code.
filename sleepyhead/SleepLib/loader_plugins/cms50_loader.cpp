@@ -340,7 +340,8 @@ void CMS50Loader::killTimers()
 
 void CMS50Loader::startImportTimeout()
 {
-    Q_ASSERT(m_streaming == true);
+    if (!m_streaming)
+        return;
 
     if (started_import) {
         return;

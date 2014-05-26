@@ -19,11 +19,12 @@
 #include "Graphs/gGraph.h"
 #include "Graphs/gGraphView.h"
 
+// These divisors are used to round xaxis timestamps to reasonable increments
 const quint64 divisors[] = {
     15552000000ULL, 7776000000ULL, 5184000000ULL, 2419200000ULL, 1814400000ULL, 1209600000L, 604800000L, 259200000L,
     172800000L, 86400000, 2880000, 14400000, 7200000, 3600000, 2700000,
     1800000, 1200000, 900000, 600000, 300000, 120000, 60000, 45000, 30000,
-    20000, 15000, 10000, 5000, 2000, 1000, 100, 50, 10
+    20000, 15000, 10000, 5000, 2000, 1000, 100, 50, 10, 1
 };
 const int divcnt = sizeof(divisors) / sizeof(quint64);
 
@@ -40,13 +41,6 @@ gXAxis::gXAxis(QColor col, bool fadeout)
     m_show_major_ticks = true;
     m_utcfix = false;
     m_fadeout = fadeout;
-    //    QDateTime d=QDateTime::currentDateTime();
-    //    QTime t1=d.time();
-    //    QTime t2=d.toUTC().time();
-
-    //    tz_offset=t2.secsTo(t1);
-    //    tz_hours=tz_offset/3600.0;
-    //    tz_offset*=1000L;
 
     tz_offset = timezoneOffset();
     tz_hours = tz_offset / 3600000.0;
@@ -70,6 +64,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     QVector<QLine> ticks;
 
+
     QPainter painter2; // Only need this for pixmap caching
 
     // pixmap caching screws font size when printing
@@ -77,8 +72,10 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
     bool usepixmap = w.graphView()->usePixmapCache(); // Whether or not to use pixmap caching
 
     if (!usepixmap || (usepixmap && w.invalidate_xAxisImage)) {
+        // Redraw graph xaxis labels and ticks either to pixmap or directly to screen
 
         if (usepixmap) {
+            // Initialize a new cache image
             m_image = QImage(width + 22, height + 4, QImage::Format_ARGB32_Premultiplied);
             m_image.fill(Qt::transparent);
             painter2.begin(&m_image);
@@ -101,22 +98,29 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         qint64 maxx;
 
         if (w.blockZoom()) {
+            // Lock zoom to entire data range
             minx = w.rmin_x;
             maxx = w.rmax_x;
         } else {
+            // Allow zoom
             minx = w.min_x;
             maxx = w.max_x;
         }
 
+        // duration of graph display window in milliseconds.
         qint64 xx = maxx - minx;
 
-        if (xx <= 0) { return; }
+        // shouldn't really be negative, but this is safer than an assert
+        if (xx <= 0) {
+            return;
+        }
 
         //Most of this could be precalculated when min/max is set..
         QString fd, tmpstr;
         int divmax, dividx;
         int fitmode;
 
+        // Have a quick look at the scale and prep the autoscaler a little faster
         if (xx >= 86400000L) {       // Day
             fd = "Mjj 00";
             dividx = 0;
@@ -130,7 +134,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         } else if (xx > 5000) {    // Seconds
             fd = " j0:00:00";
             dividx = 16;
-            divmax = 27;
+            divmax = 29;
             fitmode = 2;
         } else {                   // Microseconds
             fd = "j0:00:00:000";
@@ -142,18 +146,26 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         //if (divmax>divcnt) divmax=divcnt;
 
         int x, y;
+        // grab the text extent of the dummy text fields above to know how much space is needed
         GetTextExtent(fd, x, y);
 
-        if (x <= 0) {
-            qWarning() << "gXAxis::Plot() x<=0 font size bug";
-            return;
-        }
+        // Not sure when this was a problem...
+        Q_ASSERT(x > 0);
+//        if (x <= 0) {
+//            qWarning() << "gXAxis::Plot() x<=0 font size bug";
+//            return;
+//        }
 
-        int max_ticks = width / (x + 15); // Max number of ticks that will fit
+
+        // Max number of ticks that will fit, with a bit of room for a buffer
+        int max_ticks = width / (x + 15);
 
         int fit_ticks = 0;
         int div = -1;
         qint64 closest = 0, tmp, tmpft;
+
+        // Scan through divisor list with the index range given above, to find which
+        // gives the closest number of ticks to the maximum that will physically fit
 
         for (int i = dividx; i < divmax; i++) {
             tmpft = xx / divisors[i];

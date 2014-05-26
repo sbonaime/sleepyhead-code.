@@ -562,6 +562,22 @@ float gGraphView::scaleHeight()
     return ceil(th);
 }
 
+void gGraphView::updateScale()
+{
+    float th = totalHeight(); // height of all graphs
+    float h = height();     // height of main widget
+
+    if (th < h) {
+        th -= visibleGraphs() * graphSpacer;   // compensate for spacer height
+        m_scaleY = h / th;  // less graphs than fits on screen, so scale to fit
+    } else {
+        m_scaleY = 1.0;
+    }
+
+    updateScrollBar();
+}
+
+
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e); // This ques a redraw event..
@@ -715,20 +731,6 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
     }
 
     if (refresh) { redraw(); }
-}
-
-void gGraphView::updateScale()
-{
-    float th = totalHeight(); // height of all graphs
-    float h = height();     // height of main widget
-
-    if (th < h) {
-        m_scaleY = h / th;  // less graphs than fits on screen, so scale to fit
-    } else {
-        m_scaleY = 1.0;
-    }
-
-    updateScrollBar();
 }
 
 void gGraphView::updateScrollBar()

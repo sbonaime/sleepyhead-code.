@@ -355,6 +355,11 @@ void OximeterImport::on_liveImportButton_clicked()
     ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
     ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
 
+    plethyGraph->SetMinX(start_ti);
+
+    plethyGraph->setBlockZoom(false);
+
+
     // detect oximeter
 }
 
@@ -487,8 +492,9 @@ void OximeterImport::updateLiveDisplay()
     plethyChart->setMaxY(ELplethy->Max());
     plethyGraph->SetMinY(ELplethy->Min());
     plethyGraph->SetMaxY(ELplethy->Max());
-    plethyGraph->SetMinX(start_ti);
+    plethyGraph->SetMinX(sti);
     plethyGraph->SetMaxX(ti);
+    plethyGraph->setBlockZoom(true);
     ELplethy->setLast(ti);
     session->really_set_last(ti);
 
