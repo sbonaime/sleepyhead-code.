@@ -512,11 +512,8 @@ void Done()
     PREF.Save();
     LAYOUT.Save();
 
-    Q_FOREACH(Profile * profile, profiles) {
-        // TODO: only save open profiles.. (maybe add an open bit?)
-        profile->Save();
-        delete profile;
-    }
+    p_profile->Save();
+    delete p_profile;
 
     profiles.clear();
     delete p_pref;

@@ -136,6 +136,19 @@ QString htmlHeader()
                    "<style type='text/css'>"
                    "<!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
                    "p,a,td,body { font-size: 14px }"
+"table.curved {"
+    "border: 1px solid gray;"
+    "border-radius:10px;"
+    "-moz-border-radius:10px;"
+    "-webkit-border-radius:10px;"
+    "width: 95%"
+"}"
+"tr.datarow:nth-child(even) {"
+    "background-color: #f8f8f8;"
+"}"
+
+
+
                    "</style>"
                    "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
                    "<script type='text/javascript'>"
@@ -145,7 +158,7 @@ QString htmlHeader()
                    "</script>"
                    "</head>"
                    "<body leftmargin=0 topmargin=0 rightmargin=0>"
-                   "<div align=center><table cellpadding=3 cellspacing=0 border=0 width=100%>"
+                   "<div align=center><table class=curved>" // cellpadding=3 cellspacing=0 border=0
                    "<td>"+userinfo+"</td>"
                    "<td align='right'>"
                    "<h1>" + STR_TR_SleepyHead + "</h1><br/>"
@@ -154,7 +167,7 @@ QString htmlHeader()
                    "<td align='right' width=170px><img src='qrc:/icons/bob-v3.0.png' height=140px><br/>"
                    "</td></tr></table>"
                    "</div>"
-                   "<hr/>");
+                   "<br/>");
 }
 QString htmlFooter()
 {
@@ -488,7 +501,7 @@ QString Statistics::GenerateHTML()
 {
 
     QString heading_color="#ffffff";
-    QString subheading_color="#efefef";
+    QString subheading_color="#e0e0e0";
 
     QString html = htmlHeader();
 
@@ -515,7 +528,7 @@ QString Statistics::GenerateHTML()
 
 
     if (mach.size() == 0) {
-        html += "<table cellpadding=2 cellspacing=0 border=0 width=100% height=60%>";
+        html += "<table class=curved height=60%>"; //cellpadding=2 cellspacing=0 border=0
         html += "<tr><td align=center><h1>" + tr("Please Import Some Data") + "</h1><i>" +
                 tr("SleepyHead is pretty much useless without it.") + "</i><br/><p>" +
                 tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")
@@ -547,7 +560,7 @@ QString Statistics::GenerateHTML()
 
     int decimals = 2;
     html += "<div align=center>";
-    html += QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
+    html += QString("<table class=curved>"); //cellpadding=2 cellspacing=0 border=0
 
     int number_periods = 0;
     if (p_profile->general->statReportMode() == 1) {
@@ -655,7 +668,7 @@ QString Statistics::GenerateHTML()
             name = calcnames[row.calc].arg(schema::channel[id].fullname());
         }
         QString line;
-        line += QString("<tr><td>%1</td>").arg(name);
+        line += QString("<tr class=datarow><td>%1</td>").arg(name);
         for (int j=0; j < periods.size(); j++) {
             QString val=row.value(periods.at(j).start,periods.at(j).end);
             line += QString("<td>%2</td>")
@@ -1024,7 +1037,7 @@ QString Statistics::GenerateHTML()
         RXorder=true;
         qSort(rxchange.begin(),rxchange.end());*/
         html += "<div align=center><br/>";
-        html += QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
+        html += QString("<table class=curved>"); //cellpadding=2 cellspacing=0 border=1
         html += "<tr bgcolor='"+heading_color+"'><td colspan=10 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></td></tr>";
         QString extratxt;
 
@@ -1078,7 +1091,7 @@ QString Statistics::GenerateHTML()
             }
 
             mode = rx.mode;
-            extratxt = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
+            extratxt = "<table border=0 width=100%><tr>"; //cellpadding=0 cellspacing=0
 
             //            tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_EPAP+
             //                    QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals).arg(percentile*100.0)+
@@ -1148,7 +1161,7 @@ QString Statistics::GenerateHTML()
                 tooltiphide = "tooltip.hide();";
             }
 
-            html += QString("<tr bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"%1\"); %3' onclick='alert(\"overview=%4,%5\");'>")
+            html += QString("<tr class=datarow bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"%1\"); %3' onclick='alert(\"overview=%4,%5\");'>")
                     .arg(color)
                     .arg(tooltipshow)
                     .arg(tooltiphide)
@@ -1182,7 +1195,7 @@ QString Statistics::GenerateHTML()
     if (mach.size() > 0) {
         html += "<div align=center><br/>";
 
-        html += QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
+        html += QString("<table class=curved>"); // cellpadding=2 cellspacing=0 border=1 width=90%>");
         html += "<tr bgcolor='"+heading_color+"'><td colspan=5 align=center><font size=+3>" + tr("Machine Information") + "</font></td></tr>";
 
         html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
@@ -1200,7 +1213,7 @@ QString Statistics::GenerateHTML()
 
             QString mn = m->properties[STR_PROP_ModelNumber];
             //if (mn.isEmpty())
-            html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+            html += QString("<tr class=datarow><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
                     .arg(m->properties[STR_PROP_Brand])
                     .arg(m->properties[STR_PROP_Model] + " " + m->properties[STR_PROP_SubModel] +
                          (mn.isEmpty() ? "" : QString(" (") + mn + QString(")")))

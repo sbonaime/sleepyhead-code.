@@ -73,7 +73,9 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     ui->listView->setModel(proxy);
     ui->listView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
-    if (sel >= 0) { ui->listView->setCurrentIndex(model->item(sel)->index()); }
+
+
+    if (sel >= 0) { ui->listView->setCurrentIndex(proxy->index(sel,0)); } //model->item(sel)->index()); }
 
     m_tries = 0;
 
