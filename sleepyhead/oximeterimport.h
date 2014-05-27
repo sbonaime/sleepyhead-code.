@@ -20,6 +20,7 @@ public:
     explicit OximeterImport(QWidget *parent = 0);
     ~OximeterImport();
 
+
 private slots:
     void on_nextButton_clicked();
 
@@ -47,10 +48,6 @@ private slots:
 
     void on_radioSyncOximeter_clicked();
 
-    void on_radioSyncManually_clicked();
-
-    void on_syncSaveButton_clicked();
-
     void on_cancelButton_clicked();
 
     void on_showLiveGraphs_clicked(bool checked);
@@ -58,6 +55,8 @@ private slots:
     void on_skipWelcomeCheckbox_clicked(bool checked);
 
     void on_informationButton_clicked();
+
+    void on_syncButton_clicked();
 
 protected slots:
     void on_updatePlethy(QByteArray plethy);

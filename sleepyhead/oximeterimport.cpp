@@ -22,11 +22,13 @@ OximeterImport::OximeterImport(QWidget *parent) :
     setWindowTitle(tr("Oximeter Import Wizard"));
     ui->stackedWidget->setCurrentIndex(0);
     oximodule = nullptr;
-    ui->retryButton->setVisible(false);
     liveView = new gGraphView(this);
     liveView->setVisible(false);
+    ui->retryButton->setVisible(false);
     ui->stopButton->setVisible(false);
-    ui->syncSaveButton->setVisible(false);
+    ui->saveButton->setVisible(false);
+    ui->syncButton->setVisible(false);
+
 
     QVBoxLayout * lvlayout = new QVBoxLayout;
     lvlayout->setMargin(0);
@@ -80,6 +82,8 @@ OximeterImport::OximeterImport(QWidget *parent) :
         ui->nextButton->setVisible(true);
         ui->informationButton->setVisible(false);
     }
+
+    ui->dateTimeEdit->setMinimumHeight(ui->dateTimeEdit->height()+10);
 }
 
 OximeterImport::~OximeterImport()
@@ -236,13 +240,8 @@ void OximeterImport::finishedImport(SerialOximeter * oxi)
     oximodule->process();
     disconnect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
 
-    ui->stackedWidget->setCurrentWidget(ui->syncPage);
-    ui->syncSaveButton->setVisible(true);
 
-    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
-    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
-
-    on_calendarWidget_clicked(PROFILE.LastDay());
+    on_syncButton_clicked();
 }
 
 void OximeterImport::doUpdateProgress(int v, int t)
@@ -286,13 +285,7 @@ void OximeterImport::on_fileImportButton_clicked()
     }
     ui->informationButton->setVisible(false);
 
-    ui->stackedWidget->setCurrentWidget(ui->syncPage);
-    ui->syncSaveButton->setVisible(true);
-
-    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
-    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
-
-    on_calendarWidget_clicked(PROFILE.LastDay());
+    on_syncButton_clicked();
 }
 
 void OximeterImport::on_liveImportButton_clicked()
@@ -370,14 +363,10 @@ void OximeterImport::finishedRecording()
 
     disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
 
-// Remember to clear sessionlist before deleting dummyday. or it will destroy session.
 //    delete dummyday;
 
     //ui->stackedWidget->setCurrentWidget(ui->syncPage);
-    ui->syncSaveButton->setVisible(true);
-
-    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
-    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
+    ui->syncButton->setVisible(true);
 
     plethyGraph->SetMinX(start_ti);
     liveView->SetXBounds(start_ti, ti, 0, true);
@@ -385,7 +374,6 @@ void OximeterImport::finishedRecording()
     plethyGraph->setBlockZoom(false);
 
 
-    // detect oximeter
 }
 
 void OximeterImport::on_retryButton_clicked()
@@ -466,17 +454,20 @@ void OximeterImport::on_sessionForwardButton_clicked()
 
 void OximeterImport::on_radioSyncCPAP_clicked()
 {
-    if (!ui->syncCPAPGroup->isVisible()) {
-        if (sessbar->selected() < 0) {
-            int idx = 0;
-            if (idx < sessbar->count()) {
-                sessbar->setSelected(idx);
-                QDateTime datetime = QDateTime::fromMSecsSinceEpoch(sessbar->session(idx)->first());
-                ui->dateTimeEdit->setDateTime(datetime);
-                sessbar->update();
-            }
+    int idx = sessbar->selected();
+    if (idx < 0) {
+        if (sessbar->count() > 0) {
+            idx = 0;
+            sessbar->setSelected(0);
+            sessbar->update();
         }
     }
+    if (idx >= 0) {
+        QDateTime datetime = QDateTime::fromMSecsSinceEpoch(sessbar->session(idx)->first());
+        ui->dateTimeEdit->setDateTime(datetime);
+    }
+
+
     ui->syncCPAPGroup->setVisible(true);
 
 }
@@ -484,16 +475,7 @@ void OximeterImport::on_radioSyncCPAP_clicked()
 void OximeterImport::on_radioSyncOximeter_clicked()
 {
     ui->syncCPAPGroup->setVisible(false);
-}
-
-void OximeterImport::on_radioSyncManually_clicked()
-{
-    ui->syncCPAPGroup->setVisible(false);
-}
-
-void OximeterImport::on_syncSaveButton_clicked()
-{
-
+    if (oximodule && oximodule->isStartTimeValid()) ui->dateTimeEdit->setDateTime(oximodule->startTime());
 }
 
 void OximeterImport::on_updatePlethy(QByteArray plethy)
@@ -618,5 +600,32 @@ void OximeterImport::on_informationButton_clicked()
     ui->stackedWidget->setCurrentWidget(ui->welcomePage);
     ui->nextButton->setVisible(true);
     ui->informationButton->setVisible(false);
+
+}
+
+void OximeterImport::on_syncButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->syncPage);
+
+    ui->syncButton->setVisible(false);
+    ui->saveButton->setVisible(true);
+
+    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
+    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
+
+    on_calendarWidget_clicked(PROFILE.LastDay());
+    Q_ASSERT(oximodule != nullptr);
+
+    ui->radioSyncOximeter->setChecked(true);
+    on_radioSyncOximeter_clicked();
+
+    if (ELplethy != nullptr) {
+        // Live Recording
+        ui->labelSyncOximeter->setText(tr("I want to use the time my computer recorded for this live oximetry session."));
+    } else if (!oximodule->isStartTimeValid()) {
+        // Oximeter doesn't provide a clock
+        ui->labelSyncOximeter->setText(tr("I need to set the time manually, because my oximeter doesn't have an internal clock."));
+    }
+
 
 }

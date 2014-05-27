@@ -65,6 +65,8 @@ public:
     QVector<OxiRecord> oxirec;
 
     QDateTime startTime() { return m_startTime; }
+    virtual bool isStartTimeValid() { return true; }
+
 
 signals:
     void noDeviceFound();

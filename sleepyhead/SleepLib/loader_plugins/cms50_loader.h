@@ -42,6 +42,8 @@ Q_OBJECT
 
     virtual void process();
 
+    virtual bool isStartTimeValid() { return !cms50dplus; }
+
 protected slots:
 //    virtual void dataAvailable();
     virtual void resetImportTimeout();

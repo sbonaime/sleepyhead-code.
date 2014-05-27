@@ -528,11 +528,11 @@ QString Statistics::GenerateHTML()
 
 
     if (mach.size() == 0) {
-        html += "<table class=curved height=60%>"; //cellpadding=2 cellspacing=0 border=0
+        html += "<div align=center><table class=curved height=60%>"; //cellpadding=2 cellspacing=0 border=0
         html += "<tr><td align=center><h1>" + tr("Please Import Some Data") + "</h1><i>" +
                 tr("SleepyHead is pretty much useless without it.") + "</i><br/><p>" +
                 tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")
-                + "</p><p>" + tr("First import can take a few minutes.") + "</p></td></tr></table>";
+                + "</p><p>" + tr("First import can take a few minutes.") + "</p></td></tr></table></div>";
         html += htmlFooter();
         return html;
     }
