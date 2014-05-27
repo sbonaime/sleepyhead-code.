@@ -202,10 +202,10 @@ int CMS50Loader::doImportMode()
                     oda = oda.addDays(-1);
                 }
 
-                oxitime = QDateTime(oda,oti);
+                m_startTime = oxitime = QDateTime(oda,oti);
 
                 // Convert it to UTC
-                oxitime=oxitime.toTimeSpec(Qt::UTC);
+                oxitime = oxitime.toTimeSpec(Qt::UTC);
 
                 qDebug() << "Session start (according to CMS50)" << oxitime<< hex << buffer.at(idx + 1) << buffer.at(idx + 2) << ":" << dec << hour << minute ;
 
@@ -232,7 +232,7 @@ int CMS50Loader::doImportMode()
                     return idx;
                 }
 
-                quint8 pulse=(unsigned char)buffer.at(idx + 1) & 0xff;
+                quint8 pulse=(unsigned char)buffer.at(idx + 1) & 0x7f | ((c & 1) << 7);
                 quint8 spo2=(unsigned char)buffer.at(idx + 2) & 0xff;
 
                 oxirec.append(OxiRecord(pulse,spo2));

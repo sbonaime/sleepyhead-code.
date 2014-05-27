@@ -58,6 +58,8 @@ private slots:
 
     void on_syncButton_clicked();
 
+    void on_saveButton_clicked();
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
     void finishedRecording();

@@ -8,6 +8,10 @@
 
 #include "oximeterimport.h"
 #include "ui_oximeterimport.h"
+#include "SleepLib/calcs.h"
+#include "mainwindow.h"
+
+extern MainWindow * mainwin;
 
 #include "SleepLib/loader_plugins/cms50_loader.h"
 
@@ -628,4 +632,150 @@ void OximeterImport::on_syncButton_clicked()
     }
 
 
+}
+
+void OximeterImport::on_saveButton_clicked()
+{
+    int size = oximodule->oxirec.size();
+    if (size < 2) {
+        QMessageBox::warning(this, STR_MessageBox_Warning, tr("Not enough recorded oximetry data."), QMessageBox::Ok);
+        return;
+    }
+    if (!oximodule) return;
+
+    Machine * mach = oximodule->CreateMachine(p_profile);
+    SessionID sid = ui->dateTimeEdit->dateTime().toUTC().toTime_t();
+    quint64 start = quint64(sid) * 1000L;
+    if (!session) {
+        session = new Session(mach, sid);
+        session->really_set_first(start);
+    } else {
+        // Live recording...
+        if (dummyday) {
+            dummyday->removeSession(session);
+            delete dummyday;
+            dummyday = nullptr;
+        }
+        session->SetSessionID(sid);
+        session->really_set_first(start);
+        ELplethy->setFirst(start);
+        session->setFirst(OXI_Plethy, start);
+        quint64 duration = start + (ELplethy->count() * ELplethy->rate());
+        quint64 end = start + duration;
+        session->setLast(OXI_Plethy, end);
+
+        session->count(OXI_Plethy);
+        session->Min(OXI_Plethy);
+        session->Max(OXI_Plethy);
+    }
+    EventList * ELpulse = nullptr;
+    EventList * ELspo2 = nullptr;
+
+    quint16 lastpulse = 0;
+    quint16 lastspo2 = 0;
+    quint16 lastgoodpulse = 0;
+    quint16 lastgoodspo2 = 0;
+
+    quint64 ti = start;
+    for (int i=1; i < size; ++i) {
+        OxiRecord * rec = &oximodule->oxirec[i];
+
+        if (rec->pulse > 0) {
+            if (lastpulse == 0) {
+                ELpulse = session->AddEventList(OXI_Pulse, EVL_Event);
+            }
+            if (lastpulse != rec->pulse) {
+                if (lastpulse > 0) {
+                    ELpulse->AddEvent(ti, lastpulse);
+                }
+                ELpulse->AddEvent(ti, rec->pulse);
+            }
+            lastgoodpulse = rec->pulse;
+        } else {
+            // end section properly
+            if (lastgoodpulse > 0) {
+                ELpulse->AddEvent(ti, lastpulse);
+                session->setLast(OXI_Pulse, ti);
+                lastgoodpulse = 0;
+            }
+        }
+
+        lastpulse = rec->pulse;
+
+        if (rec->spo2 > 0) {
+            if (lastspo2 == 0) {
+                ELspo2 = session->AddEventList(OXI_SPO2, EVL_Event);
+            }
+            if (lastspo2 != rec->spo2) {
+                if (lastspo2 > 0) {
+                    ELspo2->AddEvent(ti, lastspo2);
+                }
+                ELspo2->AddEvent(ti, rec->spo2);
+            }
+            lastgoodspo2 = rec->spo2;
+        } else {
+            // end section properly
+            if (lastgoodspo2 > 0) {
+                ELspo2->AddEvent(ti, lastspo2);
+                session->setLast(OXI_SPO2, ti);
+                lastgoodspo2 = 0;
+            }
+        }
+        lastspo2 = rec->spo2;
+
+        ti += 20;
+    }
+    ti -= 20;
+    if (lastpulse > 0) {
+        ELpulse->AddEvent(ti, lastpulse);
+        session->setLast(OXI_Pulse, ti);
+    }
+
+    if (lastspo2 > 0) {
+        ELspo2->AddEvent(ti, lastspo2);
+        session->setLast(OXI_SPO2, ti);
+    }
+
+
+    calcSPO2Drop(session);
+    calcPulseChange(session);
+
+    session->first(OXI_Pulse);
+    session->first(OXI_SPO2);
+    session->last(OXI_Pulse);
+    session->last(OXI_SPO2);
+
+    session->first(OXI_PulseChange);
+    session->first(OXI_SPO2Drop);
+    session->last(OXI_PulseChange);
+    session->last(OXI_SPO2Drop);
+
+    session->cph(OXI_PulseChange);
+    session->sph(OXI_PulseChange);
+
+    session->cph(OXI_SPO2Drop);
+    session->sph(OXI_SPO2Drop);
+
+    session->count(OXI_Pulse);
+    session->count(OXI_SPO2);
+    session->count(OXI_PulseChange);
+    session->count(OXI_SPO2Drop);
+    session->Min(OXI_Pulse);
+    session->Max(OXI_Pulse);
+    session->Min(OXI_SPO2);
+    session->Max(OXI_SPO2);
+
+    session->really_set_last(ti);
+    session->SetChanged(true);
+
+    mach->AddSession(session, p_profile);
+    mach->Save();
+
+    mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
+    mainwin->getOverview()->ReloadGraphs();
+
+    ELplethy = nullptr;
+    session = nullptr;
+
+    accept();
 }
