@@ -656,7 +656,8 @@ void ResmedImport::run()
         sess->settings[RMS9_MaskOnTime] = R.maskon;
 
         // Grab all the system settings
-        if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
+        if (R.set_pressure >= 0)
+            sess->settings[CPAP_Pressure] = R.set_pressure;
         if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
         if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
         if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
@@ -1260,7 +1261,8 @@ int ResmedLoader::Open(QString path, Profile *profile)
         sess->SetChanged(true);
 
         // First take the settings
-        if (R.set_pressure >= 0) sess->settings[RMS9_SetPressure] = R.set_pressure;
+        if (R.set_pressure >= 0)
+            sess->settings[CPAP_Pressure] = R.set_pressure;
         if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
         if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
         if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
@@ -2061,7 +2063,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus");
     resmed_codes[CPAP_Mode].push_back("Funktion");
-    resmed_codes[RMS9_SetPressure].push_back("SetPressure");
+    resmed_codes[RMS9_SetPressure].push_back("Set Pressure");
     resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
     resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");
     resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");

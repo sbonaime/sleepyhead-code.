@@ -144,7 +144,7 @@ QString htmlHeader()
     "border-radius:10px;"
     "-moz-border-radius:10px;"
     "-webkit-border-radius:10px;"
-    "width: 95%;"
+    "width: 99%;"
     "page-break-after:auto;"
     "-fs-table-paginate: paginate;"
 "}"
@@ -166,7 +166,7 @@ QString htmlHeader()
                    "function Go(url) { throw(url); }"
                    "</script>"
                    "</head>"
-                   "<body leftmargin=0 topmargin=0 rightmargin=0>"
+                   "<body leftmargin=0 topmargin=5 rightmargin=0>"
                    "<div align=center><table class=curved>" // cellpadding=3 cellspacing=0 border=0
                    "<td>"+userinfo+"</td>"
                    "<td align='right'>"
@@ -847,7 +847,6 @@ QString Statistics::GenerateHTML()
             rx.prelief = prelief;
             rx.prelset = prelset;
             rx.machine = mach;
-
             if (mode < MODE_BIPAP) {
                 rx.per1 = p_profile->calcPercentile(CPAP_Pressure, percentile, MT_CPAP, first, last);
                 rx.per2 = 0;
@@ -870,7 +869,7 @@ QString Statistics::GenerateHTML()
         for (int i = 0; i < rxchange.size(); i++) {
             RXChange &rx = rxchange[i];
 
-            if (rx.days > rxthresh) {
+            if (rx.days >= rxthresh) {
                 tmpRX.push_back(&rx);
             }
         }
@@ -1046,9 +1045,8 @@ QString Statistics::GenerateHTML()
         RXorder=true;
         qSort(rxchange.begin(),rxchange.end());*/
 
-        html += "<p style=\"page-break-before:always;\"/>";
         html += "<div align=center><br/>";
-        html += QString("<table class=curved>"); //cellpadding=2 cellspacing=0 border=1
+        html += QString("<table class=curved style=\"page-break-before:always;\">");
         html += "<thead>";
         html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+2>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
 
@@ -1160,8 +1158,8 @@ QString Statistics::GenerateHTML()
                           QString("=%2").arg(rx.per1, 0, 'f', decimals);
             } else {
 
-                if (cpapmode > MODE_CPAP) {
-                    extratxt += "<td colspan=2>"+QString(tr("CPAP %1")+"</td>").arg(rx.min, 4, 'f', 1);
+                if (cpapmode >= MODE_CPAP) {
+                    extratxt += "<td colspan=2>"+QString(tr("Fixed %1")+"</td>").arg(rx.min, 4, 'f', 1);
                     tooltip = QString("%1").arg(machstr);
                 } else {
                     extratxt += "";

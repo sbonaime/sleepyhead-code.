@@ -18,6 +18,8 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QCalendarWidget>
+#include <QMenuBar>
+
 #include "preferencesdialog.h"
 #include "common_gui.h"
 
@@ -491,6 +493,7 @@ bool PreferencesDialog::Save()
     PREF["Fonts_Application_Bold"] = ui->applicationFontBold->isChecked();
     PREF["Fonts_Application_Italic"] = ui->applicationFontItalic->isChecked();
 
+
     PREF["Fonts_Graph_Name"] = ui->graphFont->currentText();
     PREF["Fonts_Graph_Size"] = ui->graphFontSize->value();
     PREF["Fonts_Graph_Bold"] = ui->graphFontBold->isChecked();
@@ -511,6 +514,7 @@ bool PreferencesDialog::Save()
     font.setWeight(ui->applicationFontBold->isChecked() ? QFont::Bold : QFont::Normal);
     font.setItalic(ui->applicationFontItalic->isChecked());
     QApplication::setFont(font);
+    mainwin->menuBar()->setFont(font);
 
     *defaultfont = ui->graphFont->currentFont();
     defaultfont->setPointSize(ui->graphFontSize->value());
