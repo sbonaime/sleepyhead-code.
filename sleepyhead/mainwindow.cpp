@@ -1378,8 +1378,7 @@ void MainWindow::on_actionPrint_Report_triggered()
             datestr = QDateTime::currentDateTime().toString(Qt::ISODate);
         } else { name = "Unknown"; }
 
-        QString filename = PREF.Get("{home}/" + name + "_" + PROFILE.user->userName() + "_" + datestr +
-                                    ".pdf");
+        QString filename = PREF.Get("{home}/" + name + "_" + PROFILE.user->userName() + "_" + datestr + ".pdf");
 
         printer.setOutputFileName(filename);
 #endif
@@ -1387,7 +1386,7 @@ void MainWindow::on_actionPrint_Report_triggered()
         printer.setOrientation(QPrinter::Portrait);
         printer.setFullPage(false); // This has nothing to do with scaling
         printer.setNumCopies(1);
-        printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
+        printer.setPageMargins(5, 5, 5, 5, QPrinter::Millimeter);
         QPrintDialog pdlg(&printer, this);
 
         if (pdlg.exec() == QPrintDialog::Accepted) {
