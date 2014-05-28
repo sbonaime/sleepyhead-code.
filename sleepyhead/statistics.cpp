@@ -573,12 +573,17 @@ QString Statistics::GenerateHTML()
 
     int number_periods = 0;
     if (p_profile->general->statReportMode() == 1) {
-        number_periods = 12;
+        number_periods = PROFILE.FirstDay().daysTo(PROFILE.LastDay()) / 30;
+        if (number_periods > 12) {
+            number_periods = 12;
+        }
     }
 
     QDate last = lastcpap, first = lastcpap;
 
     QList<Period> periods;
+
+
 
     bool skipsection = false;;
     for (QList<StatisticsRow>::iterator i = rows.begin(); i != rows.end(); ++i) {
@@ -587,10 +592,10 @@ QString Statistics::GenerateHTML()
 
         if (row.calc == SC_HEADING) {  // All sections begin with a heading
             last = p_profile->LastGoodDay(row.type);
-            first  = p_profile->FirstGoodDay(row.type);
+            first = p_profile->FirstGoodDay(row.type);
 
             periods.clear();
-            if (number_periods == 0) {
+            if (p_profile->general->statReportMode() == 0) {
                 periods.push_back(Period(last,last,tr("Most Recent")));
                 periods.push_back(Period(qMax(last.addDays(-6), first), last, tr("Last Week")));
                 periods.push_back(Period(qMax(last.addDays(-29),first), last, tr("Last 30 Days")));
@@ -602,17 +607,35 @@ QString Statistics::GenerateHTML()
                 periods.push_back(Period(last,last,tr("Last Session")));
 
                 bool done=false;
-                for (int j=0; j < number_periods; j++) {
+                int j=0;
+                do {
                     s=QDate(l.year(), l.month(), 1);
                     if (s < first) {
                         done = true;
                         s = first;
                     }
-                    if (p_profile->countDays(row.type, s, l)>0) {
+                    if (p_profile->countDays(row.type, s, l) > 0) {
                         periods.push_back(Period(s, l, s.toString("MMMM")));
+                        j++;
                     }
-                    l= s.addDays(-1);
-                    if (done || (l < first)) break;
+                    l = s.addDays(-1);
+                } while ((l > first) && (j < number_periods));
+
+//                for (; j < number_periods; ++j) {
+//                    s=QDate(l.year(), l.month(), 1);
+//                    if (s < first) {
+//                        done = true;
+//                        s = first;
+//                    }
+//                    if (p_profile->countDays(row.type, s, l) > 0) {
+//                        periods.push_back(Period(s, l, s.toString("MMMM")));
+//                    } else {
+//                    }
+//                    l = s.addDays(-1);
+//                    if (done || (l < first)) break;
+//                }
+                for (; j < number_periods; ++j) {
+                    periods.push_back(Period(last,last, ""));
                 }
             }
 
@@ -677,11 +700,23 @@ QString Statistics::GenerateHTML()
             name = calcnames[row.calc].arg(schema::channel[id].fullname());
         }
         QString line;
-        line += QString("<tr class=datarow><td>%1</td>").arg(name);
-        for (int j=0; j < periods.size(); j++) {
-            QString val=row.value(periods.at(j).start,periods.at(j).end);
-            line += QString("<td>%2</td>")
-                .arg(val);
+        line += QString("<tr class=datarow><td width=25%>%1</td>").arg(name);
+        int np = periods.size();
+        int width;
+        for (int j=0; j < np; j++) {
+            if (p_profile->general->statReportMode() == 1) {
+                width = j < np-1 ? 6 : 100 - (25 + 6*(np-1));
+            } else {
+                width = 75/np;
+            }
+
+            line += QString("<td width=%1%>").arg(width);
+            if (!periods.at(j).header.isEmpty()) {
+                line += row.value(periods.at(j).start, periods.at(j).end);
+            } else {
+                line +="&nbsp;";
+            }
+            line += "</td>";
         }
         html += line;
         html += "</tr>\n";
