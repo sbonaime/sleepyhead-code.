@@ -455,6 +455,7 @@ void Profile::RemoveSession(Session *sess)
 {
     QMap<QDate, QList<Day *> >::iterator di;
     QMap<QDate, QList<Day *> >::iterator daylist_end=daylist.end();
+    Machine * mach = sess->machine();
 
     for (di = daylist.begin(); di != daylist_end; di++) {
         for (int d = 0; d < di.value().size(); d++) {
@@ -484,6 +485,7 @@ void Profile::RemoveSession(Session *sess)
 
                 if (day->size() == 0) {
                     di.value().removeAll(day);
+                    mach->day.erase(mach->day.find(di.key()));
                     delete day;
                 }
 

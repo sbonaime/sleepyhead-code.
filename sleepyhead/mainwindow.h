@@ -312,6 +312,8 @@ class MainWindow : public QMainWindow
 
     void on_reportModeRange_clicked();
 
+    void on_actionPurgeCurrentDaysOximetry_triggered();
+
 private:
     int importCPAP(const QString &path, const QString &message);
     void importCPAPBackups();

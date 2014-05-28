@@ -634,7 +634,8 @@ void OximeterImport::on_syncButton_clicked()
     ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
     ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
 
-    on_calendarWidget_clicked(PROFILE.LastDay());
+    // TODO: think this through better.. do I need to pick the day before?
+    on_calendarWidget_clicked(oximodule->startTime().date());
 
     ui->radioSyncOximeter->setChecked(true);
     on_radioSyncOximeter_clicked();

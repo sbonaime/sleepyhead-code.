@@ -3148,8 +3148,16 @@ border-radius: 10px;
       </property>
       <addaction name="separator"/>
      </widget>
+     <widget class="QMenu" name="menuPurge_Oximetery_Data">
+      <property name="title">
+       <string>Purge Oximetery Data</string>
+      </property>
+      <addaction name="actionPurgeCurrentDaysOximetry"/>
+     </widget>
      <addaction name="menu_Purge_CPAP_Data"/>
      <addaction name="actionPurge_Current_Day"/>
+     <addaction name="separator"/>
+     <addaction name="menuPurge_Oximetery_Data"/>
     </widget>
     <addaction name="actionImport_ZEO_Data"/>
     <addaction name="actionImport_Somnopose_Data"/>
@@ -3392,6 +3400,11 @@ border-radius: 10px;
   <action name="actionImport_Somnopose_Data">
    <property name="text">
     <string>Import &amp;Somnopose Data</string>
+   </property>
+  </action>
+  <action name="actionPurgeCurrentDaysOximetry">
+   <property name="text">
+    <string>Current Days</string>
    </property>
   </action>
  </widget>

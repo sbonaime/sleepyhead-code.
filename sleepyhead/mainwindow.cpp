@@ -2282,3 +2282,22 @@ void MainWindow::on_reportModeRange_clicked()
         GenerateStatistics();
     }
 }
+
+void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
+{
+    QDate date = getDaily()->getDate();
+    Day * day = PROFILE.GetDay(date, MT_OXIMETER);
+    if (day) {
+        QList<Session *> sessions;
+        sessions.append(day->getSessions());
+
+        for (int i=0; i < sessions.size(); ++i) {
+            sessions.at(i)->Destroy();
+        }
+
+
+        daily->clearLastDay(); // otherwise Daily will crash
+
+        getDaily()->ReloadGraphs();
+    }
+}

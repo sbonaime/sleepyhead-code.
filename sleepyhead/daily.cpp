@@ -556,7 +556,7 @@ void Daily::ReloadGraphs()
     ui->calendar->blockSignals(false);
     Load(d);
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
-
+    graphView()->redraw();
 }
 
 void Daily::on_calendar_currentPageChanged(int year, int month)
