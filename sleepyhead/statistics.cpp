@@ -141,12 +141,18 @@ QString htmlHeader()
     "border-radius:10px;"
     "-moz-border-radius:10px;"
     "-webkit-border-radius:10px;"
-    "width: 95%"
+    "width: 95%;"
+    "page-break-after:auto;"
+    "-fs-table-paginate: paginate;"
 "}"
 "tr.datarow:nth-child(even) {"
     "background-color: #f8f8f8;"
 "}"
-
+  "table { page-break-after:auto; -fs-table-paginate: paginate; }"
+  "tr    { page-break-inside:avoid; page-break-after:auto }"
+  "td    { page-break-inside:avoid; page-break-after:auto }"
+  "thead { display:table-header-group; }"
+  "tfoot { display:table-footer-group; }"
 
 
                    "</style>"
@@ -610,7 +616,7 @@ QString Statistics::GenerateHTML()
             int days = PROFILE.countDays(row.type, first, last);
             skipsection = (days == 0);
             if (days > 0) {
-                html+=QString("<tr bgcolor='%1'><td colspan=%2 align=center><font size=+3>%3</font></td></tr>\n").
+                html+=QString("<tr bgcolor='%1'><th colspan=%2 align=center><font size=+3>%3</font></th></tr>\n").
                         arg(heading_color).arg(periods.size()+1).arg(row.src);
             }
             continue;
@@ -1036,9 +1042,13 @@ QString Statistics::GenerateHTML()
         /*RXsort=RX_min;
         RXorder=true;
         qSort(rxchange.begin(),rxchange.end());*/
+
+        html += "<p style=\"page-break-before:always;\"/>";
         html += "<div align=center><br/>";
         html += QString("<table class=curved>"); //cellpadding=2 cellspacing=0 border=1
-        html += "<tr bgcolor='"+heading_color+"'><td colspan=10 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></td></tr>";
+        html += "<thead>";
+        html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
+
         QString extratxt;
 
         QString tooltip;
@@ -1058,9 +1068,19 @@ QString Statistics::GenerateHTML()
 
         html+="<tr>\n";
         for (int i=0; i < hdrlist.size(); ++i) {
-            html+=QString(" <td><b>%1</b></td>\n").arg(hdrlist.at(i));
+            html+=QString(" <th align=left><b>%1</b></th>\n").arg(hdrlist.at(i));
         }
         html+="</tr>\n";
+        html += "</thead>";
+        html += "<tfoot>";
+        html += "<tr><td colspan=10 align=center>";
+        html += QString("<i>") +
+                tr("Efficacy highlighting ignores prescription settings with less than %1 days of recorded data.").
+                arg(rxthresh) + QString("</i><br/>");
+
+        html += "</td></tr>";
+        html += "</tfoot>";
+
 
         for (int i = 0; i < rxchange.size(); i++) {
             RXChange rx = rxchange.at(i);
@@ -1185,9 +1205,6 @@ QString Statistics::GenerateHTML()
         }
 
         html += "</table>";
-        html += QString("<i>") +
-                tr("Efficacy highlighting ignores prescription settings with less than %1 days of recorded data.").arg(
-                    rxthresh) + QString("</i><br/>");
         html += "</div>";
 
     }
@@ -1195,7 +1212,9 @@ QString Statistics::GenerateHTML()
     if (mach.size() > 0) {
         html += "<div align=center><br/>";
 
-        html += QString("<table class=curved>"); // cellpadding=2 cellspacing=0 border=1 width=90%>");
+        html += QString("<table class=curved style=\"page-break-before:auto;\">");
+
+        html += "<thead>";
         html += "<tr bgcolor='"+heading_color+"'><td colspan=5 align=center><font size=+3>" + tr("Machine Information") + "</font></td></tr>";
 
         html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
@@ -1204,6 +1223,9 @@ QString Statistics::GenerateHTML()
                 .arg(STR_TR_Serial)
                 .arg(tr("First Use"))
                 .arg(tr("Last Use"));
+
+        html += "</thead>";
+
         Machine *m;
 
         for (int i = 0; i < mach.size(); i++) {

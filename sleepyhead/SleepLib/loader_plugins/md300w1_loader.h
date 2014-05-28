@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  *
- * SleepLib CMS50X Loader Header
+ * SleepLib ChoiceMMed MD300W1 Oximeter Loader Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -9,49 +9,48 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#ifndef CMS50LOADER_H
-#define CMS50LOADER_H
+#ifndef MD300W1LOADER_H
+#define MD300W1LOADER_H
 
 #include "SleepLib/serialoximeter.h"
 
-const QString cms50_class_name = "CMS50";
-const int cms50_data_version = 4;
+const QString md300w1_class_name = "MD300W1";
+const int md300w1_data_version = 1;
 
 
-/*! \class CMS50Loader
-    \brief Bulk Importer for CMS50 SPO2Review format.. Deprecated, as the Oximetry module does a better job
+/*! \class MD300W1Loader
+    \brief Importer for ChoiceMMed MD300W1 data format..
     */
-class CMS50Loader : public SerialOximeter
+class MD300W1Loader : public SerialOximeter
 {
 Q_OBJECT
   public:
 
 
-    CMS50Loader();
-    virtual ~CMS50Loader();
+    MD300W1Loader();
+    virtual ~MD300W1Loader();
 
     virtual bool Detect(const QString &path);
     virtual int Open(QString path, Profile *profile);
 
     static void Register();
 
-    virtual int Version() { return cms50_data_version; }
-    virtual const QString &ClassName() { return cms50_class_name; }
+    virtual int Version() { return md300w1_data_version; }
+    virtual const QString &ClassName() { return md300w1_class_name; }
 
     Machine *CreateMachine(Profile *profile);
 
     virtual void process();
 
-    virtual bool isStartTimeValid() { return !cms50dplus; }
+    virtual bool isStartTimeValid() { return true; }
 
 protected slots:
-//    virtual void dataAvailable();
     virtual void resetImportTimeout();
     virtual void startImportTimeout();
 
 protected:
 
-    bool readSpoRFile(QString path);
+    bool readDATFile(QString path);
     virtual void processBytes(QByteArray bytes);
 
     int doImportMode();
@@ -59,10 +58,10 @@ protected:
 
     virtual void killTimers();
 
-    // Switch CMS50D+ device to live streaming mode
+    // Switch MD300W1 device to live streaming mode
     virtual void resetDevice();
 
-    // Switch CMS50D+ device to record transmission mode
+    // Switch MD300W1 device to record transmission mode
     void requestData();
 
   private:
@@ -76,7 +75,7 @@ protected:
     bool started_import;
     bool finished_import;
     bool started_reading;
-    bool cms50dplus;
+    QDateTime oxitime;
 
     int cb_reset,imp_callbacks;
 
@@ -89,4 +88,4 @@ protected:
 };
 
 
-#endif // CMS50LOADER_H
+#endif // MD300W1LOADER_H

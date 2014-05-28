@@ -62,11 +62,20 @@ public:
 
     virtual Machine *CreateMachine(Profile *profile)=0;
 
-    QVector<OxiRecord> oxirec;
+    // available sessions
+    QMap<QDateTime, QVector<OxiRecord> *> oxisessions;
+
+    // current session
+    QVector<OxiRecord> * oxirec;
 
     QDateTime startTime() { return m_startTime; }
+    void setStartTime(QDateTime datetime) { m_startTime = datetime; }
     virtual bool isStartTimeValid() { return true; }
 
+    virtual qint64 importResolution() { return 1000; }
+    virtual qint64 liveResolution() { return 20; }
+
+    void trashRecords();
 
 signals:
     void noDeviceFound();

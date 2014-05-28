@@ -35,6 +35,7 @@
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
+#include "SleepLib/loader_plugins/md300w1_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/somnopose_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
@@ -249,6 +250,7 @@ retry_directory:
     IntellipapLoader::Register();
     FPIconLoader::Register();
     CMS50Loader::Register();
+    MD300W1Loader::Register();
     //ZEOLoader::Register(); // Use outside of directory importer..
 
     p_pref = new Preferences("Preferences");

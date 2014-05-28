@@ -48,6 +48,8 @@ CMS50Loader::CMS50Loader()
     m_vendorID = 0x10c4;
     m_productID = 0xea60;
 
+    oxirec = nullptr;
+
     startTimer.setParent(this);
     resetTimer.setParent(this);
 
@@ -84,6 +86,10 @@ int CMS50Loader::Open(QString path, Profile *profile)
 
     m_time.start();
 
+    if (oxirec) {
+        trashRecords();
+    }
+
     // Cheating using path for two serial oximetry modes
 
     if (path.compare("import") == 0) {
@@ -93,7 +99,12 @@ int CMS50Loader::Open(QString path, Profile *profile)
         startImportTimeout();
         return 1;
     } else if (path.compare("live") == 0) {
-        m_startTime = oxitime = QDateTime::currentDateTime();
+
+        m_startTime = QDateTime::currentDateTime();
+
+        oxirec = new QVector<OxiRecord>;
+        oxisessions[m_startTime] = oxirec;
+
         setStatus(LIVE);
         return 1;
     }
@@ -164,10 +175,12 @@ int CMS50Loader::doImportMode()
     while (idx < available) {
         unsigned char c=(unsigned char)buffer.at(idx);
         if (!started_import) {
+            // TODO: Check there might be length data after the 3 headers trios..
             if (c != 0xf2) { // If not started, continue scanning for a valie header.
                 idx++;
                 continue;
             } else {
+
                 received_bytes=0;
 
                 hour=(unsigned char)buffer.at(idx + 1) & 0x7f;
@@ -188,8 +201,8 @@ int CMS50Loader::doImportMode()
                 killTimers();
                 qDebug() << "Getting ready for import";
 
-                oxirec.clear();
-                oxirec.reserve(10000);
+                oxirec = new QVector<OxiRecord>;
+                oxirec->reserve(30000);
 
                 QDate oda=QDate::currentDate();
                 QTime oti=QTime(hour,minute); // Only CMS50E/F's have a realtime clock. CMS50D+ will set this to midnight
@@ -202,12 +215,10 @@ int CMS50Loader::doImportMode()
                     oda = oda.addDays(-1);
                 }
 
-                m_startTime = oxitime = QDateTime(oda,oti);
+                m_startTime = QDateTime(oda,oti);
 
-                // Convert it to UTC
-                oxitime = oxitime.toTimeSpec(Qt::UTC);
-
-                qDebug() << "Session start (according to CMS50)" << oxitime<< hex << buffer.at(idx + 1) << buffer.at(idx + 2) << ":" << dec << hour << minute ;
+                oxisessions[m_startTime] = oxirec;
+                qDebug() << "Session start (according to CMS50)" << m_startTime << hex << buffer.at(idx + 1) << buffer.at(idx + 2) << ":" << dec << hour << minute ;
 
                 cb_reset = 1;
 
@@ -232,10 +243,10 @@ int CMS50Loader::doImportMode()
                     return idx;
                 }
 
-                quint8 pulse=(unsigned char)buffer.at(idx + 1) & 0x7f | ((c & 1) << 7);
+                quint8 pulse=(unsigned char)((buffer.at(idx + 1) & 0x7f) | ((c & 1) << 7));
                 quint8 spo2=(unsigned char)buffer.at(idx + 2) & 0xff;
 
-                oxirec.append(OxiRecord(pulse,spo2));
+                oxirec->append(OxiRecord(pulse,spo2));
                 received_bytes+=3;
 
                 // TODO: Store the data to the session
@@ -273,6 +284,8 @@ int CMS50Loader::doImportMode()
 
 int CMS50Loader::doLiveMode()
 {
+    Q_ASSERT(oxirec != nullptr);
+
     int available = buffer.size();
     int idx = 0;
 
@@ -287,7 +300,7 @@ int CMS50Loader::doLiveMode()
         int pulse=((unsigned char)buffer.at(idx + 3) & 0x7f) | ((pbeat & 0x40) << 1);
         int spo2=(unsigned char)buffer.at(idx + 4) & 0x7f;
 
-        oxirec.append(OxiRecord(pulse, spo2));
+        oxirec->append(OxiRecord(pulse, spo2));
         plethy.append(pwave);
 
         idx += 5;
@@ -407,11 +420,13 @@ void CMS50Loader::resetImportTimeout()
 bool CMS50Loader::readSpoRFile(QString path)
 {
     QFile file(path);
-    if (!file.exists() || !file.isReadable()) {
+    if (!file.exists()) {
         return false;
     }
 
-    file.open(QFile::ReadOnly);
+    if (!file.open(QFile::ReadOnly)) {
+        return false;
+    }
 
     QByteArray data;
 
@@ -420,6 +435,9 @@ bool CMS50Loader::readSpoRFile(QString path)
 
     // position data stream starts at
     int pos = ((unsigned char)data.at(1) << 8) | (unsigned char)data.at(0);
+
+    // next is 0x0002
+    // followed by 16bit duration in seconds
 
     // Read date and time (it's a 16bit charset)
     char dchr[20];
@@ -430,9 +448,11 @@ bool CMS50Loader::readSpoRFile(QString path)
 
     dchr[j] = 0;
     QString dstr(dchr);
-    oxitime = QDateTime::fromString(dstr, "MM/dd/yy HH:mm:ss");
+    m_startTime = QDateTime::fromString(dstr, "MM/dd/yy HH:mm:ss");
+    if (m_startTime.date().year() < 2000) { m_startTime = m_startTime.addYears(100); }
 
-    if (oxitime.date().year() < 2000) { oxitime = oxitime.addYears(100); }
+    oxirec = new QVector<OxiRecord>;
+    oxisessions[m_startTime] = oxirec;
 
     unsigned char o2, pr;
 
@@ -440,7 +460,7 @@ bool CMS50Loader::readSpoRFile(QString path)
     for (int i = pos; i < size - 2;) {
         o2 = (unsigned char)(data.at(i + 1));
         pr = (unsigned char)(data.at(i + 0));
-        oxirec.append(OxiRecord(pr, o2));
+        oxirec->append(OxiRecord(pr, o2));
         i += 2;
     }
 
@@ -483,21 +503,14 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
 
 void CMS50Loader::process()
 {
-    int size=oxirec.size();
-    if (size<10)
-        return;
+    // Just clean up any extra crap before oximeterimport parses the oxirecords..
+    return;
+//    if (!oxirec)
+//        return;
+//    int size=oxirec->size();
+//    if (size<10)
+//        return;
 
-
-//    EventList *PULSE=new EventList(EVL_Event);
-//    EventList *SPO2=new EventList(EVL_Event);
-
-
-//    quint64 ti = oxitime.toMSecsSinceEpoch();
-
-//    for (int i=0; i < size; ++i) {
-//        //PULSE->AddWaveform
-//    }
-//    qDebug() << "Processing" << oxirec.size() << "oximetry records";
 }
 
 

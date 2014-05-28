@@ -144,7 +144,8 @@ SOURCES += \
     translation.cpp \
     statistics.cpp \
     oximeterimport.cpp \
-    SleepLib/serialoximeter.cpp
+    SleepLib/serialoximeter.cpp \
+    SleepLib/loader_plugins/md300w1_loader.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -197,7 +198,8 @@ HEADERS  += \
     translation.h \
     statistics.h \
     oximeterimport.h \
-    SleepLib/serialoximeter.h
+    SleepLib/serialoximeter.h \
+    SleepLib/loader_plugins/md300w1_loader.h
 
 FORMS += \
     daily.ui \

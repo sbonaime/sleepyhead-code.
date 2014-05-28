@@ -793,6 +793,19 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
           </widget>
          </item>
          <item>
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <widget class="QLabel" name="label">
            <property name="font">
             <font>
@@ -809,6 +822,19 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
           <widget class="QPushButton" name="directImportButton">
@@ -887,6 +913,19 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
             <bool>false</bool>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
           <widget class="QLabel" name="label_6">
@@ -1018,6 +1057,35 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
              <number>6</number>
             </property>
             <item>
+             <widget class="QCheckBox" name="showLiveGraphs">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Show Live Graphs</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <item>
                <widget class="QLabel" name="label_4">
@@ -1052,35 +1120,6 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="showLiveGraphs">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Show Live Graphs</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1247,6 +1286,78 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
              </layout>
             </item>
            </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="chooseSessionPage">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="liveConnectLabel_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>21</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Multiple Sessions Detected</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Please choose which one you want to import into SleepyHead</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="tableOxiSessions">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Import Time</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Duration</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Details</string>
+            </property>
+           </column>
           </widget>
          </item>
         </layout>
@@ -1660,6 +1771,13 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
        <widget class="QPushButton" name="retryButton">
         <property name="text">
          <string>&amp;Retry</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="chooseSessionButton">
+        <property name="text">
+         <string>&amp;Choose Session</string>
         </property>
        </widget>
       </item>

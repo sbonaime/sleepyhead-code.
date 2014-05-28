@@ -12,6 +12,10 @@ namespace Ui {
 class OximeterImport;
 }
 
+enum OximeterImportMode {
+    IM_UNDEFINED = 0, IM_LIVE, IM_RECORDING, IM_FILE
+};
+
 class OximeterImport : public QDialog
 {
     Q_OBJECT
@@ -60,6 +64,10 @@ private slots:
 
     void on_saveButton_clicked();
 
+    void chooseSession();
+
+    void on_chooseSessionButton_clicked();
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
     void finishedRecording();
@@ -82,6 +90,8 @@ private:
     EventList * ELplethy;
     qint64 start_ti, ti;
     QTimer updateTimer;
+    OximeterImportMode importMode;
+
 
     int pulse;
     int spo2;

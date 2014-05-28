@@ -130,3 +130,13 @@ void SerialOximeter::stopRecording()
     m_status = NEUTRAL;
     emit importComplete(this);
 }
+
+void SerialOximeter::trashRecords()
+{
+    QMap<QDateTime, QVector<OxiRecord> *>::iterator it;
+    for (it = oxisessions.begin(); it != oxisessions.end(); ++it) {
+        delete it.value();
+    }
+    oxisessions.clear();
+    oxirec = nullptr;
+}
