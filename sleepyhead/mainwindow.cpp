@@ -1363,7 +1363,7 @@ void MainWindow::on_actionPrint_Report_triggered()
             Report::PrintReport(oximetry->graphView(), STR_TR_Oximetry);
         }
     } else {
-        QPrinter printer;
+        QPrinter printer(QPrinter::HighResolution);
 #ifdef Q_WS_X11
         printer.setPrinterName("Print to File (PDF)");
         printer.setOutputFormat(QPrinter::PdfFormat);
@@ -1387,8 +1387,7 @@ void MainWindow::on_actionPrint_Report_triggered()
         printer.setOrientation(QPrinter::Portrait);
         printer.setFullPage(false); // This has nothing to do with scaling
         printer.setNumCopies(1);
-        printer.setPageMargins(10, 10, 10, 10, QPrinter::Millimeter);
-
+        printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
         QPrintDialog pdlg(&printer, this);
 
         if (pdlg.exec() == QPrintDialog::Accepted) {

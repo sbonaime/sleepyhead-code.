@@ -134,8 +134,11 @@ QString htmlHeader()
     return QString("<html><head>"
                    "</head>"
                    "<style type='text/css'>"
-                   "<!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
-                   "p,a,td,body { font-size: 14px }"
+                   "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
+                   "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
+
+//                   "h1,p,a,td,body { font-family: '"+PREF["Fonts_Application_Name"].toString()+"' }"
+//                   "p,a,td,body { font-size: '"+PREF["Fonts_Application_Size"].toString()+"pts' }"
 "table.curved {"
     "border: 1px solid gray;"
     "border-radius:10px;"
@@ -167,8 +170,8 @@ QString htmlHeader()
                    "<div align=center><table class=curved>" // cellpadding=3 cellspacing=0 border=0
                    "<td>"+userinfo+"</td>"
                    "<td align='right'>"
-                   "<h1>" + STR_TR_SleepyHead + "</h1><br/>"
-                   "<font size='+3'>" + QObject::tr("Usage Statistics") + "</font>"
+                   "<font size='+2'>" + STR_TR_SleepyHead + "</font><br/>"
+                   "<font size='+1'>" + QObject::tr("Usage Statistics") + "</font>"
                    "</td>"
                    "<td align='right' width=170px><img src='qrc:/icons/bob-v3.0.png' height=140px><br/>"
                    "</td></tr></table>"
@@ -616,7 +619,7 @@ QString Statistics::GenerateHTML()
             int days = PROFILE.countDays(row.type, first, last);
             skipsection = (days == 0);
             if (days > 0) {
-                html+=QString("<tr bgcolor='%1'><th colspan=%2 align=center><font size=+3>%3</font></th></tr>\n").
+                html+=QString("<tr bgcolor='%1'><th colspan=%2 align=center><font size=+2>%3</font></th></tr>\n").
                         arg(heading_color).arg(periods.size()+1).arg(row.src);
             }
             continue;
@@ -1047,7 +1050,7 @@ QString Statistics::GenerateHTML()
         html += "<div align=center><br/>";
         html += QString("<table class=curved>"); //cellpadding=2 cellspacing=0 border=1
         html += "<thead>";
-        html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+3>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
+        html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+2>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
 
         QString extratxt;
 
@@ -1215,7 +1218,7 @@ QString Statistics::GenerateHTML()
         html += QString("<table class=curved style=\"page-break-before:auto;\">");
 
         html += "<thead>";
-        html += "<tr bgcolor='"+heading_color+"'><td colspan=5 align=center><font size=+3>" + tr("Machine Information") + "</font></td></tr>";
+        html += "<tr bgcolor='"+heading_color+"'><td colspan=5 align=center><font size=+2>" + tr("Machine Information") + "</font></td></tr>";
 
         html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
                 .arg(STR_TR_Brand)
