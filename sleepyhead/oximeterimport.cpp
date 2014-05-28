@@ -430,8 +430,8 @@ void OximeterImport::on_calendarWidget_clicked(const QDate &date)
         }
         sessbar->setVisible(true);
         ui->sessbarLabel->setText(QString("%1 session(s), starting at %2").arg(day->size()).arg(time.time().toString("hh:mm:ssap")));
-//        sessbar->setSelected(0);
-//        ui->dateTimeEdit->setDateTime(time);
+        sessbar->setSelected(0);
+        ui->dateTimeEdit->setDateTime(time);
     } else {
         ui->sessbarLabel->setText("No CPAP Data available for this date"); // sessbar->setVisible(false);
     }
@@ -473,19 +473,13 @@ void OximeterImport::on_sessionForwardButton_clicked()
 
 void OximeterImport::on_radioSyncCPAP_clicked()
 {
-    int idx = sessbar->selected();
-    if (idx < 0) {
-        if (sessbar->count() > 0) {
-            idx = 0;
-            sessbar->setSelected(0);
-            sessbar->update();
-        }
-    }
-    if (idx >= 0) {
-        QDateTime datetime = QDateTime::fromMSecsSinceEpoch(sessbar->session(idx)->first());
-        ui->dateTimeEdit->setDateTime(datetime);
-    }
+    ui->calendarWidget->setSelectedDate(oximodule->startTime().date());
 
+    sessbar->setSelected(0);
+    sessbar->update();
+
+    QDateTime datetime = QDateTime::fromMSecsSinceEpoch(sessbar->session(0)->first());
+    ui->dateTimeEdit->setDateTime(datetime);
 
     ui->syncCPAPGroup->setVisible(true);
 
@@ -494,7 +488,10 @@ void OximeterImport::on_radioSyncCPAP_clicked()
 void OximeterImport::on_radioSyncOximeter_clicked()
 {
     ui->syncCPAPGroup->setVisible(false);
-    if (oximodule && oximodule->isStartTimeValid()) ui->dateTimeEdit->setDateTime(oximodule->startTime());
+    if (oximodule && oximodule->isStartTimeValid()) {
+        ui->calendarWidget->setSelectedDate(oximodule->startTime().date());
+        ui->dateTimeEdit->setDateTime(oximodule->startTime());
+    }
 }
 
 void OximeterImport::on_updatePlethy(QByteArray plethy)
@@ -631,11 +628,25 @@ void OximeterImport::on_syncButton_clicked()
     ui->syncButton->setVisible(false);
     ui->saveButton->setVisible(true);
 
-    ui->calendarWidget->setMinimumDate(PROFILE.FirstDay());
-    ui->calendarWidget->setMaximumDate(PROFILE.LastDay());
+    QDate first = PROFILE.FirstDay();
+    QDate last = PROFILE.LastDay();
 
-    // TODO: think this through better.. do I need to pick the day before?
-    on_calendarWidget_clicked(oximodule->startTime().date());
+    QDate oxidate = oximodule->startTime().date();
+
+
+    if ((oxidate >= first) && (oxidate <= last)) {
+        // TODO: think this through better.. do I need to pick the day before?
+        ui->calendarWidget->setMinimumDate(first);
+        ui->calendarWidget->setMaximumDate(last);
+        ui->calendarWidget->setCurrentPage(oxidate.year(), oxidate.month());
+        ui->calendarWidget->setSelectedDate(oxidate);
+        on_calendarWidget_clicked(oximodule->startTime().date());
+    } else {
+        // No CPAP sessions to sync it to.. kill the CPAP sync option
+        on_calendarWidget_clicked(last);
+        ui->calendarWidget->setCurrentPage(oxidate.year(), oxidate.month());
+        ui->calendarWidget->setSelectedDate(oxidate);
+    }
 
     ui->radioSyncOximeter->setChecked(true);
     on_radioSyncOximeter_clicked();
