@@ -272,10 +272,12 @@ void OximeterImport::on_fileImportButton_clicked()
 #endif
 
 
-    QString filename = QFileDialog::getOpenFileName(this, tr("Select a valid oximetry data file"), documentsFolder, "Oximetry Files (*.spo *.spor *.dat)");
+    QString filename = QFileDialog::getOpenFileName(nullptr , tr("Select a valid oximetry data file"), documentsFolder, "Oximetry Files (*.spo *.spor *.dat)");
 
     if (filename.isEmpty())
         return;
+
+
 
     // Make sure filename dialog had time to close properly..
     QApplication::processEvents();
@@ -648,13 +650,7 @@ void OximeterImport::on_syncButton_clicked()
 
 void OximeterImport::on_saveButton_clicked()
 {
-    int size = oximodule->oxirec->size();
-    if (size < 2) {
-        QMessageBox::warning(this, STR_MessageBox_Warning, tr("Not enough recorded oximetry data."), QMessageBox::Ok);
-        return;
-    }
     if (!oximodule) return;
-
 
     QVector<OxiRecord> * oxirec = nullptr;
 
@@ -664,6 +660,8 @@ void OximeterImport::on_saveButton_clicked()
         return;
     }
     oxirec = oximodule->oxisessions[oximodule->startTime()];
+    if (oxirec->size() < 10)
+        return;
 
 
     // this can move to SerialOximeter class process function...
@@ -706,6 +704,7 @@ void OximeterImport::on_saveButton_clicked()
 
 
     qint64 step = (importMode == IM_LIVE) ? oximodule->liveResolution() : oximodule->importResolution();
+    int size = oxirec->size();
 
     for (int i=1; i < size; ++i) {
         OxiRecord * rec = &(*oxirec)[i];
