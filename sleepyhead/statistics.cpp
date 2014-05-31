@@ -1217,12 +1217,16 @@ QString Statistics::GenerateHTML()
                 tooltiphide = "tooltip.hide();";
             }
 
-            html += QString("<tr class=datarow bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"%1\"); %3' onclick='alert(\"overview=%4,%5\");'>")
+            QString datarowclass;
+            if (rx.highlight == 0) datarowclass="class=datarow";
+            html += QString("<tr %6 bgcolor='%1' onmouseover='ChangeColor(this, \"#eeeeee\"); %2' onmouseout='ChangeColor(this, \"%1\"); %3' onclick='alert(\"overview=%4,%5\");'>")
                     .arg(color)
                     .arg(tooltipshow)
                     .arg(tooltiphide)
                     .arg(rx.first.toString(Qt::ISODate))
-                    .arg(rx.last.toString(Qt::ISODate));
+                    .arg(rx.last.toString(Qt::ISODate))
+                    .arg(datarowclass);
+
 
             html += QString("<td>%1</td>").arg(rx.first.toString(Qt::SystemLocaleShortDate));
             html += QString("<td>%1</td>").arg(rx.last.toString(Qt::SystemLocaleShortDate));
