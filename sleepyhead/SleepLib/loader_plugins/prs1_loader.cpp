@@ -1397,7 +1397,10 @@ void PRS1Import::run()
             delete sg->session;
             continue;
         }
-        sg->ParseEvents();
+        if (!sg->ParseEvents()) {
+           // delete sg->session;
+           // continue;
+        }
         sg->ParseWaveforms();
 
         sg->session->SetChanged(true);
@@ -1459,6 +1462,12 @@ bool PRS1FileGroup::ParseFile(QString path)
     quint16 wvfm_signals;
 
     unsigned char * header;
+    int cnt = 0;
+
+    int lastheadersize = 0;
+    int lastblocksize = 0;
+
+    int cruft = 0;
 
     do {
         QByteArray headerBA = f.read(16);
@@ -1479,6 +1488,29 @@ bool PRS1FileGroup::ParseFile(QString path)
         chunk->familyVersion = header[5];
         chunk->ext = header[6];
         chunk->timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+
+        if (lastchunk != nullptr) {
+            if ((lastchunk->fileVersion != chunk->fileVersion)
+                && (lastchunk->ext != chunk->ext)
+                && (lastchunk->family != chunk->family)
+                && (lastchunk->familyVersion != chunk->familyVersion)
+                && (lastchunk->htype != chunk->htype)) {
+                QByteArray junk = f.read(lastblocksize - 16);
+
+
+                if (lastchunk->ext == 5) {
+                    // The data is random crap
+//                    lastchunk->m_data.append(junk.mid(lastheadersize-16));
+                }
+                delete chunk;
+                ++cruft;
+                if (cruft > 3)
+                    break;
+
+                continue;
+                // Corrupt header.. skip it.
+            }
+        }
 
         int diff = 0;
 
@@ -1523,21 +1555,26 @@ bool PRS1FileGroup::ParseFile(QString path)
             }
         }
 
-        int headersize = headerBA.size() - 1;
+        int headersize = headerBA.size();
+
+        lastblocksize = blocksize;
+        lastheadersize = headersize;
+        blocksize -= headersize;
+
+
 
         // Check header checksum
         quint8 csum = 0;
-        for (int i=0; i < headersize; ++i) csum += header[i];
-        if (csum != header[headersize]) {
+        for (int i=0; i < headersize-1; ++i) csum += header[i];
+        if (csum != header[headersize-1]) {
             // header checksum error.
             delete chunk;
             return false;
         }
-
         // Read data block
-        chunk->m_data = f.read(blocksize - (headersize+1));
+        chunk->m_data = f.read(blocksize);
 
-        if (chunk->m_data.size() < (blocksize - (headersize+1))) {
+        if (chunk->m_data.size() < blocksize) {
             delete chunk;
             break;
         }
@@ -1564,6 +1601,7 @@ bool PRS1FileGroup::ParseFile(QString path)
                     lastchunk->m_data.append(chunk->m_data);
                     lastchunk->duration += chunk->duration;
                     delete chunk;
+                    cnt++;
                     chunk = lastchunk;
                     continue;
                 }
@@ -1596,6 +1634,7 @@ bool PRS1FileGroup::ParseFile(QString path)
         }
 
         lastchunk = chunk;
+        cnt++;
     } while (!f.atEnd());
     return true;
 }
