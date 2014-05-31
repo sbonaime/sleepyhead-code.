@@ -566,6 +566,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
                     }
 
+                    painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+                    painter.drawLines(lines);
+                    w.graphView()->lines_drawn_this_frame+=lines.count();
+                    lines.clear();
+
+
                 } else  {
                     //////////////////////////////////////////////////////////////////
                     // Standard events/zoomed in Plot
@@ -695,10 +701,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
         }
 
-        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
-        painter.drawLines(lines);
-        w.graphView()->lines_drawn_this_frame+=lines.count();
-        lines.clear();
+//        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+//        painter.drawLines(lines);
+//        w.graphView()->lines_drawn_this_frame+=lines.count();
+//        lines.clear();
 
         ////////////////////////////////////////////////////////////////////
         // Draw Legends on the top line

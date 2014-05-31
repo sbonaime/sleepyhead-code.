@@ -116,21 +116,33 @@ void MachineLoader::queTask(ImportTask * task)
     m_tasklist.push_back(task);
 }
 
-void MachineLoader::runTasks()
+void MachineLoader::runTasks(bool threaded)
 {
-    QThreadPool * threadpool = QThreadPool::globalInstance();
     m_totaltasks=m_tasklist.size();
     m_currenttask=0;
-    while (!m_tasklist.isEmpty()) {
-        if (threadpool->tryStart(m_tasklist.at(0))) {
-            m_tasklist.pop_front();
+
+    if (!threaded) {
+        while (!m_tasklist.isEmpty()) {
+            ImportTask * task = m_tasklist.takeFirst();
+            task->run();
             float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
             qprogress->setValue(f);
             m_currenttask++;
+            QApplication::processEvents();
         }
-        QApplication::processEvents();
+    } else {
+        QThreadPool * threadpool = QThreadPool::globalInstance();
+        while (!m_tasklist.isEmpty()) {
+            if (threadpool->tryStart(m_tasklist.at(0))) {
+                m_tasklist.pop_front();
+                float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
+                qprogress->setValue(f);
+                m_currenttask++;
+            }
+            QApplication::processEvents();
+        }
+        QThreadPool::globalInstance()->waitForDone(-1);
     }
-    QThreadPool::globalInstance()->waitForDone(-1);
 }
 
 /*const QString machine_profile_name="MachineList.xml";

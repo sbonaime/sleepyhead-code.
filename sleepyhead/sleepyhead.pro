@@ -145,7 +145,8 @@ SOURCES += \
     statistics.cpp \
     oximeterimport.cpp \
     SleepLib/serialoximeter.cpp \
-    SleepLib/loader_plugins/md300w1_loader.cpp
+    SleepLib/loader_plugins/md300w1_loader.cpp \
+    Graphs/gSessionTimesChart.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -199,7 +200,8 @@ HEADERS  += \
     statistics.h \
     oximeterimport.h \
     SleepLib/serialoximeter.h \
-    SleepLib/loader_plugins/md300w1_loader.h
+    SleepLib/loader_plugins/md300w1_loader.h \
+    Graphs/gSessionTimesChart.h
 
 FORMS += \
     daily.ui \

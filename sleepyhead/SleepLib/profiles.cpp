@@ -609,18 +609,51 @@ void Scan()
 
 } // namespace Profiles
 
+
+// Returns a list of all days records matching machine type between start and end date
+QList<Day *> Profile::getDays(MachineType mt, QDate start, QDate end)
+{
+    QList<Day *> daylist;
+
+    if (!start.isValid()) {
+        return daylist;
+    }
+
+    if (!end.isValid()) {
+        return daylist;
+    }
+
+    QDate date = start;
+
+    if (date.isNull()) {
+        return daylist;
+    }
+
+    do {
+        Day *day = GetGoodDay(date, mt);
+
+        if (day) {
+            if ((mt == MT_UNKNOWN) || (day->machine->GetType() == mt)) {
+                daylist.push_back(day);
+            }
+        }
+
+        date = date.addDays(1);
+    } while (date <= end);
+
+    return daylist;
+}
+
 int Profile::countDays(MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
         return 0;
     }
 
-    //start=LastDay(mt);
     if (!end.isValid()) {
         return 0;
     }
 
-    //end=LastDay(mt);
     QDate date = start;
 
     if (date.isNull()) {
@@ -1263,13 +1296,14 @@ QDate Profile::LastDay(MachineType mt)
 
 QDate Profile::FirstGoodDay(MachineType mt)
 {
-    if (mt == MT_UNKNOWN) { //|| (!m_last.isValid()) || (!m_first.isValid()))
+    if (mt == MT_UNKNOWN) {
         return FirstDay();
     }
 
     QDate d = FirstDay(mt);
     QDate l = LastDay(mt);
 
+    // No data will return invalid date records
     if (!d.isValid() || !l.isValid()) {
         return QDate();
     }

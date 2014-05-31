@@ -178,11 +178,16 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     QMap<quint32, STRRecord>::iterator si = strsess.find(laston);
                     if (si != strsess.end()) {
                         if (si.value().maskoff == 0) {
-                            si.value().maskoff = offtime;
+                            if (offtime > laston) {
+                                si.value().maskoff = offtime;
+                            }
                         } else {
                             if (si.value().maskoff != offtime) {
                                 // not sure why this happens.
-                                qDebug() << "WTF??" << si.value().maskoff << "!=" << offtime;
+                                qDebug() << "WTF?? mask off's don't match"
+                                        << QDateTime::fromTime_t(laston).toString()
+                                        << QDateTime::fromTime_t(si.value().maskoff).toString()
+                                        << "!=" << QDateTime::fromTime_t(offtime).toString();
                             }
                             //Q_ASSERT(si.value().maskoff == offtime);
                         }

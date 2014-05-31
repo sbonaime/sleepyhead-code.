@@ -61,7 +61,7 @@ class MachineLoader: public QObject
     void queTask(ImportTask * task);
 
     //! \brief Process Task list using all available threads.
-    void runTasks();
+    void runTasks(bool threaded=true);
 
     inline bool isAborted() { return m_abort; }
     void abort() { m_abort = true; }
@@ -70,6 +70,9 @@ class MachineLoader: public QObject
 
     DeviceStatus status() { return m_status; }
     void setStatus(DeviceStatus status) { m_status = status; }
+
+    QMutex sessionMutex;
+    QMutex saveMutex;
 
 signals:
     void updateProgress(int cnt, int total);
@@ -98,6 +101,7 @@ signals:
     bool m_abort;
 
     DeviceStatus m_status;
+
 
   private:
     QList<ImportTask *> m_tasklist;

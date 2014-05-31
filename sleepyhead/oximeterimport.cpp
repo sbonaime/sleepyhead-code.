@@ -272,7 +272,7 @@ void OximeterImport::on_fileImportButton_clicked()
 #endif
 
 
-    QString filename = QFileDialog::getOpenFileName(nullptr , tr("Select a valid oximetry data file"), documentsFolder, "Oximetry Files (*.spo *.spor *.dat)");
+    QString filename = QFileDialog::getOpenFileName(nullptr , tr("Select a valid oximetry data file"), documentsFolder, tr("Oximetry Files (*.spo *.spor *.dat)"));
 
     if (filename.isEmpty())
         return;
@@ -324,7 +324,7 @@ void OximeterImport::on_liveImportButton_clicked()
     SerialOximeter * oximodule = detectOximeter();
 
     if (!oximodule) {
-        updateStatus("Couldn't access oximeter");
+        updateStatus(tr("Couldn't access oximeter"));
         ui->retryButton->setVisible(true);
         ui->progressBar->setValue(0);
 
@@ -334,7 +334,7 @@ void OximeterImport::on_liveImportButton_clicked()
     Machine *mach = oximodule->CreateMachine(p_profile);
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
-    ui->liveConnectLabel->setText("Live Oximetery Mode");
+    ui->liveConnectLabel->setText(tr("Live Oximetery Mode"));
 
 
     liveView->setEmptyText(tr("Starting up..."));
@@ -381,7 +381,7 @@ void OximeterImport::finishedRecording()
     disconnect(ui->stopButton, SIGNAL(clicked()), this, SLOT(finishedRecording()));
 
     ui->stopButton->setVisible(false);
-    ui->liveConnectLabel->setText("Live Import Stopped");
+    ui->liveConnectLabel->setText(tr("Live Import Stopped"));
     liveView->setEmptyText(tr("Live Oximetery Stopped"));
     updateStatus(tr("Live Oximetery import has been stopped"));
 
@@ -413,30 +413,36 @@ void OximeterImport::on_stopButton_clicked()
 
 void OximeterImport::on_calendarWidget_clicked(const QDate &date)
 {
-    Day * day = PROFILE.GetGoodDay(date, MT_CPAP);
+    if (ui->radioSyncCPAP->isChecked()) {
+        Day * day = PROFILE.GetGoodDay(date, MT_CPAP);
 
-    sessbar->clear();
-    if (day) {
-        QDateTime time=QDateTime::fromMSecsSinceEpoch(day->first());
         sessbar->clear();
-        QList<QColor> colors;
-        colors.push_back("#ffffe0");
-        colors.push_back("#ffe0ff");
-        colors.push_back("#e0ffff");
-        QList<Session *>::iterator i;
-        int j=0;
-        for (i=day->begin(); i != day->end(); ++i) {
-            sessbar->add((*i),colors.at(j++ % colors.size()));
+        if (day) {
+            QDateTime time=QDateTime::fromMSecsSinceEpoch(day->first());
+            sessbar->clear();
+            QList<QColor> colors;
+            colors.push_back("#ffffe0");
+            colors.push_back("#ffe0ff");
+            colors.push_back("#e0ffff");
+            QList<Session *>::iterator i;
+            int j=0;
+            for (i=day->begin(); i != day->end(); ++i) {
+                sessbar->add((*i),colors.at(j++ % colors.size()));
+            }
+            sessbar->setVisible(true);
+            ui->sessbarLabel->setText(tr("%1 session(s) on %2, starting at %3").arg(day->size()).arg(time.date().toString(Qt::SystemLocaleLongDate)).arg(time.time().toString("hh:mm:ssap")));
+            sessbar->setSelected(0);
+            ui->dateTimeEdit->setDateTime(time);
+        } else {
+            ui->sessbarLabel->setText(tr("No CPAP data available on %1").arg(date.toString(Qt::SystemLocaleLongDate)));
+            ui->dateTimeEdit->setDateTime(QDateTime(date,oximodule->startTime().time()));
         }
-        sessbar->setVisible(true);
-        ui->sessbarLabel->setText(QString("%1 session(s), starting at %2").arg(day->size()).arg(time.time().toString("hh:mm:ssap")));
-        sessbar->setSelected(0);
-        ui->dateTimeEdit->setDateTime(time);
-    } else {
-        ui->sessbarLabel->setText("No CPAP Data available for this date"); // sessbar->setVisible(false);
-    }
 
-    sessbar->update();
+        sessbar->update();
+    } else if (ui->radioSyncOximeter) {
+        ui->sessbarLabel->setText(tr("%1").arg(date.toString(Qt::SystemLocaleLongDate)));
+        ui->dateTimeEdit->setDateTime(QDateTime(date, ui->dateTimeEdit->dateTime().time()));
+    }
 }
 
 void OximeterImport::on_calendarWidget_selectionChanged()
@@ -473,13 +479,7 @@ void OximeterImport::on_sessionForwardButton_clicked()
 
 void OximeterImport::on_radioSyncCPAP_clicked()
 {
-    ui->calendarWidget->setSelectedDate(oximodule->startTime().date());
-
-    sessbar->setSelected(0);
-    sessbar->update();
-
-    QDateTime datetime = QDateTime::fromMSecsSinceEpoch(sessbar->session(0)->first());
-    ui->dateTimeEdit->setDateTime(datetime);
+    on_calendarWidget_clicked(oximodule->startTime().date());
 
     ui->syncCPAPGroup->setVisible(true);
 

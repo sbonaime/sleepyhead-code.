@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QDataStream>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QDebug>
@@ -423,6 +424,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     int size = paths.size();
     int cnt = 0;
 
+    prs1sessions.clear();
     new_sessions.clear(); // this hash is used by OpenFile
 
     // for each p0/p1/p2/etc... folder
@@ -454,387 +456,43 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
                 continue;
             }
 
-            if ((ext == 1) || (ext == 0)) {
-                // Open just the summary files first round and create a session record if succesful
-                OpenFile(m, fi.canonicalFilePath());
+            PRS1FileGroup * group = nullptr;
+
+            QHash<SessionID, PRS1FileGroup*>::iterator it = prs1sessions.find(sid);
+            if (it != prs1sessions.end()) {
+                group = it.value();
             } else {
-                // and keep the rest of the names for next stage
-                sessfiles[sid].push_back(fi.canonicalFilePath());
+                group = new PRS1FileGroup();
+                prs1sessions[sid] = group;
+                // save a loop an que this now
+                queTask(new PRS1Import(this, sid, group, m));
+           }
+
+
+            switch (ext) {
+            case 0:
+                group->compliance = fi.canonicalFilePath();
+                break;
+            case 1:
+                group->summary = fi.canonicalFilePath();
+                break;
+            case 2:
+                group->event = fi.canonicalFilePath();
+                break;
+            case 5:
+                group->waveform = fi.canonicalFilePath();
+                break;
+            default:
+                break;
             }
         }
     }
 
-    cnt = 0;
-    size = new_sessions.size();
-
-    // Scan through new sessions and parse event and waveform data
-    // NOTE: this function could be multithreaded.
-    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end(); ++it) {
-        sid = it.key();
-
-        if (sessfiles.contains(sid)) {
-            for (int j = 0; j < sessfiles[sid].size(); j++) {
-                QString name = sessfiles[sid][j];
-
-                if (name.endsWith(".002")) {
-                    // Parse event data
-                    OpenFile(m, name);
-                } else if (name.endsWith(".005")) {
-                    // Parse Flow Rate Waveform (and mask pressure if available) data
-                    OpenWaveforms(sid, name);
-                }
-            }
-        }
-
-        // sessions are fully loaded here..
-
-        // Update the progress bar.. this could be done better by an emit if MachineLoader was a QObject and an
-        // event loop was running.
-        if ((++cnt % 10) == 0) {
-            if (qprogress) { qprogress->setValue(0.0 + (float(cnt) / float(size) * 100.0)); }
-
-            QApplication::processEvents();
-        }
-    }
-
-    // strictly can do this in the above loop, but this is cautionary
-    cnt = 0;
-
-    // Scan through parsed sessions, do a little cleanup and add to machine object
-    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end(); ++it) {
-        Session *sess = it.value();
-
-        if ((sess->length()) <= 0) {
-            //const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
-            //if (sess->hours()<=ignore_thresh) {
-            qDebug() << "Ignoring empty session" << sess->session();
-            SessionID id = sess->session();
-            delete sess;
-            new_sessions[id] = nullptr;
-            continue;
-        }
-
-        if (sess->count(CPAP_IPAP) > 0) {
-            //sess->summaryCPAP_Mode]!=MODE_ASV)
-            if (sess->settings[CPAP_Mode].toInt() != (int)MODE_ASV) {
-                sess->settings[CPAP_Mode] = MODE_BIPAP;
-            }
-
-            if (sess->settings[CPAP_PresReliefType].toInt() != PR_NONE) {
-                sess->settings[CPAP_PresReliefType] = PR_BIFLEX;
-            }
-
-            EventDataType min = sess->settings[CPAP_PressureMin].toDouble();
-            EventDataType max = sess->settings[CPAP_PressureMax].toDouble();
-            sess->settings[CPAP_EPAP] = min;
-            sess->settings[CPAP_IPAP] = max;
-
-            sess->settings[CPAP_PS] = max - min;
-            sess->settings.erase(sess->settings.find(CPAP_PressureMin));
-            sess->settings.erase(sess->settings.find(CPAP_PressureMax));
-
-            sess->m_valuesummary.erase(sess->m_valuesummary.find(CPAP_Pressure));
-            sess->m_wavg.erase(sess->m_wavg.find(CPAP_Pressure));
-            sess->m_min.erase(sess->m_min.find(CPAP_Pressure));
-            sess->m_max.erase(sess->m_max.find(CPAP_Pressure));
-            sess->m_gain.erase(sess->m_gain.find(CPAP_Pressure));
-
-
-        } else {
-
-            if (!sess->settings.contains(CPAP_Pressure) && !sess->settings.contains(CPAP_PressureMin)) {
-                sess->settings[CPAP_BrokenSummary] = true;
-
-                //sess->set_last(sess->first());
-                if (sess->Min(CPAP_Pressure) == sess->Max(CPAP_Pressure)) {
-                    sess->settings[CPAP_Mode] = MODE_CPAP; // no ramp
-                } else {
-                    sess->settings[CPAP_Mode] = MODE_UNKNOWN;
-                }
-
-                //sess->Set("FlexMode",PR_UNKNOWN);
-            }
-
-        }
-
-        if (sess->settings[CPAP_Mode].toInt() == (int)MODE_CPAP) {
-            //sess->settings[CPAP_PressureMax]=sess->settings[CPAP_PressureMin];
-        }
-
-        // set session saved flag so machine::Save() knows it needs saving
-        sess->SetChanged(true);
-
-        // Add session to machine record
-        m->AddSession(sess, profile);
-
-        // Update the progress bar
-        if ((++cnt % 10) == 0) {
-            //if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
-            QApplication::processEvents();
-        }
-
-    }
-
-    m->properties[STR_PROP_DataVersion] = QString::number(prs1_data_version);
-    m->properties[STR_PROP_LastImported] = QDateTime::currentDateTime().toString(Qt::ISODate);
-
-    // Save any new sessions to disk in our format, updating summaries as it goes..
-    m->Save();
-
-    // Set progress bar to completed.
-    if (qprogress) { qprogress->setValue(100); }
-
-    // Return number of newly added sessions
-    return cnt;
+    runTasks(p_profile->session->multithreading());
 }
 
-//struct PRS1SummaryR5 {
-//    quint8 unknown1;
-//    quint8 unknown2;
-//    quint8 unknown3;
-//    quint8 pressure_min;
-//    quint8 pressure_max;
-//    quint8 unknown;
-
-//    quint32 flags;
-
-
-//};// __attribute__((packed));
-
-// Family 0 = xPAP
-// Family 5 = ASV
-
-
-
-bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
-                              unsigned char *data, quint16 size, int family, int familyVersion)
+bool PRS1SessionData::ParseF5Events()
 {
-    if (mach->SessionExists(sequence)) {
-        qDebug() << "sessionexists exit";
-        return false;
-    }
-
-    if (size < 44 - 16) {
-        qDebug() << "size exit";
-        return false;
-    }
-
-    Session *session = new Session(mach, sequence);
-    session->really_set_first(qint64(timestamp) * 1000L);
-    EventDataType max, min;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // ASV Codes (Family 5) Recheck 17/10/2013
-    // These are all confirmed off Encore reports
-
-    //cpapmax=EventDataType(data[0x02])/10.0;   // Max Pressure in ASV machines
-    //minepap=EventDataType(data[0x03])/10.0;   // Min EPAP
-    //maxepap=EventDataType(data[0x04])/10.0;   // Max EPAP
-    //minps=EventDataType(data[0x05])/10.0      // Min Pressure Support
-    //maxps=EventDataType(data[0x06])/10.0      // Max Pressure Support
-
-    //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
-
-    //epap90=EventDataType(data[0x21])/10.0;    // EPAP 90%
-    //epapavg=EventDataType(data[0x22])/10.0;   // EPAP Average
-    //ps90=EventDataType(data[0x23])/10.0;      // Pressure Support 90%
-    //psavg=EventDataType(data[0x24])/10.0;     // Pressure Support Average
-
-    //TODO: minpb=data[0x] | data[0x] << 8;           // Minutes in PB
-    //TODO: minleak=data[0x] | data[0x] << 8;         // Minutes in Large Leak
-    //TODO: oa_cnt=data[0x] | data[0x] << 8;          // Obstructive events count
-
-    //ca_cnt=data[0x2d] | data[0x2e] << 8;      // Clear Airway Events count
-    //h_cnt=data[0x2f] | data[0x30] << 8;       // Hypopnea events count
-    //fl_cnt=data[0x33] | data[0x34] << 8;      // Flow Limitation events count
-
-    //avg_leak=EventDataType(data[0x35]);       // Average Leak
-    //avgptb=EventDataType(data[0x36]);         // Average Patient Triggered Breaths %
-    //avgbreathrate=EventDataType(data[0x37]);  // Average Breaths Per Minute
-    //avgminvent=EventDataType(data[0x38]);     // Average Minute Ventilation
-    //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-    min = float(data[0x03]) / 10.0; // Min EPAP
-    max = float(data[0x04]) / 10.0; // Max EPAP
-    int offset = 0;
-
-    if (family == 5) { //data[0x05]!=0) { // This is a time value for ASV stuff
-        offset = 4; // non zero adds 4 extra fields..
-    } else if (family == 0 && familyVersion >= 4) {
-        offset = 2;
-    }
-
-    // Minutes. Convert to seconds/hours here?
-    session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
-    session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;
-
-    if (max > 0) { // Ignoring bipap until we see some more data during import
-        session->settings[CPAP_Mode] = (family == 5) ? (int)MODE_ASV : (int)MODE_APAP;
-
-        session->settings[CPAP_PressureMin] = (EventDataType)min;
-        session->settings[CPAP_PressureMax] = (EventDataType)max;
-    } else {
-        session->settings[CPAP_Mode] = (int)MODE_CPAP;
-        session->settings[CPAP_Pressure] = (EventDataType)min;
-    }
-
-    // This is incorrect..
-    if (data[offset + 0x08] & 0x80) { // Flex Setting
-        if (data[offset + 0x08] & 0x08) {
-            if (max > 0) {
-                if (family == 5) {
-                    session->settings[CPAP_PresReliefType] = (int)PR_BIFLEX;
-                } else {
-                    session->settings[CPAP_PresReliefType] = (int)PR_AFLEX;
-                }
-            } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEXPLUS; }
-        } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEX; }
-    } else { session->settings[CPAP_PresReliefType] = (int)PR_NONE; }
-
-    session->settings[CPAP_PresReliefMode] = (int)PM_FullTime; // only has one mode
-
-
-    session->settings[CPAP_PresReliefSet] = (int)(data[offset + 0x08] & 7);
-    session->settings[PRS1_SysLock] = (data[offset + 0x0a] & 0x80) == 0x80;
-    session->settings[PRS1_HoseDiam] = ((data[offset + 0x0a] & 0x08) ? "15mm" : "22mm");
-    session->settings[PRS1_AutoOff] = (data[offset + 0x0c] & 0x10) == 0x10;
-    session->settings[PRS1_MaskAlert] = (data[offset + 0x0c] & 0x08) == 0x08;
-    session->settings[PRS1_ShowAHI] = (data[offset + 0x0c] & 0x04) == 0x04;
-
-    if (family == 0 && familyVersion >= 4) {
-        if ((data[offset + 0x0a] & 0x04) == 0x04) { // heated tubing off
-            session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
-        } else {
-            session->settings[CPAP_HumidSetting] = (int)(data[offset + 0x09] & 0x30) >> 4;
-        }
-
-        session->settings[PRS1_SysOneResistSet] = (int)(data[offset + 0x0b] & 0x38) >> 3;
-        /* These should be added to channels, if they are correct(?) */
-        /* for now, leave commented out                              */
-        /*
-        session->settings[PRS1_HeatedTubing]=(data[offset+0x0a]&0x04)!=0x04;
-        session->settings[PRS1_HeatedTubingConnected]=(data[offset+0x0b]&0x01)==0x01;
-        session->settings[PRS1_HeatedTubingTemp]=(int)(data[offset+0x09]&0x80)>>5
-            + (data[offset+0x0a]&0x03);
-        */
-    } else {
-        session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
-        session->settings[PRS1_HumidStatus] = (data[offset + 0x09] & 0x80) == 0x80;
-        session->settings[PRS1_SysOneResistStat] = (data[offset + 0x0a] & 0x40) == 0x40;
-        session->settings[PRS1_SysOneResistSet] = (int)data[offset + 0x0a] & 7;
-    }
-
-
-    // up to this point appears to be correct, everything after is pretty much crap
-    // Summary files vary too much between Families/versions
-
-
-    if (size < 59) {
-//        duration = data[offset + 0x12] | (data[offset + 0x13] << 8);
-//        duration *= 2;
-//        session->really_set_last(qint64(timestamp + duration) * 1000L);
-
-        if (max > 0) {
-            session->setMin(CPAP_Pressure, min);
-            session->setMax(CPAP_Pressure, max);
-            //session->setWavg(CPAP_Pressure,min);
-        }
-    } else {
-
-        // 0X28 & 0X29 is length on r5
-//        if (family == 0 && familyVersion >= 4) {
-//            offset += 12;
-//        }
-
-        // on some 60 series it's one off. or was the original 60 series patch wrong?
-        // I verified this comment below against several data samples compared with encore reports.
-        //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
-
-
-//        duration = data[offset + 0x14] | (data[offset + 0x15] << 8);
-
-//        if (!duration) {
-//            qDebug() << "!duration exit";
-//            delete session;
-//            return false;
-//        }
-
-  //      session->really_set_last(qint64(timestamp + duration) * 1000L);
-   //     float hours = float(duration) / 3600.0;
-
-        // Not using these because sometimes this summary is broken.
-        //EventDataType minp,maxp,avgp,p90p;
-
-        //minp=float(data[offset+0x16])/10.0;
-        //maxp=float(data[offset+0x17])/10.0;
-        //p90p=float(data[offset+0x18])/10.0;
-        //avgp=float(data[offset+0x19])/10.0;
-
-        // Nope.. positions are too variant between models.. calculate the hard way during machine->Save()..
-//        short minp = data[offset + 0x16];
-//        short maxp = data[offset + 0x17];
-//        short medp = data[offset + 0x19];
-//        short p90p = data[offset + 0x18];
-
-//        if (family < 5) {
-//            if (minp > 0) { session->setMin(CPAP_Pressure, EventDataType(minp) * 0.10); }
-//            if (maxp > 0) { session->setMax(CPAP_Pressure, EventDataType(maxp) * 0.10); }
-//            if (medp > 0) { session->setWavg(CPAP_Pressure, EventDataType(medp) * 0.10); } // ??
-
-//            session->m_gain[CPAP_Pressure] = 0.1;
-//            session->m_valuesummary[CPAP_Pressure][minp] = 5;
-//            session->m_valuesummary[CPAP_Pressure][medp] = 46;
-//            session->m_valuesummary[CPAP_Pressure][p90p] = 44;
-//            session->m_valuesummary[CPAP_Pressure][maxp] = 5;
-//        }
-
-        //        if (p90p>0) {
-        //            session->set90p(CPAP_Pressure,p90p);
-        //        }
-
-        // I can't rely on the position of any of this!
-
-//        int oc, cc, hc, rc, fc;
-//        session->setCount(CPAP_Obstructive, oc = (int)data[offset + 0x1C] | (data[offset + 0x1D] << 8));
-//        session->setCount(CPAP_ClearAirway, cc = (int)data[offset + 0x20] | (data[offset + 0x21] << 8));
-//        session->setCount(CPAP_Hypopnea, hc = (int)data[offset + 0x2A] | (data[offset + 0x2B] << 8));
-//        session->setCount(CPAP_RERA, rc = (int)data[offset + 0x2E] | (data[offset + 0x2F] << 8));
-//        session->setCount(CPAP_FlowLimit, fc = (int)data[offset + 0x30] | (data[offset + 0x31] << 8));
-
-//        session->setCph(CPAP_Obstructive, float(oc / hours));
-//        session->setCph(CPAP_ClearAirway, float(cc / hours));
-//        session->setCph(CPAP_Hypopnea, float(hc / hours));
-//        session->setCph(CPAP_RERA, float(rc / hours));
-//        session->setCph(CPAP_FlowLimit, float(fc / hours));
-    }
-
-    // Set recommended Graph values..
-    session->setPhysMax(CPAP_LeakTotal, 120);
-    session->setPhysMin(CPAP_LeakTotal, 0);
-    session->setPhysMax(CPAP_Pressure, 25);
-    session->setPhysMin(CPAP_Pressure, 4);
-    session->setPhysMax(CPAP_IPAP, 25);
-    session->setPhysMin(CPAP_IPAP, 4);
-    session->setPhysMax(CPAP_EPAP, 25);
-    session->setPhysMin(CPAP_EPAP, 4);
-    session->setPhysMax(CPAP_PS, 25);
-    session->setPhysMin(CPAP_PS, 0);
-
-    new_sessions[sequence] = session;
-    return true;
-}
-
-bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *buffer,
-                            quint16 size,int familyVersion)
-{
-    if (!new_sessions.contains(sequence)) {
-        qDebug() << "contains squence exit";
-        return false;
-    }
-
-    Session *session = new_sessions[sequence];
-
     ChannelID Codes[] = {
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
         CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
@@ -872,7 +530,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
 
     //qint64 start=timestamp;
-    qint64 t = qint64(timestamp) * 1000L;
+    qint64 t = qint64(event->timestamp) * 1000L;
     session->updateFirst(t);
     qint64 tt;
     int pos = 0;
@@ -882,6 +540,9 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     bool badcode = false;
     unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0, code = 0;
     int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
+
+    int size = event->m_data.size();
+    unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     while (pos < size) {
         lastcode3 = lastcode2;
@@ -1086,7 +747,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             EPAP->AddEvent(t, data[1] = buffer[pos++]); // 09=EPAP
             data[2] = data[0] - data[1];
             PS->AddEvent(t, data[2]);           // Pressure Support
-            if (familyVersion >= 1) {
+            if (event->familyVersion >= 1) {
                 data[0] = buffer[pos++];
 
             }
@@ -1171,13 +832,8 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
 }
 
-bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size,
-                          int family, int familyVersion)
+bool PRS1SessionData::ParseF0Events()
 {
-    if (!new_sessions.contains(sequence)) {
-        return false;
-    }
-
     unsigned char code=0;
     EventList *Code[0x20] = {0};
     EventDataType data[10];
@@ -1185,9 +841,8 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
     short delta;
     int tdata;
     quint64 pos;
-    qint64 t = qint64(timestamp) * 1000L, tt;
+    qint64 t = qint64(event->timestamp) * 1000L, tt;
 
-    Session *session = new_sessions[sequence];
     session->updateFirst(t);
 
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
@@ -1213,6 +868,9 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
     //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
     unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0;
     int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
+
+    int size = event->m_data.size();
+    unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     for (pos = 0; pos < size;) {
         lastcode3 = lastcode2;
@@ -1250,7 +908,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
             Code[0]->AddEvent(t, buffer[pos++]);
 
-            if (family == 0 && familyVersion >= 4) {
+            if ((event->family == 0) && (event->familyVersion >= 4)) {
                 pos++;
             }
 
@@ -1263,7 +921,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
             Code[1]->AddEvent(t, 0);
 
-            if (family == 0 && familyVersion >= 4) {
+            if ((event->family == 0) && (event->familyVersion >= 4)) {
                 if (!PRESSURE) {
                     PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
 
@@ -1276,7 +934,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             break;
 
         case 0x02: // Pressure
-            if (family == 0 && familyVersion >= 4) {  // BiPAP Pressure
+            if ((event->family == 0) && (event->familyVersion >= 4)) {  // BiPAP Pressure
                 if (!EPAP) {
                     if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
 
@@ -1402,7 +1060,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
                 VS2->AddEvent(t, data[1]);
             }
 
-            if (family == 0 && familyVersion >= 4) {
+            if ((event->family == 0) && (event->familyVersion >= 4)) {
                 pos++;
             }
 
@@ -1463,7 +1121,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
         default:
             // ERROR!!!
-            qWarning() << "Some new fandangled PRS1 code detected in" << sequence << hex
+            qWarning() << "Some new fandangled PRS1 code detected in" << event->sessionid << hex
                        << int(code) << " at " << pos - 1;
             return false;
         }
@@ -1481,48 +1139,311 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 }
 
 
-//bool PRS1Loader::ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format)
-//{
-//    Q_UNUSED(interleave)
-//    Q_UNUSED(sample_format)
-//    // this whole function is currently unused..
-
-//    if (!new_sessions.contains(sequence))
-//        return false;
-
-//    qint64 t=qint64(timestamp)*1000L;
-
-//    Session *session=new_sessions[sequence];
-
-//    if (num_signals==1) {
-//        session->updateFirst(t);
-//        double d=duration*1000;
-//        EventDataType rate=d / EventDataType(size);
-//        EventList *ev=session->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0.00,0,0,rate);
-//        ev->AddWaveform(t,(char *)data,size,qint64(duration)*1000L);
-//        session->updateLast(t+qint64(duration)*1000L);
-
-//    }
-
-//    return true;
-//}
-
-bool PRS1Loader::OpenFile(Machine *mach, QString filename)
+bool PRS1SessionData::ParseCompliance()
 {
-    int sequence, family, familyVersion;
-    quint32 timestamp;
-    qint64 pos;
-    unsigned char ext, sum, htype;
-    unsigned char *header, *data;
-    int chunk, hl;
-    quint16 size, datasize, c16, crc;
+    if (!compliance) return false;
+    return true;
+}
 
-    // waveform stuff
-    vector<WaveHeaderList> whl;
-    quint16 interleave, duration, num_signals;
-    quint8  sample_format;
+bool PRS1SessionData::ParseSummary()
+{
+    if (!summary) return false;
+    if (summary->m_data.size() < 59) {
+        return false;
+    }
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
-    QFile f(filename);
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ASV Codes (Family 5) Recheck 17/10/2013
+    // These are all confirmed off Encore reports
+
+    //cpapmax=EventDataType(data[0x02])/10.0;   // Max Pressure in ASV machines
+    //minepap=EventDataType(data[0x03])/10.0;   // Min EPAP
+    //maxepap=EventDataType(data[0x04])/10.0;   // Max EPAP
+    //minps=EventDataType(data[0x05])/10.0      // Min Pressure Support
+    //maxps=EventDataType(data[0x06])/10.0      // Max Pressure Support
+
+    //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
+
+    //epap90=EventDataType(data[0x21])/10.0;    // EPAP 90%
+    //epapavg=EventDataType(data[0x22])/10.0;   // EPAP Average
+    //ps90=EventDataType(data[0x23])/10.0;      // Pressure Support 90%
+    //psavg=EventDataType(data[0x24])/10.0;     // Pressure Support Average
+
+    //TODO: minpb=data[0x] | data[0x] << 8;           // Minutes in PB
+    //TODO: minleak=data[0x] | data[0x] << 8;         // Minutes in Large Leak
+    //TODO: oa_cnt=data[0x] | data[0x] << 8;          // Obstructive events count
+
+    //ca_cnt=data[0x2d] | data[0x2e] << 8;      // Clear Airway Events count
+    //h_cnt=data[0x2f] | data[0x30] << 8;       // Hypopnea events count
+    //fl_cnt=data[0x33] | data[0x34] << 8;      // Flow Limitation events count
+
+    //avg_leak=EventDataType(data[0x35]);       // Average Leak
+    //avgptb=EventDataType(data[0x36]);         // Average Patient Triggered Breaths %
+    //avgbreathrate=EventDataType(data[0x37]);  // Average Breaths Per Minute
+    //avgminvent=EventDataType(data[0x38]);     // Average Minute Ventilation
+    //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    EventDataType max, min;
+
+    min = float(data[0x03]) / 10.0; // Min EPAP
+    max = float(data[0x04]) / 10.0; // Max EPAP
+    int offset = 0;
+
+    // This is a time value for ASV stuff
+    if (summary->family == 5) {
+        offset = 4; // non zero adds 4 extra fields..
+    } else if (summary->family == 0 && summary->familyVersion >= 4) {
+        offset = 2;
+    }
+
+    // Minutes. Convert to seconds/hours here?
+    session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
+    session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;
+
+    if (max > 0) { // Ignoring bipap until we see some more data during import
+        session->settings[CPAP_Mode] = (summary->family == 5) ? (int)MODE_ASV : (int)MODE_APAP;
+
+        session->settings[CPAP_PressureMin] = (EventDataType)min;
+        session->settings[CPAP_PressureMax] = (EventDataType)max;
+    } else {
+        session->settings[CPAP_Mode] = (int)MODE_CPAP;
+        session->settings[CPAP_Pressure] = (EventDataType)min;
+    }
+
+    if (data[offset + 0x08] & 0x80) { // Flex Setting
+        if (data[offset + 0x08] & 0x08) {
+            if (max > 0) {
+                if (summary->family == 5) {
+                    session->settings[CPAP_PresReliefType] = (int)PR_BIFLEX;
+                } else {
+                    session->settings[CPAP_PresReliefType] = (int)PR_AFLEX;
+                }
+            } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEXPLUS; }
+        } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEX; }
+    } else { session->settings[CPAP_PresReliefType] = (int)PR_NONE; }
+
+    session->settings[CPAP_PresReliefMode] = (int)PM_FullTime; // only has one mode
+
+
+    session->settings[CPAP_PresReliefSet] = (int)(data[offset + 0x08] & 7);
+    session->settings[PRS1_SysLock] = (data[offset + 0x0a] & 0x80) == 0x80;
+    session->settings[PRS1_HoseDiam] = ((data[offset + 0x0a] & 0x08) ? "15mm" : "22mm");
+    session->settings[PRS1_AutoOff] = (data[offset + 0x0c] & 0x10) == 0x10;
+    session->settings[PRS1_MaskAlert] = (data[offset + 0x0c] & 0x08) == 0x08;
+    session->settings[PRS1_ShowAHI] = (data[offset + 0x0c] & 0x04) == 0x04;
+
+    if (summary->family == 0 && summary->familyVersion >= 4) {
+        if ((data[offset + 0x0a] & 0x04) == 0x04) { // heated tubing off
+            session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
+        } else {
+            session->settings[CPAP_HumidSetting] = (int)(data[offset + 0x09] & 0x30) >> 4;
+        }
+
+        session->settings[PRS1_SysOneResistSet] = (int)(data[offset + 0x0b] & 0x38) >> 3;
+        /* These should be added to channels, if they are correct(?) */
+        /* for now, leave commented out                              */
+        /*
+        session->settings[PRS1_HeatedTubing]=(data[offset+0x0a]&0x04)!=0x04;
+        session->settings[PRS1_HeatedTubingConnected]=(data[offset+0x0b]&0x01)==0x01;
+        session->settings[PRS1_HeatedTubingTemp]=(int)(data[offset+0x09]&0x80)>>5
+            + (data[offset+0x0a]&0x03);
+        */
+    } else {
+        session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
+        session->settings[PRS1_HumidStatus] = (data[offset + 0x09] & 0x80) == 0x80;
+        session->settings[PRS1_SysOneResistStat] = (data[offset + 0x0a] & 0x40) == 0x40;
+        session->settings[PRS1_SysOneResistSet] = (int)data[offset + 0x0a] & 7;
+    }
+
+    // Set recommended Graph values..
+    session->setPhysMax(CPAP_LeakTotal, 120);
+    session->setPhysMin(CPAP_LeakTotal, 0);
+    session->setPhysMax(CPAP_Pressure, 25);
+    session->setPhysMin(CPAP_Pressure, 4);
+    session->setPhysMax(CPAP_IPAP, 25);
+    session->setPhysMin(CPAP_IPAP, 4);
+    session->setPhysMax(CPAP_EPAP, 25);
+    session->setPhysMin(CPAP_EPAP, 4);
+    session->setPhysMax(CPAP_PS, 25);
+    session->setPhysMin(CPAP_PS, 0);
+
+    return true;
+}
+
+bool PRS1SessionData::ParseEvents()
+{
+    bool res = false;
+    if (!event) return false;
+    switch (event->family) {
+    case 0:
+        res = ParseF0Events();
+        break;
+    case 5:
+        res= ParseF5Events();
+        break;
+    default:
+        qDebug() << "Unknown PRS1 familyVersion" << event->familyVersion;
+        return false;
+    }
+    if (res) {
+        if (session->count(CPAP_IPAP) > 0) {
+            if (session->settings[CPAP_Mode].toInt() != (int)MODE_ASV) {
+                session->settings[CPAP_Mode] = MODE_BIPAP;
+            }
+
+            if (session->settings[CPAP_PresReliefType].toInt() != PR_NONE) {
+                session->settings[CPAP_PresReliefType] = PR_BIFLEX;
+            }
+
+            EventDataType min = session->settings[CPAP_PressureMin].toDouble();
+            EventDataType max = session->settings[CPAP_PressureMax].toDouble();
+            session->settings[CPAP_EPAP] = min;
+            session->settings[CPAP_IPAP] = max;
+
+            session->settings[CPAP_PS] = max - min;
+            session->settings.erase(session->settings.find(CPAP_PressureMin));
+            session->settings.erase(session->settings.find(CPAP_PressureMax));
+
+            session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
+            session->m_wavg.erase(session->m_wavg.find(CPAP_Pressure));
+            session->m_min.erase(session->m_min.find(CPAP_Pressure));
+            session->m_max.erase(session->m_max.find(CPAP_Pressure));
+            session->m_gain.erase(session->m_gain.find(CPAP_Pressure));
+
+        } else {
+
+            if (!session->settings.contains(CPAP_Pressure) && !session->settings.contains(CPAP_PressureMin)) {
+                session->settings[CPAP_BrokenSummary] = true;
+
+                //session->set_last(session->first());
+                if (session->Min(CPAP_Pressure) == session->Max(CPAP_Pressure)) {
+                    session->settings[CPAP_Mode] = MODE_CPAP; // no ramp
+                } else {
+                    session->settings[CPAP_Mode] = MODE_UNKNOWN;
+                }
+
+                //session->Set("FlexMode",PR_UNKNOWN);
+
+            }
+        }
+
+    }
+    return res;
+}
+
+bool PRS1SessionData::ParseWaveforms()
+{
+    int size = waveforms.size();
+
+    for (int i=0; i < size; ++i) {
+        PRS1DataChunk * waveform = waveforms.at(i);
+        int num = waveform->waveformInfo.size();
+
+        int size = waveform->m_data.size();
+        if (size == 0) {
+            continue;
+        }
+        quint64 ti = quint64(waveform->timestamp) * 1000L;
+
+        if (num > 1) {
+            // Process interleaved samples
+            QVector<QByteArray> data;
+            data.resize(num);
+
+            int pos = 0;
+            do {
+                for (int n=0; n < num; n++) {
+                    int interleave = waveform->waveformInfo.at(n).interleave;
+                    data[n].append(waveform->m_data.mid(pos, interleave));
+                    pos += interleave;
+                }
+            } while (pos < size);
+
+            if (data[0].size() > 0) {
+                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  data[0].size());
+                flow->AddWaveform(ti, (char *)data[0].data(), data[0].size(), waveform->duration);
+            }
+
+            if (data[1].size() > 0) {
+                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  data[1].size());
+                pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), waveform->duration);
+            }
+
+        } else {
+            // Non interleaved, so can process it much faster
+            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  waveform->m_data.size());
+            flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), waveform->duration);
+        }
+    }
+    return true;
+}
+
+void PRS1Import::run()
+{
+    group->ParseChunks();
+
+    QMap<SessionID, PRS1SessionData*>::iterator it;
+
+    // Do session lists..
+    for (it = group->sessions.begin(); it != group->sessions.end(); ++it) {
+        PRS1SessionData * sg = it.value();
+        sg->session = new Session(mach, it.key());
+
+        if (!sg->ParseSummary()) {
+            delete sg->session;
+            continue;
+        }
+        sg->ParseEvents();
+        sg->ParseWaveforms();
+
+        sg->session->SetChanged(true);
+
+        loader->sessionMutex.lock();
+        mach->AddSession(sg->session, p_profile);
+        loader->sessionMutex.unlock();
+
+        // Update indexes, process waveform and perform flagging
+        sg->session->UpdateSummaries();
+
+        // Save is not threadsafe
+        loader->saveMutex.lock();
+        sg->session->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+        loader->saveMutex.unlock();
+
+        sg->session->TrashEvents();
+
+        delete sg;
+    }
+    delete group;
+}
+
+void PRS1FileGroup::ParseChunks()
+{
+//    qDebug() << "Parsing chunks for session" <<  summary << event;
+    if (ParseFile(compliance)) {
+        // Compliance only piece of crap machine, nothing else to do..
+        return;
+    }
+
+    ParseFile(summary);
+    {
+        // Only parse if summary is present
+
+        ParseFile(event);
+        ParseFile(waveform);
+    }
+}
+
+bool PRS1FileGroup::ParseFile(QString path)
+{
+    if (path.isEmpty())
+        return false;
+
+    QFile f(path);
 
     if (!f.exists()) {
         return false;
@@ -1532,377 +1453,150 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         return false;
     }
 
-    qint64 filesize = f.size();
+    PRS1DataChunk *chunk = nullptr, *lastchunk = nullptr;
 
-    if (filesize > max_load_buffer_size) {
-        qWarning() << "Waveform too big, increase max_load_buffer_size in PRS1Loader sourcecode" <<
-                   filename;
-        return false;
-    }
+    quint16 blocksize;
+    quint16 wvfm_signals;
 
-    if (f.read((char *)m_buffer, filesize) < filesize) {
-        qDebug() << "Couldn't read full file" << filename;
-        return false;
-    }
-
-    pos = 0;
-    bool wasfaulty = false, faulty = false;
-    qint64 ignorebefore = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
-
-    for (chunk = 0; pos < filesize; ++chunk, pos += size) {
-        header = &m_buffer[pos];
-
-        if (header[0] != PRS1_MAGIC_NUMBER) {
-            if (chunk == 0) {
-                qDebug() << "Invalid magic number" << filename;
-            }
-
-            return false;
-            break;
-        }
-
-        size = (header[2] << 8) | header[1];
-        htype = header[3]; // 00 = normal // 01=waveform // could be a bool?
-        Q_UNUSED(htype);
-        family = header[4]; // == 5
-        familyVersion = header[5];
-        ext = header[6];
-
-        sequence = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
-        timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
-
-        if (timestamp < ignorebefore) {
-            // Don't bother with this block
-            continue;
-        }
-
-        qDebug() << "family: " << family << " familyversion: " << familyVersion;
-
-        if (ext == 5) {
-            duration = header[0xf] | header[0x10] << 8;  // block duration in seconds
-            Q_UNUSED(duration);
-            num_signals = header[0x12] | header[0x13] << 8;
-
-            if (num_signals > 2) {
-                qWarning() << "More than 2 Waveforms in " << filename;
-                return false;
-            }
-
-            long pos2 = 0x14 + (num_signals - 1) * 3;
-
-            // add the in reverse...
-            for (int i = 0; i < num_signals; i++) {
-                interleave = header[pos2] | header[pos2 + 1] << 8;
-                sample_format = header[pos2 + 2];
-                whl.push_back(WaveHeaderList(interleave, sample_format));
-                pos2 -= 3;
-            }
-
-            hl = 15 + 6 + (num_signals * 3);
-
-        } else { hl = 16; }
-
-        wasfaulty = faulty;
-        sum = 0;
-
-        for (int i = 0; i < hl - 1; i++) { sum += header[i]; }
-
-        unsigned char c8 = header[hl - 1];
-
-        if (sum != c8) {
-            if (chunk == 0) {
-                qDebug() << "File" << filename << "has faulty header at" << pos;
-
-                if ((size > 0) && (pos + size < filesize) && (header[size] == 2)) {
-                    faulty = true;
-                    continue;
-                }
-
-                return (chunk != 0);
-            }
-
-            break;
-        }
-
-        datasize = size - hl - 2;
-
-        data = &header[hl];
-
-#ifdef PRS1_CRC_CHECK
-        c16 = CRC16(data, datasize);
-        crc = (data[datasize + 1] << 8) | data[datasize];
-
-        if (crc != c16) {
-            qDebug() << "File" << filename << "failed CRC check at chunk" << chunk << "wanted" << crc << "got"
-                     << c16;
-            faulty = true;
-            continue;
-        }
-
-#endif
-
-        if (wasfaulty) {
-            qDebug() << "Managed to continue with next block";
-        }
-
-
-        qDebug() << "Loading" << QDir::toNativeSeparators(filename) << sequence << timestamp << size;
-
-        //if (ext==0) ParseCompliance(data,size);
-        if (ext <= 1) {
-            ParseSummary(mach, sequence, timestamp, data, datasize, family, familyVersion);
-        } else if (ext == 2) {
-            if (family == 5) {
-                if (!Parse002v5(sequence, timestamp, data, datasize, familyVersion)) {
-                    qDebug() << "in file: " << QDir::toNativeSeparators(filename);
-                }
-            } else {
-                Parse002(sequence, timestamp, data, datasize, family, familyVersion);
-            }
-        } else if (ext == 5) {
-            // too messy to do here..
-            //ParseWaveform(mach,sequence,timestamp,data,datasize,duration,num_signals,interleave,sample_format);
-        }
-    }
-
-    return true;
-}
-
-
-bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
-{
-    Session *session = new_sessions[sid];
-    //int sequence,seconds,br,htype,version,numsignals;
-    QFile file(filename);
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Couldn't open waveform file" << filename;
-        return false;
-    }
-
-    int pos, br, size = file.size();
-
-    if (size > max_load_buffer_size) {
-        qWarning() << "Waveform too big, increase max_load_buffer_size in PRS1Loader sourcecode" <<
-                   filename;
-        return false;
-    }
-
-    br = file.read((char *)m_buffer, size);
-
-    if (br < size) {
-        qWarning() << "Couldn't read waveform data.. Disk error?" << filename;
-        return false;
-    }
-
-    // Look at the initial header and assume this header size for the lot.
-    if ((m_buffer[0] != 2) || (m_buffer[6] != 0x05)) {
-        qWarning() << "Not correct waveform format" << filename;
-        return false;
-    }
-
-    //quint8 version=m_buffer[4];
-    quint32 start = m_buffer[0xb] | m_buffer[0xc] << 8 | m_buffer[0xd] << 16 | m_buffer[0x0e] << 24;
-
-    session->updateFirst(qint64(start) * 1000L);
-
-    quint16 num_signals = m_buffer[0x12] | m_buffer[0x13] << 8;
-
-    if (num_signals > 2) {
-        qWarning() << "More than 2 Waveforms in " << filename;
-        return false;
-    }
-
-    pos = 0x14 + (num_signals - 1) * 3;
-    vector<WaveHeaderList> whl;
-
-    // add the signals to whl in reverse...
-    for (int i = 0; i < num_signals; i++) {
-        quint16 interleave = m_buffer[pos] | m_buffer[pos + 1] << 8;
-        quint8 sample_format = m_buffer[pos + 2];
-        whl.push_back(WaveHeaderList(interleave, sample_format));
-        pos -= 3;
-    }
-
-    int hl = 15 + 5 + (num_signals * 3);
-    quint16 duration, length = 0;
-    quint32 timestamp, lasttimestamp;
-
-
-    pos = 0;
-    int block = 0;
-    lasttimestamp = start;
-    duration = 0;
-    int corrupt = 0;
-    char waveform[2][500000]; // eek. That's a lot of Stack.
-    int wlength[2];
-    qint64 wdur[2];
-
-    //EventList *evl[num_signals];
-    for (int i = 0; i < num_signals; i++) {
-        wlength[i] = 0;
-        wdur[i] = 0;
-        //evl[i]=nullptr;
-
-        //waveform[i].resize(500000);
-    }
-
-    //SampleFormat *wf[num_signals];
-    //EventList *FlowData=EventList(CPAP_FlowRate, EVL_Waveform,1,0,-128,128);
-    //EventList *MaskData=EventList(CPAP_MaskPressure, EVL_Waveform,1,0,-128,128);
-
-    //QString FlowRate=CPAP_FlowRate;
-    //QString MaskPressure="MaskPressure";
-    ChannelID wc[2] = {CPAP_FlowRate, CPAP_MaskPressure};
-
-    unsigned char sum8; // additive checksum
+    unsigned char * header;
 
     do {
-        timestamp = m_buffer[pos + 0xb] | m_buffer[pos + 0xc] << 8 |
-                    m_buffer[pos + 0xd] << 16 | m_buffer[pos + 0x0e] << 24;
+        QByteArray headerBA = f.read(16);
+        if (headerBA.size() != 16) {
+            break;
+        }
+        header = (unsigned char *)headerBA.data();
 
+        blocksize = (header[2] << 8) | header[1];
+        if (blocksize == 0) break;
 
-        // Calculate header checksum
-        sum8 = 0;
-        for (int i = 0; i < hl; i++) { sum8 += m_buffer[pos + i]; }
+        chunk = new PRS1DataChunk();
 
-        if (m_buffer[pos + hl] != sum8) {
-            if (block == 0) {
-                qDebug() << "Faulty Header Checksum, aborting" << filename;
-                return false;
+        chunk->sessionid = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
+        chunk->fileVersion = header[0];
+        chunk->htype = header[3];  // 00 = normal ?? // 01=waveform ?? // could be a bool signifying extra header bytes?
+        chunk->family = header[4];
+        chunk->familyVersion = header[5];
+        chunk->ext = header[6];
+        chunk->timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+
+        int diff = 0;
+
+        //////////////////////////////////////////////////////////
+        // Waveform Header
+        //////////////////////////////////////////////////////////
+        if (chunk->ext == 5) {
+            // Get extra 8 bytes in waveform header.
+            QByteArray extra = f.read(4);
+            if (extra.size() != 4) {
+                delete chunk;
+                break;
             }
+            headerBA.append(extra);
+            // Get the header address again to be safe
+            header = (unsigned char *)headerBA.data();
 
-            if (++corrupt > 3) {
-                qDebug() << "3 Faulty Waveform Headers in a row.. Aborting" << filename;
-                return false;
+            chunk->duration = header[0x0f] | header[0x10] << 8;
+
+            wvfm_signals = header[0x12] | header[0x13] << 8;
+
+            int sbsize = wvfm_signals * 3 + 1;
+            QByteArray sbextra = f.read(sbsize);
+            if (sbextra.size() != sbsize) {
+                delete chunk;
+                break;
             }
+            headerBA.append(sbextra);
+            header = (unsigned char *)headerBA.data();
 
-            qDebug() << "Faulty Header Checksum, skipping block" << block;
-            pos += length;
-            continue;
-        } else {
-            int diff = timestamp - (lasttimestamp + duration);
-
-            if (block == 1) {
-                if (diff > 0) {
-                    start -= diff;
-                }
+            // Read the waveform information in reverse.
+            int pos = 0x14 + (wvfm_signals - 1) * 3;
+            for (int i = 0; i < wvfm_signals; ++i) {
+                quint16 interleave = header[pos] | header[pos + 1] << 8;
+                quint8 sample_format = header[pos + 2];
+                chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
+                pos -= 3;
             }
+            if (lastchunk != nullptr) {
+                diff = (chunk->timestamp - lastchunk->timestamp) - lastchunk->duration;
 
-            length = m_buffer[pos + 0x1] | m_buffer[pos + 0x2] << 8; // block length in bytes
-            duration = m_buffer[pos + 0xf] | m_buffer[pos + 0x10] << 8; // block duration in seconds
-
-            if (diff < 0) {
-                qDebug() << "Padding waveform to keep sync" << block;
-
-                //diff=qAbs(diff);
-                for (int i = 0; i < num_signals; i++) {
-                    for (int j = 0; j < diff; j++) {
-                        for (int k = 0; k < whl[i].interleave; k++) {
-                            waveform[i][wlength[i]++] = 0;
-                        }
-                    }
-
-                    wdur[i] += diff;
-                }
-
-            } else if ((diff > 0) && (wlength[0] > 0))  {
-                qDebug() << "Timestamp resync" << block << diff << corrupt << duration << timestamp - lasttimestamp
-                         << filename;
-
-
-                for (int i = 0; i < num_signals; i++) {
-                    double rate = (double(wdur[i]) * 1000.0) / double(wlength[i]);
-                    double gain;
-
-                    if (i == 1) { gain = 0.1; }
-                    else { gain = 1; }
-
-                    EventList *a = session->AddEventList(wc[i], EVL_Waveform, gain, 0, 0, 0, rate);
-
-                    //EventList *a=new EventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
-                    //session->machine()->registerChannel(wc[i]);
-                    if (whl[i].sample_format) {
-                        a->AddWaveform(qint64(start) * 1000L, (unsigned char *)waveform[i], wlength[i],
-                                       qint64(wdur[i]) * 1000L);
-                    } else {
-                        a->AddWaveform(qint64(start) * 1000L, (char *)waveform[i], wlength[i], qint64(wdur[i]) * 1000L);
-                    }
-
-                    if (wc[i] == CPAP_FlowRate) {
-                        a->setMax(120);
-                        a->setMin(-120);
-                    } else if (wc[i] == CPAP_MaskPressure) {
-                        //int v=ceil(a->Max()/5);
-                        //a->setMax(v*5);
-                        //v=floor(a->Min()/5);
-                        //a->setMin(v*5);
-                    }
-
-                    session->updateLast((start + qint64(wdur[i])) * 1000L);
-                    wlength[i] = 0;
-                    wdur[i] = 0;
-                }
-
-                start = timestamp;
-                corrupt = 0;
             }
         }
 
-        pos += hl + 1;
+        int headersize = headerBA.size() - 1;
 
-        //qDebug() <<  (duration*num_signals*whl[0].interleave) << duration;
+        // Check header checksum
+        quint8 csum = 0;
+        for (int i=0; i < headersize; ++i) csum += header[i];
+        if (csum != header[headersize]) {
+            // header checksum error.
+            delete chunk;
+            return false;
+        }
 
-        if (num_signals == 1) { // no interleave.. this is much quicker.
-            int bs = duration * whl[0].interleave;
-            memcpy((char *) & (waveform[0])[wlength[0]], (char *)&m_buffer[pos], bs);
+        // Read data block
+        chunk->m_data = f.read(blocksize - (headersize+1));
 
-            wlength[0] += bs;
+        if (chunk->m_data.size() < (blocksize - (headersize+1))) {
+            delete chunk;
+            break;
+        }
 
-            pos += bs;
-        } else {
-            for (int i = 0; i < duration; i++) {
-                for (int s = 0; s < num_signals; s++) {
-                    memcpy((char *) & (waveform[s])[wlength[s]], (char *)&m_buffer[pos], whl[s].interleave);
-                    wlength[s] += whl[s].interleave;
-                    pos += whl[s].interleave;
+        // last two bytes contain crc16 checksum.
+        int ds = chunk->m_data.size();
+        quint16 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
+        chunk->m_data.chop(2);
+
+#ifdef PRS1_CRC_CHECK
+        quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
+        if (calc16 != crc16) {
+            // corrupt data block.. bleh..
+        }
+#endif
+
+        if (chunk->ext == 5) {
+            if (lastchunk != nullptr) {
+
+                Q_ASSERT(lastchunk->sessionid == chunk->sessionid);
+
+                if (diff == 0) {
+                    // In sync, so append waveform data to previous chunk
+                    lastchunk->m_data.append(chunk->m_data);
+                    lastchunk->duration += chunk->duration;
+                    delete chunk;
+                    chunk = lastchunk;
+                    continue;
                 }
+                // else start a new chunk to resync
             }
         }
 
-        for (int i = 0; i < num_signals; i++) { wdur[i] += duration; }
-
-        pos += 2;
-        block++;
-        lasttimestamp = timestamp;
-    } while (pos < size);
-
-    for (int i = 0; i < num_signals; i++) {
-        double rate = (double(wdur[i]) * 1000.0) / double(wlength[i]);
-        double gain;
-
-        if (i == 1) { gain = 0.1; }
-        else { gain = 1; }
-
-        EventList *a = session->AddEventList(wc[i], EVL_Waveform, gain, 0, 0, 0, rate);
-
-        if (whl[i].sample_format) {
-            a->AddWaveform(qint64(start) * 1000L, (unsigned char *)waveform[i], wlength[i],
-                           qint64(wdur[i]) * 1000L);
-        } else {
-            a->AddWaveform(qint64(start) * 1000L, (char *)waveform[i], wlength[i], qint64(wdur[i]) * 1000L);
+        QMap<SessionID, PRS1SessionData*>::iterator it = sessions.find(chunk->sessionid);
+        if (it == sessions.end()) {
+            it = sessions.insert(chunk->sessionid, new PRS1SessionData());
         }
 
-        if (wc[i] == CPAP_FlowRate) {
-            a->setMax(120);
-            a->setMin(-120);
-        } else if (wc[i] == CPAP_MaskPressure) {
+        switch (chunk->ext) {
+        case 0:
+            it.value()->compliance = chunk;
+            break;
+        case 1:
+            it.value()->summary = chunk;
+            break;
+        case 2:
+            it.value()->event = chunk;
+            break;
+        case 5:
+            it.value()->waveforms.append(chunk);
+            break;
+        default:
+            qDebug() << "Cruft file in PRS1FileGroup::ParseFile " << path;
+            delete chunk;
+            return false;
         }
 
-        session->updateLast((start + qint64(wdur[i])) * 1000L);
-    }
-
-    // lousy family 5 check to see if already has RespRate
+        lastchunk = chunk;
+    } while (!f.atEnd());
     return true;
 }
 

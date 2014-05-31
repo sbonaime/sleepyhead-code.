@@ -39,9 +39,135 @@ class PRS1: public CPAP
 
 
 const int max_load_buffer_size = 1024 * 1024;
-
-
 const QString prs1_class_name = STR_MACH_PRS1;
+
+/*! \struct PRS1Waveform
+    \brief Used in PRS1 Waveform Parsing */
+struct PRS1Waveform {
+    PRS1Waveform(quint16 i, quint8 f) {
+        interleave = i;
+        sample_format = f;
+    }
+    quint16 interleave;
+    quint8 sample_format;
+};
+
+
+class PRS1DataChunk
+{
+    friend class PRS1DataGroup;
+public:
+    PRS1DataChunk() {
+        timestamp = 0;
+        ext = 255;
+        sessionid = 0;
+        htype = 0;
+        family = 0;
+        familyVersion = 0;
+        duration = 0;
+
+    }
+    ~PRS1DataChunk() {
+    }
+    inline int size() const { return m_data.size(); }
+
+    QByteArray m_data;
+
+    SessionID sessionid;
+
+    quint8 fileVersion;
+    quint8 ext;
+    quint8 htype;
+    quint8 family;
+    quint8 familyVersion;
+    quint32 timestamp;
+
+    quint16 duration;
+
+    QList<PRS1Waveform> waveformInfo;
+};
+
+class PRS1SessionData
+{
+public:
+    PRS1SessionData() {
+        compliance = summary = event = nullptr;
+        session = nullptr;
+    }
+    PRS1SessionData(const PRS1SessionData & copy) {
+        session = copy.session;
+        compliance = copy.compliance;
+        summary = copy.summary;
+        event = copy.event;
+        waveforms = copy.waveforms;
+    }
+    ~PRS1SessionData() {
+        delete compliance;
+        delete summary;
+        delete event;
+        Q_FOREACH(PRS1DataChunk * c, waveforms) {
+            delete c;
+        }
+    }
+
+    bool ParseCompliance();
+    bool ParseSummary();
+    bool ParseEvents();
+    bool ParseWaveforms();
+
+    //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
+    bool ParseF0Events();
+
+    //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
+    bool ParseF5Events();
+
+    Session * session;
+
+    PRS1DataChunk * compliance;
+    PRS1DataChunk * summary;
+    PRS1DataChunk * event;
+    QList<PRS1DataChunk *> waveforms;
+};
+
+
+struct PRS1FileGroup
+{
+    PRS1FileGroup() {}
+    PRS1FileGroup(const PRS1FileGroup & copy) {
+        compliance = copy.compliance;
+        summary = copy.summary;
+        event = copy.event;
+        waveform = copy.waveform;
+    }
+    ~PRS1FileGroup() {
+    }
+
+    QString compliance;
+    QString summary;
+    QString event;
+    QString waveform;
+
+    bool ParseFile(QString path);
+    void ParseChunks();
+
+    QMap<SessionID, PRS1SessionData*> sessions;
+};
+
+class PRS1Loader;
+
+class PRS1Import:public ImportTask
+{
+public:
+    PRS1Import(PRS1Loader * l, SessionID s, PRS1FileGroup *g, Machine * m): loader(l), sessionid(s), group(g), mach(m) {}
+    virtual ~PRS1Import() {}
+    virtual void run();
+
+protected:
+    PRS1Loader * loader;
+    SessionID sessionid;
+    PRS1FileGroup *group;
+    Machine * mach;
+};
 
 /*! \class PRS1Loader
     \brief Philips Respironics System One Loader Module
@@ -92,12 +218,7 @@ class PRS1Loader : public MachineLoader
     bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data,
                       quint16 size, int family, int familyVersion);
 
-    //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
-    bool Parse002(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int family,
-                  int familyVersion);
 
-    //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
-    bool Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int familyVersion);
 
     //! \brief Open a PRS1 data file, and break into data chunks, delivering them to the correct parser.
     bool OpenFile(Machine *mach, QString filename);
@@ -109,6 +230,8 @@ class PRS1Loader : public MachineLoader
 
     //! \brief PRS1 Data files can store multiple sessions, so store them in this list for later processing.
     QHash<SessionID, Session *> new_sessions;
+
+    QHash<SessionID, PRS1FileGroup*> prs1sessions;
     qint32 summary_duration;
 };
 

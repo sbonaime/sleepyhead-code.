@@ -45,11 +45,12 @@ class SessionSettings;
 class Profile : public Preferences
 {
   public:
-    //! \brief Loads a new Profile from the given path.
+    //! \brief Constructor.. Does not open profile
     Profile(QString path);
 
     virtual ~Profile();
 
+    //! \brief Open profile, parse profile.xml file, and initialize helper classes
     virtual bool Open(QString filename = "");
 
     //! \brief Save Profile object (This is an extension to Preference::Save(..))
@@ -97,54 +98,94 @@ class Profile : public Preferences
     //! \brief Returns true if this profile stores this variable identified by key
     bool contains(QString key) { return p_preferences.contains(key); }
 
+
+    //! \brief Get all days records of machine type between start and end dates
+    QList<Day *> getDays(MachineType mt, QDate start, QDate end);
+
+    //! \brief Returns a count of all days (with data) of machine type, between start and end dates
     int countDays(MachineType mt = MT_UNKNOWN, QDate start = QDate(), QDate end = QDate());
 
+    //! \brief Returns a count of all compliant days of machine type between start and end dates
     int countCompliantDays(MachineType mt, QDate start, QDate end);
 
+    //! \brief Returns a count of all event entries for code, matching machine type between start an end dates
     EventDataType calcCount(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                             QDate end = QDate());
+
+    //! \brief Returns a sum of all event data for Channel code, matching machine type between start an end dates
     double calcSum(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                    QDate end = QDate());
+
+    //! \brief Returns a sum of all session durations for machine type, between start and end dates
     EventDataType calcHours(MachineType mt = MT_CPAP, QDate start = QDate(), QDate end = QDate());
+
+    //! \brief Calculates Channel Average (Sums and counts all events, returning the sum divided by the count.)
     EventDataType calcAvg(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                           QDate end = QDate());
+
+    //! \brief Calculates Channel Weighted Average between start and end dates
     EventDataType calcWavg(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                            QDate end = QDate());
+
+    //! \brief Calculates the minimum value for channel code, between start and end dates
     EventDataType calcMin(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                           QDate end = QDate());
+
+    //! \brief Calculates the maximum value for channel code, between start and end dates
     EventDataType calcMax(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                           QDate end = QDate());
+
+    //! \brief Calculates a percentile value percent for channel code, between start and end dates
     EventDataType calcPercentile(ChannelID code, EventDataType percent, MachineType mt = MT_CPAP,
                                  QDate start = QDate(), QDate end = QDate());
 
+    //! \brief Tests if Channel code is available in all day sets
     bool hasChannel(ChannelID code);
 
+    //! \brief Calculates the minimum session settings value for channel code, between start and end dates
     EventDataType calcSettingsMin(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                                   QDate end = QDate());
+
+    //! \brief Calculates the maximum session settings value for channel code, between start and end dates
     EventDataType calcSettingsMax(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                                   QDate end = QDate());
 
+    //! \brief Calculates the time channel code spends above threshold value for machine type, between start and end dates
     EventDataType calcAboveThreshold(ChannelID code, EventDataType threshold, MachineType mt = MT_CPAP,
                                      QDate start = QDate(), QDate end = QDate());
 
+    //! \brief Calculates the time channel code spends below threshold value for machine type, between start and end dates
     EventDataType calcBelowThreshold(ChannelID code, EventDataType threshold, MachineType mt = MT_CPAP,
                                      QDate start = QDate(), QDate end = QDate());
 
+
+    // XML load components
     virtual void ExtraLoad(QDomElement &root);
     virtual QDomElement ExtraSave(QDomDocument &doc);
 
+    //! \brief Looks for the first date containing a day record matching machinetype
     QDate FirstDay(MachineType mt = MT_UNKNOWN);
+
+    //! \brief Looks for the last date containing a day record matching machinetype
     QDate LastDay(MachineType mt = MT_UNKNOWN);
 
+    //! \brief Looks for the first date containing a day record with enabled sessions matching machinetype
     QDate FirstGoodDay(MachineType mt = MT_UNKNOWN);
+
+    //! \brief Looks for the last date containing a day record with enabled sessions matching machinetype
     QDate LastGoodDay(MachineType mt = MT_UNKNOWN);
 
+    //! \brief Returns this profiles data folder
     QString dataFolder() { return (*this).Get("{DataFolder}"); }
 
+    //! \brief Return if this profile has been opened or not
     bool isOpen() { return m_opened; }
 
-    QMap<QDate, QList<Day *> > daylist; // Red-Black tree of Days (iterates in order).
-    QHash<MachineID, Machine *> machlist; // List of machines, indexed by MachineID.
+    //! \brief Red-Black tree of Days (iterates in order).
+    QMap<QDate, QList<Day *> > daylist;
+
+    //! \brief List of machines, indexed by MachineID.
+    QHash<MachineID, Machine *> machlist;
 
     bool is_first_day;
 

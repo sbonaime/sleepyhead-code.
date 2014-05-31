@@ -33,7 +33,7 @@ class SummaryChart: public Layer
     SummaryChart(QString label, GraphType type = GT_BAR);
     virtual ~SummaryChart();
 
-    //! \brief Drawing code that fills the Vertex buffers
+    //! \brief Renders the graph to the QPainter object
     virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
     //! \brief Precalculation code prior to drawing. Day object is not needed here, it's just here for Layer compatability.

@@ -57,6 +57,10 @@ void SummaryChart::SetDay(Day * nullday)
     CPAPMode cpapmode = (CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode, MT_CPAP,
                         PROFILE.FirstDay(MT_CPAP), PROFILE.LastDay(MT_CPAP));
 
+
+    //////////////////////////////////////////////////////////
+    // Setup for dealing with different CPAP Pressure types
+    //////////////////////////////////////////////////////////
     if (m_label == STR_TR_Pressure) {
         m_codes.clear();
         m_colors.clear();
@@ -68,14 +72,11 @@ void SummaryChart::SetDay(Day * nullday)
         SummaryType mid;
 
         if (mididx == 0) { mid = ST_PERC; }
-
-        if (mididx == 1) { mid = ST_WAVG; }
-
-        if (mididx == 2) { mid = ST_AVG; }
+        else if (mididx == 1) { mid = ST_WAVG; }
+        else if (mididx == 2) { mid = ST_AVG; }
 
         if (cpapmode >= MODE_ASV) {
             addSlice(CPAP_EPAP, QColor("green"), ST_SETMIN);
-
             addSlice(CPAP_IPAPLo, QColor("light blue"), ST_SETMIN);
             addSlice(CPAP_IPAP, QColor("cyan"), mid, 0.5);
             addSlice(CPAP_IPAP, QColor("dark cyan"), ST_PERC, perc);
@@ -97,8 +98,8 @@ void SummaryChart::SetDay(Day * nullday)
         }
     }
 
+    // Initialize goodcodes (which identified which legends are drawn) to all off
     m_goodcodes.resize(m_codes.size());
-
     for (int i = 0; i < m_codes.size(); i++) {
         m_goodcodes[i] = false;
     }
@@ -108,6 +109,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_empty = true;
 
     if (m_graphtype == GT_SESSIONS) {
+        // No point drawing anything if no real data on record
         if (PROFILE.countDays(MT_CPAP, PROFILE.FirstDay(MT_CPAP), PROFILE.LastDay(MT_CPAP)) == 0) {
             return;
         }
@@ -117,52 +119,74 @@ void SummaryChart::SetDay(Day * nullday)
     SummaryType type;
     bool first = true;
 
-    for (QMap<QDate, QList<Day *> >::iterator d = PROFILE.daylist.begin(); d != PROFILE.daylist.end();
-            d++) {
+    // For each day in the main profile daylist
+    QMap<QDate, QList<Day *> >::iterator d;
+
+    for (d = PROFILE.daylist.begin(); d != PROFILE.daylist.end(); d++) {
+
+        // get the timestamp of this day.
         tt = QDateTime(d.key(), QTime(0, 0, 0), Qt::UTC).toTime_t();
+
+        // calculate day number
         dn = tt / 86400;
+
+        // to ms since epoch.
         tt *= 1000L;
 
+        // update min and max for this timestamp
         if (!m_minx || tt < m_minx) { m_minx = tt; }
-
         if (!m_maxx || tt > m_maxx) { m_maxx = tt; }
 
         total = 0;
         bool fnd = false;
 
+        //////////////////////////////////////////////////////////
+        // Setup for Sessions Time display chart
+        //////////////////////////////////////////////////////////
         if (m_graphtype == GT_SESSIONS) {
+            // Turn all legends on
             for (int i = 0; i < m_codes.size(); i++) {
                 m_goodcodes[i] = true;
             }
 
-            for (int i = 0; i < d.value().size(); i++) { // for each day
+            // for each day object on record for this date
+            int dlistsize = d.value().size();
+            for (int i = 0; i < dlistsize; ++i) {
                 day = d.value().at(i);
 
-                if (!day) { continue; }
-
-                if (day->machine_type() != m_machinetype) { continue; }
+                // skip any empty or irrelevant day records
+                if (!day || (day->machine_type() != m_machinetype)) { continue; }
 
                 int ft = qint64(day->first()) / 1000L;
                 ft += tz_offset; // convert to local time
 
                 int dz2 = ft / 86400;
-                dz2 *= 86400; // ft = first sessions time, rounded back to midnight..
+                dz2 *= 86400;
+                // ft = first sessions time, rounded back to midnight..
 
+                // For each session in this day record
                 for (int s = 0; s < day->size(); s++) {
                     Session *sess = (*day)[s];
 
                     if (!sess->enabled()) { continue; }
 
+                    // Get session duration
                     tmp = sess->hours();
                     m_values[dn][s] = tmp;
+
                     total += tmp;
+
+                    // Get session start timestamp
                     zt = qint64(sess->first()) / 1000L;
                     zt += tz_offset;
+
+                    // Calculate the starting hour
                     tmp2 = zt - dn * 86400;
                     tmp2 /= 3600.0;
 
                     m_times[dn][s] = tmp2;
 
+                    // Update min & max Y values
                     if (first) {
                         m_miny = tmp2;
                         m_maxy = tmp2 + tmp;
@@ -176,8 +200,9 @@ void SummaryChart::SetDay(Day * nullday)
                             m_maxy = tmp2 + tmp;
                         }
                     }
-                }
+                } // for each session
 
+                // if total hours for all sessions more than 0, register the day as valid
                 if (total > 0) {
                     m_days[dn] = day;
                     m_hours[dn] = total;
@@ -185,16 +210,24 @@ void SummaryChart::SetDay(Day * nullday)
                 }
             }
         } else {
-            for (int j = 0; j < m_codes.size(); j++) { // for each code slice
+            //////////////////////////////////////////////////////////////////////////////
+            // Data Channel summary charts
+            //////////////////////////////////////////////////////////////////////////////
+
+            // For each Channel
+            for (int j = 0; j < m_codes.size(); j++) {
                 code = m_codes[j];
                 suboffset = 0;
                 type = m_type[j];
                 EventDataType typeval = m_typeval[j];
 
-                for (int i = 0; i < d.value().size(); i++) { // for each machine object for this day
+                // for each machine object for this day
+                for (int i = 0; i < d.value().size(); i++) {
                     day = d.value()[i];
+
                     CPAPMode mode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
 
+                    // ignore irrelevent day objects
                     if (day->machine_type() != m_machinetype) { continue; }
 
                     bool hascode = //day->channelHasData(code) ||
@@ -801,6 +834,11 @@ jumpnext:
     bool ishours = false;
     int good = 0;
 
+    if (w.title().compare("Resp. Rate")==0) {
+        int i=5;
+        int b = i;
+    }
+
     for (int j = 0; j < m_codes.size(); j++) {
         if (!goodcodes[j]) { continue; }
 
@@ -908,7 +946,7 @@ jumpnext:
         w.renderText(a, legendx, top - 4);
         //  legendx-=bw/2;
 
-        painter.fillRect(legendx - bw, top-w.marginTop()-1, bh, w.marginTop(), QBrush(m_colors[j]));
+        painter.fillRect(legendx - bw-4, top-w.marginTop()-1, bh, w.marginTop(), QBrush(m_colors[j]));
         legendx -= bw * 2;
 
 
@@ -1027,10 +1065,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         //QTime t2=dt2.time();
 
         QDate dt = dt2.date();
+        day = m_days[zd];
 
-        if (d != m_values.end()) {
-
-            day = m_days[zd];
+        if ((d != m_values.end()) && (day != nullptr)) {
 
             QString z = dt.toString(Qt::SystemLocaleShortDate);
 

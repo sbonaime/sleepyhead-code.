@@ -645,7 +645,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                         t-=float(ev.raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
-                    QDateTime d=QDateTime::fromTime_t(t/1000L);
+                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
                     QString s=QString("#%1: %2 (%3)").arg((int)(++mccnt[code]),(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
                     QTreeWidgetItem *item=new QTreeWidgetItem(a);
@@ -660,6 +660,24 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     for (QHash<ChannelID,QTreeWidgetItem *>::iterator m=mcroot.begin();m!=mcroot.end();m++) {
         tree->insertTopLevelItem(cnt++,m.value());
     }
+    QTreeWidgetItem * start = new QTreeWidgetItem(QStringList(tr("Session Start Times")));
+    QTreeWidgetItem * end = new QTreeWidgetItem(QStringList(tr("Session End Times")));
+    tree->insertTopLevelItem(cnt++ , start);
+    tree->insertTopLevelItem(cnt++ , end);
+    for (QList<Session *>::iterator s=day->begin(); s!=day->end(); ++s) {
+        QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first());
+        QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last());
+
+        QTreeWidgetItem * item = new QTreeWidgetItem(QStringList(st.toString("HH:mm:ss")));
+        item->setData(0,Qt::UserRole, (*s)->first());
+        start->addChild(item);
+
+
+        item = new QTreeWidgetItem(QStringList(et.toString("HH:mm:ss")));
+        item->setData(0,Qt::UserRole, (*s)->last());
+        end->addChild(item);
+    }
+
     //tree->insertTopLevelItem(cnt++,new QTreeWidgetItem(QStringList("[Total Events ("+QString::number(total_events)+")]")));
     tree->sortByColumn(0,Qt::AscendingOrder);
     //tree->expandAll();

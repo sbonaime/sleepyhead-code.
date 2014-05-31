@@ -328,10 +328,11 @@ void MainWindow::Notify(QString s, QString title, int ms)
 void MainWindow::PopulatePurgeMenu()
 {
     QList<QAction *> actions = ui->menu_Purge_CPAP_Data->actions();
-    for (int i=0; i < actions.size(); i++) {
-        ui->menu_Purge_CPAP_Data->disconnect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
-    }
+
+    ui->menu_Purge_CPAP_Data->disconnect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
+
     ui->menu_Purge_CPAP_Data->clear();
+
     QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
     for (int i=0; i < machines.size(); ++i) {
         Machine *mach = machines.at(i);
@@ -342,8 +343,8 @@ void MainWindow::PopulatePurgeMenu()
         QAction * action = new QAction(name.replace("&","&&"), ui->menu_Purge_CPAP_Data);
         action->setData(mach->GetClass()+":"+mach->properties[STR_PROP_Serial]);
         ui->menu_Purge_CPAP_Data->addAction(action);
-        ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
     }
+    ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
 }
 
 void MainWindow::Startup()
@@ -2285,9 +2286,19 @@ void MainWindow::on_reportModeRange_clicked()
 
 void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
 {
+    if (!getDaily())
+        return;
     QDate date = getDaily()->getDate();
     Day * day = PROFILE.GetDay(date, MT_OXIMETER);
     if (day) {
+        if (QMessageBox::question(this, STR_MessageBox_Warning,
+            tr("Are you sure you want to delete oximetry data for %1").
+                arg(getDaily()->getDate().toString(Qt::DefaultLocaleLongDate))+"<br/><br/>"+
+            tr("<b>Please be aware you can not undo this operation!</b>"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
+            return;
+        }
+
         QList<Session *> sessions;
         sessions.append(day->getSessions());
 
@@ -2299,5 +2310,8 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
         daily->clearLastDay(); // otherwise Daily will crash
 
         getDaily()->ReloadGraphs();
+    } else {
+        QMessageBox::information(this, STR_MessageBox_Information,
+            tr("Select the day with valid oximetry data in daily view first."),QMessageBox::Ok);
     }
 }

@@ -1393,7 +1393,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>180</height>
+               <height>200</height>
               </size>
              </property>
              <property name="title">
@@ -1436,7 +1436,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>180</height>
+               <height>200</height>
               </size>
              </property>
              <property name="title">
@@ -1691,7 +1691,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
               <enum>QAbstractSpinBox::UpDownArrows</enum>
              </property>
              <property name="displayFormat">
-              <string>hh:mm:ss AP</string>
+              <string>HH:mm:ssap</string>
              </property>
             </widget>
            </item>

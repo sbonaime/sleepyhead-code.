@@ -536,7 +536,6 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
     flow->setFirst(ti);
     pressure->setFirst(ti);
 
-
     quint16 endMarker;
     qint8 offset;         // offset from center for this block
     quint16 pres;       // mask pressure
@@ -569,9 +568,12 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
             samples[i] = val;
         }
         flow->AddWaveform(ti, samples, samples_per_block, rate);
-        ti += samples_per_block * rate;
 
         pres = *((quint16 *)p);
+        pressure->AddEvent(ti, pres);
+
+        ti += samples_per_block * rate;
+
         p+=3; // (offset too)
     } while (p < end);
 

@@ -124,9 +124,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     SummaryType ST_mid;
 
     if (mididx == 0) { ST_mid = ST_PERC; }
-
     if (mididx == 1) { ST_mid = ST_WAVG; }
-
     if (mididx == 2) { ST_mid = ST_AVG; }
 
     SummaryType ST_max = PROFILE.general->prefCalcMax() ? ST_PERC : ST_MAX;
