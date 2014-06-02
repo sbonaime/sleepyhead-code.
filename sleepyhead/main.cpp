@@ -24,6 +24,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QFileDialog>
+#include <QSysInfo>
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -142,6 +143,7 @@ void sDelay(int s)
 
 int compareVersion(QString version);
 
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
@@ -176,6 +178,32 @@ int main(int argc, char *argv[])
     initTranslations(settings);
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
+
+#if defined(Q_OS_WIN)
+#ifndef BROKEN_OPENGL_BUILD
+    QString glversion = (char *)glGetString(GL_VERSION);
+    qDebug() << "OpenGL Version detected:" << glversion;
+  //  if (QSysInfo::windowsVersion() < QSysInfo::WV_VISTA) {
+        if (glversion.contains("ANGLE")) {
+            QMessageBox::warning(nullptr, QObject::tr("You have the wrong version of SleepyHead"),
+                                 QObject::tr("This build of SleepyHead was designed to work with computers lacking full OpenGL 2.0 support, and only runs on (native) Windows Vista or higher.") + "<br/><br/>"+
+                                 QObject::tr("There is another special build available for computers that do not support OpenGL 2.0 via ANGLE, tagged '-BrokenGL', that has been designed to work with Windows XP, Virtual Box, VMware, etc.")+"<br/><br/>"+
+                                 QObject::tr("Because graphs will not render correctly, this version will now exit."), QMessageBox::Ok, QMessageBox::Ok);
+            exit(1);
+        }
+//    }
+#else
+    if (QSysInfo::windowsVersion() > QSysInfo::WV_VISTA) {
+        QMessageBox::information(nullptr, QObject::tr("A faster build may be available"),
+                         QObject::tr("This special build of SleepyHead was designed to work with computers lacking OpenGL 2.0 support.") + "<br/><br/>"+
+                         QObject::tr("There is another special build available for computers running Windows Vista or higher that do not support OpenGL 2.0, tagged 'ANGLE', which will work faster on your computer.")+"<br/><br/>"+
+                         QObject::tr("If your running Windows in a Virutal machine, disregard this message, because the version you are running works best.")
+
+                         QMessageBox::Ok, QMessageBox::Ok);
+    }
+
+#endif
+#endif
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Datafolder location Selection

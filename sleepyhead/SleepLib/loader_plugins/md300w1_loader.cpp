@@ -177,6 +177,13 @@ bool MD300W1Loader::readDATFile(QString path)
     // Number of records
     int n = ((unsigned char)data.at(2) << 8) | (unsigned char)data.at(1);
 
+    // CHECKME:
+    if (size < (n*11)+3) {
+        qDebug() << "Short MD300W1 .dat file" << path;
+        return false;
+    }
+
+
     unsigned char o2, pr;
 
     qint32 lasttime=0, ts=0;
