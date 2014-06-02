@@ -14,7 +14,7 @@
 #include <QDateTime>
 
 #include "SleepLib/profiles.h"
-#include "gsessiontimeschart.h"
+#include "gSessionTimesChart.h"
 
 #include "gYAxis.h"
 
@@ -92,12 +92,16 @@ void gSessionTimesChart::SetDay(Day *unused_day)
 
 void gSessionTimesChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    Q_UNUSED(painter)
+    Q_UNUSED(w)
+    Q_UNUSED(region)
+
     QMap<quint32, QList<TimeSpan> >::iterator st_end = sessiontimes.end();
     QMap<quint32, QList<TimeSpan> >::iterator it;
 
 
     for (it = sessiontimes.begin(); it != st_end; ++it) {
-        int dn = it.key();
+//        int dn = it.key();
         QList<TimeSpan> & st = it.value();
         int stsize = st.size();
 
@@ -110,21 +114,29 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &w, const QRegion &regi
 
 bool gSessionTimesChart::keyPressEvent(QKeyEvent *event, gGraph *graph)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
     return true;
 }
 
 bool gSessionTimesChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
     return true;
 }
 
 bool gSessionTimesChart::mousePressEvent(QMouseEvent *event, gGraph *graph)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
     return true;
 }
 
 bool gSessionTimesChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
     return true;
 }
 

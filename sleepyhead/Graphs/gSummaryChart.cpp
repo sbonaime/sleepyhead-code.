@@ -35,6 +35,7 @@ SummaryChart::~SummaryChart()
 }
 void SummaryChart::SetDay(Day * nullday)
 {
+    Q_UNUSED(nullday)
     Day *day = nullptr;
     Layer::SetDay(day);
 
@@ -834,10 +835,9 @@ jumpnext:
     bool ishours = false;
     int good = 0;
 
-    if (w.title().compare("Resp. Rate")==0) {
-        int i=5;
-        int b = i;
-    }
+//    if (w.title().compare("Resp. Rate")==0) {
+//        int i=5;
+//    }
 
     for (int j = 0; j < m_codes.size(); j++) {
         if (!goodcodes[j]) { continue; }

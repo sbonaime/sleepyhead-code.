@@ -63,6 +63,8 @@ class MachineLoader: public QObject
     //! \brief Process Task list using all available threads.
     void runTasks(bool threaded=true);
 
+    int countTasks() { return m_tasklist.size(); }
+
     inline bool isAborted() { return m_abort; }
     void abort() { m_abort = true; }
 

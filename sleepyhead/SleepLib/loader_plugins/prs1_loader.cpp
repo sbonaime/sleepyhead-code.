@@ -25,7 +25,7 @@
 #include "SleepLib/calcs.h"
 
 
-const int PRS1_MAGIC_NUMBER = 2;
+//const int PRS1_MAGIC_NUMBER = 2;
 //const int PRS1_SUMMARY_FILE=1;
 //const int PRS1_EVENT_FILE=2;
 //const int PRS1_WAVEFORM_FILE=5;
@@ -358,6 +358,7 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 
 int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 {
+    Q_UNUSED(profile)
 
     qDebug() << "Opening PRS1 " << path;
     QDir dir(path);
@@ -422,7 +423,6 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     long ext;
     QHash<SessionID, QStringList> sessfiles;
     int size = paths.size();
-    int cnt = 0;
 
     prs1sessions.clear();
     new_sessions.clear(); // this hash is used by OpenFile
@@ -488,7 +488,9 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
         }
     }
 
+    int tasks = countTasks();
     runTasks(p_profile->session->multithreading());
+    return tasks;
 }
 
 bool PRS1SessionData::ParseF5Events()
@@ -840,7 +842,7 @@ bool PRS1SessionData::ParseF0Events()
     int cnt = 0;
     short delta;
     int tdata;
-    quint64 pos;
+    int pos;
     qint64 t = qint64(event->timestamp) * 1000L, tt;
 
     session->updateFirst(t);
@@ -1188,7 +1190,7 @@ bool PRS1SessionData::ParseSummary()
     //////////////////////////////////////////////////////////////////////////////////////////
 
 
-    quint8 rectype = data[0x00];
+    //quint8 rectype = data[0x00];
 
 
 

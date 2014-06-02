@@ -110,6 +110,7 @@ int MD300W1Loader::Open(QString path, Profile *profile)
 
 void MD300W1Loader::processBytes(QByteArray bytes)
 {
+    Q_UNUSED(bytes);
     return;
 }
 

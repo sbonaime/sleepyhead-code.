@@ -244,7 +244,6 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
 
         lastgain = gain;
 
-        int value;
         qint64 weight;
 
         //qint64 tval;

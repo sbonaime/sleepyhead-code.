@@ -379,9 +379,6 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
     double len, st2, et2, adj, stmin, b, rr = 0;
     double len2;
-    int idx;
-
-
 
     /////////////////////////////////////////////////////////////////////////////////
     // Inspiratory / Expiratory Time setup

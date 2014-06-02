@@ -299,8 +299,10 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     setAutoBufferSwap(false);
 #endif
 }
+
 void gGraphView::closeEvent(QCloseEvent * event)
 {
+
     timer->stop();
     redrawtimer->stop();
     disconnect(redrawtimer, 0, 0, 0);
@@ -311,7 +313,11 @@ void gGraphView::closeEvent(QCloseEvent * event)
     if (m_scrollbar) {
         this->disconnect(m_scrollbar, SIGNAL(sliderMoved(int)), 0, 0);
     }
-
+#ifdef BROKEN_OPENGL_BUILD
+    QWidget::closeEvent(event);
+#else
+    QGLWidget::closeEvent(event);
+#endif
 }
 
 gGraphView::~gGraphView()
@@ -408,7 +414,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
             if (!QPixmapCache::find(hstr, &pm)) {
 
                 QFontMetrics fm(*q.font);
-                QRect rect=fm.tightBoundingRect(q.text);
+               // QRect rect=fm.tightBoundingRect(q.text);
                 w = fm.width(q.text);
                 h = fm.height()+buf;
 

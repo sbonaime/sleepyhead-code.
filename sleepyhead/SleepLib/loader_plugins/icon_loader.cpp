@@ -311,10 +311,10 @@ quint32 convertDate(quint32 timestamp)
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second),Qt::UTC);
 
     Q_ASSERT(dt.isValid());
-    if ((year == 2013) && (month == 9) && (day == 18)) {
-        // this is for testing.. set a breakpoint on here and
-        int i=5;
-    }
+//    if ((year == 2013) && (month == 9) && (day == 18)) {
+//        // this is for testing.. set a breakpoint on here and
+//        int i=5;
+//    }
 
 
     // From Rudd's data set compared to times reported from his F&P software's report (just the time bits left over)
@@ -348,9 +348,9 @@ quint32 convertFLWDate(quint32 timestamp)
 //    hour = (timestamp >> 12) & 0x1f;
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
     Q_ASSERT(dt.isValid());
-    if ((year == 2013) && (month == 9) && (day == 18)) {
-        int i=5;
-    }
+//    if ((year == 2013) && (month == 9) && (day == 18)) {
+//        int i=5;
+//    }
     // 87922 23:23:50 WET
     return dt.addSecs(-360).toTime_t();
 }
@@ -498,7 +498,6 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         sess = nullptr;
 
         sit = Sessions.end();
-        int cnt=0;
         if (Sessions.begin() != sit) {
             do {
                 sit--;

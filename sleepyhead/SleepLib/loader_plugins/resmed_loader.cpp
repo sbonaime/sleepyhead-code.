@@ -194,7 +194,6 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     }
                     continue;
                 }
-                bool skip = false;
 
                 QMap<quint32, STRRecord>::iterator sid = strsess.find(ontime);
                 // Record already exists?
