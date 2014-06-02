@@ -12,12 +12,10 @@ greaterThan(QT_MAJOR_VERSION,4) {
     QT += webkit
 }
 
-#Windows XP with older intel cards needs the following variable defined
-#It slows other platforms down way too much
-#DEFINES += BROKEN_OPENGL_BUILD
-
-
-exists($$PWD/../BrokenGL2) {
+#SleepyHead requires OpenGL 2.0 support to run smoothly
+#On platforms where it's not available, it can still be built to work
+#provided the BrokenGL file resides in the SleepyHead source root directory
+exists($$PWD/../BrokenGL) {
     DEFINES += BROKEN_OPENGL_BUILD
     message("Building with QWidget gGraphView")
 } else {
