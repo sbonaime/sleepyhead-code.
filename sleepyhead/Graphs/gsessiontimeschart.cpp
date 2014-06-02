@@ -110,17 +110,21 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &w, const QRegion &regi
 
 bool gSessionTimesChart::keyPressEvent(QKeyEvent *event, gGraph *graph)
 {
+    return true;
 }
 
 bool gSessionTimesChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
+    return true;
 }
 
 bool gSessionTimesChart::mousePressEvent(QMouseEvent *event, gGraph *graph)
 {
+    return true;
 }
 
 bool gSessionTimesChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 {
+    return true;
 }
 
