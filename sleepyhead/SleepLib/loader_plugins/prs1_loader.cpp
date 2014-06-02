@@ -1187,19 +1187,31 @@ bool PRS1SessionData::ParseSummary()
     //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
     //////////////////////////////////////////////////////////////////////////////////////////
 
+
+    quint8 rectype = data[0x00];
+
+
+
     EventDataType max, min;
 
     min = float(data[0x03]) / 10.0; // Min EPAP
     max = float(data[0x04]) / 10.0; // Max EPAP
     int offset = 0;
+    int duration = 0;
 
     // This is a time value for ASV stuff
     if (summary->family == 5) {
         offset = 4; // non zero adds 4 extra fields..
-    } else if (summary->family == 0 && summary->familyVersion >= 4) {
-        offset = 2;
-    }
+    } else if (summary->family == 0) {
 
+        if (summary->familyVersion == 2) {
+            duration = data[0x14] | data[0x15] << 8;
+        }
+        if (summary->familyVersion >= 4) {
+            offset = 2;
+        }
+
+    }
     // Minutes. Convert to seconds/hours here?
     session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
     session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;
@@ -1259,6 +1271,8 @@ bool PRS1SessionData::ParseSummary()
         session->settings[PRS1_SysOneResistSet] = (int)data[offset + 0x0a] & 7;
     }
 
+
+
     // Set recommended Graph values..
     session->setPhysMax(CPAP_LeakTotal, 120);
     session->setPhysMin(CPAP_LeakTotal, 0);
@@ -1270,6 +1284,10 @@ bool PRS1SessionData::ParseSummary()
     session->setPhysMin(CPAP_EPAP, 4);
     session->setPhysMax(CPAP_PS, 25);
     session->setPhysMin(CPAP_PS, 0);
+
+
+    if (summary->family == 0 && summary->familyVersion == 0) {
+    }
 
     return true;
 }

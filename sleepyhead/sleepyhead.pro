@@ -15,7 +15,10 @@ greaterThan(QT_MAJOR_VERSION,4) {
 #Windows XP with older intel cards needs the following variable defined
 #It slows other platforms down way too much
 #DEFINES += BROKEN_OPENGL_BUILD
-contains(DEFINES, BROKEN_OPENGL_BUILD) {
+
+
+exists($$PWD/../BrokenGL2) {
+    DEFINES += BROKEN_OPENGL_BUILD
     message("Building with QWidget gGraphView")
 } else {
     message("Building with QGLWidget gGraphView")

@@ -864,7 +864,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
     bool corrupted_waveform=false;
     QString tooltip;
 
-    html+=QString("<tr><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td><td align=left><b>"+tr("Duration")+"</b></td></tr>");
+    html+=QString("<tr>"
+                  "<td><b>"+STR_TR_On+"</b></td>"
+                  "<td align=center><b>"+STR_TR_Date+"</b></td>"
+                  "<td align=center><b>"+STR_TR_Start+"</b></td>"
+                  "<td align=center><b>"+STR_TR_End+"</b></td>"
+                  "<td align=left><b>"+tr("Duration")+"</b></td></tr>");
     QList<Day *>::iterator di;
     QString type;
 
@@ -904,6 +909,11 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             int m=(len/60) % 60;
             int s1=len % 60;
             tooltip=day->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
+
+#define DEBUG_SESSIONS
+#ifdef DEBUG_SESSIONS
+            tooltip += " "+QString::number(len)+"s";
+#endif
             // tooltip needs to lookup language.. :-/
 
             Session *sess=*s;
@@ -913,7 +923,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             bool b=sess->settings[SESSION_ENABLED].toBool();
             html+=QString("<tr>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
-                          "<img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='"+type+"=%1'>%3<span>%2</span></a></td></tr>")
+                          "<img src='qrc:/icons/session-%4.png' width=24px></a></td>"
+                          "<td align=center>%5</td>"
+                          "<td align=center>%6</td>"
+                          "<td align=center>%7</td>"
+                          "<td align=left><a class=info href='"+type+"=%1'>%3<span>%2</span></a></td>"
+                          "</tr>")
                     .arg((*s)->session())
                     .arg(tooltip)
                     .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
