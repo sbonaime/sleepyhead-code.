@@ -65,6 +65,40 @@ QStatusBar *qstatusbar;
 
 extern Profile *profile;
 
+const char * CSTR_GFX_ANGLE = "ANGLE";
+const char * CSTR_GFX_OpenGL = "OpenGL";
+const char * CSTR_GFX_BrokenGL = "BrokenGL";
+
+QString getOpenGLVersion()
+{
+    static QString glversion;
+
+    if (glversion.isEmpty()) {
+        QGLWidget w;
+        w.makeCurrent();
+
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+        qDebug() << "OpenGL Version:" << glversion;
+    }
+    return glversion;
+}
+
+QString getGraphicsEngine()
+{
+    QString gfxEngine = QString();
+#ifdef BROKEN_OPENGL_BUILD
+    gfxEngine = CSTR_GFX_BrokenGL;
+#else
+    QString glversion = getOpenGLVersion();
+    if (glversion.contains(CSTR_GFX_ANGLE)) {
+        gfxEngine = CSTR_GFX_ANGLE;
+    } else {
+        gfxEngine = CSTR_GFX_OpenGL;
+    }
+#endif
+    return gfxEngine;
+}
+
 void MainWindow::Log(QString s)
 {
 
@@ -109,17 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->warningLabel->hide();
 #endif
 
-#ifdef BROKEN_OPENGL_BUILD
-    version += " BrokenGL2";
-#else
-    QString glversion = (char *)glGetString(GL_VERSION);
-    if (glversion.contains("ANGLE")) {
-        version += " ANGLE";
-    } else {
-        version += " OpenGL";
-    }
+    version += " "+getGraphicsEngine();
 
-#endif
     if (QString(GIT_BRANCH) != "master") { version += " [" + QString(GIT_BRANCH)+" branch]"; }
 
 
@@ -1061,19 +1086,6 @@ void MainWindow::aboutBoxLinkClicked(const QUrl &url)
 
 void MainWindow::on_action_About_triggered()
 {
-    QString gfxengine;
-#ifdef BROKEN_OPENGL_BUILD
-    gfxengine = "BrokenGL2";
-#else
-    QString glversion = (char *)glGetString(GL_VERSION);
-    if (glversion.contains("ANGLE")) {
-        gfxengine = "ANGLE";
-    } else {
-        gfxengine = "OpenGL";
-    }
-
-#endif
-
     QString gitrev = QString(GIT_REVISION);
 
     if (!gitrev.isEmpty()) { gitrev = tr("Revision:")+" " + gitrev + " (" + QString(GIT_BRANCH) + " " + tr("branch") + ")"; }
@@ -1092,7 +1104,7 @@ void MainWindow::on_action_About_triggered()
                 QString(" v%1 (%2)</h1></p><font color=black><p>").arg(VersionString).arg(ReleaseStatus) +
                 tr("Build Date: %1 %2").arg(__DATE__).arg(__TIME__) +
                 QString("<br/>%1<br/>").arg(gitrev) +
-                tr("Graphics Engine: %1").arg(gfxengine)+
+                tr("Graphics Engine: %1").arg(getGraphicsEngine())+
                 "<br/>" +
                 tr("Data Folder Location: %1").arg(QDir::toNativeSeparators(GetAppRoot()) +
                 "<hr/>"+tr("Copyright") + " &copy;2011-2014 Mark Watkins (jedimark) <br/> \n" +

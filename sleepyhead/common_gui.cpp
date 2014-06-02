@@ -15,6 +15,7 @@
 # include <unistd.h>
 #endif
 
+
 #if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
 // Qt 4.8 makes this a whole lot easier
 Qt::DayOfWeek firstDayOfWeekFromLocale()

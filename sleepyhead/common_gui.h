@@ -18,6 +18,12 @@
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();
 
+//! \brief Returns a text string naming the current graphics engine
+QString getGraphicsEngine();
+
+QString getOpenGLVersion();
+
+
 // Flag Colors
 extern QColor COLOR_Hypopnea;
 extern QColor COLOR_Obstructive;

@@ -32,6 +32,7 @@
 #include "profileselect.h"
 #include "newprofile.h"
 #include "translation.h"
+#include "common_gui.h"
 
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
@@ -182,11 +183,13 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_WIN)
     // True openGL will meanly return nothing here, but ANGLE will give useful info
-    QString glversion = (char *)glGetString(GL_VERSION);
+
+
+    QString glversion = getGraphicsEngine();
 
  #ifndef BROKEN_OPENGL_BUILD
     if (QSysInfo::windowsVersion() < QSysInfo::WV_VISTA) {
-        if (glversion.contains("ANGLE")) {
+        if (glversion.compare("ANGLE")==0) {
             QMessageBox::warning(nullptr, QObject::tr("You have the wrong version of SleepyHead"),
                                  QObject::tr("This build of SleepyHead was designed to work with computers lacking full OpenGL 2.0 support, and only runs on (native) Windows Vista or higher.") + "<br/><br/>"+
                                  QObject::tr("There is another special build available for computers that do not support OpenGL 2.0 via ANGLE, tagged '-BrokenGL', that has been designed to work with Windows XP, Virtual Box, VMware, etc.")+"<br/><br/>"+
