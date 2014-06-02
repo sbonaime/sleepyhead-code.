@@ -179,11 +179,13 @@ int main(int argc, char *argv[])
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
 
+
 #if defined(Q_OS_WIN)
-#ifndef BROKEN_OPENGL_BUILD
+    // True openGL will meanly return nothing here, but ANGLE will give useful info
     QString glversion = (char *)glGetString(GL_VERSION);
-    qDebug() << "OpenGL Version detected:" << glversion;
-  //  if (QSysInfo::windowsVersion() < QSysInfo::WV_VISTA) {
+
+ #ifndef BROKEN_OPENGL_BUILD
+    if (QSysInfo::windowsVersion() < QSysInfo::WV_VISTA) {
         if (glversion.contains("ANGLE")) {
             QMessageBox::warning(nullptr, QObject::tr("You have the wrong version of SleepyHead"),
                                  QObject::tr("This build of SleepyHead was designed to work with computers lacking full OpenGL 2.0 support, and only runs on (native) Windows Vista or higher.") + "<br/><br/>"+
@@ -191,18 +193,23 @@ int main(int argc, char *argv[])
                                  QObject::tr("Because graphs will not render correctly, this version will now exit."), QMessageBox::Ok, QMessageBox::Ok);
             exit(1);
         }
-//    }
-#else
+    }
+ #else
+    settings.remove("Settings/BrokenGL2");
     if (QSysInfo::windowsVersion() > QSysInfo::WV_VISTA) {
-        QMessageBox::information(nullptr, QObject::tr("A faster build may be available"),
-                         QObject::tr("This special build of SleepyHead was designed to work with computers lacking OpenGL 2.0 support.") + "<br/><br/>"+
-                         QObject::tr("There is another special build available for computers running Windows Vista or higher that do not support OpenGL 2.0, tagged 'ANGLE', which will work faster on your computer.")+"<br/><br/>"+
-                         QObject::tr("If your running Windows in a Virutal machine, disregard this message, because the version you are running works best.")
-
+        if (!settings.contains("Settings/BrokenGL2")) {
+            QMessageBox::information(nullptr, QObject::tr("A faster build may be available"),
+                         QObject::tr("This special build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support.") + "<br/><br/>"+
+                         QObject::tr("There is a <b>better build available</b> for computers running (native) Windows Vista or higher that do not support OpenGL 2.0, tagged '<b>-ANGLE</b>', which will work faster on your computer.")+"<br/><br/>"+
+                         QObject::tr("If your running Windows in a Virutal Machine, like VirtualBox or VMware, disregard this message, because the version you are running works best.")+"<br/><br/>"+
+                         QObject::tr("<b>There is no harm in running this version, it's just quite a bit slower.</b>")+"<br/><br/>"+
+                         QObject::tr("You will not be shown this message again."),
                          QMessageBox::Ok, QMessageBox::Ok);
+            settings.setValue("Settings/BrokenGL2", true);
+        }
     }
 
-#endif
+ #endif
 #endif
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,6 +407,7 @@ retry_directory:
 
     // Must be initialized AFTER profile creation
     MainWindow w;
+
     mainwin = &w;
 
     if (check_updates) { mainwin->CheckForUpdates(); }
