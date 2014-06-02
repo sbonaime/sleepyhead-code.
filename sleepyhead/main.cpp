@@ -195,7 +195,6 @@ int main(int argc, char *argv[])
         }
     }
  #else
-    settings.remove("Settings/BrokenGL2");
     if (QSysInfo::windowsVersion() > QSysInfo::WV_VISTA) {
         if (!settings.contains("Settings/BrokenGL2")) {
             QMessageBox::information(nullptr, QObject::tr("A faster build may be available"),
