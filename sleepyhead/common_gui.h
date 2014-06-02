@@ -18,10 +18,15 @@
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();
 
+const QString CSTR_GFX_ANGLE = "ANGLE";
+const QString CSTR_GFX_OpenGL = "OpenGL";
+const QString CSTR_GFX_BrokenGL = "BrokenGL";
+
+
 //! \brief Returns a text string naming the current graphics engine
 QString getGraphicsEngine();
-
-QString getOpenGLVersion();
+QString getOpenGLVersionString();
+float getOpenGLVersion();
 
 
 // Flag Colors

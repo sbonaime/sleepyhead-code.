@@ -180,38 +180,67 @@ int main(int argc, char *argv[])
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
 
+    float glversion = getOpenGLVersion();
+
+    bool opengl2supported = glversion >= 2.0;
+    bool bad_graphics = !opengl2supported;
+    bool intel_graphics = getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
 
 #if defined(Q_OS_WIN)
-    // True openGL will meanly return nothing here, but ANGLE will give useful info
-
-
-    QString glversion = getGraphicsEngine();
-
- #ifndef BROKEN_OPENGL_BUILD
-    if (QSysInfo::windowsVersion() < QSysInfo::WV_VISTA) {
-        if (glversion.compare("ANGLE")==0) {
-            QMessageBox::warning(nullptr, QObject::tr("You have the wrong version of SleepyHead"),
-                                 QObject::tr("This build of SleepyHead was designed to work with computers lacking full OpenGL 2.0 support, and only runs on (native) Windows Vista or higher.") + "<br/><br/>"+
-                                 QObject::tr("There is another special build available for computers that do not support OpenGL 2.0 via ANGLE, tagged '-BrokenGL', that has been designed to work with Windows XP, Virtual Box, VMware, etc.")+"<br/><br/>"+
-                                 QObject::tr("Because graphs will not render correctly, this version will now exit."), QMessageBox::Ok, QMessageBox::Ok);
-            exit(1);
-        }
+    bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);
+    if (bad_graphics) {
+        bad_graphics = !angle_supported
     }
- #else
-    if (QSysInfo::windowsVersion() > QSysInfo::WV_VISTA) {
-        if (!settings.contains("Settings/BrokenGL2")) {
-            QMessageBox::information(nullptr, QObject::tr("A faster build may be available"),
-                         QObject::tr("This special build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support.") + "<br/><br/>"+
-                         QObject::tr("There is a <b>better build available</b> for computers running (native) Windows Vista or higher that do not support OpenGL 2.0, tagged '<b>-ANGLE</b>', which will work faster on your computer.")+"<br/><br/>"+
-                         QObject::tr("If your running Windows in a Virutal Machine, like VirtualBox or VMware, disregard this message, because the version you are running works best.")+"<br/><br/>"+
-                         QObject::tr("<b>There is no harm in running this version, it's just quite a bit slower.</b>")+"<br/><br/>"+
-                         QObject::tr("You will not be shown this message again."),
-                         QMessageBox::Ok, QMessageBox::Ok);
-            settings.setValue("Settings/BrokenGL2", true);
-        }
-    }
+#endif
 
- #endif
+    QString lookfor = QObject::tr("Look for this build in <a href='%1'>SleepyHead's files hosted on Sourceforge</a>.").arg("http://sf.net/projects/sleepyhead/files");
+#ifdef BROKEN_OPENGL_BUILD
+    Q_UNUSED(bad_graphics)
+    Q_UNUSED(intel_graphics)
+
+    QString betterbuild = "Settings/BetterBuild";
+    QString fasterbuildavailable = QObject::tr("A faster build of SleepyHead may be available");
+    QString notbotheragain = QObject::tr("You will not be bothered with this message again.");
+    QString betterresults = QObject::tr("This version will run fine, but a \"<b>%1</b>\" tagged build of SleepyHead will likely run much smoother on your computer.");
+
+    if (opengl2supported) {
+        if (!settings.value(betterbuild, false).toBool()) {
+            QMessageBox::information(nullptr, fasterbuildavailable,
+                             QObject::tr("This build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support, but it looks like your computer has full support for it.") + "<br/><br/>"+
+                             betterresults.arg("-OpenGL")+"<br/><br/>"+
+                             lookfor + "<br/><br/>"+
+                             notbotheragain, QMessageBox::Ok, QMessageBox::Ok);
+            settings.setValue(betterbuild, true);
+        }
+    } else {
+#if defined(Q_OS_WIN)
+        if (angle_supported) {
+            if (!settings.value(betterbuild, false).toBool()) {
+                QMessageBox::information(nullptr, fasterbuildavailable,
+                             QObject::tr("This build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support, which yours doesn't have, but there may still be a better version available for your computer.") + "<br/><br/>"+
+                             betterresults.arg("-ANGLE")+"<br/><br/>"+
+                             QObject::tr("If you are running this in a virtual machine like VirtualBox or VMware, please disregard this message, as no better build is available.")+"<br/><br/>"+
+                             lookfor + "<br/><br/>"+
+                             notbotheragain, QMessageBox::Ok, QMessageBox::Ok);
+                settings.setValue(betterbuild, true);
+            }
+        }
+#endif
+    }
+#else
+    if (bad_graphics) {
+        QMessageBox::warning(nullptr, QObject::tr("Incompatible Graphics Hardware"),
+                             QObject::tr("This build of SleepyHead requires OpenGL 2.0 support to function correctly, and unfortunately your computer lacks this capability.") + "<br/><br/>"+
+                             QObject::tr("You may need to update your computers graphics drivers from the GPU makers website. %1").
+                                arg(intel_graphics ? QObject::tr("(<a href='http://intel.com/support'>Intel's support site</a>)") : "")+"<br/><br/>"+
+                             QObject::tr("Because graphs will not render correctly, and it may cause crashes, this build will now exit.")+"<br/><br/>"+
+                             QObject::tr("Don't be disheartened, there is another build available tagged \"<b>-BrokenGL</b>\" that should work on your computer.")+ "<br/><br/>"+
+                             lookfor+ "<br/><br/>"
+
+
+                             ,QMessageBox::Ok, QMessageBox::Ok);
+        exit(1);
+    }
 #endif
 
     ////////////////////////////////////////////////////////////////////////////////////////////

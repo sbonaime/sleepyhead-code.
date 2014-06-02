@@ -65,11 +65,7 @@ QStatusBar *qstatusbar;
 
 extern Profile *profile;
 
-const char * CSTR_GFX_ANGLE = "ANGLE";
-const char * CSTR_GFX_OpenGL = "OpenGL";
-const char * CSTR_GFX_BrokenGL = "BrokenGL";
-
-QString getOpenGLVersion()
+QString getOpenGLVersionString()
 {
     static QString glversion;
 
@@ -83,13 +79,23 @@ QString getOpenGLVersion()
     return glversion;
 }
 
+float getOpenGLVersion()
+{
+    QString glversion = getOpenGLVersionString();
+    glversion = glversion.section(" ",0,0);
+    bool ok;
+    float v = glversion.toFloat(&ok);
+
+    return v;
+}
+
 QString getGraphicsEngine()
 {
     QString gfxEngine = QString();
 #ifdef BROKEN_OPENGL_BUILD
     gfxEngine = CSTR_GFX_BrokenGL;
 #else
-    QString glversion = getOpenGLVersion();
+    QString glversion = getOpenGLVersionString();
     if (glversion.contains(CSTR_GFX_ANGLE)) {
         gfxEngine = CSTR_GFX_ANGLE;
     } else {
