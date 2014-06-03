@@ -86,6 +86,15 @@ float getOpenGLVersion()
     bool ok;
     float v = glversion.toFloat(&ok);
 
+    if (!ok) {
+        QString tmp = glversion.section(".",0,1);
+        v = tmp.toFloat(&ok);
+        if (!ok) {
+            // just look at major, we are only interested in whether we have OpenGL 2.0 anyway
+            tmp = glversion.section(".",0,0);
+            v = tmp.toFloat(&ok);
+        }
+    }
     return v;
 }
 
