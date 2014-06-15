@@ -22,15 +22,12 @@
 #include <QSettings>
 #include <QTranslator>
 #include <QListWidget>
-#include <QDirIterator>
 
 #ifndef nullptr
 #define nullptr NULL
 #endif
 
 #include "translation.h"
-
-extern QString GetAppRoot(); //returns app root path plus trailing path separator.
 
 void initTranslations(QSettings & settings) {
 
@@ -48,6 +45,20 @@ void initTranslations(QSettings & settings) {
 
     QHash<QString, QString> langFiles;
 
+#ifdef Q_OS_MAC
+    QString transdir = QDir::cleanPath(QCoreApplication::applicationDirPath() +
+                                   "/../Resources/Translations/");
+
+#else
+    const QString transdir = QCoreApplication::applicationDirPath() + "/Translations/";
+#endif
+
+    QDir dir(transdir);
+    qDebug() << "Scanning \"" << transdir << "\" for translations";
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList("*.qm"));
+
+    QFileInfoList list = dir.entryInfoList();
     QString language = settings.value("Settings/Language").toString();
 
     QString langfile, langname;
@@ -58,47 +69,21 @@ void initTranslations(QSettings & settings) {
     langNames[en]="English";
 
     // Scan through available translations, and add them to the list
-    qDebug() << "Scanning resources for translations";
-    QDirIterator it(":/Translations", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-
-        QString path = it.next();
-        QString filename = path.section("/",-1);
-        QString name = filename.section('.', 0, 0);
-        QString code = filename.section('.', 1, 1);
-
-        qDebug() << "Found internal" << name << "Translation";
-
-        if (langNames.contains(code)) {
-            name = langNames[code];
-        } else {
-            langNames[code]=name;
-        }
-
-        langFiles[code]=path;
-    }
-
-
-    const QString transdir = GetAppRoot()+"/Translations/";
-    QDir dir(transdir);
-    qDebug() << "Scanning" << transdir << "for custom/updated translations";
-    dir.setFilter(QDir::Files);
-    dir.setNameFilters(QStringList("*.qm"));
-
-    QFileInfoList list = dir.entryInfoList();
-
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fi = list.at(i);
         QString name = fi.fileName().section('.', 0, 0);
         QString code = fi.fileName().section('.', 1, 1);
+
+        qDebug() << "Detected" << name << "Translation";
+
         if (langNames.contains(code)) {
             name = langNames[code];
         } else {
             langNames[code]=name;
         }
 
-        qDebug() << "Found custom" << name << "translation" << transdir + fi.fileName();
-        langFiles[code]=transdir + fi.fileName();
+        langFiles[code]=fi.fileName();
+
     }
 
     if (language.isEmpty() || !langNames.contains(language)) {
@@ -134,7 +119,6 @@ void initTranslations(QSettings & settings) {
         langlist.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         int row = 0;
         for (QHash<QString, QString>::iterator it = langNames.begin(); it != langNames.end(); ++it) {
-            if (!langFiles.contains(it.key())) continue;
             const QString & code = it.key();
             const QString & name = it.value();
             QListWidgetItem *item = new QListWidgetItem(name);
@@ -165,7 +149,7 @@ void initTranslations(QSettings & settings) {
     qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
     QTranslator * translator = new QTranslator();
 
-    if (!langfile.isEmpty() && !translator->load(langfile, "")) {
+    if (!langfile.isEmpty() && !translator->load(langfile, transdir)) {
         qWarning() << "Could not load translation" << langfile << "reverting to english :(";
     }
 

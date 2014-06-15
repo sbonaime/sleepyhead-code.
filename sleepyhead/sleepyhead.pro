@@ -218,8 +218,7 @@ FORMS += \
     oximeterimport.ui
 
 RESOURCES += \
-    Resources.qrc \
-    ../Translations.qrc
+    Resources.qrc
 
 OTHER_FILES += \
     docs/index.html \
@@ -238,6 +237,33 @@ OTHER_FILES += \
     docs/changelog.txt \
     docs/intro.html \
     docs/statistics.xml
+
+win32 {
+    CONFIG(debug, debug|release) {
+        DDIR = $$OUT_PWD/debug/Translations
+    }
+    CONFIG(release, debug|release) {
+        DDIR = $$OUT_PWD/release/Translations
+    }
+    DDIR ~= s,/,\\,g
+
+    TRANS_FILES += $$PWD/../Translations/*.qm
+    TRANS_FILES_WIN = $${TRANS_FILES}
+    TRANS_FILES_WIN ~= s,/,\\,g
+
+    system(mkdir $$quote($$DDIR))
+
+    for(FILE,TRANS_FILES_WIN){
+        system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
+    }
+
+}
+
+mac {
+    TransFiles.files = $$files(../Translations/*.qm)
+    TransFiles.path = Contents/Resources/Translations
+    QMAKE_BUNDLE_DATA += TransFiles
+}
 
 bundlelibs = $$cat($$PWD/../Bundle3rdParty)
 
