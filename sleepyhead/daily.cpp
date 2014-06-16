@@ -72,7 +72,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->splitter_2->setSizes(a);
     ui->splitter_2->setStretchFactor(1,1);
 
-    layout=new QHBoxLayout(ui->graphMainArea);
+    layout=new QHBoxLayout();
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->setContentsMargins(0,0,0,0);

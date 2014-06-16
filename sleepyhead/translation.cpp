@@ -65,7 +65,7 @@ void initTranslations(QSettings & settings) {
 
     // Add default language (English)
     const QString en="en";
-    langFiles[en]="";
+    langFiles[en]="English.en.qm";
     langNames[en]="English";
 
     // Scan through available translations, and add them to the list
@@ -121,11 +121,14 @@ void initTranslations(QSettings & settings) {
         for (QHash<QString, QString>::iterator it = langNames.begin(); it != langNames.end(); ++it) {
             const QString & code = it.key();
             const QString & name = it.value();
+            if (!langFiles.contains(code) || langFiles[code].isEmpty())
+                continue;
+
             QListWidgetItem *item = new QListWidgetItem(name);
             item->setData(Qt::UserRole, code);
             langlist.insertItem(row++, item);
             // Todo: Use base system language code
-            if (code.compare("en")==0) {
+            if (code.compare("en") == 0) {
                 langlist.setCurrentItem(item);
             }
         }
@@ -146,12 +149,16 @@ void initTranslations(QSettings & settings) {
     langname=langNames[language];
     langfile=langFiles[language];
 
-    qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
-    QTranslator * translator = new QTranslator();
+    if (language.compare("en") != 0) {
+        qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
+        QTranslator * translator = new QTranslator();
 
-    if (!langfile.isEmpty() && !translator->load(langfile, transdir)) {
-        qWarning() << "Could not load translation" << langfile << "reverting to english :(";
+        if (!langfile.isEmpty() && !translator->load(langfile, transdir)) {
+            qWarning() << "Could not load translation" << langfile << "reverting to english :(";
+        }
+
+        qApp->installTranslator(translator);
+    } else {
+        qDebug() << "Using in-built english Translation";
     }
-
-    qApp->installTranslator(translator);
 }
