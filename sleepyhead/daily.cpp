@@ -1424,8 +1424,15 @@ void Daily::Load(QDate date)
                     } else {
                         html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }
-                } else {
-                    html += "<tr><td align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+                } else if (cpap->channelHasData(CPAP_Obstructive)
+                           || cpap->channelHasData(CPAP_Hypopnea)
+                           || cpap->channelHasData(CPAP_ClearAirway)
+                           || cpap->channelHasData(CPAP_RERA)
+                           || cpap->channelHasData(CPAP_Apnea)
+                           || cpap->channelHasData(CPAP_FlowLimit)
+                           || cpap->channelHasData(CPAP_SensAwake)
+                           ) {
+                        html += "<tr><td align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
                 }
             }
 

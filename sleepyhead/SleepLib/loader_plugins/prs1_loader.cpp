@@ -1204,6 +1204,10 @@ bool PRS1SessionData::ParseSummary()
     // This is a time value for ASV stuff
     if (summary->family == 5) {
         offset = 4; // non zero adds 4 extra fields..
+
+        if (summary->familyVersion == 0) {
+            duration = data[0x1B] | data[0x1C] << 8;
+        }
     } else if (summary->family == 0) {
 
         if (summary->familyVersion == 2) {
@@ -1214,6 +1218,11 @@ bool PRS1SessionData::ParseSummary()
         }
 
     }
+    if (!event) {
+        session->set_last(qint64(summary->timestamp + duration) * 1000L);
+        session->settings[CPAP_SummaryOnly] = true;
+    }
+
     // Minutes. Convert to seconds/hours here?
     session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
     session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;

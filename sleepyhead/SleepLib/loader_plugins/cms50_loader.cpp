@@ -298,8 +298,6 @@ int CMS50Loader::doImportMode()
                 emit importComplete(this);
                 resetTimer.singleShot(2000, this, SLOT(shutdownPorts()));
                 return available;
-//                imp_callbacks = cb_reset = 0;
-//                return available;
             }
         }
     }
