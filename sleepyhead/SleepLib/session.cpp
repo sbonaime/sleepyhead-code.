@@ -282,12 +282,20 @@ bool Session::LoadSummary(QString filename)
             settings[code] = i.value();
         }
 
-        QHash<QString, int> zcnt;
-        in >> zcnt;
-
-        for (QHash<QString, int>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
-            code = schema::channel[i.key()].id();
-            m_cnt[code] = i.value();
+        if (version < 13) {
+            QHash<QString, int> zcnt;
+            in >> zcnt;
+            for (QHash<QString, int>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
+                code = schema::channel[i.key()].id();
+                m_cnt[code] = i.value();
+            }
+        } else {
+            QHash<QString, EventDataType> zcnt;
+            in >> zcnt;
+            for (QHash<QString, EventDataType>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
+                code = schema::channel[i.key()].id();
+                m_cnt[code] = i.value();
+            }
         }
 
         QHash<QString, double> zsum;
@@ -295,7 +303,7 @@ bool Session::LoadSummary(QString filename)
 
         for (QHash<QString, double>::iterator i = zsum.begin(); i != zsum.end(); i++) {
             code = schema::channel[i.key()].id();
-            m_cnt[code] = i.value();
+            m_sum[code] = i.value();
         }
 
         QHash<QString, EventDataType> ztmp;
