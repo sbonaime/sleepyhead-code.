@@ -450,9 +450,10 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->setScaleY(1.0);
 
-    float dpr = sg->devicePixelRatio();
-    sg->setDevicePixelRatio(1);
+//    float dpr = sg->devicePixelRatio();
+//    sg->setDevicePixelRatio(1);
 
+//    bool b = sg->usePixmapCache();
     QPixmap pm(w,h);
 
     QPainter painter(&pm);
@@ -460,7 +461,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     sg->renderGraphs(painter);
     painter.end();
 
-    sg->setDevicePixelRatio(dpr);
+//    sg->setDevicePixelRatio(dpr);
     //sg->doneCurrent();
     sg->trashGraphs();
 

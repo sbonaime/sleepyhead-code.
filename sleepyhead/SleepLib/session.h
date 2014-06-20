@@ -151,7 +151,7 @@ class Session
     }
 
     // Session caches
-    QHash<ChannelID, int> m_cnt;
+    QHash<ChannelID, EventDataType> m_cnt;
     QHash<ChannelID, double> m_sum;
     QHash<ChannelID, EventDataType> m_avg;
     QHash<ChannelID, EventDataType> m_wavg;
@@ -180,7 +180,7 @@ class Session
     void destroyEvent(ChannelID code);
 
     // UpdateSummaries may recalculate all these, but it may be faster setting upfront
-    void setCount(ChannelID id, int val) { m_cnt[id] = val; }
+    void setCount(ChannelID id, EventDataType val) { m_cnt[id] = val; }
     void setSum(ChannelID id, EventDataType val) { m_sum[id] = val; }
     void setMin(ChannelID id, EventDataType val) { m_min[id] = val; }
     void setMax(ChannelID id, EventDataType val) { m_max[id] = val; }
@@ -215,10 +215,10 @@ class Session
     void setFirst(ChannelID id, qint64 val) { m_firstchan[id] = val; }
     void setLast(ChannelID id, qint64 val) { m_lastchan[id] = val; }
 
-    int count(ChannelID id);
+    EventDataType count(ChannelID id);
 
     //! \brief Returns the Count of all events of type id between time range
-    int rangeCount(ChannelID id, qint64 first, qint64 last);
+    EventDataType rangeCount(ChannelID id, qint64 first, qint64 last);
 
     //! \brief Returns the Sum of all events of type id between time range
     double rangeSum(ChannelID id, qint64 first, qint64 last);

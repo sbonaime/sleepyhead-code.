@@ -311,6 +311,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 QDateTime dontime = QDateTime::fromTime_t(ontime);
                 date = dontime.date();
                 R.date = date;
+
+                //CHECKME: Should I be taking noon day split time into account here?
                 strdate[date].push_back(&strsess.insert(ontime, R).value());
 
                 QDateTime dofftime = QDateTime::fromTime_t(offtime);
@@ -420,7 +422,7 @@ bool EDFParser::Parse()
         return false;
     }
 
-    dur_data_record = QString::fromLatin1(header.dur_data_records, 8).toDouble(&ok) * 1000.0;
+    dur_data_record = (QString::fromLatin1(header.dur_data_records, 8).toDouble(&ok) * 1000.0L);
 
     if (!ok) {
         return false;
@@ -1221,6 +1223,7 @@ int ResmedLoader::Open(QString path, Profile *profile)
     cnt=0;
     quint32 ignoreolder = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
 
+    bool ignoreold = PROFILE.session->ignoreOlderSessions();
     // strsess end can change above.
     end = strsess.end();
 
@@ -1230,16 +1233,25 @@ int ResmedLoader::Open(QString path, Profile *profile)
 
 
     m->StartSaveThreads();
-    // Look for the nearest matching str record
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Scan through unmatched strsess records, and attempt to get at summary data
+    /////////////////////////////////////////////////////////////////////////////////////////////
     for (it = strsess.begin(); it != end; ++it) {
         STRRecord & R = it.value();
 
-        if (R.maskon < ignoreolder) {
+        if (R.date == QDate(2013,6,20)) {
+            int i=5;
+        }
+
+        if (ignoreold && (R.maskon < ignoreolder)) {
             m->skipSaveTask();
             continue;
         }
 
         //Q_ASSERT(R.sessionid == 0);
+        // the following should not happen
         if (R.sessionid > 0) {
             m->skipSaveTask();
             continue;
@@ -1320,20 +1332,20 @@ int ResmedLoader::Open(QString path, Profile *profile)
 
                     // Add the time weighted proportion of the events counts
                     if (r->ai >= 0) {
-                        sess->setCount(CPAP_Obstructive, r->ai / ratio);
-                        sess->setCph(CPAP_Obstructive, (r->ai / ratio) / (time / 3600.0));
+                        sess->setCount(CPAP_Obstructive, r->ai * ratio);
+                        sess->setCph(CPAP_Obstructive, (r->ai * ratio) / (time / 3600.0));
                     }
                     if (r->uai >= 0) {
-                        sess->setCount(CPAP_Apnea, r->uai / ratio);
-                        sess->setCph(CPAP_Apnea, (r->uai / ratio) / (time / 3600.0));
+                        sess->setCount(CPAP_Apnea, r->uai * ratio);
+                        sess->setCph(CPAP_Apnea, (r->uai * ratio) / (time / 3600.0));
                     }
                     if (r->hi >= 0) {
-                        sess->setCount(CPAP_Hypopnea, r->hi / ratio);
-                        sess->setCph(CPAP_Hypopnea, (r->hi / ratio) / (time / 3600.0));
+                        sess->setCount(CPAP_Hypopnea, r->hi * ratio);
+                        sess->setCph(CPAP_Hypopnea, (r->hi * ratio) / (time / 3600.0));
                     }
                     if (r->cai >= 0) {
-                        sess->setCount(CPAP_ClearAirway, r->cai / ratio);
-                        sess->setCph(CPAP_ClearAirway, (r->ai / ratio) / (time / 3600.0));
+                        sess->setCount(CPAP_ClearAirway, r->cai * ratio);
+                        sess->setCph(CPAP_ClearAirway, (r->ai * ratio) / (time / 3600.0));
                     }
 
                 }

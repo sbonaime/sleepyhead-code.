@@ -44,7 +44,7 @@ class Day
     MachineType machine_type() const;
 
     //! \brief Returns the count of all this days sessions' events for this day
-    int count(ChannelID code);
+    EventDataType count(ChannelID code);
 
     //! \brief Returns the Minimum of all this sessions' events for this day
     EventDataType Min(ChannelID code);

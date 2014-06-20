@@ -758,20 +758,20 @@ EventDataType Day::sph(ChannelID code)
     return sum;
 }
 
-int Day::count(ChannelID code)
+EventDataType Day::count(ChannelID code)
 {
-    int sum = 0;
+    EventDataType total = 0;
 
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
 
-        if (sess.enabled() && sess.channelExists(code)) {
-            sum += sess.count(code);
+        if (sess.enabled() && sess.m_cnt.contains(code)) {
+            total += sess.count(code);
         }
     }
 
-    return sum;
+    return total;
 }
 
 bool Day::summaryOnly()
@@ -847,6 +847,9 @@ bool Day::channelHasData(ChannelID id)
             }
 
             if (sess.m_valuesummary.contains(id)) {
+                return true;
+            }
+            if (sess.m_cnt.contains(id)) {
                 return true;
             }
         }

@@ -30,7 +30,7 @@ const quint16 filetype_data = 1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version = 12;
+const quint16 summary_version = 13;
 const quint16 events_version = 10;
 
 Session::Session(Machine *m, SessionID session)
@@ -1232,7 +1232,7 @@ bool Session::channelExists(ChannelID id)
             return false;
         }
     } else {
-        QHash<ChannelID, int>::iterator q = m_cnt.find(id);
+        QHash<ChannelID, EventDataType>::iterator q = m_cnt.find(id);
 
         if (q == m_cnt.end()) {
             return false;
@@ -1244,7 +1244,7 @@ bool Session::channelExists(ChannelID id)
     return true;
 }
 
-int Session::rangeCount(ChannelID id, qint64 first, qint64 last)
+EventDataType Session::rangeCount(ChannelID id, qint64 first, qint64 last)
 {
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
 
@@ -1253,7 +1253,7 @@ int Session::rangeCount(ChannelID id, qint64 first, qint64 last)
     }
 
     QVector<EventList *> &evec = j.value();
-    int sum = 0, cnt;
+    int total = 0, cnt;
 
     qint64 t, start;
 
@@ -1280,7 +1280,7 @@ int Session::rangeCount(ChannelID id, qint64 first, qint64 last)
             }
 
             t = (et - st) / ev.rate();
-            sum += t;
+            total += t;
         } else {
             cnt = ev.count();
             start = ev.first();
@@ -1292,15 +1292,16 @@ int Session::rangeCount(ChannelID id, qint64 first, qint64 last)
 
                 if (t >= first) {
                     if (t <= last) {
-                        sum++;
+                        total++;
                     } else { break; }
                 }
             }
         }
     }
 
-    return sum;
+    return (EventDataType)total;
 }
+
 double Session::rangeSum(ChannelID id, qint64 first, qint64 last)
 {
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
@@ -1517,9 +1518,9 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first, qint64 last)
     return max;
 }
 
-int Session::count(ChannelID id)
+EventDataType Session::count(ChannelID id)
 {
-    QHash<ChannelID, int>::iterator i = m_cnt.find(id);
+    QHash<ChannelID, EventDataType>::iterator i = m_cnt.find(id);
 
     if (i != m_cnt.end()) {
         return i.value();

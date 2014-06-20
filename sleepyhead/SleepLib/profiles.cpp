@@ -113,7 +113,7 @@ void Profile::DataFormatError(Machine *m)
     QString msg =
         QObject::tr("Software changes have been made that require the reimporting of the following machines data:\n\n");
     msg = msg + m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
-          m->properties[STR_PROP_Serial];
+          m->properties[STR_PROP_Serial] + "\n\n";
     msg = msg +
           QObject::tr("I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n");
     msg = msg +

@@ -285,7 +285,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_limbo = false;
     m_fadedir = false;
     m_blockUpdates = false;
-    use_pixmap_cache = true;
+    use_pixmap_cache = p_profile->appearance->usePixmapCaching();
 
    // pixmapcache.setCacheLimit(10240*2);
 
