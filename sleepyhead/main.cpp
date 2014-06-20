@@ -25,6 +25,8 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QSysInfo>
+#include <QThreadPool>
+
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -50,18 +52,19 @@
 
 MainWindow *mainwin = nullptr;
 
+QMutex mutex;
+
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void MyOutputHandler(QtMsgType type, const char *msgtxt)
 {
+
 #else
 void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgtxt)
 {
     Q_UNUSED(context)
 #endif
 
-    if (!mainwin) {
-        //  qInstallMessageHandler(0);
-
+    if (!logger) {
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
         fprintf(stderr, "Pre/Post: %s\n", msgtxt.toLocal8Bit().constData());
 #else
@@ -96,13 +99,16 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
 #else
     msg = typestr + msgtxt;
 #endif
-    mainwin->Log(msg);
+
+    if (logger && logger->isRunning()) logger->append(msg);
+    else {
+        fprintf(stderr, msg.toLocal8Bit().data());
+    }
 
     if (type == QtFatalMsg) {
         abort();
     }
 
-    //loglock.unlock();
 }
 
 void initialize()
@@ -172,6 +178,23 @@ int main(int argc, char *argv[])
             sDelay(1);
         }
     }
+
+    logger = new LogThread();
+    QThreadPool * threadpool = QThreadPool::globalInstance();
+    bool b = threadpool->tryStart(logger);
+    if (b) {
+        qWarning() << "Started logging thread";
+    } else {
+        qWarning() << "Logging thread did not start correctly";
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    qInstallMessageHandler(MyOutputHandler);
+#else
+    qInstallMsgHandler(MyOutputHandler);
+#endif
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
@@ -430,18 +453,12 @@ retry_directory:
 
     qDebug() << "Selected Font" << QApplication::font().family();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    qInstallMessageHandler(MyOutputHandler);
-#else
-    qInstallMsgHandler(MyOutputHandler);
-#endif
-
     // Must be initialized AFTER profile creation
     MainWindow w;
 
     mainwin = &w;
 
-    if (check_updates) { mainwin->CheckForUpdates(); }
+  //  if (check_updates) { mainwin->CheckForUpdates(); }
 
     w.show();
 

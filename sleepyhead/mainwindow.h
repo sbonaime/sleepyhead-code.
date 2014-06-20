@@ -17,6 +17,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
+#include <QRunnable>
+#include <QPlainTextEdit>
 
 #include "version.h"
 #include "daily.h"
@@ -65,6 +67,30 @@ class Daily;
 class Report;
 class Overview;
 
+class LogThread:public QObject, public QRunnable
+{
+    Q_OBJECT
+public:
+    explicit LogThread() { running = false; logtime.start(); }
+    virtual ~LogThread() {}
+
+    void run();
+    void append(QString msg);
+    bool isRunning() { return running; }
+
+    void quit();
+
+    QStringList buffer;
+    QMutex strlock;
+signals:
+    void outputLog(QString);
+protected:
+    volatile bool running;
+    QTime logtime;
+};
+extern LogThread * logger;
+
+
 /*! \class MainWindow
     \author Mark Watkins
     \brief The Main Application window for SleepyHead
@@ -77,9 +103,6 @@ class MainWindow : public QMainWindow
   public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    //! \brief Log message s to Application Debug log
-    void Log(QString s);
 
     //! \brief Update the list of Favourites (Bookmarks) in the right sidebar.
     void updateFavourites();
@@ -314,6 +337,8 @@ class MainWindow : public QMainWindow
 
     void on_actionPurgeCurrentDaysOximetry_triggered();
 
+    void logMessage(QString msg);
+
 private:
     int importCPAP(const QString &path, const QString &message);
     void importCPAPBackups();
@@ -329,8 +354,6 @@ private:
     Oximetry *oximetry;
     bool first_load;
     PreferencesDialog *prefdialog;
-    QMutex loglock, strlock;
-    QStringList logbuffer;
     QTime logtime;
     QSystemTrayIcon *systray;
     QMenu *systraymenu;
@@ -343,8 +366,6 @@ private:
 
     //! \brief Destroy ALL the CPAP data for the selected machine
     void purgeMachine(Machine *);
-
-
 };
 
 #endif // MAINWINDOW_H

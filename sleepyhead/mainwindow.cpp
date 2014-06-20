@@ -33,6 +33,8 @@
 #include <QTranslator>
 #include <QPushButton>
 #include <QCalendarWidget>
+#include <QThreadPool>
+
 #include "common_gui.h"
 
 #include <cmath>
@@ -114,31 +116,47 @@ QString getGraphicsEngine()
     return gfxEngine;
 }
 
-void MainWindow::Log(QString s)
+LogThread * logger = nullptr;
+
+void LogThread::append(QString msg)
 {
-
-    if (!strlock.tryLock()) {
-        return;
-    }
-
-    //  strlock.lock();
-    QString tmp = QString("%1: %2").arg(logtime.elapsed(), 5, 10, QChar('0')).arg(s);
-
-    logbuffer.append(tmp); //QStringList appears not to be threadsafe
-    strlock.unlock();
-
+    QString tmp = QString("%1: %2").arg(logtime.elapsed(), 5, 10, QChar('0')).arg(msg);
+    //QStringList appears not to be threadsafe
     strlock.lock();
-
-    // only do this in the main thread?
-    for (int i = 0; i < logbuffer.size(); i++) {
-        ui->logText->appendPlainText(logbuffer[i]);
-        fprintf(stderr, "%s\n", logbuffer[i].toLocal8Bit().constData());
-    }
-
-    logbuffer.clear();
+    buffer.append(tmp);
     strlock.unlock();
+}
 
-    //loglock.unlock();
+void LogThread::quit() {
+    qDebug() << "Shutting down logging thread";
+    running = false;
+    strlock.lock();
+    while (!buffer.isEmpty()) {
+        QString msg = buffer.takeFirst();
+        fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
+    }
+    strlock.unlock();
+}
+
+
+void LogThread::run()
+{
+    running = true;
+    do {
+        strlock.lock();
+        while (!buffer.isEmpty()) {
+            QString msg = buffer.takeFirst();
+            emit outputLog(msg);
+            fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
+        }
+        strlock.unlock();
+        QThread::msleep(1000);
+    } while (running);
+}
+
+void MainWindow::logMessage(QString msg)
+{
+    ui->logText->appendPlainText(msg);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -147,8 +165,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     Q_ASSERT(p_profile != nullptr);
 
-    logtime.start();
     ui->setupUi(this);
+
+    if (logger) {
+        connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
+    }
 
     QString version = VersionString;
 
@@ -164,6 +185,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+
+    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
+             "on" << __DATE__ << __TIME__;
+
+#ifdef BROKEN_OPENGL_BUILD
+    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
+#endif
+
     //ui->tabWidget->setCurrentIndex(1);
 
 #ifdef Q_OS_MAC
@@ -315,27 +344,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+    // Shutdown and Save the current User profile
+    Profiles::Done();
+
     if (daily) {
-        daily->close();
+        //daily->close();
         daily->deleteLater();
     }
 
     if (overview) {
-        overview->close();
+        //overview->close();
         overview->deleteLater();
     }
 
     if (oximetry) {
-        oximetry->close();
+        //oximetry->close();
         oximetry->deleteLater();
     }
-
-    // Shutdown and Save the current User profile
-    Profiles::Done();
 
     // Save current window position
     QSettings settings(getDeveloperName(), getAppName());
     settings.setValue("MainWindow/geometry", saveGeometry());
+
     QMainWindow::closeEvent(event);
 }
 
@@ -348,6 +378,12 @@ MainWindow::~MainWindow()
 
     // Trash anything allocated by the Graph objects
     DestroyGraphGlobals();
+
+    logger->quit();
+    disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
+
+    QThreadPool::globalInstance()->waitForDone(-1);
+    logger = nullptr;
 
     mainwin = nullptr;
     delete ui;
@@ -400,13 +436,6 @@ void MainWindow::PopulatePurgeMenu()
 
 void MainWindow::Startup()
 {
-    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
-             "on" << __DATE__ << __TIME__;
-
-#ifdef BROKEN_OPENGL_BUILD
-    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
-#endif
-
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -1219,11 +1248,14 @@ void MainWindow::on_actionDebug_toggled(bool checked)
 {
     PROFILE.general->setShowDebug(checked);
 
+    logger->strlock.lock();
     if (checked) {
         ui->logText->show();
     } else {
         ui->logText->hide();
     }
+  //  QApplication::processEvents();
+    logger->strlock.unlock();
 }
 
 void MainWindow::on_action_Reset_Graph_Layout_triggered()
