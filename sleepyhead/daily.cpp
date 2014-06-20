@@ -1192,10 +1192,10 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             ccnt++;
         }
     }
-    if (GraphView->isEmpty() && (ccnt>0)) {
+    if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->settingExists(CPAP_SummaryOnly)))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
-    }
+    } else
     if (cpap && PROFILE.cpap->showLeakRedline()) {
         float rlt = cpap->timeAboveThreshold(CPAP_Leak, PROFILE.cpap->leakRedline()) / 60.0;
         float pc = 100.0 / cpap->hours() * rlt;
