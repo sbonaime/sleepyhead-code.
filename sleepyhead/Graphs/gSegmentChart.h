@@ -49,10 +49,10 @@ class gSegmentChart : public Layer
   protected:
     QVector<ChannelID> m_codes;
     QVector<QString> m_names;
-    QVector<int> m_values;
+    QVector<EventDataType> m_values;
     QVector<QColor> m_colors;
 
-    int m_total;
+    EventDataType m_total;
     GraphSegmentType m_graph_type;
     QColor m_gradient_color;
     QColor m_outline_color;

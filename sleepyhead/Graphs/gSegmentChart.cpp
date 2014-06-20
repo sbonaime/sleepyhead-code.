@@ -41,7 +41,7 @@ void gSegmentChart::SetDay(Day *d)
 
         for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); ++s) {
             if ((*s)->enabled() && (*s)->m_cnt.contains(m_codes[c])) {
-                int cnt = (*s)->count(m_codes[c]);
+                EventDataType cnt = (*s)->count(m_codes[c]);
                 m_values[c] += cnt;
                 m_total += cnt;
             }
@@ -100,7 +100,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         return;
     }
 
-    int data;
+    EventDataType data;
     unsigned size = m_values.size();
     float line_step = float(width) / float(size - 1);
     bool line_first = true;
