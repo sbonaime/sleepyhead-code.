@@ -25,9 +25,8 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QSysInfo>
-#include <QThreadPool>
 
-
+#include "logger.h"
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
@@ -35,6 +34,7 @@
 #include "newprofile.h"
 #include "translation.h"
 #include "common_gui.h"
+
 
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
@@ -51,67 +51,6 @@
 #endif
 
 MainWindow *mainwin = nullptr;
-QThreadPool * otherThreadPool = nullptr;
-
-
-QMutex mutex;
-
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-void MyOutputHandler(QtMsgType type, const char *msgtxt)
-{
-
-#else
-void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgtxt)
-{
-    Q_UNUSED(context)
-#endif
-
-    if (!logger) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-        fprintf(stderr, "Pre/Post: %s\n", msgtxt.toLocal8Bit().constData());
-#else
-        fprintf(stderr, "Pre/Post: %s\n", msgtxt);
-#endif
-        return;
-    }
-
-    QString msg, typestr;
-
-    switch (type) {
-    case QtWarningMsg:
-        typestr = QString("Warning: ");
-        break;
-
-    case QtFatalMsg:
-        typestr = QString("Fatal: ");
-        break;
-
-    case QtCriticalMsg:
-        typestr = QString("Critical: ");
-        break;
-
-    default:
-        typestr = QString("Debug: ");
-        break;
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    msg = typestr +
-          msgtxt; //+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
-#else
-    msg = typestr + msgtxt;
-#endif
-
-    if (logger && logger->isRunning()) logger->append(msg);
-    else {
-        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
-    }
-
-    if (type == QtFatalMsg) {
-        abort();
-    }
-
-}
 
 void initialize()
 {
@@ -181,21 +120,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    logger = new LogThread();
-    otherThreadPool = new QThreadPool();
-    bool b = otherThreadPool->tryStart(logger);
-    if (b) {
-        qWarning() << "Started logging thread";
-    } else {
-        qWarning() << "Logging thread did not start correctly";
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    qInstallMessageHandler(MyOutputHandler);
-#else
-    qInstallMsgHandler(MyOutputHandler);
-#endif
-
+    initializeLogger();
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////

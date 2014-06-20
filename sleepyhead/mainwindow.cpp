@@ -33,7 +33,6 @@
 #include <QTranslator>
 #include <QPushButton>
 #include <QCalendarWidget>
-#include <QThreadPool>
 
 #include "common_gui.h"
 
@@ -47,6 +46,7 @@
 #include <SleepLib/loader_plugins/mseries_loader.h>
 #endif
 
+#include "logger.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "newprofile.h"
@@ -116,47 +116,9 @@ QString getGraphicsEngine()
     return gfxEngine;
 }
 
-LogThread * logger = nullptr;
-
-void LogThread::append(QString msg)
-{
-    QString tmp = QString("%1: %2").arg(logtime.elapsed(), 5, 10, QChar('0')).arg(msg);
-    //QStringList appears not to be threadsafe
-    strlock.lock();
-    buffer.append(tmp);
-    strlock.unlock();
-}
-
-void LogThread::quit() {
-    qDebug() << "Shutting down logging thread";
-    running = false;
-    strlock.lock();
-    while (!buffer.isEmpty()) {
-        QString msg = buffer.takeFirst();
-        fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
-    }
-    strlock.unlock();
-}
-
-
-void LogThread::run()
-{
-    running = true;
-    do {
-        strlock.lock();
-        while (!buffer.isEmpty()) {
-            QString msg = buffer.takeFirst();
-            emit outputLog(msg);
-        }
-        strlock.unlock();
-        QThread::msleep(1000);
-    } while (running);
-}
-
 void MainWindow::logMessage(QString msg)
 {
     ui->logText->appendPlainText(msg);
-    fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -379,12 +341,8 @@ MainWindow::~MainWindow()
     // Trash anything allocated by the Graph objects
     DestroyGraphGlobals();
 
-    logger->quit();
     disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
-
-    otherThreadPool->waitForDone(-1);
-    delete logger;
-    logger = nullptr;
+    shutdownLogger();
 
     mainwin = nullptr;
     delete ui;
