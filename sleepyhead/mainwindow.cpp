@@ -147,7 +147,6 @@ void LogThread::run()
         while (!buffer.isEmpty()) {
             QString msg = buffer.takeFirst();
             emit outputLog(msg);
-            fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
         }
         strlock.unlock();
         QThread::msleep(1000);
@@ -157,6 +156,7 @@ void LogThread::run()
 void MainWindow::logMessage(QString msg)
 {
     ui->logText->appendPlainText(msg);
+    fprintf(stderr, "%s\n", msg.toLocal8Bit().constData());
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -382,7 +382,8 @@ MainWindow::~MainWindow()
     logger->quit();
     disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
 
-    QThreadPool::globalInstance()->waitForDone(-1);
+    otherThreadPool->waitForDone(-1);
+    delete logger;
     logger = nullptr;
 
     mainwin = nullptr;

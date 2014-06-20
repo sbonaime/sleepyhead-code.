@@ -652,8 +652,13 @@ void ResmedImport::run()
             QDateTime dt = QDateTime::fromTime_t(sessionid);
             QDateTime rt = QDateTime::fromTime_t(R.maskon);
 
-            qDebug() << "Warning: Closest matching STR record for" << dt << (sess->length() / 1000L) << "is" << rt << "by" << gap << "seconds";
+            QString msg = QString("Warning: Closest matching STR record for %1 is %2 by %3 seconds").
+                    arg(dt.toString(Qt::ISODate)).
+                    arg(sess->length() / 1000.0L,0,'f',1).
+                    arg(gap);
+            qDebug() << msg;
         }
+
 
         // Claim this session
         R.sessionid = sessionid;
@@ -662,8 +667,7 @@ void ResmedImport::run()
         sess->settings[RMS9_MaskOnTime] = R.maskon;
 
         // Grab all the system settings
-        if (R.set_pressure >= 0)
-            sess->settings[CPAP_Pressure] = R.set_pressure;
+        if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
         if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
         if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
         if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
@@ -1202,7 +1206,7 @@ int ResmedLoader::Open(QString path, Profile *profile)
     for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
         queTask(new ResmedImport(this, fgit.key(), fgit.value(), m));
     }
-    runTasks();
+    runTasks(p_profile->session->multithreading());
 
     // Now look for any new summary data that can be extracted from STR.edf records
     QMap<quint32, STRRecord>::iterator it;
@@ -1237,7 +1241,6 @@ int ResmedLoader::Open(QString path, Profile *profile)
     m->lockSaveMutex();
     m->setTotalTasks(m->totalTasks() + size);
     m->unlockSaveMutex();
-
 
     m->StartSaveThreads();
 

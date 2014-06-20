@@ -415,6 +415,7 @@ Session *Machine::popSaveList()
 void Machine::StartSaveThreads()
 {
     m_savelist.clear();
+    if (!p_profile->session->multithreading()) return;
 
     QString path = profile->Get(properties[STR_PROP_Path]);
 

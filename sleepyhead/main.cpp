@@ -51,6 +51,8 @@
 #endif
 
 MainWindow *mainwin = nullptr;
+QThreadPool * otherThreadPool = nullptr;
+
 
 QMutex mutex;
 
@@ -102,7 +104,7 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
 
     if (logger && logger->isRunning()) logger->append(msg);
     else {
-        fprintf(stderr, msg.toLocal8Bit().data());
+        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
     }
 
     if (type == QtFatalMsg) {
@@ -180,8 +182,8 @@ int main(int argc, char *argv[])
     }
 
     logger = new LogThread();
-    QThreadPool * threadpool = QThreadPool::globalInstance();
-    bool b = threadpool->tryStart(logger);
+    otherThreadPool = new QThreadPool();
+    bool b = otherThreadPool->tryStart(logger);
     if (b) {
         qWarning() << "Started logging thread";
     } else {

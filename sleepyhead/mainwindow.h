@@ -18,7 +18,7 @@
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
 #include <QRunnable>
-#include <QPlainTextEdit>
+#include <QThreadPool>
 
 #include "version.h"
 #include "daily.h"
@@ -62,6 +62,8 @@ class MainWindow;
 // * \section install_sec Installation
 
 extern QStatusBar *qstatusbar;
+extern QThreadPool * otherThreadPool;
+
 
 class Daily;
 class Report;
@@ -82,6 +84,7 @@ public:
 
     QStringList buffer;
     QMutex strlock;
+    QThreadPool *threadpool;
 signals:
     void outputLog(QString);
 protected:

@@ -135,6 +135,10 @@ void MachineLoader::runTasks(bool threaded)
         while (!m_tasklist.isEmpty()) {
             if (threadpool->tryStart(m_tasklist.at(0))) {
                 m_tasklist.pop_front();
+                if (m_tasklist.isEmpty()) {
+                    int i=5;
+                }
+
                 float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
                 qprogress->setValue(f);
                 m_currenttask++;
