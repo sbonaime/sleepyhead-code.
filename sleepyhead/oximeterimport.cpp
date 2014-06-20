@@ -203,14 +203,13 @@ void OximeterImport::on_directImportButton_clicked()
     ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->ClassName())+"</h2>");
     updateStatus(tr("Waiting for you to start the upload process..."));
 
-
     connect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
 
     oximodule->Open("import", p_profile);
 
     // Wait to start import streaming..
     while (!oximodule->isImporting() && !oximodule->isAborted()) {
-        QThread::msleep(100);
+//        QThread::msleep(10);
         QApplication::processEvents();
         if (!isVisible()) {
             disconnect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));

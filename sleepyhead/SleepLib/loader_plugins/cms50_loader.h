@@ -48,6 +48,7 @@ protected slots:
 //    virtual void dataAvailable();
     virtual void resetImportTimeout();
     virtual void startImportTimeout();
+    virtual void shutdownPorts();
 
 protected:
 

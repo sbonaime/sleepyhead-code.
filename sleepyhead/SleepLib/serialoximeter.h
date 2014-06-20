@@ -89,6 +89,7 @@ protected slots:
     virtual void startImportTimeout() {}
 
     virtual void stopRecording();
+    virtual void shutdownPorts() {}
 //    virtual void abortTask();
 
 protected:
