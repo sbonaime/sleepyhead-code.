@@ -23,7 +23,7 @@
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int prs1_data_version = 11;
+const int prs1_data_version = 12;
 //
 //********************************************************************************************
 

@@ -23,7 +23,7 @@
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int fpicon_data_version = 2;
+const int fpicon_data_version = 3;
 //
 //********************************************************************************************
 

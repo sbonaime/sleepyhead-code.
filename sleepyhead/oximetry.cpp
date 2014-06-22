@@ -1155,7 +1155,7 @@ Oximetry::Oximetry(QWidget *parent, gGraphView *shared) :
 
     day = new Day(oximeter->getMachine());
 
-    QVBoxLayout *framelayout = new QVBoxLayout(ui->graphArea);
+    QVBoxLayout *framelayout = new QVBoxLayout;
     ui->graphArea->setLayout(framelayout);
 
     QFrame *border = new QFrame(ui->graphArea);
@@ -1165,7 +1165,7 @@ Oximetry::Oximetry(QWidget *parent, gGraphView *shared) :
     framelayout->addWidget(border,1);
 
 
-    layout = new QHBoxLayout(ui->graphArea);
+    layout = new QHBoxLayout;
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->setContentsMargins(0, 0, 0, 0);

@@ -1170,7 +1170,8 @@ void MainWindow::on_action_About_triggered()
     aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
 
 
-    QVBoxLayout layout(&aboutbox);
+    QVBoxLayout layout;
+    aboutbox.setLayout(&layout);
 
     QWebView webview(&aboutbox);
 

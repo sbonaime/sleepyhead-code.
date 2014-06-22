@@ -69,7 +69,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     connect(ui->dateEnd->calendarWidget(), SIGNAL(currentPageChanged(int, int)),
             SLOT(dateEnd_currentPageChanged(int, int)));
 
-    QVBoxLayout *framelayout = new QVBoxLayout(ui->graphArea);
+    QVBoxLayout *framelayout = new QVBoxLayout;
     ui->graphArea->setLayout(framelayout);
 
     QFrame *border = new QFrame(ui->graphArea);
