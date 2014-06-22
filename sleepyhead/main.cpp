@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_WIN)
     bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);
     if (bad_graphics) {
-        bad_graphics = !angle_supported
+        bad_graphics = !angle_supported;
     }
 #endif
 

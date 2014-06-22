@@ -1251,10 +1251,6 @@ int ResmedLoader::Open(QString path, Profile *profile)
     for (it = strsess.begin(); it != end; ++it) {
         STRRecord & R = it.value();
 
-        if (R.date == QDate(2013,6,20)) {
-            int i=5;
-        }
-
         if (ignoreold && (R.maskon < ignoreolder)) {
             m->skipSaveTask();
             continue;

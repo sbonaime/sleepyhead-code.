@@ -502,7 +502,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
             do {
                 sit--;
                 s1 = sit.value();
-                qint64 z = qAbs(sit.key() - ts);
+                qint64 z = qAbs(qint64(sit.key()) - qint64(ts));
                 if (z < 3600) {
                     if ((k < 0) || (k > z)) {
                         k = z;

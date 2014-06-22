@@ -116,7 +116,7 @@ void LogThread::run()
     running = true;
     do {
         strlock.lock();
-        int r = receivers(SIGNAL(outputLog(QString())));
+        //int r = receivers(SIGNAL(outputLog(QString())));
         while (!buffer.isEmpty()) {
             QString msg = buffer.takeFirst();
                 fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
