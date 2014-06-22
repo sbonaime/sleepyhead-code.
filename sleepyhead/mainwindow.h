@@ -140,13 +140,13 @@ class MainWindow : public QMainWindow
     //! \brief Internal function to set Records Box html from statistics module
     void setRecBoxHTML(QString html);
 
-    void closeEvent(QCloseEvent *);
 
   public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();
 
   protected:
+    virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent *event);
 
   private slots:

@@ -79,9 +79,6 @@ public:
         */
     explicit Daily(QWidget *parent, gGraphView *shared);
     ~Daily();
-    void closeEvent(QCloseEvent *);
-    void showEvent(QShowEvent *);
-
 
     /*! \fn ReloadGraphs()
         \brief Reload all graph information from disk and updates the view.
@@ -259,6 +256,8 @@ private slots:
     void doToggleSession(Session *);
 
 protected:
+    virtual void closeEvent(QCloseEvent *);
+    virtual void showEvent(QShowEvent *);
 
 private:
     /*! \fn CreateJournalSession()

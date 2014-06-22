@@ -546,6 +546,7 @@ bool PreferencesDialog::Save()
     PREF.Save();
     PROFILE.Save();
 
+
     if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
@@ -553,6 +554,9 @@ bool PreferencesDialog::Save()
         mainwin->RestartApplication();
     } else {
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
+        // Save early.. just in case..
+        mainwin->getDaily()->graphView()->SaveSettings("Daily");
+        mainwin->getOverview()->graphView()->SaveSettings("Overview");
     }
 
     return true;

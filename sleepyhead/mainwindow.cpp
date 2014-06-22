@@ -306,23 +306,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    // Shutdown and Save the current User profile
-    Profiles::Done();
-
     if (daily) {
-        //daily->close();
+        daily->close();
         daily->deleteLater();
     }
 
     if (overview) {
-        //overview->close();
+        overview->close();
         overview->deleteLater();
     }
 
     if (oximetry) {
-        //oximetry->close();
+        oximetry->close();
         oximetry->deleteLater();
     }
+
+    // Shutdown and Save the current User profile
+    Profiles::Done();
 
     // Save current window position
     QSettings settings(getDeveloperName(), getAppName());
