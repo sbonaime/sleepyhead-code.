@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QRunnable>
 #include <QThreadPool>
+#include <QMutex>
 #include <QTime>
 
 void initializeLogger();
