@@ -1218,8 +1218,11 @@ bool PRS1SessionData::ParseSummary()
         }
 
     }
-    if (!event) {
+
+    if (duration > 0) {
         session->set_last(qint64(summary->timestamp + duration) * 1000L);
+    }
+    if (!event) {
         session->settings[CPAP_SummaryOnly] = true;
     }
 
@@ -1423,8 +1426,8 @@ void PRS1Import::run()
         sg->session = new Session(mach, it.key());
 
         if (!sg->ParseSummary()) {
-            delete sg->session;
-            continue;
+//            delete sg->session;
+//            continue;
         }
         if (!sg->ParseEvents()) {
            // delete sg->session;
@@ -1432,6 +1435,11 @@ void PRS1Import::run()
         }
         sg->ParseWaveforms();
 
+        if (sg->session->last() < sg->session->first()) {
+            // if last isn't set, duration couldn't be gained from summary, parsing events or waveforms..
+            // This session is dodgy, so kill it
+            sg->session->really_set_last(sg->session->first());
+        }
         sg->session->SetChanged(true);
 
         loader->sessionMutex.lock();
@@ -1457,17 +1465,13 @@ void PRS1FileGroup::ParseChunks()
 {
 //    qDebug() << "Parsing chunks for session" <<  summary << event;
     if (ParseFile(compliance)) {
-        // Compliance only piece of crap machine, nothing else to do..
-        return;
+        // Compliance only piece of crap machine, nothing else to do.. :(
+   //     return;
     }
 
     ParseFile(summary);
-    {
-        // Only parse if summary is present
-
-        ParseFile(event);
-        ParseFile(waveform);
-    }
+    ParseFile(event);
+    ParseFile(waveform);
 }
 
 bool PRS1FileGroup::ParseFile(QString path)
