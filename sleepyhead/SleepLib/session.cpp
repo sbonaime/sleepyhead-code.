@@ -282,20 +282,11 @@ bool Session::LoadSummary(QString filename)
             settings[code] = i.value();
         }
 
-        if (version < 13) {
-            QHash<QString, int> zcnt;
-            in >> zcnt;
-            for (QHash<QString, int>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
-                code = schema::channel[i.key()].id();
-                m_cnt[code] = i.value();
-            }
-        } else {
-            QHash<QString, EventDataType> zcnt;
-            in >> zcnt;
-            for (QHash<QString, EventDataType>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
-                code = schema::channel[i.key()].id();
-                m_cnt[code] = i.value();
-            }
+        QHash<QString, int> zcnt;
+        in >> zcnt;
+        for (QHash<QString, int>::iterator i = zcnt.begin(); i != zcnt.end(); i++) {
+            code = schema::channel[i.key()].id();
+            m_cnt[code] = i.value();
         }
 
         QHash<QString, double> zsum;
@@ -375,7 +366,18 @@ bool Session::LoadSummary(QString filename)
         //SetChanged(true);
     } else {
         in >> settings;
-        in >> m_cnt;
+        if (version < 13) {
+            QHash<ChannelID, int> cnt2;
+            in >> cnt2;
+
+            QHash<ChannelID, int>::iterator it;
+
+            for (it = cnt2.begin(); it != cnt2.end(); ++it) {
+                m_cnt[it.key()] = it.value();
+            }
+        } else {
+            in >> m_cnt;
+        }
         in >> m_sum;
         in >> m_avg;
         in >> m_wavg;
