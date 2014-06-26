@@ -349,11 +349,13 @@ QString EDFParser::Read(unsigned n)
         return "";
     }
 
-    QString str;
+    unsigned char buf[n+1];
+    memset(buf, 0, n+1);
 
     for (unsigned i = 0; i < n; i++) {
-        str += buffer[pos++];
+        buf[i] = buffer[pos++];
     }
+    QString str = (char *)buf;
 
     return str.trimmed();
 }
@@ -2064,6 +2066,8 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_Leak].push_back("Leak");
     resmed_codes[CPAP_Leak].push_back("Leck");
+
+    resmed_codes[CPAP_Leak].push_back("\xE6\xBC\x8F\xE6\xB0\x94");
     resmed_codes[CPAP_Leak].push_back("Lekk");
     resmed_codes[CPAP_Leak].push_back("Läck");
     resmed_codes[CPAP_Leak].push_back("LÃ¤ck");
@@ -2091,27 +2095,36 @@ void ResInitModelMap()
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus");
     resmed_codes[CPAP_Mode].push_back("Funktion");
+    resmed_codes[CPAP_Mode].push_back("\xE6\xA8\xA1\xE5\xBC\x8F");  // Chinese
+
     resmed_codes[RMS9_SetPressure].push_back("Set Pressure");
     resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
     resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");
+    resmed_codes[RMS9_SetPressure].push_back("\xE8\xAE\xBE\xE5\xAE\x9A\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
     resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
     resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");
     resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
     resmed_codes[RMS9_EPR].push_back("EPR");
+    resmed_codes[RMS9_EPR].push_back("\xE5\x91\xBC\xE6\xB0\x94\xE9\x87\x8A\xE5\x8E\x8B\x28\x45\x50"); // Chinese
     resmed_codes[RMS9_EPRSet].push_back("EPR Level");
     resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");
     resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");
+    resmed_codes[RMS9_EPRSet].push_back("\x45\x50\x52\x20\xE6\xB0\xB4\xE5\xB9\xB3"); // Chinese
+
     resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");
     resmed_codes[RMS9_EPRSet].push_back("EPR-nivå");
     resmed_codes[RMS9_EPRSet].push_back("EPR-nivÃ¥");
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
     resmed_codes[CPAP_PressureMax].push_back("Max druk");
+
+    resmed_codes[CPAP_PressureMax].push_back("\xE6\x9C\x80\xE5\xA4\xA7\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
     resmed_codes[CPAP_PressureMax].push_back("Pression max.");
     resmed_codes[CPAP_PressureMax].push_back("Max tryck");
     resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
     resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
     resmed_codes[CPAP_PressureMin].push_back("Min druk");
+    resmed_codes[CPAP_PressureMin].push_back("\xE6\x9C\x80\xE5\xB0\x8F\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
     resmed_codes[CPAP_PressureMin].push_back("Pression min.");
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 }
