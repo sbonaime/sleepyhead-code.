@@ -236,7 +236,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
                 if ((sig = str.lookupSignal(CPAP_PressureMin))) {
-                    R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    R.min_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
                 if ((sig = str.lookupSignal(RMS9_SetPressure))) {
                     R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
