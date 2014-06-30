@@ -874,17 +874,15 @@ QString MainWindow::getWelcomeHTML()
            tr("(It doesn't support SSL encryption, so it's not a good idea to type your passwords or personal details anywhere.)")
            + "</p>" +
 
-           tr("SleepyHead's Online <a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide\">Users Guide</a><br/>")
+           tr("SleepyHead's Online <a href=\"http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide\">Users Guide</a><br/>")
            +
-           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions\">Frequently Asked Questions</a><br/>")
+           tr("<a href=\"http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions\">Frequently Asked Questions</a><br/>")
            +
-           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary\">Glossary of Sleep Disorder Terms</a><br/>")
+           tr("<a href=\"http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary\">Glossary of Sleep Disorder Terms</a><br/>")
            +
-           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page\">SleepyHead Wiki</a><br/>")
+           tr("<a href=\"http://sleepyhead.sourceforge.net/wiki/index.php?title=Main_Page\">SleepyHead Wiki</a><br/>")
            +
            tr("SleepyHead's <a href='http://www.sourceforge.net/projects/sleepyhead'>Project Website</a> on SourceForge<br/>")
-           +
-           tr("Got a neat idea on how to improve SleepyHead? Check out SleepyHeads <a href=\"http://sourceforge.net/apps/ideatorrent/sleepyhead/\">Idea Torrent</a>")
            +
            "<p><h3>" + tr("Further Information") + "</h3></p>"
            "<p>" +
@@ -897,7 +895,7 @@ QString MainWindow::getWelcomeHTML()
 
            "<p>" + tr("Friendly forums to talk and learn about Sleep Apnea:") + "<br/>" +
            tr("<a href='http://www.cpaptalk.com'>CPAPTalk Forum</a>,") +
-           tr("<a href='http://s7.zetaboards.com/Apnea_Board/index'>Apnea Board</a>") + "</p>"
+           tr("<a href='http://www.apneaboard.com/forums/'>Apnea Board</a>") + "</p>"
            "</td>"
            "<td><image src='qrc:/icons/bob-v3.0.png' width=220 height=220><br/>"
            "</td>"
@@ -1113,7 +1111,7 @@ void MainWindow::on_action_About_triggered()
                 ": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"
                 +
                 tr("SleepyHead Wiki") +
-                ": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><p/>" +
+                ": <a href=\"http://sleepyhead.sourceforge.net/wiki\">http://sleepyhead.sourceforge.net/wiki</a><p/>" +
 
                 // Social media links.. (Dear Translators, if one of these isn't available in your country, it's ok to leave it out.)
                 tr("Don't forget to Like/+1 SleepyHead on <a href=\"http://www.facebook.com/SleepyHeadCPAP\">Facebook</a> or <a href=\"http://plus.google.com/u/0/b/101426655252362287937\">Google+")
@@ -1483,14 +1481,14 @@ void MainWindow::on_actionExp_ort_triggered()
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
     ui->webView->load(
-        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide"));
+        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_action_Frequently_Asked_Questions_triggered()
 {
     ui->webView->load(
-        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
+        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
@@ -2195,14 +2193,14 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
 void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
 {
     ui->webView->load(
-        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary"));
+        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
     QUrl url =
-        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Support_SleepyHead_Development");
+        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Support_SleepyHead_Development");
     QDesktopServices().openUrl(url);
     //    ui->webView->load(url);
     //    ui->tabWidget->setCurrentWidget(ui->helpTab);
