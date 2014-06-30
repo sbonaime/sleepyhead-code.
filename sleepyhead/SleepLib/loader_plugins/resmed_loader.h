@@ -311,6 +311,19 @@ protected:
     Machine * mach;
 };
 
+class ResmedImportStage2:public ImportTask
+{
+public:
+    ResmedImportStage2(ResmedLoader * l, STRRecord r, Machine * m): loader(l), R(r), mach(m) {}
+    virtual ~ResmedImportStage2() {}
+    virtual void run();
+
+protected:
+    ResmedLoader * loader;
+    STRRecord R;
+    Machine * mach;
+};
+
 
 /*! \class ResmedLoader
     \brief Importer for ResMed S9 Data
@@ -318,6 +331,7 @@ protected:
 class ResmedLoader : public MachineLoader
 {
     friend class ResmedImport;
+    friend class ResmedImportStage2;
   public:
     ResmedLoader();
     virtual ~ResmedLoader();

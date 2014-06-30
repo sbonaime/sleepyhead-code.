@@ -428,8 +428,9 @@ void Machine::StartSaveThreads()
     m_totaltasks=0;
 
     for (int i = 0; i < threads; i++) {
-        thread.push_back(new SaveThread(this, path));
-        QObject::connect(thread[i], SIGNAL(UpdateProgress(int)), qprogress, SLOT(setValue(int)));
+        SaveThread * thr = new SaveThread(this, path);
+        QObject::connect(thr, SIGNAL(UpdateProgress(int)), qprogress, SLOT(setValue(int)));
+        thread.push_back(thr);
         thread[i]->start();
     }
 
