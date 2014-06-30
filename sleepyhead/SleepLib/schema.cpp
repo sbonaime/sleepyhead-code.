@@ -177,7 +177,7 @@ void init()
                         QObject::tr("VS"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("red")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore2       = 0x1008, FLAG,    SESSION, "VSnore2",
-                        QObject::tr("Vibratory Snore"),
+                        QObject::tr("Vibratory Snore (VS2) "),
                         QObject::tr("A vibratory snore as detcted by a System One machine"),
                         QObject::tr("VS2"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("red")));
 

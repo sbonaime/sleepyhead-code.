@@ -1,0 +1,9 @@
+This folder contains the python/GTK script I (jedimark) wrote that eventually turned into SleepyHead
+
+I can't honestly tell you if this is the latest version, because the computer I originally wrote this on died.
+
+I put it here for project history, reference (and humour at how sad it is.) 
+
+It requires matplotlib and pygtk to run.. Probably pytz too, I honestly can't remember if it needed any other libs.
+
+I've mostly forgotten python since then.

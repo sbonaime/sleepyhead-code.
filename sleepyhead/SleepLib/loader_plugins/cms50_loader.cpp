@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QString>
+#include <QDataStream>
 #include <QDateTime>
 #include <QFile>
 #include <QDebug>
@@ -47,6 +48,7 @@ CMS50Loader::CMS50Loader()
 
     m_vendorID = 0x10c4;
     m_productID = 0xea60;
+    cms50dplus = false;
 
     oxirec = nullptr;
 
@@ -124,7 +126,7 @@ int CMS50Loader::Open(QString path, Profile *profile)
         return 1;
     }
     QString ext = path.section(".",1);
-    if ((ext.compare("spo", Qt::CaseInsensitive)==0) || (ext.compare("spor", Qt::CaseInsensitive)==0)) {
+    if ((ext.compare("spo2", Qt::CaseInsensitive)==0) || (ext.compare("spo", Qt::CaseInsensitive)==0) || (ext.compare("spor", Qt::CaseInsensitive)==0)) {
         // try to read and process SpoR file..
         return readSpoRFile(path) ? 1 : 0;
     }
@@ -471,28 +473,68 @@ bool CMS50Loader::readSpoRFile(QString path)
         return false;
     }
 
+    bool spo2header = false;
+    QString ext = path.section('.', -1);
+    if (ext.compare("spo2",Qt::CaseInsensitive) == 0) {
+        spo2header = true;
+    }
+
     QByteArray data;
 
     data = file.readAll();
-    long size = data.size();
+    QDataStream in(data);
+    in.setByteOrder(QDataStream::LittleEndian);
+    quint16 pos;
+    in >> pos;
 
-    // position data stream starts at
-    int pos = ((unsigned char)data.at(1) << 8) | (unsigned char)data.at(0);
+    in.skipRawData(pos - 2);
 
-    // next is 0x0002
-    // followed by 16bit duration in seconds
+    //long size = data.size();
 
-    // Read date and time (it's a 16bit charset)
-    char dchr[20];
-    int j = 0;
-    for (int i = 0; i < 18 * 2; i += 2) {
-        dchr[j++] = data.at(8 + i);
+    if (!spo2header) {
+        // next is 0x0002
+        // followed by 16bit duration in seconds
+
+        // Read date and time (it's a 16bit charset)
+
+        char dchr[20];
+        int j = 0;
+        for (int i = 0; i < 18 * 2; i += 2) {
+            dchr[j++] = data.at(8 + i);
+        }
+
+        dchr[j] = 0;
+        if (dchr[0]) {
+            QString dstr(dchr);
+            m_startTime = QDateTime::fromString(dstr, "MM/dd/yy HH:mm:ss");
+            if (m_startTime.date().year() < 2000) { m_startTime = m_startTime.addYears(100); }
+        } else {
+            m_startTime = QDateTime(QDate::currentDate(), QTime(0,0,0));
+        }
+    } else { // !spo2header
+
+        quint32 samples = 0; // number of samples
+
+        quint32 year, month, day;
+        quint32 hour, minute, second;
+
+        if (data.at(pos) != 1) {
+            qWarning() << ".spo2 file" << path << "might be a different";
+        }
+
+        // Unknown cruft...
+        in.skipRawData(200);
+
+        in >> year >> month >> day;
+        in >> hour >> minute >> second;
+
+        m_startTime = QDateTime(QDate(year, month, day), QTime(hour, minute, second));
+
+        // ignoring it for now
+        pos += 0x1c + 200;
+
+        in >> samples;
     }
-
-    dchr[j] = 0;
-    QString dstr(dchr);
-    m_startTime = QDateTime::fromString(dstr, "MM/dd/yy HH:mm:ss");
-    if (m_startTime.date().year() < 2000) { m_startTime = m_startTime.addYears(100); }
 
     oxirec = new QVector<OxiRecord>;
     oxisessions[m_startTime] = oxirec;
@@ -500,12 +542,19 @@ bool CMS50Loader::readSpoRFile(QString path)
     unsigned char o2, pr;
 
     // Read all Pulse and SPO2 data
-    for (int i = pos; i < size - 2;) {
-        o2 = (unsigned char)(data.at(i + 1));
-        pr = (unsigned char)(data.at(i + 0));
+    do {
+        in >> o2;
+        in >> pr;
         oxirec->append(OxiRecord(pr, o2));
-        i += 2;
-    }
+    } while (!in.atEnd());
+
+
+//    for (int i = pos; i < size - 2;) {
+//        o2 = (unsigned char)(data.at(i + 1));
+//        pr = (unsigned char)(data.at(i + 0));
+//        oxirec->append(OxiRecord(pr, o2));
+//        i += 2;
+//    }
 
     // processing gets done later
     return true;
