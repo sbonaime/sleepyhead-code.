@@ -193,15 +193,78 @@ int CMS50Loader::doImportMode()
     while (idx < available) {
         unsigned char c=(unsigned char)buffer.at(idx);
         if (!started_import) {
-            // TODO: Check there might be length data after the 3 headers trios..
-            if (c != 0xf2) { // If not started, continue scanning for a valie header.
+            // There are three [0xf2 0xXX 0xXX] trio's at start of recording
+            // Followed by [0xfX 0xXX 0xXX] trios containing spo2 and pulse till the end of recording
+
+            // Scan for first header trio starting byte.
+            if (c != 0xf2) {
                 idx++;
                 continue;
             }
-            received_bytes=0;
 
-            hour=(unsigned char)buffer.at(idx + 1) & 0x7f;
-            minute=(unsigned char)buffer.at(idx + 2) & 0x7f;
+            // sometimes a f2 starting trio can be corrupted by live data
+            // peek ahead and see where the f2 headers are
+            int f2cnt = 0;
+            int f2idx[3] = {-1};
+
+            for (int i=0; i < 30; ++i) {
+
+                if ((idx + i) >= available) {
+                    qDebug() << "Not enough bytes to read CMS50 headers";
+                    break;
+                }
+
+                c = (unsigned char)buffer.at(idx+i);
+
+                if (c == 0xf2) {
+                    f2idx[f2cnt++] = idx+i;
+                    if (f2cnt >= 3)
+                        break;  // got all 3 headers
+
+                    // Skip the following two bytes
+                    i += 2;
+                }
+            }
+
+            if (f2cnt<3) {
+                qDebug() << "Did not get all header Trio's";
+            }
+
+            f2cnt--;
+
+            // CHECK: Check there might be length data after the last header trio..
+
+
+            received_bytes=0;
+            bool badheader = false;
+
+            // Look for the best of three headers trios
+            int bestf2 = 0;
+
+            if ((f2cnt >= 1) && ((f2idx[1] - f2idx[0]) == 3)) {
+                bestf2 = f2idx[0];
+            } else if ((f2cnt >= 2) && ((f2idx[2] - f2idx[1]) == 3)) {
+                bestf2 = f2idx[1];
+            } else {
+                bestf2 = f2idx[f2cnt];
+
+                // ouch.. check if f0 starts afterwards
+                if (((unsigned char)buffer.at(bestf2+3) & 0xf0) != 0xf0) {
+                    // crap.. bad time
+                    badheader = true;
+                }
+            }
+
+            if (!badheader) {
+                hour = (unsigned char)buffer.at(bestf2 + 1) & 0x7f;
+                minute = (unsigned char)buffer.at(bestf2 + 2) & 0x7f;
+            } else {
+                hour = 0;
+                minute = 0;
+            }
+
+            // Either a CMS50D+, has a bad header, or it's really midnight, set a flag anyway for later to help choose the right sync time
+            cms50dplus = (hour == 0) && (minute == 0);
 
             qDebug() << QString("Receiving Oximeter transmission %1:%2").arg(hour).arg(minute);
             // set importing to true or whatever..
@@ -224,7 +287,6 @@ int CMS50Loader::doImportMode()
             QDate oda=QDate::currentDate();
             QTime oti=QTime(hour,minute); // Only CMS50E/F's have a realtime clock. CMS50D+ will set this to midnight
 
-            cms50dplus = (hour == 0) && (minute == 0); // Either a CMS50D+ or it's really midnight, set a flag anyway for later to help choose the right sync time
 
             // If the oximeter record time is more than the current time, then assume it was from the day before
             // Or should I use split time preference instead??? Foggy Confusements..
@@ -243,30 +305,23 @@ int CMS50Loader::doImportMode()
             resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
 
             QStringList data;
-            do {
-                c=(unsigned char)buffer.at(idx);
-                if (c == 0xf2) {
-                    for (int i=0; i<3; ++i) {
-                        data.push_back(QString::number((unsigned char)buffer.at(idx+i), 16));
-                    }
-                    idx += 3;
-                } else {
-                    break;
-                }
-            } while (idx < available);
+
+            int len = f2idx[f2cnt]+3;
+            for (int i=idx; i < len; ++i) {
+                data.append(QString::number((unsigned char)buffer.at(i),16));
+            }
             qDebug() << "CMS50 Record Header bytes:" << data.join(",");
 
-            if (idx >= available) {
-                break;
-            }
+            idx = len;
 
-            // peek ahead
+            // peek ahead to see if there really is data length bytes..
             data.clear();
             for (int i=0; i < 12; ++i) {
                 if ((idx+i) > available) break;
                 data.push_back(QString::number((unsigned char)buffer.at(idx+i), 16));
             }
             qDebug() << "bytes directly following header trio's:" << data.join(",");
+
         } else { // have started import
             if ((c & 0xf0) == 0xf0) { // Data trio
                 started_reading=true; // Sometimes errornous crap is sent after data rec header
