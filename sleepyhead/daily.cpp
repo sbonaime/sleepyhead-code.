@@ -952,6 +952,12 @@ QString Daily::getMachineSettings(Day * cpap) {
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
+
+        if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
+            html+="<tr><td colspan=5 align=center><i>"+tr("Machine Settings Unavailable")+"</i></td></tr></table><hr/>\n";
+            return html;
+        }
+
         if (cpap->settingExists(CPAP_PresReliefType)) {
             int i=cpap->settings_max(CPAP_PresReliefType);
             int j=cpap->settings_max(CPAP_PresReliefMode);
@@ -1081,6 +1087,11 @@ QString Daily::getCPAPInformation(Day * cpap)
         }
     }
     html+="</td></tr>\n";
+    if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
+        html+="<tr><td colspan=4>&nbsp;</td></tr>\n";
+        html+=QString("<tr><td colspan=4 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+":</b> "+ tr("This day has missing pressure, mode and settings data."));
+    }
+
     html+="</table>\n";
     html+="<hr/>\n";
     return html;
@@ -1192,6 +1203,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             ccnt++;
         }
     }
+
     if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
