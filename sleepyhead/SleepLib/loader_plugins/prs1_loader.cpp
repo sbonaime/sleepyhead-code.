@@ -356,6 +356,31 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
     return true;
 }
 
+void copyPath(QString src, QString dst)
+{
+    QDir dir(src);
+    if (!dir.exists())
+        return;
+
+    // Recursively handle directories
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src + QDir::separator() + d, dst_path);
+    }
+
+    // Files
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QString srcFile = src + QDir::separator() + f;
+        QString destFile = dst + QDir::separator() + f;
+
+        if (!QFile::exists(destFile)) {
+            QFile::copy(srcFile, destFile);
+        }
+    }
+}
+
+
 int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 {
     Q_UNUSED(profile)
@@ -366,7 +391,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     if (!dir.exists() || (!dir.isReadable())) {
         return 0;
     }
-
+    QString backupPath = p_profile->Get(m->properties[STR_PROP_BackupPath]) + path.section("/", -2);
+    copyPath(path, backupPath);
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
