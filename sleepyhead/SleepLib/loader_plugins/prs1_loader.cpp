@@ -1354,8 +1354,11 @@ bool PRS1SessionData::ParseEvents()
                 //session->set_last(session->first());
                 if (session->Min(CPAP_Pressure) == session->Max(CPAP_Pressure)) {
                     session->settings[CPAP_Mode] = MODE_CPAP; // no ramp
+                    session->settings[CPAP_Pressure] = session->Min(CPAP_Pressure);
                 } else {
-                    session->settings[CPAP_Mode] = MODE_UNKNOWN;
+                    session->settings[CPAP_Mode] = MODE_APAP;
+                    session->settings[CPAP_PressureMin] = session->Min(CPAP_Pressure);
+                    session->settings[CPAP_PressureMax] = 0; //session->Max(CPAP_Pressure);
                 }
 
                 //session->Set("FlexMode",PR_UNKNOWN);
