@@ -711,8 +711,16 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
             sess->really_set_first(qint64(ts) * 1000L);
             sess->really_set_last(qint64(ts + usage) * 1000L);
             sess->SetChanged(true);
+
             sess->setCount(CPAP_Obstructive, j2);
+            sess->setCph(CPAP_Obstructive, j2 / (float(usage)/3600.00));
+
             sess->setCount(CPAP_Hypopnea, j3);
+            sess->setCph(CPAP_Hypopnea, j3 / (float(usage)/3600.00));
+
+            sess->setCount(CPAP_FlowLimit, j4);
+            sess->setCph(CPAP_FlowLimit, j4 / (float(usage)/3600.00));
+
             SessDate.insert(date, sess);
 
             //            sess->setCount(CPAP_Obstructive,j1);
