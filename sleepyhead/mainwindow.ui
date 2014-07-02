@@ -3436,22 +3436,6 @@ border-radius: 10px;
    </hints>
   </connection>
   <connection>
-   <sender>importButton</sender>
-   <signal>clicked()</signal>
-   <receiver>action_Import_Data</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>850</x>
-     <y>460</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionView_Daily</sender>
    <signal>triggered()</signal>
    <receiver>dailyButton</receiver>

@@ -592,11 +592,17 @@ QStringList MainWindow::detectCPAPCards()
     QDialog popup(this, Qt::SplashScreen);
     QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
     QProgressBar progress;
-    QVBoxLayout waitlayout(&popup);
-    QPushButton skipbtn(tr("Click here to choose a folder"));
+    QVBoxLayout waitlayout;
+    popup.setLayout(&waitlayout);
+
+    QHBoxLayout layout2;
+    QIcon icon("://icons/sdcard.png");
+    QPushButton skipbtn(icon, tr("Choose a folder"));
+    skipbtn.setMinimumHeight(40);
     waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
     waitlayout.addWidget(&progress,1);
-    waitlayout.addWidget(&skipbtn);
+    waitlayout.addLayout(&layout2,1);
+    layout2.addWidget(&skipbtn);
     popup.connect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
     progress.setValue(0);
     progress.setMaximum(timeout);
@@ -2349,3 +2355,9 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
             tr("Select the day with valid oximetry data in daily view first."),QMessageBox::Ok);
     }
 }
+
+void MainWindow::on_importButton_clicked()
+{
+    on_action_Import_Data_triggered();
+}
+

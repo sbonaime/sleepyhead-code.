@@ -1,11 +1,30 @@
 <html>
 <body>
-<h1><image src="qrc:/docs/sheep.png" width=64 height=64>SleepyHead v0.9.6 <b>Testing</b></h1>
+<h1><image src="qrc:/docs/sheep.png" width=64 height=64>SleepyHead v0.9.7 <b>Testing</b></h1>
 
 <p><h2><b>Release Notes</b></h2></p>
 <p>Greetings!</p>
 <p>Here is a new and hopefully improved SleepyHead build.</p>
 
+<p>0.9.7 already? Yup.. otherwise I can't tell them apart, and you probably won't be able to either. Before anyone asks, yes, version numbers will go past 0.9.10 before 1.0.0 is reached.</p>
+<p>Not a gigantic set of changes this time, but I've been busily working my way through a lot of bugs mentioned on the forums, trying to knock them down one by one. Please don't be offended if yours isn't in here yet.. I have a memory like a goldfish, plus I tried to focus on stability issues first.</p>
+<p>A gentle reminder for anyone submitting bug reports (either via message or through sourceforges bug reporting system), please (please please) remember to state the SleepyHead version number, your computers platform and operating system type version (and service packs), and your CPAP machines type and model number. Without this information I pretty much don't have a clue what you are talking about.</p>
+<br/>
+<b>New features & bug fixes in v0.9.7</b><br/>
+<list>
+<li>Stopped faulty statistics calculations where only summary data was present (For now it should show zero where calculations are impossible)</li>
+<li>Added .spo2 file import support for firmware 3.7 CMS50F oximeters.</li>
+<li>Some pre-v3.7 firmware CMS50 oximeter serial importer improvements</li>
+<li>Fixed ResMed AutoSet minimum pressure not displaying correctly</li>
+<li>Fix ResMed EPR setting display</li>
+<li>Restore display of MaskPressureHi plots when available</li>
+<li>Fix wiki URL's thanks to sourceForge forcing move of SleepyHead's wiki</li>
+<li>Fix ResMed importer crashes, finished rewriting stage2 multithreading code</li>
+<li>Made database upgrade/purge process a bit more friendly (ResMed users Keep your backups switched on!)</li>
+<li>Fixed a SleepyHead summary error that prevented count indexes from being stored properly</li>
+<li>Some other minor stuff</li>
+</list>
+<br/>
 <b>New features & bugs fixes in v0.9.6</b><br/>
 <list>
 <li>Threadsafety improvements to debug/logger</li>

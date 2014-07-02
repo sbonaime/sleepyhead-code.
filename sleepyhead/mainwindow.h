@@ -316,6 +316,8 @@ class MainWindow : public QMainWindow
 
     void logMessage(QString msg);
 
+    void on_importButton_clicked();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();
