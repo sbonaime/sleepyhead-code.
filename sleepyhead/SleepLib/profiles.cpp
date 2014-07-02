@@ -1048,8 +1048,9 @@ EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDat
         return 0;
     }
 
+    bool first = true;
 
-    double min = 99999999, tmp;
+    double min = 0, tmp;
 
     do {
         Day *day = GetGoodDay(date, mt);
@@ -1058,8 +1059,9 @@ EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDat
             if (!day->summaryOnly() || day->hasData(code, ST_MIN)) {
                 tmp = day->Min(code);
 
-                if (min > tmp) {
+                if (first || (min > tmp)) {
                     min = tmp;
+                    first = false;
                 }
             }
 
@@ -1068,7 +1070,7 @@ EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDat
         date = date.addDays(1);
     } while (date <= end);
 
-    if (min >= 99999999) {
+    if (first) {
         min = 0;
     }
 
@@ -1086,7 +1088,8 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
 
     QDate date = start;
 
-    double max = -99999999, tmp;
+    bool first = true;
+    double max = 0, tmp;
 
     do {
         Day *day = GetGoodDay(date, mt);
@@ -1095,8 +1098,9 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
             if (!day->summaryOnly() || day->hasData(code, ST_MAX)) {
                 tmp = day->Max(code);
 
-                if (max < tmp) {
+                if (first || (max < tmp)) {
                     max = tmp;
+                    first = false;
                 }
             }
         }
@@ -1104,7 +1108,7 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
         date = date.addDays(1);
     } while (date <= end);
 
-    if (max <= -99999999) {
+    if (first) {
         max = 0;
     }
 
@@ -1126,7 +1130,8 @@ EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate sta
         return 0;
     }
 
-    double min = 99999999, tmp;
+    bool first = true;
+    double min = 0, tmp;
 
     do {
         Day *day = GetGoodDay(date, mt);
@@ -1134,15 +1139,16 @@ EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate sta
         if (day) {
             tmp = day->settings_min(code);
 
-            if (min > tmp) {
+            if (first || (min > tmp)) {
                 min = tmp;
+                first = false;
             }
         }
 
         date = date.addDays(1);
     } while (date <= end);
 
-    if (min >= 99999999) {
+    if (first) {
         min = 0;
     }
 
@@ -1165,7 +1171,8 @@ EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate sta
         return 0;
     }
 
-    double max = -99999999, tmp;
+    bool first = true;
+    double max = 0, tmp;
 
     do {
         Day *day = GetGoodDay(date, mt);
@@ -1173,15 +1180,16 @@ EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate sta
         if (day) {
             tmp = day->settings_max(code);
 
-            if (max < tmp) {
+            if (first || (max < tmp)) {
                 max = tmp;
+                first = false;
             }
         }
 
         date = date.addDays(1);
     } while (date <= end);
 
-    if (max <= -99999999) {
+    if (first) {
         max = 0;
     }
 
