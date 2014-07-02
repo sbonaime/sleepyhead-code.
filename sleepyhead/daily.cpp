@@ -954,7 +954,7 @@ QString Daily::getMachineSettings(Day * cpap) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
         if (cpap->settingExists(CPAP_PresReliefType)) {
             int i=cpap->settings_max(CPAP_PresReliefType);
-            int j=cpap->settings_max(CPAP_PresReliefSet);
+            int j=cpap->settings_max(CPAP_PresReliefMode);
             QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
             html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
                     .arg(STR_TR_PrRelief)

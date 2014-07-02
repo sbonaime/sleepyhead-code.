@@ -975,8 +975,10 @@ EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDat
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            val += day->sum(code);
-            cnt++;
+            if (!day->summaryOnly() || day->hasData(code, ST_AVG)) {
+                val += day->sum(code);
+                cnt++;
+            }
         }
 
         date = date.addDays(1);
@@ -1011,10 +1013,12 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            tmph = day->hours();
-            tmp = day->wavg(code);
-            val += tmp * tmph;
-            hours += tmph;
+            if (!day->summaryOnly() || day->hasData(code, ST_WAVG)) {
+                tmph = day->hours();
+                tmp = day->wavg(code);
+                val += tmp * tmph;
+                hours += tmph;
+            }
         }
 
         date = date.addDays(1);
@@ -1051,11 +1055,14 @@ EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDat
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            tmp = day->Min(code);
+            if (!day->summaryOnly() || day->hasData(code, ST_MIN)) {
+                tmp = day->Min(code);
 
-            if (min > tmp) {
-                min = tmp;
+                if (min > tmp) {
+                    min = tmp;
+                }
             }
+
         }
 
         date = date.addDays(1);
@@ -1085,10 +1092,12 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            tmp = day->Max(code);
+            if (!day->summaryOnly() || day->hasData(code, ST_MAX)) {
+                tmp = day->Max(code);
 
-            if (max < tmp) {
-                max = tmp;
+                if (max < tmp) {
+                    max = tmp;
+                }
             }
         }
 
@@ -1215,11 +1224,16 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     qint64 SN = 0;
     bool timeweight;
+    bool summaryOnly = false;
 
     do {
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
+            if (day->summaryOnly()) {
+                summaryOnly = true;
+                break;
+            }
             for (int i = 0; i < day->size(); i++) {
                 for (QList<Session *>::iterator s = day->begin(); s != day->end(); s++) {
                     if (!(*s)->enabled()) {
@@ -1276,6 +1290,12 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
         date = date.addDays(1);
     } while (date <= end);
+
+
+    if (summaryOnly) {
+        // abort percentile calculation, there is not enough data
+        return 0;
+    }
 
     QVector<ValueCount> valcnt;
 

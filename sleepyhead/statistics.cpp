@@ -764,7 +764,7 @@ QString Statistics::GenerateHTML()
                 AHI.push_back(UsageData(date, ahi, hours));
 
                 prelief = (PRTypes)(int)round(day->settings_wavg(CPAP_PresReliefType));
-                prelset = round(day->settings_wavg(CPAP_PresReliefSet));
+                prelset = round(day->settings_max(CPAP_PresReliefSet));
                 mode = (CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
                 mach = day->machine;
 

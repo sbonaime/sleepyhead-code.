@@ -684,12 +684,13 @@ void ResmedImport::run()
         if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
 
         if (R.epr >= 0) {
-            sess->settings[RMS9_EPR] = R.epr;
+            sess->settings[RMS9_EPR] = (int)R.epr;
             sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
+            sess->settings[CPAP_PresReliefSet] = (int)R.epr;
         }
         if (R.epr_set >= 0) {
-            sess->settings[RMS9_EPRSet] = R.epr_set;
-            sess->settings[CPAP_PresReliefSet] = R.epr_set;
+            sess->settings[RMS9_EPRSet] = (int)R.epr_set;
+            sess->settings[CPAP_PresReliefMode] = (int)R.epr_set;
         }
 
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
@@ -804,12 +805,13 @@ void ResmedImportStage2::run()
     if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
     if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
     if (R.epr >= 0) {
-        sess->settings[RMS9_EPR] = R.epr;
+        sess->settings[RMS9_EPR] = (int)R.epr;
         sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
+        sess->settings[CPAP_PresReliefSet] = (int)R.epr;
     }
     if (R.epr_set >= 0) {
-        sess->settings[RMS9_EPRSet] = R.epr_set;
-        sess->settings[CPAP_PresReliefSet] = R.epr_set;
+        sess->settings[RMS9_EPRSet] = (int)R.epr_set;
+        sess->settings[CPAP_PresReliefMode] = (int)R.epr_set;
     }
     if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
     if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
