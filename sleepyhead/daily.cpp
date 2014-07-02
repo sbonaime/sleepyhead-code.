@@ -1192,7 +1192,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             ccnt++;
         }
     }
-    if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->settingExists(CPAP_SummaryOnly)))) {
+    if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
     } else

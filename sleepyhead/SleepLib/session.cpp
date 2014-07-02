@@ -30,7 +30,7 @@ const quint16 filetype_data = 1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version = 13;
+const quint16 summary_version = 14;
 const quint16 events_version = 10;
 
 Session::Session(Machine *m, SessionID session)
@@ -52,7 +52,9 @@ Session::Session(Machine *m, SessionID session)
     s_eventfile = "";
     s_evchecksum_checked = false;
 
+    s_summaryOnly = false;
 }
+
 Session::~Session()
 {
     TrashEvents();
@@ -201,6 +203,8 @@ bool Session::StoreSummary(QString filename)
     out << m_valuesummary;
     out << m_timesummary;
     out << m_gain;
+
+    out << s_summaryOnly;
 
     file.close();
     return true;
@@ -365,6 +369,8 @@ bool Session::LoadSummary(QString filename)
 
         //SetChanged(true);
     } else {
+        // version > 7
+
         in >> settings;
         if (version < 13) {
             QHash<ChannelID, int> cnt2;
@@ -417,14 +423,25 @@ bool Session::LoadSummary(QString filename)
             }
         }
 
-
+        if (version == 13) {
+            QHash<ChannelID, QVariant>::iterator it = settings.find(CPAP_SummaryOnly);
+            if (it != settings.end()) {
+                s_summaryOnly = (*it).toBool();
+            } else s_summaryOnly = false;
+        } else if (version > 13) {
+            in >> s_summaryOnly;
+        }
     }
 
     // not really a good idea to do this... should flag and do a reindex
     if (version < summary_version) {
 
         qDebug() << "Upgrading Summary file to version" << summary_version;
-        UpdateSummaries();
+        if (!s_summaryOnly) {
+            UpdateSummaries();
+        } else {
+            // summary only upgrades go here.
+        }
         StoreSummary(filename);
     }
 

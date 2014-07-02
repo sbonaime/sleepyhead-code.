@@ -145,14 +145,6 @@ class Session
     //! \brief Sessions Settings List, contianing single settings for this session.
     QHash<ChannelID, QVariant> settings;
 
-    QVariant setting(ChannelID) {
-        QHash<ChannelID, QVariant>::iterator it = settings.find(CPAP_SummaryOnly);
-        if (it != settings.end()) {
-            return (*it);
-        }
-        return QVariant();
-    }
-
     // Session caches
     QHash<ChannelID, EventDataType> m_cnt;
     QHash<ChannelID, double> m_sum;
@@ -315,7 +307,13 @@ class Session
     Machine *machine() { return s_machine; }
 
     //! \brief Returns true if session only contains summary data
-    bool summaryOnly();
+    inline bool summaryOnly() {
+        return s_summaryOnly;
+    }
+
+    inline void setSummaryOnly(bool b) {
+        s_summaryOnly = b;
+    }
 
     //! \brief Completely purges Session from memory and disk.
     bool Destroy();
@@ -339,6 +337,7 @@ protected:
     bool s_lonesession;
     bool s_evchecksum_checked;
     bool _first_session;
+    bool s_summaryOnly;
 
     bool s_events_loaded;
     char s_enabled;

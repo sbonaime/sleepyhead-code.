@@ -1223,7 +1223,7 @@ bool PRS1SessionData::ParseSummary()
         session->set_last(qint64(summary->timestamp + duration) * 1000L);
     }
     if (!event) {
-        session->settings[CPAP_SummaryOnly] = true;
+        session->setSummaryOnly(true);
     }
 
     // Minutes. Convert to seconds/hours here?

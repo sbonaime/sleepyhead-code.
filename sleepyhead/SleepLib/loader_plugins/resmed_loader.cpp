@@ -584,7 +584,7 @@ void ResmedImport::run()
 {
     Session * sess = mach->SessionExists(sessionid);
     if (sess) {
-        if (sess->setting(CPAP_SummaryOnly).toBool()) {
+        if (sess->summaryOnly()) {
             // Reuse this session
             sess->wipeSummary();
         } else {
@@ -596,7 +596,7 @@ void ResmedImport::run()
         quint32 key = int(sessionid / 60) * 60;
         sess = mach->SessionExists(key);
         if (sess) {
-            if (sess->setting(CPAP_SummaryOnly).toBool()) {
+            if (sess->summaryOnly()) {
                 sess->Destroy();
                 delete sess;
             }
@@ -624,7 +624,7 @@ void ResmedImport::run()
         return;
     }
 
-    sess->settings[CPAP_SummaryOnly] = false;
+    sess->setSummaryOnly(false);
     sess->SetChanged(true);
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -784,7 +784,7 @@ void ResmedImportStage2::run()
 
     // Claim this record for future imports
     sess->settings[RMS9_MaskOnTime] = R.maskon;
-    sess->settings[CPAP_SummaryOnly] = true;
+    sess->setSummaryOnly(true);
 
     sess->SetChanged(true);
 
