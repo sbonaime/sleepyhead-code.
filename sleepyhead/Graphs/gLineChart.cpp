@@ -77,8 +77,18 @@ void gLineChart::SetDay(Day *d)
         for (int i = 0; i < d->size(); i++) {
             Session *sess = d->getSessions()[i];
 
-            if (!sess->channelExists(code)) { continue; }
+            if (code == CPAP_MaskPressure) {
+                if (sess->channelExists(CPAP_MaskPressureHi)) {
+                    code = m_codes[j] = CPAP_MaskPressureHi;
+                    goto skipcheck; // why not :P
+                }
+            }
 
+            if (!sess->channelExists(code)) {
+                continue;
+            }
+
+skipcheck:
             if (first) {
                 m_miny = sess->Min(code);
                 m_maxy = sess->Max(code);
