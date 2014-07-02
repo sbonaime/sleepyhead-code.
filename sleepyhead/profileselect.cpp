@@ -280,6 +280,7 @@ void ProfileSelect::on_newProfileButton_clicked()
 {
     NewProfile newprof(this);
     newprof.skipWelcomeScreen();
+    newprof.setWindowTitle(tr("Create new profile"));
 
     if (newprof.exec() == NewProfile::Rejected) {
         //        reject();

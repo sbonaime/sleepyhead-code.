@@ -31,7 +31,7 @@ NewProfile::NewProfile(QWidget *parent) :
     ui(new Ui::NewProfile)
 {
     ui->setupUi(this);
-    ui->userNameEdit->setText(getUserName());
+//    ui->userNameEdit->setText(getUserName());
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);
 
@@ -157,7 +157,7 @@ void NewProfile::on_nextButton_clicked()
 
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
-            QMessageBox::information(this, STR_MessageBox_Error, tr("Empty Username"), QMessageBox::Ok);
+            QMessageBox::information(this, STR_MessageBox_Error, tr("Please provide a username for this profile"), QMessageBox::Ok);
             return;
         }
 
