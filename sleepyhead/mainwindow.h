@@ -139,7 +139,9 @@ class MainWindow : public QMainWindow
 
     //! \brief Internal function to set Records Box html from statistics module
     void setRecBoxHTML(QString html);
+    int importCPAP(const QString &path, const QString &message);
 
+    void startImportDialog() { on_action_Import_Data_triggered(); }
 
   public slots:
     //! \brief Recalculate all event summaries and flags
@@ -315,7 +317,6 @@ class MainWindow : public QMainWindow
     void logMessage(QString msg);
 
 private:
-    int importCPAP(const QString &path, const QString &message);
     void importCPAPBackups();
     void finishCPAPImport();
     QStringList detectCPAPCards();

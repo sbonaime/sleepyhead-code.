@@ -14,6 +14,7 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
+#include <QProcess>
 #include <algorithm>
 #include <cmath>
 
@@ -108,39 +109,126 @@ bool Profile::Open(QString filename)
     return b;
 }
 
+
+// Borrowed from QtCreator (http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt)
+void showInGraphicalShell(const QString &pathIn)
+{
+    QWidget * parent = NULL;
+
+    // Mac, Windows support folder or file.
+#if defined(Q_OS_WIN)
+    const QString explorer = Environment::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
+    if (explorer.isEmpty()) {
+        QMessageBox::warning(parent,
+                             tr("Launching Windows Explorer failed"),
+                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
+        return;
+    }
+    QString param;
+    if (!QFileInfo(pathIn).isDir())
+        param = QLatin1String("/select,");
+    param += QDir::toNativeSeparators(pathIn);
+    QProcess::startDetached(explorer, QStringList(param));
+#elif defined(Q_OS_MAC)
+    Q_UNUSED(parent)
+    QStringList scriptArgs;
+    scriptArgs << QLatin1String("-e")
+               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+                                     .arg(pathIn);
+    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+    scriptArgs.clear();
+    scriptArgs << QLatin1String("-e")
+               << QLatin1String("tell application \"Finder\" to activate");
+    QProcess::execute("/usr/bin/osascript", scriptArgs);
+#else
+    // we cannot select a file here, because no file browser really supports it...
+    const QFileInfo fileInfo(pathIn);
+    const QString folder = fileInfo.absoluteFilePath();
+    const QString app = Utils::UnixUtils::fileBrowser(Core::ICore::instance()->settings());
+    QProcess browserProc;
+    const QString browserArgs = Utils::UnixUtils::substituteFileBrowserParameters(app, folder);
+    if (debug)
+        qDebug() <<  browserArgs;
+    bool success = browserProc.startDetached(browserArgs);
+    const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
+    success = success && error.isEmpty();
+    if (!success) {
+        QMessageBox::warning(NULL,STR_MessageBox_Error, "Could not find the file browser for your system, you will have to find your profile directory yourself."+"\n\n"+error, QMessageBox::Ok);
+//        showGraphicalShellError(parent, app, error);
+    }
+#endif
+}
+
 void Profile::DataFormatError(Machine *m)
 {
-    QString msg =
-        QObject::tr("Software changes have been made that require the reimporting of the following machines data:\n\n");
-    msg = msg + m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
-          m->properties[STR_PROP_Serial] + "\n\n";
-    msg = msg +
-          QObject::tr("I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n");
-    msg = msg +
-          QObject::tr("Would you like me to purge this data this for you so you can run the new version?");
+    QString msg;
 
-    if (QMessageBox::warning(nullptr,
-                             QObject::tr("Machine Database Changes"),
-                             msg,
-                             QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes) {
+    msg = "<font size=+1>"+QObject::tr("SleepyHead (%1) needs to upgrade its database for %2 %3 %4").
+            arg(FullVersionString).
+            arg(m->properties[STR_PROP_Brand]).arg(m->properties[STR_PROP_Model]).arg(m->properties[STR_PROP_Serial])
+            + "</font><br/><br/>";
+
+    bool backups = false;
+    if (p_profile->session->backupCardData() && m->properties.contains(STR_PROP_BackupPath)) {
+        QDir dir(Get(m->properties[STR_PROP_BackupPath]));
+        if (dir.count() > 0) backups = true;
+    }
+
+    if (backups) {
+        msg = msg + QObject::tr("<b>SleepyHead maintains a backup of your devices data card that it uses for this purpose.</b>")+ "<br/><br/>";
+        msg = msg + QObject::tr("<i>Your old machine data should be regenerated provided this backup feature has not been disabled in preferences during a previous data import.</i>") + "<br/><br/>";
+        backups = true;
+    } else {
+        msg = msg + QObject::tr("SleepyHead does <font size=+1>not</font> yet have an automatic card backup capabilities for this device.") + "<br/><br/>";
+        msg = msg + QObject::tr("This means you will need to import this machine data again afterwards from your own backups or data card.") + "<br/><br/>";
+    }
+
+    msg += "<font size=+1>"+QObject::tr("Important:")+"</font> "+QObject::tr("Once you upgrade, you <font size=+1>can not</font> use this profile with the previous version anymore.")+"<br/><br/>"+
+            QObject::tr("If you are concerned, click No to exit, and backup your profile manually, before starting SleepyHead again.")+ "<br/><br/>";
+    msg = msg + "<font size=+1>"+QObject::tr("Are you ready to upgrade, so you can run the new version of SleepyHead?")+"</font>";
 
 
+    QMessageBox * question = new QMessageBox(QMessageBox::Warning, QObject::tr("Machine Database Changes"), msg, QMessageBox::Yes | QMessageBox::No);
+    question->setDefaultButton(QMessageBox::Yes);
+
+    QFont font("Sans Serif", 11, QFont::Normal);
+
+    question->setFont(font);
+
+    if (question->exec() == QMessageBox::Yes) {
         if (!m->Purge(3478216)) {
-            // Do not copy this line without thinking.. You will be eaten by a Grue if you do
-
+            // Purge failed.. probably a permissions error.. let the user deal with it.
             QMessageBox::critical(nullptr, STR_MessageBox_Error,
                                   QObject::tr("Sorry, the purge operation failed, which means this version of SleepyHead can't start.")+"\n\n"+
                                   QObject::tr("The machine data folder needs to be removed manually.")+"\n\n"+
                                   QObject::tr("This folder currently resides at the following location:")+"\n\n"+
-                                  QDir::toNativeSeparators(PREF[STR_GEN_DataFolder].toString()), QMessageBox::Ok);
+                                  QDir::toNativeSeparators(Get(p_preferences[STR_GEN_DataFolder].toString())), QMessageBox::Ok);
             QApplication::exit(-1);
         }
         // Note: I deliberately haven't added a Profile help for this
-        PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
+        if (backups) {
+            mainwin->importCPAP(Get(m->properties[STR_PROP_BackupPath]), QObject::tr("Rebuilding from %1 Backup").arg(m->properties[STR_PROP_Brand]));
+        } else {
+            QMessageBox::information(nullptr, STR_MessageBox_Information,
+                                     QObject::tr("SleepyHead will now start the import wizard so you can reinstall your %1 data.").arg(m->properties[STR_PROP_Brand])
+                                     ,QMessageBox::Ok, QMessageBox::Ok);
+            mainwin->startImportDialog();
+        }
         PROFILE.Save();
+        delete question;
+
     } else {
+        delete question;
+        QMessageBox::information(nullptr, STR_MessageBox_Information,
+            QObject::tr("SleepyHead will now exit, then (attempt to) launch your computers file manager so you can manually back your profile up:")+"\n\n"+
+            QDir::toNativeSeparators(Get(p_preferences[STR_GEN_DataFolder].toString()))+"\n\n"+
+            QObject::tr("Use your file manager to make a copy of your profile directory, then afterwards, restart Sleepyhead and complete the upgrade process.")
+                , QMessageBox::Ok, QMessageBox::Ok);
+
+        showInGraphicalShell(Get(p_preferences[STR_GEN_DataFolder].toString()));
         QApplication::exit(-1);
     }
+
 
     return;
 
@@ -600,7 +688,7 @@ void Scan()
         QFileInfo fi = list.at(i);
         QString npath = fi.canonicalFilePath();
         Profile *prof = new Profile(npath);
-//        prof->Open();  // Read it's XML file..
+
         profiles[fi.fileName()] = prof;
     }
 

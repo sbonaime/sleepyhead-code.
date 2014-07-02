@@ -996,6 +996,12 @@ void Session::setEnabled(bool b)
 }
 
 
+QString Session::dimension(ChannelID id)
+{
+    // Cheat for now
+    return schema::channel[id].units();
+}
+
 EventDataType Session::Min(ChannelID id)
 {
     QHash<ChannelID, EventDataType>::iterator i = m_min.find(id);

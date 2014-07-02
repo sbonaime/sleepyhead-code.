@@ -115,6 +115,8 @@ QString STR_UNIT_Minutes;
 QString STR_UNIT_Seconds;
 QString STR_UNIT_BPM;       // Beats per Minute
 QString STR_UNIT_LPM;       // Litres per Minute
+QString STR_UNIT_ml;        // MilliLitres
+QString STR_UNIT_Litres;
 QString STR_UNIT_Hz;
 QString STR_UNIT_EventsPerHour;
 QString STR_UNIT_BreathsPerMinute;
@@ -301,6 +303,8 @@ void initializeStrings()
     STR_UNIT_Hz = QObject::tr("Hz");          // Hertz
     STR_UNIT_BPM = QObject::tr("bpm");        // Beats per Minute
     STR_UNIT_LPM = QObject::tr("L/min");      // Litres per Minute
+    STR_UNIT_Litres = QObject::tr("Litres");
+    STR_UNIT_ml = QObject::tr("ml");        // millilitres
     STR_UNIT_BreathsPerMinute = QObject::tr("Breaths/min"); // Breaths per minute
     STR_UNIT_Unknown = QObject::tr("??");
     STR_UNIT_Ratio = QObject::tr("ratio");

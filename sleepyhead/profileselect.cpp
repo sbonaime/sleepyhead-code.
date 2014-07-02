@@ -297,6 +297,10 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     if (!profile) { return; }
     if (!profile->isOpen()) {
         profile->Open();
+        // Do this in case user renames the directory (otherwise it won't load)
+        // Essentially makes the folder name the user name, but whatever..
+        // TODO: Change the profile editor one day to make it rename the actual folder
+        profile->p_preferences[STR_UI_UserName] = name;
     }
 
     if (!profile->user->hasPassword()) {

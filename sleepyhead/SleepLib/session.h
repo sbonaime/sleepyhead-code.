@@ -135,6 +135,9 @@ class Session
         return s_changed;
     }
 
+    //! \brief Return the unit type string used by events of supplied channel
+    QString dimension(ChannelID);
+
 
     //! \brief Contains all the EventLists, indexed by ChannelID
     QHash<ChannelID, QVector<EventList *> > eventlist;

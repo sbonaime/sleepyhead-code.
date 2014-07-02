@@ -131,6 +131,8 @@ extern QString STR_UNIT_Minutes;
 extern QString STR_UNIT_Seconds;
 extern QString STR_UNIT_BPM;       // Beats per Minute
 extern QString STR_UNIT_LPM;       // Litres per Minute
+extern QString STR_UNIT_ml;        // millilitres
+extern QString STR_UNIT_Litres;
 extern QString STR_UNIT_Hz;
 extern QString STR_UNIT_EventsPerHour;
 extern QString STR_UNIT_Percentage;

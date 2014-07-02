@@ -289,7 +289,7 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_TidalVolume       = 0x1103, WAVEFORM,    SESSION,
                         "TidalVolume",       QObject::tr("Tidal Volume"),
                         QObject::tr("Amount of air displaced per breath"),           QObject::tr("Tidal Volume"),
-                        STR_UNIT_LPM,    DEFAULT,    QColor("magenta")));
+                        STR_UNIT_ml,    DEFAULT,    QColor("magenta")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_Snore             = 0x1104, WAVEFORM,    SESSION,
                         "Snore",             QObject::tr("Snore"),
