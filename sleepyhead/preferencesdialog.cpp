@@ -902,3 +902,14 @@ void PreferencesDialog::on_tooltipTimeoutSlider_valueChanged(int value)
 {
     ui->tooltipMS->display(value * 50);
 }
+
+void PreferencesDialog::on_createSDBackups_clicked(bool checked)
+{
+    if (!checked && p_profile->session->backupCardData()) {
+        if (QMessageBox::question(this, STR_MessageBox_Warning, tr("Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.")+"\n\n"+
+                              tr("Are you really sure you want to do this?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
+        } else {
+            ui->createSDBackups->setChecked(true);
+        }
+    }
+}

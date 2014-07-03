@@ -96,7 +96,9 @@ class PreferencesDialog : public QDialog
 
     void on_tooltipTimeoutSlider_valueChanged(int value);
 
-  private:
+    void on_createSDBackups_clicked(bool checked);
+
+private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();
 

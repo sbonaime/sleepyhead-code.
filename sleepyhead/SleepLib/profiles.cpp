@@ -159,6 +159,14 @@ void showInGraphicalShell(const QString &pathIn)
 #endif
 }
 
+int dirCount(QString path)
+{
+    QDir dir(path);
+
+    QStringList list = dir.entryList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
+    return list.size();
+}
+
 void Profile::DataFormatError(Machine *m)
 {
     QString msg;
@@ -170,8 +178,9 @@ void Profile::DataFormatError(Machine *m)
 
     bool backups = false;
     if (p_profile->session->backupCardData() && m->properties.contains(STR_PROP_BackupPath)) {
-        QDir dir(Get(m->properties[STR_PROP_BackupPath]));
-        if (dir.count() > 0) backups = true;
+        QString bpath = Get(m->properties[STR_PROP_BackupPath]);
+        int cnt = dirCount(bpath);
+        if (cnt > 0) backups = true;
     }
 
     if (backups) {
@@ -179,7 +188,7 @@ void Profile::DataFormatError(Machine *m)
         msg = msg + QObject::tr("<i>Your old machine data should be regenerated provided this backup feature has not been disabled in preferences during a previous data import.</i>") + "<br/><br/>";
         backups = true;
     } else {
-        msg = msg + QObject::tr("SleepyHead does <font size=+1>not</font> yet have an automatic card backup capabilities for this device.") + "<br/><br/>";
+        msg = msg + "<font size=+1>"+STR_MessageBox_Warning+":</font> "+QObject::tr("SleepyHead does not yet have any automatic card backups stored for this device.") + "<br/><br/>";
         msg = msg + QObject::tr("This means you will need to import this machine data again afterwards from your own backups or data card.") + "<br/><br/>";
     }
 
@@ -209,6 +218,15 @@ void Profile::DataFormatError(Machine *m)
         if (backups) {
             mainwin->importCPAP(Get(m->properties[STR_PROP_BackupPath]), QObject::tr("Rebuilding from %1 Backup").arg(m->properties[STR_PROP_Brand]));
         } else {
+            if (!p_profile->session->backupCardData()) {
+                // Automatic backups not available for Intellipap users yet, so don't taunt them..
+                if (m->GetClass() != STR_MACH_Intellipap) {
+                    if (QMessageBox::question(nullptr, STR_MessageBox_Question, QObject::tr("Would you like to switch on automatic backups, so next time a new version of SleepyHead needs to do so, it can rebuild from these?"),
+                                              QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)) {
+                        p_profile->session->setBackupCardData(true);
+                    }
+                }
+            }
             QMessageBox::information(nullptr, STR_MessageBox_Information,
                                      QObject::tr("SleepyHead will now start the import wizard so you can reinstall your %1 data.").arg(m->properties[STR_PROP_Brand])
                                      ,QMessageBox::Ok, QMessageBox::Ok);

@@ -392,7 +392,10 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
         return 0;
     }
     QString backupPath = p_profile->Get(m->properties[STR_PROP_BackupPath]) + path.section("/", -2);
-    copyPath(path, backupPath);
+
+    if (dir.absolutePath().compare(QDir(backupPath).absolutePath()) != 0) {
+        copyPath(path, backupPath);
+    }
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
