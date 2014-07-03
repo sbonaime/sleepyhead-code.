@@ -109,6 +109,80 @@ bool Profile::Open(QString filename)
     return b;
 }
 
+#if defined(Q_OS_WIN)
+QStringList path() const
+{
+    QProcessEnvironment::systemEnvironment().value(QLatin1String("PATH"), "").split(';');
+}
+
+void searchInDirectory(const QStringList & execs, QString directory) const
+{
+    const QChar slash = QLatin1Char('/');
+
+    if (directory.isEmpty())
+        return QString();
+
+    if (!directory.endsWith(slash))
+        directory += slash;
+
+    foreach (const QString & exec, execs) {
+        QFileInfo fi(directory + exec);
+        if (fi.exists() && fi.isFile() && fi.isExecutable())
+            return fi.absoluteFilePath();
+    }
+    return QString();
+}
+
+void searchInPath(const QString &executable, const QStringList & additionalDirs) const
+{
+    if (executable.isEmpty()) return QString();
+
+    QString exec = QDir::cleanPath(executable);
+    QFileInfo fi(exec);
+
+    QStringList execs(exec);
+
+    if (fi.suffix().isEmpty()) {
+        QStringList extensions = value(QLatin1String("PATHEXT")).split(QLatin1Char(';'));
+
+        foreach (const QString &ext, extensions) {
+            QString tmp = executable + ext.toLower();
+            if (fi.isAbsolute()) {
+                if (QFile::exists(tmp))
+                    return tmp;
+            } else {
+                execs << tmp;
+            }
+        }
+    }
+
+    if (fi.isAbsolute())
+        return exec;
+
+    QSet<QString> alreadyChecked;
+    foreach (const QString &dir, additionalDirs) {
+        if (alreadyChecked.contains(dir))
+            continue;
+        alreadyChecked.insert(dir);
+        QString tmp = searchInDirectory(execs, dir);
+        if (!tmp.isEmpty())
+            return tmp;
+    }
+
+    if (executable.indexOf(QLatin1Char('/')) != -1)
+        return QString();
+
+    foreach (const QString &p, path()) {
+        if (alreadyChecked.contains(p))
+            continue;
+        alreadyChecked.insert(p);
+        QString tmp = searchInDirectory(execs, QDir::fromNativeSeparators(p));
+        if (!tmp.isEmpty())
+            return tmp;
+    }
+    return QString();
+}
+#endif
 
 // Borrowed from QtCreator (http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt)
 void showInGraphicalShell(const QString &pathIn)
