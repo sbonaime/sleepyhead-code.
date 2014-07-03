@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1266,10 +1266,10 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
        <item>
         <widget class="QGroupBox" name="oximetryGroupBox">
          <property name="title">
-          <string>Use Oximetry</string>
+          <string>Oximetery Settings</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <property name="leftMargin">
@@ -1310,7 +1310,17 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             </property>
             <item>
              <property name="text">
-              <string>Contec CMS50</string>
+              <string>Contec CMS50D+</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Contec CMS50E/F</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Contec CMS50F v3.7</string>
              </property>
             </item>
            </widget>

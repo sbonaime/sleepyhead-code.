@@ -21,7 +21,6 @@
 #include "version.h"
 #include "daily.h"
 #include "overview.h"
-#include "oximetry.h"
 #include "preferencesdialog.h"
 
 extern Profile *profile;
@@ -115,9 +114,6 @@ class MainWindow : public QMainWindow
     //! \brief Returns the Overview Tab object
     Overview *getOverview() { return overview; }
 
-    //! \brief Returns the Oximetry Tab object
-    Oximetry *getOximetry() { return oximetry; }
-
     /*! \fn void RestartApplication(bool force_login=false);
         \brief Closes down SleepyHead and restarts it
         \param bool force_login
@@ -125,9 +121,6 @@ class MainWindow : public QMainWindow
         If force_login is set, it will return to the login menu even if it's set to skip
         */
     static void RestartApplication(bool force_login = false, bool change_datafolder = false);
-
-    //! \brief Self explainitory, selects the Oximetry Tab
-    void selectOximetryTab();
 
     void JumpDaily();
 
@@ -329,7 +322,6 @@ private:
     Ui::MainWindow *ui;
     Daily *daily;
     Overview *overview;
-    Oximetry *oximetry;
     bool first_load;
     PreferencesDialog *prefdialog;
     QTime logtime;

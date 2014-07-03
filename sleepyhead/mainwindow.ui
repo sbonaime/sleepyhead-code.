@@ -3108,7 +3108,6 @@ border-radius: 10px;
     <addaction name="actionView_Statistics"/>
     <addaction name="actionView_Daily"/>
     <addaction name="actionView_Overview"/>
-    <addaction name="actionView_Oximetry"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Screenshot"/>
@@ -3159,6 +3158,8 @@ border-radius: 10px;
      <addaction name="separator"/>
      <addaction name="menuPurge_Oximetery_Data"/>
     </widget>
+    <addaction name="actionView_Oximetry"/>
+    <addaction name="separator"/>
     <addaction name="actionImport_ZEO_Data"/>
     <addaction name="actionImport_Somnopose_Data"/>
     <addaction name="actionImport_RemStar_MSeries_Data"/>
@@ -3280,7 +3281,7 @@ border-radius: 10px;
   </action>
   <action name="actionView_Oximetry">
    <property name="text">
-    <string>View O&amp;ximetry</string>
+    <string>O&amp;ximetry Wizard</string>
    </property>
    <property name="shortcut">
     <string>F7</string>

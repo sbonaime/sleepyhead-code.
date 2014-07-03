@@ -504,10 +504,6 @@ void Daily::Link_clicked(const QUrl &url)
     } else if (code=="oxi") {
         day=PROFILE.GetDay(previous_date,MT_OXIMETER);
         Session *sess=day->machine->sessionlist[sid];
-        if (mainwin->getOximetry()) {
-            mainwin->getOximetry()->openSession(sess);
-            mainwin->selectOximetryTab();
-        }
         return;
     } else if (code=="event")  {
         QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[sid].fullname(),Qt::MatchContains);

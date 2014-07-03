@@ -228,7 +228,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
-    ui->oximetryGroupBox->setChecked(profile->oxi->oximetryEnabled());
     ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
     int ot = ui->oximetryType->findText(profile->oxi->oximeterType(), Qt::MatchExactly);
 
@@ -442,7 +441,6 @@ bool PreferencesDialog::Save()
     profile->cpap->setLeakMode(ui->leakModeCombo->currentIndex());
     profile->cpap->setMaskType((MaskType)ui->maskTypeCombo->currentIndex());
 
-    profile->oxi->setOximetryEnabled(ui->oximetryGroupBox->isChecked());
     profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
     int oxigrp = ui->oximetrySync->isChecked() ? 0 : 1;
     gGraphView *gv = mainwin->getDaily()->graphView();
@@ -642,10 +640,6 @@ void PreferencesDialog::graphModel_changed(QStandardItem *item)
         gv = mainwin->getOverview()->graphView();
         break;
 
-    case 2:
-        gv = mainwin->getOximetry()->graphView();
-        break;
-
     default:
         ;
     }
@@ -781,34 +775,6 @@ void PreferencesDialog::resetGraphModel()
         overview->insertRow(i, items);
     }
 
-    if (mainwin->getOximetry()) {
-        QStandardItem *oximetry = new QStandardItem(tr("Oximetry Graphs"));
-        graphModel->appendRow(oximetry);
-        oximetry->setEditable(false);
-        gv = mainwin->getOximetry()->graphView();
-
-        for (int i = 0; i < gv->size(); i++) {
-            QList<QStandardItem *> items;
-            QStandardItem *it = new QStandardItem((*gv)[i]->title());
-            it->setCheckable(true);
-            it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
-            it->setEditable(false);
-            it->setData(2, Qt::UserRole + 1);
-            it->setData(i, Qt::UserRole + 2);
-            items.push_back(it);
-
-            it = new QStandardItem(QString::number((*gv)[i]->rec_miny, 'f', 1));
-            it->setEditable(true);
-            items.push_back(it);
-
-            it = new QStandardItem(QString::number((*gv)[i]->rec_maxy, 'f', 1));
-            it->setEditable(true);
-            items.push_back(it);
-
-            oximetry->insertRow(i, items);
-        }
-    }
-
     connect(graphModel, SIGNAL(itemChanged(QStandardItem *)), this,
             SLOT(graphModel_changed(QStandardItem *)));
 
@@ -832,8 +798,6 @@ void PreferencesDialog::on_resetGraphButton_clicked()
     gGraphView *views[3] = {0};
     views[0] = mainwin->getDaily()->graphView();
     views[1] = mainwin->getOverview()->graphView();
-    if (mainwin->getOximetry())
-        views[2] = mainwin->getOximetry()->graphView();
 
     // Iterate over all graph containers.
     for (unsigned j = 0; j < 3; j++) {

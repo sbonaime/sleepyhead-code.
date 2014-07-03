@@ -180,7 +180,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     overview = nullptr;
     daily = nullptr;
-    oximetry = nullptr;
     prefdialog = nullptr;
 
     m_inRecalculation = false;
@@ -316,11 +315,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
         overview->deleteLater();
     }
 
-    if (oximetry) {
-        oximetry->close();
-        oximetry->deleteLater();
-    }
-
     // Shutdown and Save the current User profile
     Profiles::Done();
 
@@ -416,11 +410,6 @@ void MainWindow::Startup()
 
     overview = new Overview(ui->tabWidget, daily->graphView());
     ui->tabWidget->insertTab(2, overview, STR_TR_Overview);
-
-    if (PROFILE.oxi->oximetryEnabled()) {
-        oximetry = new Oximetry(ui->tabWidget, daily->graphView());
-        ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
-    }
 
     GenerateStatistics();
     ui->tabWidget->setCurrentWidget(ui->statisticsTab);
@@ -1258,10 +1247,6 @@ void MainWindow::on_action_Preferences_triggered()
 
     prefdialog = nullptr;
 }
-void MainWindow::selectOximetryTab()
-{
-    on_oximetryButton_clicked();
-}
 
 #include "oximeterimport.h"
 QDateTime datetimeDialog(QDateTime datetime, QString message);
@@ -1270,61 +1255,6 @@ void MainWindow::on_oximetryButton_clicked()
 {
     OximeterImport oxiimp(this);
     oxiimp.exec();
-
-    return;
-
-//    QDateTime current=QDateTime::currentDateTime();
-//    DateTimeDialog datedlg("Oximetry Session Start Time", this);
-//    current = datedlg.execute(current);
-//    return;
-//    bool first = false;
-
-//    if (!oximetry) {
-//        if (!PROFILE.oxi->oximetryEnabled()) {
-//            if (QMessageBox::question(this, STR_MessageBox_Question,
-//                                      tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."), QMessageBox::Yes,
-//                                      QMessageBox::No) == QMessageBox::No) { return; }
-
-//            PROFILE.oxi->setOximetryEnabled(true);
-//        }
-
-//      //  oximetry = new Oximetry(ui->tabWidget, daily->graphView());
-//      //  ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
-//        first = true;
-//    }
-
-
-//    QDialog dlg(this, Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::Dialog);
-
-//    dlg.setWindowModality(Qt::ApplicationModal);
-//    dlg.setModal(true);
-
-//    QVBoxLayout layout(&dlg);
-//    QLabel msg("<h2>"+tr("Please connect your %1 oximeter.").arg(active)+"</h2>");
-//    QPushButton cancel(STR_MessageBox_Cancel);
-
-//    layout.addWidget(&msg,1);
-//    layout.addWidget(qprogress,1);
-//    layout.addWidget(&cancel);
-
-//    qprogress->setMaximum(PORTSCAN_TIMEOUT);
-//    qprogress->setVisible(true);
-
-//    dlg.connect(&cancel, SIGNAL(clicked()), &dlg, SLOT(hide()));
-//    dlg.show();
-
-//    QApplication::processEvents();
-
-
-
-    // MW: Instead, how about starting a direct import?
-//    oximetry->serialImport();
-
-//    ui->tabWidget->setCurrentWidget(oximetry);
-
-//    if (!first) { oximetry->RedrawGraphs(); }
-
-    qstatus2->setText(STR_TR_Oximetry);
 }
 
 void MainWindow::CheckForUpdates()
@@ -1399,10 +1329,6 @@ void MainWindow::on_actionPrint_Report_triggered()
         Report::PrintReport(overview->graphView(), STR_TR_Overview);
     } else if (ui->tabWidget->currentWidget() == daily) {
         Report::PrintReport(daily->graphView(), STR_TR_Daily, daily->getDate());
-    } else if (ui->tabWidget->currentWidget() == oximetry) {
-        if (oximetry) {
-            Report::PrintReport(oximetry->graphView(), STR_TR_Oximetry);
-        }
     } else {
         QPrinter printer(QPrinter::HighResolution);
 #ifdef Q_WS_X11
@@ -1979,9 +1905,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     } else if (widget == overview) {
         qstatus2->setVisible(true);
         overview->graphView()->selectionTime();
-    } else if (widget == oximetry) {
-        qstatus2->setVisible(true);
-        oximetry->graphView()->selectionTime();
     }
 }
 

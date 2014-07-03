@@ -102,7 +102,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     newprofile.cpp \
-    oximetry.cpp \
     overview.cpp \
     preferencesdialog.cpp \
     profileselect.cpp \
@@ -156,7 +155,6 @@ HEADERS  += \
     exportcsv.h \
     mainwindow.h \
     newprofile.h \
-    oximetry.h \
     overview.h \
     preferencesdialog.h \
     profileselect.h \
@@ -268,11 +266,6 @@ mac {
 }
 
 bundlelibs = $$cat($$PWD/../Bundle3rdParty)
-
-#QExtSerialPort will be replaced soon with Qt5's QSerialPort
-include($$PWD/../3rdparty/qextserialport/src/qextserialport.pri)
-INCLUDEPATH += $$PWD/../3rdparty/qextserialport/src
-DEPENDPATH += $$PWD/../3rdparty/qextserialport/src
 
 contains(bundlelibs, true) {
     include(../3rdparty/quazip/quazip/quazip.pri)
