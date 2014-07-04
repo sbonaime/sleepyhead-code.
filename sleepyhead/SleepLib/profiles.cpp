@@ -110,12 +110,28 @@ bool Profile::Open(QString filename)
 }
 
 #if defined(Q_OS_WIN)
-QStringList path() const
+class Environment
 {
-    QProcessEnvironment::systemEnvironment().value(QLatin1String("PATH"), "").split(';');
+public:
+    Environment();
+
+    QStringList path();
+    QString searchInDirectory(const QStringList & execs, QString directory);
+    QString searchInPath(const QString &executable, const QStringList & additionalDirs = QStringList());
+
+    QProcessEnvironment env;
+};
+Environment::Environment()
+{
+    env = QProcessEnvironment::systemEnvironment();
 }
 
-void searchInDirectory(const QStringList & execs, QString directory) const
+QStringList Environment::path()
+{
+    return env.value(QLatin1String("PATH"), "").split(';');
+}
+
+QString Environment::searchInDirectory(const QStringList & execs, QString directory)
 {
     const QChar slash = QLatin1Char('/');
 
@@ -133,7 +149,7 @@ void searchInDirectory(const QStringList & execs, QString directory) const
     return QString();
 }
 
-void searchInPath(const QString &executable, const QStringList & additionalDirs) const
+QString Environment::searchInPath(const QString &executable, const QStringList & additionalDirs)
 {
     if (executable.isEmpty()) return QString();
 
@@ -143,7 +159,7 @@ void searchInPath(const QString &executable, const QStringList & additionalDirs)
     QStringList execs(exec);
 
     if (fi.suffix().isEmpty()) {
-        QStringList extensions = value(QLatin1String("PATHEXT")).split(QLatin1Char(';'));
+        QStringList extensions = env.value(QLatin1String("PATHEXT")).split(QLatin1Char(';'));
 
         foreach (const QString &ext, extensions) {
             QString tmp = executable + ext.toLower();
@@ -191,15 +207,16 @@ void showInGraphicalShell(const QString &pathIn)
 
     // Mac, Windows support folder or file.
 #if defined(Q_OS_WIN)
-    const QString explorer = Environment::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
+    Environment env;
+    const QString explorer = env.searchInPath(QLatin1String("explorer.exe"));
     if (explorer.isEmpty()) {
         QMessageBox::warning(parent,
-                             tr("Launching Windows Explorer failed"),
-                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
+                             QObject::tr("Launching Windows Explorer failed"),
+                             QObject::tr("Could not find explorer.exe in path to launch Windows Explorer."));
         return;
     }
     QString param;
-    if (!QFileInfo(pathIn).isDir())
+    //if (!QFileInfo(pathIn).isDir())
         param = QLatin1String("/select,");
     param += QDir::toNativeSeparators(pathIn);
     QProcess::startDetached(explorer, QStringList(param));
