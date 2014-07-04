@@ -216,6 +216,7 @@ void showInGraphicalShell(const QString &pathIn)
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
     // we cannot select a file here, because no file browser really supports it...
+    /*
     const QFileInfo fileInfo(pathIn);
     const QString folder = fileInfo.absoluteFilePath();
     const QString app = Utils::UnixUtils::fileBrowser(Core::ICore::instance()->settings());
@@ -229,7 +230,7 @@ void showInGraphicalShell(const QString &pathIn)
     if (!success) {
         QMessageBox::warning(NULL,STR_MessageBox_Error, "Could not find the file browser for your system, you will have to find your profile directory yourself."+"\n\n"+error, QMessageBox::Ok);
 //        showGraphicalShellError(parent, app, error);
-    }
+    }*/
 #endif
 }
 
