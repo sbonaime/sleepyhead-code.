@@ -349,15 +349,10 @@ QString EDFParser::Read(unsigned n)
         return "";
     }
 
-    unsigned char buf[n+1];
-    memset(buf, 0, n+1);
+    QByteArray buf(&buffer[pos], n);
+    pos+=n;
 
-    for (unsigned i = 0; i < n; i++) {
-        buf[i] = buffer[pos++];
-    }
-    QString str = (char *)buf;
-
-    return str.trimmed();
+    return buf.trimmed();
 }
 bool EDFParser::Parse()
 {
