@@ -957,7 +957,15 @@ QString Daily::getMachineSettings(Day * cpap) {
         if (cpap->settingExists(CPAP_PresReliefType)) {
             int i=cpap->settings_max(CPAP_PresReliefType);
             int j=cpap->settings_max(CPAP_PresReliefMode);
-            QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
+            QString flexstr;
+
+            if (cpap->machine->GetClass() == STR_MACH_ResMed) {
+                // this is temporary..
+                flexstr = QString(tr("EPR:%1 EPR_LEVEL:%2")).arg(cpap->settings_max(RMS9_EPR)).arg(cpap->settings_max(RMS9_EPRLevel));
+            } else {
+                flexstr = (i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
+            }
+
             html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
                     .arg(STR_TR_PrRelief)
                     .arg(schema::channel[CPAP_PresReliefType].description())

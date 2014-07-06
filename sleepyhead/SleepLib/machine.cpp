@@ -638,7 +638,7 @@ ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAP
           CPAP_Test2;
 
 
-ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure, RMS9_MaskOnTime;
+ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRLevel, RMS9_SetPressure, RMS9_MaskOnTime;
 ChannelID INTP_SmartFlex;
 ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 

@@ -451,7 +451,7 @@ void init()
     RMS9_E01 = schema::channel["RMS9_E01"].id();
     RMS9_E02 = schema::channel["RMS9_E02"].id();
     RMS9_EPR = schema::channel["EPR"].id();
-    RMS9_EPRSet = schema::channel["EPRSet"].id();
+    RMS9_EPRLevel = schema::channel["EPRLevel"].id();
     RMS9_SetPressure = schema::channel["SetPressure"].id();
     PRS1_FlexMode = schema::channel["FlexMode"].id();
     PRS1_FlexSet = schema::channel["FlexSet"].id();

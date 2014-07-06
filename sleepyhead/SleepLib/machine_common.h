@@ -100,7 +100,7 @@ extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CP
        CPAP_UserFlag1, CPAP_UserFlag2, CPAP_UserFlag3, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
        CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_Test1, CPAP_Test2;
 
-extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure, RMS9_MaskOnTime;
+extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRLevel, RMS9_SetPressure, RMS9_MaskOnTime;
 extern ChannelID INTP_SmartFlex;
 extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, CPAP_LargeLeak,
        PRS1_12,

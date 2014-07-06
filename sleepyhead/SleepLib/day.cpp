@@ -110,7 +110,7 @@ EventDataType Day::settings_sum(ChannelID code)
 
 EventDataType Day::settings_max(ChannelID code)
 {
-    EventDataType min = std::numeric_limits<EventDataType>::min();
+    EventDataType min = -std::numeric_limits<EventDataType>::max();
     EventDataType max = min;
     EventDataType value;
 
@@ -118,7 +118,7 @@ EventDataType Day::settings_max(ChannelID code)
     for(QList<Session *>::iterator it = sessions.begin(); it < end; ++it) {
         Session &sess = *(*it);
         if (sess.enabled()) {
-            value = sess.settings.value(code, min).toDouble();
+            value = sess.settings.value(code, min).toFloat();
             if (value > max) {
                 max = value;
             }
@@ -139,7 +139,7 @@ EventDataType Day::settings_min(ChannelID code)
     for(QList<Session *>::iterator it = sessions.begin(); it < end; ++it) {
         Session &sess = *(*it);
         if (sess.enabled()) {
-            value = sess.settings.value(code, max).toDouble();
+            value = sess.settings.value(code, max).toFloat();
             if (value < min) {
                 min = value;
             }

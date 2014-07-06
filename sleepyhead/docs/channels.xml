@@ -162,7 +162,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
    <Option id="2" value="Full Time"/>
    <Option id="3" value="EPR?"/>
   </channel>
-  <channel id="0xe202" class="setting" scope="!session" name="EPRSet" details="EPR Setting" label="EPR Setting" type="integer">
+  <channel id="0xe202" class="setting" scope="!session" name="EPRLevel" details="EPR Setting" label="EPR Setting" type="integer">
    <Option id="0" value="0"/>
    <Option id="1" value="1"/>
    <Option id="2" value="2"/>

@@ -122,7 +122,7 @@ struct STRRecord
         max_ipap = -1;
         min_ipap = -1;
         epr = -1;
-        epr_set = -1;
+        epr_level = -1;
         sessionid = 0;
 
         ahi = -1;
@@ -157,7 +157,7 @@ struct STRRecord
         max_ipap = copy.max_ipap;
         min_ipap = copy.min_ipap;
         epr = copy.epr;
-        epr_set = copy.epr_set;
+        epr_level = copy.epr_level;
         sessionid = copy.sessionid;
         ahi = copy.ahi;
         ai = copy.ai;
@@ -188,7 +188,7 @@ struct STRRecord
     EventDataType max_ipap;
     EventDataType min_ipap;
     EventDataType epr;
-    EventDataType epr_set;
+    EventDataType epr_level;
     quint32 sessionid;
     EventDataType ahi;
     EventDataType ai;

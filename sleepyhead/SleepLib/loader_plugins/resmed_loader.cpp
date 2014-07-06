@@ -271,8 +271,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(RMS9_EPR))) {
                     R.epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
-                if ((sig = str.lookupSignal(RMS9_EPRSet))) {
-                    R.epr_set = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
+                    R.epr_level = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
                 if ((sig = str.lookupSignal(CPAP_Mode))) {
                     int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -688,9 +688,9 @@ void ResmedImport::run()
             sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
             sess->settings[CPAP_PresReliefSet] = (int)R.epr;
         }
-        if (R.epr_set >= 0) {
-            sess->settings[RMS9_EPRSet] = (int)R.epr_set;
-            sess->settings[CPAP_PresReliefMode] = (int)R.epr_set;
+        if (R.epr_level >= 0) {
+            sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+            sess->settings[CPAP_PresReliefMode] = (int)R.epr_level;
         }
 
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
@@ -809,9 +809,9 @@ void ResmedImportStage2::run()
         sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
         sess->settings[CPAP_PresReliefSet] = (int)R.epr;
     }
-    if (R.epr_set >= 0) {
-        sess->settings[RMS9_EPRSet] = (int)R.epr_set;
-        sess->settings[CPAP_PresReliefMode] = (int)R.epr_set;
+    if (R.epr_level >= 0) {
+        sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+        sess->settings[CPAP_PresReliefMode] = (int)R.epr_level;
     }
     if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
     if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
@@ -2107,14 +2107,14 @@ void ResInitModelMap()
     resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
     resmed_codes[RMS9_EPR].push_back("EPR");
     resmed_codes[RMS9_EPR].push_back("\xE5\x91\xBC\xE6\xB0\x94\xE9\x87\x8A\xE5\x8E\x8B\x28\x45\x50"); // Chinese
-    resmed_codes[RMS9_EPRSet].push_back("EPR Level");
-    resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");
-    resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");
-    resmed_codes[RMS9_EPRSet].push_back("\x45\x50\x52\x20\xE6\xB0\xB4\xE5\xB9\xB3"); // Chinese
+    resmed_codes[RMS9_EPRLevel].push_back("EPR Level");
+    resmed_codes[RMS9_EPRLevel].push_back("EPR-Stufe");
+    resmed_codes[RMS9_EPRLevel].push_back("EPR-niveau");
+    resmed_codes[RMS9_EPRLevel].push_back("\x45\x50\x52\x20\xE6\xB0\xB4\xE5\xB9\xB3"); // Chinese
 
-    resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");
-    resmed_codes[RMS9_EPRSet].push_back("EPR-nivå");
-    resmed_codes[RMS9_EPRSet].push_back("EPR-nivÃ¥");
+    resmed_codes[RMS9_EPRLevel].push_back("Niveau EPR");
+    resmed_codes[RMS9_EPRLevel].push_back("EPR-nivå");
+    resmed_codes[RMS9_EPRLevel].push_back("EPR-nivÃ¥");
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
     resmed_codes[CPAP_PressureMax].push_back("Max druk");
