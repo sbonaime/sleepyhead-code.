@@ -347,14 +347,28 @@ int CMS50Loader::doImportMode()
             } else if (!started_reading) { // have not got a valid trio yet, skip...
                 idx += 1;
             } else {
-                //Completed
-                finished_import = true;
-                killTimers();
-                m_importing = false;
-                m_status = NEUTRAL;
-                emit importComplete(this);
-                resetTimer.singleShot(2000, this, SLOT(shutdownPorts()));
-                return available;
+                // scan ahead for another 0xf0 in case it's corrupted..
+                bool resync = false;
+
+                for (int i=idx; i < available; ++i) {
+                    c=(unsigned char)buffer.at(i);
+                    if ((c & 0xf0) == 0xf0) {
+                        idx = i;
+                        resync = true;
+                        break;
+                    }
+                }
+
+                if (!resync) {
+                    // Data transfer has completed
+                    finished_import = true;
+                    killTimers();
+                    m_importing = false;
+                    m_status = NEUTRAL;
+                    emit importComplete(this);
+                    resetTimer.singleShot(2000, this, SLOT(shutdownPorts()));
+                    return available;
+                }
             }
         }
     }
