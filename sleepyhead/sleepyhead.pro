@@ -100,15 +100,17 @@ win32 {
 }
 
 unix {
-     CONFIG(release, debug|release) {
-        # Update build number
-        build_nr.commands = $$PWD/scripts/inc_build.sh
-        build_nr.depends = FORCE
-        QMAKE_EXTRA_TARGETS += build_nr
-        PRE_TARGETDEPS += build_nr
-
-        HEADERS  += build_number.h
+    # Update build number
+    CONFIG(release, debug|release) {
+        build_nr.commands = $$PWD/scripts/inc_build.sh release
+    } else {
+        build_nr.commands = $$PWD/scripts/inc_build.sh debug
     }
+    build_nr.depends = FORCE
+    QMAKE_EXTRA_TARGETS += build_nr
+    PRE_TARGETDEPS += build_nr
+
+    HEADERS  += build_number.h
 }
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
