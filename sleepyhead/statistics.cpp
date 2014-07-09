@@ -15,7 +15,6 @@
 #include "mainwindow.h"
 #include "statistics.h"
 
-
 extern MainWindow *mainwin;
 
 QString formatTime(float time)

@@ -16,6 +16,7 @@
 #include <QCryptographicHash>
 #include <QThread>
 
+#include "version.h"
 #include "machine.h"
 #include "machine_loader.h"
 #include "preferences.h"

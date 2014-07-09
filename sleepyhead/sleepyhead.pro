@@ -88,6 +88,27 @@ win32 {
         # MingW needs this
         LIBS += -lz
     }
+     CONFIG(release, debug|release) {
+        # Update build number
+        build_nr.commands = $$PWD/scripts/inc_build.bat
+        build_nr.depends = FORCE
+        QMAKE_EXTRA_TARGETS += build_nr
+        PRE_TARGETDEPS += build_nr
+
+        HEADERS  += build_number.h
+    }
+}
+
+unix {
+     CONFIG(release, debug|release) {
+        # Update build number
+        build_nr.commands = $$PWD/scripts/inc_build.sh
+        build_nr.depends = FORCE
+        QMAKE_EXTRA_TARGETS += build_nr
+        PRE_TARGETDEPS += build_nr
+
+        HEADERS  += build_number.h
+    }
 }
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)

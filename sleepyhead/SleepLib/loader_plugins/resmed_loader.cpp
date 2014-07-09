@@ -660,6 +660,7 @@ void ResmedImport::run()
         // Claim this session
         R.sessionid = sessionid;
 
+
         // Save maskon time in session setting so we can use it later to avoid doubleups.
         sess->settings[RMS9_MaskOnTime] = R.maskon;
 

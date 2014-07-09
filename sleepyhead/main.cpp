@@ -26,6 +26,7 @@
 #include <QFileDialog>
 #include <QSysInfo>
 
+#include "version.h"
 #include "logger.h"
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -60,7 +61,7 @@ void initialize()
 void release_notes()
 {
     QDialog relnotes;
-    relnotes.setWindowTitle(STR_TR_SleepyHead + " " + QObject::tr("Release Notes"));
+    relnotes.setWindowTitle(STR_TR_SleepyHead + " " + QObject::tr("Release Notes") +" "+FullVersionString);
     QVBoxLayout layout(&relnotes);
     QWebView web(&relnotes);
 

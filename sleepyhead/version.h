@@ -13,10 +13,11 @@
 #define VERSION_H
 
 #include <qglobal.h>
+#include "build_number.h"
 
 const int major_version = 0;   // incompatible API changes
 const int minor_version = 9;   // new features that don't break things
-const int patch_number = 7;    // bugfixes, revisions
+const int revision_number = 7;    // bugfixes, revisions
 
 #ifdef TEST_BUILD
 const QString ReleaseStatus = "testing";
@@ -24,8 +25,8 @@ const QString ReleaseStatus = "testing";
 const QString ReleaseStatus = "beta";
 #endif
 
-const QString VersionString = QString().sprintf("%i.%i.%i", major_version, minor_version, patch_number);
-const QString FullVersionString = QString().sprintf("%i.%i.%i", major_version, minor_version, patch_number)+"-"+ReleaseStatus;
+const QString VersionString = QString().sprintf("%i.%i.%i-%i", major_version, minor_version, revision_number, build_number);
+const QString FullVersionString = QString().sprintf("%i.%i.%i-%i", major_version, minor_version, revision_number, build_number)+"-"+ReleaseStatus;
 
 #ifdef Q_OS_MAC
 const QString PlatformString = "MacOSX";

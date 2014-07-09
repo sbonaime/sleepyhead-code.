@@ -35,6 +35,8 @@
 #include <QCalendarWidget>
 
 #include "common_gui.h"
+#include "version.h"
+
 
 #include <cmath>
 
@@ -148,8 +150,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
 
-    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
-             "on" << __DATE__ << __TIME__;
+    qDebug() << STR_TR_SleepyHead << VersionString << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
 
 #ifdef BROKEN_OPENGL_BUILD
     qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
@@ -345,6 +346,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::Notify(QString s, QString title, int ms)
 {
+    if (title.isEmpty()) {
+        title = "SleepyHead v" + VersionString;
+    }
     if (systray) {
         // GNOME3's systray hides the last line of the displayed Qt message.
         // As a workaround, add an extra line to bump the message back

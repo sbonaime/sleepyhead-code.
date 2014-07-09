@@ -222,13 +222,22 @@ int compareVersion(QString version)
     }
 
     QStringList patchver = parts[2].split("-");
-    short patch = patchver[0].toInt(&ok);
+
+    short revision = patchver[0].toInt(&ok);
     if (!ok) return -1;
 
-    // Still here.. check patch version
-    if (patch > patch_number) {
+    if (revision > revision_number) {
         return 1;
-    } else if (patch < patch_number) {
+    } else if (revision < revision_number) {
+        return -1;
+    }
+
+    short build = patchver[1].toInt(&ok);
+    if (!ok) return -1;
+
+    if (build > build_number) {
+        return 1;
+    } else if (build < build_number) {
         return -1;
     }
 

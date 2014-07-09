@@ -15,7 +15,6 @@
 #include <QString>
 #include <QColor>
 #include <QObject>
-#include "version.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(4,8,0)
 
@@ -260,7 +259,6 @@ extern QString STR_TR_SensAwake;
 extern QString STR_TR_NoData;
 extern QString STR_TR_Bookmarks;
 extern QString STR_TR_SleepyHead;
-extern QString STR_TR_SleepyHeadVersion;
 
 extern QString STR_TR_Mode;
 extern QString STR_TR_Model;

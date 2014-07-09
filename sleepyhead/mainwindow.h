@@ -18,7 +18,6 @@
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
 
-#include "version.h"
 #include "daily.h"
 #include "overview.h"
 #include "preferencesdialog.h"
@@ -102,7 +101,7 @@ class MainWindow : public QMainWindow
 
         Mac needs Growl notification system for this to work
         */
-    void Notify(QString s, QString title = "SleepyHead v" + VersionString, int ms = 5000);
+    void Notify(QString s, QString title = "", int ms = 5000);
 
     /*! \fn gGraphView *snapshotGraph()
         \brief Returns the current snapshotGraph object used by the report printing system */

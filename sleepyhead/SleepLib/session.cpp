@@ -24,7 +24,6 @@
 
 using namespace std;
 
-
 const quint16 filetype_summary = 0;
 const quint16 filetype_data = 1;
 

@@ -274,8 +274,7 @@ int IntellipapLoader::Open(QString path, Profile *profile)
 
     for (int i = 0; i < recs; i++) {
         // convert timestamp to real epoch
-        ts1 = ((m_buffer[pos] << 24) | (m_buffer[pos + 1] << 16) | (m_buffer[pos + 2] << 8) | m_buffer[pos
-                + 3]) + ep;
+        ts1 = ((m_buffer[pos] << 24) | (m_buffer[pos + 1] << 16) | (m_buffer[pos + 2] << 8) | m_buffer[pos + 3]) + ep;
 
         for (int j = 0; j < SessionStart.size(); j++) {
             sid = SessionStart[j];
@@ -310,6 +309,7 @@ int IntellipapLoader::Open(QString path, Profile *profile)
                 }
 
                 if (m_buffer[pos + 0x5] > 4) { // This matches Exhale Puff.. not sure why 4
+                    //MW: Are the lower 2 bits something else?
                     if (!sess->eventlist.contains(CPAP_ExP)) {
                         sess->AddEventList(CPAP_ExP, EVL_Event);
                     }
@@ -372,6 +372,8 @@ int IntellipapLoader::Open(QString path, Profile *profile)
             //   delete sess;
             //   continue;
             //}
+
+
             quint64 first = qint64(sid) * 1000L;
             quint64 last = qint64(SessionEnd[i]) * 1000L;
 
