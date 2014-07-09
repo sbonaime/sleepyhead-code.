@@ -8,7 +8,7 @@ else
 number=0
 fi
 
-if [ ! "$1" == "release" ]
+if [ "$1" == "release" ]
 then
 	echo "Updating build number"
 	let number++

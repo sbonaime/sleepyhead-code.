@@ -101,10 +101,10 @@ win32 {
 
 unix {
     # Update build number
-    CONFIG(release, debug|release) {
-        build_nr.commands = $$PWD/scripts/inc_build.sh release
-    } else {
+    CONFIG(debug, debug|release) {
         build_nr.commands = $$PWD/scripts/inc_build.sh debug
+    } else {
+        build_nr.commands = $$PWD/scripts/inc_build.sh release
     }
     build_nr.depends = FORCE
     QMAKE_EXTRA_TARGETS += build_nr
