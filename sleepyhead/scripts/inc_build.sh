@@ -8,6 +8,18 @@ else
 number=0
 fi
 
+if [ ! -f $MY_PATH/../build_number.h ]
+then
+# This is needed to build, so make sure it's available
+    echo "const int build_number = ""$number;" | tee $MY_PATH/../build_number.h
+fi
+
+if [ ! -f "$MY_PATH/ReleaseManager" ]
+then
+# Script only needs running by Release Managers
+	exit;
+fi
+
 if [ "$1" == "release" ]
 then
 	echo "Updating build number"
@@ -16,9 +28,4 @@ then
 	echo "const int build_number = ""$number;" | tee $MY_PATH/../build_number.h
 else
 	echo "Skipping build number update"
-    # But create anyway if it doesn't exist
-	if [ ! -f $MY_PATH/../build_number.h ]
-	then
-        echo "const int build_number = ""$number;" | tee $MY_PATH/../build_number.h
-	fi	
 fi
