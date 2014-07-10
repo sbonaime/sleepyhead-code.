@@ -137,7 +137,6 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
         QDateTime start = QDateTime::fromMSecsSinceEpoch(str.startdate);
         QDate date = start.date();
-        quint32 timestamp = start.toTime_t();
 
         qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
 
@@ -150,9 +149,11 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
         int size = str.GetNumDataRecords();
         int cnt=0;
+        QDateTime dt = start;
 
         // For each data record, representing 1 day each
         for (int rec = 0; rec < str.GetNumDataRecords(); ++rec) {
+            uint timestamp = dt.toTime_t();
             int recstart = rec * maskon->nr;
 
             skipday = false;
@@ -319,7 +320,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
 
             }
-            timestamp += 86400;
+            dt.addDays(1);
         }
     }
 }
@@ -1117,6 +1118,7 @@ int ResmedLoader::Open(QString path, Profile *profile)
 
     qint64 numrecs = stredf.GetNumDataRecords();
     qint64 duration = numrecs * stredf.GetDuration();
+
     int days = duration / 86400000L; // GetNumDataRecords = this.. Duh!
 
     //QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
