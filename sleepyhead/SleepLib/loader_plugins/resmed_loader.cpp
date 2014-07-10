@@ -320,7 +320,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
 
             }
-            dt.addDays(1);
+            dt = dt.addDays(1);
         }
     }
 }
