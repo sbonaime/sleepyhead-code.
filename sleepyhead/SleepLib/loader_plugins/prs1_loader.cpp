@@ -456,6 +456,11 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     prs1sessions.clear();
     new_sessions.clear(); // this hash is used by OpenFile
 
+
+    // Note, I have observed p0/p1/etc folders containing duplicates session files (in Robin Sanders data.)
+
+
+
     // for each p0/p1/p2/etc... folder
     for (int p=0; p < size; ++p) {
         dir.setPath(paths.at(p));
@@ -487,6 +492,9 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
             PRS1FileGroup * group = nullptr;
 
+            // There is a Problem here
+            // The previous session could have a data chunk that encompasses this sessions data, causing duplicate sessions during initial import.
+
             QHash<SessionID, PRS1FileGroup*>::iterator it = prs1sessions.find(sid);
             if (it != prs1sessions.end()) {
                 group = it.value();
@@ -500,15 +508,19 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
             switch (ext) {
             case 0:
+                if (!group->compliance.isEmpty()) continue;
                 group->compliance = fi.canonicalFilePath();
                 break;
             case 1:
+                if (!group->summary.isEmpty()) continue;
                 group->summary = fi.canonicalFilePath();
                 break;
             case 2:
+                if (!group->event.isEmpty()) continue;
                 group->event = fi.canonicalFilePath();
                 break;
             case 5:
+                if (!group->waveform.isEmpty()) continue;
                 group->waveform = fi.canonicalFilePath();
                 break;
             default:
@@ -516,6 +528,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
             }
         }
     }
+
 
     int tasks = countTasks();
     runTasks(p_profile->session->multithreading());
@@ -1448,13 +1461,14 @@ bool PRS1SessionData::ParseWaveforms()
 
 void PRS1Import::run()
 {
-    group->ParseChunks();
+    group->ParseChunks(loader);
 
     QMap<SessionID, PRS1SessionData*>::iterator it;
 
     // Do session lists..
     for (it = group->sessions.begin(); it != group->sessions.end(); ++it) {
         PRS1SessionData * sg = it.value();
+
         sg->session = new Session(mach, it.key());
 
         if (!sg->ParseSummary()) {
@@ -1493,8 +1507,10 @@ void PRS1Import::run()
     delete group;
 }
 
-void PRS1FileGroup::ParseChunks()
+void PRS1FileGroup::ParseChunks(PRS1Loader * ldr)
 {
+    loader = ldr;
+
 //    qDebug() << "Parsing chunks for session" <<  summary << event;
     if (ParseFile(compliance)) {
         // Compliance only piece of crap machine, nothing else to do.. :(
@@ -1504,6 +1520,8 @@ void PRS1FileGroup::ParseChunks()
     ParseFile(summary);
     ParseFile(event);
     ParseFile(waveform);
+
+
 }
 
 bool PRS1FileGroup::ParseFile(QString path)
@@ -1533,6 +1551,7 @@ bool PRS1FileGroup::ParseFile(QString path)
     int lastblocksize = 0;
 
     int cruft = 0;
+    int firstsession = 0;
 
     do {
         QByteArray headerBA = f.read(16);
@@ -1547,6 +1566,10 @@ bool PRS1FileGroup::ParseFile(QString path)
         chunk = new PRS1DataChunk();
 
         chunk->sessionid = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
+
+        if (!firstsession) {
+            firstsession = chunk->sessionid;
+        }
         chunk->fileVersion = header[0];
         chunk->htype = header[3];  // 00 = normal ?? // 01=waveform ?? // could be a bool signifying extra header bytes?
         chunk->family = header[4];
@@ -1636,6 +1659,19 @@ bool PRS1FileGroup::ParseFile(QString path)
             delete chunk;
             return false;
         }
+
+        // Check for a valid file group with this sessionid
+        if ((chunk->sessionid != firstsession) && (loader->prs1sessions.find(chunk->sessionid) != loader->prs1sessions.end())) {
+            delete chunk;
+            return true;
+
+            // I don't see a point in skipping this block, because the next sessions files are present
+
+//            if (!f.seek(f.pos()+blocksize)) {
+//                return;
+//            }
+        }
+
         // Read data block
         chunk->m_data = f.read(blocksize);
 

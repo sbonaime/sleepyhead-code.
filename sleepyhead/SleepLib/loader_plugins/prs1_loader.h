@@ -129,15 +129,17 @@ public:
     QList<PRS1DataChunk *> waveforms;
 };
 
+class PRS1Loader;
 
 struct PRS1FileGroup
 {
-    PRS1FileGroup() {}
+    PRS1FileGroup() { loader = NULL; }
     PRS1FileGroup(const PRS1FileGroup & copy) {
         compliance = copy.compliance;
         summary = copy.summary;
         event = copy.event;
         waveform = copy.waveform;
+        loader = copy.loader;
     }
     ~PRS1FileGroup() {
     }
@@ -148,12 +150,12 @@ struct PRS1FileGroup
     QString waveform;
 
     bool ParseFile(QString path);
-    void ParseChunks();
+    void ParseChunks(PRS1Loader *);
+
+    PRS1Loader * loader;
 
     QMap<SessionID, PRS1SessionData*> sessions;
 };
-
-class PRS1Loader;
 
 class PRS1Import:public ImportTask
 {
@@ -195,6 +197,9 @@ class PRS1Loader : public MachineLoader
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
+
+    QHash<SessionID, PRS1FileGroup*> prs1sessions;
+
   protected:
     QString last;
     QHash<QString, Machine *> PRS1List;
@@ -231,7 +236,6 @@ class PRS1Loader : public MachineLoader
     //! \brief PRS1 Data files can store multiple sessions, so store them in this list for later processing.
     QHash<SessionID, Session *> new_sessions;
 
-    QHash<SessionID, PRS1FileGroup*> prs1sessions;
     qint32 summary_duration;
 };
 
