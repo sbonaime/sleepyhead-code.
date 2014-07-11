@@ -43,7 +43,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         return;
     }
 
-    QString username = PROFILE.Get(QString("_{") + QString(STR_UI_UserName) + "}_");
+    QString username = p_profile->Get(QString("_{") + QString(STR_UI_UserName) + "}_");
 
     bool print_bookmarks = false;
 
@@ -66,7 +66,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
     QPrinter *printer;
 
-    bool aa_setting = PROFILE.appearance->antiAliasing();
+    bool aa_setting = p_profile->appearance->antiAliasing();
 
     bool force_antialiasing = aa_setting;
 
@@ -141,18 +141,18 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
     int maxy = 0;
 
-    if (!PROFILE.user->firstName().isEmpty()) {
-        QString userinfo = STR_TR_Name + QString(":\t %1, %2\n").arg(PROFILE.user->lastName()).arg(
-                               PROFILE.user->firstName());
-        userinfo += STR_TR_DOB + QString(":\t%1\n").arg(PROFILE.user->DOB().toString(
+    if (!p_profile->user->firstName().isEmpty()) {
+        QString userinfo = STR_TR_Name + QString(":\t %1, %2\n").arg(p_profile->user->lastName()).arg(
+                               p_profile->user->firstName());
+        userinfo += STR_TR_DOB + QString(":\t%1\n").arg(p_profile->user->DOB().toString(
                         Qt::SystemLocaleShortDate));
 
-        if (!PROFILE.doctor->patientID().isEmpty()) { userinfo += STR_TR_PatientID + QString(":\t%1\n").arg(PROFILE.doctor->patientID()); }
+        if (!p_profile->doctor->patientID().isEmpty()) { userinfo += STR_TR_PatientID + QString(":\t%1\n").arg(p_profile->doctor->patientID()); }
 
-        userinfo += STR_TR_Phone + QString(":\t%1\n").arg(PROFILE.user->phone());
-        userinfo += STR_TR_Email + QString(":\t%1\n").arg(PROFILE.user->email());
+        userinfo += STR_TR_Phone + QString(":\t%1\n").arg(p_profile->user->phone());
+        userinfo += STR_TR_Email + QString(":\t%1\n").arg(p_profile->user->email());
 
-        if (!PROFILE.user->address().isEmpty()) { userinfo += "\n" + STR_TR_Address + QString(":\n%1").arg(PROFILE.user->address()); }
+        if (!p_profile->user->address().isEmpty()) { userinfo += "\n" + STR_TR_Address + QString(":\n%1").arg(p_profile->user->address()); }
 
         QRectF bounds = painter.boundingRect(QRectF(0, top, virt_width, 0), userinfo,
                                              QTextOption(Qt::AlignLeft | Qt::AlignTop));
@@ -166,8 +166,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     int graph_slots = 0;
 
     if (name == STR_TR_Daily) {
-        cpap = PROFILE.GetGoodDay(date, MT_CPAP);
-        oxi = PROFILE.GetGoodDay(date, MT_OXIMETER);
+        cpap = p_profile->GetGoodDay(date, MT_CPAP);
+        oxi = p_profile->GetGoodDay(date, MT_OXIMETER);
         QString cpapinfo = date.toString(Qt::SystemLocaleLongDate) + "\n\n";
 
         if (cpap) {
@@ -227,7 +227,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             float ahi = (cpap->count(CPAP_Obstructive) + cpap->count(CPAP_Hypopnea) + cpap->count(
                              CPAP_ClearAirway) + cpap->count(CPAP_Apnea));
 
-            if (PROFILE.general->calculateRDI()) { ahi += cpap->count(CPAP_RERA); }
+            if (p_profile->general->calculateRDI()) { ahi += cpap->count(CPAP_RERA); }
 
             ahi /= cpap->hours();
             float csr = (100.0 / cpap->hours()) * (cpap->sum(CPAP_CSR) / 3600.0);
@@ -251,7 +251,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             QString stats;
             painter.setFont(medium_font);
 
-            if (PROFILE.general->calculateRDI()) {
+            if (p_profile->general->calculateRDI()) {
                 stats = QObject::tr("RDI\t%1\n").arg(ahi, 0, 'f', 2);
             } else {
                 stats = QObject::tr("AHI\t%1\n").arg(ahi, 0, 'f', 2);
@@ -585,7 +585,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             top += bounds.height();
         } else { top += normal_height / 2; }
 
-        PROFILE.appearance->setAntiAliasing(force_antialiasing);
+        p_profile->appearance->setAntiAliasing(force_antialiasing);
         int tmb = g->m_marginbottom;
         g->m_marginbottom = 0;
 
@@ -603,7 +603,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         //g->showTitle(true);
         //painter.endNativePainting();
         g->m_marginbottom = tmb;
-        PROFILE.appearance->setAntiAliasing(aa_setting);
+        p_profile->appearance->setAntiAliasing(aa_setting);
 
 
         if (!pm.isNull()) {

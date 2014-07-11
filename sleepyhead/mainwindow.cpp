@@ -203,7 +203,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress, 1);
     ui->statusbar->addPermanentWidget(qstatus2, 0);
 
-    ui->actionDebug->setChecked(PROFILE.general->showDebug());
+    ui->actionDebug->setChecked(p_profile->general->showDebug());
 
     QTextCharFormat format = ui->statStartDate->calendarWidget()->weekdayTextFormat(Qt::Saturday);
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
@@ -221,7 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statStartDate->setVisible(false);
 
     ui->reportModeRange->setVisible(false);
-    switch(PROFILE.general->statReportMode()) {
+    switch(p_profile->general->statReportMode()) {
         case 0:
             ui->reportModeStandard->setChecked(true);
             break;
@@ -234,16 +234,16 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statStartDate->setVisible(true);
             break;
         default:
-            PROFILE.general->setStatReportMode(0);
+            p_profile->general->setStatReportMode(0);
     }
-    if (!PROFILE.general->showDebug()) {
+    if (!p_profile->general->showDebug()) {
         ui->logText->hide();
     }
 
 #ifdef Q_OS_MAC
-    PROFILE.appearance->setAntiAliasing(false);
+    p_profile->appearance->setAntiAliasing(false);
 #endif
-    ui->action_Link_Graph_Groups->setChecked(PROFILE.general->linkGroups());
+    ui->action_Link_Graph_Groups->setChecked(p_profile->general->linkGroups());
 
     first_load = true;
 
@@ -282,8 +282,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBox->setCurrentIndex(0);
     daily->graphView()->redraw();
 
-    if (PROFILE.cpap->AHIWindow() < 30.0) {
-        PROFILE.cpap->setAHIWindow(60.0);
+    if (p_profile->cpap->AHIWindow() < 30.0) {
+        p_profile->cpap->setAHIWindow(60.0);
     }
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
@@ -377,7 +377,7 @@ void MainWindow::PopulatePurgeMenu()
 
     ui->menu_Purge_CPAP_Data->clear();
 
-    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (int i=0; i < machines.size(); ++i) {
         Machine *mach = machines.at(i);
         QString name =  mach->properties[STR_PROP_Brand]+" "+
@@ -398,7 +398,7 @@ void MainWindow::Startup()
     //qstatusbar->showMessage(tr("Loading Data"),0);
 
     // profile is a global variable set in main after login
-    PROFILE.LoadMachineData();
+    p_profile->LoadMachineData();
 
     PopulatePurgeMenu();
 
@@ -418,8 +418,8 @@ void MainWindow::Startup()
     GenerateStatistics();
     ui->tabWidget->setCurrentWidget(ui->statisticsTab);
 
-    ui->statStartDate->setDate(PROFILE.FirstDay());
-    ui->statEndDate->setDate(PROFILE.LastDay());
+    ui->statStartDate->setDate(p_profile->FirstDay());
+    ui->statEndDate->setDate(p_profile->LastDay());
 
     if (daily) { daily->ReloadGraphs(); }
 
@@ -428,9 +428,9 @@ void MainWindow::Startup()
     qprogress->hide();
     qstatus->setText("");
 
-    if (PROFILE.p_preferences[STR_PREF_ReimportBackup].toBool()) {
+    if (p_profile->p_preferences[STR_PREF_ReimportBackup].toBool()) {
         importCPAPBackups();
-        PROFILE.p_preferences[STR_PREF_ReimportBackup]=false;
+        p_profile->p_preferences[STR_PREF_ReimportBackup]=false;
     }
 }
 
@@ -443,7 +443,7 @@ int MainWindow::importCPAP(const QString &path, const QString &message)
     waitlayout.addWidget(qprogress,1);
     qprogress->setVisible(true);
     popup.show();
-    int c=PROFILE.Import(path);
+    int c=p_profile->Import(path);
     popup.hide();
     ui->statusbar->insertWidget(2,qprogress,1);
     qprogress->setVisible(false);
@@ -453,7 +453,7 @@ int MainWindow::importCPAP(const QString &path, const QString &message)
 
 void MainWindow::finishCPAPImport()
 {
-    PROFILE.Save();
+    p_profile->Save();
     GenerateStatistics();
 
     if (overview) { overview->ReloadGraphs(); }
@@ -464,11 +464,11 @@ void MainWindow::importCPAPBackups()
 {
 
     // Get BackupPaths for all CPAP machines
-    QList<Machine *> machlist = PROFILE.GetMachines(MT_CPAP);
+    QList<Machine *> machlist = p_profile->GetMachines(MT_CPAP);
     QStringList paths;
     Q_FOREACH(Machine *m, machlist) {
         if (m->properties.contains(STR_PROP_BackupPath)) {
-            paths.push_back(PROFILE.Get(m->properties[STR_PROP_BackupPath]));
+            paths.push_back(p_profile->Get(m->properties[STR_PROP_BackupPath]));
         }
     }
 
@@ -758,7 +758,7 @@ void MainWindow::on_action_Import_Data_triggered()
             qprogress->setValue(0);
             qprogress->show();
             qstatus->setText(tr("Importing Data"));
-            int c = PROFILE.Import(dir);
+            int c = p_profile->Import(dir);
             qDebug() << "Finished Importing data" << c;
 
             if (c) {
@@ -937,7 +937,7 @@ void MainWindow::on_homeButton_clicked()
 
 void MainWindow::updateFavourites()
 {
-    QDate date = PROFILE.LastDay(MT_JOURNAL);
+    QDate date = p_profile->LastDay(MT_JOURNAL);
 
     if (!date.isValid()) {
         return;
@@ -952,7 +952,7 @@ void MainWindow::updateFavourites()
                    "<table width=100% cellpadding=2 cellspacing=0>";
 
     do {
-        Day *journal = PROFILE.GetDay(date, MT_JOURNAL);
+        Day *journal = p_profile->GetDay(date, MT_JOURNAL);
 
         if (journal) {
             if (journal->size() > 0) {
@@ -993,7 +993,7 @@ void MainWindow::updateFavourites()
         }
 
         date = date.addDays(-1);
-    } while (date >= PROFILE.FirstDay(MT_JOURNAL));
+    } while (date >= p_profile->FirstDay(MT_JOURNAL));
 
     html += "</table></body></html>";
     ui->bookmarkView->setHtml(html);
@@ -1203,7 +1203,7 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
-    PROFILE.general->setShowDebug(checked);
+    p_profile->general->setShowDebug(checked);
 
     logger->strlock.lock();
     if (checked) {
@@ -1349,7 +1349,7 @@ void MainWindow::on_actionPrint_Report_triggered()
             datestr = QDateTime::currentDateTime().toString(Qt::ISODate);
         } else { name = "Unknown"; }
 
-        QString filename = PREF.Get("{home}/" + name + "_" + PROFILE.user->userName() + "_" + datestr + ".pdf");
+        QString filename = PREF.Get("{home}/" + name + "_" + p_profile->user->userName() + "_" + datestr + ".pdf");
 
         printer.setOutputFileName(filename);
 #endif
@@ -1388,7 +1388,7 @@ void MainWindow::on_action_Edit_Profile_triggered()
 
 void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
 {
-    PROFILE.general->setLinkGroups(arg1);
+    p_profile->general->setLinkGroups(arg1);
 
     if (daily) { daily->RedrawGraphs(); }
 }
@@ -1503,11 +1503,11 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
     QVector<ChannelID> invalid;
 
-    QList<Machine *> machines = PROFILE.GetMachines(MT_OXIMETER);
+    QList<Machine *> machines = p_profile->GetMachines(MT_OXIMETER);
 
     qint64 f = 0, l = 0;
 
-    int discard_threshold = PROFILE.oxi->oxiDiscardThreshold();
+    int discard_threshold = p_profile->oxi->oxiDiscardThreshold();
     Machine *m;
 
     for (int z = 0; z < machines.size(); z++) {
@@ -1690,7 +1690,7 @@ void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
 
 void MainWindow::on_actionChange_User_triggered()
 {
-    PROFILE.Save();
+    p_profile->Save();
     PREF.Save();
     RestartApplication(true);
 }
@@ -1698,12 +1698,12 @@ void MainWindow::on_actionChange_User_triggered()
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
     QDate date = getDaily()->getDate();
-    Day *day = PROFILE.GetDay(date, MT_CPAP);
+    Day *day = p_profile->GetDay(date, MT_CPAP);
     Machine *m;
 
     if (day) {
         m = day->machine;
-        QString path = PROFILE.Get("{" + STR_GEN_DataFolder + "}/") + m->GetClass() + "_" +
+        QString path = p_profile->Get("{" + STR_GEN_DataFolder + "}/") + m->GetClass() + "_" +
                        m->properties[STR_PROP_Serial] + "/";
 
         QList<Session *>::iterator s;
@@ -1731,7 +1731,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             delete sess;
         }
 
-        QList<Day *> &dl = PROFILE.daylist[date];
+        QList<Day *> &dl = p_profile->daylist[date];
         QList<Day *>::iterator it;//=dl.begin();
 
         for (it = dl.begin(); it != dl.end(); it++) {
@@ -1740,7 +1740,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
 
         if (it != dl.end()) {
             dl.erase(it);
-            //PROFILE.daylist[date].  // ??
+            //p_profile->daylist[date].  // ??
             delete day;
         }
     }
@@ -1754,7 +1754,7 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
     QString data = action->data().toString();
     QString cls = data.section(":",0,0);
     QString serial = data.section(":", 1);
-    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     Machine * mach = nullptr;
     for (int i=0; i < machines.size(); ++i) {
         Machine * m = machines.at(i);
@@ -1788,7 +1788,7 @@ void MainWindow::purgeMachine(Machine * mach)
         QMessageBox::warning(this, STR_MessageBox_Error,
                              tr("Not all session data could be removed, you have to delete the following folder manually.")
                              +"\n\n"+
-                             QDir::toNativeSeparators(PROFILE.Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
+                             QDir::toNativeSeparators(p_profile->Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
         if (overview) overview->ReloadGraphs();
 
         if (daily) {
@@ -1812,13 +1812,13 @@ void MainWindow::purgeMachine(Machine * mach)
                               STR_MessageBox_Question,
                               tr("Machine data has been successfully purged.") + "\n\n" +
                               tr("Would you like to reimport from the backup folder?") + "\n\n" +
-                              QDir::toNativeSeparators(PROFILE.Get(mach->properties[STR_PROP_BackupPath])),
+                              QDir::toNativeSeparators(p_profile->Get(mach->properties[STR_PROP_BackupPath])),
                               QMessageBox::Yes | QMessageBox::No,
                               QMessageBox::Yes) == QMessageBox::No) {
-        PROFILE.machlist.erase(PROFILE.machlist.find(mach->id()));
+        p_profile->machlist.erase(p_profile->machlist.find(mach->id()));
         delete mach;
     } else {
-        importCPAP(PROFILE.Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
+        importCPAP(p_profile->Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
         if (overview) overview->ReloadGraphs();
         if (daily) {
             daily->clearLastDay(); // otherwise Daily will crash
@@ -1826,7 +1826,7 @@ void MainWindow::purgeMachine(Machine * mach)
         }
     }
     GenerateStatistics();
-    PROFILE.Save();
+    p_profile->Save();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -1942,13 +1942,13 @@ void MainWindow::reprocessEvents(bool restart)
 
 void MainWindow::FreeSessions()
 {
-    QDate first = PROFILE.FirstDay();
-    QDate date = PROFILE.LastDay();
+    QDate first = p_profile->FirstDay();
+    QDate date = p_profile->LastDay();
     Day *day;
     QDate current = daily->getDate();
 
     do {
-        day = PROFILE.GetDay(date, MT_CPAP);
+        day = p_profile->GetDay(date, MT_CPAP);
 
         if (day) {
             if (date != current) {
@@ -1962,13 +1962,13 @@ void MainWindow::FreeSessions()
 
 void MainWindow::doReprocessEvents()
 {
-    if (PROFILE.countDays(MT_CPAP, PROFILE.FirstDay(), PROFILE.LastDay()) == 0) {
+    if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) == 0) {
         return;
     }
 
     m_inRecalculation = true;
-    QDate first = PROFILE.FirstDay();
-    QDate date = PROFILE.LastDay();
+    QDate first = p_profile->FirstDay();
+    QDate date = p_profile->LastDay();
     Session *sess;
     Day *day;
     //FlowParser flowparser;
@@ -1980,10 +1980,10 @@ void MainWindow::doReprocessEvents()
     int daycount = first.daysTo(date);
     int idx = 0;
 
-    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
 
     // Disabling multithreaded save as it appears it's causing problems
-    bool cache_sessions = false; //PROFILE.session->cacheSessions();
+    bool cache_sessions = false; //p_profile->session->cacheSessions();
 
     if (cache_sessions) { // Use multithreaded save to handle reindexing.. (hogs memory like hell)
         qstatus->setText(tr("Loading Event Data"));
@@ -1999,7 +1999,7 @@ void MainWindow::doReprocessEvents()
     bool isopen;
 
     do {
-        day = PROFILE.GetDay(date, MT_CPAP);
+        day = p_profile->GetDay(date, MT_CPAP);
 
         if (day) {
             for (int i = 0; i < day->size(); i++) {
@@ -2144,7 +2144,7 @@ void MainWindow::on_actionChange_Language_triggered()
     QSettings *settings = new QSettings(getDeveloperName(), getAppName());
     settings->remove("Settings/Language");
     delete settings;
-    PROFILE.Save();
+    p_profile->Save();
     PREF.Save();
 
     RestartApplication(true);
@@ -2152,7 +2152,7 @@ void MainWindow::on_actionChange_Language_triggered()
 
 void MainWindow::on_actionChange_Data_Folder_triggered()
 {
-    PROFILE.Save();
+    p_profile->Save();
     PREF.Save();
     RestartApplication(false, true);
 }
@@ -2183,8 +2183,8 @@ void MainWindow::on_actionImport_Somnopose_Data_triggered()
 
 void MainWindow::GenerateStatistics()
 {
-    QDate first = PROFILE.FirstDay();
-    QDate last = PROFILE.LastDay();
+    QDate first = p_profile->FirstDay();
+    QDate last = p_profile->LastDay();
     ui->statStartDate->setMinimumDate(first);
     ui->statStartDate->setMaximumDate(last);
 
@@ -2224,8 +2224,8 @@ void MainWindow::on_reportModeMonthly_clicked()
 {
     ui->statStartDate->setVisible(false);
     ui->statEndDate->setVisible(false);
-    if (PROFILE.general->statReportMode() != 1) {
-        PROFILE.general->setStatReportMode(1);
+    if (p_profile->general->statReportMode() != 1) {
+        p_profile->general->setStatReportMode(1);
         GenerateStatistics();
     }
 }
@@ -2234,8 +2234,8 @@ void MainWindow::on_reportModeStandard_clicked()
 {
     ui->statStartDate->setVisible(false);
     ui->statEndDate->setVisible(false);
-    if (PROFILE.general->statReportMode() != 0) {
-        PROFILE.general->setStatReportMode(0);
+    if (p_profile->general->statReportMode() != 0) {
+        p_profile->general->setStatReportMode(0);
         GenerateStatistics();
     }
 }
@@ -2245,8 +2245,8 @@ void MainWindow::on_reportModeRange_clicked()
 {
     ui->statStartDate->setVisible(true);
     ui->statEndDate->setVisible(true);
-    if (PROFILE.general->statReportMode() != 2) {
-        PROFILE.general->setStatReportMode(2);
+    if (p_profile->general->statReportMode() != 2) {
+        p_profile->general->setStatReportMode(2);
         GenerateStatistics();
     }
 }
@@ -2256,7 +2256,7 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
     if (!getDaily())
         return;
     QDate date = getDaily()->getDate();
-    Day * day = PROFILE.GetDay(date, MT_OXIMETER);
+    Day * day = p_profile->GetDay(date, MT_OXIMETER);
     if (day) {
         if (QMessageBox::question(this, STR_MessageBox_Warning,
             tr("Are you sure you want to delete oximetry data for %1").

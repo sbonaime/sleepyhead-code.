@@ -340,7 +340,7 @@ class ResmedLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
 
     //! \brief Returns the version number of this ResMed loader
     virtual int Version() { return resmed_data_version; }
@@ -353,7 +353,7 @@ class ResmedLoader : public MachineLoader
                      qint64 duration, EventDataType min = 0, EventDataType max = 0, bool square = false);
 
     //! \brief Create Machine record, and index it by serial number
-    Machine *CreateMachine(QString serial, Profile *profile);
+    Machine *CreateMachine(QString serial);
 
     //! \brief Register the ResmedLoader with the list of other machine loaders
     static void Register();

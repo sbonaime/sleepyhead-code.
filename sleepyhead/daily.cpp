@@ -129,7 +129,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    int default_height=PROFILE.appearance->graphHeight();
+    int default_height=p_profile->appearance->graphHeight();
 
     gGraph *GAHI = nullptr,
 //            *TAP = nullptr,
@@ -158,13 +158,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height);
     }
 
-    int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
+    int oxigrp=p_profile->ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
     for (int i=0; i < oxisize; ++i) {
         ChannelID code = oxicodes[i];
         graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height, oxigrp);
     }
 
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         AHI=new gGraph(GraphView,STR_TR_RDI, channelInfo(CPAP_RDI), default_height);
     } else {
         AHI=new gGraph(GraphView,STR_TR_AHI, channelInfo(CPAP_AHI), default_height);
@@ -216,7 +216,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
-    if (PROFILE.cpap->userEventFlagging()) {
+    if (p_profile->cpap->userEventFlagging()) {
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag1, COLOR_Yellow, STR_TR_UF1)));
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag2, COLOR_DarkGreen, STR_TR_UF2)));
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag3, COLOR_Brown, STR_TR_UF3)));
@@ -265,7 +265,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
 
     gLineOverlayBar * rera = new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE);
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         FRW->AddLayer(AddCPAP(los->add(rera)));
     } else {
         FRW->AddLayer(AddCPAP(rera));
@@ -276,7 +276,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
-    if (PROFILE.cpap->userEventFlagging()) {
+    if (p_profile->cpap->userEventFlagging()) {
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1, COLOR_Yellow, tr("U1"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
@@ -288,7 +288,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     FRW->AddLayer(AddCPAP(los));
 
-    bool square=PROFILE.appearance->squareWavePlots();
+    bool square=p_profile->appearance->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, COLOR_Pressure, square);
     graphlist[schema::channel[CPAP_Pressure].label()]->AddLayer(AddCPAP(pc));
     pc->addPlot(CPAP_EPAP, COLOR_EPAP, square);
@@ -296,7 +296,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     pc->addPlot(CPAP_IPAP, COLOR_IPAP, square);
     pc->addPlot(CPAP_IPAPHi, COLOR_IPAPHi, square);
 
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI, COLOR_RDI, square)));
 //        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     } else {
@@ -374,8 +374,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         it.value()->AddLayer(new gXAxis(),LayerBottom,0,20);
     }
 
-    if (PROFILE.cpap->showLeakRedline()) {
-        schema::channel[CPAP_Leak].setUpperThreshold(PROFILE.cpap->leakRedline());
+    if (p_profile->cpap->showLeakRedline()) {
+        schema::channel[CPAP_Leak].setUpperThreshold(p_profile->cpap->leakRedline());
     } else {
         schema::channel[CPAP_Leak].setUpperThreshold(0); // switch it off
     }
@@ -397,7 +397,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     connect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
 
-    int ews=PROFILE.general->eventWindowSize();
+    int ews=p_profile->general->eventWindowSize();
     ui->evViewSlider->setValue(ews);
     ui->evViewLCD->display(ews);
 
@@ -408,7 +408,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     ui->splitter->setVisible(false);
 
-    if (PROFILE.general->unitSystem()==US_Archiac) {
+    if (p_profile->general->unitSystem()==US_Archiac) {
         ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
@@ -457,7 +457,7 @@ void Daily::doToggleSession(Session * sess)
     sess->setEnabled(!sess->enabled());
 
    // sess->StoreSummary();
-    Day *day=PROFILE.GetDay(previous_date,MT_CPAP);
+    Day *day=p_profile->GetDay(previous_date,MT_CPAP);
     if (day) {
         day->machine->Save();
         this->LoadDate(previous_date);
@@ -471,7 +471,7 @@ void Daily::Link_clicked(const QUrl &url)
     int sid=data.toInt();
     Day *day=nullptr;
     if (code=="togglecpapsession") { // Enable/Disable CPAP session
-        day=PROFILE.GetDay(previous_date,MT_CPAP);
+        day=p_profile->GetDay(previous_date,MT_CPAP);
         Session *sess=day->find(sid);
         if (!sess)
             return;
@@ -486,7 +486,7 @@ void Daily::Link_clicked(const QUrl &url)
         webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
         return;
     } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
-        day=PROFILE.GetDay(previous_date,MT_OXIMETER);
+        day=p_profile->GetDay(previous_date,MT_OXIMETER);
         Session *sess=day->find(sid);
         if (!sess)
             return;
@@ -500,9 +500,9 @@ void Daily::Link_clicked(const QUrl &url)
         webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
         return;
     } else if (code=="cpap")  {
-        day=PROFILE.GetDay(previous_date,MT_CPAP);
+        day=p_profile->GetDay(previous_date,MT_CPAP);
     } else if (code=="oxi") {
-        //day=PROFILE.GetDay(previous_date,MT_OXIMETER);
+        //day=p_profile->GetDay(previous_date,MT_OXIMETER);
         //Session *sess=day->machine->sessionlist[sid];
         return;
     } else if (code=="event")  {
@@ -541,7 +541,7 @@ void Daily::ReloadGraphs()
         d=previous_date;
 //        Unload(d);
     }
-    d=PROFILE.LastDay();
+    d=p_profile->LastDay();
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
@@ -579,7 +579,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     int total_events=0;
     bool userflags=p_profile->cpap->userEventFlagging();
 
-    qint64 drift=0, clockdrift=PROFILE.cpap->clockDrift()*1000L;
+    qint64 drift=0, clockdrift=p_profile->cpap->clockDrift()*1000L;
     for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
         if (!(*s)->enabled()) continue;
 
@@ -704,11 +704,11 @@ void Daily::UpdateCalendarDay(QDate date)
     nodata.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     nodata.setFontWeight(QFont::Normal);
 
-    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=nullptr;
-    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=nullptr;
-    bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=nullptr;
-    bool hasstage=PROFILE.GetDay(date,MT_SLEEPSTAGE)!=nullptr;
-    bool haspos=PROFILE.GetDay(date,MT_POSITION)!=nullptr;
+    bool hascpap=p_profile->GetDay(date,MT_CPAP)!=nullptr;
+    bool hasoxi=p_profile->GetDay(date,MT_OXIMETER)!=nullptr;
+    bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=nullptr;
+    bool hasstage=p_profile->GetDay(date,MT_SLEEPSTAGE)!=nullptr;
+    bool haspos=p_profile->GetDay(date,MT_POSITION)!=nullptr;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxicpap);
@@ -766,7 +766,7 @@ void Daily::on_calendar_selectionChanged()
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
-    if (PROFILE.general->unitSystem()==US_Archiac) {
+    if (p_profile->general->unitSystem()==US_Archiac) {
         ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
@@ -1112,15 +1112,15 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     list.push_back(pos);
 
 
-    int mididx=PROFILE.general->prefCalcMiddle();
+    int mididx=p_profile->general->prefCalcMiddle();
     SummaryType ST_mid;
     if (mididx==0) ST_mid=ST_PERC;
     if (mididx==1) ST_mid=ST_WAVG;
     if (mididx==2) ST_mid=ST_AVG;
 
-    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
+    float percentile=p_profile->general->prefCalcPercentile()/100.0;
 
-    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_PERC : ST_MAX;
+    SummaryType ST_max=p_profile->general->prefCalcMax() ? ST_PERC : ST_MAX;
     const EventDataType maxperc=0.995F;
 
     QString midname;
@@ -1212,8 +1212,8 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
     } else
-    if (cpap && PROFILE.cpap->showLeakRedline()) {
-        float rlt = cpap->timeAboveThreshold(CPAP_Leak, PROFILE.cpap->leakRedline()) / 60.0;
+    if (cpap && p_profile->cpap->showLeakRedline()) {
+        float rlt = cpap->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
         float pc = 100.0 / cpap->hours() * rlt;
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
         html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
@@ -1271,12 +1271,12 @@ void Daily::Load(QDate date)
 {
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     previous_date=date;
-    Day *cpap=PROFILE.GetDay(date,MT_CPAP);
-    Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
-    Day *stage=PROFILE.GetDay(date,MT_SLEEPSTAGE);
-    Day *posit=PROFILE.GetDay(date,MT_POSITION);
+    Day *cpap=p_profile->GetDay(date,MT_CPAP);
+    Day *oxi=p_profile->GetDay(date,MT_OXIMETER);
+    Day *stage=p_profile->GetDay(date,MT_SLEEPSTAGE);
+    Day *posit=p_profile->GetDay(date,MT_POSITION);
 
-    if (!PROFILE.session->cacheSessions()) {
+    if (!p_profile->session->cacheSessions()) {
         // Getting trashed on purge last day...
 
         // lastcpapday can get purged and be invalid
@@ -1349,7 +1349,7 @@ void Daily::Load(QDate date)
     if (cpap) {
         float hours=cpap->hours();
         if (GraphView->isEmpty() && (hours>0)) {
-            if (!PROFILE.hasChannel(CPAP_Obstructive) && !PROFILE.hasChannel(CPAP_Hypopnea)) {
+            if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
                 GraphView->setEmptyText(tr("No Graphs :("));
 
                 isBrick=true;
@@ -1361,7 +1361,7 @@ void Daily::Load(QDate date)
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
         EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
-        if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
+        if (p_profile->general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
         ahi/=hours;
         EventDataType csr,uai,oai,hi,cai,rei,fli,sai,nri,lki,vs,vs2,exp,lk2;
 
@@ -1369,7 +1369,7 @@ void Daily::Load(QDate date)
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             ChannelID ahichan=CPAP_AHI;
             QString ahiname=STR_TR_AHI;
-            if (PROFILE.general->calculateRDI()) {
+            if (p_profile->general->calculateRDI()) {
                 ahichan=CPAP_RDI;
                 ahiname=STR_TR_RDI;
             }
@@ -1422,7 +1422,7 @@ void Daily::Load(QDate date)
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             // Show Event Breakdown pie chart
-            if ((hours > 0) && PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
+            if ((hours > 0) && p_profile->appearance->graphSnapshots()) {  // AHI Pie Chart
                 if ((oai+hi+cai+uai+rei+fli+sai)>0) {
                     html+="<tr><td align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
@@ -1556,7 +1556,7 @@ void Daily::Load(QDate date)
         if (journal->settings.contains(Journal_Weight)) {
             double kg=journal->settings[Journal_Weight].toDouble(&ok);
 
-            if (PROFILE.general->unitSystem()==US_Metric) {
+            if (p_profile->general->unitSystem()==US_Metric) {
                 ui->weightSpinBox->setDecimals(3);
                 ui->weightSpinBox->blockSignals(true);
                 ui->weightSpinBox->setValue(kg);
@@ -1581,7 +1581,7 @@ void Daily::Load(QDate date)
                 ui->ouncesSpinBox->setVisible(true);
                 ui->ouncesSpinBox->setSuffix(STR_UNIT_OUNCE);
             }
-            double height=PROFILE.user->height()/100.0;
+            double height=p_profile->user->height()/100.0;
             if (height>0 && kg>0) {
                 double bmi=kg/(height*height);
                 ui->BMI->setVisible(true);
@@ -1604,8 +1604,8 @@ void Daily::Load(QDate date)
             ui->bookmarkTable->blockSignals(true);
 
 
-            qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
-            Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
+            qint64 clockdrift=p_profile->cpap->clockDrift()*1000L,drift;
+            Day * dday=p_profile->GetDay(previous_date,MT_CPAP);
             drift=(dday!=nullptr) ? clockdrift : 0;
 
             bool ok;
@@ -1632,7 +1632,7 @@ void Daily::Load(QDate date)
 void Daily::UnitsChanged()
 {
     double kg;
-    if (PROFILE.general->unitSystem()==US_Archiac) {
+    if (p_profile->general->unitSystem()==US_Archiac) {
         kg=ui->weightSpinBox->value();
         float ounces=(kg*1000.0)/ounce_convert;
         int pounds=ounces/16;
@@ -1691,7 +1691,7 @@ void Daily::Unload(QDate date)
         if (journal->IsChanged()) {
             // blah.. was updating overview graphs here.. Was too slow.
         }
-        Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
+        Machine *jm=p_profile->GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
     }
     UpdateCalendarDay(date);
@@ -1774,17 +1774,17 @@ void Daily::on_JournalNotesColour_clicked()
 }
 Session * Daily::CreateJournalSession(QDate date)
 {
-    Machine *m=PROFILE.GetMachine(MT_JOURNAL);
+    Machine *m=p_profile->GetMachine(MT_JOURNAL);
     if (!m) {
-        m=new Machine(p_profile,0);
+        m=new Machine(0);
         m->SetClass("Journal");
         m->properties[STR_PROP_Brand]="Virtual";
         m->SetType(MT_JOURNAL);
-        PROFILE.AddMachine(m);
+        p_profile->AddMachine(m);
     }
     Session *sess=new Session(m,0);
     qint64 st,et;
-    Day *cday=PROFILE.GetDay(date,MT_CPAP);
+    Day *cday=p_profile->GetDay(date,MT_CPAP);
     if (cday) {
         st=cday->first();
         et=cday->last();
@@ -1796,12 +1796,12 @@ Session * Daily::CreateJournalSession(QDate date)
     sess->set_first(st);
     sess->set_last(et);
     sess->SetChanged(true);
-    m->AddSession(sess,p_profile);
+    m->AddSession(sess);
     return sess;
 }
 Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 {
-    Day *journal=PROFILE.GetDay(date,MT_JOURNAL);
+    Day *journal=p_profile->GetDay(date,MT_JOURNAL);
     if (!journal)
         return nullptr; //CreateJournalSession(date);
     QList<Session *>::iterator s;
@@ -1858,8 +1858,8 @@ void Daily::UpdateOXIGraphs(Day *day)
 void Daily::RedrawGraphs()
 {
     // setting this here, because it needs to be done when preferences change
-    if (PROFILE.cpap->showLeakRedline()) {
-        schema::channel[CPAP_Leak].setUpperThreshold(PROFILE.cpap->leakRedline());
+    if (p_profile->cpap->showLeakRedline()) {
+        schema::channel[CPAP_Leak].setUpperThreshold(p_profile->cpap->leakRedline());
     } else {
         schema::channel[CPAP_Leak].setUpperThreshold(0); // switch it off
     }
@@ -1872,7 +1872,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     Q_UNUSED(column);
     QDateTime d;
     if (!item->data(0,Qt::UserRole).isNull()) {
-        qint64 winsize=qint64(PROFILE.general->eventWindowSize())*60000L;
+        qint64 winsize=qint64(p_profile->general->eventWindowSize())*60000L;
         qint64 t=item->data(0,Qt::UserRole).toLongLong();
 
         double st=t-(winsize/2);
@@ -1917,13 +1917,13 @@ void Daily::on_JournalNotesUnderline_clicked()
 
 void Daily::on_prevDayButton_clicked()
 {
-    if (!PROFILE.ExistsAndTrue("SkipEmptyDays")) {
+    if (!p_profile->ExistsAndTrue("SkipEmptyDays")) {
         LoadDate(previous_date.addDays(-1));
     } else {
         QDate d=previous_date;
         for (int i=0;i<90;i++) {
             d=d.addDays(-1);
-            if (PROFILE.GetDay(d)) {
+            if (p_profile->GetDay(d)) {
                 LoadDate(d);
                 break;
             }
@@ -1933,13 +1933,13 @@ void Daily::on_prevDayButton_clicked()
 
 void Daily::on_nextDayButton_clicked()
 {
-    if (!PROFILE.ExistsAndTrue("SkipEmptyDays")) {
+    if (!p_profile->ExistsAndTrue("SkipEmptyDays")) {
         LoadDate(previous_date.addDays(1));
     } else {
         QDate d=previous_date;
         for (int i=0;i<90;i++) {
             d=d.addDays(1);
-            if (PROFILE.GetDay(d)) {
+            if (p_profile->GetDay(d)) {
                 LoadDate(d);
                 break;
             }
@@ -1963,14 +1963,14 @@ void Daily::on_calButton_toggled(bool checked)
 void Daily::on_todayButton_clicked()
 {
     QDate d=QDate::currentDate();
-    if (d > PROFILE.LastDay()) d=PROFILE.LastDay();
+    if (d > p_profile->LastDay()) d=p_profile->LastDay();
     LoadDate(d);
 }
 
 void Daily::on_evViewSlider_valueChanged(int value)
 {
     ui->evViewLCD->display(value);
-    PROFILE.general->setEventWindowSize(value);
+    p_profile->general->setEventWindowSize(value);
 
     int winsize=value*60;
 
@@ -1999,8 +1999,8 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     int row=item->row();
     qint64 st,et;
 
-//    qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
-//    Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
+//    qint64 clockdrift=p_profile->cpap->clockDrift()*1000L,drift;
+//    Day * dday=p_profile->GetDay(previous_date,MT_CPAP);
 //    drift=(dday!=nullptr) ? clockdrift : 0;
 
     QTableWidgetItem *it=ui->bookmarkTable->item(row,1);
@@ -2008,12 +2008,12 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     st=it->data(Qt::UserRole).toLongLong(&ok);
     et=it->data(Qt::UserRole+1).toLongLong(&ok);
     qint64 st2=0,et2=0,st3,et3;
-    Day * day=PROFILE.GetGoodDay(previous_date,MT_CPAP);
+    Day * day=p_profile->GetGoodDay(previous_date,MT_CPAP);
     if (day) {
         st2=day->first();
         et2=day->last();
     }
-    Day * oxi=PROFILE.GetGoodDay(previous_date,MT_OXIMETER);
+    Day * oxi=p_profile->GetGoodDay(previous_date,MT_OXIMETER);
     if (oxi) {
         st3=oxi->first();
         et3=oxi->last();
@@ -2049,8 +2049,8 @@ void Daily::on_addBookmarkButton_clicked()
     dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     ui->bookmarkTable->setItem(row,0,dw);
     ui->bookmarkTable->setItem(row,1,tw);
-    qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
-    Day * day=PROFILE.GetDay(previous_date,MT_CPAP);
+    qint64 clockdrift=p_profile->cpap->clockDrift()*1000L,drift;
+    Day * day=p_profile->GetDay(previous_date,MT_CPAP);
     drift=(day!=nullptr) ? clockdrift : 0;
 
     // Counter CPAP clock drift for storage, in case user changes it later on
@@ -2127,10 +2127,10 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
 {
     // Update the BMI display
     double kg;
-    if (PROFILE.general->unitSystem()==US_Archiac) {
+    if (p_profile->general->unitSystem()==US_Archiac) {
          kg=((arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert)) / 1000.0;
     } else kg=arg1;
-    double height=PROFILE.user->height()/100.0;
+    double height=p_profile->user->height()/100.0;
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
         ui->BMI->display(bmi);
@@ -2142,14 +2142,14 @@ void Daily::on_weightSpinBox_editingFinished()
 {
     double arg1=ui->weightSpinBox->value();
 
-    double height=PROFILE.user->height()/100.0;
+    double height=p_profile->user->height()/100.0;
     Session *journal=GetJournalSession(previous_date);
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
 
     double kg;
-    if (PROFILE.general->unitSystem()==US_Archiac) {
+    if (p_profile->general->unitSystem()==US_Archiac) {
             kg=((arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert)) / 1000.0;
     } else {
             kg=arg1;
@@ -2177,7 +2177,7 @@ void Daily::on_weightSpinBox_editingFinished()
 void Daily::on_ouncesSpinBox_valueChanged(int arg1)
 {
     // just update for BMI display
-    double height=PROFILE.user->height()/100.0;
+    double height=p_profile->user->height()/100.0;
     double kg=((ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert)) / 1000.0;
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
@@ -2193,7 +2193,7 @@ void Daily::on_ouncesSpinBox_editingFinished()
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
-    double height=PROFILE.user->height()/100.0;
+    double height=p_profile->user->height()/100.0;
     double kg=((ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert)) / 1000.0;
     journal->settings[Journal_Weight]=kg;
 

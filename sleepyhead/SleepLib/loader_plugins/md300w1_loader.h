@@ -31,14 +31,14 @@ Q_OBJECT
     virtual ~MD300W1Loader();
 
     virtual bool Detect(const QString &path);
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
 
     static void Register();
 
     virtual int Version() { return md300w1_data_version; }
     virtual const QString &ClassName() { return md300w1_class_name; }
 
-    Machine *CreateMachine(Profile *profile);
+    Machine *CreateMachine();
 
     virtual void process();
 

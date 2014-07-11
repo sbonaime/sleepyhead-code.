@@ -17,8 +17,8 @@ extern QProgressBar *qprogress;
 
 
 
-MSeries::MSeries(Profile *p, MachineID id)
-    : CPAP(p, id)
+MSeries::MSeries(MachineID id)
+    : CPAP(id)
 {
     m_class = mseries_class_name;
     properties[STR_PROP_Brand] = "Respironics";
@@ -115,9 +115,8 @@ blockLayoutOffsets   {
                     */
 
 
-int MSeriesLoader::Open(QString path, Profile *profile)
+int MSeriesLoader::Open(QString path)
 {
-    Q_UNUSED(profile);
     // Until a smartcard reader is written, this is not an auto-scanner.. it just opens a block file..
 
     QFile file(path);
@@ -485,15 +484,13 @@ int MSeriesLoader::Open(QString path, Profile *profile)
     return 1;
 }
 
-Machine *MSeriesLoader::CreateMachine(QString serial, Profile *profile)
+Machine *MSeriesLoader::CreateMachine(QString serial)
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile != nullptr);
 
     qDebug() << "Create Machine " << serial;
 
-    QList<Machine *> ml = profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
 
@@ -507,10 +504,10 @@ Machine *MSeriesLoader::CreateMachine(QString serial, Profile *profile)
 
     if (found) { return *i; }
 
-    Machine *m = new MSeries(profile, 0);
+    Machine *m = new MSeries(0);
 
     MachList[serial] = m;
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial] = serial;
     m->properties[STR_PROP_DataVersion] = QString::number(mseries_data_version);

@@ -41,7 +41,7 @@ public:
     virtual ~SerialOximeter() {}
 
     virtual bool Detect(const QString &path)=0;
-    virtual int Open(QString path, Profile *profile)=0;
+    virtual int Open(QString path)=0;
 
     static void Register() {}
 
@@ -60,7 +60,7 @@ public:
 
     virtual void process() {}
 
-    virtual Machine *CreateMachine(Profile *profile)=0;
+    virtual Machine *CreateMachine()=0;
 
     // available sessions
     QMap<QDateTime, QVector<OxiRecord> *> oxisessions;

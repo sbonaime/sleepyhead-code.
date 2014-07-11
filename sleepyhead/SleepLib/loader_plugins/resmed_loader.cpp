@@ -695,7 +695,7 @@ void ResmedImport::run()
         if (sess->length() > 0) {
             loader->saveMutex.lock();
 
-            if (!mach->AddSession(sess, p_profile)) {
+            if (!mach->AddSession(sess)) {
                 delete sess;
                 loader->saveMutex.unlock();
                 return;
@@ -727,18 +727,18 @@ ResmedLoader::~ResmedLoader()
 {
 }
 
-Machine *ResmedLoader::CreateMachine(QString serial, Profile *profile)
+Machine *ResmedLoader::CreateMachine(QString serial)
 {
-    if (!profile) { return nullptr; }
+    Q_ASSERT(p_profile != nullptr);
 
-    QList<Machine *> ml = profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
     Machine *m = nullptr;
 
     for (i = ml.begin(); i != ml.end(); i++) {
         if (((*i)->GetClass() == resmed_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            ResmedList[serial] = *i; //static_cast<CPAP *>(*i);
+            ResmedList[serial] = *i;
             found = true;
             m = *i;
             break;
@@ -746,7 +746,7 @@ Machine *ResmedLoader::CreateMachine(QString serial, Profile *profile)
     }
 
     if (!found) {
-        m = new CPAP(profile, 0);
+        m = new CPAP(0);
     }
 
     m->properties[STR_PROP_Brand] = STR_MACH_ResMed;
@@ -760,7 +760,7 @@ Machine *ResmedLoader::CreateMachine(QString serial, Profile *profile)
     m->SetClass(resmed_class_name);
 
     ResmedList[serial] = m;
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial] = serial;
     m->properties[STR_PROP_DataVersion] = QString::number(resmed_data_version);
@@ -871,7 +871,7 @@ void ResmedImportStage2::run()
     }
 
     loader->saveMutex.lock();
-    mach->AddSession(sess, p_profile);
+    mach->AddSession(sess);
     sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
     loader->saveMutex.unlock();
 }
@@ -904,7 +904,7 @@ bool ResmedLoader::Detect(const QString & givenpath)
     return true;
 }
 
-int ResmedLoader::Open(QString path, Profile *profile)
+int ResmedLoader::Open(QString path)
 {
 
     QString serial;                 // Serial number
@@ -998,15 +998,15 @@ int ResmedLoader::Open(QString path, Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     // Create machine object (unless it's already registered)
     ///////////////////////////////////////////////////////////////////////////////////
-    Machine *m = CreateMachine(serial, profile);
+    Machine *m = CreateMachine(serial);
 
-    bool create_backups = PROFILE.session->backupCardData();
-    bool compress_backups = PROFILE.session->compressBackupData();
+    bool create_backups = p_profile->session->backupCardData();
+    bool compress_backups = p_profile->session->compressBackupData();
 
-    QString backup_path = PROFILE.Get(m->properties[STR_PROP_BackupPath]);
+    QString backup_path = p_profile->Get(m->properties[STR_PROP_BackupPath]);
 
     if (backup_path.isEmpty()) {
-        backup_path = PROFILE.Get(m->properties[STR_PROP_Path]) + "Backup/";
+        backup_path = p_profile->Get(m->properties[STR_PROP_Path]) + "Backup/";
     }
 
     if (path == backup_path) {
@@ -1340,9 +1340,9 @@ int ResmedLoader::Open(QString path, Profile *profile)
 
     size = strsess.size();
     cnt=0;
-    quint32 ignoreolder = PROFILE.session->ignoreOlderSessionsDate().toTime_t();
+    quint32 ignoreolder = p_profile->session->ignoreOlderSessionsDate().toTime_t();
 
-    bool ignoreold = PROFILE.session->ignoreOlderSessions();
+    bool ignoreold = p_profile->session->ignoreOlderSessions();
     // strsess end can change above.
     end = strsess.end();
 

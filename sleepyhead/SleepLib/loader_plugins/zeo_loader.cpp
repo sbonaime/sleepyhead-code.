@@ -30,10 +30,9 @@ ZEOLoader::~ZEOLoader()
 {
 }
 
-int ZEOLoader::Open(QString path, Profile *profile)
+int ZEOLoader::Open(QString path)
 {
     Q_UNUSED(path)
-    Q_UNUSED(profile)
 
     QString newpath;
 
@@ -77,7 +76,7 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
 
     qDebug("Create ZEO Machine Record");
 
-    Machine *m = new SleepStage(profile, 0);
+    Machine *m = new SleepStage(0);
     m->SetType(MT_SLEEPSTAGE);
     m->SetClass(zeo_class_name);
     m->properties[STR_PROP_Brand] = "ZEO";
@@ -344,7 +343,7 @@ int ZEOLoader::OpenFile(QString filename)
         sess->really_set_last(tt);
         int size = DSG.size();
         sess->SetChanged(true);
-        mach->AddSession(sess, p_profile);
+        mach->AddSession(sess);
 
 
         qDebug() << linecomp[0] << start_of_night << end_of_night << rise_time << size <<

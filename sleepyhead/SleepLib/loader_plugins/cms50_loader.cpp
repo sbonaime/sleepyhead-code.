@@ -67,11 +67,9 @@ bool CMS50Loader::Detect(const QString &path)
     return false;
 }
 
-int CMS50Loader::Open(QString path, Profile *profile)
+int CMS50Loader::Open(QString path)
 {
-
     // Only one active Oximeter module at a time, set in preferences
-    Q_UNUSED(profile)
 
     m_itemCnt = 0;
     m_itemTotal = 0;
@@ -629,16 +627,14 @@ bool CMS50Loader::readSpoRFile(QString path)
     return true;
 }
 
-Machine *CMS50Loader::CreateMachine(Profile *profile)
+Machine *CMS50Loader::CreateMachine()
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile != nullptr);
 
     // NOTE: This only allows for one CMS50 machine per profile..
     // Upgrading their oximeter will use this same record..
 
-    QList<Machine *> ml = profile->GetMachines(MT_OXIMETER);
+    QList<Machine *> ml = p_profile->GetMachines(MT_OXIMETER);
 
     for (QList<Machine *>::iterator i = ml.begin(); i != ml.end(); i++) {
         if ((*i)->GetClass() == cms50_class_name)  {
@@ -649,13 +645,13 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
 
     qDebug() << "Create CMS50 Machine Record";
 
-    Machine *m = new Oximeter(profile, 0);
+    Machine *m = new Oximeter(0);
     m->SetClass(cms50_class_name);
     m->properties[STR_PROP_Brand] = "Contec";
     m->properties[STR_PROP_Model] = "CMS50X";
     m->properties[STR_PROP_DataVersion] = QString::number(cms50_data_version);
 
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
     QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + m->hexid() + "/";
     m->properties[STR_PROP_Path] = path;
 

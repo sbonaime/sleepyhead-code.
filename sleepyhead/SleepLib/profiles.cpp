@@ -324,7 +324,7 @@ void Profile::DataFormatError(Machine *m)
                                      ,QMessageBox::Ok, QMessageBox::Ok);
             mainwin->startImportDialog();
         }
-        PROFILE.Save();
+        p_profile->Save();
         delete question;
 
     } else {
@@ -420,15 +420,15 @@ void Profile::ExtraLoad(QDomElement &root)
         //   ml->CreateMachine
         //}
         if (m_type == MT_CPAP) {
-            m = new CPAP(this, m_id);
+            m = new CPAP(m_id);
         } else if (m_type == MT_OXIMETER) {
-            m = new Oximeter(this, m_id);
+            m = new Oximeter(m_id);
         } else if (m_type == MT_SLEEPSTAGE) {
-            m = new SleepStage(this, m_id);
+            m = new SleepStage(m_id);
         } else if (m_type == MT_POSITION) {
-            m = new PositionSensor(this, m_id);
+            m = new PositionSensor(m_id);
         } else {
-            m = new Machine(this, m_id);
+            m = new Machine(m_id);
             m->SetType(m_type);
         }
 
@@ -593,7 +593,7 @@ int Profile::Import(QString path)
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
     Q_FOREACH(MachineLoader * loader, loaders) {
-        if (c += loader->Open(path, this)) {
+        if (c += loader->Open(path)) {
             break;
         }
     }
@@ -748,7 +748,7 @@ Profile *Create(QString name)
     prof->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) +
               QString("}"));
 
-    Machine *m = new Machine(prof, 0);
+    Machine *m = new Machine(0);
     m->SetClass("Journal");
     m->properties[STR_PROP_Brand] = "Journal";
     m->properties[STR_PROP_Model] = "Journal Data Machine Object";

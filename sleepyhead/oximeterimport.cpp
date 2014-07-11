@@ -205,7 +205,7 @@ void OximeterImport::on_directImportButton_clicked()
 
     connect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
 
-    oximodule->Open("import", p_profile);
+    oximodule->Open("import");
 
     // Wait to start import streaming..
     while (!oximodule->isImporting() && !oximodule->isAborted()) {
@@ -287,7 +287,7 @@ void OximeterImport::on_fileImportButton_clicked()
 
     oximodule = nullptr;
     Q_FOREACH(SerialOximeter * loader, loaders) {
-        if (loader->Open(filename,p_profile)) {
+        if (loader->Open(filename)) {
             success = true;
             oximodule = loader;
             break;
@@ -330,7 +330,7 @@ void OximeterImport::on_liveImportButton_clicked()
         return;
     }
 
-    Machine *mach = oximodule->CreateMachine(p_profile);
+    Machine *mach = oximodule->CreateMachine();
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText(tr("Live Oximetery Mode"));
@@ -340,7 +340,7 @@ void OximeterImport::on_liveImportButton_clicked()
     updateStatus(tr("If you can still read this after a few seconds, cancel and try again"));
     ui->progressBar->hide();
     liveView->update();
-    oximodule->Open("live",p_profile);
+    oximodule->Open("live");
     ui->stopButton->setVisible(true);
 
     dummyday = new Day(mach);
@@ -413,7 +413,7 @@ void OximeterImport::on_stopButton_clicked()
 void OximeterImport::on_calendarWidget_clicked(const QDate &date)
 {
     if (ui->radioSyncCPAP->isChecked()) {
-        Day * day = PROFILE.GetGoodDay(date, MT_CPAP);
+        Day * day = p_profile->GetGoodDay(date, MT_CPAP);
 
         sessbar->clear();
         if (day) {
@@ -627,8 +627,8 @@ void OximeterImport::on_syncButton_clicked()
     ui->syncButton->setVisible(false);
     ui->saveButton->setVisible(true);
 
-    QDate first = PROFILE.FirstDay();
-    QDate last = PROFILE.LastDay();
+    QDate first = p_profile->FirstDay();
+    QDate last = p_profile->LastDay();
 
     QDate oxidate = oximodule->startTime().date();
 
@@ -676,7 +676,7 @@ void OximeterImport::on_saveButton_clicked()
 
 
     // this can move to SerialOximeter class process function...
-    Machine * mach = oximodule->CreateMachine(p_profile);
+    Machine * mach = oximodule->CreateMachine();
     SessionID sid = ui->dateTimeEdit->dateTime().toUTC().toTime_t();
     quint64 start = quint64(sid) * 1000L;
 
@@ -808,7 +808,7 @@ void OximeterImport::on_saveButton_clicked()
     session->really_set_last(ti);
     session->SetChanged(true);
 
-    mach->AddSession(session, p_profile);
+    mach->AddSession(session);
     mach->Save();
 
     mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());

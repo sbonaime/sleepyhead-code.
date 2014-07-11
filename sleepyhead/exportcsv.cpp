@@ -74,7 +74,7 @@ ExportCSV::~ExportCSV()
 void ExportCSV::on_filenameBrowseButton_clicked()
 {
     QString timestamp = tr("SleepyHead_");
-    timestamp += PROFILE.Get("Username") + "_";
+    timestamp += p_profile->Get("Username") + "_";
 
     if (ui->rb1_details->isChecked()) { timestamp += tr("Details_"); }
 
@@ -105,8 +105,8 @@ void ExportCSV::on_filenameBrowseButton_clicked()
 
 void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
 {
-    QDate first = PROFILE.FirstDay();
-    QDate last = PROFILE.LastDay();
+    QDate first = p_profile->FirstDay();
+    QDate last = p_profile->LastDay();
 
     if (arg1 == tr("Custom")) {
         ui->startDate->setEnabled(true);
@@ -226,13 +226,13 @@ void ExportCSV::on_exportButton_clicked()
     QDate daily_date = daily->getDate();
 
     ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(PROFILE.daylist.count());
+    ui->progressBar->setMaximum(p_profile->daylist.count());
 
     do {
         ui->progressBar->setValue(ui->progressBar->value() + 1);
         QApplication::processEvents();
 
-        Day *day = PROFILE.GetDay(date, MT_CPAP);
+        Day *day = p_profile->GetDay(date, MT_CPAP);
 
         if (day) {
             QString data;

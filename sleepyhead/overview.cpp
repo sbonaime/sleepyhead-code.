@@ -106,7 +106,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     layout->layout();
 
     // TODO: Automate graph creation process
-    ChannelID ahicode = PROFILE.general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
+    ChannelID ahicode = p_profile->general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
 
     if (ahicode == CPAP_RDI) {
         AHI = createGraph(STR_TR_RDI, tr("Respiratory\nDisturbance\nIndex"));
@@ -119,15 +119,15 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     FL = createGraph(STR_TR_FlowLimit, STR_TR_FlowLimit);
 
-    float percentile = PROFILE.general->prefCalcPercentile() / 100.0;
-    int mididx = PROFILE.general->prefCalcMiddle();
+    float percentile = p_profile->general->prefCalcPercentile() / 100.0;
+    int mididx = p_profile->general->prefCalcMiddle();
     SummaryType ST_mid;
 
     if (mididx == 0) { ST_mid = ST_PERC; }
     if (mididx == 1) { ST_mid = ST_WAVG; }
     if (mididx == 2) { ST_mid = ST_AVG; }
 
-    SummaryType ST_max = PROFILE.general->prefCalcMax() ? ST_PERC : ST_MAX;
+    SummaryType ST_max = p_profile->general->prefCalcMax() ? ST_PERC : ST_MAX;
     const EventDataType maxperc = 0.995F;
 
 
@@ -224,7 +224,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     bc->addSlice(CPAP_Obstructive, COLOR_Obstructive, ST_CPH);
     bc->addSlice(CPAP_ClearAirway, COLOR_ClearAirway, ST_CPH);
 
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         bc->addSlice(CPAP_RERA, COLOR_RERA, ST_CPH);
     }
 
@@ -325,7 +325,7 @@ void Overview::closeEvent(QCloseEvent *event)
 
 gGraph *Overview::createGraph(QString name, QString units, YTickerType yttype)
 {
-    int default_height = PROFILE.appearance->graphHeight();
+    int default_height = p_profile->appearance->graphHeight();
     gGraph *g = new gGraph(GraphView, name, units, default_height, 0);
 
     gYAxis *yt;
@@ -336,7 +336,7 @@ gGraph *Overview::createGraph(QString name, QString units, YTickerType yttype)
         break;
 
     case YT_Weight:
-        yt = new gYAxisWeight(PROFILE.general->unitSystem());
+        yt = new gYAxisWeight(p_profile->general->unitSystem());
         break;
 
     default:
@@ -509,7 +509,7 @@ void Overview::ResetGraphLayout()
     QDate s1=QDateTime::fromTime_t(st/1000L).date();
     QDate s2=QDateTime::fromTime_t(et/1000L).date();
 
-    int len=PROFILE.countDays(MT_UNKNOWN,s1,s2);
+    int len=p_profile->countDays(MT_UNKNOWN,s1,s2);
     if (len>7) {
         if (QMessageBox::question(this, "Woah!", "Do you really want to print "+QString::number(len)+" days worth of Daily reports,\n from "+s1.toString(Qt::SystemLocaleShortDate)+" to "+s2.toString(Qt::SystemLocaleShortDate)+"?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
             return;
@@ -535,10 +535,10 @@ void Overview::ResetGraphLayout()
 
 void Overview::on_rangeCombo_activated(int index)
 {
-    ui->dateStart->setMinimumDate(PROFILE.FirstDay());
-    ui->dateEnd->setMaximumDate(PROFILE.LastDay());
+    ui->dateStart->setMinimumDate(p_profile->FirstDay());
+    ui->dateEnd->setMaximumDate(p_profile->LastDay());
 
-    QDate end = PROFILE.LastDay();
+    QDate end = p_profile->LastDay();
     QDate start;
 
     if (index == 8) { // Custom
@@ -572,10 +572,10 @@ void Overview::on_rangeCombo_activated(int index)
     } else if (index == 6) {
         start = end.addYears(-1).addDays(1);
     } else if (index == 7) { // Everything
-        start = PROFILE.FirstDay();
+        start = p_profile->FirstDay();
     }
 
-    if (start < PROFILE.FirstDay()) { start = PROFILE.FirstDay(); }
+    if (start < p_profile->FirstDay()) { start = p_profile->FirstDay(); }
 
     setRange(start, end);
 }

@@ -33,7 +33,7 @@ const int prs1_data_version = 13;
 class PRS1: public CPAP
 {
   public:
-    PRS1(Profile *p, MachineID id = 0);
+    PRS1(MachineID id = 0);
     virtual ~PRS1();
 };
 
@@ -184,7 +184,7 @@ class PRS1Loader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans directory path for valid PRS1 signature
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return prs1_data_version; }
@@ -193,7 +193,7 @@ class PRS1Loader : public MachineLoader
     virtual const QString &ClassName() { return prs1_class_name; }
 
     //! \brief Create a new PRS1 machine record, indexed by Serial number.
-    Machine *CreateMachine(QString serial, Profile *profile);
+    Machine *CreateMachine(QString serial);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
@@ -205,7 +205,7 @@ class PRS1Loader : public MachineLoader
     QHash<QString, Machine *> PRS1List;
 
     //! \brief Opens the SD folder structure for this machine, scans for data files and imports any new sessions
-    int OpenMachine(Machine *m, QString path, Profile *profile);
+    int OpenMachine(Machine *m, QString path);
 
     //! \brief Parses "properties.txt" file containing machine information
     bool ParseProperties(Machine *m, QString filename);

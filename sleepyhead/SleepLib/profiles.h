@@ -215,7 +215,6 @@ extern Profile *p_profile;
 // these are bad and must change
 #define PREF (*p_pref)
 #define LAYOUT (*p_layout)
-#define PROFILE (*p_profile)
 
 // DoctorInfo Strings
 const QString STR_DI_Name = "DoctorName";

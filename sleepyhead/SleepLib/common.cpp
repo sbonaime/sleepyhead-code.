@@ -59,7 +59,7 @@ qint64 timezoneOffset()
 QString weightString(float kg, UnitSystem us)
 {
     if (us == US_Undefined) {
-        us = PROFILE.general->unitSystem();
+        us = p_profile->general->unitSystem();
     }
 
     if (us == US_Metric) {

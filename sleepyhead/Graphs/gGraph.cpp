@@ -514,7 +514,7 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 // YAxis Autoscaling code
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
-    if ((zoomY() == 0) && PROFILE.appearance->allowYAxisScaling()) {
+    if ((zoomY() == 0) && p_profile->appearance->allowYAxisScaling()) {
         if (rec_maxy > rec_miny) {
             // Use graph preference settings only for this graph
             miny = rec_miny;

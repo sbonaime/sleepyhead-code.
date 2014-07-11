@@ -374,7 +374,7 @@ bool PreferencesDialog::Save()
     }
 
     if (recalc_events) {
-        if (PROFILE.countDays(MT_CPAP, PROFILE.FirstDay(), PROFILE.LastDay()) > 0) {
+        if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) > 0) {
             if (QMessageBox::question(this, tr("Data Reindex Required"),
                                       tr("A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),
                                       QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
@@ -542,7 +542,7 @@ bool PreferencesDialog::Save()
     //qDebug() << "TODO: Save channels.xml to update channel data";
 
     PREF.Save();
-    PROFILE.Save();
+    p_profile->Save();
 
 
     if (recalc_events) {
@@ -857,7 +857,7 @@ void PreferencesDialog::on_maskTypeCombo_activated(int index)
 void PreferencesDialog::on_createSDBackups_toggled(bool checked)
 {
     if (profile->session->backupCardData() && !checked) {
-        QList<Machine *> mach = PROFILE.GetMachines(MT_CPAP);
+        QList<Machine *> mach = p_profile->GetMachines(MT_CPAP);
         bool haveS9 = false;
 
         for (int i = 0; i < mach.size(); i++) {

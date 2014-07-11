@@ -22,8 +22,8 @@ extern QProgressBar *qprogress;
 
 const QString FPHCARE = "FPHCARE";
 
-FPIcon::FPIcon(Profile *p, MachineID id)
-    : CPAP(p, id)
+FPIcon::FPIcon(MachineID id)
+    : CPAP(id)
 {
     m_class = fpicon_class_name;
 }
@@ -64,7 +64,7 @@ bool FPIconLoader::Detect(const QString & givenpath)
 }
 
 
-int FPIconLoader::Open(QString path, Profile *profile)
+int FPIconLoader::Open(QString path)
 {
     QString newpath;
 
@@ -115,15 +115,15 @@ int FPIconLoader::Open(QString path, Profile *profile)
 
     for (int i = 0; i < SerialNumbers.size(); i++) {
         QString &sn = SerialNumbers[i];
-        m = CreateMachine(sn, profile);
+        m = CreateMachine(sn);
 
         npath = newpath + "/" + sn;
 
         try {
-            if (m) { OpenMachine(m, npath, profile); }
+            if (m) { OpenMachine(m, npath); }
         } catch (OneTypePerDay e) {
             Q_UNUSED(e)
-            profile->DelMachine(m);
+            p_profile->DelMachine(m);
             MachList.erase(MachList.find(sn));
             QMessageBox::warning(nullptr, "Import Error",
                                  "This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",
@@ -166,7 +166,7 @@ bool operator<(const FPWaveChunk &a, const FPWaveChunk &b)
     return (a.st < b.st);
 }
 
-int FPIconLoader::OpenMachine(Machine *mach, QString &path, Profile *profile)
+int FPIconLoader::OpenMachine(Machine *mach, QString &path)
 {
     qDebug() << "Opening FPIcon " << path;
     QDir dir(path);
@@ -193,7 +193,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path, Profile *profile)
 
         if (filename.left(3).toUpper() == "SUM") {
             summary.push_back(fpath);
-            OpenSummary(mach, fpath, profile);
+            OpenSummary(mach, fpath);
         } else if (filename.left(3).toUpper() == "DET") {
             det.push_back(fpath);
         } else if (filename.left(3).toUpper() == "FLW") {
@@ -204,11 +204,11 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path, Profile *profile)
     }
 
     for (int i = 0; i < det.size(); i++) {
-        OpenDetail(mach, det[i], profile);
+        OpenDetail(mach, det[i]);
     }
 
     for (int i = 0; i < flw.size(); i++) {
-        OpenFLW(mach, flw[i], profile);
+        OpenFLW(mach, flw[i]);
     }
 
     SessionID sid;//,st;
@@ -413,10 +413,9 @@ hour=(ts >> 12) & 0x1f; */
 // 0x01ff 8 bit additive sum checksum byte of previous header bytes
 
 // 0x0200-0x0203 32bit timestamp in
-bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
+bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
 {
     Q_UNUSED(mach);
-    Q_UNUSED(profile);
 
     quint32 ts;
     double ti;
@@ -588,11 +587,11 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
     }
 
     if (newsess) {
-        mach->AddSession(sess, profile);
+        mach->AddSession(sess);
     }
 
-    if (profile->session->backupCardData()) {
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+    if (p_profile->session->backupCardData()) {
+        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("FLW%1.FPH").arg(ts);
         dir.mkpath(backup);
@@ -610,7 +609,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Open Summary file
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile)
+bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
 {
     qDebug() << filename;
     QByteArray header;
@@ -740,12 +739,12 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
             sess->settings[CPAP_HumidSetting] = x2;
             //sess->settings[CPAP_PresReliefType]=PR_SENSAWAKE;
             Sessions[ts] = sess;
-            mach->AddSession(sess, profile);
+            mach->AddSession(sess);
         }
     } while (!in.atEnd());
 
-    if (profile->session->backupCardData()) {
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+    if (p_profile->session->backupCardData()) {
+        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("SUM%1.FPH").arg(QDate::currentDate().year(),4,10,QChar('0'));
         dir.mkpath(backup);
@@ -758,10 +757,9 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
     return true;
 }
 
-bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
+bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
 {
     Q_UNUSED(mach);
-    Q_UNUSED(profile);
 
     qDebug() << filename;
     QByteArray header;
@@ -908,12 +906,12 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         //        sess->SetChanged(true);
         //       mach->AddSession(sess,profile);
     }
-    if (profile->session->backupCardData()) {
+    if (p_profile->session->backupCardData()) {
         unsigned char *data = (unsigned char *)index.data();
         ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
         ts = convertDate(ts);
 
-        QString backup = PROFILE.Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("DET%1.FPH").arg(ts);
 
@@ -928,15 +926,13 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
 }
 
 
-Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
+Machine *FPIconLoader::CreateMachine(QString serial)
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile != nullptr);
 
     qDebug() << "Create Machine " << serial;
 
-    QList<Machine *> ml = profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
     Machine *m;
@@ -951,7 +947,7 @@ Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
     }
 
     if (!found) {
-        m = new FPIcon(profile, 0);
+        m = new FPIcon(0);
     }
 
     m->properties[STR_PROP_Brand] = "Fisher & Paykel";
@@ -964,7 +960,7 @@ Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
 
 
     MachList[serial] = m;
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial] = serial;
     m->properties[STR_PROP_DataVersion] = QString::number(fpicon_data_version);

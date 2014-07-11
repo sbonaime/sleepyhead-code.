@@ -37,14 +37,14 @@ void gSessionTimesChart::SetDay(Day *unused_day)
     Q_UNUSED(unused_day)
     Layer::SetDay(nullptr);
 
-    QDate firstday = PROFILE.FirstDay(m_machtype);
-    QDate lastday = PROFILE.LastDay(m_machtype);
+    QDate firstday = p_profile->FirstDay(m_machtype);
+    QDate lastday = p_profile->LastDay(m_machtype);
 
     m_minx = QDateTime(firstday, QTime(0,0,0)).toMSecsSinceEpoch();
     m_maxx = QDateTime(lastday, QTime(23,59,59)).toMSecsSinceEpoch();
 
     // Get list of valid day records in supplied date range
-    QList<Day *> daylist = PROFILE.getDays(m_machtype, firstday, lastday);
+    QList<Day *> daylist = p_profile->getDays(m_machtype, firstday, lastday);
 
     if (daylist.size() == 0) {
         m_miny = m_maxy = 0;

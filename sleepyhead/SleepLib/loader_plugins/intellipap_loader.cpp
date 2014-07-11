@@ -17,8 +17,8 @@
 
 extern QProgressBar *qprogress;
 
-Intellipap::Intellipap(Profile *p, MachineID id)
-    : CPAP(p, id)
+Intellipap::Intellipap(MachineID id)
+    : CPAP(id)
 {
     m_class = intellipap_class_name;
 }
@@ -58,7 +58,7 @@ bool IntellipapLoader::Detect(const QString & givenpath)
     return true;
 }
 
-int IntellipapLoader::Open(QString path, Profile *profile)
+int IntellipapLoader::Open(QString path)
 {
     // Check for SL directory
     // Check for DV5MFirm.bin?
@@ -153,7 +153,7 @@ int IntellipapLoader::Open(QString path, Profile *profile)
     Machine *mach = nullptr;
 
     if (set1.contains(STR_PROP_Serial)) {
-        mach = CreateMachine(set1[STR_PROP_Serial], profile);
+        mach = CreateMachine(set1[STR_PROP_Serial]);
     }
 
     if (!mach) {
@@ -410,17 +410,11 @@ int IntellipapLoader::Open(QString path, Profile *profile)
                 sess->settings[CPAP_RampPressure] = pres;
             }
 
-            //quint64 len=last-first;
-            //if (len>0) {
-            //if (!sess->first()) {
             sess->set_first(first);
             sess->set_last(last);
-            // }
+
             sess->UpdateSummaries();
-            mach->AddSession(sess, profile);
-            /*} else {
-                delete sess;
-            }*/
+            mach->AddSession(sess);
         }
     }
 
@@ -437,15 +431,13 @@ int IntellipapLoader::Open(QString path, Profile *profile)
     return 1;
 }
 
-Machine *IntellipapLoader::CreateMachine(QString serial, Profile *profile)
+Machine *IntellipapLoader::CreateMachine(QString serial)
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile != nullptr);
 
     qDebug() << "Create Machine " << serial;
 
-    QList<Machine *> ml = profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
     Machine *m = nullptr;
@@ -460,7 +452,7 @@ Machine *IntellipapLoader::CreateMachine(QString serial, Profile *profile)
     }
 
     if (!found) {
-        m = new Intellipap(profile, 0);
+        m = new Intellipap(0);
     }
 
     m->properties[STR_PROP_Brand] = "DeVilbiss";
@@ -472,7 +464,7 @@ Machine *IntellipapLoader::CreateMachine(QString serial, Profile *profile)
 
 
     MachList[serial] = m;
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial] = serial;
     m->properties[STR_PROP_DataVersion] = QString::number(intellipap_data_version);

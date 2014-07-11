@@ -77,12 +77,12 @@ class Machine
     friend class SaveThread;
 
   public:
-    /*! \fn Machine(Profile *p,MachineID id=0);
-        \brief Constructs a Machine object in Profile p, and with MachineID id
+    /*! \fn Machine(MachineID id=0);
+        \brief Constructs a Machine object with MachineID id
 
         If supplied MachineID is zero, it will generate a new unused random one.
         */
-    Machine(Profile *p, MachineID id = 0);
+    Machine(MachineID id = 0);
     virtual ~Machine();
 
     //! \brief Load all Machine summary data
@@ -109,7 +109,7 @@ class Machine
     Session *SessionExists(SessionID session);
 
     //! \brief Adds the session to this machine object, and the Master Profile list. (used during load)
-    bool AddSession(Session *s, Profile *p);
+    bool AddSession(Session *s);
 
     //! \brief Find the date this session belongs in, according to profile settings
     QDate pickDate(qint64 start);
@@ -187,7 +187,7 @@ class Machine
     QString m_class;
     MachineType m_type;
     QString m_path;
-    Profile *profile;
+
     bool changed;
     bool firstsession;
     int m_totaltasks;
@@ -207,7 +207,7 @@ class Machine
 class CPAP: public Machine
 {
   public:
-    CPAP(Profile *p, MachineID id = 0);
+    CPAP(MachineID id = 0);
     virtual ~CPAP();
 };
 
@@ -218,7 +218,7 @@ class CPAP: public Machine
 class Oximeter: public Machine
 {
   public:
-    Oximeter(Profile *p, MachineID id = 0);
+    Oximeter(MachineID id = 0);
     virtual ~Oximeter();
   protected:
 };
@@ -229,7 +229,7 @@ class Oximeter: public Machine
 class SleepStage: public Machine
 {
   public:
-    SleepStage(Profile *p, MachineID id = 0);
+    SleepStage(MachineID id = 0);
     virtual ~SleepStage();
   protected:
 };
@@ -240,7 +240,7 @@ class SleepStage: public Machine
 class PositionSensor: public Machine
 {
   public:
-    PositionSensor(Profile *p, MachineID id = 0);
+    PositionSensor(MachineID id = 0);
     virtual ~PositionSensor();
   protected:
 };

@@ -29,11 +29,10 @@ extern QProgressBar *qprogress;
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Machine::Machine(Profile *p, MachineID id)
+Machine::Machine(MachineID id)
 {
     day.clear();
     highest_sessionid = 0;
-    profile = p;
 
     if (!id) {
         srand(time(nullptr));
@@ -41,7 +40,7 @@ Machine::Machine(Profile *p, MachineID id)
 
         do {
             temp = rand();
-        } while (profile->machlist.find(temp) != profile->machlist.end());
+        } while (p_profile->machlist.find(temp) != p_profile->machlist.end());
 
         m_id = temp;
 
@@ -71,8 +70,8 @@ Session *Machine::SessionExists(SessionID session)
 // Find date this session belongs in
 QDate Machine::pickDate(qint64 first)
 {
-    QTime split_time = PROFILE.session->daySplitTime();
-    int combine_sessions = PROFILE.session->combineCloseSessions();
+    QTime split_time = p_profile->session->daySplitTime();
+    int combine_sessions = p_profile->session->combineCloseSessions();
 
     QDateTime d2 = QDateTime::fromTime_t(first / 1000);
 
@@ -99,13 +98,12 @@ QDate Machine::pickDate(qint64 first)
     return date;
 }
 
-bool Machine::AddSession(Session *s, Profile *p)
+bool Machine::AddSession(Session *s)
 {
     Q_ASSERT(s != nullptr);
-    Q_ASSERT(p != nullptr);
 
-    if (profile->session->ignoreOlderSessions()) {
-        qint64 ignorebefore = profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
+    if (p_profile->session->ignoreOlderSessions()) {
+        qint64 ignorebefore = p_profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
         if (s->last() < ignorebefore) {
             skipped_sessions++;
             return false;
@@ -116,9 +114,9 @@ bool Machine::AddSession(Session *s, Profile *p)
         highest_sessionid = s->session();
     }
 
-    QTime split_time = PROFILE.session->daySplitTime();
-    int combine_sessions = PROFILE.session->combineCloseSessions();
-    int ignore_sessions = PROFILE.session->ignoreShortSessions();
+    QTime split_time = p_profile->session->daySplitTime();
+    int combine_sessions = p_profile->session->combineCloseSessions();
+    int ignore_sessions = p_profile->session->ignoreShortSessions();
 
     // ResMed machines can't do this.. but don't really want to do a slow string compare here
 
@@ -127,7 +125,7 @@ bool Machine::AddSession(Session *s, Profile *p)
 
     sessionlist[s->session()] = s; // To make sure it get's saved later even if it's not wanted.
 
-    //int drift=PROFILE.cpap->clockDrift();
+    //int drift=p_profile->cpap->clockDrift();
 
     QDateTime d2 = QDateTime::fromTime_t(s->first() / 1000);
 
@@ -190,7 +188,7 @@ bool Machine::AddSession(Session *s, Profile *p)
         dd = new Day(this);
         day[date] = dd;
         // Add this Day record to profile
-        p->AddDay(date, dd, m_type);
+        p_profile->AddDay(date, dd, m_type);
     } else {
         dd = *dit;
     }
@@ -202,7 +200,7 @@ bool Machine::AddSession(Session *s, Profile *p)
             dd->AddSession(*i);
         }
 
-        QMap<QDate, QList<Day *> >::iterator nd = p->daylist.find(date.addDays(1));
+        QMap<QDate, QList<Day *> >::iterator nd = p_profile->daylist.find(date.addDays(1));
 
         for (QList<Day *>::iterator i = nd->begin(); i != nd->end(); i++) {
             if (*i == nextday.value()) {
@@ -222,7 +220,7 @@ bool Machine::Purge(int secret)
     // Boring api key to stop this function getting called by accident :)
     if (secret != 3478216) { return false; }
 
-    QString path = profile->Get(properties[STR_PROP_Path]);
+    QString path = p_profile->Get(properties[STR_PROP_Path]);
 
     QDir dir(path);
 
@@ -296,8 +294,7 @@ bool Machine::Purge(int secret)
 
 bool Machine::Load()
 {
-    QString path = profile->Get(
-                       properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_"+hexid();
+    QString path = p_profile->Get(properties[STR_PROP_Path]);
 
     QDir dir(path);
     qDebug() << "Loading " << QDir::toNativeSeparators(path);
@@ -352,8 +349,8 @@ bool Machine::Load()
 
         if (sess->LoadSummary(s.value()[0])) {
             sess->SetEventFile(s.value()[1]);
-            //sess->OpenEvents();
-            AddSession(sess, profile);
+
+            AddSession(sess);
         } else {
             qWarning() << "Error unpacking summary data";
             delete sess;
@@ -364,10 +361,10 @@ bool Machine::Load()
 
     return true;
 }
+
 bool Machine::SaveSession(Session *sess)
 {
-    QString path = profile->Get(
-                       properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_"+hexid();
+    QString path = p_profile->Get(properties[STR_PROP_Path]);
 
     if (sess->IsChanged()) { sess->Store(path); }
 
@@ -383,9 +380,9 @@ void Machine::queSaveList(Session * sess)
         QApplication::processEvents();
 
         sess->UpdateSummaries();
-        sess->Store(profile->Get(properties[STR_PROP_Path]));
+        sess->Store(p_profile->Get(properties[STR_PROP_Path]));
 
-        if (!PROFILE.session->cacheSessions()) {
+        if (!p_profile->session->cacheSessions()) {
             sess->TrashEvents();
         }
 
@@ -417,7 +414,7 @@ void Machine::StartSaveThreads()
     m_savelist.clear();
     if (!p_profile->session->multithreading()) return;
 
-    QString path = profile->Get(properties[STR_PROP_Path]);
+    QString path = p_profile->Get(properties[STR_PROP_Path]);
 
     int threads = QThread::idealThreadCount();
     savelistSem = new QSemaphore(threads);
@@ -517,7 +514,7 @@ void SaveTask::run()
 
 void Machine::queTask(ImportTask * task)
 {
-    if (0) { //PROFILE.session->multithreading()) {
+    if (0) { //p_profile->session->multithreading()) {
         m_tasklist.push_back(task);
         return;
     }
@@ -528,7 +525,7 @@ void Machine::queTask(ImportTask * task)
 
 void Machine::runTasks()
 {
-    if (0) { //!PROFILE.session->multithreading()) {
+    if (0) { //!p_profile->session->multithreading()) {
         Q_ASSERT(m_tasklist.isEmpty());
         return;
     }
@@ -552,7 +549,7 @@ bool Machine::Save()
     //int size;
     int cnt = 0;
 
-    QString path = profile->Get(properties[STR_PROP_Path]);
+    QString path = p_profile->Get(properties[STR_PROP_Path]);
     QDir dir(path);
 
     if (!dir.exists()) {
@@ -578,7 +575,7 @@ bool Machine::Save()
 //////////////////////////////////////////////////////////////////////////////////////////
 // CPAP implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-CPAP::CPAP(Profile *p, MachineID id): Machine(p, id)
+CPAP::CPAP(MachineID id): Machine(id)
 {
     m_type = MT_CPAP;
 }
@@ -590,7 +587,7 @@ CPAP::~CPAP()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Oximeter Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Oximeter::Oximeter(Profile *p, MachineID id): Machine(p, id)
+Oximeter::Oximeter(MachineID id): Machine(id)
 {
     m_type = MT_OXIMETER;
 }
@@ -602,7 +599,7 @@ Oximeter::~Oximeter()
 //////////////////////////////////////////////////////////////////////////////////////////
 // SleepStage Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-SleepStage::SleepStage(Profile *p, MachineID id): Machine(p, id)
+SleepStage::SleepStage(MachineID id): Machine(id)
 {
     m_type = MT_SLEEPSTAGE;
 }
@@ -613,7 +610,7 @@ SleepStage::~SleepStage()
 //////////////////////////////////////////////////////////////////////////////////////////
 // PositionSensor Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-PositionSensor::PositionSensor(Profile *p, MachineID id): Machine(p, id)
+PositionSensor::PositionSensor(MachineID id): Machine(id)
 {
     m_type = MT_POSITION;
 }

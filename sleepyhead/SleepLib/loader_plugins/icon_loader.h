@@ -33,7 +33,7 @@ const int fpicon_data_version = 3;
 class FPIcon: public CPAP
 {
   public:
-    FPIcon(Profile *p, MachineID id = 0);
+    FPIcon(MachineID id = 0);
     virtual ~FPIcon();
 };
 
@@ -58,13 +58,13 @@ class FPIconLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for F&P Icon data signature, and Loads any new data
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
 
-    int OpenMachine(Machine *mach, QString &path, Profile *profile);
+    int OpenMachine(Machine *mach, QString &path);
 
-    bool OpenSummary(Machine *mach, QString path, Profile *profile);
-    bool OpenDetail(Machine *mach, QString path, Profile *profile);
-    bool OpenFLW(Machine *mach, QString filename, Profile *profile);
+    bool OpenSummary(Machine *mach, QString path);
+    bool OpenDetail(Machine *mach, QString path);
+    bool OpenFLW(Machine *mach, QString filename);
 
     //! \brief Returns SleepLib database version of this F&P Icon loader
     virtual int Version() { return fpicon_data_version; }
@@ -73,7 +73,7 @@ class FPIconLoader : public MachineLoader
     virtual const QString &ClassName() { return fpicon_class_name; }
 
     //! \brief Creates a machine object, indexed by serial number
-    Machine *CreateMachine(QString serial, Profile *profile);
+    Machine *CreateMachine(QString serial);
 
     //! \brief Registers this MachineLoader with the master list, so F&P Icon data can load
     static void Register();

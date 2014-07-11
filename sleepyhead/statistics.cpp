@@ -106,25 +106,25 @@ Statistics::Statistics(QObject *parent) :
 QString htmlHeader()
 {
 
-    QString address = PROFILE.user->address();
+    QString address = p_profile->user->address();
     address.replace("\n", "<br/>");
     //   "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
     //   "a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
 
     QString userinfo;
 
-    if (!PROFILE.user->firstName().isEmpty()) {
-        userinfo = QString(QObject::tr("Name: %1, %2")).arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName()) + "<br/>";
-        if (!PROFILE.user->DOB().isNull()) {
-            userinfo += QString(QObject::tr("DOB: %1")).arg(PROFILE.user->DOB().toString()) + "<br/>";
+    if (!p_profile->user->firstName().isEmpty()) {
+        userinfo = QString(QObject::tr("Name: %1, %2")).arg(p_profile->user->lastName()).arg(p_profile->user->firstName()) + "<br/>";
+        if (!p_profile->user->DOB().isNull()) {
+            userinfo += QString(QObject::tr("DOB: %1")).arg(p_profile->user->DOB().toString()) + "<br/>";
         }
-        if (!PROFILE.user->phone().isEmpty()) {
-            userinfo += QString(QObject::tr("Phone: %1")).arg(PROFILE.user->phone()) + "<br/>";
+        if (!p_profile->user->phone().isEmpty()) {
+            userinfo += QString(QObject::tr("Phone: %1")).arg(p_profile->user->phone()) + "<br/>";
         }
-        if (!PROFILE.user->email().isEmpty()) {
-            userinfo += QString(QObject::tr("Email: %1")).arg(PROFILE.user->email()) + "<br/><br/>";
+        if (!p_profile->user->email().isEmpty()) {
+            userinfo += QString(QObject::tr("Email: %1")).arg(p_profile->user->email()) + "<br/><br/>";
         }
-        if (!PROFILE.user->address().isEmpty()) {
+        if (!p_profile->user->address().isEmpty()) {
             userinfo +=  QObject::tr("Address:")+"<br/>"+address;
         }
     }
@@ -197,7 +197,7 @@ EventDataType calcAHI(QDate start, QDate end)
                          + p_profile->calcCount(CPAP_ClearAirway, MT_CPAP, start, end)
                          + p_profile->calcCount(CPAP_Apnea, MT_CPAP, start, end));
 
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         val += p_profile->calcCount(CPAP_RERA, MT_CPAP, start, end);
     }
 
@@ -528,8 +528,8 @@ QString Statistics::GenerateHTML()
     if (cpap6month < firstcpap) { cpap6month = firstcpap; }
     if (cpapyear < firstcpap) { cpapyear = firstcpap; }
 
-    QList<Machine *> cpap_machines = PROFILE.GetMachines(MT_CPAP);
-    QList<Machine *> oximeters = PROFILE.GetMachines(MT_OXIMETER);
+    QList<Machine *> cpap_machines = p_profile->GetMachines(MT_CPAP);
+    QList<Machine *> oximeters = p_profile->GetMachines(MT_OXIMETER);
     QList<Machine *> mach;
     mach.append(cpap_machines);
     mach.append(oximeters);
@@ -545,14 +545,14 @@ QString Statistics::GenerateHTML()
         return html;
     }
 
-    int cpapdays = PROFILE.countDays(MT_CPAP, firstcpap, lastcpap);
+    int cpapdays = p_profile->countDays(MT_CPAP, firstcpap, lastcpap);
 
     CPAPMode cpapmode = (CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode, MT_CPAP, firstcpap,
                         lastcpap);
 
-    float percentile = PROFILE.general->prefCalcPercentile() / 100.0;
+    float percentile = p_profile->general->prefCalcPercentile() / 100.0;
 
-    //    int mididx=PROFILE.general->prefCalcMiddle();
+    //    int mididx=p_profile->general->prefCalcMiddle();
     //    SummaryType ST_mid;
     //    if (mididx==0) ST_mid=ST_PERC;
     //    if (mididx==1) ST_mid=ST_WAVG;
@@ -560,7 +560,7 @@ QString Statistics::GenerateHTML()
 
     QString ahitxt;
 
-    if (PROFILE.general->calculateRDI()) {
+    if (p_profile->general->calculateRDI()) {
         ahitxt = STR_TR_RDI;
     } else {
         ahitxt = STR_TR_AHI;
@@ -572,7 +572,7 @@ QString Statistics::GenerateHTML()
 
     int number_periods = 0;
     if (p_profile->general->statReportMode() == 1) {
-        number_periods = PROFILE.FirstDay().daysTo(PROFILE.LastDay()) / 30;
+        number_periods = p_profile->FirstDay().daysTo(p_profile->LastDay()) / 30;
         if (number_periods > 12) {
             number_periods = 12;
         }
@@ -638,7 +638,7 @@ QString Statistics::GenerateHTML()
                 }
             }
 
-            int days = PROFILE.countDays(row.type, first, last);
+            int days = p_profile->countDays(row.type, first, last);
             skipsection = (days == 0);
             if (days > 0) {
                 html+=QString("<tr bgcolor='%1'><th colspan=%2 align=center><font size=+2>%3</font></th></tr>\n").
@@ -693,7 +693,7 @@ QString Statistics::GenerateHTML()
             continue;
         } else {
             ChannelID id = schema::channel[row.src].id();
-            if ((id == NoChannel) || (!PROFILE.hasChannel(id))) {
+            if ((id == NoChannel) || (!p_profile->hasChannel(id))) {
                 continue;
             }
             name = calcnames[row.calc].arg(schema::channel[id].fullname());
@@ -743,21 +743,21 @@ QString Statistics::GenerateHTML()
         int compliant = 0;
 
         do {
-            day = PROFILE.GetGoodDay(date, MT_CPAP);
+            day = p_profile->GetGoodDay(date, MT_CPAP);
 
             if (day) {
                 lastchanged = false;
 
                 hours = day->hours();
 
-                if (hours > PROFILE.cpap->complianceHours()) {
+                if (hours > p_profile->cpap->complianceHours()) {
                     compliant++;
                 }
 
                 EventDataType ahi = day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(
                                         CPAP_Apnea) + day->count(CPAP_ClearAirway);
 
-                if (PROFILE.general->calculateRDI()) { ahi += day->count(CPAP_RERA); }
+                if (p_profile->general->calculateRDI()) { ahi += day->count(CPAP_RERA); }
 
                 ahi /= hours;
                 AHI.push_back(UsageData(date, ahi, hours));
@@ -807,7 +807,7 @@ QString Statistics::GenerateHTML()
                         || (maxipap != cmaxipap) || (mach != lastmach) || (prelset != lastprelset))  {
                     if ((cmode != MODE_UNKNOWN) && (lastmach != nullptr)) {
                         first = date.addDays(1);
-                        int days = PROFILE.countDays(MT_CPAP, first, last);
+                        int days = p_profile->countDays(MT_CPAP, first, last);
                         RXChange rx;
                         rx.first = first;
                         rx.last = last;
@@ -865,7 +865,7 @@ QString Statistics::GenerateHTML()
         if (!lastchanged && (mach != nullptr)) {
             // last=date.addDays(1);
             first = firstcpap;
-            int days = PROFILE.countDays(MT_CPAP, first, last);
+            int days = p_profile->countDays(MT_CPAP, first, last);
             RXChange rx;
             rx.first = first;
             rx.last = last;
@@ -927,7 +927,7 @@ QString Statistics::GenerateHTML()
             recbox += QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Total Days")).arg(
                           numdays);
 
-            if (PROFILE.cpap->showComplianceInfo()) {
+            if (p_profile->cpap->showComplianceInfo()) {
                 recbox += QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Compliant Days")).arg(
                               compliant);
             }
@@ -979,7 +979,7 @@ QString Statistics::GenerateHTML()
             tmpRX[0]->highlight = 4; // worst
             int ls = tmpRX.size() - 1;
             tmpRX[ls]->highlight = 1; //best
-            CPAPMode mode = (CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode, MT_CPAP, tmpRX[ls]->first,
+            CPAPMode mode = (CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode, MT_CPAP, tmpRX[ls]->first,
                             tmpRX[ls]->last);
 
 
@@ -1028,7 +1028,7 @@ QString Statistics::GenerateHTML()
 
             recbox += QString("<tr><td colspan=2>&nbsp;</td></tr>");
 
-            mode = (CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode, MT_CPAP, tmpRX[0]->first, tmpRX[0]->last);
+            mode = (CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode, MT_CPAP, tmpRX[0]->first, tmpRX[0]->last);
 
             if (mode < MODE_APAP) { // is CPAP?
                 minstr = STR_TR_Pressure;
@@ -1093,7 +1093,7 @@ QString Statistics::GenerateHTML()
         hdrlist.push_back(tr("Days"));
         hdrlist.push_back(ahitxt);
         hdrlist.push_back(STR_TR_FL);
-        if (PROFILE.hasChannel(CPAP_SensAwake)) {
+        if (p_profile->hasChannel(CPAP_SensAwake)) {
             hdrlist.push_back(STR_TR_SA);
         }
         hdrlist.push_back(STR_TR_Machine);
@@ -1233,7 +1233,7 @@ QString Statistics::GenerateHTML()
             html += QString("<td>%1</td>").arg(rx.ahi, 0, 'f', decimals);
             html += QString("<td>%1</td>").arg(rx.fl, 0, 'f', decimals); // Not the best way to do this.. Todo: Add an extra field for data..
 
-            if (PROFILE.hasChannel(CPAP_SensAwake)) {
+            if (p_profile->hasChannel(CPAP_SensAwake)) {
                 html += QString("<td>%1</td>").arg(calcSA(rx.first, rx.last), 0, 'f', decimals);
             }
             html += QString("<td>%1</td>").arg(rx.machine->GetClass());
@@ -1298,7 +1298,7 @@ QString StatisticsRow::value(QDate start, QDate end)
 {
     const int decimals=2;
     QString value;
-    float days = PROFILE.countDays(type, start, end);
+    float days = p_profile->countDays(type, start, end);
 
     // Handle special data sources first
     if (calc == SC_AHI) {
@@ -1336,8 +1336,8 @@ QString StatisticsRow::value(QDate start, QDate end)
                 value = QString("%1").arg(p_profile->calcMax(code, type, start, end), 0, 'f', decimals);
                 break;
             case SC_CPH:
-                value = QString("%1").arg(PROFILE.calcCount(code, type, start, end)
-                     / PROFILE.calcHours(type, start, end), 0, 'f', decimals);
+                value = QString("%1").arg(p_profile->calcCount(code, type, start, end)
+                     / p_profile->calcHours(type, start, end), 0, 'f', decimals);
                 break;
             case SC_SPH:
                 value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)

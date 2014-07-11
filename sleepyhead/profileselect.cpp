@@ -205,7 +205,7 @@ void ProfileSelect::deleteProfile()
     if (!profile) {
         QMessageBox::warning(this, STR_MessageBox_Error,
             QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
-            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + PROFILE.user->userName())), QMessageBox::Ok);
+            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + p_profile->user->userName())), QMessageBox::Ok);
             return;
     }
     bool reallydelete = false;

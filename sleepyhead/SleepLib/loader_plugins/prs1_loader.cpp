@@ -99,7 +99,7 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 }
 #endif
 
-PRS1::PRS1(Profile *p, MachineID id): CPAP(p, id)
+PRS1::PRS1(MachineID id): CPAP(id)
 {
     m_class = prs1_class_name;
 }
@@ -130,15 +130,13 @@ PRS1Loader::PRS1Loader()
 PRS1Loader::~PRS1Loader()
 {
 }
-Machine *PRS1Loader::CreateMachine(QString serial, Profile *profile)
+Machine *PRS1Loader::CreateMachine(QString serial)
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile != nullptr);
 
     qDebug() << "Create Machine " << serial;
 
-    QList<Machine *> ml = profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
     Machine *m = nullptr;
@@ -153,7 +151,7 @@ Machine *PRS1Loader::CreateMachine(QString serial, Profile *profile)
     }
 
     if (!found) {
-        m = new PRS1(profile, 0);
+        m = new PRS1(0);
     }
 
     m->properties[STR_PROP_Brand] = "Philips Respironics";
@@ -164,7 +162,7 @@ Machine *PRS1Loader::CreateMachine(QString serial, Profile *profile)
     }
 
     PRS1List[serial] = m;
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial] = serial;
     m->properties[STR_PROP_DataVersion] = QString::number(prs1_data_version);
@@ -226,7 +224,7 @@ bool PRS1Loader::Detect(const QString & path)
     return true;
 }
 
-int PRS1Loader::Open(QString path, Profile *profile)
+int PRS1Loader::Open(QString path)
 {
     QString newpath;
     path = path.replace("\\", "/");
@@ -285,15 +283,15 @@ int PRS1Loader::Open(QString path, Profile *profile)
 
     for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
         QString s = *sn;
-        m = CreateMachine(s, profile);
+        m = CreateMachine(s);
 
         try {
             if (m) {
-                OpenMachine(m, newpath + "/" + (*sn), profile);
+                OpenMachine(m, newpath + "/" + (*sn));
             }
         } catch (OneTypePerDay e) {
             Q_UNUSED(e)
-            profile->DelMachine(m);
+            p_profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(s));
             QMessageBox::warning(nullptr, QObject::tr("Import Error"),
                                  QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),
@@ -381,9 +379,9 @@ void copyPath(QString src, QString dst)
 }
 
 
-int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
+int PRS1Loader::OpenMachine(Machine *m, QString path)
 {
-    Q_UNUSED(profile)
+    Q_ASSERT(p_profile != nullptr);
 
     qDebug() << "Opening PRS1 " << path;
     QDir dir(path);
@@ -1489,7 +1487,7 @@ void PRS1Import::run()
         sg->session->SetChanged(true);
 
         loader->sessionMutex.lock();
-        mach->AddSession(sg->session, p_profile);
+        mach->AddSession(sg->session);
         loader->sessionMutex.unlock();
 
         // Update indexes, process waveform and perform flagging

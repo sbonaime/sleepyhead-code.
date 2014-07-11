@@ -65,11 +65,11 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
     EventStoreType *dptr, *eptr;
     qint64 stime;
 
-    OverlayDisplayType odt = PROFILE.appearance->overlayType();
+    OverlayDisplayType odt = p_profile->appearance->overlayType();
     QHash<ChannelID, QVector<EventList *> >::iterator cei;
     int count;
 
-    qint64 clockdrift = qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 clockdrift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 drift = 0;
 
     // For each session, process it's eventlist

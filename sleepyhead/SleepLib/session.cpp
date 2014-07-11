@@ -112,9 +112,9 @@ bool Session::OpenEvents()
 
 bool Session::Destroy()
 {
-    QString path = PROFILE.Get(s_machine->properties[STR_PROP_Path]);
+    QString path = p_profile->Get(s_machine->properties[STR_PROP_Path]);
 
-    PROFILE.RemoveSession(this);
+    p_profile->RemoveSession(this);
     s_machine->sessionlist.erase(s_machine->sessionlist.find(s_session));
 
     QDir dir(path);
@@ -1144,7 +1144,7 @@ EventDataType Session::physMax(ChannelID id)
 
 qint64 Session::first(ChannelID id)
 {
-    qint64 drift = qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 drift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 tmp;
     QHash<ChannelID, quint64>::iterator i = m_firstchan.find(id);
 
@@ -1191,7 +1191,7 @@ qint64 Session::first(ChannelID id)
 }
 qint64 Session::last(ChannelID id)
 {
-    qint64 drift = qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 drift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 tmp;
     QHash<ChannelID, quint64>::iterator i = m_lastchan.find(id);
 
@@ -1943,7 +1943,7 @@ qint64 Session::first()
     qint64 start = s_first;
 
     if (s_machine->GetType() == MT_CPAP) {
-        start += qint64(PROFILE.cpap->clockDrift()) * 1000L;
+        start += qint64(p_profile->cpap->clockDrift()) * 1000L;
     }
 
     return start;
@@ -1954,7 +1954,7 @@ qint64 Session::last()
     qint64 last = s_last;
 
     if (s_machine->GetType() == MT_CPAP) {
-        last += qint64(PROFILE.cpap->clockDrift()) * 1000L;
+        last += qint64(p_profile->cpap->clockDrift()) * 1000L;
     }
 
     return last;

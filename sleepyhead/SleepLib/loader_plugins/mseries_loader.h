@@ -31,7 +31,7 @@ const int mseries_data_version = 2;
 class MSeries: public CPAP
 {
   public:
-    MSeries(Profile *p, MachineID id = 0);
+    MSeries(MachineID id = 0);
     virtual ~MSeries();
 };
 
@@ -51,7 +51,7 @@ class MSeriesLoader : public MachineLoader
     virtual bool Detect(const QString & path) { Q_UNUSED(path); return false; }
 
     //! \brief Opens M-Series block device
-    virtual int Open(QString file, Profile *profile);
+    virtual int Open(QString file);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return mseries_data_version; }
@@ -60,7 +60,7 @@ class MSeriesLoader : public MachineLoader
     virtual const QString &ClassName() { return mseries_class_name; }
 
     //! \brief Create a new PRS1 machine record, indexed by Serial number.
-    Machine *CreateMachine(QString serial, Profile *profile);
+    Machine *CreateMachine(QString serial);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();

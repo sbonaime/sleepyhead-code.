@@ -64,11 +64,9 @@ bool MD300W1Loader::Detect(const QString &path)
     return false;
 }
 
-int MD300W1Loader::Open(QString path, Profile *profile)
+int MD300W1Loader::Open(QString path)
 {
-
     // Only one active Oximeter module at a time, set in preferences
-    Q_UNUSED(profile)
 
     m_itemCnt = 0;
     m_itemTotal = 0;
@@ -223,16 +221,14 @@ bool MD300W1Loader::readDATFile(QString path)
     return true;
 }
 
-Machine *MD300W1Loader::CreateMachine(Profile *profile)
+Machine *MD300W1Loader::CreateMachine()
 {
-    if (!profile) {
-        return nullptr;
-    }
+    Q_ASSERT(p_profile);
 
     // NOTE: This only allows for one MD300W1 machine per profile..
     // Upgrading their oximeter will use this same record..
 
-    QList<Machine *> ml = profile->GetMachines(MT_OXIMETER);
+    QList<Machine *> ml = p_profile->GetMachines(MT_OXIMETER);
 
     for (QList<Machine *>::iterator i = ml.begin(); i != ml.end(); i++) {
         if ((*i)->GetClass() == md300w1_class_name)  {
@@ -243,13 +239,13 @@ Machine *MD300W1Loader::CreateMachine(Profile *profile)
 
     qDebug() << "Create MD300W1 Machine Record";
 
-    Machine *m = new Oximeter(profile, 0);
+    Machine *m = new Oximeter(0);
     m->SetClass(md300w1_class_name);
     m->properties[STR_PROP_Brand] = "ChoiceMMed";
     m->properties[STR_PROP_Model] = "MD300W1";
     m->properties[STR_PROP_DataVersion] = QString::number(md300w1_data_version);
 
-    profile->AddMachine(m);
+    p_profile->AddMachine(m);
     QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + m->hexid() + "/";
     m->properties[STR_PROP_Path] = path;
 

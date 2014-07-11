@@ -55,8 +55,8 @@ void SummaryChart::SetDay(Day * nullday)
     int dn;
     EventDataType tmp, tmp2, total;
     ChannelID code;
-    CPAPMode cpapmode = (CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode, MT_CPAP,
-                        PROFILE.FirstDay(MT_CPAP), PROFILE.LastDay(MT_CPAP));
+    CPAPMode cpapmode = (CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode, MT_CPAP,
+                        p_profile->FirstDay(MT_CPAP), p_profile->LastDay(MT_CPAP));
 
 
     //////////////////////////////////////////////////////////
@@ -68,8 +68,8 @@ void SummaryChart::SetDay(Day * nullday)
         m_type.clear();
         m_typeval.clear();
 
-        float perc = PROFILE.general->prefCalcPercentile() / 100.0;
-        int mididx = PROFILE.general->prefCalcMiddle();
+        float perc = p_profile->general->prefCalcPercentile() / 100.0;
+        int mididx = p_profile->general->prefCalcMiddle();
         SummaryType mid;
 
         if (mididx == 0) { mid = ST_PERC; }
@@ -111,7 +111,7 @@ void SummaryChart::SetDay(Day * nullday)
 
     if (m_graphtype == GT_SESSIONS) {
         // No point drawing anything if no real data on record
-        if (PROFILE.countDays(MT_CPAP, PROFILE.FirstDay(MT_CPAP), PROFILE.LastDay(MT_CPAP)) == 0) {
+        if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(MT_CPAP), p_profile->LastDay(MT_CPAP)) == 0) {
             return;
         }
     }
@@ -123,7 +123,7 @@ void SummaryChart::SetDay(Day * nullday)
     // For each day in the main profile daylist
     QMap<QDate, QList<Day *> >::iterator d;
 
-    for (d = PROFILE.daylist.begin(); d != PROFILE.daylist.end(); d++) {
+    for (d = p_profile->daylist.begin(); d != p_profile->daylist.end(); d++) {
 
         // get the timestamp of this day.
         tt = QDateTime(d.key(), QTime(0, 0, 0), Qt::UTC).toTime_t();
@@ -378,8 +378,8 @@ void SummaryChart::SetDay(Day * nullday)
         m_miny = 0;
     }
 
-    // m_minx=qint64(QDateTime(PROFILE.FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    m_maxx = qint64(QDateTime(PROFILE.LastDay(), QTime(23, 59, 0), Qt::UTC).toTime_t()) * 1000L;
+    // m_minx=qint64(QDateTime(p_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx = qint64(QDateTime(p_profile->LastDay(), QTime(23, 59, 0), Qt::UTC).toTime_t()) * 1000L;
     m_physmaxy = m_maxy;
     m_physminy = m_miny;
 }
@@ -424,7 +424,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     GraphType graphtype = m_graphtype;
 
     if (graphtype == GT_LINE || graphtype == GT_POINTS) {
-        bool pts = PROFILE.appearance->overviewLinechartMode() == OLC_Lines;
+        bool pts = p_profile->appearance->overviewLinechartMode() == OLC_Lines;
         graphtype = pts ? GT_POINTS : GT_LINE;
     }
 
@@ -526,8 +526,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     float compliance_hours = 0;
 
-    if (PROFILE.cpap->showComplianceInfo()) {
-        compliance_hours = PROFILE.cpap->complianceHours();
+    if (p_profile->cpap->showComplianceInfo()) {
+        compliance_hours = p_profile->cpap->complianceHours();
     }
 
     int incompliant = 0;
@@ -975,7 +975,7 @@ jumpnext:
     }*/
     a += QString(QObject::tr("Days: %1")).arg(total_days, 0);
 
-    if (PROFILE.cpap->showComplianceInfo()) {
+    if (p_profile->cpap->showComplianceInfo()) {
         if (ishours && incompliant > 0) {
             a += " "+QString(QObject::tr("Low Usage Days: %1")).arg(incompliant, 0)+
                  " "+QString(QObject::tr("(%1% compliant, defined as > %2 hours)")).
@@ -1200,7 +1200,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                         } else { v = 0; }
 
                         if (m_codes[i] == Journal_Weight) {
-                            val = weightString(v, PROFILE.general->unitSystem());
+                            val = weightString(v, p_profile->general->unitSystem());
                         } else {
                             val = QString::number(v, 'f', 2);
                         }

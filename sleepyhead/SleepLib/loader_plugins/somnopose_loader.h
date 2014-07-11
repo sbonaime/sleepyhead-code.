@@ -28,7 +28,7 @@ class SomnoposeLoader : public MachineLoader
     virtual ~SomnoposeLoader();
     virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
 
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
     virtual int OpenFile(QString filename);
     static void Register();
 
@@ -36,7 +36,7 @@ class SomnoposeLoader : public MachineLoader
     virtual const QString &ClassName() { return somnopose_class_name; }
 
 
-    Machine *CreateMachine(Profile *profile);
+    Machine *CreateMachine();
 
   protected:
   private:

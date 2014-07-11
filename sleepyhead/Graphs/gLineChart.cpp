@@ -250,7 +250,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int total_points = 0;
     int total_visible = 0;
     bool square_plot, accel;
-    qint64 clockdrift = qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 clockdrift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 drift = 0;
 
     QHash<ChannelID, QVector<EventList *> >::iterator ci;
@@ -262,7 +262,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
-    painter.setRenderHint(QPainter::Antialiasing, PROFILE.appearance->antiAliasing());
+    painter.setRenderHint(QPainter::Antialiasing, p_profile->appearance->antiAliasing());
 
 
     for (int gi = 0; gi < m_codes.size(); gi++) {

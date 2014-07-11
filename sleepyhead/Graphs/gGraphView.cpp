@@ -348,7 +348,7 @@ gGraphView::~gGraphView()
 bool gGraphView::usePixmapCache()
 {
     //use_pixmap_cache is an overide setting
-    return PROFILE.appearance->usePixmapCaching();
+    return p_profile->appearance->usePixmapCaching();
 }
 
 #define CACHE_DRAWTEXT
@@ -359,7 +359,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
     int w, h;
 
     // not sure if global antialiasing would be better..
-    //painter.setRenderHint(QPainter::TextAntialiasing, PROFILE.appearance->antiAliasing());
+    //painter.setRenderHint(QPainter::TextAntialiasing, p_profile->appearance->antiAliasing());
     int m_textque_items = m_textque.size();
     for (int i = 0; i < m_textque_items; ++i) {
         TextQue &q = m_textque[i];
@@ -617,7 +617,7 @@ void gGraphView::selectionTime()
     if (d > 1) {
         /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
         QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
-        d=PROFILE.countDays(MT_CPAP,d1,d2); */
+        d=p_profile->countDays(MT_CPAP,d1,d2); */
 
         str.sprintf("%1.0f days", ceil(d));
     } else {
@@ -664,7 +664,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         if (!m2 || m_graphs[i]->max_x > m2) { m2 = m_graphs[i]->max_x; }
     }
 
-    if (PROFILE.general->linkGroups()) {
+    if (p_profile->general->linkGroups()) {
         for (int i = 0; i < m_graphs.size(); i++) {
             m_graphs[i]->SetMinX(m1);
             m_graphs[i]->SetMaxX(m2);
@@ -687,7 +687,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     if (d > 1) {
         /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
         QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
-        d=PROFILE.countDays(MT_CPAP,d1,d2); */
+        d=p_profile->countDays(MT_CPAP,d1,d2); */
 
         str.sprintf("%1.0f days", ceil(d));
     } else {
@@ -710,7 +710,7 @@ void gGraphView::GetXBounds(qint64 &st, qint64 &et)
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
 {
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (PROFILE.general->linkGroups() || (m_graphs[i]->group() == group)) {
+        if (p_profile->general->linkGroups() || (m_graphs[i]->group() == group)) {
             m_graphs[i]->SetXBounds(minx, maxx);
         }
     }
@@ -972,7 +972,7 @@ void gGraphView::paintGL()
         redrawtimer->stop();
     }
 
-    bool render_cube = false; //PROFILE.appearance->animations(); // do something to
+    bool render_cube = false; //p_profile->appearance->animations(); // do something to
 
     if (width() <= 0) { return; }
     if (height() <= 0) { return; }
@@ -1019,7 +1019,7 @@ void gGraphView::paintGL()
     static int rp = 0;
 
     // Show FPS and draw time
-    if (m_showsplitter && PROFILE.general->showDebug()) {
+    if (m_showsplitter && p_profile->general->showDebug()) {
         QString ss;
         qint64 ela = time.nsecsElapsed();
         double ms = double(ela) / 1000000.0;
@@ -1684,7 +1684,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
             py += graphSpacer; // do we want the extra spacer down the bottom?
         }
     } else {
-        int scrollDampening = PROFILE.general->scrollDampening();
+        int scrollDampening = p_profile->general->scrollDampening();
 
         if (event->orientation() == Qt::Vertical) { // Vertical Scrolling
             if (horizScrollTime.elapsed() < scrollDampening) {
@@ -1766,7 +1766,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_PageUp) {
         if (m_scrollbar) {
-            m_offsetY -= PROFILE.appearance->graphHeight() * 3 * m_scaleY;
+            m_offsetY -= p_profile->appearance->graphHeight() * 3 * m_scaleY;
             m_scrollbar->setValue(m_offsetY);
             m_offsetY = m_scrollbar->value();
             redraw();
@@ -1774,7 +1774,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         if (m_scrollbar) {
-            m_offsetY += PROFILE.appearance->graphHeight() * 3 * m_scaleY; //PROFILE.appearance->graphHeight();
+            m_offsetY += p_profile->appearance->graphHeight() * 3 * m_scaleY; //p_profile->appearance->graphHeight();
 
             if (m_offsetY < 0) { m_offsetY = 0; }
 
@@ -1898,7 +1898,7 @@ void gGraphView::timedRedraw(int ms)
 }
 void gGraphView::resetLayout()
 {
-    int default_height = PROFILE.appearance->graphHeight();
+    int default_height = p_profile->appearance->graphHeight();
 
     for (int i = 0; i < m_graphs.size(); i++) {
         m_graphs[i]->setHeight(default_height);
@@ -1919,7 +1919,7 @@ const quint16 gvversion = 2;
 
 void gGraphView::SaveSettings(QString title)
 {
-    QString filename = PROFILE.Get("{DataFolder}/") + title.toLower() + ".shg";
+    QString filename = p_profile->Get("{DataFolder}/") + title.toLower() + ".shg";
     QFile f(filename);
     f.open(QFile::WriteOnly);
     QDataStream out(&f);
@@ -1946,7 +1946,7 @@ void gGraphView::SaveSettings(QString title)
 
 bool gGraphView::LoadSettings(QString title)
 {
-    QString filename = PROFILE.Get("{DataFolder}/") + title.toLower() + ".shg";
+    QString filename = p_profile->Get("{DataFolder}/") + title.toLower() + ".shg";
     QFile f(filename);
 
     if (!f.exists()) { return false; }

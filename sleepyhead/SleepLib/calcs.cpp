@@ -616,7 +616,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
 void FlowParser::flagEvents()
 {
-    if (!PROFILE.cpap->userEventFlagging()) { return; }
+    if (!p_profile->cpap->userEventFlagging()) { return; }
 
     int numbreaths = breaths.size();
 
@@ -639,7 +639,7 @@ void FlowParser::flagEvents()
     double st, et, dur; //mt
     qint64 len;
 
-    bool allowDuplicates = PROFILE.cpap->userEventDuplicates();
+    bool allowDuplicates = p_profile->cpap->userEventDuplicates();
 
     BreathPeak *bpstr = breaths.data();
     BreathPeak *bpend = bpstr + numbreaths;
@@ -665,7 +665,7 @@ void FlowParser::flagEvents()
 
     EventDataType peak = br[idx]; //*(br.begin()+idx);
 
-    EventDataType cutoffval = peak * (PROFILE.cpap->userFlowRestriction() / 100.0F);
+    EventDataType cutoffval = peak * (p_profile->cpap->userFlowRestriction() / 100.0F);
 
     int bs, bm, be, bs1, bm1, be1;
 
@@ -738,7 +738,7 @@ void FlowParser::flagEvents()
     }
 
 
-    EventDataType duration = PROFILE.cpap->userEventDuration();
+    EventDataType duration = p_profile->cpap->userEventDuration();
     //double lastst=start, lastet=start;
     //EventDataType v;
     int bsize = bstart.size();
@@ -860,7 +860,7 @@ void calcRespRate(Session *session, FlowParser *flowparser)
 
 EventDataType calcAHI(Session *session, qint64 start, qint64 end)
 {
-    bool rdi = PROFILE.general->calculateRDI();
+    bool rdi = p_profile->general->calculateRDI();
 
     double hours, ahi, cnt;
 
@@ -900,7 +900,7 @@ EventDataType calcAHI(Session *session, qint64 start, qint64 end)
 int calcAHIGraph(Session *session)
 {
     bool calcrdi = session->machine()->GetClass() == "PRS1";
-    //PROFILE.general->calculateRDI()
+    //p_profile->general->calculateRDI()
 
 
     const qint64 window_step = 30000; // 30 second windows
@@ -1700,10 +1700,10 @@ int calcPulseChange(Session *session)
 
     EventDataType val, val2, change, tmp;
     qint64 time, time2;
-    qint64 window = PROFILE.oxi->pulseChangeDuration();
+    qint64 window = p_profile->oxi->pulseChangeDuration();
     window *= 1000;
 
-    change = PROFILE.oxi->pulseChangeBPM();
+    change = p_profile->oxi->pulseChangeBPM();
 
     EventList *pc = new EventList(EVL_Event, 1, 0, 0, 0, 0, true);
     pc->setFirst(session->first(OXI_Pulse));
@@ -1779,9 +1779,9 @@ int calcSPO2Drop(Session *session)
 
     EventDataType val, val2, change, tmp;
     qint64 time, time2;
-    qint64 window = PROFILE.oxi->spO2DropDuration();
+    qint64 window = p_profile->oxi->spO2DropDuration();
     window *= 1000;
-    change = PROFILE.oxi->spO2DropPercentage();
+    change = p_profile->oxi->spO2DropPercentage();
 
     EventList *pc = new EventList(EVL_Event, 1, 0, 0, 0, 0, true);
     qint64 lastt;

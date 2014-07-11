@@ -32,7 +32,7 @@ const int intellipap_data_version = 3;
 class Intellipap: public CPAP
 {
   public:
-    Intellipap(Profile *p, MachineID id = 0);
+    Intellipap(MachineID id = 0);
     virtual ~Intellipap();
 };
 
@@ -56,7 +56,7 @@ class IntellipapLoader : public MachineLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for Intellipap data signature, and Loads any new data
-    virtual int Open(QString path, Profile *profile);
+    virtual int Open(QString path);
 
     //! \brief Returns SleepLib database version of this IntelliPap loader
     virtual int Version() { return intellipap_data_version; }
@@ -65,7 +65,7 @@ class IntellipapLoader : public MachineLoader
     virtual const QString &ClassName() { return intellipap_class_name; }
 
     //! \brief Creates a machine object, indexed by serial number
-    Machine *CreateMachine(QString serial, Profile *profile);
+    Machine *CreateMachine(QString serial);
 
     //! \brief Registers this MachineLoader with the master list, so Intellipap data can load
     static void Register();
