@@ -774,13 +774,13 @@ Profile *Create(QString name)
     }
 
     //path+="/"+name;
-    Profile *prof = new Profile(path);
-    prof->Open();
-    profiles[name] = prof;
-    prof->user->setUserName(name);
-    //prof->Set("Realname",realname);
-    //if (!password.isEmpty()) prof.user->setPassword(password);
-    prof->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) +
+    p_profile = new Profile(path);
+    p_profile->Open();
+    profiles[name] = p_profile;
+    p_profile->user->setUserName(name);
+    //p_profile->Set("Realname",realname);
+    //if (!password.isEmpty()) p_profile.user->setPassword(password);
+    p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) +
               QString("}"));
 
     Machine *m = new Machine(0);
@@ -790,11 +790,11 @@ Profile *Create(QString name)
     m->properties[STR_PROP_Serial] = m->hexid();
     m->properties[STR_PROP_Path] = "{DataFolder}/" + m->GetClass() + "_" + m->hexid();
     m->SetType(MT_JOURNAL);
-    prof->AddMachine(m);
+    p_profile->AddMachine(m);
 
-    prof->Save();
+    p_profile->Save();
 
-    return prof;
+    return p_profile;
 }
 
 Profile *Get()
