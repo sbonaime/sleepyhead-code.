@@ -54,6 +54,12 @@ class Profile : public Preferences
     //! \brief Open profile, parse profile.xml file, and initialize helper classes
     virtual bool Open(QString filename = "");
 
+    //! \brief Returns hostname that locked profile, or empty string if unlocked
+    QString checkLock();
+
+    //! \brief Removes a lockfile
+    bool removeLock();
+
     //! \brief Save Profile object (This is an extension to Preference::Save(..))
     virtual bool Save(QString filename = "");
 

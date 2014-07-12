@@ -18,6 +18,7 @@
 #include <QVBoxLayout>
 #include <QCryptographicHash>
 #include <QMessageBox>
+#include <QHostInfo>
 #include <QTimer>
 #include <QFontMetrics>
 #include <QDir>
@@ -49,16 +50,22 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
             p != Profiles::profiles.end(); p++) {
         name = p.key();
 
-        QStandardItem *item = new QStandardItem(name);
-        QRect rect = fm.boundingRect(name);
-        if (rect.width() > w) w = rect.width();
-
         if (PREF.contains(STR_GEN_Profile) && (name == PREF[STR_GEN_Profile].toString())) {
             sel = i;
         }
 
-        item->setData(p.key());
+        QStandardItem *item = new QStandardItem(name);
+
+        item->setData(p.key(), Qt::UserRole+2);
         item->setEditable(false);
+
+        if (!(*p)->checkLock().isEmpty()) {
+            item->setForeground(QBrush(Qt::red));
+            item->setText(name+" (open)");
+        }
+
+        QRect rect = fm.boundingRect(name);
+        if (rect.width() > w) w = rect.width();
 
         // Profile fonts arern't loaded yet.. Using generic font.
         item->setFont(font);
@@ -122,10 +129,13 @@ void ProfileSelect::earlyExit()
 }
 void ProfileSelect::editProfile()
 {
-    QString name = ui->listView->currentIndex().data().toString();
+    QString name = ui->listView->currentIndex().data(Qt::UserRole+2).toString();
     Profile *profile = Profiles::Get(name);
 
     if (!profile) { return; }
+    if (!profile->isOpen()) {
+        profile->Open();
+    }
 
     bool reallyEdit = false;
 
@@ -173,7 +183,7 @@ void ProfileSelect::editProfile()
 }
 void ProfileSelect::deleteProfile()
 {
-    QString name = ui->listView->currentIndex().data().toString();
+    QString name = ui->listView->currentIndex().data(Qt::UserRole+2).toString();
 
     QDialog confirmdlg;
     QVBoxLayout layout(&confirmdlg);
@@ -292,11 +302,38 @@ void ProfileSelect::on_newProfileButton_clicked()
 //! \brief Process the selected login, requesting passwords if required.
 void ProfileSelect::on_listView_activated(const QModelIndex &index)
 {
-    QString name = index.data().toString();
+    QString name = index.data(Qt::UserRole+2).toString();
     Profile *profile = Profiles::profiles[name];
 
     if (!profile) { return; }
     if (!profile->isOpen()) {
+        QString lockhost = profile->checkLock();
+
+        if (!lockhost.isEmpty()) {
+            if (lockhost.compare(QHostInfo::localHostName()) == 0) {
+                // Localhost has it locked..
+                if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
+                                      QObject::tr("There is a lockfile already present for profile '%1'.").arg(name)+"\n\n"+
+                                      QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
+                                      QObject::tr("Please close any other instances of SleepyHead running with this profile before proceeding.")+"\n\n"+
+                                      QObject::tr("If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message."),
+                                      QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
+                    return;
+                }
+
+            } else {
+                if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
+                                      QObject::tr("There is a lockfile already present for this profile '%1', claimed on '%2'.").arg(name).arg(lockhost)+"\n\n"+
+                                      QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
+                                      QObject::tr("If you are using cloud storage, make sure SleepyHead is closed and syncing has completed first on the other computer before proceeding."),
+                                      QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
+                    return;
+                }
+            }
+
+            profile->removeLock();
+        }
+
         profile->Open();
         // Do this in case user renames the directory (otherwise it won't load)
         // Essentially makes the folder name the user name, but whatever..

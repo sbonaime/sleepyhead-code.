@@ -302,6 +302,29 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     on_homeButton_clicked();
+
+    qsrand(QDateTime::currentDateTime().toTime_t());
+
+    // Translators, these are only temporary messages, don't bother unless you really want to..
+
+    warnmsg.push_back(tr("<b>Warning:</b> This pre-release build is meant for beta testers only. Please do <b>NOT</b> share outside the SleepyHead Testing Forum."));
+    warnmsg.push_back(tr("Please report bugs for this build to the SleepyHead Testing Forum, but first, check the release thread to ensure you are running the latest version."));
+    warnmsg.push_back(tr("When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model."));
+    warnmsg.push_back(tr("<b>Warning:</b> This reports this software generates are not fit for compliance or medical diagnostic purposes."));
+    warnmsg.push_back(tr(""));
+    warnmsg.push_back(tr("These messages are only a temporary feature. Some people thought they were an error."));
+
+    wtimer.setParent(this);
+    warnidx = 0;
+    wtimer.singleShot(0, this, SLOT(on_changeWarningMessage()));
+}
+
+void MainWindow::on_changeWarningMessage()
+{
+    int i=warnidx++ % warnmsg.size();
+    QString warning = "<html><head/><body><p>"+warnmsg[i]+"</p></body></html>";
+    ui->warningLabel->setText(warning);
+    wtimer.singleShot(10000, this, SLOT(on_changeWarningMessage()));
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

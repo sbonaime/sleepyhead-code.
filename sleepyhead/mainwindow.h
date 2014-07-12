@@ -17,6 +17,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 #include "daily.h"
 #include "overview.h"
@@ -310,6 +311,8 @@ class MainWindow : public QMainWindow
 
     void on_importButton_clicked();
 
+    void on_changeWarningMessage();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();
@@ -335,6 +338,10 @@ private:
 
     //! \brief Destroy ALL the CPAP data for the selected machine
     void purgeMachine(Machine *);
+
+    int warnidx;
+    QStringList warnmsg;
+    QTimer wtimer;
 };
 
 #endif // MAINWINDOW_H

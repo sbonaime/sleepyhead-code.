@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QProcess>
+#include <QByteArray>
+#include <QHostInfo>
 #include <algorithm>
 #include <cmath>
 
@@ -64,6 +66,10 @@ Profile::Profile(QString path)
 
 Profile::~Profile()
 {
+    QString lockfile=p_path+"/lockfile";
+    QFile file(lockfile);
+    file.remove();
+
     if (m_opened) {
         delete user;
         delete doctor;
@@ -87,6 +93,27 @@ bool Profile::Save(QString filename)
     } else return false;
 }
 
+bool Profile::removeLock()
+{
+    QString filename=p_path+"/lockfile";
+    QFile file(filename);
+    return file.remove();
+}
+
+QString Profile::checkLock()
+{
+
+    QString filename=p_path+"/lockfile";
+    QFile file(filename);
+
+    if (!file.exists())
+        return QString();
+
+    file.open(QFile::ReadOnly);
+    QString lockhost = file.readLine(1024).trimmed();
+    return lockhost;
+}
+
 bool Profile::Open(QString filename)
 {
     if (filename.isEmpty()) {
@@ -97,6 +124,14 @@ bool Profile::Open(QString filename)
         return true;
     }
     bool b = Preferences::Open(filename);
+
+    QString lockfile=p_path+"/lockfile";
+    QFile file(lockfile);
+    file.open(QFile::WriteOnly);
+    QByteArray ba;
+    ba.append(QHostInfo::localHostName());
+    file.write(ba);
+    file.close();
 
     m_opened=true;
     doctor = new DoctorInfo(this);
