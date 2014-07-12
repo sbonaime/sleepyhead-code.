@@ -281,7 +281,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
                     if (mod >= 7) {
                         mode = MODE_ASV;
-                    } else if (mod >= 5) {
+                    } else if (mod >= 3) {
                         mode = MODE_BIPAP;
                     } else if (mod >= 1) {
                         mode = MODE_APAP;

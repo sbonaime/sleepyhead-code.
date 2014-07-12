@@ -799,6 +799,8 @@ QString Statistics::GenerateHTML()
 
                     if (day->settingExists(CPAP_IPAPHi)) {
                         maxipap = day->settings_max(CPAP_IPAPHi);
+                    } else if (day->settingExists(CPAP_IPAP)) {
+                        maxipap = day->settings_max(CPAP_IPAP);
                     }
 
                 }
