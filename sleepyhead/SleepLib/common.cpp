@@ -421,7 +421,7 @@ void initializeStrings()
     STR_TR_Sessions = QObject::tr("Sessions");
     STR_TR_PrRelief = QObject::tr("Pr. Relief"); // Pressure Relief
 
-    STR_TR_NoData = QObject::tr("No Data");
+    STR_TR_NoData = QObject::tr("No Data Available");
     STR_TR_Bookmarks = QObject::tr("Bookmarks");
     STR_TR_SleepyHead = QObject::tr("SleepyHead");
 

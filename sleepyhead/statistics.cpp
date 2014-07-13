@@ -1317,46 +1317,53 @@ QString StatisticsRow::value(QDate start, QDate end)
     } else {
         //
         ChannelID code=channel();
+
+        EventDataType val = 0;
+        QString fmt = "%1";
         if (code != NoChannel) {
             switch(calc) {
             case SC_AVG:
-                value = QString("%1").arg(p_profile->calcAvg(code, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcAvg(code, type, start, end);
                 break;
             case SC_WAVG:
-                value = QString("%1").arg(p_profile->calcWavg(code, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcWavg(code, type, start, end);
                 break;
             case SC_MEDIAN:
-                value = QString("%1").arg(p_profile->calcPercentile(code, 0.5F, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcPercentile(code, 0.5F, type, start, end);
                 break;
             case SC_90P:
-                value = QString("%1").arg(p_profile->calcPercentile(code, 0.9F, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcPercentile(code, 0.9F, type, start, end);
                 break;
             case SC_MIN:
-                value = QString("%1").arg(p_profile->calcMin(code, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcMin(code, type, start, end);
                 break;
             case SC_MAX:
-                value = QString("%1").arg(p_profile->calcMax(code, type, start, end), 0, 'f', decimals);
+                val = p_profile->calcMax(code, type, start, end);
                 break;
             case SC_CPH:
-                value = QString("%1").arg(p_profile->calcCount(code, type, start, end)
-                     / p_profile->calcHours(type, start, end), 0, 'f', decimals);
+                val = p_profile->calcCount(code, type, start, end) / p_profile->calcHours(type, start, end);
                 break;
             case SC_SPH:
-                value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
-                     * p_profile->calcSum(code, type, start, end)
-                     / 3600.0, 0, 'f', decimals);
+                fmt += "%";
+                val = 100.0 / p_profile->calcHours(type, start, end) * p_profile->calcSum(code, type, start, end) / 3600.0;
                 break;
             case SC_ABOVE:
-                value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
-                    * (p_profile->calcAboveThreshold(code, schema::channel[code].upperThreshold(), type, start, end) / 60.0), 0, 'f', decimals);
+                fmt += "%";
+                val = 100.0 / p_profile->calcHours(type, start, end) * (p_profile->calcAboveThreshold(code, schema::channel[code].upperThreshold(), type, start, end) / 60.0);
                 break;
             case SC_BELOW:
-                value = QString("%1%").arg(100.0 / p_profile->calcHours(type, start, end)
-                    * (p_profile->calcBelowThreshold(code, schema::channel[code].lowerThreshold(), type, start, end) / 60.0), 0, 'f', decimals);
+                fmt += "%";
+                val = 100.0 / p_profile->calcHours(type, start, end) * (p_profile->calcBelowThreshold(code, schema::channel[code].lowerThreshold(), type, start, end) / 60.0);
                 break;
             default:
                 break;
             };
+        }
+
+        if ((val == std::numeric_limits<EventDataType>::min()) || (val == std::numeric_limits<EventDataType>::max())) {
+            value = "Err";
+        } else {
+            value = fmt.arg(val, 0, 'f', decimals);
         }
     }
 

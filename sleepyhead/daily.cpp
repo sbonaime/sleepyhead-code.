@@ -1345,7 +1345,6 @@ void Daily::Load(QDate date)
 
     updateGraphCombo();
 
-
     if (cpap) {
         float hours=cpap->hours();
         if (GraphView->isEmpty() && (hours>0)) {
@@ -2259,10 +2258,17 @@ void Daily::updateCube()
         ui->toggleGraphs->setChecked(true);
         ui->toggleGraphs->blockSignals(false);
 
-        if (ui->graphCombo->count()>0) {
+        if (ui->graphCombo->count() > 0) {
             GraphView->setEmptyText(tr("No Graphs On!"));
         } else {
-            GraphView->setEmptyText(STR_TR_NoData);
+            if (!p_profile->GetGoodDay(getDate(), MT_CPAP)
+              && !p_profile->GetGoodDay(getDate(), MT_OXIMETER)
+              && !p_profile->GetGoodDay(getDate(), MT_SLEEPSTAGE)
+              && !p_profile->GetGoodDay(getDate(), MT_POSITION)) {
+                GraphView->setEmptyText(STR_TR_NoData);
+            } else {
+                GraphView->setEmptyText(tr("Summary Only :("));
+            }
         }
     } else {
         ui->toggleGraphs->setArrowType(Qt::DownArrow);
@@ -2271,6 +2277,7 @@ void Daily::updateCube()
         ui->toggleGraphs->setChecked(false);
         ui->toggleGraphs->blockSignals(false);
     }
+
 }
 
 
