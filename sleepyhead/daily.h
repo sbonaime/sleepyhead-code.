@@ -132,6 +132,13 @@ public:
     QWidget * sessionBar() { return sessbar; }
 
     void clearLastDay();
+
+    /*! \fn Unload(QDate date)
+        \brief Saves any journal changes for the provided date.
+        \param QDate date
+        */
+    void Unload(QDate date);
+
 private slots:
 
     /*! \fn on_calendar_currentPageChanged(int year, int month);
@@ -278,11 +285,6 @@ private:
         \param QDate date
         */
     void Load(QDate date);
-    /*! \fn Unload(QDate date)
-        \brief Saves any journal changes for the provided date.
-        \param QDate date
-        */
-    void Unload(QDate date);
     /*! \fn UpdateCalendarDay(QDate date)
         \brief Updates the calendar visual information, changing a dates color depending on what data is available.
         \param QDate date

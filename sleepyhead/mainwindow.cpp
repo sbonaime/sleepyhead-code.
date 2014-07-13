@@ -1715,12 +1715,15 @@ void MainWindow::on_actionChange_User_triggered()
 {
     p_profile->Save();
     PREF.Save();
+    p_profile->removeLock();
+
     RestartApplication(true);
 }
 
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
     QDate date = getDaily()->getDate();
+    getDaily()->Unload(date);
     Day *day = p_profile->GetDay(date, MT_CPAP);
     Machine *m;
 
@@ -1802,6 +1805,7 @@ void MainWindow::purgeMachine(Machine * mach)
                               QMessageBox::No) == QMessageBox::No) {
         return;
     }
+    daily->Unload(daily->getDate());
 
     // Technicially the above won't sessions under short session limit.. Using Purge to clean up the rest.
     if (mach->Purge(3478216)) {

@@ -1661,6 +1661,7 @@ void Daily::clearLastDay()
 
 void Daily::Unload(QDate date)
 {
+    webView->setHtml("");
     Session *journal=GetJournalSession(date);
 
     bool nonotes=ui->JournalNotes->toPlainText().isEmpty();
