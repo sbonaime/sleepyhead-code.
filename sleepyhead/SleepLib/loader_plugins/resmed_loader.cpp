@@ -316,9 +316,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 //CHECKME: Should I be taking noon day split time into account here?
                 strdate[date].push_back(&strsess.insert(ontime, R).value());
 
-                QDateTime dofftime = QDateTime::fromTime_t(offtime);
-                qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
-
+                //QDateTime dofftime = QDateTime::fromTime_t(offtime);
+                //qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
             }
             dt = dt.addDays(1);
         }

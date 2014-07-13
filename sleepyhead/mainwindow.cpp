@@ -680,10 +680,9 @@ void MainWindow::on_action_Import_Data_triggered()
     if (datapaths.size() > 0) {
         int res = QMessageBox::question(this,
                                         tr("CPAP Data Located"),
-                                        QString((tr("CPAP Datacard structures were detected at the following locations:")+
-                                                   "\n\n%1\n\n"+
-                                                   tr("Would you like to import from the path(s) shown above?"))).
-                                            arg(QDir::toNativeSeparators(datapaths.join("\n"))),
+                                        tr("CPAP Datacard structures were detected at the following locations:")+
+                                        QString("\n\n%1\n\n").arg(QDir::toNativeSeparators(datapaths.join("\n")))+
+                                        tr("Would you like to import from the path(s) shown above?"),
                                         STR_MessageBox_Yes,
                                         tr("Select another folder"),
                                         STR_MessageBox_Cancel,
@@ -707,18 +706,23 @@ void MainWindow::on_action_Import_Data_triggered()
 
     if (asknew) {
         popup.show();
-        mainwin->Notify(tr("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder."),tr("Import Reminder"),8000);
+        mainwin->Notify(tr("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder."),
+                        tr("Import Reminder"),8000);
 
         QFileDialog w(this);
+
+        QString folder;
+        if (p_profile->contains(STR_PREF_LastCPAPPath)) {
+            folder = (*p_profile)[STR_PREF_LastCPAPPath].toString();
+        } else {
 #if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
-        const QString documentsFolder = QDesktopServices::storageLocation(
-                                      QDesktopServices::DocumentsLocation);
+            folder = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
 #else
-        const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+            folder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #endif
+        }
 
-
-        w.setDirectory(documentsFolder);
+        w.setDirectory(folder);
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
 
@@ -759,6 +763,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
             return;
         }
+
         popup.hide();
 
         for (int i = 0; i < w.selectedFiles().size(); i++) {
@@ -787,6 +792,9 @@ void MainWindow::on_action_Import_Data_triggered()
             if (c) {
                 goodlocations.push_back(dir);
 
+                QDir d(dir.section("/",0,-2));
+                (*p_profile)[STR_PREF_LastCPAPPath] = d.absolutePath();
+
                 successful = true;
             }
 
@@ -811,6 +819,7 @@ void MainWindow::on_action_Import_Data_triggered()
     }
     PopulatePurgeMenu();
 }
+
 QMenu *MainWindow::CreateMenu(QString title)
 {
     QMenu *menu = new QMenu(title, ui->menubar);
