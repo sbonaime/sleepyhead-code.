@@ -306,6 +306,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // this is class wide because the leak redline can be reset in preferences..
     // Better way would be having a search for linechart layers in graphlist[...]
     gLineChart *leakchart=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
+    graphlist[schema::channel[CPAP_Leak].label()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+
     leakchart->addPlot(CPAP_Leak, COLOR_Leak, square);
     leakchart->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
     schema::channel[CPAP_Leak].setUpperThresholdColor(Qt::red);

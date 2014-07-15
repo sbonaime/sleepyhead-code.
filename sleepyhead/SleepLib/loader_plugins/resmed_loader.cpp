@@ -279,14 +279,14 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     CPAPMode mode;
 
-                    if (mod >= 7) {
-                        mode = MODE_ASV;
-                    } else if (mod >= 3) {
+                    if (mod >= 7) {       // mod 7 == vpap adapt
+                        mode = MODE_ASV;  // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
+                    } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
                         mode = MODE_BIPAP;
                     } else if (mod >= 1) {
-                        mode = MODE_APAP;
+                        mode = MODE_APAP; // mod 1 == apap
                     } else {
-                        mode = MODE_CPAP;
+                        mode = MODE_CPAP; // mod 0 == cpap
                     }
                     R.mode = mode;
 

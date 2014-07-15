@@ -88,7 +88,7 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_EPAP, QColor("light green"), ST_PERC, perc);
             addSlice(CPAP_IPAP, QColor("light cyan"), mid, 0.5);
             addSlice(CPAP_IPAP, QColor("light blue"), ST_PERC, perc);
-            addSlice(CPAP_IPAP, QColor("blue"), ST_SETMAX);
+            addSlice(CPAP_IPAPHi, QColor("blue"), ST_SETMAX);
         } else if (cpapmode >= MODE_APAP) {
             addSlice(CPAP_PressureMin, QColor("orange"), ST_SETMIN);
             addSlice(CPAP_Pressure, QColor("dark green"), mid, 0.5);

@@ -101,6 +101,8 @@ QDate Machine::pickDate(qint64 first)
 bool Machine::AddSession(Session *s)
 {
     Q_ASSERT(s != nullptr);
+    Q_ASSERT(p_profile);
+    Q_ASSERT(p_profile->isOpen());
 
     if (p_profile->session->ignoreOlderSessions()) {
         qint64 ignorebefore = p_profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();

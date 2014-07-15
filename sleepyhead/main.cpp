@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
     Q_UNUSED(intel_graphics)
 
     QString betterbuild = "Settings/BetterBuild";
+
     QString fasterbuildavailable = QObject::tr("A faster build of SleepyHead may be available");
     QString notbotheragain = QObject::tr("You will not be bothered with this message again.");
     QString betterresults = QObject::tr("This version will run fine, but a \"<b>%1</b>\" tagged build of SleepyHead will likely run much smoother on your computer.");
