@@ -1968,9 +1968,8 @@ bool gGraphView::LoadSettings(QString title)
 
     in >> t2;
 
-    if (t2 != gvversion) {
-        qDebug() << "gGraphView" << title << "version doesn't match";
-        return false;
+    if (t2 < gvversion) {
+        qDebug() << "gGraphView" << title << "settings will be upgraded.";
     }
 
     qint16 siz;
