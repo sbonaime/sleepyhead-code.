@@ -46,7 +46,6 @@
 //extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
 
-
 // This was Sean Stangl's idea.. but I couldn't apply that patch.
 inline QString channelInfo(ChannelID code) {
     return schema::channel[code].fullname()+"\n"+schema::channel[code].description()+"\n("+schema::channel[code].units()+")";
@@ -136,7 +135,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
             *SF = nullptr,
             *AHI = nullptr;
 
-    graphlist["SF"] = SF = new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
+    graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);
 
     ChannelID cpapcodes[] = {
@@ -155,25 +154,25 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     for (int i=0; i < cpapsize; ++i) {
         ChannelID code = cpapcodes[i];
-        graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height);
+        graphlist[schema::channel[code].label()] = new gGraph(schema::channel[code].code(), GraphView, schema::channel[code].label(), channelInfo(code), default_height);
     }
 
     int oxigrp=p_profile->ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
     for (int i=0; i < oxisize; ++i) {
         ChannelID code = oxicodes[i];
-        graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height, oxigrp);
+        graphlist[schema::channel[code].label()] = new gGraph(schema::channel[code].code(), GraphView, schema::channel[code].label(), channelInfo(code), default_height, oxigrp);
     }
 
     if (p_profile->general->calculateRDI()) {
-        AHI=new gGraph(GraphView,STR_TR_RDI, channelInfo(CPAP_RDI), default_height);
+        AHI=new gGraph("AHI", GraphView,STR_TR_RDI, channelInfo(CPAP_RDI), default_height);
     } else {
-        AHI=new gGraph(GraphView,STR_TR_AHI, channelInfo(CPAP_AHI), default_height);
+        AHI=new gGraph("AHI", GraphView,STR_TR_AHI, channelInfo(CPAP_AHI), default_height);
     }
 
     graphlist["AHI"] = AHI;
 
-    graphlist["INTPULSE"] = new gGraph(GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
-    graphlist["INTSPO2"] = new gGraph(GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
+    graphlist["INTPULSE"] = new gGraph("INTPULSE", GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
+    graphlist["INTSPO2"] = new gGraph("INTSPO2", GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -183,7 +182,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    TAP->AddLayer(AddCPAP(tap));
     //TAP->setMargins(0,0,0,0);
 
-    graphlist["EventBreakdown"] = GAHI = new gGraph(snapGV,tr("Breakdown"),tr("events"),172);
+    graphlist[STR_GRAPH_EventBreakdown] = GAHI = new gGraph(STR_GRAPH_EventBreakdown, snapGV,tr("Breakdown"),tr("events"),172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
     evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
     evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),STR_TR_UA);
@@ -1300,9 +1299,9 @@ void Daily::Load(QDate date)
         } else
             gr=0;
 
-        GraphView->findGraph(STR_TR_PulseRate)->setGroup(gr);
-        GraphView->findGraph(STR_TR_SpO2)->setGroup(gr);
-        GraphView->findGraph(STR_TR_Plethy)->setGroup(gr);
+        (*GraphView)[schema::channel[OXI_Pulse].code()]->setGroup(gr);
+        (*GraphView)[schema::channel[OXI_SPO2].code()]->setGroup(gr);
+        (*GraphView)[schema::channel[OXI_Plethy].code()]->setGroup(gr);
     }
     lastcpapday=cpap;
 
@@ -1880,8 +1879,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         double st=t-(winsize/2);
         double et=t+(winsize/2);
 
-
-        gGraph *g=GraphView->findGraph(STR_TR_EventFlags);
+        gGraph *g=(*GraphView)[STR_GRAPH_EventBreakdown];
         if (!g) return;
         if (st<g->rmin_x) {
             st=g->rmin_x;
@@ -1976,7 +1974,7 @@ void Daily::on_evViewSlider_valueChanged(int value)
 
     int winsize=value*60;
 
-    gGraph *g=GraphView->findGraph(STR_TR_EventFlags);
+    gGraph *g=GraphView->findGraph(STR_GRAPH_SleepFlags);
     if (!g) return;
     qint64 st=g->min_x;
     qint64 et=g->max_x;
@@ -2160,7 +2158,7 @@ void Daily::on_weightSpinBox_editingFinished()
     gGraphView *gv=mainwin->getOverview()->graphView();
     gGraph *g;
     if (gv) {
-        g=gv->findGraph(STR_TR_Weight);
+        g=gv->findGraph(STR_GRAPH_Weight);
         if (g) g->setDay(nullptr);
     }
     if ((height>0) && (kg>0)) {
@@ -2169,7 +2167,7 @@ void Daily::on_weightSpinBox_editingFinished()
         ui->BMI->setVisible(true);
         journal->settings[Journal_BMI]=bmi;
         if (gv) {
-            g=gv->findGraph(STR_TR_BMI);
+            g=gv->findGraph(STR_GRAPH_BMI);
             if (g) g->setDay(nullptr);
         }
     }
@@ -2201,7 +2199,7 @@ void Daily::on_ouncesSpinBox_editingFinished()
 
     gGraph *g;
     if (mainwin->getOverview()) {
-        g=mainwin->getOverview()->graphView()->findGraph(STR_TR_Weight);
+        g=mainwin->getOverview()->graphView()->findGraph(STR_GRAPH_Weight);
         if (g) g->setDay(nullptr);
     }
 
@@ -2212,12 +2210,12 @@ void Daily::on_ouncesSpinBox_editingFinished()
 
         journal->settings[Journal_BMI]=bmi;
         if (mainwin->getOverview()) {
-            g=mainwin->getOverview()->graphView()->findGraph(STR_TR_BMI);
+            g=mainwin->getOverview()->graphView()->findGraph(STR_GRAPH_BMI);
             if (g) g->setDay(nullptr);
         }
     }
     journal->SetChanged(true);
-    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Weight");
+    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph(STR_GRAPH_Weight);
 }
 
 QString Daily::GetDetailsText()
@@ -2244,7 +2242,7 @@ void Daily::on_graphCombo_activated(int index)
     } else {
         ui->graphCombo->setItemIcon(index,*icon_off);
     }
-    g=GraphView->findGraph(s);
+    g=GraphView->findGraphTitle(s);
     g->setVisible(b);
 
     updateCube();

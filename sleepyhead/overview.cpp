@@ -109,15 +109,15 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     ChannelID ahicode = p_profile->general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
 
     if (ahicode == CPAP_RDI) {
-        AHI = createGraph(STR_TR_RDI, tr("Respiratory\nDisturbance\nIndex"));
+        AHI = createGraph(STR_GRAPH_AHI, STR_TR_RDI, tr("Respiratory\nDisturbance\nIndex"));
     } else {
-        AHI = createGraph(STR_TR_AHI, tr("Apnea\nHypopnea\nIndex"));
+        AHI = createGraph(STR_GRAPH_AHI, STR_TR_AHI, tr("Apnea\nHypopnea\nIndex"));
     }
 
 
-    UC = createGraph(tr("Usage"), tr("Usage\n(hours)"));
+    UC = createGraph(STR_GRAPH_Usage, tr("Usage"), tr("Usage\n(hours)"));
 
-    FL = createGraph(STR_TR_FlowLimit, STR_TR_FlowLimit);
+    FL = createGraph(schema::channel[CPAP_FlowLimit].code(), schema::channel[CPAP_FlowLimit].label(), STR_TR_FlowLimit);
 
     float percentile = p_profile->general->prefCalcPercentile() / 100.0;
     int mididx = p_profile->general->prefCalcMiddle();
@@ -130,33 +130,32 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     SummaryType ST_max = p_profile->general->prefCalcMax() ? ST_PERC : ST_MAX;
     const EventDataType maxperc = 0.995F;
 
-
-    US = createGraph(tr("Session Times"), tr("Session Times\n(hours)"), YT_Time);
-    PR = createGraph(STR_TR_Pressure, STR_TR_Pressure + "\n(" + STR_UNIT_CMH2O + ")");
-    SET = createGraph(STR_TR_Settings, STR_TR_Settings);
-    LK = createGraph(STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
-    TOTLK = createGraph(STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
-    NPB = createGraph(tr("% in PB"), tr("Periodic\nBreathing\n(% of night)"));
+    US = createGraph(STR_GRAPH_SessionTimes, tr("Session Times"), tr("Session Times\n(hours)"), YT_Time);
+    PR = createGraph("Pressure", STR_TR_Pressure, STR_TR_Pressure + "\n(" + STR_UNIT_CMH2O + ")");
+    SET = createGraph("Settings", STR_TR_Settings, STR_TR_Settings);
+    LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
+    TOTLK = createGraph("TotalLeaks", STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
+    NPB = createGraph("TimeInPB", tr("% in PB"), tr("Periodic\nBreathing\n(% of night)"));
 
     if (ahicode == CPAP_RDI) {
-        AHIHR = createGraph(tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
+        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
     } else {
-        AHIHR = createGraph(tr("Peak AHI"), tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
+        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak AHI"), tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
     }
 
-    RR = createGraph(STR_TR_RespRate, tr("Respiratory\nRate\n(breaths/min)"));
-    TV = createGraph(STR_TR_TidalVolume, tr("Tidal\nVolume\n(ml)"));
-    MV = createGraph(STR_TR_MinuteVent, tr("Minute\nVentilation\n(L/min)"));
-    TGMV = createGraph(STR_TR_TargetVent, tr("Target\nVentilation\n(L/min)"));
-    PTB = createGraph(STR_TR_PatTrigBreath, tr("Patient\nTriggered\nBreaths\n(%)"));
-    SES = createGraph(STR_TR_Sessions, STR_TR_Sessions + tr("\n(count)"));
-    PULSE = createGraph(STR_TR_PulseRate, STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
-    SPO2 = createGraph(STR_TR_SpO2, tr("Oxygen Saturation\n(%)"));
-    SA = createGraph(STR_TR_SensAwake, tr("SensAwake\n(count)"));
+    RR = createGraph(schema::channel[CPAP_RespRate].code(), schema::channel[CPAP_RespRate].label(), schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].units());
+    TV = createGraph(schema::channel[CPAP_TidalVolume].code(),schema::channel[CPAP_TidalVolume].label(), tr("Tidal\nVolume\n(ml)"));
+    MV = createGraph(schema::channel[CPAP_MinuteVent].code(), schema::channel[CPAP_MinuteVent].label(), tr("Minute\nVentilation\n(L/min)"));
+    TGMV = createGraph(schema::channel[CPAP_TgMV].code(), schema::channel[CPAP_TgMV].label(), tr("Target\nVentilation\n(L/min)"));
+    PTB = createGraph(schema::channel[CPAP_PTB].code(), schema::channel[CPAP_PTB].label(), tr("Patient\nTriggered\nBreaths\n(%)"));
+    SES = createGraph(STR_GRAPH_Sessions, STR_TR_Sessions, STR_TR_Sessions + tr("\n(count)"));
+    PULSE = createGraph(schema::channel[OXI_Pulse].code(), schema::channel[OXI_Pulse].label(), STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
+    SPO2 = createGraph(schema::channel[OXI_SPO2].code(), schema::channel[OXI_SPO2].label(), tr("Oxygen Saturation\n(%)"));
+    SA = createGraph(schema::channel[CPAP_SensAwake].code(), schema::channel[CPAP_SensAwake].label(), tr("SensAwake\n(count)"));
 
-    WEIGHT = createGraph(STR_TR_Weight, STR_TR_Weight, YT_Weight);
-    BMI = createGraph(STR_TR_BMI, tr("Body\nMass\nIndex"));
-    ZOMBIE = createGraph(STR_TR_Zombie, tr("How you felt\n(0-10)"));
+    WEIGHT = createGraph(STR_GRAPH_Weight, STR_TR_Weight, STR_TR_Weight, YT_Weight);
+    BMI = createGraph(STR_GRAPH_BMI, STR_TR_BMI, tr("Body\nMass\nIndex"));
+    ZOMBIE = createGraph(STR_GRAPH_Zombie, STR_TR_Zombie, tr("How you felt\n(0-10)"));
 
     ahihr = new SummaryChart(STR_UNIT_EventsPerHour, GT_POINTS);
     ahihr->addSlice(ahicode, COLOR_Blue, ST_MAX);
@@ -323,10 +322,10 @@ void Overview::closeEvent(QCloseEvent *event)
     QWidget::closeEvent(event);
 }
 
-gGraph *Overview::createGraph(QString name, QString units, YTickerType yttype)
+gGraph *Overview::createGraph(QString code, QString name, QString units, YTickerType yttype)
 {
     int default_height = p_profile->appearance->graphHeight();
-    gGraph *g = new gGraph(GraphView, name, units, default_height, 0);
+    gGraph *g = new gGraph(code, GraphView, name, units, default_height, 0);
 
     gYAxis *yt;
 
@@ -612,7 +611,7 @@ void Overview::on_graphCombo_activated(int index)
         ui->graphCombo->setItemIcon(index, *icon_off);
     }
 
-    g = GraphView->findGraph(s);
+    g = GraphView->findGraphTitle(s);
     g->setVisible(b);
 
     updateCube();
@@ -654,7 +653,7 @@ void Overview::on_toggleVisibility_clicked(bool checked)
         s = ui->graphCombo->itemText(i);
         ui->graphCombo->setItemIcon(i, *icon);
         ui->graphCombo->setItemData(i, !checked, Qt::UserRole);
-        g = GraphView->findGraph(s);
+        g = GraphView->findGraphTitle(s);
         g->setVisible(!checked);
     }
 

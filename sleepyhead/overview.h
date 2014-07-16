@@ -62,7 +62,7 @@ class Overview : public QWidget
     /*! \brief Create an overview graph, adding it to the overview gGraphView object
         \param QString name  The title of the graph
         \param QString units The units of measurements to show in the popup */
-    gGraph *createGraph(QString name, QString units = "", YTickerType yttype = YT_Number);
+    gGraph *createGraph(QString code, QString name, QString units = "", YTickerType yttype = YT_Number);
     gGraph *AHI, *AHIHR, *UC, *FL, *SA, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2,
 //    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2,
            *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK;

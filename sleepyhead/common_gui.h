@@ -22,6 +22,16 @@ const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";
 const QString CSTR_GFX_BrokenGL = "BrokenGL";
 
+const QString STR_GRAPH_EventBreakdown = "EventBreakdown";
+const QString STR_GRAPH_SleepFlags = "SF";
+const QString STR_GRAPH_Weight = "Weight";
+const QString STR_GRAPH_BMI = "BMI";
+const QString STR_GRAPH_Zombie = "Zombie";
+const QString STR_GRAPH_Sessions = "Sessions";
+const QString STR_GRAPH_SessionTimes = "SessionTimes";
+const QString STR_GRAPH_Usage = "Usage";
+const QString STR_GRAPH_AHI = "AHI";
+const QString STR_GRAPH_PeakAHI = "PeakAHI";
 
 //! \brief Returns a text string naming the current graphics engine
 QString getGraphicsEngine();

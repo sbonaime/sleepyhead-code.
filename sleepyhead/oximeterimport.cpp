@@ -40,7 +40,7 @@ OximeterImport::OximeterImport(QWidget *parent) :
     lvlayout->setMargin(0);
     ui->liveViewFrame->setLayout(lvlayout);
     lvlayout->addWidget(liveView);
-    plethyGraph = new gGraph(liveView, STR_TR_Plethy, STR_UNIT_Hz);
+    plethyGraph = new gGraph("Plethy", liveView, STR_TR_Plethy, STR_UNIT_Hz);
 
     plethyGraph->AddLayer(new gYAxis(), LayerLeft, gYAxis::Margin);
     plethyGraph->AddLayer(new gXAxis(), LayerBottom, 0, 20);

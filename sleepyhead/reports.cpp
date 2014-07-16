@@ -413,7 +413,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                     et = oxi->last();
                 }
 
-                if (g->title() == STR_TR_FlowRate) {
+                if (g->name() == schema::channel[CPAP_FlowRate].code()) {
                     if (!((qAbs(savest - st) < 2000) && (qAbs(saveet - et) < 2000))) {
                         start.push_back(st);
                         end.push_back(et);
@@ -441,10 +441,9 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                     QVariantList st1 = journal->settings[Bookmark_Start].toList();
                     QVariantList et1 = journal->settings[Bookmark_End].toList();
                     QStringList notes = journal->settings[Bookmark_Notes].toStringList();
-                    gGraph *flow = gv->findGraph(STR_TR_FlowRate),
-                            *spo2 = gv->findGraph(STR_TR_SpO2),
-                             *pulse = gv->findGraph(STR_TR_PulseRate);
-
+                    gGraph *flow = (*gv)[schema::channel[CPAP_FlowRate].code()],
+                            *spo2 = (*gv)[schema::channel[OXI_SPO2].code()],
+                             *pulse = (*gv)[schema::channel[OXI_Pulse].code()];
 
                     if (cpap && flow && !flow->isEmpty() && flow->visible()) {
                         labels.push_back(EntireDay);
@@ -499,8 +498,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
                 if (!g->visible()) { continue; }
 
-                if ((g->title() != STR_TR_FlowRate) && (g->title() != STR_TR_SpO2)
-                        && (g->title() != STR_TR_PulseRate)) {
+                if ((g->name() != schema::channel[CPAP_FlowRate].code()) && (g->name() != schema::channel[OXI_SPO2].code())
+                        && (g->name() != schema::channel[OXI_Pulse].code())) {
                     start.push_back(st);
                     end.push_back(et);
                     graphs.push_back(g);

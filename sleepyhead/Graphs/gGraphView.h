@@ -195,6 +195,19 @@ class gGraphView
     //! \brief The splitter is drawn inside this gap
     static const int graphSpacer = 4;
 
+    bool contains(QString name) {
+        for (int i=0; i<m_graphs.size(); ++i) {
+            if (m_graphs[i]->name() == name) return true;
+        }
+        return false;
+    }
+    gGraph *operator [](QString name) {
+        for (int i=0; i<m_graphs.size(); ++i) {
+            if (m_graphs[i]->name() == name) return m_graphs[i];
+        }
+        return nullptr;
+    }
+
     //! \brief Finds the top pixel position of the supplied graph
     float findTop(gGraph *graph);
 
@@ -224,6 +237,9 @@ class gGraphView
 
     //! \brief Returns the graph object matching the supplied name, nullptr if it does not exist.
     gGraph *findGraph(QString name);
+
+    //! \brief Returns the graph object matching the graph title, nullptr if it does not exist.
+    gGraph *findGraphTitle(QString title);
 
     inline float printScaleX() const { return print_scaleX; }
     inline float printScaleY() const { return print_scaleY; }
@@ -383,7 +399,7 @@ class gGraphView
     QVector<gGraph *> m_graphs;
 
     //! \brief List of all graphs contained, indexed by title
-    QHash<QString, gGraph *> m_graphsbytitle;
+    QHash<QString, gGraph *> m_graphsbyname;
 
     //! \variable Vertical scroll offset (adjusted when scrollbar gets moved)
     int m_offsetY;

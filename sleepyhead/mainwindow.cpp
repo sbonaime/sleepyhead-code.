@@ -2182,6 +2182,7 @@ void MainWindow::on_actionChange_Language_triggered()
     delete settings;
     p_profile->Save();
     PREF.Save();
+    p_profile->removeLock();
 
     RestartApplication(true);
 }
@@ -2190,6 +2191,8 @@ void MainWindow::on_actionChange_Data_Folder_triggered()
 {
     p_profile->Save();
     PREF.Save();
+    p_profile->removeLock();
+
     RestartApplication(false, true);
 }
 

@@ -47,7 +47,7 @@ class gGraph : public QObject
         \param int height containing the opening height for this graph
         \param short group containing which graph-link group this graph belongs to
         */
-    gGraph(gGraphView *graphview = nullptr, QString title = "", QString units = "",
+    gGraph(QString name, gGraphView *graphview = nullptr, QString title = "", QString units = "",
            int height = 100, short group = 0);
     virtual ~gGraph();
 
@@ -123,6 +123,10 @@ class gGraph : public QObject
 
     //! \brief Returns the Graph's (vertical) title
     inline QString & title() { return m_title; }
+
+    //! \brief Returns the Graph's internal name
+    inline QString & name() { return m_name; }
+
 
     //! \brief Sets the Graph's (vertical) title
     void setTitle(const QString title) { m_title = title; }
@@ -306,6 +310,8 @@ class gGraph : public QObject
 
     //! \brief The Main gGraphView object holding this graph
     //         (this can be pinched temporarily by print code)
+    QString m_name;
+
     gGraphView *m_graphview;
     QString m_title;
     QString m_units;

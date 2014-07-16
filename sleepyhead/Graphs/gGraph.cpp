@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <cmath>
+#include <exception>
 
 #include "mainwindow.h"
 #include "Graphs/gGraphView.h"
@@ -111,13 +112,18 @@ void DestroyGraphGlobals()
     globalsInitialized = false;
 }
 
-gGraph::gGraph(gGraphView *graphview, QString title, QString units, int height, short group)
-    : m_graphview(graphview),
+gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units, int height, short group)
+    : m_name(name),
+      m_graphview(graphview),
       m_title(title),
       m_units(units),
       m_height(height),
       m_visible(true)
 {
+    if (graphview->contains(name)) {
+        qDebug() << "Trying to duplicate " << name << " when a graph with the same name already exists";
+        name+="-1";
+    }
     m_min_height = 60;
     m_width = 0;
 

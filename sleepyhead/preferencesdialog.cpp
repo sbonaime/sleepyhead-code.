@@ -444,19 +444,19 @@ bool PreferencesDialog::Save()
     profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
     int oxigrp = ui->oximetrySync->isChecked() ? 0 : 1;
     gGraphView *gv = mainwin->getDaily()->graphView();
-    gGraph *g = gv->findGraph(STR_TR_PulseRate);
+    gGraph *g = gv->findGraph(schema::channel[OXI_Pulse].code());
 
     if (g) {
         g->setGroup(oxigrp);
     }
 
-    g = gv->findGraph(STR_TR_SpO2);
+    g = gv->findGraph(schema::channel[OXI_SPO2].code());
 
     if (g) {
         g->setGroup(oxigrp);
     }
 
-    g = gv->findGraph(STR_TR_Plethy);
+    g = gv->findGraph(schema::channel[OXI_Plethy].code());
 
     if (g) {
         g->setGroup(oxigrp);

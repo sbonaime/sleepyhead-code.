@@ -415,7 +415,7 @@ bool gYAxis::mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph)
         //        int y=event->y();
         short z = (graph->zoomY() + 1) % gGraph::maxZoomY;
         graph->setZoomY(z);
-        qDebug() << "Mouse double clicked for" << graph->title() << z;
+        qDebug() << "Mouse double clicked for" << graph->name() << z;
     }
 
     Q_UNUSED(event);

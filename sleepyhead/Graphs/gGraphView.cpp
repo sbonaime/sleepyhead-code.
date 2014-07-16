@@ -210,7 +210,7 @@ void gGraphView::trashGraphs()
 {
     // Don't actually want to delete them here.. we are just borrowing the graphs
     m_graphs.clear();
-    m_graphsbytitle.clear();
+    m_graphsbyname.clear();
 }
 
 // Take the next graph to render from the drawing list
@@ -516,8 +516,8 @@ void gGraphView::addGraph(gGraph *g, short group)
         g->setGroup(group);
         m_graphs.push_back(g);
 
-        if (!m_graphsbytitle.contains(g->title())) {
-            m_graphsbytitle[g->title()] = g;
+        if (!m_graphsbyname.contains(g->name())) {
+            m_graphsbyname[g->name()] = g;
         } else {
             qDebug() << "Can't have to graphs with the same title in one GraphView!!";
         }
@@ -1915,7 +1915,7 @@ void gGraphView::deselect()
 }
 
 const quint32 gvmagic = 0x41756728;
-const quint16 gvversion = 2;
+const quint16 gvversion = 3;
 
 void gGraphView::SaveSettings(QString title)
 {
@@ -1932,7 +1932,7 @@ void gGraphView::SaveSettings(QString title)
     out << (qint16)size();
 
     for (qint16 i = 0; i < size(); i++) {
-        out << m_graphs[i]->title();
+        out << m_graphs[i]->name();
         out << m_graphs[i]->height();
         out << m_graphs[i]->visible();
         out << m_graphs[i]->RecMinY();
@@ -1988,6 +1988,7 @@ bool gGraphView::LoadSettings(QString title)
 
     for (int i = 0; i < siz; i++) {
         in >> name;
+
         in >> hght;
         in >> vis;
         in >> recminy;
@@ -2001,12 +2002,26 @@ bool gGraphView::LoadSettings(QString title)
             in >> pinned;
         }
 
-        gi = m_graphsbytitle.find(name);
+        gGraph *g = nullptr;
 
-        if (gi == m_graphsbytitle.end()) {
-            qDebug() << "Graph" << name << "has been renamed or removed";
+        if (t2 <= 2) {
+            // Names were stored as translated strings, so look up title instead.
+            g = nullptr;
+            for (int z=0; z<m_graphs.size(); ++z) {
+                if (m_graphs[z]->title() == name) {
+                    g=m_graphs[z];
+                    break;
+                }
+            }
         } else {
-            gGraph *g = gi.value();
+            gi = m_graphsbyname.find(name);
+            if (gi == m_graphsbyname.end()) {
+                qDebug() << "Graph" << name << "has been renamed or removed";
+            } else {
+                g = gi.value();
+            }
+        }
+        if (g) {
             neworder.push_back(g);
             g->setHeight(hght);
             g->setVisible(vis);
@@ -2028,12 +2043,21 @@ bool gGraphView::LoadSettings(QString title)
 
 gGraph *gGraphView::findGraph(QString name)
 {
-    QHash<QString, gGraph *>::iterator i = m_graphsbytitle.find(name);
+    QHash<QString, gGraph *>::iterator i = m_graphsbyname.find(name);
 
-    if (i == m_graphsbytitle.end()) { return nullptr; }
+    if (i == m_graphsbyname.end()) { return nullptr; }
 
     return i.value();
 }
+
+gGraph *gGraphView::findGraphTitle(QString title)
+{
+    for (int i=0; i< m_graphs.size(); ++i) {
+        if (m_graphs[i]->title() == title) return m_graphs[i];
+    }
+    return nullptr;
+}
+
 int gGraphView::visibleGraphs()
 {
     int cnt = 0;
