@@ -305,6 +305,9 @@ class gGraph : public QObject
     //! \brief Key Pressed event
     virtual void keyPressEvent(QKeyEvent *event);
 
+    //! \brief Key Pressed event
+    virtual void keyReleaseEvent(QKeyEvent *event);
+
     //! \brief Change the current selected time boundaries by mult, from origin position origin_px
     void ZoomX(double mult, int origin_px);
 

@@ -241,6 +241,12 @@ class gGraphView
     //! \brief Returns the graph object matching the graph title, nullptr if it does not exist.
     gGraph *findGraphTitle(QString title);
 
+    //! \brief Returns true if control key is down during select operation
+    inline bool metaSelect() const { return m_metaselect; }
+
+    //! \brief Returns true if currently selecting data with mouse
+    inline bool selectionInProgress() const { return m_button_down; }
+
     inline float printScaleX() const { return print_scaleX; }
     inline float printScaleY() const { return print_scaleY; }
     inline void setPrintScaleX(float x) { print_scaleX = x; }
@@ -262,8 +268,8 @@ class gGraphView
     gToolTip *m_tooltip;
     QTimer *timer;
 
-    //! \brief Show the current selection time in the statusbar area
-    void selectionTime();
+    //! \brief Updates the current selection time in the statusbar area
+    void updateSelectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
     void AddTextQue(const QString &text, short x, short y, float angle = 0.0,
@@ -383,6 +389,8 @@ class gGraphView
     virtual void wheelEvent(QWheelEvent *event);
     //! \brief Keyboard event while main gGraphArea has focus.
     virtual void keyPressEvent(QKeyEvent *event);
+    //! \brief Keyboard event while main gGraphArea has focus.
+    virtual void keyReleaseEvent(QKeyEvent *event);
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *, int originX, int originY, int width, int height);
@@ -414,6 +422,8 @@ class gGraphView
 
     bool m_button_down;
     QPoint m_point_clicked;
+    QPoint m_point_released;
+    bool m_metaselect;
 
     QPoint m_sizer_point;
     int m_horiz_travel;

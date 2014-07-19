@@ -242,13 +242,14 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 {
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
-    m_button_down = m_graph_dragging = m_sizer_dragging = false;
+    m_metaselect = m_button_down = m_graph_dragging = m_sizer_dragging = false;
     m_lastypos = m_lastxpos = 0;
     m_horiz_travel = 0;
     m_minx = m_maxx = 0;
     m_day = nullptr;
     m_selected_graph = nullptr;
     m_scrollbar = nullptr;
+    m_point_released = m_point_clicked = QPoint(0,0);
 
     horizScrollTime.start();
     vertScrollTime.start();
@@ -604,7 +605,7 @@ void gGraphView::scrollbarValueChanged(int val)
     }
 }
 
-void gGraphView::selectionTime()
+void gGraphView::updateSelectionTime()
 {
     qint64 xx = m_maxx - m_minx;
     double d = xx / 86400000L;
@@ -1386,6 +1387,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_point_clicked = QPoint(event->x(), event->y());
                     //QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
                     m_button_down = true;
+                    m_metaselect = event->modifiers() && Qt::ControlModifier;
                     m_horiz_travel = 0;
                     m_graph_index = i;
                     m_selected_graph = m_graphs[i];
@@ -1442,6 +1444,8 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         m_point_clicked = QPoint(event->x(), event->y());
                         //QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
                         m_button_down = true;
+                        m_metaselect = event->modifiers() && Qt::ControlModifier;
+
                         m_horiz_travel = 0;
                         m_graph_index = i;
                         m_selected_graph = m_graphs[i];
@@ -1554,9 +1558,30 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     // The graph that got the button press gets the release event
     if (m_button_down) {
         m_button_down = false;
-        m_graphs[m_graph_index]->mouseReleaseEvent(event);
+        if (m_metaselect) {
+            m_point_released = event->pos();
+        } else {
+            m_graphs[m_graph_index]->mouseReleaseEvent(event);
+        }
     }
 }
+
+void gGraphView::keyReleaseEvent(QKeyEvent *event)
+{
+    if (m_metaselect) {
+        QMouseEvent event(QEvent::MouseButtonRelease, m_point_released, Qt::LeftButton, Qt::LeftButton, event.modifiers());
+        if (m_graph_index>=0)
+            m_graphs[m_graph_index]->mouseReleaseEvent(&event);
+
+        qDebug() << "Control released";
+    }
+#ifdef BROKEN_OPENGL_BUILD
+        QWidget::keyReleaseEvent(event);
+#else
+        QGLWidget::keyReleaseEvent(event);
+#endif
+}
+
 
 void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
 {
@@ -1672,7 +1697,8 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                         // What to do when ctrl+wheel is used on the graph title ??
                     } else {
                         // send event to graph..
-                        m_graphs[i]->wheelEvent(event);
+                        if (!m_button_down)
+                            m_graphs[i]->wheelEvent(event);
                     }
                 } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                     // What to do when the wheel is used on the resize handle?
@@ -1859,6 +1885,8 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
     //qDebug() << "Keypress??";
 }
+
+
 void gGraphView::setDay(Day *day)
 {
     m_day = day;

@@ -1948,10 +1948,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         qstatus2->setVisible(false);
     } else if (widget == daily) {
         qstatus2->setVisible(true);
-        daily->graphView()->selectionTime();
+        daily->graphView()->updateSelectionTime();
     } else if (widget == overview) {
         qstatus2->setVisible(true);
-        overview->graphView()->selectionTime();
+        overview->graphView()->updateSelectionTime();
     }
 }
 
