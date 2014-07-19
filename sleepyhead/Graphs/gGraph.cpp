@@ -137,6 +137,7 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
     rec_miny = rec_maxy = 0;
     rphysmax_y = rphysmin_y = 0;
     m_zoomY = 0;
+    m_selectedDuration = 0;
 
     if (graphview) {
         graphview->addGraph(this, group);
@@ -697,6 +698,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     if (m_graphview->m_selected_graph == this) {  // Left Mouse button dragging
         if (event->buttons() & Qt::LeftButton) {
+
             //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << h;
             int a1 = MIN(x, x2);
             int a2 = MAX(x, x2);
@@ -716,22 +718,22 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
             }
 
             qint64 a = double(a2 - a1) * xmult;
+            m_selectedDuration = a;
             float d = double(a) / 86400000.0;
             int h = a / 3600000;
             int m = (a / 60000) % 60;
             int s = (a / 1000) % 60;
             int ms(a % 1000);
-            QString str;
 
             if (d > 1) {
-                str.sprintf("%1.0f days", d);
+                m_selDurString.sprintf("%1.0f days", d);
             } else {
 
-                str.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
+                m_selDurString.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
             }
 
             if (qstatus2) {
-                qstatus2->setText(str);
+                qstatus2->setText(m_selDurString);
             }
 
             doredraw = true;

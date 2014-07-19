@@ -348,6 +348,9 @@ class gGraphView
     //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
     bool renderGraphs(QPainter &painter);
 
+    //! \brief Used internally by graph mousehandler to set modifier state
+    void setMetaSelect(bool b) { m_metaselect = b; }
+
     // for profiling purposes, a count of lines drawn in a single frame
     int lines_drawn_this_frame;
     int quads_drawn_this_frame;

@@ -285,11 +285,16 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
 
     if (time > 0) { val = cnt / time; }
 
+    QString a;
 
+    if (w.graphView()->selectionInProgress()) {
 
-    QString a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
+        a = QObject::tr("Duration")+": "+w.selDurString();
+    } else {
+
+        a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
                 QObject::tr("Duration") + " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " + m_text + ": " + QString::number(val, 'f', 2);
-
+    }
     if (isSpan) {
         float sph;
 

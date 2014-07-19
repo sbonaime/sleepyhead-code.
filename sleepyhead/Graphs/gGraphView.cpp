@@ -1220,6 +1220,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
             m_lastypos = y;
             //           QPoint p(x,y);
             //           QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
+
             m_graphs[i]->mouseMoveEvent(event);
 
             done = true;
@@ -1558,6 +1559,8 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     // The graph that got the button press gets the release event
     if (m_button_down) {
         m_button_down = false;
+        m_metaselect = event->modifiers() & Qt::ControlModifier;
+
         if (m_metaselect) {
             m_point_released = event->pos();
         } else {
@@ -1568,12 +1571,12 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
 
 void gGraphView::keyReleaseEvent(QKeyEvent *event)
 {
-    if (m_metaselect) {
-        QMouseEvent event(QEvent::MouseButtonRelease, m_point_released, Qt::LeftButton, Qt::LeftButton, event.modifiers());
+    if (m_metaselect && !(event->modifiers() & Qt::ControlModifier)) {
+        QMouseEvent mevent(QEvent::MouseButtonRelease, m_point_released, Qt::LeftButton, Qt::LeftButton, event->modifiers());
         if (m_graph_index>=0)
-            m_graphs[m_graph_index]->mouseReleaseEvent(&event);
+            m_graphs[m_graph_index]->mouseReleaseEvent(&mevent);
 
-        qDebug() << "Control released";
+        m_metaselect = false;
     }
 #ifdef BROKEN_OPENGL_BUILD
         QWidget::keyReleaseEvent(event);
@@ -1785,6 +1788,9 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
 void gGraphView::keyPressEvent(QKeyEvent *event)
 {
+    if (m_button_down) {
+        m_metaselect = event->modifiers() & Qt::ControlModifier;
+    }
     if (event->key() == Qt::Key_Tab) {
         event->ignore();
         return;

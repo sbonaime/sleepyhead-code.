@@ -286,6 +286,9 @@ class gGraph : public QObject
 
     static const short maxZoomY = 2;
 
+    inline qint64 selectedDuration() const { return m_selectedDuration; }
+    inline QString selDurString() const { return m_selDurString; }
+
   protected:
     //! \brief Mouse Wheel events
     virtual void wheelEvent(QWheelEvent *event);
@@ -339,6 +342,9 @@ class gGraph : public QObject
     bool m_pinned;
     short m_zoomY;
     QRect m_rect;
+
+    qint64 m_selectedDuration;
+    QString m_selDurString;
 
   protected slots:
     //! \brief Deselects any highlights, and schedules a main gGraphView redraw
