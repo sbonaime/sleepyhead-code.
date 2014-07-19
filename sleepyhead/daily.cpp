@@ -1879,7 +1879,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         double st=t-(winsize/2);
         double et=t+(winsize/2);
 
-        gGraph *g=(*GraphView)[STR_GRAPH_EventBreakdown];
+        gGraph *g=GraphView->findGraph(STR_GRAPH_SleepFlags);
         if (!g) return;
         if (st<g->rmin_x) {
             st=g->rmin_x;
