@@ -56,6 +56,8 @@ const QColor COLOR_ALT_BG2 =
     COLOR_White;               // Alternating Background Color 2 (Event Flags)
 
 
+const int max_history = 50;
+
 #ifndef M_PI
 const double M_PI = 3.141592653589793;
 #endif

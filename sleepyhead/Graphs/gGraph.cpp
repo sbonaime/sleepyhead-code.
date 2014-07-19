@@ -761,6 +761,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                     min_x = rmax_x - xx;
                 }
 
+                m_graphview->saveHistory();
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
                 doredraw = true;
             } else {
@@ -784,6 +785,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                     min_x = rmax_x - xx;
                 }
 
+                m_graphview->saveHistory();
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
                 doredraw = true;
             }
@@ -889,6 +891,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                 } else {
                     if (a2 - a1 < zoom_hard_limit) { a2 = a1 + zoom_hard_limit; }
 
+                    m_graphview->saveHistory();
                     m_graphview->SetXBounds(a1, a2, m_group);
                 }
             } else {
@@ -906,7 +909,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                     qDebug() << "Foo2??";
                 } else  {
                     if (a2 - a1 < zoom_hard_limit) { a2 = a1 + zoom_hard_limit; }
-
+                    m_graphview->saveHistory();
                     m_graphview->SetXBounds(a1, a2, m_group);
                 }
             }
@@ -980,6 +983,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                 min_x = rmax_x - xx;
             }
 
+            m_graphview->saveHistory();
             m_graphview->SetXBounds(min_x, max_x, m_group);
             m_lastx23 = x;
         }
@@ -1116,6 +1120,9 @@ void gGraph::ZoomX(double mult, int origin_px)
         min = max - q;
     }
 
+    extern const int max_history;
+
+    m_graphview->saveHistory();
     m_graphview->SetXBounds(min, max, m_group);
     //updateSelectionTime(max-min);
 }

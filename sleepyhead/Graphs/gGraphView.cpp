@@ -39,6 +39,7 @@
 extern MainWindow *mainwin;
 extern QLabel *qstatus2;
 
+
 gToolTip::gToolTip(gGraphView *graphview)
     : m_graphview(graphview)
 {
@@ -1573,13 +1574,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     if (m_button_down) {
         m_button_down = false;
         m_metaselect = event->modifiers() & Qt::ShiftModifier;
-
-        const int max_history = 20;
-
-        history.push_front(SelectionHistoryItem(m_minx, m_maxx));
-        if (history.size() > max_history) {
-            history.pop_back();
-        }
+        saveHistory();
 
         if (m_metaselect) {
             m_point_released = event->pos();
@@ -1603,7 +1598,10 @@ void gGraphView::keyReleaseEvent(QKeyEvent *event)
         if (history.size() > 0) {
             SelectionHistoryItem h = history.takeFirst();
             SetXBounds(h.minx, h.maxx);
+
+            // could Forward push this to another list?
         } else {
+            ResetBounds();
 
         }
         return;
@@ -1731,8 +1729,9 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                         // What to do when ctrl+wheel is used on the graph title ??
                     } else {
                         // send event to graph..
-                        if (!m_button_down)
+                        if (!m_button_down) {
                             m_graphs[i]->wheelEvent(event);
+                        }
                     }
                 } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                     // What to do when the wheel is used on the resize handle?
@@ -1812,6 +1811,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                 g->min_x = g->max_x - xx;
             }
 
+            saveHistory();
             SetXBounds(g->min_x, g->max_x, group);
         }
     }
@@ -1891,6 +1891,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
             g->max_x = g->rmin_x + xx;
         }
 
+        saveHistory();
         SetXBounds(g->min_x, g->max_x, group);
     } else if (event->key() == Qt::Key_Right) {
         double xx = g->max_x - g->min_x;
@@ -1906,6 +1907,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
             g->min_x = g->rmax_x - xx;
         }
 
+        saveHistory();
         SetXBounds(g->min_x, g->max_x, group);
     } else if (event->key() == Qt::Key_Up) {
         float zoom = 0.75F;

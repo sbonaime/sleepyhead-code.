@@ -269,6 +269,13 @@ class gGraphView
     inline void setPrintScaleX(float x) { print_scaleX = x; }
     inline void setPrintScaleY(float y) { print_scaleY = y; }
 
+    void saveHistory() {
+        history.push_front(SelectionHistoryItem(m_minx, m_maxx));
+        if (history.size() > max_history) {
+            history.pop_back();
+        }
+    }
+
     //! \brief Returns true if all Graph objects contain NO day data. ie, graph area is completely empty.
     bool isEmpty();
 
@@ -374,6 +381,8 @@ class gGraphView
     int strings_drawn_this_frame;
     int strings_cached_this_frame;
 
+    QList<SelectionHistoryItem> history;
+
   protected:
 
     //! \brief The heart of the drawing code
@@ -464,7 +473,7 @@ class gGraphView
 
     qint64 m_minx, m_maxx;
 
-    QList<SelectionHistoryItem> history;
+    QList<SelectionHistoryItem> fwd_history;
     float print_scaleX, print_scaleY;
 
     QPixmap previous_day_snapshot;
