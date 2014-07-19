@@ -1577,6 +1577,7 @@ void gGraphView::keyReleaseEvent(QKeyEvent *event)
             m_graphs[m_graph_index]->mouseReleaseEvent(&mevent);
 
         m_metaselect = false;
+        timedRedraw(50);
     }
 #ifdef BROKEN_OPENGL_BUILD
         QWidget::keyReleaseEvent(event);
@@ -1677,6 +1678,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 {
     // Hmm.. I could optionalize this to change mousewheel behaviour without affecting the scrollbar now..
 
+    if (m_button_down) return;
     if ((event->modifiers() & Qt::ControlModifier)) {
         int x = event->x();
         int y = event->y();
