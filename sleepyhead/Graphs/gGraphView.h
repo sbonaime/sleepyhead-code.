@@ -152,6 +152,23 @@ class gToolTip : public QObject
     void timerDone();
 };
 
+struct SelectionHistoryItem {
+    SelectionHistoryItem() {
+        minx=maxx=0;
+    }
+    SelectionHistoryItem(quint64 m1, quint64 m2) {
+        minx=m1;
+        maxx=m2;
+    }
+
+    SelectionHistoryItem(const SelectionHistoryItem & copy) {
+        minx = copy.minx;
+        maxx = copy.maxx;
+    }
+    quint64 minx;
+    quint64 maxx;
+};
+
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 
@@ -446,6 +463,8 @@ class gGraphView
     bool m_showsplitter;
 
     qint64 m_minx, m_maxx;
+
+    QList<SelectionHistoryItem> history;
     float print_scaleX, print_scaleY;
 
     QPixmap previous_day_snapshot;

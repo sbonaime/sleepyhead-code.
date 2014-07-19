@@ -1574,6 +1574,13 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
         m_button_down = false;
         m_metaselect = event->modifiers() & Qt::ShiftModifier;
 
+        const int max_history = 20;
+
+        history.push_front(SelectionHistoryItem(m_minx, m_maxx));
+        if (history.size() > max_history) {
+            history.pop_back();
+        }
+
         if (m_metaselect) {
             m_point_released = event->pos();
         } else {
@@ -1591,6 +1598,15 @@ void gGraphView::keyReleaseEvent(QKeyEvent *event)
 
         m_metaselect = false;
         timedRedraw(50);
+    }
+    if (event->key() == Qt::Key_Escape) {
+        if (history.size() > 0) {
+            SelectionHistoryItem h = history.takeFirst();
+            SetXBounds(h.minx, h.maxx);
+        } else {
+
+        }
+        return;
     }
 #ifdef BROKEN_OPENGL_BUILD
         QWidget::keyReleaseEvent(event);
