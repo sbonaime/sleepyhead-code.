@@ -3099,7 +3099,7 @@ border-radius: 10px;
     <addaction name="actionChange_User"/>
     <addaction name="actionChange_Data_Folder"/>
     <addaction name="separator"/>
-    <addaction name="actionE_xit"/>
+    <addaction name="action_Exit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -3192,9 +3192,9 @@ border-radius: 10px;
     <string>&amp;Profiles</string>
    </property>
   </action>
-  <action name="actionE_xit">
+  <action name="action_Exit">
    <property name="text">
-    <string>E&amp;xit</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionView_Daily">
@@ -3421,7 +3421,7 @@ border-radius: 10px;
  </resources>
  <connections>
   <connection>
-   <sender>actionE_xit</sender>
+   <sender>action_Exit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>

@@ -36,7 +36,7 @@ void initTranslations(QSettings & settings) {
     //  change it, but Qt4 support is still going to die sooner or later)
     // Add any languages with special character set needs to this list
     QHash<QString, QString> langNames;
-    langNames["cn"] = "漢語繁體字";
+    langNames["zh"] = "漢語繁體字";
     langNames["es"] = "Español";
     langNames["bg"] = "български";
     langNames["fr"] = "Français";
@@ -64,9 +64,9 @@ void initTranslations(QSettings & settings) {
     QString langfile, langname;
 
     // Add default language (English)
-    const QString en="en";
-    langFiles[en]="English.en.qm";
-    langNames[en]="English";
+    const QString en="en_US";
+    langFiles[en]="English.en_US.qm";
+    langNames[en]="English US";
 
     // Scan through available translations, and add them to the list
     for (int i = 0; i < list.size(); ++i) {
@@ -128,7 +128,7 @@ void initTranslations(QSettings & settings) {
             item->setData(Qt::UserRole, code);
             langlist.insertItem(row++, item);
             // Todo: Use base system language code
-            if (code.compare("en") == 0) {
+            if (code.compare(en) == 0) {
                 langlist.setCurrentItem(item);
             }
         }
@@ -149,7 +149,7 @@ void initTranslations(QSettings & settings) {
     langname=langNames[language];
     langfile=langFiles[language];
 
-    if (language.compare("en") != 0) {
+    if (language.compare(en) != 0) {
         qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
         QTranslator * translator = new QTranslator();
 

@@ -159,11 +159,18 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tabWidget->setCurrentIndex(1);
 
 #ifdef Q_OS_MAC
+
+    ui->action_About->setMenuRole(QAction::ApplicationSpecificRole);
+    ui->action_Preferences->setMenuRole(QAction::ApplicationSpecificRole);
+    ui->action_Exit->setMenuRole(QAction::ApplicationSpecificRole);
 #if(QT_VERSION<QT_VERSION_CHECK(5,0,0))
     // Disable Screenshot on Mac Platform,as it doesn't work in Qt4, and the system provides this functionality anyway.
     ui->action_Screenshot->setEnabled(false);
 #endif
 #endif
+
+
+
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
         QString mclass=(*it)->GetClass();
