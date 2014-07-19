@@ -1061,7 +1061,7 @@ void gGraph::keyReleaseEvent(QKeyEvent *event)
     if (!m_graphview) return;
 
     if (m_graphview->selectionInProgress() && m_graphview->metaSelect()) {
-        if (!(event->modifiers() & Qt::ControlModifier)) {
+        if (!(event->modifiers() & Qt::ShiftModifier)) {
 
         }
     }
