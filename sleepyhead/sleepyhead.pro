@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT += core gui network xml
-#serialport
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets
@@ -98,6 +97,9 @@ win32 {
 
         HEADERS  += build_number.h
     }
+
+    QT += serialport
+
 }
 
 unix {
@@ -296,11 +298,12 @@ contains(bundlelibs, true) {
     INCLUDEPATH += $$PWD/../3rdparty/quazip
     DEPENDPATH += $$PWD/../3rdparty/quazip
 
+ !win32 {
     include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
     INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
     DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
  #   DEPENDPATH += $$PWD/../3rdparty/qtserialport/src/serialport/include/QtSerialPort/5.3.1
-
+    }
 } else {
     unix {
         message("Attempting to build with system quazip.");
