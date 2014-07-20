@@ -1094,6 +1094,8 @@ void gGraphView::setOffsetX(int offsetX)
 
 void gGraphView::mouseMoveEvent(QMouseEvent *event)
 {
+    this->setFocus();
+
     int x = event->x();
     int y = event->y();
 
@@ -1397,7 +1399,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
 
 
                     m_button_down = true;
-                    m_metaselect = event->modifiers() && Qt::ShiftModifier;
+                    m_metaselect = event->modifiers() && Qt::AltModifier;
                     m_horiz_travel = 0;
                     m_graph_index = i;
                     m_selected_graph = m_graphs[i];
@@ -1459,7 +1461,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         m_point_clicked = QPoint(event->x(), event->y());
                         //QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
                         m_button_down = true;
-                        m_metaselect = event->modifiers() && Qt::ShiftModifier;
+                        m_metaselect = event->modifiers() && Qt::AltModifier;
 
                         m_horiz_travel = 0;
                         m_graph_index = i;
@@ -1573,7 +1575,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     // The graph that got the button press gets the release event
     if (m_button_down) {
         m_button_down = false;
-        m_metaselect = event->modifiers() & Qt::ShiftModifier;
+        m_metaselect = event->modifiers() & Qt::AltModifier;
         saveHistory();
 
         if (m_metaselect) {
@@ -1586,7 +1588,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
 
 void gGraphView::keyReleaseEvent(QKeyEvent *event)
 {
-    if (m_metaselect && !(event->modifiers() & Qt::ShiftModifier)) {
+    if (m_metaselect && !(event->modifiers() & Qt::AltModifier)) {
         QMouseEvent mevent(QEvent::MouseButtonRelease, m_point_released, Qt::LeftButton, Qt::LeftButton, event->modifiers());
         if (m_graph_index>=0)
             m_graphs[m_graph_index]->mouseReleaseEvent(&mevent);
@@ -1819,8 +1821,11 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
 void gGraphView::keyPressEvent(QKeyEvent *event)
 {
-    if (m_button_down) {
-        m_metaselect = event->modifiers() & Qt::ShiftModifier;
+    bool meta = m_metaselect;
+    m_metaselect = event->modifiers() & Qt::AltModifier;
+
+    if (meta != m_metaselect) {
+        timedRedraw(30);
     }
 
     if (event->key() == Qt::Key_Tab) {

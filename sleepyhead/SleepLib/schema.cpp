@@ -211,12 +211,12 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag1     = 0x101e, FLAG,    SESSION,
                         "UserFlag1",      QObject::tr("User Flag #1"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),
-                        QObject::tr("UF1"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark cyan")));
+                        QObject::tr("UF1"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor(0xc0,0xc0,0xe0)));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag2     = 0x101f, FLAG,    SESSION,
                         "UserFlag2",      QObject::tr("User Flag #2"),
                         QObject::tr("A user definable event detected by SleepyHead's flow waveform processor."),
-                        QObject::tr("UF2"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark blue")));
+                        QObject::tr("UF2"),      STR_UNIT_EventsPerHour,    DEFAULT,    QColor(0xa0,0xa0,0xc0)));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag3     = 0x1024, FLAG,    SESSION,
                         "UserFlag3",      QObject::tr("User Flag #3"),

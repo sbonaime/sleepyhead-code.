@@ -792,7 +792,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     //if (!nolayer) { // no mouse button
     if (doredraw) {
-        m_graphview->redraw();
+        m_graphview->timedRedraw(30);
     }
 
     //}
@@ -1060,7 +1060,7 @@ void gGraph::keyReleaseEvent(QKeyEvent *event)
     if (!m_graphview) return;
 
     if (m_graphview->selectionInProgress() && m_graphview->metaSelect()) {
-        if (!(event->modifiers() & Qt::ShiftModifier)) {
+        if (!(event->modifiers() & Qt::AltModifier)) {
 
         }
     }

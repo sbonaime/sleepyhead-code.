@@ -21,6 +21,8 @@ gLineOverlayBar::~gLineOverlayBar()
 {
 }
 
+QColor brighten(QColor color);
+
 void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();
@@ -145,10 +147,10 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     if (x1 > width + left) {
                         x1 = width + left;
                     }
+
                     QRect rect(x2, start_py, x1-x2, height);
                     QColor col = m_flag_color;
                     if (rect.contains(mouse)) {
-                        col = QColor("gold");
                         hover = true;
                     }
 
@@ -263,7 +265,6 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 bool gLineOverlayBar::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event)
-    graph->timedRedraw(0);
     return true;
 }
 

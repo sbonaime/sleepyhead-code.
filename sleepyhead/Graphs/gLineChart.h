@@ -79,6 +79,9 @@ class gLineChart: public Layer
     void setPlotEnabled(ChannelID code, bool b) { m_enabled[code] = b; }
 
   protected:
+    //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
+
     bool m_report_empty;
     bool m_square_plot;
     bool m_disable_accel;

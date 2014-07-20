@@ -21,18 +21,71 @@
 
 extern double round(double number);
 
-bool SearchApnea(Session *session, qint64 time, qint64 dist)
+
+bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType dur, qint64 dist)
 {
-    if (session->SearchEvent(CPAP_Obstructive, time, dist))
+    qint64 t, start;
+    QHash<ChannelID, QVector<EventList *> >::iterator it;
+    it = session->eventlist.find(code);
+    quint32 *tptr;
+
+    EventStoreType *dptr;
+
+    int cnt;
+
+    //qint64 rate;
+
+    QHash<ChannelID, QVector<EventList *> >::iterator evend = session->eventlist.end();
+    if (it != evend) {
+        int el_size=it.value().size();
+        for (int i = 0; i < el_size; i++)  {
+            EventList *el = it.value()[i];
+            //            rate=el->rate();
+            cnt = el->count();
+
+            // why would this be necessary???
+            if (el->type() == EVL_Waveform) {
+                qDebug() << "Called SearchEvent on a waveform object!";
+                return false;
+            } else {
+                start = el->first();
+                tptr = el->rawTime();
+                dptr = el->rawData();
+
+                for (int j = 0; j < cnt; j++) {
+                    t = start + *tptr;
+
+                    if (qAbs(time - t) < dist) {
+
+                        // Move the position and set the duration
+                        if (dur>0) {
+                            *tptr = time - start;
+                            *dptr = (EventStoreType)dur;
+                        }
+                        return true;
+                    }
+                    tptr++;
+                    dptr++;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool SearchApnea(Session *session, qint64 time, double dur, qint64 dist)
+{
+    if (SearchEvent(session, CPAP_Obstructive, time, dur, dist))
         return true;
 
-    if (session->SearchEvent(CPAP_Apnea, time, dist))
+    if (SearchEvent(session, CPAP_Apnea, time, dur, dist))
         return true;
 
-    if (session->SearchEvent(CPAP_ClearAirway, time, dist))
+    if (SearchEvent(session, CPAP_ClearAirway, time, dur, dist))
         return true;
 
-    if (session->SearchEvent(CPAP_Hypopnea, time, dist))
+    if (SearchEvent(session, CPAP_Hypopnea, time, 0, dist))
         return true;
 
     if (session->SearchEvent(CPAP_UserFlag1, time, dist))
@@ -724,7 +777,7 @@ void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, Event
         dur = len / 1000.0;
 
         if (dur >= duration) {
-            if (allowDuplicates || !SearchApnea(m_session, et - len / 2, 15000)) {
+            if (allowDuplicates || !SearchApnea(m_session, et, dur, 15000)) {
                 if (!uf) {
                     uf = m_session->AddEventList(code, EVL_Event);
                 }

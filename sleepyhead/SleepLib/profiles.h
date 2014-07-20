@@ -271,6 +271,8 @@ const QString STR_CS_UntreatedAHI = "UntreatedAHI";
 const QString STR_CS_Notes = "CPAPNotes";
 const QString STR_CS_DateDiagnosed = "DateDiagnosed";
 const QString STR_CS_UserEventFlagging = "UserEventFlagging";
+const QString STR_CS_UserEventPieChart = "UserEventPieChart";
+
 const QString STR_CS_UserFlowRestriction = "UserFlowRestriction";
 const QString STR_CS_UserEventDuration = "UserEventDuration";
 const QString STR_CS_UserFlowRestriction2 = "UserFlowRestriction2";
@@ -525,6 +527,7 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_AHIReset, false);
         initPref(STR_CS_LeakRedline, 24.0);
         initPref(STR_CS_ShowLeakRedline, true);
+        initPref(STR_CS_UserEventPieChart, false);
 
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
@@ -554,6 +557,7 @@ class CPAPSettings : public ProfileSettings
     int clockDrift() const { return m_clock_drift; }
     EventDataType leakRedline() const { return getPref(STR_CS_LeakRedline).toFloat(); }
     bool showLeakRedline() const { return getPref(STR_CS_ShowLeakRedline).toBool(); }
+    bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
@@ -583,6 +587,7 @@ class CPAPSettings : public ProfileSettings
     }
     void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, value); }
     void setShowLeakRedline(bool reset) { setPref(STR_CS_ShowLeakRedline, reset); }
+    void setUserEventPieChart(bool b) { setPref(STR_CS_UserEventPieChart, b); }
 
   public:
     int m_clock_drift;

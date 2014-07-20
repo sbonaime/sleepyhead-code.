@@ -157,6 +157,14 @@ EventDataType gLineChart::Maxy()
     return Layer::Maxy() - subtract_offset;
 }
 
+bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
+{
+    Q_UNUSED(event)
+    if (graph->graphView()->metaSelect())
+        graph->timedRedraw(30);
+    return true;
+}
+
 // Time Domain Line Chart
 void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
@@ -224,6 +232,27 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         if (miny == 0) {
             return;
         }
+    }
+
+    if (w.graphView()->metaSelect()) {
+        QPoint mouse = w.graphView()->currentMousePos();
+        double pos = mouse.x() - left;
+        if (pos > 0) {
+            double xval = minx + (pos * (xx / double(width)));
+
+
+            painter.setPen(QPen(QBrush(QColor(Qt::gray)),1));
+            painter.drawLine(mouse.x(), top-w.marginTop()-3, mouse.x(), top+height+w.bottom-1);
+
+            QDateTime dt=QDateTime::fromMSecsSinceEpoch(xval);
+
+            QString text = dt.toString("MMM dd - HH:mm:ss:zzz");
+
+            int wid, h;
+            GetTextExtent(text, wid, h);
+            w.renderText(text, left + width/2 - wid/2, top -h);
+        }
+
     }
 
     EventDataType lastpx, lastpy;

@@ -247,6 +247,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->userEventDuplicates->setChecked(profile->cpap->userEventDuplicates());
     ui->userEventDuplicates->setVisible(false);
 
+    ui->showUserFlagsInPie->setChecked(profile->cpap->userEventPieChart());
+
     ui->eventTable->setColumnWidth(0, 40);
     ui->eventTable->setColumnWidth(1, 55);
     ui->eventTable->setColumnHidden(3, true);
@@ -344,6 +346,11 @@ bool PreferencesDialog::Save()
         needs_restart = true;
     }
 
+    if (profile->cpap->userEventPieChart() != ui->showUserFlagsInPie->isChecked()) {
+        // lazy.. fix me
+        needs_restart = true;
+    }
+
     if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
         //recalc_events=true;
         needs_restart = true;
@@ -392,6 +399,8 @@ bool PreferencesDialog::Save()
             return false;
         }
     }
+
+    profile->cpap->setUserEventPieChart(ui->showUserFlagsInPie->isChecked());
 
     profile->appearance->setAllowYAxisScaling(ui->allowYAxisScaling->isChecked());
     profile->appearance->setGraphTooltips(ui->graphTooltips->isChecked());
@@ -551,11 +560,11 @@ bool PreferencesDialog::Save()
     PREF.Save();
     p_profile->Save();
 
-
     if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
     } else if (needs_restart) {
+        p_profile->removeLock();
         mainwin->RestartApplication();
     } else {
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());

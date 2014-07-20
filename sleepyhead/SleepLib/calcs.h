@@ -140,7 +140,7 @@ class FlowParser
     EventDataType *m_buffers[num_filter_buffers];
 };
 
-bool SearchApnea(Session *session, qint64 time, qint64 dist = 15000);
+bool SearchApnea(Session *session, qint64 time, double dur, qint64 dist = 15000);
 
 //! \brief Calculate Respiratory Rate, Tidal Volume & Minute Ventilation for PRS1 data
 void calcRespRate(Session *session, FlowParser *flowparser = nullptr);

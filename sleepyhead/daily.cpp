@@ -192,7 +192,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     evseg->AddSlice(CPAP_NRI,QColor(0x00,0x80,0x40,0xff),STR_TR_NR);
     evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),STR_TR_FL);
     evseg->AddSlice(CPAP_SensAwake,QColor(0x40,0xC0,0x40,0xff),STR_TR_SA);
-    //evseg->AddSlice(CPAP_UserFlag1,QColor(0x40,0x40,0x40,0xff),tr("UF"));
+    if (p_profile->cpap->userEventPieChart()) {
+        evseg->AddSlice(CPAP_UserFlag1,QColor(0xe0,0xe0,0xe0,0xff),tr("UF1"));
+        evseg->AddSlice(CPAP_UserFlag2,QColor(0xc0,0xc0,0xe0,0xff),tr("UF2"));
+    }
 
     GAHI->AddLayer(AddCPAP(evseg));
     GAHI->setMargins(0,0,0,0);
@@ -1393,8 +1396,6 @@ void Daily::Load(QDate date)
                 { CPAP_Apnea,       COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
                 { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
                 { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
-                { CPAP_UserFlag1,   COLOR_UserFlag1,    Qt::black, uf1=cpap->count(CPAP_UserFlag1)/hours },
-                { CPAP_UserFlag2,   COLOR_UserFlag2,    Qt::black, uf2=cpap->count(CPAP_UserFlag2)/hours },
                 { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
                 { CPAP_SensAwake,   COLOR_SensAwake,    Qt::black, sai=cpap->count(CPAP_SensAwake)/hours },
                 { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
@@ -1403,7 +1404,10 @@ void Daily::Load(QDate date)
                 { CPAP_VSnore2,     COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
                 { CPAP_LeakFlag,    COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
                 { CPAP_LargeLeak,   COLOR_LargeLeak,    Qt::black, lk2=(100.0/cpap->hours())*(cpap->sum(CPAP_LargeLeak)/3600.0) },
-                { CPAP_CSR,         COLOR_CSR,          Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
+                { CPAP_CSR,         COLOR_CSR,          Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) },
+                { CPAP_UserFlag1,   COLOR_UserFlag1,    Qt::black, uf1=cpap->count(CPAP_UserFlag1)/hours },
+                { CPAP_UserFlag2,   COLOR_UserFlag2,    Qt::black, uf2=cpap->count(CPAP_UserFlag2)/hours },
+
             };
             int numchans=sizeof(chans)/sizeof(ChannelInfo);
 
