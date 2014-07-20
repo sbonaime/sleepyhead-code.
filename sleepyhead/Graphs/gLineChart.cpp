@@ -266,7 +266,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             int wid, h;
             GetTextExtent(text, wid, h);
-            w.renderText(text, left + width/2 - wid/2, top-h+4);
+            w.renderText(text, left + width/2 - wid/2, top-h+7);
         }
 
     }
