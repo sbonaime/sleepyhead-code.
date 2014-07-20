@@ -115,6 +115,7 @@ class FlowParser
     // Minute vent needs Resp & TV calcs made here..
     void calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool calcMv);
     void flagEvents();
+    void flagUserEvents(ChannelID code, EventDataType restriction, EventDataType duration);
 
     /*void calcTidalVolume();
     void calcRespRate();

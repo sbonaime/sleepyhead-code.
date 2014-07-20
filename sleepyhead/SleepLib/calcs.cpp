@@ -35,6 +35,12 @@ bool SearchApnea(Session *session, qint64 time, qint64 dist)
     if (session->SearchEvent(CPAP_Hypopnea, time, dist))
         return true;
 
+    if (session->SearchEvent(CPAP_UserFlag1, time, dist))
+        return true;
+
+    if (session->SearchEvent(CPAP_UserFlag2, time, dist))
+        return true;
+
     return false;
 }
 
@@ -614,29 +620,21 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     }
 }
 
-void FlowParser::flagEvents()
+void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, EventDataType duration)
 {
-    if (!p_profile->cpap->userEventFlagging()) { return; }
-
     int numbreaths = breaths.size();
-
-    if (numbreaths < 5) { return; }
-
     EventDataType val, mx, mn;
     QVector<EventDataType> br;
 
     QVector<qint32> bstart;
     QVector<qint32> bend;
-    //QVector<EventDataType> bvalue;
 
     bstart.reserve(numbreaths * 2);
     bend.reserve(numbreaths * 2);
-    //bvalue.reserve(numbreaths*2);
     br.reserve(numbreaths * 2);
 
     double start = m_flow->first();
-    // double sps=1000.0/m_rate;
-    double st, et, dur; //mt
+    double st, et, dur;
     qint64 len;
 
     bool allowDuplicates = p_profile->cpap->userEventDuplicates();
@@ -649,23 +647,13 @@ void FlowParser::flagEvents()
         br.push_back(qAbs(p->min));
     }
 
-//    for (int i = 0; i < numbreaths; i++) {
-//        mx = breaths[i].max;
-//        mn = breaths[i].min;
-//        br.push_back(qAbs(mx));
-//        br.push_back(qAbs(mn));
-//    }
-
-    //EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
-    //EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
-
     const EventDataType perc = 0.6F;
     int idx = float(br.size()) * perc;
     nth_element(br.begin(), br.begin() + idx, br.end() - 1);
 
-    EventDataType peak = br[idx]; //*(br.begin()+idx);
+    EventDataType peak = br[idx]; ;
 
-    EventDataType cutoffval = peak * (p_profile->cpap->userFlowRestriction() / 100.0F);
+    EventDataType cutoffval = peak * (restriction / 100.0F);
 
     int bs, bm, be, bs1, bm1, be1;
 
@@ -675,16 +663,8 @@ void FlowParser::flagEvents()
         be = p->end;
         mx = p->max;
         mn = p->min;
-//    for (int i = 0; i < numbreaths; i++) {
-//        bs = breaths[i].start;
-//        bm = breaths[i].middle;
-//        be = breaths[i].end;
-
-//        mx = breaths[i].max;
-//        mn = breaths[i].min;
         val = mx - mn;
 
-        //        if (qAbs(mx) > cutoffval) {
         bs1 = bs;
 
         for (; bs1 < be; bs1++) {
@@ -706,8 +686,6 @@ void FlowParser::flagEvents()
             bend.push_back(bm1);
         }
 
-        //      }
-        //    if (qAbs(mn) > cutoffval) {
         bm1 = bm;
 
         for (; bm1 < be; bm1++) {
@@ -729,20 +707,12 @@ void FlowParser::flagEvents()
             bend.push_back(be1);
         }
 
-        //        }
         st = start + bs1 * m_rate;
         et = start + be1  * m_rate;
-        //         uf2->AddEvent(st,0);
-        //         uf3->AddEvent(et,0);
-
     }
 
-
-    EventDataType duration = p_profile->cpap->userEventDuration();
-    //double lastst=start, lastet=start;
-    //EventDataType v;
     int bsize = bstart.size();
-    EventList *uf1 = nullptr;
+    EventList *uf = nullptr;
 
     for (int i = 0; i < bsize - 1; i++) {
         bs = bend[i];
@@ -755,14 +725,26 @@ void FlowParser::flagEvents()
 
         if (dur >= duration) {
             if (allowDuplicates || !SearchApnea(m_session, et - len / 2, 15000)) {
-                if (!uf1) {
-                    uf1 = m_session->AddEventList(CPAP_UserFlag1, EVL_Event);
+                if (!uf) {
+                    uf = m_session->AddEventList(code, EVL_Event);
                 }
 
-                uf1->AddEvent(et, dur);
+                uf->AddEvent(et, dur);
             }
         }
     }
+}
+
+void FlowParser::flagEvents()
+{
+    if (!p_profile->cpap->userEventFlagging()) { return; }
+
+    int numbreaths = breaths.size();
+
+    if (numbreaths < 5) { return; }
+
+    flagUserEvents(CPAP_UserFlag1, p_profile->cpap->userFlowRestriction(), p_profile->cpap->userEventDuration());
+    flagUserEvents(CPAP_UserFlag2, p_profile->cpap->userFlowRestriction2(), p_profile->cpap->userEventDuration2());
 }
 
 void calcRespRate(Session *session, FlowParser *flowparser)

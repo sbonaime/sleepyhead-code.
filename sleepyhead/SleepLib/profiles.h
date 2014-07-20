@@ -273,6 +273,8 @@ const QString STR_CS_DateDiagnosed = "DateDiagnosed";
 const QString STR_CS_UserEventFlagging = "UserEventFlagging";
 const QString STR_CS_UserFlowRestriction = "UserFlowRestriction";
 const QString STR_CS_UserEventDuration = "UserEventDuration";
+const QString STR_CS_UserFlowRestriction2 = "UserFlowRestriction2";
+const QString STR_CS_UserEventDuration2 = "UserEventDuration2";
 const QString STR_CS_UserEventDuplicates = "UserEventDuplicates";
 const QString STR_CS_AHIWindow = "AHIWindow";
 const QString STR_CS_AHIReset = "AHIReset";
@@ -514,7 +516,9 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_Notes, QString());
         initPref(STR_CS_DateDiagnosed, QDate());
         initPref(STR_CS_UserFlowRestriction, 20.0);
-        initPref(STR_CS_UserEventDuration, 10.0);
+        initPref(STR_CS_UserEventDuration, 8.0);
+        initPref(STR_CS_UserFlowRestriction2, 50.0);
+        initPref(STR_CS_UserEventDuration2, 8.0);
         initPref(STR_CS_UserEventDuplicates, false);
         initPref(STR_CS_UserEventFlagging, false);
         initPref(STR_CS_AHIWindow, 60.0);
@@ -541,6 +545,8 @@ class CPAPSettings : public ProfileSettings
     QDate dateDiagnosed() const { return getPref(STR_CS_DateDiagnosed).toDate(); }
     double userFlowRestriction() const { return getPref(STR_CS_UserFlowRestriction).toDouble(); }
     double userEventDuration() const { return getPref(STR_CS_UserEventDuration).toDouble(); }
+    double userFlowRestriction2() const { return getPref(STR_CS_UserFlowRestriction2).toDouble(); }
+    double userEventDuration2() const { return getPref(STR_CS_UserEventDuration2).toDouble(); }
     bool userEventDuplicates() const { return getPref(STR_CS_UserEventDuplicates).toBool(); }
     double AHIWindow() const { return getPref(STR_CS_AHIWindow).toDouble(); }
     bool AHIReset() const { return getPref(STR_CS_AHIReset).toBool(); }
@@ -563,6 +569,8 @@ class CPAPSettings : public ProfileSettings
     void setMaskType(MaskType masktype) { setPref(STR_CS_MaskType, (int)masktype); }
     void setUserFlowRestriction(double flow) { setPref(STR_CS_UserFlowRestriction, flow); }
     void setUserEventDuration(double duration) { setPref(STR_CS_UserEventDuration, duration); }
+    void setUserFlowRestriction2(double flow) { setPref(STR_CS_UserFlowRestriction2, flow); }
+    void setUserEventDuration2(double duration) { setPref(STR_CS_UserEventDuration2, duration); }
     void setAHIWindow(double window) { setPref(STR_CS_AHIWindow, window); }
     void setAHIReset(bool reset) { setPref(STR_CS_AHIReset, reset); }
     void setUserEventFlagging(bool flagging) { setPref(STR_CS_UserEventFlagging, flagging); }
