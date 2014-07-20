@@ -163,6 +163,7 @@ class Layer
     short m_order;                     // order for positioning..
     LayerPosition m_position;
     QRect m_rect;
+    bool m_mouseover;
 
 //    //! \brief A vector containing all this layers custom drawing buffers
 //    QVector<GLBuffer *> mgl_buffers;

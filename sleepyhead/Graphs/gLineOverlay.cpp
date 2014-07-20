@@ -36,6 +36,8 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     double xx = w.max_x - w.min_x;
     double yy = w.max_y - w.min_y;
+    double jj = double(width) / double(xx);
+
 
     if (xx <= 0) { return; }
 
@@ -47,6 +49,8 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     double X;
     double Y;
+
+    QPoint mouse=w.graphView()->currentMousePos();
 
     m_count = 0;
     m_sum = 0;
@@ -71,6 +75,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     qint64 clockdrift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 drift = 0;
+    bool hover = false;
 
     // For each session, process it's eventlist
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
@@ -114,6 +119,8 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 // FT_Span
                 ////////////////////////////////////////////////////////////////////////////
                 for (; dptr < eptr; dptr++) {
+                    hover = false;
+
                     X = stime + *tptr++;
                     raw = *dptr;
                     Y = X - (qint64(raw) * 1000.0L); // duration
@@ -122,10 +129,10 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         break;
                     }
 
-                    x1 = double(width) / double(xx) * double(X - w.min_x) + left;
+                    x1 = jj * double(X - w.min_x) + left;
                     m_count++;
                     m_sum += raw;
-                    x2 = double(width) / double(xx) * double(Y - w.min_x) + left;
+                    x2 = jj * double(Y - w.min_x) + left;
 
                     if (int(x1) == int(x2)) {
                         x2 += 1;
@@ -138,14 +145,22 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     if (x1 > width + left) {
                         x1 = width + left;
                     }
+                    QRect rect(x2, start_py, x1-x2, height);
+                    QColor col = m_flag_color;
+                    if (rect.contains(mouse)) {
+                        col = QColor("gold");
+                        hover = true;
+                    }
 
-                    painter.fillRect(x2, start_py, x1-x2, height, QBrush(m_flag_color));
+                    painter.fillRect(rect, QBrush(col));
                 }
             } else if (m_flt == FT_Dot) {
                 ////////////////////////////////////////////////////////////////////////////
                 // FT_Dot
                 ////////////////////////////////////////////////////////////////////////////
                 for (; dptr < eptr; dptr++) {
+                    hover = false;
+
                     X = stime + *tptr++; //el.time(i);
                     raw = *dptr; //el.data(i);
 
@@ -153,7 +168,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         break;
                     }
 
-                    x1 = double(width) / double(xx) * double(X - w.min_x) + left;
+                    x1 = jj * double(X - w.min_x) + left;
                     m_count++;
                     m_sum += raw;
 
@@ -174,6 +189,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 // FT_Bar
                 ////////////////////////////////////////////////////////////////////////////
                 for (; dptr < eptr; dptr++) {
+                    hover = false;
                     X = stime + *tptr++;
                     raw = *dptr;
 
@@ -181,26 +197,57 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         break;
                     }
 
-                    x1 = double(width) / double(xx) * double(X - w.min_x) + left;
+                    x1 = jj * double(X - w.min_x) + left;
                     m_count++;
                     m_sum += raw;
                     int z = start_py + height;
 
+
                     if ((odt == ODT_Bars) || (xx < 3600000)) {
                         z = top;
+                        double d1 = jj * double(raw) * 1000.0;
 
-                        painter.setPen(QPen(m_flag_color,4));
+                        QRect rect(x1-d1-2, top, d1+2, height);
+                        QColor col = m_flag_color;
+
+                        painter.setPen(QPen(col,4));
                         painter.drawPoint(x1, top);
-                        painter.setPen(QPen(m_flag_color,1));
-                        painter.drawLine(x1, top, x1, bottom);
+
+                        if (rect.contains(mouse)) {
+                            QColor col2(230,230,230,128);
+                            QRect rect(x1-d1, start_py+2, d1, height-2);
+                            if (rect.x() < left) {
+                                rect.setX(left);
+                            }
+
+                            painter.fillRect(rect, QBrush(col2));
+                            painter.setPen(col);
+                            painter.drawRect(rect);
+//                            painter.drawLine(rect.x(), top, rect.x()+d1, top);
+//                            painter.drawLine(rect.x(), bottom, rect.x()+d1, bottom);
+//                            painter.drawLine(rect.x(), top, rect.x(), bottom);
+
+                           // col = QColor("gold");
+                            hover = true;
+                        } else {
+                            painter.setPen(QPen(col,1));
+                            painter.drawLine(x1, top, x1, bottom);
+                        }
+
 
                     } else {
                         painter.drawLine(x1, z, x1, z - 12);
                     }
 
                     if (xx < (1800000)) {
-                        GetTextExtent(m_label, x, y);
-                        w.renderText(m_label, x1 - (x / 2), top - y + (3 * w.printScaleY()));
+                        if (!hover) {
+                            GetTextExtent(m_label, x, y);
+                            w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()));
+                        } else {
+                            QString lab = QString("%1 (%2)").arg(m_label).arg(raw);
+                            GetTextExtent(lab, x, y);
+                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,Qt::red);
+                        }
                     }
                 }
             }
@@ -209,6 +256,14 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     }
 }
+bool gLineOverlayBar::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
+{
+    Q_UNUSED(event)
+    graph->timedRedraw(0);
+    return true;
+}
+
+
 
 gLineOverlaySummary::gLineOverlaySummary(QString text, int x, int y)
     : Layer(CPAP_Obstructive), m_text(text), m_x(x), m_y(y) // The Layer code is a dummy here.

@@ -39,6 +39,9 @@ class gLineOverlayBar: public Layer
     double sum() { return m_sum; }
     FlagType flagtype() { return m_flt; }
   protected:
+    //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
+
     QColor m_flag_color;
     QString m_label;
     FlagType m_flt;
