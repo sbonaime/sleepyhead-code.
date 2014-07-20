@@ -22,7 +22,7 @@
 extern double round(double number);
 
 
-bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType dur, qint64 dist)
+bool SearchEvent(Session * session, ChannelID code, qint64 time, int dur, bool update=true)
 {
     qint64 t, start;
     QHash<ChannelID, QVector<EventList *> >::iterator it;
@@ -34,9 +34,10 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType 
     int cnt;
 
     //qint64 rate;
-    bool fixdurations = (session->machine()->GetClass() != STR_MACH_ResMed);
-    if (!fixdurations) {
-        dur=0;
+//    bool fixdurations = (session->machine()->GetClass() != STR_MACH_ResMed);
+
+    if (!p_profile->cpap->resyncFromUserFlagging()) {
+        update=false;
     }
 
     QHash<ChannelID, QVector<EventList *> >::iterator evend = session->eventlist.end();
@@ -59,12 +60,22 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType 
                 for (int j = 0; j < cnt; j++) {
                     t = start + *tptr;
 
-                    if (qAbs(time - t) < dist) {
+                    // Move the position and set the duration
+                    qint64 end1 = time + 5000L;
+                    qint64 start1 = end1 - quint64(dur+10)*1000L;
 
-                        // Move the position and set the duration
-                        if (dur>0) {
-                            *tptr = time - start;
-                            *dptr = (EventStoreType)dur;
+                    qint64 end2 = t + 5000L;
+                    qint64 start2 = end2 - quint64(*dptr+10)*1000L;
+
+                    bool overlap = (start1 <= end2) && (start2 <= end1);
+
+                    if (overlap) {
+                        if (update) {
+                            qint32 delta = time-start;
+                            if (delta >= 0) {
+                                *tptr = delta;
+                                *dptr = (EventStoreType)dur;
+                            }
                         }
                         return true;
                     }
@@ -78,26 +89,25 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType 
     return false;
 }
 
-bool SearchApnea(Session *session, qint64 time, double dur, qint64 dist)
+bool SearchApnea(Session *session, qint64 time, double dur)
 {
-    if (session->SearchEvent(CPAP_UserFlag1, time, dist))
+    if (SearchEvent(session, CPAP_Obstructive, time, dur))
         return true;
 
-    if (session->SearchEvent(CPAP_UserFlag2, time, dist))
+    if (SearchEvent(session, CPAP_Apnea, time, dur))
         return true;
 
-    if (SearchEvent(session, CPAP_Obstructive, time, dur, dist))
+    if (SearchEvent(session, CPAP_ClearAirway, time, dur))
         return true;
 
-    if (SearchEvent(session, CPAP_Apnea, time, dur, dist))
+    if (SearchEvent(session, CPAP_Hypopnea, time, dur, false))
         return true;
 
-    if (SearchEvent(session, CPAP_ClearAirway, time, dur, dist))
+    if (SearchEvent(session, CPAP_UserFlag1, time, dur, false))
         return true;
 
-    if (SearchEvent(session, CPAP_Hypopnea, time, dur, dist))
+    if (SearchEvent(session, CPAP_UserFlag2, time, dur, false))
         return true;
-
 
     return false;
 }
@@ -776,13 +786,13 @@ void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, Event
         bs = bend[i];
         be = bstart[i + 1];
         st = start + bs * m_rate;
-        et = start + be  * m_rate;
+        et = start + be * m_rate;
 
         len = et - st;
         dur = len / 1000.0;
 
         if (dur >= duration) {
-            if (allowDuplicates || !SearchApnea(m_session, et, dur, 15000)) {
+            if (allowDuplicates || !SearchApnea(m_session, et, dur)) {
                 if (!uf) {
                     uf = m_session->AddEventList(code, EVL_Event);
                 }

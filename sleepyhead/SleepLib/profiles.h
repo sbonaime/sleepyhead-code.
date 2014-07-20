@@ -278,6 +278,8 @@ const QString STR_CS_UserEventDuration = "UserEventDuration";
 const QString STR_CS_UserFlowRestriction2 = "UserFlowRestriction2";
 const QString STR_CS_UserEventDuration2 = "UserEventDuration2";
 const QString STR_CS_UserEventDuplicates = "UserEventDuplicates";
+const QString STR_CS_ResyncFromUserFlagging = "ResyncFromUserFlagging";
+
 const QString STR_CS_AHIWindow = "AHIWindow";
 const QString STR_CS_AHIReset = "AHIReset";
 const QString STR_CS_ClockDrift = "ClockDrift";
@@ -528,6 +530,7 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_LeakRedline, 24.0);
         initPref(STR_CS_ShowLeakRedline, true);
         initPref(STR_CS_UserEventPieChart, false);
+        initPref(STR_CS_ResyncFromUserFlagging, false);
 
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
@@ -558,6 +561,8 @@ class CPAPSettings : public ProfileSettings
     EventDataType leakRedline() const { return getPref(STR_CS_LeakRedline).toFloat(); }
     bool showLeakRedline() const { return getPref(STR_CS_ShowLeakRedline).toBool(); }
     bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
+    bool resyncFromUserFlagging() const { return getPref(STR_CS_ResyncFromUserFlagging).toBool(); }
+
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
@@ -588,6 +593,7 @@ class CPAPSettings : public ProfileSettings
     void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, value); }
     void setShowLeakRedline(bool reset) { setPref(STR_CS_ShowLeakRedline, reset); }
     void setUserEventPieChart(bool b) { setPref(STR_CS_UserEventPieChart, b); }
+    void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
 
   public:
     int m_clock_drift;

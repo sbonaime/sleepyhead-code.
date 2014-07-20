@@ -171,6 +171,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->maskTypeCombo->setCurrentIndex(mt);
     on_maskTypeCombo_activated(mt);
 
+    ui->resyncMachineDetectedEvents->setChecked(profile->cpap->resyncFromUserFlagging());
 
     ui->maskDescription->setText(profile->cpap->maskDescription());
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
@@ -491,6 +492,7 @@ bool PreferencesDialog::Save()
 
     profile->cpap->setUserEventFlagging(ui->customEventGroupbox->isChecked());
 
+    profile->cpap->setResyncFromUserFlagging(ui->resyncMachineDetectedEvents->isChecked());
     profile->cpap->setUserEventDuration(ui->apneaDuration->value());
     profile->cpap->setUserFlowRestriction(ui->apneaFlowRestriction->value());
     profile->cpap->setUserEventDuration2(ui->apneaDuration2->value());

@@ -878,6 +878,83 @@ This option must be enabled before import, otherwise a purge is required.</strin
             <property name="spacing">
              <number>4</number>
             </property>
+            <item row="3" column="1">
+             <widget class="QDoubleSpinBox" name="apneaFlowRestriction2">
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="5">
+             <widget class="QCheckBox" name="showUserFlagsInPie">
+              <property name="text">
+               <string>Show in Event Breakdown Piechart</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_49">
+              <property name="text">
+               <string>#1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_50">
+              <property name="text">
+               <string>#2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_35">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Flow Restriction</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QDoubleSpinBox" name="apneaDuration2">
+              <property name="suffix">
+               <string>s</string>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="label_38">
+              <property name="text">
+               <string>Event Duration</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QDoubleSpinBox" name="apneaDuration">
+              <property name="toolTip">
+               <string>Duration of airflow restriction</string>
+              </property>
+              <property name="suffix">
+               <string>s</string>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="1">
              <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
               <property name="sizePolicy">
@@ -898,33 +975,14 @@ A value of 20% works well for detecting apneas. </string>
               </property>
              </widget>
             </item>
-            <item row="2" column="4">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_35">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+            <item row="6" column="1" colspan="5">
+             <widget class="QCheckBox" name="userEventDuplicates">
               <property name="text">
-               <string>Flow Restriction</string>
+               <string>Allow duplicates near machine events.</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="5">
+            <item row="0" column="0" colspan="6">
              <widget class="QLabel" name="label_34">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -952,74 +1010,26 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
-             <widget class="QDoubleSpinBox" name="apneaDuration">
+            <item row="2" column="5">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="1" colspan="5">
+             <widget class="QCheckBox" name="resyncMachineDetectedEvents">
               <property name="toolTip">
-               <string>Duration of airflow restriction</string>
+               <string>This experimental option attempts to use SleepyHead's event flagging system to improve machine detected event positioning.</string>
               </property>
-              <property name="suffix">
-               <string>s</string>
-              </property>
-              <property name="minimum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="label_38">
               <property name="text">
-               <string>Event Duration</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="apneaFlowRestriction2">
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_50">
-              <property name="text">
-               <string>#2</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1" colspan="4">
-             <widget class="QCheckBox" name="userEventDuplicates">
-              <property name="text">
-               <string>Allow duplicates near machine events.</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QDoubleSpinBox" name="apneaDuration2">
-              <property name="suffix">
-               <string>s</string>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_49">
-              <property name="text">
-               <string>#1</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1" colspan="4">
-             <widget class="QCheckBox" name="showUserFlagsInPie">
-              <property name="text">
-               <string>Show in Event Breakdown Piechart</string>
+               <string>Resync Machine Detected Events (Experimental)</string>
               </property>
              </widget>
             </item>
