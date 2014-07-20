@@ -851,6 +851,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
     int y2 = m_graphview->pointClicked().y() - m_rect.top();
 
 
+    m_selDurString = QString();
+
     //qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
     if (m_selecting_area) {
         m_selecting_area = false;

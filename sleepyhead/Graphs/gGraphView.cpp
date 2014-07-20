@@ -1590,10 +1590,12 @@ void gGraphView::keyReleaseEvent(QKeyEvent *event)
 {
     if (m_metaselect && !(event->modifiers() & Qt::AltModifier)) {
         QMouseEvent mevent(QEvent::MouseButtonRelease, m_point_released, Qt::LeftButton, Qt::LeftButton, event->modifiers());
-        if (m_graph_index>=0)
+        if (m_graph_index>=0) {
             m_graphs[m_graph_index]->mouseReleaseEvent(&mevent);
+        }
 
         m_metaselect = false;
+
         timedRedraw(50);
     }
     if (event->key() == Qt::Key_Escape) {

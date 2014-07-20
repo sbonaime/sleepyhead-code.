@@ -347,8 +347,7 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
 
     QString a;
 
-    if (w.graphView()->selectionInProgress() || w.graphView()->metaSelect()) {
-
+    if ((w.graphView()->selectionInProgress() || w.graphView()->metaSelect()) && (!w.selDurString().isEmpty())) {
         a = QObject::tr("Duration")+": "+w.selDurString();
     } else {
 
