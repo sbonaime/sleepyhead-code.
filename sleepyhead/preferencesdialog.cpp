@@ -295,6 +295,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->graphView->setModel(graphFilterModel);
 
     resetGraphModel();
+
+    grabKeyboard();
     //    tree->sortByColumn(0,Qt::AscendingOrder);
 }
 

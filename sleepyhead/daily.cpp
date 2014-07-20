@@ -750,6 +750,7 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
+    graphView()->releaseKeyboard();
     QTime time;
     time_t unload_time, load_time, other_time;
     time.start();

@@ -34,6 +34,10 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType 
     int cnt;
 
     //qint64 rate;
+    bool fixdurations = (session->machine()->GetClass() != STR_MACH_ResMed);
+    if (!fixdurations) {
+        dur=0;
+    }
 
     QHash<ChannelID, QVector<EventList *> >::iterator evend = session->eventlist.end();
     if (it != evend) {
@@ -76,6 +80,12 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, EventStoreType 
 
 bool SearchApnea(Session *session, qint64 time, double dur, qint64 dist)
 {
+    if (session->SearchEvent(CPAP_UserFlag1, time, dist))
+        return true;
+
+    if (session->SearchEvent(CPAP_UserFlag2, time, dist))
+        return true;
+
     if (SearchEvent(session, CPAP_Obstructive, time, dur, dist))
         return true;
 
@@ -85,14 +95,9 @@ bool SearchApnea(Session *session, qint64 time, double dur, qint64 dist)
     if (SearchEvent(session, CPAP_ClearAirway, time, dur, dist))
         return true;
 
-    if (SearchEvent(session, CPAP_Hypopnea, time, 0, dist))
+    if (SearchEvent(session, CPAP_Hypopnea, time, dur, dist))
         return true;
 
-    if (session->SearchEvent(CPAP_UserFlag1, time, dist))
-        return true;
-
-    if (session->SearchEvent(CPAP_UserFlag2, time, dist))
-        return true;
 
     return false;
 }
