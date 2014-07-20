@@ -7,7 +7,7 @@ CONFIG += ordered
 TRANSLATIONS += \
     Translations/Nederlands.nl.ts \
     Translations/Deutsch.de.ts \
-    Translations/Chinese.cn.ts \
+    Translations/Chinese.zh.ts \
     Translations/Francais.fr.ts \
     Translations/Svenska.se.ts \
     Translations/Espaniol.es.ts \
