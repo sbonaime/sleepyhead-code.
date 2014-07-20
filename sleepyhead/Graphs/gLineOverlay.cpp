@@ -239,7 +239,11 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         painter.drawLine(x1, z, x1, z - 12);
                     }
 
-                    if (xx < (1800000)) {
+                    if (xx < 300000) {
+                        QString lab = schema::channel[m_code].fullname();
+                        GetTextExtent(lab, x, y);
+                        w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()));
+                    } else if (xx < (3600000)) {
                         if (!hover) {
                             GetTextExtent(m_label, x, y);
                             w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()));

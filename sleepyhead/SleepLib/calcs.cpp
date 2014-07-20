@@ -759,7 +759,7 @@ void FlowParser::flagEvents()
                     uf1 = m_session->AddEventList(CPAP_UserFlag1, EVL_Event);
                 }
 
-                uf1->AddEvent(et - len / 2, dur);
+                uf1->AddEvent(et, dur);
             }
         }
     }
