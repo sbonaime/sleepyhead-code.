@@ -1074,6 +1074,13 @@ void gGraphView::paintGL()
     }
 }
 
+void gGraphView::leaveEvent(QEvent * event)
+{
+    Q_UNUSED(event);
+    releaseKeyboard();
+}
+
+
 // For manual scrolling
 void gGraphView::setOffsetY(int offsetY)
 {

@@ -202,7 +202,6 @@ class gGraphView
     virtual ~gGraphView();
     virtual void closeEvent(QCloseEvent * event);
 
-
     //! \brief Add gGraph g to this gGraphView, in the requested graph-linkage group
     void addGraph(gGraph *g, short group = 0);
 
@@ -386,6 +385,8 @@ class gGraphView
     QList<SelectionHistoryItem> history;
 
   protected:
+
+    virtual void leaveEvent (QEvent * event);
 
     //! \brief The heart of the drawing code
 #ifdef BROKEN_OPENGL_BUILD

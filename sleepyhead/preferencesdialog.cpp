@@ -45,12 +45,6 @@ MaskProfile masks[] = {
 };
 const int num_masks = sizeof(masks) / sizeof(MaskProfile);
 
-void PreferencesDialog::showEvent(QShowEvent * event)
-{
-    mainwin->getDaily()->graphView()->releaseKeyboard();
-    mainwin->getOverview()->graphView()->releaseKeyboard();
-}
-
 PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     QDialog(parent),
     ui(new Ui::PreferencesDialog),

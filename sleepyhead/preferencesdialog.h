@@ -68,9 +68,6 @@ class PreferencesDialog : public QDialog
     //! \brief Updates the date text of the last time updates where checked
     void RefreshLastChecked();
 
-  protected:
-    virtual void showEvent(QShowEvent * event);
-
   private slots:
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void on_combineSlider_valueChanged(int value);
