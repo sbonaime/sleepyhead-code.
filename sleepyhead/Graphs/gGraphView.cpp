@@ -1094,7 +1094,7 @@ void gGraphView::setOffsetX(int offsetX)
 
 void gGraphView::mouseMoveEvent(QMouseEvent *event)
 {
-    this->setFocus();
+    grabKeyboard();
 
     int x = event->x();
     int y = event->y();
