@@ -1363,7 +1363,7 @@ void Daily::Load(QDate date)
         EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
         if (p_profile->general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
         ahi/=hours;
-        EventDataType csr,uai,oai,hi,cai,rei,fli,sai,nri,lki,vs,vs2,exp,lk2;
+        EventDataType csr,uai,oai,hi,cai,rei,fli,sai,nri,lki,vs,vs2,exp,lk2,uf1, uf2;
 
         if (!isBrick && hours>0) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -1393,6 +1393,8 @@ void Daily::Load(QDate date)
                 { CPAP_Apnea,       COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
                 { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
                 { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
+                { CPAP_UserFlag1,   COLOR_UserFlag1,    Qt::black, uf1=cpap->count(CPAP_UserFlag1)/hours },
+                { CPAP_UserFlag2,   COLOR_UserFlag2,    Qt::black, uf2=cpap->count(CPAP_UserFlag2)/hours },
                 { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
                 { CPAP_SensAwake,   COLOR_SensAwake,    Qt::black, sai=cpap->count(CPAP_SensAwake)/hours },
                 { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },

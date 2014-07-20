@@ -57,6 +57,7 @@ extern QColor COLOR_PressurePulse;
 extern QColor COLOR_PulseChange;
 extern QColor COLOR_SPO2Drop;
 extern QColor COLOR_UserFlag1;
+extern QColor COLOR_UserFlag2;
 
 // Chart Colors
 extern QColor COLOR_EPAP;
