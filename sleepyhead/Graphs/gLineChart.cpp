@@ -165,6 +165,7 @@ bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     return true;
 }
 
+
 // Time Domain Line Chart
 void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
@@ -238,15 +239,30 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         QPoint mouse = w.graphView()->currentMousePos();
         double pos = mouse.x() - left;
         if (pos > 0) {
-            double xval = minx + (pos * (xx / double(width)));
+            qint64 xpos = minx + (pos * (xx / double(width)));
 
+            EventDataType val = 0, val2 = 0, val3 = 0;
+            QString pressure;
+            if (m_day) {
+                CPAPMode mode = (CPAPMode)round(m_day->settings_wavg(CPAP_Mode));
+                if (mode >= MODE_BIPAP) {
+                    val = m_day->lookupValue(CPAP_EPAP, xpos);
+                    val2 = m_day->lookupValue(CPAP_IPAP, xpos);
+                    val3 = val2 - val;
+                    pressure=QString("%1: %2%3 %4:%5%3 %6:%7%3").arg(STR_TR_EPAP).arg(val,0,'f',1).arg(STR_UNIT_CMH2O).arg(STR_TR_IPAP).arg(val2,0,'f',1).arg(STR_TR_PS).arg(val3,0,'f',1);
+
+                } else {
+                    val = m_day->lookupValue(CPAP_Pressure, xpos);
+                    pressure=QString("%1: %2%3").arg(STR_TR_Pressure).arg(val).arg(STR_UNIT_CMH2O);
+                }
+            }
 
             painter.setPen(QPen(QBrush(QColor(Qt::gray)),1));
             painter.drawLine(mouse.x(), top-w.marginTop()-3, mouse.x(), top+height+w.bottom-1);
 
-            QDateTime dt=QDateTime::fromMSecsSinceEpoch(xval);
+            QDateTime dt=QDateTime::fromMSecsSinceEpoch(xpos);
 
-            QString text = dt.toString("MMM dd - HH:mm:ss:zzz");
+            QString text = dt.toString("MMM dd - HH:mm:ss:zzz")+" "+pressure;
 
             int wid, h;
             GetTextExtent(text, wid, h);

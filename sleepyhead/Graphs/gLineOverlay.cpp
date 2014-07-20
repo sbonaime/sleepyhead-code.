@@ -241,18 +241,19 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         painter.drawLine(x1, z, x1, z - 12);
                     }
 
+                    QColor txcol = hover ? Qt::red: Qt::black;
                     if (xx < 300000) {
-                        QString lab = schema::channel[m_code].fullname();
+                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
                         GetTextExtent(lab, x, y);
-                        w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()));
+                        w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
                     } else if (xx < (3600000)) {
                         if (!hover) {
                             GetTextExtent(m_label, x, y);
-                            w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()));
+                            w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
                         } else {
                             QString lab = QString("%1 (%2)").arg(m_label).arg(raw);
                             GetTextExtent(lab, x, y);
-                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,Qt::red);
+                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
                         }
                     }
                 }
@@ -265,6 +266,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 bool gLineOverlayBar::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event)
+    Q_UNUSED(graph)
     return true;
 }
 

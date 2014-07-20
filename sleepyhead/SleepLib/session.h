@@ -64,8 +64,8 @@ class Session
     //! \brief Returns true if session contains an empty duration
     inline bool isEmpty() { return (s_first == s_last); }
 
-    //! \brief Search for Event code happening within dist milliseconds of supplied time (ms since epoch)
-    bool SearchEvent(ChannelID code, qint64 time, qint64 dist = 15000);
+    //! \brief Search for Event code happening at supplied time (ms since epoch)
+    EventDataType SearchValue(ChannelID code, qint64 time);
 
     //! \brief Return the sessionID
     inline const SessionID &session() {

@@ -98,11 +98,13 @@ class Day
     EventDataType settings_max(ChannelID code);
 
     //! \brief Returns the amount of time (in decimal minutes) the Channel spent above the threshold
-    EventDataType timeAboveThreshold(ChannelID id, EventDataType threshold);
+    EventDataType timeAboveThreshold(ChannelID code, EventDataType threshold);
 
     //! \brief Returns the amount of time (in decimal minutes) the Channel spent below the threshold
-    EventDataType timeBelowThreshold(ChannelID id, EventDataType threshold);
+    EventDataType timeBelowThreshold(ChannelID code, EventDataType threshold);
 
+    //! \brief Returns the value for Channel code at a given time
+    EventDataType lookupValue(ChannelID code, qint64 time);
 
     //! \brief Returns the first session time of this day
     qint64 first();

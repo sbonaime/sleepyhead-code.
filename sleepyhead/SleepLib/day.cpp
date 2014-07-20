@@ -55,6 +55,22 @@ void Day::AddSession(Session *s)
     sessions.push_back(s);
 }
 
+EventDataType Day::lookupValue(ChannelID code, qint64 time)
+{
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            if ((time > sess.first()) && (time < sess.last())) {
+                return sess.SearchValue(code,time);
+            }
+        }
+    }
+    return 0;
+}
+
+
 EventDataType Day::timeAboveThreshold(ChannelID code, EventDataType threshold)
 {
     EventDataType val = 0;

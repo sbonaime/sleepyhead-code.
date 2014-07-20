@@ -937,8 +937,10 @@ void Session::UpdateSummaries()
             last(id);
             first(id);
 
-            if (((id == CPAP_FlowRate) || (id == CPAP_MaskPressureHi) || (id == CPAP_RespEvent)
-                    || (id == CPAP_MaskPressure))) {
+            if (((id == CPAP_FlowRate)
+                 || (id == CPAP_MaskPressureHi)
+                 || (id == CPAP_RespEvent)
+                 || (id == CPAP_MaskPressure))) {
                 continue;
             }
 
@@ -950,42 +952,41 @@ void Session::UpdateSummaries()
     }
 }
 
-bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
+EventDataType Session::SearchValue(ChannelID code, qint64 time)
 {
-    qint64 t, start;
+    qint64 tt, start;
     QHash<ChannelID, QVector<EventList *> >::iterator it;
     it = eventlist.find(code);
     quint32 *tptr;
     int cnt;
 
-    //qint64 rate;
     if (it != eventlist.end()) {
         int el_size=it.value().size();
         for (int i = 0; i < el_size; i++)  {
             EventList *el = it.value()[i];
-            //            rate=el->rate();
+            if ((time < el->first()) || (time > el->last())) continue;
+
             cnt = el->count();
 
-            // why would this be necessary???
             if (el->type() == EVL_Waveform) {
                 qDebug() << "Called SearchEvent on a waveform object!";
-                return false;
+                return 0;
             } else {
                 start = el->first();
                 tptr = el->rawTime();
 
-                for (int j = 0; j < cnt; j++) {
-                    t = start + *tptr++;
-
-                    if (qAbs(time - t) < dist) {
-                        return true;
+                for (int j = 0; j < cnt-1; j++) {
+                    tptr++;
+                    tt = start + *tptr;
+                    if (tt > time) {
+                        return el->data(j);
                     }
                 }
             }
         }
     }
 
-    return false;
+    return 0;
 }
 
 bool Session::enabled()
