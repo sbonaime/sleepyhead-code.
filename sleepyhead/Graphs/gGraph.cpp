@@ -761,7 +761,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                     min_x = rmax_x - xx;
                 }
 
-                m_graphview->saveHistory();
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
                 doredraw = true;
             } else {
@@ -785,7 +784,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                     min_x = rmax_x - xx;
                 }
 
-                m_graphview->saveHistory();
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
                 doredraw = true;
             }
@@ -891,7 +889,6 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                 } else {
                     if (a2 - a1 < zoom_hard_limit) { a2 = a1 + zoom_hard_limit; }
 
-                    m_graphview->saveHistory();
                     m_graphview->SetXBounds(a1, a2, m_group);
                 }
             } else {
@@ -900,16 +897,15 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                 qint64 j1 = rmin_x + xmult * x;
                 qint64 j2 = rmin_x + xmult * x2;
                 qint64 a1 = MIN(j1, j2)
-                            qint64 a2 = MAX(j1, j2)
+                qint64 a2 = MAX(j1, j2)
 
-                                        //if (a1<rmin_x) a1=rmin_x;
+                //if (a1<rmin_x) a1=rmin_x;
                 if (a2 > rmax_x) { a2 = rmax_x; }
 
                 if (a1 <= rmin_x && a2 <= rmin_x) {
                     qDebug() << "Foo2??";
                 } else  {
                     if (a2 - a1 < zoom_hard_limit) { a2 = a1 + zoom_hard_limit; }
-                    m_graphview->saveHistory();
                     m_graphview->SetXBounds(a1, a2, m_group);
                 }
             }
@@ -983,7 +979,6 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
                 min_x = rmax_x - xx;
             }
 
-            m_graphview->saveHistory();
             m_graphview->SetXBounds(min_x, max_x, m_group);
             m_lastx23 = x;
         }
@@ -1122,7 +1117,6 @@ void gGraph::ZoomX(double mult, int origin_px)
 
     extern const int max_history;
 
-    m_graphview->saveHistory();
     m_graphview->SetXBounds(min, max, m_group);
     //updateSelectionTime(max-min);
 }
