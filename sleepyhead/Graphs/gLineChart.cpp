@@ -274,7 +274,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
 
-    if (w.graphView()->metaSelect()) {
+    if (p_profile->appearance->lineCursorMode()) {
         qint64 time = w.currentTime();
 
         if ((time > minx) && (time < maxx)) {

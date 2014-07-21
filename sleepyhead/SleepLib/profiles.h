@@ -310,6 +310,7 @@ const QString STR_AS_UsePixmapCaching = "UsePixmapCaching";
 const QString STR_AS_AllowYAxisScaling = "AllowYAxisScaling";
 const QString STR_AS_GraphTooltips = "GraphTooltips";
 const QString STR_AS_LineThickness = "LineThickness";
+const QString STR_AS_LineCursorMode = "LineCursorMode";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem = "UnitSystem";
@@ -664,6 +665,7 @@ class AppearanceSettings : public ProfileSettings
         initPref(STR_AS_OverlayType, ODT_Bars);
         initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
         initPref(STR_AS_LineThickness, 1.0);
+        initPref(STR_AS_LineCursorMode, false);
     }
 
     //! \brief Returns the normal (unscaled) height of a graph
@@ -684,6 +686,8 @@ class AppearanceSettings : public ProfileSettings
     bool graphTooltips() const { return getPref(STR_AS_GraphTooltips).toBool(); }
     //! \brief Pen width of line plots
     float lineThickness() const { return getPref(STR_AS_LineThickness).toFloat(); }
+    //! \brief Whether to show line cursor
+    bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
 
 
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
@@ -719,6 +723,8 @@ class AppearanceSettings : public ProfileSettings
     }
     //! \brief Set the pen width of line plots.
     void setLineThickness(float size) { setPref(STR_AS_LineThickness, size); }
+    //! \brief Sets whether to display Line Cursor
+    void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
 };
 
 /*! \class UserSettings

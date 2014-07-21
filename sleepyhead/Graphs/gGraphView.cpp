@@ -1077,6 +1077,10 @@ void gGraphView::paintGL()
 void gGraphView::leaveEvent(QEvent * event)
 {
     Q_UNUSED(event);
+    if (m_metaselect) {
+        m_metaselect = false;
+        timedRedraw(0);
+    }
     releaseKeyboard();
 }
 
@@ -1830,11 +1834,16 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
 void gGraphView::keyPressEvent(QKeyEvent *event)
 {
-    bool meta = m_metaselect;
+//    bool meta = m_metaselect;
     m_metaselect = event->modifiers() & Qt::AltModifier;
 
-    if (meta != m_metaselect) {
-        timedRedraw(30);
+//    if (meta != m_metaselect) {
+//        timedRedraw(30);
+//    }
+
+    if (event->key() == Qt::Key_F3) {
+        p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
+        timedRedraw(0);
     }
 
     if (event->key() == Qt::Key_Tab) {

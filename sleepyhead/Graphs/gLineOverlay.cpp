@@ -352,10 +352,8 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
     if ((w.graphView()->selectionInProgress() || w.graphView()->metaSelect()) && (!w.selDurString().isEmpty())) {
         a = QObject::tr("Duration")+": "+w.selDurString();
     } else {
-        if (!w.graphView()->metaSelect()) {
-            a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
+        a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
                 QObject::tr("Duration") + " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " + m_text + ": " + QString::number(val, 'f', 2);
-        }
     }
     if (isSpan) {
         float sph;
