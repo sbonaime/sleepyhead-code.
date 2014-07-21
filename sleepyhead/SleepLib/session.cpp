@@ -969,8 +969,9 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
             cnt = el->count();
 
             if (el->type() == EVL_Waveform) {
-                qDebug() << "Called SearchEvent on a waveform object!";
-                return 0;
+                qint64 tt = time - el->first();
+                qint64 i = tt / el->rate();
+                return el->data(i);
             } else {
                 start = el->first();
                 tptr = el->rawTime();
