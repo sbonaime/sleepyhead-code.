@@ -465,27 +465,27 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Machine Settings Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>Geräteeinstellungen nicht verfügbar</translation>
     </message>
     <message>
         <source>EPR:%1 EPR_LEVEL:%2</source>
-        <translation type="unfinished"></translation>
+        <translation>EPR:%1 EPR_LEVEL:%2</translation>
     </message>
     <message>
         <source>This day has missing pressure, mode and settings data.</source>
-        <translation type="unfinished"></translation>
+        <translation>An diesem Tag fehlen die Einstellungsdaten für den Druck.</translation>
     </message>
     <message>
         <source>Summary Only :(</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur die Zusammenfassung: (</translation>
     </message>
     <message>
         <source>UF1</source>
-        <translation type="unfinished">UF1</translation>
+        <translation>UF1</translation>
     </message>
     <message>
         <source>UF2</source>
-        <translation type="unfinished">UF2</translation>
+        <translation>UF2</translation>
     </message>
 </context>
 <context>
@@ -1499,55 +1499,63 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgang</translation>
     </message>
     <message>
         <source>O&amp;ximetry Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation>O&amp;ximetrie Assistent</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This pre-release build is meant for beta testers only. Please do &lt;b&gt;NOT&lt;/b&gt; share outside the SleepyHead Testing Forum.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt; Achtung: &lt;/ b&gt; Diese Pre-Release-Build ist nur für Beta-Tester gedacht. Bitte &lt;b&gt; NICHT &lt;/ b&gt; Aktien außerhalb des SleepyHead Testing Forums.</translation>
     </message>
     <message>
         <source>Please report bugs for this build to the SleepyHead Testing Forum, but first, check the release thread to ensure you are running the latest version.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte melden Sie Fehler für diesen Build auf dem SleepyHead Testing Forum, überprüfen Sie aber zuerst die Release Thread, um sicherzustellen, dass Sie die aktuellste Version verwenden.</translation>
     </message>
     <message>
         <source>When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn Sie Fehler melden, stellen Sie bitte sicher, dass Sie die SleepyHead Versionsnummer, Betriebssystem Details und CPAP-Geräte-Modelldaten angeben.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This reports this software generates are not fit for compliance or medical diagnostic purposes.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt; Achtung: &lt;/ b&gt; Die Berichte die die Software erzeugt sind nicht für die Einhaltung oder medizinische Diagnosezwecke geeignet.</translation>
     </message>
     <message>
         <source>These messages are only a temporary feature. Some people thought they were an error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Meldungen sind nur einer temporären Funktion zugeordnet. Einige Nutzer dachten, dass die Meldungen Fehler waren.</translation>
     </message>
     <message>
         <source>Choose a folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie einen Ordner</translation>
     </message>
     <message>
         <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead&apos;s Online &lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide&quot;&gt;Benutzerhandbuch&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions&quot;&gt;Frequently Asked Questions&lt;/a&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions&quot;&gt;Häufig gestellte Fragen&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary&quot;&gt;Glossar der Schlafstörung AGB&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Main_Page&quot;&gt;SleepyHead Wiki&lt;/a&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Main_Page&quot;&gt;SleepyHead Wiki&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>&lt;a href=&apos;http://www.apneaboard.com/forums/&apos;&gt;Apnea Board&lt;/a&gt;</source>
+        <translation>&lt;a href=&apos;http://www.apneaboard.com/forums/&apos;&gt;Apnea Board&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <source>Toggle &amp;Line Cursor</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
     </message>
 </context>
 <context>
@@ -1802,7 +1810,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Please provide a username for this profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte geben Sie einen Benutzernamen für dieses Profil an</translation>
     </message>
 </context>
 <context>
@@ -2066,11 +2074,11 @@ Volumen
     <name>OximeterImport</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <source>Oximeter Import Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation>Oximeter Import-Assistenten</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -2087,275 +2095,288 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Important Notes: &lt;/span&gt;For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, &lt;a href=&quot;http://sleepyhead.sf.net/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;click here&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Contec CMS50D+ devices do not have an internal clock, and do not record a starting time. If you do not have a CPAP session to link a recording to, you will have to enter the start time manually after the import process is completed.&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Lucida Grande UI&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;(Diese Übersetzung bitte nicht durchführen, weil eine neue Aufteilung stattfinden wird)&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Welcome to the Oximeter Import Wizard&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pulse Oximeters are medical devices used to measure blood oxygen saturation. During extended Apnea events and abnormal breathing patterns, blood oxygen saturation levels can drop significantly, and can indicate issues that need medical attention.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead gives you the ability to track Oximetry data alongside CPAP session data, which can give valuable insight into the effectiveness of CPAP treatment. It will also work standalone with your Pulse Oximeter, allowing you to store, track and review your recorded data.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead is currently compatible with Contec CMS50D+, CMS50E and CMS50F serial oximeters.&lt;br /&gt;(Note: Direct importing from bluetooth models is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; supported yet)&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;It also can read from ChoiceMMed MD300W1 oximeter .dat files.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Please remember: &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;If you are trying to sync oximetery and CPAP data, please make sure you imported your CPAP sessions first before proceeding!&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Important Notes: &lt;/span&gt;For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, &lt;a href=&quot;http://sleepyhead.sf.net/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;click here&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Contec CMS50D+ devices do not have an internal clock, and do not record a starting time. If you do not have a CPAP session to link a recording to, you will have to enter the start time manually after the import process is completed.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Skip this page next time.</source>
-        <translation type="unfinished"></translation>
+        <translation>Überspringen Sie diese Seite das nächste Mal.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead fully supports Contec CMS50D+/E/F serial oximeters, &lt;br/&gt;as well as data files made by ChoiceMMed MD300W1 oximeters&apos; software.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead unterstütztl Contec CMS50D + / E / F Serien Oximeter, &lt;br/&gt;sowie Daten-Dateien welche durch die Software von Choicemmed MD300W1 Oximeter &quot;erzeugt werden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Where would you like to import from?</source>
-        <translation type="unfinished"></translation>
+        <translation>Von wo wollen Sie importieren?</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import (via cable) from your oximeters internal recordings.&lt;/p&gt;&lt;p&gt;After selecting on this option, some oximeters will require you to do something in the devices menu to initiate the upload.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Option ermöglicht den Import (über Kabel) aus Ihrem Oximeter.&lt;/p&gt;&lt;p&gt;Nach der Auswahl dieser Option, werden einige Einstellungen im Oximeter erforderlich sein um den Upload zu starten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Directly from a recording on a device</source>
-        <translation type="unfinished"></translation>
+        <translation>Direkt von einer Aufnahme auf einem Gerät</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you don&apos;t mind a being attached to a running computer overnight, this option provide a useful plethysomogram graph, which gives an indication of heart rhythm, on top of the normal oximetry readings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sollten Sie das Pulsoximeter über Nacht an einem PC betreiben kann diese Option sehr nützlich sein um Herzrhythmusstörungen zu erkennen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Record attached to computer overnight (provides plethysomogram)</source>
-        <translation type="unfinished"></translation>
+        <translation>Waren Sie über Nacht an den PC angeschlossen benutzen Sie das (Plethysonogramm)</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import from data files created by software that came with your Pulse Oximeter, such as SpO2Review.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Option ermöglicht den Import von Dateien, welche durch Software von SpO2 Review erzeugt wurde.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Import from a datafile saved by another program, like SpO2Review</source>
-        <translation type="unfinished"></translation>
+        <translation>Import aus einer Datendatei von einem anderen Programm, welche von SpO2Review gespeichert wurden</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Reminder for CPAP users: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;Did you remember to import your CPAP sessions first?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you forget, you won&apos;t have a valid time to sync this oximetry session to.&lt;br/&gt;&lt;br/&gt;To a ensure good sync between devices, always try to start both at the same time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Erinnerung für CPAP-Anwender: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;Haben Sie daran gedacht, zuerst Ihre CPAP-Daten zu importieren?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Wenn Sie das vergessen haben, werden Sie keine gültige Zeit für diese Oxymetrie Sitzung erhalten.&lt;br/&gt;&lt;br/&gt;Um sicherzustellen,dass eine gute Synchronisierung zwischen den Geräten erfolgt, müssen Sie beide Geräte zur gleichen Zeit starten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Please connect your oximeter device</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte verbinden Sie Ihr Oximeter-Gerät</translation>
     </message>
     <message>
         <source>Press Start to commence recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Drücken Sie Start, um die Aufnahme zu beginnen</translation>
     </message>
     <message>
         <source>Show Live Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Live-Diagramme anzeigen</translation>
     </message>
     <message>
         <source>Duration</source>
-        <translation type="unfinished">Dauer</translation>
+        <translation>Dauer</translation>
     </message>
     <message>
         <source>SpO2 %</source>
-        <translation type="unfinished">SpO2 %</translation>
+        <translation>SpO2 %</translation>
     </message>
     <message>
         <source>Pulse Rate</source>
-        <translation type="unfinished">Pulsrate</translation>
+        <translation>Pulsrate</translation>
     </message>
     <message>
         <source>Multiple Sessions Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Mehrere Sitzungen erkannt</translation>
     </message>
     <message>
         <source>Please choose which one you want to import into SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte wählen Sie, welche Sie in SleepyHead importieren möchten</translation>
     </message>
     <message>
         <source>Import Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Importzeit</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation type="unfinished">Details</translation>
+        <translation>Details</translation>
     </message>
     <message>
         <source>Import Completed. When did the recording start?</source>
-        <translation type="unfinished"></translation>
+        <translation>Import abgeschlossen. Wann hat die Aufnahme zu starten?</translation>
     </message>
     <message>
         <source>Day recording (normally would of) started</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalerweise wird der Tag der Aufnahme gestartet</translation>
     </message>
     <message>
         <source>Oximeter Starting time</source>
-        <translation type="unfinished"></translation>
+        <translation>Oximeter Startzeit</translation>
     </message>
     <message>
         <source>I want to use the time reported by my oximeter&apos;s built in clock.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ich will die Zeit von meiner im Oximeter eingebauten Uhr verwenden.</translation>
     </message>
     <message>
         <source>I started this oximeter recording at (or near) the same time as a session on my CPAP machine.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ich begann diese Oximeter Aufnahme zur gleichen Zeit (oder nahe der Zeit) wie eine Session auf meinem CPAP-Gerät.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead needs a starting time to know where to save this oximetry session to.&lt;/p&gt;&lt;p&gt;Choose one of the following options:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead benötigt eine Startzeit um zu wissen wo diese Oxymetrie-Sitzung gespeichert werden soll.&lt;/p&gt;&lt;p&gt;Wählen Sie eine der folgenden Optionen:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note: Syncing to CPAP session starting time will always be more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hinweis: Synchronisieren Sie die CPAP-Sitzungs- Startzeit. Danach wird das Ergebnis immer genauer sein.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Choose CPAP session to sync to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie aus um die CPAP-Sitzung zu synchronisieren:</translation>
     </message>
     <message>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>You can manually adjust the time here if required:</source>
-        <translation type="unfinished"></translation>
+        <translation>Falls erforderlich, können Sie hier die Zeit manuell einstellen:</translation>
     </message>
     <message>
         <source>HH:mm:ssap</source>
-        <translation type="unfinished"></translation>
+        <translation>HH:mm:ssap</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schließen</translation>
     </message>
     <message>
         <source>&amp;Information Page</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Informationsseite</translation>
     </message>
     <message>
         <source>&amp;Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wiederholen</translation>
     </message>
     <message>
         <source>&amp;Choose Session</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wählen Sie die Sitzung</translation>
     </message>
     <message>
         <source>&amp;End Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aufnahme Beenden</translation>
     </message>
     <message>
         <source>&amp;Sync and Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sync und Speichern</translation>
     </message>
     <message>
         <source>&amp;Save and Finish</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Speichern und Beenden</translation>
     </message>
     <message>
         <source>&amp;Start</source>
-        <translation type="unfinished">&amp;Start</translation>
+        <translation>&amp;Start</translation>
     </message>
     <message>
         <source>Scanning for compatible oximeters</source>
-        <translation type="unfinished"></translation>
+        <translation>Scannen von kompatieblen Oximetern</translation>
     </message>
     <message>
         <source>Could not detect any connected oximeter devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte keine angeschlossenen Oximeter Geräte erkennen.</translation>
     </message>
     <message>
         <source>Connecting to %1 Oximeter</source>
-        <translation type="unfinished"></translation>
+        <translation>Anschließen an ein %1 Oximeter</translation>
     </message>
     <message>
         <source>Select upload option on %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie eine Uploadfunktion %1</translation>
     </message>
     <message>
         <source>Waiting for you to start the upload process...</source>
-        <translation type="unfinished"></translation>
+        <translation>Warten Sie bis der Uploadvorgang startet...</translation>
     </message>
     <message>
         <source>%1 device is uploading data...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Gerät Hochladen von Daten...</translation>
     </message>
     <message>
         <source>Please wait until oximeter upload process completes. Do not unplug your oximeter.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte warten Sie, bis der Oximeter Upload-Vorgang abgeschlossen ist. Nicht das Oximeter trennen.</translation>
     </message>
     <message>
         <source>Oximeter import completed..</source>
-        <translation type="unfinished"></translation>
+        <translation>Oximerterdatenimport abgeschlossen..</translation>
     </message>
     <message>
         <source>Select a valid oximetry data file</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie eine gültige Oximetriedatendatei aus</translation>
     </message>
     <message>
         <source>No Oximetery module could parse the given file:</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Oximetery Modul konnte die angegebene Datei nicht analysieren:</translation>
     </message>
     <message>
         <source>Oximeter not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Oximeter angeschlossen</translation>
     </message>
     <message>
         <source>Couldn&apos;t access oximeter</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte nicht auf das Oxiimeter zugreifen</translation>
     </message>
     <message>
         <source>Live Oximetery Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Live Oximetrie Modus</translation>
     </message>
     <message>
         <source>Starting up...</source>
-        <translation type="unfinished"></translation>
+        <translation>Sarten Sie...</translation>
     </message>
     <message>
         <source>If you can still read this after a few seconds, cancel and try again</source>
-        <translation type="unfinished"></translation>
+        <translation>Sollte der Vorgang zu lange dauern, starten Sie Ihn nach ein paar Sekunden erneut</translation>
     </message>
     <message>
         <source>Live Import Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>Live Import stoppen</translation>
     </message>
     <message>
         <source>Live Oximetery Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>Live Oximetrie stoppen</translation>
     </message>
     <message>
         <source>Live Oximetery import has been stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>Live-Oximetrie-Import wurde gestoppt</translation>
     </message>
     <message>
         <source>%1 session(s) on %2, starting at %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Sitzung(en) an %2, Starten ab %3</translation>
     </message>
     <message>
         <source>No CPAP data available on %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine CPAP Daten auf%1 verfügbar</translation>
     </message>
     <message>
         <source>%1</source>
-        <translation type="unfinished">%1% {1?}</translation>
+        <translation>%1</translation>
     </message>
     <message>
         <source>Recording...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahme...</translation>
     </message>
     <message>
         <source>Finger not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Fingerchlip angeschlossen</translation>
     </message>
     <message>
         <source>I want to use the time my computer recorded for this live oximetry session.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ich möchte die Zeit von meinem Computer für diese Live-Oxymetrie-Sitzung benutzen.</translation>
     </message>
     <message>
         <source>I need to set the time manually, because my oximeter doesn&apos;t have an internal clock.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ich muss die Zeit manuell einstellen, denn mein Oximeter hat keine eigebaute Uhr.</translation>
     </message>
     <message>
         <source>Something went wrong getting session data</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Fehler ist immer wenn Sitzungs-Daten nicht übereinstimmen</translation>
     </message>
     <message>
         <source>CMS50 Session %1</source>
-        <translation type="unfinished"></translation>
+        <translation>CMS50 Sitzung %1</translation>
     </message>
     <message>
         <source>Oximetry Files (*.spo *.spor *.spo2 *.dat)</source>
-        <translation type="unfinished"></translation>
+        <translation>Oximetriedateiendungen (*.spo *.spor *.dat)</translation>
     </message>
 </context>
 <context>
@@ -3455,27 +3476,27 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Oximetery Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Oximetereinstellungen</translation>
     </message>
     <message>
         <source>Contec CMS50D+</source>
-        <translation type="unfinished"></translation>
+        <translation>Contec CMS50D+</translation>
     </message>
     <message>
         <source>Contec CMS50E/F</source>
-        <translation type="unfinished"></translation>
+        <translation>Contec CMS50E/F</translation>
     </message>
     <message>
         <source>Contec CMS50F v3.7</source>
-        <translation type="unfinished"></translation>
+        <translation>Contec CMS50F v3.7</translation>
     </message>
     <message>
         <source>Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Abschalten der automatischen Backups ist keine gute Idee, weil SleepyHead Dieses braucht, um die Datenbank neu zu erstellen, wenn Fehler gefunden wurden.</translation>
     </message>
     <message>
         <source>Are you really sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sind Sie wirklich sicher, dass Sie das tun wollen?</translation>
     </message>
     <message>
         <source>Show in Event Breakdown Piechart</source>
@@ -3483,11 +3504,11 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>#1</source>
-        <translation type="unfinished"></translation>
+        <translation>#1</translation>
     </message>
     <message>
         <source>#2</source>
-        <translation type="unfinished"></translation>
+        <translation>#2</translation>
     </message>
     <message>
         <source>This experimental option attempts to use SleepyHead&apos;s event flagging system to improve machine detected event positioning.</source>
@@ -3682,7 +3703,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Create new profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Profil erstellen</translation>
     </message>
 </context>
 <context>
@@ -3709,7 +3730,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>??</source>
-        <translation>??</translation>
+        <translation type="vanished">??</translation>
     </message>
     <message>
         <source>AI</source>
@@ -5100,7 +5121,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>Severety (0-1)</source>
-        <translation>Außergewöhnliche Schwere (0-1)</translation>
+        <translation type="vanished">Außergewöhnliche Schwere (0-1)</translation>
     </message>
     <message>
         <source>Degrees</source>
@@ -5260,111 +5281,119 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>Unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbekannt.</translation>
     </message>
     <message>
         <source>Litres</source>
-        <translation type="unfinished"></translation>
+        <translation>Liter</translation>
     </message>
     <message>
         <source>ml</source>
-        <translation type="unfinished"></translation>
+        <translation>ml</translation>
     </message>
     <message>
         <source>No Data Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Daten verfügbar</translation>
     </message>
     <message>
         <source>Launching Windows Explorer failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Starten vom Windows Explorer ist gescheitert</translation>
     </message>
     <message>
         <source>Could not find explorer.exe in path to launch Windows Explorer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorer.exe konnte nicht den Pfad im Windows-Explorer starten.</translation>
     </message>
     <message>
         <source>SleepyHead (%1) needs to upgrade its database for %2 %3 %4</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead (%1) braucht, um seine Datenbank zu aktualisieren %2 %3 %4</translation>
     </message>
     <message>
         <source>&lt;b&gt;SleepyHead maintains a backup of your devices data card that it uses for this purpose.&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt; SleepyHead hält eine Sicherung der Geräte-Datenkarte, die es für diesen Zweck verwendet. &lt;/ b&gt;</translation>
     </message>
     <message>
         <source>&lt;i&gt;Your old machine data should be regenerated provided this backup feature has not been disabled in preferences during a previous data import.&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt; Ihre alten Gerätedaten sollten regeneriert werden. Sie haben die Backup-Funktion während eines früheren Datenimports nicht deaktiviert. &lt;/ i&gt;</translation>
     </message>
     <message>
         <source>SleepyHead does not yet have any automatic card backups stored for this device.</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead verfügt noch nicht über alle für dieses Gerät gespeicherten automatischen Karten Backups.</translation>
     </message>
     <message>
         <source>This means you will need to import this machine data again afterwards from your own backups or data card.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das heißt, Sie müssen diese Gerätedaten danach wieder von Ihren eigenen Backups oder Datenkarte importieren.</translation>
     </message>
     <message>
         <source>Important:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wichtig:</translation>
     </message>
     <message>
         <source>Once you upgrade, you &lt;font size=+1&gt;can not&lt;/font&gt; use this profile with the previous version anymore.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn Sie ein Upgrade beauftragen, können Sie &lt;font size=+1&gt; nicht &lt;/ font&gt; dieses Profil verwenden mehr mit der vorherigen Version.</translation>
     </message>
     <message>
         <source>If you are concerned, click No to exit, and backup your profile manually, before starting SleepyHead again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn Sie besorgt sind, klicken Sie auf Nein, um Ihr Profil manuell zu beenden und starten Sie ein Backup, bevor Sie Schlafmütze wieder verwenden.</translation>
     </message>
     <message>
         <source>Are you ready to upgrade, so you can run the new version of SleepyHead?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie können Sie die neue Version von Sleepyhead benutzen. Sind Sie bereit für ein Upgrade?</translation>
     </message>
     <message>
         <source>Rebuilding from %1 Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederaufbau von%1-Backup</translation>
     </message>
     <message>
         <source>Would you like to switch on automatic backups, so next time a new version of SleepyHead needs to do so, it can rebuild from these?</source>
-        <translation type="unfinished"></translation>
+        <translation>Möchten Sie auf automatische Sicherungen wechseln, so dass beim nächsten Mal, wenn Sie eine neue Version von SleepyHead benutzen, diese wieder aufgebaut wird?</translation>
     </message>
     <message>
         <source>SleepyHead will now start the import wizard so you can reinstall your %1 data.</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead wird nun den Import-Assistenten starten, so dass Sie Ihre%1 Daten neu installieren können.</translation>
     </message>
     <message>
         <source>SleepyHead will now exit, then (attempt to) launch your computers file manager so you can manually back your profile up:</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead wird jetzt beendet, versuchen Sie Ihren Dateimanager zu starten, so dass Sie Ihr Profil manuell zurück holen:</translation>
     </message>
     <message>
         <source>Use your file manager to make a copy of your profile directory, then afterwards, restart Sleepyhead and complete the upgrade process.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwenden Sie Ihren Datei-Manager um eine Kopie von Ihrem Profilverzeichnis zu machen, danach starten Sie Sleepyhead und führen den Upgrade-Prozess zu Ende.</translation>
     </message>
     <message>
         <source>Vibratory Snore (VS2) </source>
-        <translation type="unfinished"></translation>
+        <translation>Vibrations-Schnarchen (VS2) </translation>
     </message>
     <message>
         <source>There is a lockfile already present for profile &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Es ist eine bereits für Ihr Profil vorliegende Sperrdatei &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>You can only work with one instance of an individual SleepyHead profile at a time.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie können nur mit einer Instanz eines einzelnen SleepyHead-Profils zur gleichen Zeit arbeiten.</translation>
     </message>
     <message>
         <source>Please close any other instances of SleepyHead running with this profile before proceeding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte schließen Sie alle anderen Instanzen von Sleepyhead mit diesem Profil, bevor Sie fortfahren.</translation>
     </message>
     <message>
         <source>If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn keine anderen Instanzen von Sleepyhead ausgeführt werden (z. B., Absturz beim letzten startenl!),können Sie diese Nachricht ignorieren.</translation>
     </message>
     <message>
         <source>There is a lockfile already present for this profile &apos;%1&apos;, claimed on &apos;%2&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Es ist ein bereits für dieses Profil vorhanden Sperrdatei &apos;%1&apos;, behauptete auf &apos;%2&apos;.</translation>
     </message>
     <message>
         <source>If you are using cloud storage, make sure SleepyHead is closed and syncing has completed first on the other computer before proceeding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn Sie mit Cloud-Storage arbeiten, stellen Sie sicher das Sleepyhead auf den anderen PC geschlossen ist. Sie müssen warten bis die Syncronisierung mit dem anderen PC abgeschlossen ist.</translation>
+    </message>
+    <message>
+        <source>?</source>
+        <translation>?</translation>
+    </message>
+    <message>
+        <source>Severity (0-1)</source>
+        <translation>Außergewöhnliche Schwere (0-1)</translation>
     </message>
 </context>
 <context>
