@@ -270,6 +270,8 @@ EventDataType *FlowParser::applyFilters(EventDataType *data, int samples)
 
     return out;
 }
+
+// Opens the flow rate EventList, applies the input filter chain, and calculates peaks
 void FlowParser::openFlow(Session *session, EventList *flow)
 {
     if (!flow) {
@@ -286,8 +288,7 @@ void FlowParser::openFlow(Session *session, EventList *flow)
 
     // Make sure we won't overflow internal buffers
     if (m_samples > max_filter_buf_size) {
-        qDebug() <<
-                 "Error: Sample size exceeds max_filter_buf_size in FlowParser::openFlow().. Capping!!!";
+        qDebug() << "Error: Sample size exceeds max_filter_buf_size in FlowParser::openFlow().. Capping!!!";
         m_samples = max_filter_buf_size;
     }
 
@@ -304,6 +305,7 @@ void FlowParser::openFlow(Session *session, EventList *flow)
     // Apply the rest of the filters chain
     buf = applyFilters(m_filtered, m_samples);
 
+    // Scan for and create an index of each breath
     calcPeaks(m_filtered, m_samples);
 }
 
@@ -330,8 +332,11 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
 
     // Estimate storage space needed using typical average breaths per minute.
     m_minutes = double(m_flow->last() - m_flow->first()) / 60000.0;
-    const double avgbpm = 20;
+
+    const double avgbpm = 20; // average breaths per minute of a standard human
     int guestimate = m_minutes * avgbpm;
+
+    // reserve some memory
     breaths.reserve(guestimate);
 
     // Prime min & max, and see which side of the zero line we are starting from.
@@ -340,13 +345,13 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
     lastc = c;
     m_startsUpper = (c >= zeroline);
 
-    qint32 start = 0, middle = 0; //,end=0;
+    qint32 start = 0, middle = 0;
 
 
     int sps = 1000 / m_rate;
-    int len = 0, lastk = 0; //lastlen=0
+    int len = 0, lastk = 0;
 
-    qint64 sttime = time; //, ettime=time;
+    qint64 sttime = time;
 
     // For each samples, find the peak upper and lower breath components
     for (int k = 0; k < samples; k++) {
@@ -362,12 +367,11 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
                 if ((max > 3) && ((max - min) > 8) && (len > sps) && (middle > start))  {
 
                     // peak detection may not be needed..
-                    breaths.push_back(BreathPeak(min, max, start, middle, k)); //, peakmin, peakmax));
+                    breaths.push_back(BreathPeak(min, max, start, middle, k));
 
                     // Set max for start of the upper breath cycle
                     max = c;
                     peakmax = time;
-
 
                     // Starting point of next breath cycle
                     start = k;
@@ -500,7 +504,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
     if (calcMv) {
         MV = m_session->AddEventList(CPAP_MinuteVent, EVL_Event);
-        MV->setGain(0.125);
+        MV->setGain(0.125); // gain set to 1/8th
     }
 
     EventDataType sps = (1000.0 / m_rate); // Samples Per Second
@@ -509,18 +513,14 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     qint32 timeval = 0; // Time relative to start
 
 
-
     BreathPeak * bpstr = breaths.data();
     BreathPeak * bpend = bpstr + nm;
+
+    // For each breath...
     for (BreathPeak * bp = bpstr; bp != bpend; ++bp) {
         bs = bp->start;
         bm = bp->middle;
         be = bp->end;
-
-//    for (idx = 0; idx < nm; idx++) {
-//        bs = breaths[idx].start;
-//        bm = breaths[idx].middle;
-//        be = breaths[idx].end;
 
         // Calculate start, middle and end time of this breath
         st = start + bs * m_rate;
@@ -530,15 +530,22 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
         et = start + timeval;
 
-
-
         /////////////////////////////////////////////////////////////////////
         // Calculate Inspiratory Time (Ti) for this breath
         /////////////////////////////////////////////////////////////////////
         if (calcTi) {
+            // Ti is simply the time between the start of a breath and it's midpoint
+
+            // Note the 50.0 is the gain value, to give it better resolution
+            // (and mt and st are in milliseconds)
             ti = ((mt - st) / 1000.0) * 50.0;
-            ti1 = (lastti2 + lastti + ti) / 3.0;
-            Ti->AddEvent(mt, ti1);
+
+            // Average for a little smoothing
+            ti1 = (lastti2 + lastti + ti * 2) / 4.0;
+
+            Ti->AddEvent(mt, ti1);   // Add the event
+
+            // Track the last two values to use for averaging
             lastti2 = lastti;
             lastti = ti;
         }
@@ -547,9 +554,11 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
         // Calculate Expiratory Time (Te) for this breath
         /////////////////////////////////////////////////////////////////////
         if (calcTe) {
+            // Te is simply the time between the second half of the breath
             te = ((et - mt) / 1000.0) * 50.0;
+
             // Average last three values..
-            te1 = (lastte2 + lastte + te) / 3.0;
+            te1 = (lastte2 + lastte + te * 2 ) / 4.0;
             Te->AddEvent(mt, te1);
 
             lastte2 = lastte;
@@ -569,13 +578,29 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
                 val2 += c;
                 //val2+=c*c; // for RMS
             }
+            tv = val2;
+
+            bool usebothhalves = false;
+            if (usebothhalves) {
+                for (int j = bm; j < be; j++)  {
+                    // convert flow to ml/s to L/min and divide by samples per second
+                    c = double(qAbs(m_filtered[j])) * 1000.0 / 60.0 / sps;
+                    val1 += c;
+                    //val1 += c*c; // for RMS
+                }
+                tv = (qAbs(val2) + qAbs(val1)) / 2;
+            }
+
+            // Add the other half here and average might make it more accurate
+            // But last time I tried it was pretty messy
+
+            // Perhaps needs a bit of history averaging..
 
             // calculate root mean square
             //double n=bm-bs;
             //double q=(1/n)*val2;
             //double x=sqrt(q)*2;
             //val2=x;
-            tv = val2;
 
             if (tv < mintv) { mintv = tv; }
 
@@ -600,17 +625,12 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
             len = et - stmin;
             rr = 0;
             len2 = 0;
-            //if ( len >= minute) {
-            //et2=et;
 
             // Step back through last minute and count breaths
             BreathPeak *bpstr1 = bpstr-1;
             for (BreathPeak *p = bp; p != bpstr1; --p) {
                 st2 = start + double(p->start) * m_rate;
                 et2 = start + double(p->end) * m_rate;
-//            for (int i = idx; i >= 0; i--) {
-//                st2 = start + double(breaths[i].start) * m_rate;
-//                et2 = start + double(breaths[i].end) * m_rate;
 
                 if (et2 < stmin) {
                     break;
@@ -652,13 +672,13 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
             *rr_dptr++ = rr * 5.0;
             rr_count++;
-
-            //rr->AddEvent(et,br * 50.0);
-            //}
         }
 
         if (calcMv && calcResp && calcTv) {
+            // Minute Ventilation is tidal volume times respiratory rate
             mv = (tv / 1000.0) * rr;
+
+            // The 8.0 is the gain of the MV EventList to boost resolution
             MV->AddEvent(et, mv * 8.0);
         }
     }

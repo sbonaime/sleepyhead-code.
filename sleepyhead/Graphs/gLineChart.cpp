@@ -191,9 +191,6 @@ QString gLineChart::getMetaString(ChannelID code, qint64 xpos)
             }
         }
 
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(xpos);
-
-        text = dt.toString("MMM dd - HH:mm:ss:zzz")+" "+text;
         lastcode = code;
         lasttime = xpos;
         lasttext = text;
@@ -276,14 +273,26 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     if (p_profile->appearance->lineCursorMode()) {
         qint64 time = w.currentTime();
 
+
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
+
+        QString text = dt.toString("MMM dd - HH:mm:ss:zzz");
+
+
         if ((time > minx) && (time < maxx)) {
             double xpos = (time - minx) * xmult;
             painter.setPen(QPen(QBrush(QColor(0,255,0,255)),1));
             painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
         }
 
-
-        QString text = getMetaString(m_codes[0], time);
+        //QString text = getMetaString(m_codes[0], time);
+        for (int i=0; i<m_codes.size(); ++i) {
+            ChannelID code = m_codes[i];
+            if (m_day->channelHasData(code)) {
+                EventDataType val = m_day->lookupValue(code, time);
+                text += " "+QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
+            }
+        }
 
         int wid, h;
         GetTextExtent(text, wid, h);

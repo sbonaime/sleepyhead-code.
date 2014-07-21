@@ -1423,6 +1423,7 @@ bool PRS1SessionData::ParseWaveforms()
             continue;
         }
         quint64 ti = quint64(waveform->timestamp) * 1000L;
+        qint64 dur = qint64(waveform->duration) * 1000L;
 
         if (num > 1) {
             // Process interleaved samples
@@ -1439,19 +1440,19 @@ bool PRS1SessionData::ParseWaveforms()
             } while (pos < size);
 
             if (data[0].size() > 0) {
-                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  data[0].size());
-                flow->AddWaveform(ti, (char *)data[0].data(), data[0].size(), waveform->duration);
+                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[0].size());
+                flow->AddWaveform(ti, (char *)data[0].data(), data[0].size(), dur);
             }
 
             if (data[1].size() > 0) {
-                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  data[1].size());
-                pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), waveform->duration);
+                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[1].size());
+                pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), dur);
             }
 
         } else {
             // Non interleaved, so can process it much faster
-            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, (waveform->duration * 1000.0) /  waveform->m_data.size());
-            flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), waveform->duration);
+            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / waveform->m_data.size());
+            flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), dur);
         }
     }
     return true;
