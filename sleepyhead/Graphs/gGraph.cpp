@@ -696,8 +696,8 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     int x2 = m_graphview->pointClicked().x() - m_rect.left();
 
-    int w = m_rect.width() - (left + right);
-    //int h=m_lastbounds.height()-(bottom+m_marginbottom);
+    int w = m_rect.width() - left - right;
+
     double xx = max_x - min_x;
     double xmult = xx / w;
 

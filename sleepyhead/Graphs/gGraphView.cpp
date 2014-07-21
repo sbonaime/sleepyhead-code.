@@ -1982,10 +1982,15 @@ void gGraphView::refreshTimeout()
 }
 void gGraphView::timedRedraw(int ms)
 {
-    if (!timer->isActive()) {
-        timer->setSingleShot(true);
-        timer->start(ms);
+
+    if (timer->isActive()) {
+        int m = timer->remainingTime();
+        if (m > ms) {
+            timer->stop();
+        } else return;
     }
+    timer->setSingleShot(true);
+    timer->start(ms);
 }
 void gGraphView::resetLayout()
 {

@@ -160,8 +160,7 @@ EventDataType gLineChart::Maxy()
 bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event)
-    if (graph->graphView()->metaSelect())
-        graph->timedRedraw(30);
+    Q_UNUSED(graph)
     return true;
 }
 
@@ -279,7 +278,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if ((time > minx) && (time < maxx)) {
             double xpos = (time - minx) * xmult;
-            painter.setPen(QPen(QBrush(QColor(Qt::gray)),1));
+            painter.setPen(QPen(QBrush(QColor(0,255,0,255)),1));
             painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
         }
 

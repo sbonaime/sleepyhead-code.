@@ -493,6 +493,28 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     lastdaygood = true;
 
+    if (p_profile->appearance->lineCursorMode()) {
+        qint64 time = w.currentTime();
+        double xmult = double(width) / xx;
+
+        if ((time > minx) && (time < maxx)) {
+            double xpos = (time - minx) * xmult;
+            painter.setPen(QPen(QBrush(QColor(0,255,0,255)),1));
+            painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
+        }
+
+
+
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time,Qt::UTC);
+
+        QString text = dt.date().toString(Qt::SystemLocaleLongDate);
+
+        int wid, h;
+        GetTextExtent(text, wid, h);
+        w.renderText(text, left + width/2 - wid/2, top-h+5);
+
+    }
+
     for (int i = 0; i < numcodes; i++) {
         totalcounts[i] = 0;
 

@@ -128,8 +128,9 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
 
-    if (graph->graphView()->metaSelect())
-        graph->timedRedraw(30);
+    if (p_profile->appearance->lineCursorMode()) {
+        graph->timedRedraw(0);
+    }
 
     if (!p_profile->appearance->graphTooltips()) {
         return false;
