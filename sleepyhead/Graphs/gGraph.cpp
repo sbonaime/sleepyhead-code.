@@ -671,6 +671,11 @@ void gGraph::timedRedraw(int ms)
     m_graphview->timedRedraw(ms);
 }
 
+qint64 gGraph::currentTime() const
+{
+    return m_graphview->currentTime();
+}
+
 void gGraph::mouseMoveEvent(QMouseEvent *event)
 {
     // qDebug() << m_title << "Move" << event->pos() << m_graphview->pointClicked();
@@ -695,6 +700,21 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     //int h=m_lastbounds.height()-(bottom+m_marginbottom);
     double xx = max_x - min_x;
     double xmult = xx / w;
+
+    {
+        xmult = (m_blockzoom ? (rmax_x - rmin_x) : (max_x - min_x)) / w;
+
+        double  a = x;
+
+        if (a < left) a = left;
+        if (a > left+w) a = left+w;
+
+        a -= left;
+        a *= xmult;
+        a += m_blockzoom ? rmin_x : min_x;
+
+        m_graphview->setCurrentTime(a);
+    }
 
     if (m_graphview->m_selected_graph == this) {  // Left Mouse button dragging
         if (event->buttons() & Qt::LeftButton) {

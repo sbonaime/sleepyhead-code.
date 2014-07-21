@@ -275,24 +275,20 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
     if (w.graphView()->metaSelect()) {
+        qint64 time = w.currentTime();
 
-
-        QPoint mouse = w.graphView()->currentMousePos();
-        double pos = mouse.x() - left;
-        if (pos > 0) {
-            qint64 xpos = minx + (pos * (xx / double(width)));
-
+        if ((time > minx) && (time < maxx)) {
+            double xpos = (time - minx) * xmult;
             painter.setPen(QPen(QBrush(QColor(Qt::gray)),1));
-            painter.drawLine(mouse.x(), top-w.marginTop()-3, mouse.x(), top+height+w.bottom-1);
-
-
-            QString text = getMetaString(CPAP_Pressure, xpos);
-
-            int wid, h;
-            GetTextExtent(text, wid, h);
-            w.renderText(text, left + width/2 - wid/2, top-h+5);
-
+            painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
         }
+
+
+        QString text = getMetaString(m_codes[0], time);
+
+        int wid, h;
+        GetTextExtent(text, wid, h);
+        w.renderText(text, left + width/2 - wid/2, top-h+5);
 
     }
 

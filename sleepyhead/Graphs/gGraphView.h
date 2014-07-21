@@ -374,6 +374,11 @@ class gGraphView
     //! \brief Used internally by graph mousehandler to set modifier state
     void setMetaSelect(bool b) { m_metaselect = b; }
 
+    //! \brief The current time the mouse pointer is hovering over
+    inline qint64 currentTime() { return m_currenttime; }
+
+    inline void setCurrentTime(qint64 time) { m_currenttime = time; }
+
     inline QPoint currentMousePos() const { return m_mouse; }
 
     // for profiling purposes, a count of lines drawn in a single frame
@@ -489,6 +494,8 @@ class gGraphView
     bool m_blockUpdates;
 
     QPoint m_mouse;
+    qint64 m_currenttime;
+
 
     QTime m_animationStarted;
 

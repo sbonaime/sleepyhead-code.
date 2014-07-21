@@ -104,6 +104,9 @@ class gGraph : public QObject
     //! \brief Returns true if none of the included layers have data attached
     bool isEmpty();
 
+    qint64 currentTime() const;
+
+
     //! \brief Add Layer l to graph object, allowing you to specify position,
     //         margin sizes, order, movability status and offsets
     void AddLayer(Layer *l, LayerPosition position = LayerCenter,
