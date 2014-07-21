@@ -692,11 +692,12 @@ void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, Event
 {
     int numbreaths = breaths.size();
     EventDataType val, mx, mn;
-    QVector<EventDataType> br;
 
+    QVector<EventDataType> br;
     QVector<qint32> bstart;
     QVector<qint32> bend;
 
+    // Allocate some memory beforehand so it doesn't have to slow it down mid calculations
     bstart.reserve(numbreaths * 2);
     bend.reserve(numbreaths * 2);
     br.reserve(numbreaths * 2);
@@ -707,96 +708,125 @@ void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, Event
 
     bool allowDuplicates = p_profile->cpap->userEventDuplicates();
 
+    // Get the Breath list, which is calculated by the previously run breath marker algorithm.
     BreathPeak *bpstr = breaths.data();
     BreathPeak *bpend = bpstr + numbreaths;
 
+    // Create a list containing the abs of min and max waveform flow for each breath
     for (BreathPeak *p = bpstr; p != bpend; ++p) {
         br.push_back(qAbs(p->max));
         br.push_back(qAbs(p->min));
     }
 
+    // The following ignores the outliers to get a cleaner cutoff value
+    // 60th percentile was chosen because it's a little more than median, and, well, reasons I can't remember specifically.. :-}
+
+    // Look for the 60th percentile of the abs'ed min/max values
     const EventDataType perc = 0.6F;
     int idx = float(br.size()) * perc;
     nth_element(br.begin(), br.begin() + idx, br.end() - 1);
 
+    // Take this value as the peak
     EventDataType peak = br[idx]; ;
 
+    // Scale the restriction percentage to the peak to find the cutoff value
     EventDataType cutoffval = peak * (restriction / 100.0F);
 
     int bs, bm, be, bs1, bm1, be1;
 
+    // For each Breath, search for flow restrictions
     for (BreathPeak *p = bpstr; p != bpend; ++p) {
-        bs = p->start;
-        bm = p->middle;
-        be = p->end;
+
+        // Todo: Define these markers in the comments better
+        bs = p->start;   // breath start
+        bm = p->middle;  // breath middle
+        be = p->end;     // breath end
+
         mx = p->max;
         mn = p->min;
-        val = mx - mn;
 
-        bs1 = bs;
+        val = mx - mn;   // the total height from top to bottom of this breath
 
-        for (; bs1 < be; bs1++) {
+        // Scan the breath in the flow data and stop at the first location more than the cutoff value
+        // (Only really needs to scan to the middle.. I'm not sure why I made it go all the way to the end.)
+        for (bs1 = bs; bs1 < be; bs1++) {
             if (qAbs(m_filtered[bs1]) > cutoffval) {
                 break;
             }
         }
 
-        bm1 = bm;
+        // if bs1 has reached the end, this means the entire marked breath is within the restriction
 
-        for (; bm1 > bs; bm1--) {
+        // Scan backwards from the middle to the start, stopping at the first value past the cutoff value
+        for (bm1 = bm; bm1 > bs; bm1--) {
             if (qAbs(m_filtered[bm1]) > cutoffval) {
                 break;
             }
         }
 
+        // Now check if a value was found in the first half of the breath above the cutoff value
         if (bm1 >= bs1) {
+            // Good breath... And add it as a beginning/end marker for the next stage
             bstart.push_back(bs1);
             bend.push_back(bm1);
-        }
+        } // else we crossed over and the first half of the breath is under the threshold, therefore has a flow restricted
 
-        bm1 = bm;
 
-        for (; bm1 < be; bm1++) {
+        // Now do the other half of the breath....
+
+        // Scan from middle to end of breath, stopping at first cutoff value
+        for (bm1 = bm; bm1 < be; bm1++) {
             if (qAbs(m_filtered[bm1]) > cutoffval) {
                 break;
             }
         }
 
-        be1 = be;
-
-        for (; be1 > bm; be1--) {
+        // Scan backwards from the end to the middle of the breath, stopping at the first cutoff value
+        for (be1 = be; be1 > bm; be1--) {
             if (qAbs(m_filtered[be1]) > cutoffval) {
                 break;
             }
         }
 
+        // Check for crossover again
         if (be1 >= bm1) {
+            // Good strong healthy breath.. add the beginning and end to the breath markers.
             bstart.push_back(bm1);
             bend.push_back(be1);
-        }
+        } // else crossed over again.. breathe damn you!
 
-        st = start + bs1 * m_rate;
-        et = start + be1  * m_rate;
+        // okay, this looks like cruft..
+//        st = start + bs1 * m_rate;
+//        et = start + be1 * m_rate;
     }
 
-    int bsize = bstart.size();
+    int bsize = bstart.size();   // Number of breath components over cutoff threshold
     EventList *uf = nullptr;
 
+    // For each good breath marker, look at the gaps in between
     for (int i = 0; i < bsize - 1; i++) {
-        bs = bend[i];
-        be = bstart[i + 1];
+        bs = bend[i];         // start  at the end of the healthy breath
+        be = bstart[i + 1];   // look ahead to the beginning of the next one
+
+        // Calculate the start and end timestamps
         st = start + bs * m_rate;
         et = start + be * m_rate;
 
+        // Calculate the length of the flow restriction
         len = et - st;
-        dur = len / 1000.0;
+        dur = len / 1000.0; // (scale to seconds, not milliseconds)
 
-        if (dur >= duration) {
+
+        if (dur >= duration) { // is the event greater than the duration threshold?
+
+            // Unless duplicates have been specifically allowed, scan for any apnea's already detected by the machine
             if (allowDuplicates || !SearchApnea(m_session, et, dur)) {
                 if (!uf) {
+                    // Create event list if not already done
                     uf = m_session->AddEventList(code, EVL_Event);
                 }
 
+                // Add the user flag at the end
                 uf->AddEvent(et, dur);
             }
         }
