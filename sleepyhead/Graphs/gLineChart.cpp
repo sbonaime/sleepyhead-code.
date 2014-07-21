@@ -165,6 +165,45 @@ bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     return true;
 }
 
+QString gLineChart::getMetaString(ChannelID code, qint64 xpos)
+{
+    static qint64 lasttime = 0;
+    static ChannelID lastcode = NoChannel;
+    static QString lasttext;
+
+    QString text;
+    if (!((lasttime == xpos) && (lastcode == code))) {
+        EventDataType val = 0, val2 = 0, val3 = 0;
+        if (m_day) {
+            if (code == CPAP_Pressure) {
+                CPAPMode mode = (CPAPMode)round(m_day->settings_wavg(CPAP_Mode));
+                if (mode >= MODE_BIPAP) {
+                    val = m_day->lookupValue(CPAP_EPAP, xpos);
+                    val2 = m_day->lookupValue(CPAP_IPAP, xpos);
+                    val3 = val2 - val;
+                    text=QString("%1: %2 %3 %4:%5 %3 %6:%7 %3").arg(STR_TR_EPAP).arg(val,0,'f',1).arg(STR_UNIT_CMH2O).arg(STR_TR_IPAP).arg(val2,0,'f',1).arg(STR_TR_PS).arg(val3,0,'f',1);
+                } else {
+                    val = m_day->lookupValue(code, xpos);
+                    text = QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
+                }
+            } else {
+                val = m_day->lookupValue(code, xpos);
+                text = QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
+            }
+        }
+
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(xpos);
+
+        text = dt.toString("MMM dd - HH:mm:ss:zzz")+" "+text;
+        lastcode = code;
+        lasttime = xpos;
+        lasttext = text;
+    } else {
+        text = lasttext;
+    }
+
+    return text;
+}
 
 // Time Domain Line Chart
 void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
@@ -236,37 +275,23 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
     if (w.graphView()->metaSelect()) {
+
+
         QPoint mouse = w.graphView()->currentMousePos();
         double pos = mouse.x() - left;
         if (pos > 0) {
             qint64 xpos = minx + (pos * (xx / double(width)));
 
-            EventDataType val = 0, val2 = 0, val3 = 0;
-            QString pressure;
-            if (m_day) {
-                CPAPMode mode = (CPAPMode)round(m_day->settings_wavg(CPAP_Mode));
-                if (mode >= MODE_BIPAP) {
-                    val = m_day->lookupValue(CPAP_EPAP, xpos);
-                    val2 = m_day->lookupValue(CPAP_IPAP, xpos);
-                    val3 = val2 - val;
-                    pressure=QString("%1: %2%3 %4:%5%3 %6:%7%3").arg(STR_TR_EPAP).arg(val,0,'f',1).arg(STR_UNIT_CMH2O).arg(STR_TR_IPAP).arg(val2,0,'f',1).arg(STR_TR_PS).arg(val3,0,'f',1);
-
-                } else {
-                    val = m_day->lookupValue(CPAP_Pressure, xpos);
-                    pressure=QString("%1: %2%3").arg(STR_TR_Pressure).arg(val).arg(STR_UNIT_CMH2O);
-                }
-            }
-
             painter.setPen(QPen(QBrush(QColor(Qt::gray)),1));
             painter.drawLine(mouse.x(), top-w.marginTop()-3, mouse.x(), top+height+w.bottom-1);
 
-            QDateTime dt=QDateTime::fromMSecsSinceEpoch(xpos);
 
-            QString text = dt.toString("MMM dd - HH:mm:ss:zzz")+" "+pressure;
+            QString text = getMetaString(CPAP_Pressure, xpos);
 
             int wid, h;
             GetTextExtent(text, wid, h);
             w.renderText(text, left + width/2 - wid/2, top-h+5);
+
         }
 
     }

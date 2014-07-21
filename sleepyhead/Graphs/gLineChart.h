@@ -82,6 +82,8 @@ class gLineChart: public Layer
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
+    QString getMetaString(ChannelID code, qint64 time);
+
     bool m_report_empty;
     bool m_square_plot;
     bool m_disable_accel;
