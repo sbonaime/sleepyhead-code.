@@ -1301,10 +1301,12 @@ int ResmedLoader::Open(QString path)
 
     backup_path += RMS9_STR_datalog + "/";
 
+#ifdef LOCK_RESMED_SESSIONS
     // Have to sacrifice these features to get access to summary data.
     p_profile->session->setCombineCloseSessions(0);
     p_profile->session->setDaySplitTime(QTime(12,0,0));
     p_profile->session->setIgnoreShortSessions(false);
+#endif
 
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions

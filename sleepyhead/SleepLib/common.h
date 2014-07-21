@@ -139,7 +139,7 @@ extern QString STR_UNIT_Percentage;
 extern QString STR_UNIT_BreathsPerMinute;
 extern QString STR_UNIT_Unknown;
 extern QString STR_UNIT_Ratio;
-extern QString STR_UNIT_Severety;
+extern QString STR_UNIT_Severity;
 extern QString STR_UNIT_Degrees;
 
 extern QString STR_MessageBox_Question;

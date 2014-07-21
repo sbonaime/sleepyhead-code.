@@ -25,6 +25,7 @@ public:
 
     void run();
     void append(QString msg);
+    void appendClean(QString msg);
     bool isRunning() { return running; }
 
     void quit();

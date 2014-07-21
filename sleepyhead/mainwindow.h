@@ -136,6 +136,8 @@ class MainWindow : public QMainWindow
 
     void startImportDialog() { on_action_Import_Data_triggered(); }
 
+    void log(QString text);
+
   public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();

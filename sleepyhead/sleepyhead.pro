@@ -23,6 +23,9 @@ exists($$PWD/../BrokenGL) {
     QT += opengl
 }
 
+#The following forces ResMed session locking.. it *may* not be necessary.. I'm still trying to assess this properly.
+DEFINES += LOCK_RESMED_SESSIONS
+
 #CONFIG += c++11
 CONFIG += rtti
 

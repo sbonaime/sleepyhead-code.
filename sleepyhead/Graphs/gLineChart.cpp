@@ -29,6 +29,7 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     m_line_color = col;
     m_report_empty = false;
     lines.reserve(50000);
+    lasttime = 0;
 }
 gLineChart::~gLineChart()
 {
@@ -164,41 +165,40 @@ bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     return true;
 }
 
-QString gLineChart::getMetaString(ChannelID code, qint64 xpos)
+QString gLineChart::getMetaString(qint64 time)
 {
-    static qint64 lasttime = 0;
-    static ChannelID lastcode = NoChannel;
-    static QString lasttext;
+    lasttext = QString();
+    if (!m_day) return lasttext;
 
-    QString text;
-    if (!((lasttime == xpos) && (lastcode == code))) {
-        EventDataType val = 0, val2 = 0, val3 = 0;
-        if (m_day) {
-            if (code == CPAP_Pressure) {
-                CPAPMode mode = (CPAPMode)round(m_day->settings_wavg(CPAP_Mode));
-                if (mode >= MODE_BIPAP) {
-                    val = m_day->lookupValue(CPAP_EPAP, xpos);
-                    val2 = m_day->lookupValue(CPAP_IPAP, xpos);
-                    val3 = val2 - val;
-                    text=QString("%1: %2 %3 %4:%5 %3 %6:%7 %3").arg(STR_TR_EPAP).arg(val,0,'f',1).arg(STR_UNIT_CMH2O).arg(STR_TR_IPAP).arg(val2,0,'f',1).arg(STR_TR_PS).arg(val3,0,'f',1);
-                } else {
-                    val = m_day->lookupValue(code, xpos);
-                    text = QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
-                }
-            } else {
-                val = m_day->lookupValue(code, xpos);
-                text = QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
+
+    EventDataType val;
+
+    EventDataType ipap = 0, epap = 0;
+    bool addPS = false;
+
+    for (int i=0; i<m_codes.size(); ++i) {
+        ChannelID code = m_codes[i];
+        if (m_day->channelHasData(code)) {
+            val = m_day->lookupValue(code, time);
+            lasttext += " "+QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val,0,'f',2).arg(schema::channel[code].units());
+
+            if (code == CPAP_IPAP) {
+                ipap = val;
+                addPS = true;
+            }
+            if (code == CPAP_EPAP) {
+                epap = val;
             }
         }
 
-        lastcode = code;
-        lasttime = xpos;
-        lasttext = text;
-    } else {
-        text = lasttext;
+    }
+    if (addPS) {
+        val = ipap - epap;
+        lasttext += " "+QString("%1: %2 %3").arg(schema::channel[CPAP_PS].label()).arg(val,0,'f',2).arg(schema::channel[CPAP_PS].units());
     }
 
-    return text;
+    lasttime = time;
+    return lasttext;
 }
 
 // Time Domain Line Chart
@@ -274,25 +274,18 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         qint64 time = w.currentTime();
 
 
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
-
-        QString text = dt.toString("MMM dd - HH:mm:ss:zzz");
-
-
         if ((time > minx) && (time < maxx)) {
             double xpos = (time - minx) * xmult;
             painter.setPen(QPen(QBrush(QColor(0,255,0,255)),1));
             painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
         }
 
-        //QString text = getMetaString(m_codes[0], time);
-        for (int i=0; i<m_codes.size(); ++i) {
-            ChannelID code = m_codes[i];
-            if (m_day->channelHasData(code)) {
-                EventDataType val = m_day->lookupValue(code, time);
-                text += " "+QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val).arg(schema::channel[code].units());
-            }
+        if ((time != lasttime) || lasttext.isEmpty()) {
+            getMetaString(time);
         }
+
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
+        QString text = dt.toString("MMM dd - HH:mm:ss:zzz") + lasttext;
 
         int wid, h;
         GetTextExtent(text, wid, h);

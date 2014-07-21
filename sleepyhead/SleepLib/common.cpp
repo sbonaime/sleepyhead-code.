@@ -123,7 +123,7 @@ QString STR_UNIT_BreathsPerMinute;
 QString STR_UNIT_Percentage;
 QString STR_UNIT_Unknown;
 QString STR_UNIT_Ratio;
-QString STR_UNIT_Severety;
+QString STR_UNIT_Severity;
 QString STR_UNIT_Degrees;
 
 QString STR_MessageBox_Question;
@@ -305,9 +305,9 @@ void initializeStrings()
     STR_UNIT_Litres = QObject::tr("Litres");
     STR_UNIT_ml = QObject::tr("ml");        // millilitres
     STR_UNIT_BreathsPerMinute = QObject::tr("Breaths/min"); // Breaths per minute
-    STR_UNIT_Unknown = QObject::tr("??");
+    STR_UNIT_Unknown = QObject::tr("?");
     STR_UNIT_Ratio = QObject::tr("ratio");
-    STR_UNIT_Severety = QObject::tr("Severety (0-1)");
+    STR_UNIT_Severity = QObject::tr("Severity (0-1)");
     STR_UNIT_Degrees = QObject::tr("Degrees");
 
     STR_MessageBox_Question = QObject::tr("Question");

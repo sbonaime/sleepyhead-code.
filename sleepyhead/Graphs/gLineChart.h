@@ -78,11 +78,12 @@ class gLineChart: public Layer
     //! \brief Enable or Disable the subplot identified by code.
     void setPlotEnabled(ChannelID code, bool b) { m_enabled[code] = b; }
 
+    QString getMetaString(qint64 time);
+
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
-    QString getMetaString(ChannelID code, qint64 time);
 
     bool m_report_empty;
     bool m_square_plot;
@@ -103,6 +104,9 @@ class gLineChart: public Layer
     QHash<ChannelID, bool> m_enabled;
 
     QVector<QLine> lines;
+
+    QString lasttext;
+    qint64 lasttime;
 };
 
 #endif // GLINECHART_H

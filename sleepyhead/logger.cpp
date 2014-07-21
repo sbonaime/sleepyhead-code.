@@ -99,6 +99,14 @@ void LogThread::append(QString msg)
     strlock.unlock();
 }
 
+void LogThread::appendClean(QString msg)
+{
+    strlock.lock();
+    buffer.append(msg);
+    strlock.unlock();
+}
+
+
 void LogThread::quit() {
     qDebug() << "Shutting down logging thread";
     running = false;

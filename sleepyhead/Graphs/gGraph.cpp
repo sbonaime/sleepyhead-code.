@@ -1394,3 +1394,21 @@ int GetXHeight(QFont *font)
     QFontMetrics fm(*font);
     return fm.xHeight();
 }
+
+void gGraph::dumpInfo() {
+    for (int i = 0; i < m_layers.size(); i++) {
+        Layer *ll = m_layers[i];
+
+        if (!ll->visible()) { continue; }
+
+        if (ll->position() == LayerCenter) {
+            gLineChart *lc = dynamic_cast<gLineChart *>(ll);
+            if (lc != nullptr) {
+                QString text = lc->getMetaString(currentTime());
+                if (!text.isEmpty()) {
+                    mainwin->log(text);
+                }
+            }
+        }
+    }
+}

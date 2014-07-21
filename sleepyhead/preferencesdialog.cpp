@@ -71,6 +71,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         }*/
     }
 
+#ifdef LOCK_RESMED_SESSIONS
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
         QString mclass=(*it)->GetClass();
@@ -81,7 +82,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
             break;
         }
     }
-
+#endif
 
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);

@@ -347,6 +347,16 @@ gGraphView::~gGraphView()
     m_graphs.clear();
 }
 
+void gGraphView::dumpInfo()
+{
+    QDateTime dt=QDateTime::fromMSecsSinceEpoch(currentTime());
+    QString text = "==================== Line Cursor Dump ====================\n"+dt.toString("MMM dd - HH:mm:ss:zzz");
+    mainwin->log(text);
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->dumpInfo();
+    }
+}
+
 bool gGraphView::usePixmapCache()
 {
     //use_pixmap_cache is an overide setting
@@ -1844,6 +1854,9 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_F3) {
         p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
         timedRedraw(0);
+    }
+    if (event->key() == Qt::Key_F10) {
+        dumpInfo();
     }
 
     if (event->key() == Qt::Key_Tab) {
