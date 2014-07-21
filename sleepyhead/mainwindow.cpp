@@ -185,6 +185,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     }
 
+    ui->actionToggle_Line_Cursor->setChecked(p_profile->appearance->lineCursorMode());
 
     overview = nullptr;
     daily = nullptr;
@@ -2334,3 +2335,13 @@ void MainWindow::on_importButton_clicked()
     on_action_Import_Data_triggered();
 }
 
+
+void MainWindow::on_actionToggle_Line_Cursor_toggled(bool b)
+{
+    p_profile->appearance->setLineCursorMode(b);
+    if (ui->tabWidget->currentWidget() == getDaily()) {
+        getDaily()->graphView()->timedRedraw(0);
+    } else if (ui->tabWidget->currentWidget() == getOverview()) {
+        getOverview()->graphView()->timedRedraw(0);
+    }
+}

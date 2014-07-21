@@ -313,6 +313,8 @@ class MainWindow : public QMainWindow
 
     void on_changeWarningMessage();
 
+    void on_actionToggle_Line_Cursor_toggled(bool arg1);
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();

@@ -3115,6 +3115,7 @@ border-radius: 10px;
     <addaction name="action_Link_Graph_Groups"/>
     <addaction name="action_Reset_Graph_Layout"/>
     <addaction name="separator"/>
+    <addaction name="actionToggle_Line_Cursor"/>
     <addaction name="action_Sidebar_Toggle"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -3406,6 +3407,17 @@ border-radius: 10px;
   <action name="actionPurgeCurrentDaysOximetry">
    <property name="text">
     <string>Current Days</string>
+   </property>
+  </action>
+  <action name="actionToggle_Line_Cursor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle &amp;Line Cursor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
