@@ -2149,7 +2149,7 @@ Modus: </translation>
         <source>Data successfully imported from the following locations
 
 </source>
-        <translation>Gegevens succesvol geïmporteerd vanaf de volgende locatie
+        <translation>Gegevens succesvol geïmporteerd vanaf
 
 </translation>
     </message>
