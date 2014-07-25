@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>395</height>
+    <width>667</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="welcomePage">
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -51,7 +51,7 @@
              </property>
              <property name="source">
               <url>
-               <string>qrc:/docs/update_notes.html</string>
+               <string>about:blank</string>
               </url>
              </property>
              <property name="openExternalLinks">

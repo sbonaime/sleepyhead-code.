@@ -251,14 +251,18 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
                     R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+                bool haveipap = false;
                 if ((sig = str.lookupSignal(CPAP_IPAP))) {
                     R.ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
                 }
                 if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
                     R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
                 }
                 if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
                     R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
                 }
                 if ((sig = str.lookupSignal(CPAP_PS))) {
                     R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -275,14 +279,34 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
                     R.epr_level = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+
                 if ((sig = str.lookupSignal(CPAP_Mode))) {
                     int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     CPAPMode mode;
 
-                    if (mod >= 7) {       // mod 7 == vpap adapt
-                        mode = MODE_ASV;  // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
+//                    if (R.epap > 0) {
+//                        if (R.max_epap < 0) R.max_epap = R.epap;
+//                        if (R.min_epap < 0) R.min_epap = R.epap;
+//                    }
+//                    if (R.ipap > 0) {
+//                        if (R.max_ipap < 0) R.max_ipap = R.ipap;
+//                        if (R.min_ipap < 0) R.min_ipap = R.ipap;
+//                    }
+
+                    if (mod >= 8) {       // mod 8 == vpap adapt variable epap
+                        mode = MODE_ASV_VARIABLE_EPAP;
+                        if (!haveipap) {
+                            R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
+                        }
+                    } else if (mod >= 7) {       // mod 7 == vpap adapt
+                        mode = MODE_ASV;
+                        if (!haveipap) {
+                            R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
+                        }
+                    } else if (mod >= 6) { // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
+                        mode = MODE_BILEVEL_AUTO_FIXED_PS;
                     } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
-                        mode = MODE_BIPAP;
+                        mode = MODE_BILEVEL_FIXED;
                     } else if (mod >= 1) {
                         mode = MODE_APAP; // mod 1 == apap
                     } else {
@@ -577,6 +601,8 @@ badfile:
 
 void ResmedImport::run()
 {
+    loader->saveMutex.lock();
+
     Session * sess = mach->SessionExists(sessionid);
     if (sess) {
         if (sess->summaryOnly()) {
@@ -584,15 +610,19 @@ void ResmedImport::run()
             sess->wipeSummary();
         } else {
             // Already imported
+            loader->saveMutex.unlock();
             return;
         }
     } else {
         // Could be importing from an older backup.. if so, destroy the summary only records
         quint32 key = int(sessionid / 60) * 60;
+
         sess = mach->SessionExists(key);
         if (sess) {
             if (sess->summaryOnly()) {
+
                 sess->Destroy();
+                //mach->sessionlist.remove(sess->session());
                 delete sess;
             }
         }
@@ -600,6 +630,7 @@ void ResmedImport::run()
         // Create the session
         sess = new Session(mach, sessionid);
     }
+    loader->saveMutex.unlock();
 
     if (!group.EVE.isEmpty()) {
         loader->LoadEVE(sess, group.EVE);
@@ -614,7 +645,11 @@ void ResmedImport::run()
         loader->LoadSAD(sess, group.SAD);
     }
 
-    if (!sess->first()) {
+    if (sess->first() == 0) {
+        //if (mach->sessionlist.contains(sess->session())) {
+        sess->Destroy();
+            //mach->sessionlist.remove(sess->session());
+        //}
         delete sess;
         return;
     }
@@ -1917,7 +1952,7 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
         } else if (matchSignal(CPAP_IPAP, es.label)) {
             code = CPAP_IPAP;
-            sess->settings[CPAP_Mode] = MODE_BIPAP;
+            sess->settings[CPAP_Mode] = MODE_BILEVEL_FIXED;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);

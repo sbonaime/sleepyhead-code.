@@ -137,7 +137,7 @@ public:
         \brief Saves any journal changes for the provided date.
         \param QDate date
         */
-    void Unload(QDate date);
+    void Unload(QDate date=QDate());
 
 private slots:
 

@@ -739,6 +739,10 @@ void Daily::UpdateCalendarDay(QDate date)
 }
 void Daily::LoadDate(QDate date)
 {
+    if (!date.isValid()) {
+        qDebug() << "LoadDate called with invalid date";
+        return;
+    }
     ui->calendar->blockSignals(true);
     if (date.month()!=previous_date.month()) {
         on_calendar_currentPageChanged(date.year(),date.month());
@@ -1027,74 +1031,11 @@ QString Daily::getCPAPInformation(Day * cpap)
 
     html+=tooltip;
     html+="</span></td></tr>\n";
-    CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
+    //CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
     html+="<tr><td colspan=4 align=center>";
 
-
-    QString modestr;
-
-    if (mode==MODE_CPAP) modestr=STR_TR_CPAP;
-    else if (mode==MODE_APAP) modestr=STR_TR_APAP;
-    else if (mode==MODE_BIPAP) modestr=STR_TR_BiLevel;
-    else if (mode==MODE_ASV) modestr=STR_TR_ASV;
-    else modestr=STR_TR_Unknown;
-    html+=tr("PAP Mode: %1<br/>").arg(modestr);
-
-    if (mode==MODE_CPAP) {
-        EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
-        // eg: Pressure: 13cmH2O
-        html+=QString("%1: %2%3").arg(STR_TR_Pressure).arg(min).arg(STR_UNIT_CMH2O);
-    } else if (mode==MODE_APAP) {
-        EventDataType min=cpap->settings_min(CPAP_PressureMin);
-        EventDataType max=cpap->settings_max(CPAP_PressureMax);
-        // eg: Pressure: 7.0-10.0cmH2O
-        html+=QString("%1: %2-%3%4").arg(STR_TR_Pressure).arg(min,0,'f',1).arg(max,0,'f',1).arg(STR_UNIT_CMH2O);
-    } else if (mode>=MODE_BIPAP) {
-        if (cpap->settingExists(CPAP_EPAPLo)) {
-            html+=QString(STR_TR_EPAPLo+": %1")
-                    .arg(cpap->settings_min(CPAP_EPAPLo),0,'f',1);
-
-            if (cpap->settingExists(CPAP_EPAPHi)) {
-                    html+=QString("-%2")
-                    .arg(cpap->settings_max(CPAP_EPAPHi),0,'f',1);
-            }
-            html+=STR_UNIT_CMH2O+"</br>";
-        } else if (cpap->settingExists(CPAP_EPAP)) {
-            EventDataType epap=cpap->settings_min(CPAP_EPAP);
-
-            html+=QString("%1: %2%3<br/>").arg(STR_TR_EPAP)
-                    .arg(epap,0,'f',1)
-                    .arg(STR_UNIT_CMH2O);
-
-            if (!cpap->settingExists(CPAP_IPAPHi)) {
-                if (cpap->settingExists(CPAP_PSMax)) {
-                    html+=QString("%1: %2%3<br/>").arg(STR_TR_IPAPHi)
-                        .arg(epap+cpap->settings_max(CPAP_PSMax),0,'f',1)
-                        .arg(STR_UNIT_CMH2O);
-
-                }
-            }
-        }
-        if (cpap->settingExists(CPAP_IPAPHi)) {
-            html+=QString(STR_TR_IPAPHi+": %1"+STR_UNIT_CMH2O+"<br/>")
-                    .arg(cpap->settings_max(CPAP_IPAPHi),0,'f',1);
-        } else
-        if (cpap->settingExists(CPAP_IPAP)) {
-            html+=QString(STR_TR_IPAP+": %1"+STR_UNIT_CMH2O+"<br/>")
-                    .arg(cpap->settings_max(CPAP_IPAP),0,'f',1);
-        }
-
-        if (cpap->settingExists(CPAP_PSMin)) {
-                    EventDataType psl=cpap->settings_min(CPAP_PSMin);
-                    EventDataType psh=cpap->settings_max(CPAP_PSMax);
-                    html+=QString(STR_TR_PS+": %1-%2"+STR_UNIT_CMH2O+"<br/>")
-                        .arg(psl,0,'f',1)
-                        .arg(psh,0,'f',1);
-        } else if (cpap->settingExists(CPAP_PS)) {
-            html+=QString(STR_TR_PS+": %1"+STR_UNIT_CMH2O+"<br/>")
-                .arg(cpap->settings_max(CPAP_PS),0,'f',1);
-        }
-    }
+    html+=tr("PAP Mode: %1<br/>").arg(cpap->getCPAPMode());
+    html+= cpap->getPressureSettings();
     html+="</td></tr>\n";
     if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
         html+="<tr><td colspan=4>&nbsp;</td></tr>\n";
@@ -1669,6 +1610,13 @@ void Daily::clearLastDay()
 
 void Daily::Unload(QDate date)
 {
+    if (!date.isValid()) {
+        date = getDate();
+        if (!date.isValid()) {
+            graphView()->setDay(nullptr);
+            return;
+        }
+    }
     webView->setHtml("");
     Session *journal=GetJournalSession(date);
 

@@ -43,5 +43,11 @@
         <file>icons/Bob Strikes Back.png</file>
         <file>icons/Jedimark.png</file>
         <file>COPYING</file>
+        <file>icons/sdcard-lock.png</file>
+        <file>icons/statistics.png</file>
+        <file>icons/prs1.png</file>
+        <file>icons/cms50f.png</file>
+        <file>icons/rms9.png</file>
+        <file>icons/intellipap.png</file>
     </qresource>
 </RCC>

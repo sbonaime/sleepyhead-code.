@@ -201,14 +201,29 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                 EventDataType min = cpap->settings_min(CPAP_PressureMin);
                 EventDataType max = cpap->settings_max(CPAP_PressureMax);
                 cpapinfo += STR_TR_APAP + " " + QString::number(min) + "-" + QString::number(max) + STR_UNIT_CMH2O;
-            } else if (mode == MODE_BIPAP) {
+            } else if (mode == MODE_BILEVEL_FIXED) {
                 EventDataType epap = cpap->settings_min(CPAP_EPAP);
                 EventDataType ipap = cpap->settings_max(CPAP_IPAP);
                 EventDataType ps = cpap->settings_max(CPAP_PS);
-                cpapinfo += STR_TR_BiLevel + QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 %3\n" +
-                                                     STR_TR_PS + ": %4")
+                cpapinfo += STR_TR_BiLevel +
+                        QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 %3\n" + STR_TR_PS + ": %4")
                             .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
-            } else if (mode == MODE_ASV) {
+            } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+                EventDataType epap = cpap->settings_min(CPAP_EPAP);
+                EventDataType ipap = cpap->settings_max(CPAP_IPAP);
+                EventDataType ps = cpap->settings_max(CPAP_PS);
+                cpapinfo += STR_TR_BiLevel +
+                        QString("\n" + QObject::tr("Range")+ ": %1-%2 %3 " + QObject::tr("Fixed %1").arg(STR_TR_PS) + ": %4")
+                            .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
+            } /*else if (mode == MODE_BILEVEL_AUTO_FIXED_EPAP_VARIABLE_PS) {
+                EventDataType epap = cpap->settings_min(CPAP_EPAP);
+                EventDataType ipap = cpap->settings_max(CPAP_IPAPHi);
+                EventDataType psl = cpap->settings_max(CPAP_PSMin);
+                EventDataType psh = cpap->settings_max(CPAP_PSMax);
+                cpapinfo += STR_TR_BiLevel +
+                        QString("\n" + QObject::tr("Fixed %1").arg(STR_TR_EPAP) + ": %1 %3" + QObject::tr("Max %1").arg(STR_TR_IPAP) + ": %2 %3\n" + QObject::tr("Variable %1").arg(STR_TR_PS) + ": %4-%5")
+                            .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(psl,0,'f',1).arg(psh,0,'f',1);
+            } */else if (mode == MODE_ASV) {
                 EventDataType epap = cpap->settings_min(CPAP_EPAP);
                 EventDataType low = cpap->settings_min(CPAP_IPAPLo);
                 EventDataType high = cpap->settings_max(CPAP_IPAPHi);

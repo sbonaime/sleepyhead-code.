@@ -1364,7 +1364,7 @@ bool PRS1SessionData::ParseEvents()
     if (res) {
         if (session->count(CPAP_IPAP) > 0) {
             if (session->settings[CPAP_Mode].toInt() != (int)MODE_ASV) {
-                session->settings[CPAP_Mode] = MODE_BIPAP;
+                session->settings[CPAP_Mode] = MODE_BILEVEL_FIXED;
             }
 
             if (session->settings[CPAP_PresReliefType].toInt() != PR_NONE) {

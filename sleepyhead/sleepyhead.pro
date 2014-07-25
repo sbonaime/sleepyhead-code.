@@ -176,7 +176,8 @@ SOURCES += \
     SleepLib/serialoximeter.cpp \
     SleepLib/loader_plugins/md300w1_loader.cpp \
     Graphs/gSessionTimesChart.cpp \
-    logger.cpp
+    logger.cpp \
+    welcome.cpp
 
 HEADERS  += \
     common_gui.h \

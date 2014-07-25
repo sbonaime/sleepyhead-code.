@@ -620,8 +620,11 @@ border-radius: 0px;</string>
           <property name="pixmap">
            <pixmap resource="Resources.qrc">:/icons/oximeter.png</pixmap>
           </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
           <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
           </property>
          </widget>
         </item>
@@ -644,7 +647,7 @@ border-radius: 0px;</string>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>5</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="welcomePage">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -876,7 +879,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
            </property>
            <property name="icon">
             <iconset resource="Resources.qrc">
-             <normaloff>:/icons/oximeter.png</normaloff>:/icons/oximeter.png</iconset>
+             <normaloff>:/icons/cms50f.png</normaloff>:/icons/cms50f.png</iconset>
            </property>
            <property name="iconSize">
             <size>

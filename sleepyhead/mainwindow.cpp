@@ -262,7 +262,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
     daily = new Daily(ui->tabWidget, nullptr);
-    ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
+    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
 
 
     // Start with the Summary Tab
@@ -405,6 +405,29 @@ void MainWindow::Notify(QString s, QString title, int ms)
     }
 }
 
+class MyStatsPage: public QWebPage
+{
+  public:
+    MyStatsPage(QObject *parent);
+    virtual ~MyStatsPage();
+  protected:
+    //virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
+    virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
+};
+MyStatsPage::MyStatsPage(QObject *parent)
+    : QWebPage(parent)
+{
+}
+MyStatsPage::~MyStatsPage()
+{
+}
+
+void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
+{
+    Q_UNUSED(frame);
+    mainwin->sendStatsUrl(msg);
+}
+
 void MainWindow::PopulatePurgeMenu()
 {
     QList<QAction *> actions = ui->menu_Purge_CPAP_Data->actions();
@@ -426,6 +449,7 @@ void MainWindow::PopulatePurgeMenu()
     }
     ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
 }
+QString GenerateWelcomeHTML();
 
 void MainWindow::Startup()
 {
@@ -449,10 +473,9 @@ void MainWindow::Startup()
     SnapshotGraph->hide();
 
     overview = new Overview(ui->tabWidget, daily->graphView());
-    ui->tabWidget->insertTab(2, overview, STR_TR_Overview);
+    ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
 
-    GenerateStatistics();
-    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+//    GenerateStatistics();
 
     ui->statStartDate->setDate(p_profile->FirstDay());
     ui->statEndDate->setDate(p_profile->LastDay());
@@ -468,6 +491,10 @@ void MainWindow::Startup()
         importCPAPBackups();
         p_profile->p_preferences[STR_PREF_ReimportBackup]=false;
     }
+
+    ui->tabWidget->setCurrentWidget(ui->welcomeTab);
+
+
 }
 
 int MainWindow::importCPAP(const QString &path, const QString &message)
@@ -619,7 +646,7 @@ QStringList MainWindow::detectCPAPCards()
 
     // Create dialog
     QDialog popup(this, Qt::SplashScreen);
-    QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
+    QLabel waitmsg(tr("Please insert your CPAP data card..."));
     QProgressBar progress;
     QVBoxLayout waitlayout;
     popup.setLayout(&waitlayout);
@@ -852,29 +879,6 @@ void MainWindow::on_action_Fullscreen_triggered()
 void MainWindow::setRecBoxHTML(QString html)
 {
     ui->recordsBox->setHtml(html);
-}
-
-class MyStatsPage: public QWebPage
-{
-  public:
-    MyStatsPage(QObject *parent);
-    virtual ~MyStatsPage();
-  protected:
-    //virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
-    virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
-};
-MyStatsPage::MyStatsPage(QObject *parent)
-    : QWebPage(parent)
-{
-}
-MyStatsPage::~MyStatsPage()
-{
-}
-
-void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
-{
-    Q_UNUSED(frame);
-    mainwin->sendStatsUrl(msg);
 }
 
 QString MainWindow::getWelcomeHTML()
@@ -1775,7 +1779,8 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
 
         for (int i = 0; i < list.size(); i++) {
             Session *sess = list.at(i);
-            day->removeSession(sess);
+            sess->machine()->unlinkSession(sess);
+            //day->removeSession(sess);
             delete sess;
         }
 
@@ -1892,23 +1897,28 @@ void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
 {
     QString link = linkurl.toString().section("=", 0, 0).toLower();
-    QString datestr = linkurl.toString().section("=", 1).toLower();
-    qDebug() << linkurl.toString() << link << datestr;
+    QString data = linkurl.toString().section("=", 1).toLower();
+    qDebug() << linkurl.toString() << link << data;
 
     if (link == "daily") {
-        QDate date = QDate::fromString(datestr, Qt::ISODate);
-        daily->LoadDate(date);
+        QDate date = QDate::fromString(data, Qt::ISODate);
         ui->tabWidget->setCurrentWidget(daily);
+        QApplication::processEvents();
+        daily->LoadDate(date);
     } else if (link == "overview") {
-        QString date1 = datestr.section(",", 0, 0);
-        QString date2 = datestr.section(",", 1);
+        QString date1 = data.section(",", 0, 0);
+        QString date2 = data.section(",", 1);
 
         QDate d1 = QDate::fromString(date1, Qt::ISODate);
         QDate d2 = QDate::fromString(date2, Qt::ISODate);
         overview->setRange(d1, d2);
         ui->tabWidget->setCurrentWidget(overview);
+    } else if (link == "import") {
+        if (data == "cpap") on_importButton_clicked();
+        if (data == "oximeter") on_oximetryButton_clicked();
+    } else if (link == "statistics") {
+        ui->tabWidget->setCurrentWidget(ui->statisticsTab);
     }
-
 }
 
 void MainWindow::on_helpButton_clicked()
@@ -2254,6 +2264,13 @@ void MainWindow::GenerateStatistics()
     MyStatsPage *page = new MyStatsPage(this);
     page->currentFrame()->setHtml(html);
     ui->statisticsView->setPage(page);
+
+
+
+    MyStatsPage *page2 = new MyStatsPage(this);
+    page2->currentFrame()->setHtml(GenerateWelcomeHTML());
+    ui->welcomeView->setPage(page2);
+
     //    connect(ui->statisticsView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
     //    QString file="qrc:/docs/index.html";
     //    QUrl url(file);
@@ -2318,11 +2335,13 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
             return;
         }
 
-        QList<Session *> sessions;
-        sessions.append(day->getSessions());
+        QList<Session *> sessionlist;
+        sessionlist.append(day->sessions);
 
-        for (int i=0; i < sessions.size(); ++i) {
-            sessions.at(i)->Destroy();
+        for (int i=0; i < sessionlist.size(); ++i) {
+            Session * sess = sessionlist.at(i);
+            sess->Destroy();
+            delete sess;
         }
 
 

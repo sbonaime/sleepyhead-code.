@@ -52,11 +52,14 @@ Session::Session(Machine *m, SessionID session)
     s_evchecksum_checked = false;
 
     s_summaryOnly = false;
+
+    destroyed = false;
 }
 
 Session::~Session()
 {
     TrashEvents();
+    destroyed = true;
 }
 
 void Session::TrashEvents()
@@ -114,8 +117,7 @@ bool Session::Destroy()
 {
     QString path = p_profile->Get(s_machine->properties[STR_PROP_Path]);
 
-    p_profile->RemoveSession(this);
-    s_machine->sessionlist.erase(s_machine->sessionlist.find(s_session));
+    s_machine->unlinkSession(this);
 
     QDir dir(path);
     QString base;
@@ -1697,6 +1699,7 @@ EventDataType Session::sph(ChannelID id) // sum per hour, assuming id is a time 
 
 EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
 {
+    this->OpenEvents();
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
     if (j == eventlist.end()) {
         return 0.0f;

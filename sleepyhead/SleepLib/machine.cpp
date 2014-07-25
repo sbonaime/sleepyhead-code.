@@ -199,21 +199,67 @@ bool Machine::AddSession(Session *s)
 
     if (combine_next_day) {
         for (QList<Session *>::iterator i = nextday.value()->begin(); i != nextday.value()->end(); i++) {
+            // i may need to do something here
+            unlinkSession(*i);
             dd->AddSession(*i);
         }
 
-        QMap<QDate, QList<Day *> >::iterator nd = p_profile->daylist.find(date.addDays(1));
+//        QMap<QDate, QList<Day *> >::iterator nd = p_profile->daylist.find(date.addDays(1));
+//        if (nd != p_profile->daylist.end()) {
+//            p_profile->unlinkDay(nd.key(), nd.value());
+//        }
 
-        for (QList<Day *>::iterator i = nd->begin(); i != nd->end(); i++) {
-            if (*i == nextday.value()) {
-                nd.value().erase(i);
-            }
-        }
+//        QList<Day *>::iterator iend = nd.value().end();
+//        for (QList<Day *>::iterator i = nd.value()->begin(); i != iend; ++i) {
+//            if (*i == nextday.value()) {
+//                nd.value().erase(i);
+//            }
+//        }
 
-        day.erase(nextday);
+//        day.erase(nextday);
     }
 
     return true;
+}
+
+bool Machine::unlinkDay(Day * d)
+{
+    return day.remove(day.key(d)) > 0;
+}
+
+bool Machine::unlinkSession(Session * sess)
+{
+    // Remove the object from the machine object's session list
+    bool b=sessionlist.remove(sess->session());
+
+    QList<QDate> dates;
+
+    QList<Day *> days;
+    QMap<QDate, Day *>::iterator it;
+
+    Day * d;
+
+    // Doing this in case of accidental double linkages
+    for (it = day.begin(); it != day.end(); ++it) {
+        d = it.value();
+        if (it.value()->sessions.contains(sess)) {
+            days.push_back(d);
+            dates.push_back(it.key());
+        }
+    }
+
+    for (int i=0; i < days.size(); ++i) {
+        d = days.at(i);
+        if (d->sessions.removeAll(sess)) {
+            b=true;
+            if (d->size() == 0) {
+                day.remove(dates[i]);
+                p_profile->unlinkDay(d);
+            }
+        }
+    }
+
+    return b;
 }
 
 // This functions purpose is murder and mayhem... It deletes all of a machines data.
@@ -248,8 +294,9 @@ bool Machine::Purge(int secret)
             qDebug() << "Could not destroy "+ m_class+" ("+properties[STR_PROP_Serial]+") session" << sess->session();
             success = false;
         } else {
-            sessionlist.erase(sessionlist.find(sess->session()));
+//            sessionlist.remove(sess->session());
         }
+
         delete sess;
     }
 

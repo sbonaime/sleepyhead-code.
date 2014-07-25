@@ -43,7 +43,7 @@ bool gLineChart::isEmpty()
         ChannelID code = m_codes[j];
 
         for (int i = 0; i < m_day->size(); i++) {
-            Session *sess = m_day->getSessions()[i];
+            Session *sess = m_day->sessions[i];
 
             if (sess->channelExists(code)) {
                 return false;
@@ -76,7 +76,7 @@ void gLineChart::SetDay(Day *d)
         ChannelID code = m_codes[j];
 
         for (int i = 0; i < d->size(); i++) {
-            Session *sess = d->getSessions()[i];
+            Session *sess = d->sessions[i];
 
             if (code == CPAP_MaskPressure) {
                 if (sess->channelExists(CPAP_MaskPressureHi)) {

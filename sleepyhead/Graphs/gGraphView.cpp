@@ -1292,10 +1292,10 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                 m_horiz_travel += qAbs(x - m_lastxpos) + qAbs(y - m_lastypos);
                 m_lastxpos = x;
                 m_lastypos = y;
-                //           QPoint p(x,y);
-                //           QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
-                m_graphs[i]->mouseMoveEvent(event);
-
+                gGraph *g = m_graphs[i];
+                if (g) {
+                    g->mouseMoveEvent(event);
+                }
 
             }
 
@@ -1371,13 +1371,13 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
     // first handle pinned graphs.
     // Calculate total height of all pinned graphs
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty()
-                || !m_graphs[i]->visible()
-                || !m_graphs[i]->isPinned()) {
+        gGraph *g = m_graphs[i];
+
+        if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
         }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
         pinned_height += h + graphSpacer;
 
         if (py > height()) {
@@ -1423,8 +1423,8 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_metaselect = event->modifiers() && Qt::AltModifier;
                     m_horiz_travel = 0;
                     m_graph_index = i;
-                    m_selected_graph = m_graphs[i];
-                    m_graphs[i]->mousePressEvent(event);
+                    m_selected_graph = g;
+                    g->mousePressEvent(event);
                 }
 
                 done = true;
@@ -1443,10 +1443,12 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
 
     if (!done)
         for (int i = 0; i < m_graphs.size(); i++) {
+            gGraph * g = m_graphs[i];
+            if (!g) continue;
 
-            if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned()) { continue; }
+            if (!g || g->isEmpty() || !g->visible() || g->isPinned()) { continue; }
 
-            h = m_graphs[i]->height() * m_scaleY;
+            h = g->height() * m_scaleY;
 
             if (py > height()) {
                 break;
@@ -1486,8 +1488,8 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
 
                         m_horiz_travel = 0;
                         m_graph_index = i;
-                        m_selected_graph = m_graphs[i];
-                        m_graphs[i]->mousePressEvent(event);
+                        m_selected_graph = g;
+                        g->mousePressEvent(event);
                     }
                 }
 
@@ -1508,11 +1510,13 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
 
     // Handle pinned graphs first
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned()) {
+        gGraph *g = m_graphs[i];
+
+        if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
         }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
         pinned_height += h + graphSpacer;
 
         if (py > height()) {
@@ -1525,7 +1529,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
         } else if ((y >= py + 1) && (y <= py + h)) {
 
             //            if (!m_sizer_dragging && !m_graph_dragging) {
-            //                m_graphs[i]->mouseReleaseEvent(event);
+            //               g->mouseReleaseEvent(event);
             //            }
 
             if (x >= titleWidth + 10) {
@@ -1546,12 +1550,13 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
 
     if (done)
         for (int i = 0; i < m_graphs.size(); i++) {
+            gGraph *g = m_graphs[i];
 
-            if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned()) {
+            if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
             }
 
-            h = m_graphs[i]->height() * m_scaleY;
+            h = g->height() * m_scaleY;
 
             if (py > height()) {
                 break;    // we are done.. can't draw anymore
@@ -1562,7 +1567,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
             } else if ((y >= py + 1) && (y <= py + h)) {
 
                 //            if (!m_sizer_dragging && !m_graph_dragging) {
-                //                m_graphs[i]->mouseReleaseEvent(event);
+                //                g->mouseReleaseEvent(event);
                 //            }
 
                 if (x >= titleWidth + 10) {
@@ -1602,7 +1607,9 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
         if (m_metaselect) {
             m_point_released = event->pos();
         } else {
-            m_graphs[m_graph_index]->mouseReleaseEvent(event);
+            if (m_graphs[m_graph_index]) {
+                m_graphs[m_graph_index]->mouseReleaseEvent(event);
+            }
         }
     }
 }
@@ -1651,11 +1658,12 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
 
     // Handle pinned graphs first
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned()) {
+        gGraph *g = m_graphs[i];
+        if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
         }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
         pinned_height += h + graphSpacer;
 
         if (py > height()) {
@@ -1667,13 +1675,13 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
                 if (x < titleWidth) {
                     // What to do when double clicked on the graph title ??
 
-                    m_graphs[i]->mouseDoubleClickEvent(event);
+                    g->mouseDoubleClickEvent(event);
                     // pin the graph??
-                    m_graphs[i]->setPinned(false);
+                    g->setPinned(false);
                     redraw();
                 } else {
                     // send event to graph..
-                    m_graphs[i]->mouseDoubleClickEvent(event);
+                    g->mouseDoubleClickEvent(event);
                 }
 
                 done = true;
@@ -1693,12 +1701,12 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
 
     if (!done) // then handle unpinned graphs
         for (int i = 0; i < m_graphs.size(); i++) {
-
-            if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned()) {
+            gGraph *g = m_graphs[i];
+            if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
             }
 
-            h = m_graphs[i]->height() * m_scaleY;
+            h = g->height() * m_scaleY;
 
             if (py > height()) {
                 break;
@@ -1708,13 +1716,13 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
                 if ((y >= py) && (y <= py + h)) {
                     if (x < titleWidth) {
                         // What to do when double clicked on the graph title ??
-                        m_graphs[i]->mouseDoubleClickEvent(event);
+                        g->mouseDoubleClickEvent(event);
 
-                        m_graphs[i]->setPinned(true);
+                        g->setPinned(true);
                         redraw();
                     } else {
                         // send event to graph..
-                        m_graphs[i]->mouseDoubleClickEvent(event);
+                        g->mouseDoubleClickEvent(event);
                     }
                 } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                     // What to do when double clicked on the resize handle?
@@ -1726,6 +1734,7 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
             py += graphSpacer; // do we want the extra spacer down the bottom?
         }
 }
+
 void gGraphView::wheelEvent(QWheelEvent *event)
 {
     // Hmm.. I could optionalize this to change mousewheel behaviour without affecting the scrollbar now..
@@ -1739,10 +1748,10 @@ void gGraphView::wheelEvent(QWheelEvent *event)
         float h;
 
         for (int i = 0; i < m_graphs.size(); i++) {
+            gGraph *g = m_graphs[i];
+            if (!g || g->isEmpty() || !g->visible()) { continue; }
 
-            if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) { continue; }
-
-            h = m_graphs[i]->height() * m_scaleY;
+            h = g->height() * m_scaleY;
 
             if (py > height()) {
                 break;
@@ -1755,7 +1764,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                     } else {
                         // send event to graph..
                         if (!m_button_down) {
-                            m_graphs[i]->wheelEvent(event);
+                            g->wheelEvent(event);
                         }
                     }
                 } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
@@ -1792,6 +1801,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
             // Pick the first valid graph in the primary group
             for (int i = 0; i < m_graphs.size(); i++) {
+                if (!m_graphs[i]) continue;
                 if (m_graphs[i]->group() == group) {
                     if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
                         g = m_graphs[i];
@@ -1803,6 +1813,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
             if (!g) {
                 // just pick any graph then
                 for (int i = 0; i < m_graphs.size(); i++) {
+                    if (!m_graphs[i]) continue;
                     if (!m_graphs[i]->isEmpty()) {
                         g = m_graphs[i];
                         group = g->group();
@@ -1847,9 +1858,12 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 //    bool meta = m_metaselect;
     m_metaselect = event->modifiers() & Qt::AltModifier;
 
-//    if (meta != m_metaselect) {
-//        timedRedraw(30);
-//    }
+    if ((m_metaselect) && (event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9)) {
+        int bk = (int)event->key()-Qt::Key_0;
+        m_metaselect = false;
+
+        timedRedraw(30);
+    }
 
     if (event->key() == Qt::Key_F3) {
         p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
@@ -1965,10 +1979,11 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
 void gGraphView::setDay(Day *day)
 {
+
     m_day = day;
 
     for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->setDay(day);
+        if (m_graphs[i]) m_graphs[i]->setDay(day);
     }
 
     ResetBounds(false);
@@ -2010,7 +2025,7 @@ void gGraphView::resetLayout()
     int default_height = p_profile->appearance->graphHeight();
 
     for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->setHeight(default_height);
+        if (m_graphs[i]) m_graphs[i]->setHeight(default_height);
     }
 
     updateScale();
@@ -2019,7 +2034,7 @@ void gGraphView::resetLayout()
 void gGraphView::deselect()
 {
     for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->deselect();
+        if (m_graphs[i]) m_graphs[i]->deselect();
     }
 }
 
@@ -2041,6 +2056,8 @@ void gGraphView::SaveSettings(QString title)
     out << (qint16)size();
 
     for (qint16 i = 0; i < size(); i++) {
+        if (!m_graphs[i]) continue;
+
         out << m_graphs[i]->name();
         out << m_graphs[i]->height();
         out << m_graphs[i]->visible();

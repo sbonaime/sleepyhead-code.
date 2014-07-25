@@ -83,7 +83,14 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_IPAP, QColor("dark cyan"), ST_PERC, perc);
             //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
             addSlice(CPAP_IPAPHi, QColor("blue"), ST_SETMAX);
-        } else if (cpapmode >= MODE_BIPAP) {
+        } else if (cpapmode >= MODE_BILEVEL_AUTO_FIXED_PS) {
+            addSlice(CPAP_EPAP, QColor("green"), ST_SETMIN);
+            addSlice(CPAP_IPAP, QColor("light cyan"), mid, 0.5);
+            addSlice(CPAP_IPAP, QColor("light blue"), ST_PERC, perc);
+            addSlice(CPAP_PSMin, QColor("blue"), ST_SETMIN, perc);
+            addSlice(CPAP_PSMax, QColor("red"), ST_SETMAX, perc);
+
+        } else if (cpapmode >= MODE_BILEVEL_FIXED) {
             addSlice(CPAP_EPAP, QColor("green"), ST_SETMIN);
             addSlice(CPAP_EPAP, QColor("light green"), ST_PERC, perc);
             addSlice(CPAP_IPAP, QColor("light cyan"), mid, 0.5);

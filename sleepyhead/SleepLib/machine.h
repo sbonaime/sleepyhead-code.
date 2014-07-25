@@ -96,6 +96,11 @@ class Machine
     //! \brief Deletes the crud out of all machine data in the SleepLib database
     bool Purge(int secret);
 
+    //! \brief Unlink a session from any Machine related indexes
+    bool unlinkSession(Session * sess);
+
+    bool unlinkDay(Day * day);
+
     //! \brief Contains a secondary index of day data, containing just this machines sessions
     QMap<QDate, Day *> day;
 

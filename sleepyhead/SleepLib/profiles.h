@@ -80,8 +80,10 @@ class Profile : public Preferences
      */
     int Import(QString path);
 
-    //! \brief Remove a session from day object, without deleting the Session object
-    void RemoveSession(Session *sess);
+    //! \brief Removes a given day from the date, destroying the daylist date record if empty
+    bool unlinkDay(Day * day);
+
+//    bool trashMachine(Machine * mach);
 
     //! \brief Add Day record to Profile Day list
     void AddDay(QDate date, Day *day, MachineType mt);

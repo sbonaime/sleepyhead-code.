@@ -343,6 +343,9 @@ protected:
     char s_enabled;
     QString s_eventfile;
 
+    // for debugging
+    bool destroyed;
+
 
 };
 

@@ -684,51 +684,67 @@ Machine *Profile::GetMachine(MachineType t)
     return vec[0];
 }
 
-void Profile::RemoveSession(Session *sess)
+//bool Profile::trashMachine(Machine * mach)
+//{
+//    QMap<QDate, QList<Day *> >::iterator it_end = daylist.end();
+//    QMap<QDate, QList<Day *> >::iterator it;
+
+//    QList<QDate> datelist;
+//    QList<Day *> days;
+
+//    for (it = daylist.begin(); it != it_end; ++it) {
+//        for (int i = 0; i< it.value().size(); ++i) {
+//            Day * day = it.value().at(i);
+//            if (day->machine() == mach) {
+//                days.push_back(day);
+//                datelist.push_back(it.key());
+//            }
+//        }
+//    }
+
+//    for (int i=0; i < datelist.size(); ++i) {
+//        Day * day = days.at(i);
+//        it = daylist.find(datelist.at(i));
+//        if (it != daylist.end()) {
+//            it.value().removeAll(day);
+//            if (it.value().size() == 0) {
+//                daylist.erase(it);
+//            }
+//        }
+//        mach->unlinkDay(days.at(i));
+//    }
+
+//}
+
+bool Profile::unlinkDay(Day * day)
 {
-    QMap<QDate, QList<Day *> >::iterator di;
-    QMap<QDate, QList<Day *> >::iterator daylist_end=daylist.end();
-    Machine * mach = sess->machine();
+    bool b=false;
 
-    for (di = daylist.begin(); di != daylist_end; di++) {
-        for (int d = 0; d < di.value().size(); d++) {
-            Day *day = di.value()[d];
+    QList<QDate> dates;
 
-            int i = day->getSessions().indexOf(sess);
+    QMap<QDate, QList<Day *> >::iterator it;
+    QMap<QDate, QList<Day *> >::iterator it_end = daylist.end();
 
-            if (i >= 0) {
-                for (; i < day->getSessions().size() - 1; i++) {
-                    day->getSessions()[i] = day->getSessions()[i + 1];
-                }
-
-                day->getSessions().pop_back();
-                qint64 first = 0, last = 0;
-
-                for (int i = 0; i < day->getSessions().size(); i++) {
-                    Session &sess = *day->getSessions()[i];
-
-                    if (!first || first > sess.first()) {
-                        first = sess.first();
-                    }
-
-                    if (!last || last < sess.last()) {
-                        last = sess.last();
-                    }
-                }
-
-                if (day->size() == 0) {
-                    di.value().removeAll(day);
-                    mach->day.erase(mach->day.find(di.key()));
-                    delete day;
-                }
-
-                // day->setFirst(first);
-                // day->setLast(last);
-                return;
-            }
-
+    for (it = daylist.begin(); it != it_end; ++it) {
+        if (it.value().contains(day)) {
+            dates.push_back(it.key());
         }
     }
+
+    for (int i=0; i < dates.size(); ++i) {
+        it = daylist.find(dates.at(i));
+
+        if (it != daylist.end()) {
+            it.value().removeAll(day);
+            // TODO: Check it doesn't change from the above...
+
+            if (it.value().size() == 0) {
+                daylist.erase(it);
+            }
+        }
+    }
+
+     return b;
 }
 
 

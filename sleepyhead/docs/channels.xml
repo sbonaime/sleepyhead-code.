@@ -28,8 +28,10 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
    <option id="0" value="CPAP"/>
    <option id="1" value="Auto"/>
-   <option id="2" value="Bi-Level"/>
-   <option id="3" value="ASV"/>
+   <option id="2" value="Fixed Bi-Level"/>
+   <option id="3" value="Auto Bi-Level"/>
+   <option id="4" value="ASV"/>
+   <option id="5" value="ASV Auto EPAP"/>
   </channel>
   <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
     <Option id="0" value=""/>

@@ -160,9 +160,6 @@ class Day
     //! \brief Closes all Events files for this Days Sessions
     void CloseEvents();
 
-    //! \brief Returns this days sessions list
-    QList<Session *> &getSessions() { return sessions; }
-
     //! \brief Returns true if this Day contains loaded Event Data for this channel.
     bool channelExists(ChannelID id);
 
@@ -175,11 +172,15 @@ class Day
     //! \brief Returns true if this day contains the supplied settings Channel id
     bool settingExists(ChannelID id);
 
-    void removeSession(Session *sess);
+    bool removeSession(Session *sess);
+
+
+    QString getCPAPMode();
+    QString getPressureSettings();
+    QList<Session *> sessions;
 
   protected:
     //! \brief A Vector containing all sessions for this day
-    QList<Session *> sessions;
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     //qint64 d_first,d_last;
   private:

@@ -679,6 +679,7 @@ qint64 gGraph::currentTime() const
 void gGraph::mouseMoveEvent(QMouseEvent *event)
 {
     // qDebug() << m_title << "Move" << event->pos() << m_graphview->pointClicked();
+    if (m_rect.width() == 0) return;
     int y = event->y();
     int x = event->x();
 
@@ -698,6 +699,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     int w = m_rect.width() - left - right;
 
+
     double xx = max_x - min_x;
     double xmult = xx / w;
 
@@ -713,6 +715,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
         a *= xmult;
         a += m_blockzoom ? rmin_x : min_x;
 
+        m_currentTime = a;
         m_graphview->setCurrentTime(a);
     }
 
@@ -850,6 +853,7 @@ void gGraph::mousePressEvent(QMouseEvent *event)
 
 void gGraph::mouseReleaseEvent(QMouseEvent *event)
 {
+
     int y = event->pos().y();
     int x = event->pos().x();
 

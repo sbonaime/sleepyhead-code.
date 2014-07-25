@@ -349,6 +349,10 @@ class gGraph : public QObject
     QRect m_rect;
 
     qint64 m_selectedDuration;
+
+    qint64 m_currentTime;
+    qint64 m_clickTime;
+
     QString m_selDurString;
 
   protected slots:
