@@ -785,6 +785,10 @@ class UserSettings : public ProfileSettings
     void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
 };
 
+//! \brief Returns a count of all files & directories in a supplied folder
+int dirCount(QString path);
+
+
 namespace Profiles {
 
 extern QMap<QString, Profile *> profiles;

@@ -503,7 +503,8 @@ bool EDFParser::Parse()
         long recs = sig.nr * num_data_records;
 
         if (num_data_records < 0) {
-            return false;
+            sig.data = nullptr;
+            continue;
         }
 
         sig.data = new qint16 [recs];
@@ -622,7 +623,6 @@ void ResmedImport::run()
             if (sess->summaryOnly()) {
 
                 sess->Destroy();
-                //mach->sessionlist.remove(sess->session());
                 delete sess;
             }
         }
@@ -646,11 +646,14 @@ void ResmedImport::run()
     }
 
     if (sess->first() == 0) {
+       // loader->saveMutex.lock();
+
         //if (mach->sessionlist.contains(sess->session())) {
-        sess->Destroy();
+       // sess->Destroy();
             //mach->sessionlist.remove(sess->session());
         //}
         delete sess;
+        //loader->saveMutex.unlock();
         return;
     }
 
@@ -1681,6 +1684,8 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
         EDFSignal &es = edf.edfsignals[s];
 
         long recs = es.nr * edf.GetNumDataRecords();
+        if (recs < 0)
+            continue;
         ChannelID code;
 
         if (matchSignal(CPAP_FlowRate, es.label)) {

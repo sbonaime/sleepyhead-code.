@@ -117,8 +117,6 @@ bool Session::Destroy()
 {
     QString path = p_profile->Get(s_machine->properties[STR_PROP_Path]);
 
-    s_machine->unlinkSession(this);
-
     QDir dir(path);
     QString base;
     base.sprintf("%08lx", s_session);
@@ -127,7 +125,7 @@ bool Session::Destroy()
     dir.remove(base + ".000");
     dir.remove(base + ".001");
 
-    return !dir.exists(base + ".000") && !dir.exists(base + ".001");
+    return s_machine->unlinkSession(this); //!dir.exists(base + ".000") && !dir.exists(base + ".001");
 }
 
 bool Session::Store(QString path)

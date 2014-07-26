@@ -1405,7 +1405,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(py); // point at top of graph..
                     this->setCursor(Qt::ClosedHandCursor);
-                }
+                } else
 
                 {
                     if (m_metaselect) {
@@ -1508,6 +1508,11 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     float h, py = 0, pinned_height = 0;
     bool done = false;
 
+
+    // Copy to a local variable to make sure this gets cleared
+    bool button_down = m_button_down;
+    m_button_down = false;
+
     // Handle pinned graphs first
     for (int i = 0; i < m_graphs.size(); i++) {
         gGraph *g = m_graphs[i];
@@ -1599,8 +1604,8 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     }
 
     // The graph that got the button press gets the release event
-    if (m_button_down) {
-        m_button_down = false;
+    if (button_down) {
+//        m_button_down = false;
         m_metaselect = event->modifiers() & Qt::AltModifier;
         saveHistory();
 
@@ -1739,7 +1744,9 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 {
     // Hmm.. I could optionalize this to change mousewheel behaviour without affecting the scrollbar now..
 
-    if (m_button_down) return;
+    if (m_button_down)
+        return;
+
     if ((event->modifiers() & Qt::ControlModifier)) {
         int x = event->x();
         int y = event->y();
@@ -1763,9 +1770,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                         // What to do when ctrl+wheel is used on the graph title ??
                     } else {
                         // send event to graph..
-                        if (!m_button_down) {
-                            g->wheelEvent(event);
-                        }
+                        g->wheelEvent(event);
                     }
                 } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                     // What to do when the wheel is used on the resize handle?

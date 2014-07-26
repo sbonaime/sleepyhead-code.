@@ -99,7 +99,7 @@ QString GenerateWelcomeHTML()
 
 
      html+=QString("<tr><td colspan=%1 align=center>").arg(cols)+
-     "<font size=+1>"+((havecpapdata || haveoximeterdata) ? QObject::tr("Would you like to import more data?") : QObject::tr("Please Import Some Data")) +"</font></td>"
+     "<font size=+1>"+((havecpapdata || haveoximeterdata) ? QObject::tr("What would you like to do?") : QObject::tr("Please Import Some Data")) +"</font></td>"
      "</tr>"
      "<tr>"
       "<td align=center>"
@@ -134,9 +134,9 @@ QString GenerateWelcomeHTML()
                 else if (day->machine->GetClass() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
                 else if (day->machine->GetClass() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
             }
-            html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=128px><br/>";
+            html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
-            html+="</td><td><table cellpadding=4 class=curved2><tr>"+
+            html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+
                     QString("<td align=center  onmouseover='ChangeColor(this, \"#efefa0\");' onmouseout='ChangeColor(this, \"#ffffc0\");' onclick='alert(\"daily=%1\");'>").arg(date.toString(Qt::ISODate))+"<b>"+
                     QObject::tr("The last time you used your %1...").arg(day->machine->properties[STR_PROP_Brand]+" "+day->machine->properties[STR_PROP_Model])+"</b><br/>";
 

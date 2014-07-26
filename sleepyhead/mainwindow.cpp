@@ -430,11 +430,11 @@ void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 
 void MainWindow::PopulatePurgeMenu()
 {
-    QList<QAction *> actions = ui->menu_Purge_CPAP_Data->actions();
+    QList<QAction *> actions = ui->menu_Rebuild_CPAP_Data->actions();
 
-    ui->menu_Purge_CPAP_Data->disconnect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
+    ui->menu_Rebuild_CPAP_Data->disconnect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
 
-    ui->menu_Purge_CPAP_Data->clear();
+    ui->menu_Rebuild_CPAP_Data->clear();
 
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (int i=0; i < machines.size(); ++i) {
@@ -443,12 +443,13 @@ void MainWindow::PopulatePurgeMenu()
                         mach->properties[STR_PROP_Model]+" "+
                         mach->properties[STR_PROP_Serial];
 
-        QAction * action = new QAction(name.replace("&","&&"), ui->menu_Purge_CPAP_Data);
+        QAction * action = new QAction(name.replace("&","&&"), ui->menu_Rebuild_CPAP_Data);
         action->setData(mach->GetClass()+":"+mach->properties[STR_PROP_Serial]);
-        ui->menu_Purge_CPAP_Data->addAction(action);
+        ui->menu_Rebuild_CPAP_Data->addAction(action);
     }
-    ui->menu_Purge_CPAP_Data->connect(ui->menu_Purge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
+    ui->menu_Rebuild_CPAP_Data->connect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
 }
+
 QString GenerateWelcomeHTML();
 
 void MainWindow::Startup()
@@ -525,7 +526,6 @@ void MainWindow::finishCPAPImport()
 
 void MainWindow::importCPAPBackups()
 {
-
     // Get BackupPaths for all CPAP machines
     QList<Machine *> machlist = p_profile->GetMachines(MT_CPAP);
     QStringList paths;
@@ -1822,15 +1822,37 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
 
 void MainWindow::purgeMachine(Machine * mach)
 {
+    // detect backups
+    bool backups = false;
+    if (mach->properties.contains(STR_PROP_BackupPath)) {
+        QString bpath = p_profile->Get(mach->properties[STR_PROP_BackupPath]);
+        int cnt = dirCount(bpath);
+        if (cnt > 0) backups = true;
+    }
 
-    if (QMessageBox::question(this,
+    if (backups) {
+        if (QMessageBox::question(this,
                               STR_MessageBox_Question,
-                              tr("Are you sure you want to purge all CPAP data for the following machine:")+ "\n\n" +
+                              tr("Are you sure you want to rebuild all CPAP data for the following machine:")+ "\n\n" +
                               mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
-                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")",
+                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")" + "\n\n"+
+                              tr("Please note, that this could result in loss of graph data if SleepyHead's internal backups have been disabled or interfered with in any way."),
                               QMessageBox::Yes | QMessageBox::No,
                               QMessageBox::No) == QMessageBox::No) {
-        return;
+            return;
+        }
+    } else {
+        if (QMessageBox::question(this,
+                              STR_MessageBox_Warning,
+                              "<p><b>"+STR_MessageBox_Warning+": </b>"+tr("For some reason, SleepyHead does not have internal backups for the following machine:")+ "</p>" +
+                              "<p>"+mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
+                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")" + "</p>"+
+                              "<p>"+tr("Provided you have made <i>your <b>own</b> backups for ALL of your CPAP data</i>, you can still complete this operation, but you will have to restore from your backups manually.")+"</p>"
+                              "<p><b>"+tr("Are you really sure you want to do this?")+"</b></p>",
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::No) == QMessageBox::No) {
+            return;
+        }
     }
     daily->Unload(daily->getDate());
 
@@ -1840,7 +1862,7 @@ void MainWindow::purgeMachine(Machine * mach)
         mach->day.clear();
     } else {
         QMessageBox::warning(this, STR_MessageBox_Error,
-                             tr("Not all session data could be removed, you have to delete the following folder manually.")
+                             tr("A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:")
                              +"\n\n"+
                              QDir::toNativeSeparators(p_profile->Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
         if (overview) overview->ReloadGraphs();
@@ -1862,22 +1884,22 @@ void MainWindow::purgeMachine(Machine * mach)
     GenerateStatistics();
     QApplication::processEvents();
 
-    if (QMessageBox::question(this,
-                              STR_MessageBox_Question,
-                              tr("Machine data has been successfully purged.") + "\n\n" +
-                              tr("Would you like to reimport from the backup folder?") + "\n\n" +
-                              QDir::toNativeSeparators(p_profile->Get(mach->properties[STR_PROP_BackupPath])),
-                              QMessageBox::Yes | QMessageBox::No,
-                              QMessageBox::Yes) == QMessageBox::No) {
-        p_profile->machlist.erase(p_profile->machlist.find(mach->id()));
-        delete mach;
-    } else {
+
+    if (backups) {
         importCPAP(p_profile->Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
-        if (overview) overview->ReloadGraphs();
-        if (daily) {
-            daily->clearLastDay(); // otherwise Daily will crash
-            daily->ReloadGraphs();
+    } else {
+        if (QMessageBox::information(this, STR_MessageBox_Warning,
+                                 tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+
+                                 tr("Would you like to import from your own backups now? (you will have no data visible for this machine until you do)"),
+                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+        } else {
+            on_action_Import_Data_triggered();
         }
+    }
+    if (overview) overview->ReloadGraphs();
+    if (daily) {
+        daily->clearLastDay(); // otherwise Daily will crash
+        daily->ReloadGraphs();
     }
     GenerateStatistics();
     p_profile->Save();

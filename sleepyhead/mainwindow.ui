@@ -3185,22 +3185,20 @@ border-radius: 10px;
      <property name="title">
       <string>&amp;Advanced</string>
      </property>
-     <widget class="QMenu" name="menu_Purge_CPAP_Data">
-      <property name="title">
-       <string>&amp;Purge CPAP Data</string>
-      </property>
-      <addaction name="separator"/>
-     </widget>
      <widget class="QMenu" name="menuPurge_Oximetery_Data">
       <property name="title">
        <string>Purge Oximetery Data</string>
       </property>
       <addaction name="actionPurgeCurrentDaysOximetry"/>
      </widget>
-     <addaction name="menu_Purge_CPAP_Data"/>
      <addaction name="actionPurge_Current_Day"/>
      <addaction name="separator"/>
      <addaction name="menuPurge_Oximetery_Data"/>
+    </widget>
+    <widget class="QMenu" name="menu_Rebuild_CPAP_Data">
+     <property name="title">
+      <string>Rebuild CPAP Data</string>
+     </property>
     </widget>
     <addaction name="actionView_Oximetry"/>
     <addaction name="separator"/>
@@ -3209,8 +3207,9 @@ border-radius: 10px;
     <addaction name="actionImport_RemStar_MSeries_Data"/>
     <addaction name="separator"/>
     <addaction name="action_Rebuild_Oximetry_Index"/>
-    <addaction name="menu_Advanced"/>
+    <addaction name="menu_Rebuild_CPAP_Data"/>
     <addaction name="separator"/>
+    <addaction name="menu_Advanced"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
@@ -3366,7 +3365,7 @@ border-radius: 10px;
   </action>
   <action name="action_Rebuild_Oximetry_Index">
    <property name="text">
-    <string>&amp;Rebuild Oximetry Indices</string>
+    <string>&amp;Automatic Oximetry Cleanup</string>
    </property>
   </action>
   <action name="actionChange_User">
@@ -3461,6 +3460,11 @@ border-radius: 10px;
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionFoo">
+   <property name="text">
+    <string>Foo</string>
    </property>
   </action>
  </widget>

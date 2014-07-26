@@ -201,6 +201,10 @@ bool Machine::AddSession(Session *s)
         for (QList<Session *>::iterator i = nextday.value()->begin(); i != nextday.value()->end(); i++) {
             // i may need to do something here
             unlinkSession(*i);
+            // Add it back
+
+            sessionlist[(*i)->session()] = *i;
+
             dd->AddSession(*i);
         }
 
