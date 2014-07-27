@@ -1755,47 +1755,27 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
 
     if (day) {
         m = day->machine;
-        QString path = p_profile->Get("{" + STR_GEN_DataFolder + "}/") + m->GetClass() + "_" +
-                       m->properties[STR_PROP_Serial] + "/";
 
         QList<Session *>::iterator s;
 
         QList<Session *> list;
 
         for (s = day->begin(); s != day->end(); ++s) {
-            SessionID id = (*s)->session();
-            QString filename0 = path + QString().sprintf("%08lx.000", id);
-            QString filename1 = path + QString().sprintf("%08lx.001", id);
-            qDebug() << "Removing" << filename0;
-            qDebug() << "Removing" << filename1;
-            QFile::remove(filename0);
-            QFile::remove(filename1);
-
             list.push_back(*s);
-            m->sessionlist.erase(m->sessionlist.find(id)); // remove from machines session list
         }
 
-        m->day.erase(m->day.find(date));
+//        m->day.erase(m->day.find(date));
 
         for (int i = 0; i < list.size(); i++) {
             Session *sess = list.at(i);
-            sess->machine()->unlinkSession(sess);
-            //day->removeSession(sess);
+            sess->Destroy();
             delete sess;
         }
+    }
+    day = p_profile->GetDay(date, MT_CPAP);
 
-        QList<Day *> &dl = p_profile->daylist[date];
-        QList<Day *>::iterator it;//=dl.begin();
-
-        for (it = dl.begin(); it != dl.end(); it++) {
-            if ((*it) == day) { break; }
-        }
-
-        if (it != dl.end()) {
-            dl.erase(it);
-            //p_profile->daylist[date].  // ??
-            delete day;
-        }
+    if (day != nullptr) {
+        int i = 5;
     }
 
     getDaily()->clearLastDay();

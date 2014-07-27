@@ -284,8 +284,11 @@ bool Machine::Purge(int secret)
         return false;
     }
 
-
     qDebug() << "Purging" << m_class << properties[STR_PROP_Serial] << dir.absoluteFilePath(path);
+
+    // Remove any imported file list
+    QFile impfile(getDataPath()+"/imported_files.csv");
+    impfile.remove();
 
     // Create a copy of the list so the hash can be manipulated
     QList<Session *> sessions = sessionlist.values();
@@ -343,6 +346,10 @@ bool Machine::Purge(int secret)
 }
 
 //const quint32 channel_version=1;
+const QString Machine::getDataPath()
+{
+    return p_profile->Get(properties[STR_PROP_Path]);
+}
 
 
 bool Machine::Load()

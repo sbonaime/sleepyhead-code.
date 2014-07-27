@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QTextStream>
 #include <QDebug>
 #include <cmath>
 
@@ -941,6 +942,355 @@ bool ResmedLoader::Detect(const QString & givenpath)
     return true;
 }
 
+
+struct EDFduration {
+    EDFduration() { start = end = 0; }
+    EDFduration(const EDFduration & copy) {
+        path = copy.path;
+        start = copy.start;
+        end = copy.end;
+    }
+    EDFduration(quint32 start, quint32 end, QString path) :
+        start(start), end(end), path(path) {}
+    quint32 start;
+    quint32 end;
+    QString path;
+};
+
+
+// Looks inside an EDF or EDF.gz and grabs the start and duration
+EDFduration getEDFDuration(QString filename)
+{
+    bool ok1, ok2;
+
+    int num_records;
+    double rec_duration;
+
+    QDateTime startDate;
+
+    if (!filename.endsWith(".gz", Qt::CaseInsensitive)) {
+        QFile file(filename);
+        if (!file.open(QFile::ReadOnly)) {
+            return EDFduration(0, 0, filename);
+        }
+
+        if (!file.seek(0xa8)) {
+            file.close();
+            return EDFduration(0, 0, filename);
+        }
+
+        QByteArray bytes = file.read(16).trimmed();
+
+        startDate = QDateTime::fromString(QString::fromLatin1(bytes, 16), "dd.MM.yyHH.mm.ss");
+
+        if (!file.seek(0xec)) {
+            file.close();
+            return EDFduration(0, 0, filename);
+        }
+
+        bytes = file.read(8).trimmed();
+        num_records = bytes.toInt(&ok1);
+        bytes = file.read(8).trimmed();
+        rec_duration = bytes.toDouble(&ok2);
+        file.close();
+    } else {
+        gzFile f = gzopen(filename.toLatin1(), "rb");
+        if (!f) {
+            return EDFduration(0, 0, filename);
+        }
+
+        if (!gzseek(f, 0xa8, SEEK_SET)) {
+            gzclose(f);
+            return EDFduration(0, 0, filename);
+        }
+        char datebytes[17] = {0};
+        gzread(f, (char *)&datebytes, 16);
+        QString str = QString(QString::fromLatin1(datebytes,16)).trimmed();
+
+        startDate = QDateTime::fromString(str, "dd.MM.yyHH.mm.ss");
+
+        if (!gzseek(f, 0xec-0xa8-16, SEEK_CUR)) { // 0xec
+            gzclose(f);
+            return EDFduration(0, 0, filename);
+        }
+
+        // Decompressed header and data block
+        char cbytes[9] = {0};
+        gzread(f, (char *)&cbytes, 8);
+        str = QString(cbytes).trimmed();
+        num_records = str.toInt(&ok1);
+
+        gzread(f, (char *)&cbytes, 8);
+        str = QString(cbytes).trimmed();
+        rec_duration = str.toDouble(&ok2);
+
+        gzclose(f);
+
+    }
+
+    QDate d2 = startDate.date();
+
+    if (d2.year() < 2000) {
+        d2.setDate(d2.year() + 100, d2.month(), d2.day());
+        startDate.setDate(d2);
+    }
+    if (!startDate.isValid()) {
+        qDebug() << "Invalid date time retreieved parsing EDF duration for" << filename;
+        return EDFduration(0, 0, filename);
+    }
+
+    if (!(ok1 && ok2)) {
+        return EDFduration(0, 0, filename);
+    }
+
+    quint32 start = startDate.toTime_t();
+    quint32 end = start + rec_duration * num_records;
+
+    QString filedate = filename.section("/",-1).section("_",0,1);
+    QString ext = filename.section("_", -1).section(".",0,0).toUpper();
+
+    QDateTime dt2 = QDateTime::fromString(filedate, "yyyyMMdd_hhmmss");
+    quint32 st2 = dt2.toTime_t();
+
+    if (end < start) end = start;
+
+    if (ext == "EVE") {
+        // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
+        // It could be avoided by parsing the EDF annotations completely, but on days with no events, this would be pointless.
+
+        // Add 45 seconds to make sure some overlap happens with related sessions.
+
+        end += 45;
+    }
+
+    start = qMin(st2, start);
+
+    EDFduration dur(start, end, filename);
+    return dur;
+}
+
+void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
+{
+
+    bool create_backups = p_profile->session->backupCardData();
+
+    QString backup_path = p_profile->Get(mach->properties[STR_PROP_BackupPath]);
+
+    if (backup_path.isEmpty()) {
+        backup_path = p_profile->Get(mach->properties[STR_PROP_Path]) + "Backup/";
+    }
+    QString dlog = datalog_path;
+
+    if (datalog_path == backup_path + RMS9_STR_datalog + "/") {
+        // Don't create backups if importing from backup folder
+        create_backups = false;
+    }
+
+    skipfiles.clear();
+
+    // Read the already imported file list
+    QFile impfile(mach->getDataPath()+"/imported_files.csv");
+    if (impfile.open(QFile::ReadOnly)) {
+        QTextStream impstream(&impfile);
+        QString serial;
+        impstream >> serial;
+        if (mach->properties[STR_PROP_Serial] == serial) {
+            QString line, file, str;
+            SessionID sid;
+            bool ok;
+            do {
+                line = impstream.readLine();
+                file = line.section(',',0,0);
+                str = line.section(',',1);
+                sid = str.toInt(&ok);
+
+                skipfiles[file] = sid;
+            } while (!impstream.atEnd());
+        }
+    }
+    impfile.close();
+
+    QStringList dirs;
+    dirs.push_back(datalog_path);
+
+    QDir dir(datalog_path);
+
+    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
+    QFileInfoList flist = dir.entryInfoList();
+    QString filename;
+    bool ok, gz;
+
+
+    // Scan for any year folders if this is a backup
+    for (int i = 0; i < flist.size(); i++) {
+        QFileInfo fi = flist.at(i);
+        filename = fi.fileName();
+
+        if (filename.length() == 4) {
+            filename.toInt(&ok);
+
+            if (ok) {
+                dirs.push_back(fi.canonicalFilePath());
+            }
+        }
+    }
+
+    QStringList newSkipFiles;
+    QMap<QString, EDFduration> newfiles; // used for duplicate checking
+
+    // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
+    for (int d=0; d < dirs.size(); ++d) {
+        dir.setPath(dirs.at(d));
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+        dir.setSorting(QDir::Name);
+        flist = dir.entryInfoList();
+
+        int size = flist.size();
+
+        // For each file in flist...
+        for (int i = 0; i < size; i++) {
+            QFileInfo fi = flist.at(i);
+            filename = fi.fileName();
+
+            // Forget about it if it can't be read.
+            if (!fi.isReadable()) {
+                continue;
+            }
+
+            // Chop off the .gz component if it exists
+            if (filename.endsWith(STR_ext_gz)) {
+                filename.chop(3);
+                gz = true;
+            } else { gz = false; }
+
+            // Skip if this file is in the already imported list
+            if (skipfiles.contains(filename)) continue;
+
+            if (newfiles.contains(filename)) {
+                // Not sure what to do with it.. delete it? check compress status and delete the other one?
+                qDebug() << "Duplicate EDF file detected" << filename;
+                continue;
+            }
+
+            // Peek inside file and get duration in seconds..
+
+            // Accept only .edf and .edf.gz files
+            if (filename.right(4).toLower() != "." + STR_ext_EDF) {
+                continue;
+            }
+
+            QString fullname = fi.canonicalFilePath();
+            newfiles[filename] = getEDFDuration(fullname);
+        }
+    }
+
+    QMap<QString, EDFduration>::iterator it;
+    QMap<QString, EDFduration>::iterator itn;
+    QMap<QString, EDFduration>::iterator it_end = newfiles.end();
+
+    // Now scan through all new files, and group together into sessions
+    for (it = newfiles.begin(); it != it_end; ++it) {
+        quint32 start = it.value().start;
+
+        if (start == 0)
+            continue;
+
+        const QString & file = it.key();
+
+        quint32 end = it.value().end;
+
+
+        QString type = file.section("_",-1).section(".",0,0).toUpper();
+
+        QString newpath = create_backups ? backup(it.value().path, backup_path) : it.value().path;
+
+        EDFGroup group;
+
+        if (type == "BRP") group.BRP = newpath;
+        else if (type == "EVE") group.EVE = newpath;
+        else if (type == "PLD") group.PLD = newpath;
+        else if (type == "SAD") group.SAD = newpath;
+        else continue;
+
+        QStringList sessfiles;
+        sessfiles.push_back(file);
+
+        for (itn = it+1; itn != it_end; ++itn) {
+            if (itn.value().start == 0) continue;  // already processed
+            const EDFduration & dur2 = itn.value();
+
+            // Do the sessions Overlap?
+            if ((start < dur2.end) && ( dur2.start < end)) {
+
+                start = qMin(start, dur2.start);
+                end = qMax(end, dur2.end);
+
+                type = itn.key().section("_",-1).section(".",0,0).toUpper();
+
+                newpath = create_backups ? backup(dur2.path, backup_path) : dur2.path;
+
+                if (type == "BRP") {
+                    if (!group.BRP.isEmpty()) {
+                        itn.value().start = 0;
+                        continue;
+                    }
+                    group.BRP = newpath;
+                } else if (type == "EVE") {
+                    if (!group.EVE.isEmpty()) {
+                        itn.value().start = 0;
+                        continue;
+                    }
+                    group.EVE = newpath;
+                } else if (type == "PLD") {
+                    if (!group.PLD.isEmpty()) {
+                        itn.value().start = 0;
+                        continue;
+                    }
+                    group.PLD = newpath;
+                } else if (type == "SAD") {
+                    if (!group.SAD.isEmpty()) {
+                        itn.value().start = 0;
+                        continue;
+                    }
+                    group.SAD = newpath;
+                } else {
+                    itn.value().start = 0;
+                    continue;
+                }
+                sessfiles.push_back(itn.key());
+
+                itn.value().start = 0;
+            }
+        }
+
+        if (mach->SessionExists(start) == nullptr) {
+            queTask(new ResmedImport(this, start, group, mach));
+            for (int i=0; i < sessfiles.size(); ++i) {
+                skipfiles[sessfiles.at(i)] = start;
+            }
+        }
+    }
+
+    // Run the tasks...
+    runTasks(p_profile->session->multithreading());
+
+    newSkipFiles.append(skipfiles.keys());
+    impfile.remove();
+
+    if (impfile.open(QFile::WriteOnly)) {
+        QTextStream out(&impfile);
+        QHash<QString, SessionID>::iterator skit;
+        QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
+        for (skit = skipfiles.begin(); skit != skit_end; ++skit) {
+            QString a = QString("%1,%2\n").arg(skit.key()).arg(skit.value());;
+            out << a;
+        }
+        out.flush();
+    }
+    impfile.close();
+
+}
+
 int ResmedLoader::Open(QString path)
 {
 
@@ -1183,7 +1533,9 @@ int ResmedLoader::Open(QString path)
     // Open DATALOG file and build list of session files
     ///////////////////////////////////////////////////////////////////////////////////
 
-    QStringList dirs;
+    scanFiles(m, newpath);
+
+ /*   QStringList dirs;
     dirs.push_back(newpath);
     dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
     flist = dir.entryInfoList();
@@ -1353,7 +1705,7 @@ int ResmedLoader::Open(QString path)
     for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
         queTask(new ResmedImport(this, fgit.key(), fgit.value(), m));
     }
-    runTasks(p_profile->session->multithreading());
+    runTasks(p_profile->session->multithreading()); */
 
     // Now look for any new summary data that can be extracted from STR.edf records
     QMap<quint32, STRRecord>::iterator it;
@@ -1362,8 +1714,9 @@ int ResmedLoader::Open(QString path)
     QHash<SessionID, Session *>::iterator sessit;
     QHash<SessionID, Session *>::iterator sessend = m->sessionlist.end();;
 
-    size = m->sessionlist.size();
-    cnt=0;
+    int size = m->sessionlist.size();
+    int cnt=0;
+    Session * sess;
 
     // Scan through all sessions, and remove any strsess records that have a matching session already
     for (sessit = m->sessionlist.begin(); sessit != sessend; ++sessit) {
@@ -1449,8 +1802,11 @@ int ResmedLoader::Open(QString path)
     return 1;
 }
 
-QString ResmedLoader::backup(QString fullname, QString backup_path, bool compress)
+
+QString ResmedLoader::backup(QString fullname, QString backup_path)
 {
+    bool compress = p_profile->session->compressBackupData();
+
     QString filename, yearstr, newname, oldname;
     bool ok, gz = (fullname.right(3).toLower() == STR_ext_gz);
 

@@ -379,12 +379,19 @@ protected:
 
     void ParseSTR(Machine *mach, QStringList strfiles);
 
+    //! \brief Scan for new files to import, group into sessions and add to task que
+    void scanFiles(Machine * mach, QString datalog_path);
 
-    QString backup(QString file, QString backup_path, bool compress = false);
+
+
+    QString backup(QString file, QString backup_path);
 
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;
     QMap<QDate, QList<STRRecord *> > strdate;
+
+    QHash<QString, SessionID> skipfiles;
+
 
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;
