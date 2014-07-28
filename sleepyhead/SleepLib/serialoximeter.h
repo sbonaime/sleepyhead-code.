@@ -46,8 +46,10 @@ public:
     static void Register() {}
 
     virtual int Version()=0;
-    virtual const QString &ClassName()=0;
-
+    virtual const QString &loaderName()=0;
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_OXIMETER, "", QString(), QString(), QString(), QString(), "Generic", QDateTime::currentDateTime(), 0);
+    }
 
     // Serial Stuff
     virtual bool scanDevice(QString keyword="",quint16 vendor_id=0, quint16 product_id=0);
@@ -60,7 +62,7 @@ public:
 
     virtual void process() {}
 
-    virtual Machine *CreateMachine()=0;
+    //virtual Machine *CreateMachine()=0;
 
     // available sessions
     QMap<QDateTime, QVector<OxiRecord> *> oxisessions;

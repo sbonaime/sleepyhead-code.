@@ -33,10 +33,14 @@ class SomnoposeLoader : public MachineLoader
     static void Register();
 
     virtual int Version() { return somnopose_data_version; }
-    virtual const QString &ClassName() { return somnopose_class_name; }
+    virtual const QString &loaderName() { return somnopose_class_name; }
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_POSITION, somnopose_class_name, QObject::tr("Somnopose"), QString(), QString(), QString(), QObject::tr("Somnopose Software"), QDateTime::currentDateTime(), somnopose_data_version);
+    }
 
 
-    Machine *CreateMachine();
+  //Machine *CreateMachine();
 
   protected:
   private:

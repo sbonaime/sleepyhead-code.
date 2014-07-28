@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef LOCK_RESMED_SESSIONS
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-        QString mclass=(*it)->GetClass();
+        QString mclass=(*it)->loaderName();
         if (mclass == STR_MACH_ResMed) {
             qDebug() << "ResMed machine found.. locking Session splitting capabilities";
 
@@ -262,7 +262,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
     daily = new Daily(ui->tabWidget, nullptr);
-    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
+    ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
 
 
     // Start with the Summary Tab
@@ -428,6 +428,22 @@ void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
     mainwin->sendStatsUrl(msg);
 }
 
+QString getCPAPPixmap(QString mach_class)
+{
+    QString cpapimage;
+    if (mach_class == STR_MACH_ResMed) cpapimage = ":/icons/rms9.png";
+    else if (mach_class == STR_MACH_PRS1) cpapimage = ":/icons/prs1.png";
+    else if (mach_class == STR_MACH_Intellipap) cpapimage = ":/icons/intellipap.png";
+    return cpapimage;
+}
+
+QIcon getCPAPIcon(QString mach_class)
+{
+    QString cpapimage = getCPAPPixmap(mach_class);
+
+    return QIcon(cpapimage);
+}
+
 void MainWindow::PopulatePurgeMenu()
 {
     QList<QAction *> actions = ui->menu_Rebuild_CPAP_Data->actions();
@@ -439,12 +455,14 @@ void MainWindow::PopulatePurgeMenu()
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (int i=0; i < machines.size(); ++i) {
         Machine *mach = machines.at(i);
-        QString name =  mach->properties[STR_PROP_Brand]+" "+
-                        mach->properties[STR_PROP_Model]+" "+
-                        mach->properties[STR_PROP_Serial];
+        QString name =  mach->brand() + " "+
+                        mach->model() + " "+
+                        mach->serial();
 
         QAction * action = new QAction(name.replace("&","&&"), ui->menu_Rebuild_CPAP_Data);
-        action->setData(mach->GetClass()+":"+mach->properties[STR_PROP_Serial]);
+        action->setIconVisibleInMenu(true);
+        action->setIcon(getCPAPIcon(mach->loaderName()));
+        action->setData(mach->loaderName()+":"+mach->serial());
         ui->menu_Rebuild_CPAP_Data->addAction(action);
     }
     ui->menu_Rebuild_CPAP_Data->connect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
@@ -498,8 +516,12 @@ void MainWindow::Startup()
 
 }
 
-int MainWindow::importCPAP(const QString &path, const QString &message)
+int MainWindow::importCPAP(ImportPath import, const QString &message)
 {
+    if (!import.loader) {
+        return 0;
+    }
+
     QDialog popup(this, Qt::SplashScreen);
     QLabel waitmsg(message);
     QVBoxLayout waitlayout(&popup);
@@ -507,7 +529,7 @@ int MainWindow::importCPAP(const QString &path, const QString &message)
     waitlayout.addWidget(qprogress,1);
     qprogress->setVisible(true);
     popup.show();
-    int c=p_profile->Import(path);
+    int c=import.loader->Open(import.path);;
     popup.hide();
     ui->statusbar->insertWidget(2,qprogress,1);
     qprogress->setVisible(false);
@@ -528,35 +550,23 @@ void MainWindow::importCPAPBackups()
 {
     // Get BackupPaths for all CPAP machines
     QList<Machine *> machlist = p_profile->GetMachines(MT_CPAP);
-    QStringList paths;
+    QList<ImportPath> paths;
     Q_FOREACH(Machine *m, machlist) {
-        if (m->properties.contains(STR_PROP_BackupPath)) {
-            paths.push_back(p_profile->Get(m->properties[STR_PROP_BackupPath]));
-        }
+        paths.append(ImportPath(m->getBackupPath(), lookupLoader(m)));
     }
 
     if (paths.size() > 0) {
-        if (QMessageBox::question(
-                    this,
-                    STR_MessageBox_Question,
-                    tr("CPAP data was recently purged and needs to be re-imported.")+"\n\n"+
-                    tr("Would you like this done automatically from the Backup Folder?")+"\n\n"+
-                    QDir::toNativeSeparators(paths.join("\n")),
-                    QMessageBox::Yes | QMessageBox::No,
-                    QMessageBox::Yes) == QMessageBox::Yes)
-        {
-            int c=0;
-            Q_FOREACH(QString path, paths) {
-                c+=importCPAP(path,tr("Please wait, importing from backup folder(s)..."));
-            }
-            if (c>0) {
-                QString str=tr("Data successfully imported from the following locations:")+"\n\n"+
-                        QDir::toNativeSeparators(paths.join("\n"));
-                mainwin->Notify(str);
-                finishCPAPImport();
-            } else {
-                mainwin->Notify(tr("Couldn't find any new Machine Data at the locations given."),tr("Import Problem"));
-            }
+        int c=0;
+        QString str=tr("Data successfully imported from the following locations:")+"\n\n";
+        Q_FOREACH(ImportPath path, paths) {
+            c+=importCPAP(path, tr("Please wait, importing from backup folder(s)..."));
+            str.append(QDir::toNativeSeparators(path.path)+"\n");
+        }
+        if (c>0) {
+            mainwin->Notify(str);
+            finishCPAPImport();
+        } else {
+            mainwin->Notify(tr("Couldn't find any new Machine Data at the locations given."),tr("Import Problem"));
         }
     }
 }
@@ -634,11 +644,12 @@ QStringList getDriveList()
     return drivelist;
 }
 
-QStringList MainWindow::detectCPAPCards()
+
+QList<ImportPath> MainWindow::detectCPAPCards()
 {
     const int timeout = 20000;
 
-    QStringList datapaths;
+    QList<ImportPath> detectedCards;
 
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
     QTime time;
@@ -674,9 +685,9 @@ QStringList MainWindow::detectCPAPCards()
             // Scan through available machine loaders and test if this folder contains valid folder structure
             Q_FOREACH(MachineLoader * loader, loaders) {
                 if (loader->Detect(path)) {
-                    datapaths.push_back(path);
+                    detectedCards.append(ImportPath(path, loader));
 
-                    qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
+                    qDebug() << "Found" << loader->loaderName() << "datacard at" << path;
                 }
             }
         }
@@ -687,12 +698,13 @@ QStringList MainWindow::detectCPAPCards()
         if (!popup.isVisible()) break;
         // needs a slight delay here
         QThread::msleep(200);
-    } while (datapaths.size() == 0);
+    } while (detectedCards.size() == 0);
     popup.hide();
     popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
 
-    return datapaths;
+    return detectedCards;
 }
+
 
 void MainWindow::on_action_Import_Data_triggered()
 {
@@ -701,7 +713,7 @@ void MainWindow::on_action_Import_Data_triggered()
         return;
     }
 
-    QStringList datapaths = detectCPAPCards();
+    QList<ImportPath> datacards = detectCPAPCards();
 
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
@@ -717,23 +729,35 @@ void MainWindow::on_action_Import_Data_triggered()
     bool asknew = false;
     qprogress->setVisible(false);
 
-    if (datapaths.size() > 0) {
-        int res = QMessageBox::question(this,
-                                        tr("CPAP Data Located"),
-                                        tr("CPAP Datacard structures were detected at the following locations:")+
-                                        QString("\n\n%1\n\n").arg(QDir::toNativeSeparators(datapaths.join("\n")))+
-                                        tr("Would you like to import from the path(s) shown above?"),
-                                        STR_MessageBox_Yes,
-                                        tr("Select another folder"),
-                                        STR_MessageBox_Cancel,
-                                        0, 2);
-        if (res == 1) {
-            waitmsg.setText(tr("Please wait, launching file dialog..."));
-            datapaths.clear();
-            asknew = true;
+    if (datacards.size() > 0) {
+        MachineInfo info = datacards[0].loader->PeekInfo(datacards[0].path);
+        QString infostr;
+        if (!info.model.isEmpty()) {
+            QString infostr2 = info.model+" ("+info.serial+")";
+            infostr = tr("A %1 file structure for a %2 was located at:").arg(info.brand).arg(infostr2);
+        } else {
+            infostr = tr("A %1 file structure was located at:").arg(datacards[0].loader->loaderName());
         }
+        QMessageBox mbox(QMessageBox::NoIcon,
+                         tr("CPAP Data Located"),
+                         infostr+"\n\n"+QDir::toNativeSeparators(datacards[0].path)+"\n\n"+
+                         tr("Would you like to import from this location?"),
+                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                         this);
+        mbox.setDefaultButton(QMessageBox::Yes);
+        mbox.setButtonText(QMessageBox::No, tr("Specify"));
 
-        if (res == 2) {
+        QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
+        mbox.setIconPixmap(pixmap);
+        int res = mbox.exec();
+
+        if (res == QMessageBox::Cancel) {
+            return;
+        } else if (res == QMessageBox::No) {
+            waitmsg.setText(tr("Please wait, launching file dialog..."));
+            datacards.clear();
+            asknew = true;
+        } else {
             // Give the communal progress bar back
             ui->statusbar->insertWidget(2,qprogress,1);
             return;
@@ -807,7 +831,12 @@ void MainWindow::on_action_Import_Data_triggered()
         popup.hide();
 
         for (int i = 0; i < w.selectedFiles().size(); i++) {
-            datapaths.append(w.selectedFiles().at(i));
+            Q_FOREACH(MachineLoader * loader, loaders) {
+                if (loader->Detect(w.selectedFiles().at(i))) {
+                    datacards.append(ImportPath(w.selectedFiles().at(i), loader));
+                    break;
+                }
+            }
         }
     }
 
@@ -819,14 +848,16 @@ void MainWindow::on_action_Import_Data_triggered()
     qprogress->setVisible(true);
 
     popup.show();
-    for (int i = 0; i < datapaths.size(); i++) {
-        QString dir = datapaths[i];
+    for (int i = 0; i < datacards.size(); i++) {
+        QString dir = datacards[i].path;
+        MachineLoader * loader = datacards[i].loader;
+        if (!loader) continue;
 
         if (!dir.isEmpty()) {
             qprogress->setValue(0);
             qprogress->show();
             qstatus->setText(tr("Importing Data"));
-            int c = p_profile->Import(dir);
+            int c = loader->Open(dir);
             qDebug() << "Finished Importing data" << c;
 
             if (c) {
@@ -1746,6 +1777,10 @@ void MainWindow::on_actionChange_User_triggered()
     RestartApplication(true);
 }
 
+void purgeCPAPDay(QDate date)
+{
+}
+
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
     QDate date = getDaily()->getDate();
@@ -1759,10 +1794,55 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         QList<Session *>::iterator s;
 
         QList<Session *> list;
-
+        QList<SessionID> sidlist;
         for (s = day->begin(); s != day->end(); ++s) {
             list.push_back(*s);
+            sidlist.push_back((*s)->session());
         }
+
+        QHash<QString, SessionID> skipfiles;
+        // Read the already imported file list
+
+        QFile impfile(m->getDataPath()+"/imported_files.csv");
+        if (impfile.exists()) {
+            if (impfile.open(QFile::ReadOnly)) {
+                QTextStream impstream(&impfile);
+                QString serial;
+                impstream >> serial;
+                if (m->serial() == serial) {
+                    QString line, file, str;
+                    SessionID sid;
+                    bool ok;
+                    do {
+                        line = impstream.readLine();
+                        file = line.section(',',0,0);
+                        str = line.section(',',1);
+                        sid = str.toInt(&ok);
+                        if (!sidlist.contains(sid)) {
+                            skipfiles[file] = sid;
+                        }
+                    } while (!impstream.atEnd());
+                }
+            }
+            impfile.close();
+            // Delete the file
+            impfile.remove();
+
+            // Rewrite the file without the sessions being removed.
+            if (impfile.open(QFile::WriteOnly)) {
+                QTextStream out(&impfile);
+                out << m->serial();
+                QHash<QString, SessionID>::iterator skit;
+                QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
+                for (skit = skipfiles.begin(); skit != skit_end; ++skit) {
+                    QString a = QString("%1,%2\n").arg(skit.key()).arg(skit.value());;
+                    out << a;
+                }
+                out.flush();
+            }
+            impfile.close();
+        }
+
 
 //        m->day.erase(m->day.find(date));
 
@@ -1791,7 +1871,7 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
     Machine * mach = nullptr;
     for (int i=0; i < machines.size(); ++i) {
         Machine * m = machines.at(i);
-        if ((m->GetClass() == cls) && (m->properties[STR_PROP_Serial] == serial)) {
+        if ((m->loaderName() == cls) && (m->serial() == serial)) {
             mach = m;
             break;
         }
@@ -1803,19 +1883,15 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
 void MainWindow::purgeMachine(Machine * mach)
 {
     // detect backups
-    bool backups = false;
-    if (mach->properties.contains(STR_PROP_BackupPath)) {
-        QString bpath = p_profile->Get(mach->properties[STR_PROP_BackupPath]);
-        int cnt = dirCount(bpath);
-        if (cnt > 0) backups = true;
-    }
+    QString bpath = mach->getBackupPath();
+    bool backups = (dirCount(bpath) > 0) ? true : false;
 
     if (backups) {
         if (QMessageBox::question(this,
                               STR_MessageBox_Question,
                               tr("Are you sure you want to rebuild all CPAP data for the following machine:")+ "\n\n" +
-                              mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
-                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")" + "\n\n"+
+                              mach->brand() + " " + mach->model() + " " +
+                              mach->modelnumber() + " (" + mach->serial() + ")" + "\n\n"+
                               tr("Please note, that this could result in loss of graph data if SleepyHead's internal backups have been disabled or interfered with in any way."),
                               QMessageBox::Yes | QMessageBox::No,
                               QMessageBox::No) == QMessageBox::No) {
@@ -1825,8 +1901,8 @@ void MainWindow::purgeMachine(Machine * mach)
         if (QMessageBox::question(this,
                               STR_MessageBox_Warning,
                               "<p><b>"+STR_MessageBox_Warning+": </b>"+tr("For some reason, SleepyHead does not have internal backups for the following machine:")+ "</p>" +
-                              "<p>"+mach->properties[STR_PROP_Brand] + " " + mach->properties[STR_PROP_Model] + " " +
-                              mach->properties[STR_PROP_ModelNumber] + " (" + mach->properties[STR_PROP_Serial] + ")" + "</p>"+
+                              "<p>"+mach->brand() + " " + mach->model() + " " +
+                              mach->modelnumber() + " (" + mach->serial() + ")" + "</p>"+
                               "<p>"+tr("Provided you have made <i>your <b>own</b> backups for ALL of your CPAP data</i>, you can still complete this operation, but you will have to restore from your backups manually.")+"</p>"
                               "<p><b>"+tr("Are you really sure you want to do this?")+"</b></p>",
                               QMessageBox::Yes | QMessageBox::No,
@@ -1844,7 +1920,7 @@ void MainWindow::purgeMachine(Machine * mach)
         QMessageBox::warning(this, STR_MessageBox_Error,
                              tr("A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:")
                              +"\n\n"+
-                             QDir::toNativeSeparators(p_profile->Get(mach->properties[STR_PROP_Path])), QMessageBox::Ok, QMessageBox::Ok);
+                             QDir::toNativeSeparators(mach->getDataPath()), QMessageBox::Ok, QMessageBox::Ok);
         if (overview) overview->ReloadGraphs();
 
         if (daily) {
@@ -1866,7 +1942,7 @@ void MainWindow::purgeMachine(Machine * mach)
 
 
     if (backups) {
-        importCPAP(p_profile->Get(mach->properties[STR_PROP_BackupPath]),tr("Please wait, importing..."));
+        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing..."));
     } else {
         if (QMessageBox::information(this, STR_MessageBox_Warning,
                                  tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+

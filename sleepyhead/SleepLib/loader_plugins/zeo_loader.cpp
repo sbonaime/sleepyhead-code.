@@ -56,42 +56,6 @@ int ZEOLoader::Open(QString path)
     return 0; // number of machines affected
 }
 
-Machine *ZEOLoader::CreateMachine(Profile *profile)
-{
-    if (!profile) {
-        return nullptr;
-    }
-
-    // NOTE: This only allows for one ZEO machine per profile..
-    // Upgrading their ZEO will use this same record..
-
-    QList<Machine *> ml = profile->GetMachines(MT_SLEEPSTAGE);
-
-    for (QList<Machine *>::iterator i = ml.begin(); i != ml.end(); i++) {
-        if ((*i)->GetClass() == zeo_class_name)  {
-            return (*i);
-            break;
-        }
-    }
-
-    qDebug("Create ZEO Machine Record");
-
-    Machine *m = new SleepStage(0);
-    m->SetType(MT_SLEEPSTAGE);
-    m->SetClass(zeo_class_name);
-    m->properties[STR_PROP_Brand] = "ZEO";
-    m->properties[STR_PROP_Model] = "Personal Sleep Coach";
-    m->properties[STR_PROP_DataVersion] = QString::number(zeo_data_version);
-
-    profile->AddMachine(m);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + m->hexid() + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
-
 /*15233: "Sleep Date"
 15234: "ZQ"
 15236: "Total Z"
@@ -154,7 +118,8 @@ int ZEOLoader::OpenFile(QString filename)
 
     QStringList SG, DSG;
 
-    Machine *mach = CreateMachine(p_profile);
+    MachineInfo info = newInfo();
+    Machine *mach = CreateMachine(info);
 
 
     int idxZQ = header.indexOf("ZQ");

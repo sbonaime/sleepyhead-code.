@@ -227,7 +227,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
             continue;
         }
 
-        drift = ((*s)->machine()->GetType() == MT_CPAP) ? clockdrift : 0;
+        drift = ((*s)->machine()->type() == MT_CPAP) ? clockdrift : 0;
 
         cei = (*s)->eventlist.find(m_code);
 

@@ -62,13 +62,17 @@ class IntellipapLoader : public MachineLoader
     virtual int Version() { return intellipap_data_version; }
 
     //! \brief Returns the machine class name of this IntelliPap, "Intellipap"
-    virtual const QString &ClassName() { return intellipap_class_name; }
+    virtual const QString &loaderName() { return intellipap_class_name; }
 
     //! \brief Creates a machine object, indexed by serial number
-    Machine *CreateMachine(QString serial);
+ //   Machine *CreateMachine(QString serial);
 
     //! \brief Registers this MachineLoader with the master list, so Intellipap data can load
     static void Register();
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_CPAP, intellipap_class_name, QObject::tr("DeVilbiss"), QString(), QString(), QString(), QObject::tr("Intellipap"), QDateTime::currentDateTime(), intellipap_data_version);
+    }
   protected:
     QString last;
     QHash<QString, Machine *> MachList;

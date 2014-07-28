@@ -327,6 +327,7 @@ class Session
     }
 
     const QString & eventFile() { return s_eventfile; }
+
 protected:
     SessionID s_session;
 

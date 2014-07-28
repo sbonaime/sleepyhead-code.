@@ -186,7 +186,7 @@ SerialOximeter * OximeterImport::detectOximeter()
         return nullptr;
     }
 
-    updateStatus(tr("Connecting to %1 Oximeter").arg(oximodule->ClassName()));
+    updateStatus(tr("Connecting to %1 Oximeter").arg(oximodule->loaderName()));
 
     return oximodule;
 }
@@ -200,7 +200,7 @@ void OximeterImport::on_directImportButton_clicked()
     if (!oximodule)
         return;
 
-    ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->ClassName())+"</h2>");
+    ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->loaderName())+"</h2>");
     updateStatus(tr("Waiting for you to start the upload process..."));
 
     connect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
@@ -226,7 +226,7 @@ void OximeterImport::on_directImportButton_clicked()
         oximodule->abort();
         return;
     }
-    ui->connectLabel->setText("<h2>"+tr("%1 device is uploading data...").arg(oximodule->ClassName())+"</h2>");
+    ui->connectLabel->setText("<h2>"+tr("%1 device is uploading data...").arg(oximodule->loaderName())+"</h2>");
     updateStatus(tr("Please wait until oximeter upload process completes. Do not unplug your oximeter."));
 
     importMode = IM_RECORDING;
@@ -330,7 +330,8 @@ void OximeterImport::on_liveImportButton_clicked()
         return;
     }
 
-    Machine *mach = oximodule->CreateMachine();
+    MachineInfo info = oximodule->newInfo();
+    Machine *mach = oximodule->CreateMachine(info);
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText(tr("Live Oximetery Mode"));
@@ -676,7 +677,8 @@ void OximeterImport::on_saveButton_clicked()
 
 
     // this can move to SerialOximeter class process function...
-    Machine * mach = oximodule->CreateMachine();
+    MachineInfo info = oximodule->newInfo();
+    Machine * mach = oximodule->CreateMachine(info);
     SessionID sid = ui->dateTimeEdit->dateTime().toUTC().toTime_t();
     quint64 start = quint64(sid) * 1000L;
 

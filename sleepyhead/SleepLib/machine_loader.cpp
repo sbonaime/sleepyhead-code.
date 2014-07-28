@@ -38,6 +38,68 @@ QList<MachineLoader *> GetLoaders(MachineType mt)
     return list;
 }
 
+MachineLoader * lookupLoader(Machine * m)
+{
+    for (int i=0; i < m_loaders.size(); ++i) {
+        MachineLoader * loader = m_loaders.at(i);
+        if (loader->loaderName() == m->loaderName())
+            return loader;
+    }
+    return nullptr;
+}
+
+QHash<QString, QHash<QString, Machine *> > MachineList;
+
+
+Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
+{
+    Q_ASSERT(p_profile != nullptr);
+
+    Machine *m = nullptr;
+
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(info.loadername);
+
+    if (mlit != MachineList.end()) {
+        QHash<QString, Machine *>::iterator mit = mlit.value().find(info.serial);
+        if (mit != mlit.value().end()) {
+            mit.value()->setInfo(info); // update info
+            return mit.value();
+        }
+    }
+
+    switch (info.type) {
+    case MT_CPAP:
+        m = new CPAP(id);
+        break;
+    case MT_SLEEPSTAGE:
+        m = new SleepStage(id);
+        break;
+    case MT_OXIMETER:
+        m = new Oximeter(id);
+        break;
+    case MT_POSITION:
+        m = new PositionSensor(id);
+        break;
+    case MT_JOURNAL:
+        m = new Machine(id);
+        break;
+    default:
+        m = new Machine(id);
+
+        break;
+    }
+
+    m->setInfo(info);
+
+    qDebug() << "Create" << info.loadername << "Machine" << (info.serial.isEmpty() ? m->hexid() : info.serial);
+
+    MachineList[info.loadername][info.serial] = m;
+    p_profile->AddMachine(m);
+
+    return m;
+}
+
+
 void RegisterLoader(MachineLoader *loader)
 {
     m_loaders.push_back(loader);

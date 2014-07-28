@@ -163,7 +163,7 @@ void CMS50Loader::processBytes(QByteArray bytes)
         break;
     default:
         ;
-//        qDebug() << "Device mode not supported by" << ClassName();
+//        qDebug() << "Device mode not supported by" << loaderName();
     }
 
     if (idx >= available) {
@@ -625,37 +625,6 @@ bool CMS50Loader::readSpoRFile(QString path)
 
     // processing gets done later
     return true;
-}
-
-Machine *CMS50Loader::CreateMachine()
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    // NOTE: This only allows for one CMS50 machine per profile..
-    // Upgrading their oximeter will use this same record..
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_OXIMETER);
-
-    for (QList<Machine *>::iterator i = ml.begin(); i != ml.end(); i++) {
-        if ((*i)->GetClass() == cms50_class_name)  {
-            return (*i);
-            break;
-        }
-    }
-
-    qDebug() << "Create CMS50 Machine Record";
-
-    Machine *m = new Oximeter(0);
-    m->SetClass(cms50_class_name);
-    m->properties[STR_PROP_Brand] = "Contec";
-    m->properties[STR_PROP_Model] = "CMS50X";
-    m->properties[STR_PROP_DataVersion] = QString::number(cms50_data_version);
-
-    p_profile->AddMachine(m);
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + m->hexid() + "/";
-    m->properties[STR_PROP_Path] = path;
-
-    return m;
 }
 
 void CMS50Loader::process()

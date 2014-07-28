@@ -54,36 +54,6 @@ int SomnoposeLoader::Open(QString path)
 
     return 0; // number of machines affected
 }
-Machine *SomnoposeLoader::CreateMachine()
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_POSITION);
-
-    for (QList<Machine *>::iterator i = ml.begin(); i != ml.end(); i++) {
-        if ((*i)->GetClass() == somnopose_class_name)  {
-            return (*i);
-            break;
-        }
-    }
-
-    qDebug("Create Somnopose Machine Record");
-
-    Machine *m = new PositionSensor(0);
-    m->SetType(MT_POSITION);
-    m->SetClass(somnopose_class_name);
-    m->properties[STR_PROP_Brand] = "Somnopose";
-    m->properties[STR_PROP_Model] = "Somnopose Position Data";
-    m->properties[STR_PROP_DataVersion] = QString::number(somnopose_data_version);
-
-    p_profile->AddMachine(m);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + m->hexid() + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
 
 int SomnoposeLoader::OpenFile(QString filename)
 {
@@ -137,7 +107,8 @@ int SomnoposeLoader::OpenFile(QString filename)
     bool ok;
 
     bool first = true;
-    Machine *mach = CreateMachine();
+    MachineInfo info = newInfo();
+    Machine *mach = CreateMachine(info);
     Session *sess = nullptr;
     SessionID sid;
 

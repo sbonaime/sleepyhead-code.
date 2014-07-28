@@ -1116,16 +1116,16 @@ QString Statistics::GenerateHTML()
 
             QString machstr;
 
-            if (rx.machine->properties.contains(STR_PROP_Brand)) {
-                machstr += rx.machine->properties[STR_PROP_Brand];
+            if (!rx.machine->brand().isEmpty()) {
+                machstr += rx.machine->brand();
             }
 
-            if (rx.machine->properties.contains(STR_PROP_Model)) {
-                machstr += " " + rx.machine->properties[STR_PROP_Model];
+            if (!rx.machine->model().isEmpty()) {
+                machstr += " " + rx.machine->model();
             }
 
-            if (rx.machine->properties.contains(STR_PROP_Serial)) {
-                machstr += " (" + rx.machine->properties[STR_PROP_Serial] + ")<br/>";
+            if (!rx.machine->serial().isEmpty()) {
+                machstr += " (" + rx.machine->serial() + ")<br/>";
             }
 
             mode = rx.mode;
@@ -1197,7 +1197,7 @@ QString Statistics::GenerateHTML()
             if (p_profile->hasChannel(CPAP_SensAwake)) {
                 html += QString("<td>%1</td>").arg(calcSA(rx.first, rx.last), 0, 'f', decimals);
             }
-            html += QString("<td>%1</td>").arg(rx.machine->GetClass());
+            html += QString("<td>%1</td>").arg(rx.machine->loaderName());
             html += QString("<td>%1</td>").arg(presrel);
             html += QString("<td>%1</td>").arg(schema::channel[CPAP_Mode].option(int(rx.mode) - 1));
             html += QString("<td>%1</td>").arg(extratxt);
@@ -1231,14 +1231,14 @@ QString Statistics::GenerateHTML()
         for (int i = 0; i < mach.size(); i++) {
             m = mach.at(i);
 
-            if (m->GetType() == MT_JOURNAL) { continue; }
+            if (m->type() == MT_JOURNAL) { continue; }
 
-            QString mn = m->properties[STR_PROP_ModelNumber];
+            QString mn = m->modelnumber();
             html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    .arg(m->properties[STR_PROP_Brand])
-                    .arg(m->properties[STR_PROP_Model] + " " + m->properties[STR_PROP_SubModel] +
+                    .arg(m->brand())
+                    .arg(m->model() +
                          (mn.isEmpty() ? "" : QString(" (") + mn + QString(")")))
-                    .arg(m->properties[STR_PROP_Serial])
+                    .arg(m->serial())
                     .arg(m->FirstDay().toString(Qt::SystemLocaleShortDate))
                     .arg(m->LastDay().toString(Qt::SystemLocaleShortDate));
         }

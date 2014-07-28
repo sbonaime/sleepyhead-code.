@@ -346,6 +346,7 @@ gGraph *Overview::createGraph(QString code, QString name, QString units, YTicker
     g->AddLayer(yt, LayerLeft, gYAxis::Margin);
     gXAxis *x = new gXAxis();
     x->setUtcFix(true);
+    x->setRoundDays(true);
     g->AddLayer(x, LayerBottom, 0, gXAxis::Margin);
     g->AddLayer(new gXGrid());
     return g;

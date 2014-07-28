@@ -44,6 +44,8 @@ gXAxis::gXAxis(QColor col, bool fadeout)
 
     tz_offset = timezoneOffset();
     tz_hours = tz_offset / 3600000.0;
+
+    m_roundDays = false;
 }
 gXAxis::~gXAxis()
 {
@@ -106,6 +108,16 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             minx = w.min_x;
             maxx = w.max_x;
         }
+
+        int days = ceil(double(maxx-minx) / 86400000.0);
+
+        if (m_roundDays && (days >= 1)) {
+            minx = floor(double(minx)/86400000.0);
+            minx *= 86400000L;
+
+            maxx = minx + 86400000L * qint64(days);
+        }
+
 
         // duration of graph display window in milliseconds.
         qint64 xx = maxx - minx;

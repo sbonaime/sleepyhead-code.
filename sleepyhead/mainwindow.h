@@ -29,6 +29,7 @@ namespace Ui {
 class MainWindow;
 }
 
+
 /*! \mainpage SleepyHead
 
  \section intro_sec Introduction
@@ -132,7 +133,7 @@ class MainWindow : public QMainWindow
 
     //! \brief Internal function to set Records Box html from statistics module
     void setRecBoxHTML(QString html);
-    int importCPAP(const QString &path, const QString &message);
+    int importCPAP(ImportPath import, const QString &message);
 
     void startImportDialog() { on_action_Import_Data_triggered(); }
 
@@ -320,7 +321,7 @@ class MainWindow : public QMainWindow
 private:
     void importCPAPBackups();
     void finishCPAPImport();
-    QStringList detectCPAPCards();
+    QList<ImportPath> detectCPAPCards();
 
     QString getWelcomeHTML();
     void FreeSessions();

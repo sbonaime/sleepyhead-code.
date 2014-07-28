@@ -25,7 +25,6 @@ const QString FPHCARE = "FPHCARE";
 FPIcon::FPIcon(MachineID id)
     : CPAP(id)
 {
-    m_class = fpicon_class_name;
 }
 
 FPIcon::~FPIcon()
@@ -56,7 +55,7 @@ bool FPIconLoader::Detect(const QString & givenpath)
     }
 
     // CHECKME: I can't access F&P ICON data right now
-    if (!dir.exists("FPCARE/ICON")) {
+    if (!dir.exists("FPHCARE/ICON")) {
         return false;
     }
 
@@ -113,18 +112,22 @@ int FPIconLoader::Open(QString path)
 
     QString npath;
 
+    int c = 0;
     for (int i = 0; i < SerialNumbers.size(); i++) {
-        QString &sn = SerialNumbers[i];
-        m = CreateMachine(sn);
+        MachineInfo info = newInfo();
+        info.serial = SerialNumbers[i];
+        m = CreateMachine(info);
 
-        npath = newpath + "/" + sn;
+        npath = newpath + "/" + info.serial;
 
         try {
-            if (m) { OpenMachine(m, npath); }
+            if (m) {
+                c+=OpenMachine(m, npath);
+            }
         } catch (OneTypePerDay e) {
             Q_UNUSED(e)
             p_profile->DelMachine(m);
-            MachList.erase(MachList.find(sn));
+            MachList.erase(MachList.find(info.serial));
             QMessageBox::warning(nullptr, "Import Error",
                                  "This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",
                                  QMessageBox::Ok);
@@ -132,7 +135,7 @@ int FPIconLoader::Open(QString path)
         }
     }
 
-    return MachList.size();
+    return c;
 }
 
 struct FPWaveChunk {
@@ -219,73 +222,77 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path)
     int cnt = 0;
     QDateTime dt;
     QString a;
-    QMap<SessionID, Session *>::iterator it = Sessions.end();
-    it--;
-    dt = QDateTime::fromTime_t(qint64(it.value()->first()) / 1000L);
-    QDate date = dt.date().addDays(-7);
-    it++;
 
-    do {
+    if (Sessions.size() > 0) {
+
+        QMap<SessionID, Session *>::iterator it = Sessions.end();
         it--;
-        Session *sess = it.value();
-        sid = sess->session();
-        hours = sess->hours();
-        mins = hours * 60;
-        dt = QDateTime::fromTime_t(sid);
 
-        if (sess->channelDataExists(CPAP_FlowRate)) { a = "(flow)"; }
-        else { a = ""; }
+        dt = QDateTime::fromTime_t(qint64(it.value()->first()) / 1000L);
+        QDate date = dt.date().addDays(-7);
+        it++;
 
-        qDebug() << cnt << ":" << dt << "session" << sid << "," << mins << "minutes" << a;
+        do {
+            it--;
+            Session *sess = it.value();
+            sid = sess->session();
+            hours = sess->hours();
+            mins = hours * 60;
+            dt = QDateTime::fromTime_t(sid);
 
-        if (dt.date() < date) { break; }
+            if (sess->channelDataExists(CPAP_FlowRate)) { a = "(flow)"; }
+            else { a = ""; }
 
-        ++cnt;
+            qDebug() << cnt << ":" << dt << "session" << sid << "," << mins << "minutes" << a;
 
-    } while (it != Sessions.begin());
+            if (dt.date() < date) { break; }
 
+            ++cnt;
 
-    //    qDebug() << "Unmatched Sessions";
-    //    QList<FPWaveChunk> chunks;
-    //    for (QMap<int,QDate>::iterator dit=FLWDate.begin();dit!=FLWDate.end();dit++) {
-    //        int k=dit.key();
-    //        //QDate date=dit.value();
-    ////        QList<Session *> values = SessDate.values(date);
-    //        for (int j=0;j<FLWTS[k].size();j++) {
+        } while (it != Sessions.begin());
 
-    //            FPWaveChunk chunk(FLWTS[k].at(j),FLWDuration[k].at(j),k);
-    //            chunk.flow=FLWMapFlow[k].at(j);
-    //            chunk.leak=FLWMapLeak[k].at(j);
-    //            chunk.pressure=FLWMapPres[k].at(j);
+    }
+        //    qDebug() << "Unmatched Sessions";
+        //    QList<FPWaveChunk> chunks;
+        //    for (QMap<int,QDate>::iterator dit=FLWDate.begin();dit!=FLWDate.end();dit++) {
+        //        int k=dit.key();
+        //        //QDate date=dit.value();
+        ////        QList<Session *> values = SessDate.values(date);
+        //        for (int j=0;j<FLWTS[k].size();j++) {
 
-    //            chunks.push_back(chunk);
+        //            FPWaveChunk chunk(FLWTS[k].at(j),FLWDuration[k].at(j),k);
+        //            chunk.flow=FLWMapFlow[k].at(j);
+        //            chunk.leak=FLWMapLeak[k].at(j);
+        //            chunk.pressure=FLWMapPres[k].at(j);
 
-    //            zz=FLWTS[k].at(j)/1000;
-    //            dur=double(FLWDuration[k].at(j))/60000.0;
-    //            bool b,c=false;
-    //            if (Sessions.contains(zz)) b=true; else b=false;
-    //            if (b) {
-    //                if (Sessions[zz]->channelDataExists(CPAP_FlowRate)) c=true;
-    //            }
-    //            qDebug() << k << "-" <<j << ":" << zz << qRound(dur) << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
-    //        }
-    //    }
-    //    qSort(chunks);
-    //    bool b,c;
-    //    for (int i=0;i<chunks.size();i++) {
-    //        const FPWaveChunk & chunk=chunks.at(i);
-    //        zz=chunk.st/1000;
-    //        dur=double(chunk.duration)/60000.0;
-    //        if (Sessions.contains(zz)) b=true; else b=false;
-    //        if (b) {
-    //            if (Sessions[zz]->channelDataExists(CPAP_FlowRate)) c=true;
-    //        }
-    //        qDebug() << chunk.file << ":" << i << zz << dur << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
-    //    }
+        //            chunks.push_back(chunk);
+
+        //            zz=FLWTS[k].at(j)/1000;
+        //            dur=double(FLWDuration[k].at(j))/60000.0;
+        //            bool b,c=false;
+        //            if (Sessions.contains(zz)) b=true; else b=false;
+        //            if (b) {
+        //                if (Sessions[zz]->channelDataExists(CPAP_FlowRate)) c=true;
+        //            }
+        //            qDebug() << k << "-" <<j << ":" << zz << qRound(dur) << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
+        //        }
+        //    }
+        //    qSort(chunks);
+        //    bool b,c;
+        //    for (int i=0;i<chunks.size();i++) {
+        //        const FPWaveChunk & chunk=chunks.at(i);
+        //        zz=chunk.st/1000;
+        //        dur=double(chunk.duration)/60000.0;
+        //        if (Sessions.contains(zz)) b=true; else b=false;
+        //        if (b) {
+        //            if (Sessions[zz]->channelDataExists(CPAP_FlowRate)) c=true;
+        //        }
+        //        qDebug() << chunk.file << ":" << i << zz << dur << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
+        //    }
 
     mach->Save();
 
-    return true;
+    return 1;
 }
 
 // !\brief Convert F&P 32bit date format to 32bit UNIX Timestamp
@@ -451,8 +458,8 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
     htxt >> model;
     htxt >> type;
 
-    if (mach->properties[STR_PROP_Model].isEmpty()) {
-        mach->properties[STR_PROP_Model] = model + " " + type;
+    if (mach->model().isEmpty()) {
+        mach->setModel(model+" "+type);
     }
 
     QByteArray buf = file.read(4);
@@ -591,7 +598,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
     }
 
     if (p_profile->session->backupCardData()) {
-        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QString backup = mach->getBackupPath()+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("FLW%1.FPH").arg(ts);
         dir.mkpath(backup);
@@ -645,7 +652,8 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
     htxt >> serial;
     htxt >> model;
     htxt >> type;
-    mach->properties[STR_PROP_Model] = model + " " + type;
+
+    mach->setModel(model + " " + type);
 
     QByteArray data;
     data = file.readAll();
@@ -744,7 +752,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
     } while (!in.atEnd());
 
     if (p_profile->session->backupCardData()) {
-        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QString backup = mach->getBackupPath()+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("SUM%1.FPH").arg(QDate::currentDate().year(),4,10,QChar('0'));
         dir.mkpath(backup);
@@ -911,7 +919,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
         ts = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
         ts = convertDate(ts);
 
-        QString backup = p_profile->Get(mach->properties[STR_PROP_BackupPath])+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
+        QString backup = mach->getBackupPath()+"FPHCARE/ICON/"+serial.right(serial.size()-4)+"/";
         QDir dir;
         QString newname = QString("DET%1.FPH").arg(ts);
 
@@ -923,53 +931,6 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
     }
 
     return 1;
-}
-
-
-Machine *FPIconLoader::CreateMachine(QString serial)
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    qDebug() << "Create Machine " << serial;
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
-    bool found = false;
-    QList<Machine *>::iterator i;
-    Machine *m;
-
-    for (i = ml.begin(); i != ml.end(); i++) {
-        if (((*i)->GetClass() == fpicon_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            MachList[serial] = *i;
-            found = true;
-            m = *i;
-            break;
-        }
-    }
-
-    if (!found) {
-        m = new FPIcon(0);
-    }
-
-    m->properties[STR_PROP_Brand] = "Fisher & Paykel";
-    m->properties[STR_PROP_Series] = STR_MACH_FPIcon;
-    m->properties[STR_PROP_Model] = STR_MACH_FPIcon;
-
-    if (found) {
-        return m;
-    }
-
-
-    MachList[serial] = m;
-    p_profile->AddMachine(m);
-
-    m->properties[STR_PROP_Serial] = serial;
-    m->properties[STR_PROP_DataVersion] = QString::number(fpicon_data_version);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + serial + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
 }
 
 bool fpicon_initialized = false;

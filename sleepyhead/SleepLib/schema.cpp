@@ -133,6 +133,11 @@ void init()
                         QObject::tr("Ramp Pr."),    STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
 
 
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_Ramp      = 0x1027, SPAN, SESSION,
+                        "Ramp",      QObject::tr("Ramp Event") ,      QObject::tr("Ramp Event"),
+                        QObject::tr("Ramp"),   STR_UNIT_EventsPerHour, DEFAULT,    QColor("light blue")));
+
+
     // Flags
     schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, SPAN,    SESSION, "CSR",
                         QObject::tr("Periodic Breathing"),

@@ -20,7 +20,6 @@ extern QProgressBar *qprogress;
 Intellipap::Intellipap(MachineID id)
     : CPAP(id)
 {
-    m_class = intellipap_class_name;
 }
 
 Intellipap::~Intellipap()
@@ -88,17 +87,40 @@ int IntellipapLoader::Open(QString path)
     f.open(QFile::ReadOnly);
     QTextStream tstream(&f);
 
+    const QString INT_PROP_Serial = "Serial";
+    const QString INT_PROP_Model = "Model";
+    const QString INT_PROP_Mode = "Mode";
+    const QString INT_PROP_MaxPressure = "Max Pressure";
+    const QString INT_PROP_MinPressure = "Min Pressure";
+    const QString INT_PROP_IPAP = "IPAP";
+    const QString INT_PROP_EPAP = "EPAP";
+    const QString INT_PROP_PS = "PS";
+    const QString INT_PROP_RampPressure = "Ramp Pressure";
+    const QString INT_PROP_RampTime = "Ramp Time";
+
+    const QString INT_PROP_HourMeter = "Usage Hours";
+    const QString INT_PROP_ComplianceMeter = "Compliance Hours";
+    const QString INT_PROP_ErrorCode = "Error";
+    const QString INT_PROP_LastErrorCode = "Long Error";
+    const QString INT_PROP_LowUseThreshold = "Low Usage";
+    const QString INT_PROP_SmartFlex = "SmartFlex";
+    const QString INT_PROP_SmartFlexMode = "SmartFlexMode";
+
+
     QHash<QString, QString> lookup;
-        lookup["Sn"]=STR_PROP_Serial;
-        lookup["Mn"]=STR_PROP_ModelNumber;
-        lookup["Mo"]="PAPMode";     // 0 cpap, 1 auto
+        lookup["Sn"] = INT_PROP_Serial;
+        lookup["Mn"] = INT_PROP_Model;
+        lookup["Mo"] = INT_PROP_Mode;     // 0 cpap, 1 auto
         //lookup["Pn"]="??";
-        lookup["Pu"]="MaxPressure";
-        lookup["Pl"]="MaxPressure";
+        lookup["Pu"] = INT_PROP_MaxPressure;
+        lookup["Pl"] = INT_PROP_MinPressure;
+        lookup["Pi"] = INT_PROP_IPAP;
+        lookup["Pe"] = INT_PROP_EPAP;  // == WF on Auto models
+        lookup["Ps"] = INT_PROP_PS;             // == WF on Auto models, Pressure support
         //lookup["Ds"]="??";
         //lookup["Pc"]="??";
-        lookup["Pd"]="RampPressure"; // Pressure Delay
-        lookup["Dt"]="RampTime";
+        lookup["Pd"] = INT_PROP_RampPressure;
+        lookup["Dt"] = INT_PROP_RampTime;
         //lookup["Ld"]="??";
         //lookup["Lh"]="??";
         //lookup["FC"]="??";
@@ -114,24 +136,34 @@ int IntellipapLoader::Open(QString path)
         lookup["Re"]="SmartFlexERnd"; // Inhale Rounding (0-5)
         //lookup["Bu"]="??"; // WF
         //lookup["Ie"]="??"; // 20
-        //lookup["Se"]="??"; // 05
-        //lookup["Si"]="??"; // 05
+        //lookup["Se"]="??"; // 05    //Inspiratory trigger?
+        //lookup["Si"]="??"; // 05    // Expiratory Trigger?
         //lookup["Mi"]="??"; // 0
         lookup["Uh"]="HoursMeter"; // 0000.0
         lookup["Up"]="ComplianceMeter"; // 0000.00
         //lookup["Er"]="ErrorCode";, // E00
-        //lookup["El"]="LastErrorCode"; // E00 00/00/0000
+        //lookup["El"]="LongErrorCode"; // E00 00/00/0000
         //lookup["Hp"]="??";, // 1
         //lookup["Hs"]="??";, // 02
         //lookup["Lu"]="LowUseThreshold"; // defaults to 0 (4 hours)
-        lookup["Sf"]="SmartFlex";
-        lookup["Sm"]="SmartFlexMode";
+        lookup["Sf"] = INT_PROP_SmartFlex;
+        lookup["Sm"] = INT_PROP_SmartFlexMode;
         lookup["Ks=s"]="Ks_s";
         lookup["Ks=i"]="ks_i";
 
     QHash<QString, QString> set1;
     QHash<QString, QString>::iterator hi;
 
+    Machine *mach = nullptr;
+
+    MachineInfo info = newInfo();
+
+
+    bool ok;
+
+    EventDataType min_pressure = 0, max_pressure = 0, ramp_pressure = 0, set_epap = 0, set_ipap = 0, set_ps = 0, ramp_time = 0;
+
+    int papmode = 0, smartflex = 0, smartflexmode = 0;
     while (1) {
         QString line = tstream.readLine();
 
@@ -146,14 +178,52 @@ int IntellipapLoader::Open(QString path)
         }
 
         QString value = line.section("\t", 1).trimmed();
-        set1[key] = value;
+
+        if (key == INT_PROP_Mode) {
+            papmode = value.toInt(&ok);
+        } else if (key == INT_PROP_Serial) {
+            info.serial = value;
+        } else if (key == INT_PROP_Model) {
+            info.model = value;
+        } else if (key == INT_PROP_MinPressure) {
+            min_pressure = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_MaxPressure) {
+            max_pressure = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_IPAP) {
+            set_ipap = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_EPAP) {
+            set_epap = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_PS) {
+            set_ps = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_RampPressure) {
+            ramp_pressure = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_RampTime) {
+            ramp_time = value.toFloat() / 10.0;
+        } else if (key == INT_PROP_SmartFlex) {
+            smartflex = value.toInt();
+        } else if (key == INT_PROP_SmartFlexMode) {
+            smartflexmode = value.toInt();
+        } else {
+            set1[key] = value;
+        }
         qDebug() << key << "=" << value;
     }
 
-    Machine *mach = nullptr;
+    CPAPMode mode = MODE_UNKNOWN;
 
-    if (set1.contains(STR_PROP_Serial)) {
-        mach = CreateMachine(set1[STR_PROP_Serial]);
+    switch (papmode) {
+    case 0:
+        mode = MODE_CPAP;
+        break;
+    case 1:
+        mode = (set_epap > 0) ? MODE_BILEVEL_FIXED : MODE_APAP;
+        break;
+    default:
+        qDebug() << "New machine mode";
+    }
+
+    if (!info.serial.isEmpty()) {
+        mach = CreateMachine(info);
     }
 
     if (!mach) {
@@ -161,19 +231,24 @@ int IntellipapLoader::Open(QString path)
         return 0;
     }
 
+    QString backupPath = mach->getBackupPath();
+    QString copypath = path;
+
+    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
+        copyPath(path, backupPath);
+    }
+
+
     // Refresh properties data..
     for (QHash<QString, QString>::iterator i = set1.begin(); i != set1.end(); i++) {
         mach->properties[i.key()] = i.value();
     }
 
-    mach->properties[STR_PROP_Model] = STR_MACH_Intellipap + " " +
-                                       mach->properties[STR_PROP_ModelNumber];
-
     f.close();
 
-    //////////////////////////
-    // Parse the Session Index
-    //////////////////////////
+    ///////////////////////////////////////////////
+    // Parse the Session Index (U File)
+    ///////////////////////////////////////////////
     unsigned char buf[27];
     filename = newpath + "/U";
     f.setFileName(filename);
@@ -193,21 +268,22 @@ int IntellipapLoader::Open(QString path)
 
     do {
         cnt = f.read((char *)buf, 9);
+        // big endian
         ts1 = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
         ts2 = (buf[4] << 24) | (buf[5] << 16) | (buf[6] << 8) | buf[7];
+        // buf[8] == ??? What is this byte? A Bit Field? A checksum?
         ts1 += ep;
         ts2 += ep;
         SessionStart.append(ts1);
         SessionEnd.append(ts2);
-        //cs=buf[8];
     } while (cnt > 0);
 
     qDebug() << "U file logs" << SessionStart.size() << "sessions.";
     f.close();
 
-    //////////////////////////
-    // Parse the Session Data
-    //////////////////////////
+    ///////////////////////////////////////////////
+    // Parse the Session Data (L File)
+    ///////////////////////////////////////////////
     filename = newpath + "/L";
     f.setFileName(filename);
 
@@ -225,6 +301,7 @@ int IntellipapLoader::Open(QString path)
 
     Session *sess;
     SessionID sid;
+    QHash<SessionID,qint64> rampstart;
 
     for (int i = 0; i < SessionStart.size(); i++) {
         sid = SessionStart[i];
@@ -235,10 +312,15 @@ int IntellipapLoader::Open(QString path)
             SessionEnd[i] = 0;
         } else if (!Sessions.contains(sid)) {
             sess = Sessions[sid] = new Session(mach, sid);
+            rampstart[sid] = 0;
             sess->SetChanged(true);
-            sess->AddEventList(CPAP_IPAP, EVL_Event);
-            sess->AddEventList(CPAP_EPAP, EVL_Event);
-            sess->AddEventList(CPAP_Pressure, EVL_Event);
+            if (mode >= MODE_BILEVEL_FIXED) {
+                sess->AddEventList(CPAP_IPAP, EVL_Event);
+                sess->AddEventList(CPAP_EPAP, EVL_Event);
+                sess->AddEventList(CPAP_PS, EVL_Event);
+            } else {
+                sess->AddEventList(CPAP_Pressure, EVL_Event);
+            }
 
             sess->AddEventList(INTELLIPAP_Unknown1, EVL_Event);
             sess->AddEventList(INTELLIPAP_Unknown2, EVL_Event);
@@ -271,6 +353,7 @@ int IntellipapLoader::Open(QString path)
     }
 
     long pos = 0;
+    int rampval = 0;
 
     for (int i = 0; i < recs; i++) {
         // convert timestamp to real epoch
@@ -284,16 +367,61 @@ int IntellipapLoader::Open(QString path)
             if ((ts1 >= (quint32)sid) && (ts1 <= SessionEnd[j])) {
                 Session *sess = Sessions[sid];
                 qint64 time = quint64(ts1) * 1000L;
-                sess->eventlist[CPAP_Pressure][0]->AddEvent(time, m_buffer[pos + 0xd] / 10.0); // current pressure
-                sess->eventlist[CPAP_EPAP][0]->AddEvent(time, m_buffer[pos + 0x13] / 10.0); // epap / low
-                sess->eventlist[CPAP_IPAP][0]->AddEvent(time, m_buffer[pos + 0x14] / 10.0); // ipap / high
+                sess->settings[CPAP_Mode] = mode;
+
+                int minp = m_buffer[pos + 0x13];
+                int maxp = m_buffer[pos + 0x14];
+                int ps = m_buffer[pos + 0x15];
+                int pres = m_buffer[pos + 0xd];
+
+                if (mode >= MODE_BILEVEL_FIXED) {
+
+                    sess->settings[CPAP_EPAP] = float(minp) / 10.0;
+                    sess->settings[CPAP_IPAP] = float(maxp) / 10.0;
+
+                    sess->settings[CPAP_PS] = float(ps) / 10.0;
+
+
+                    sess->eventlist[CPAP_IPAP][0]->AddEvent(time, float(pres) / 10.0);
+                    sess->eventlist[CPAP_EPAP][0]->AddEvent(time, float(pres-ps) / 10.0);
+                    rampval = maxp;
+
+                } else {
+                    sess->eventlist[CPAP_Pressure][0]->AddEvent(time, float(pres) / 10.0); // current pressure
+                    rampval = minp;
+
+                    if (mode == MODE_APAP) {
+                        sess->settings[CPAP_PressureMin] = float(minp) / 10.0;
+                        sess->settings[CPAP_PressureMax] = float(maxp) / 10.0;
+                    } else if (mode == MODE_CPAP) {
+                        sess->settings[CPAP_Pressure] = float(maxp) / 10.0;
+                    }
+                }
+                qint64 rs = rampstart[sid];
+
+                if (pres < rampval) {
+                    if (!rs) {
+                        rampstart[sid] = time;
+                    }
+                } else {
+                    if (rs > 0) {
+                        if (!sess->eventlist.contains(CPAP_Ramp)) {
+                            sess->AddEventList(CPAP_Ramp, EVL_Event);
+                        }
+                        int duration = (time - rs) / 1000L;
+                        sess->eventlist[CPAP_Ramp][0]->AddEvent(time, duration);
+
+                        rampstart[sid] = 0;
+                    }
+                }
+
 
                 sess->eventlist[CPAP_LeakTotal][0]->AddEvent(time, m_buffer[pos + 0x7]); // "Average Leak"
                 sess->eventlist[CPAP_MaxLeak][0]->AddEvent(time, m_buffer[pos + 0x6]); // "Max Leak"
 
                 int rr = m_buffer[pos + 0xa];
                 sess->eventlist[CPAP_RespRate][0]->AddEvent(time, rr); // Respiratory Rate
-                sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time, m_buffer[pos + 0xf]); //
+               // sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time, m_buffer[pos + 0xf]); //
                 sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time, m_buffer[pos + 0xc]);
 
                 sess->eventlist[CPAP_Snore][0]->AddEvent(time, m_buffer[pos + 0x4]); //4/5??
@@ -314,9 +442,9 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_ExP, EVL_Event);
                     }
 
-                    for (int q = 0; q < m_buffer[pos + 0x5]; q++) {
+                   // for (int q = 0; q < m_buffer[pos + 0x5]; q++) {
                         sess->eventlist[CPAP_ExP][0]->AddEvent(time, m_buffer[pos + 0x5]);
-                    }
+                   // }
                 }
 
                 if (m_buffer[pos + 0x10] > 0) {
@@ -324,9 +452,9 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     }
 
-                    for (int q = 0; q < m_buffer[pos + 0x10]; q++) {
+                   // for (int q = 0; q < m_buffer[pos + 0x10]; q++) {
                         sess->eventlist[CPAP_Obstructive][0]->AddEvent(time, m_buffer[pos + 0x10]);
-                    }
+                   // }
                 }
 
                 if (m_buffer[pos + 0x11] > 0) {
@@ -334,9 +462,9 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_Hypopnea, EVL_Event);
                     }
 
-                    for (int q = 0; q < m_buffer[pos + 0x11]; q++) {
+                  //  for (int q = 0; q < m_buffer[pos + 0x11]; q++) {
                         sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time, m_buffer[pos + 0x11]);
-                    }
+                   // }
                 }
 
                 if (m_buffer[pos + 0x12] > 0) { // NRI // is this == to RERA?? CA??
@@ -344,9 +472,9 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_NRI, EVL_Event);
                     }
 
-                    for (int q = 0; q < m_buffer[pos + 0x12]; q++) {
+                   // for (int q = 0; q < m_buffer[pos + 0x12]; q++) {
                         sess->eventlist[CPAP_NRI][0]->AddEvent(time, m_buffer[pos + 0x12]);
-                    }
+                   // }
                 }
 
                 quint16 tv = (m_buffer[pos + 0x8] << 8) | m_buffer[pos + 0x9]; // correct
@@ -368,47 +496,45 @@ int IntellipapLoader::Open(QString path)
 
         if (sid) {
             sess = Sessions[sid];
-            //if (sess->eventlist.size()==0) {
-            //   delete sess;
-            //   continue;
-            //}
-
 
             quint64 first = qint64(sid) * 1000L;
             quint64 last = qint64(SessionEnd[i]) * 1000L;
 
             sess->settings[CPAP_PresReliefType] = (PRTypes)PR_SMARTFLEX;
-            int i = set1["SmartFlex"].toInt();
-            sess->settings[CPAP_PresReliefSet] = i;
-            int sfm = set1["SmartFlexMode"].toInt();
 
-            if (sfm == 0) {
+            sess->settings[CPAP_PresReliefSet] = smartflex;
+
+            if (smartflexmode == 0) {
                 sess->settings[CPAP_PresReliefMode] = PM_FullTime;
             } else {
                 sess->settings[CPAP_PresReliefMode] = PM_RampOnly;
             }
 
-            EventDataType max = sess->Max(CPAP_IPAP);
-            EventDataType min = sess->Min(CPAP_EPAP);
-            EventDataType pres = sess->Min(CPAP_Pressure);
+            sess->settings[CPAP_RampPressure] = ramp_pressure;
+            sess->settings[CPAP_RampTime] = ramp_time;
 
-            if (max == min) {
-                sess->settings[CPAP_Mode] = (int)MODE_CPAP;
-                sess->settings[CPAP_Pressure] = min;
-            } else {
-                sess->settings[CPAP_Mode] = (int)MODE_APAP;
-                sess->settings[CPAP_PressureMin] = min;
-                sess->settings[CPAP_PressureMax] = max;
-            }
 
-            sess->eventlist.erase(sess->eventlist.find(CPAP_IPAP));
-            sess->eventlist.erase(sess->eventlist.find(CPAP_EPAP));
-            sess->m_min.erase(sess->m_min.find(CPAP_EPAP));
-            sess->m_max.erase(sess->m_max.find(CPAP_EPAP));
+//            EventDataType max = sess->Max(CPAP_IPAP);
+//            EventDataType min = sess->Min(CPAP_EPAP);
+//            EventDataType pres = sess->Min(CPAP_Pressure);
 
-            if (pres < min) {
-                sess->settings[CPAP_RampPressure] = pres;
-            }
+//            if (max == min) {
+//                sess->settings[CPAP_Mode] = (int)MODE_CPAP;
+//                sess->settings[CPAP_Pressure] = min;
+//            } else {
+//                sess->settings[CPAP_Mode] = (int)MODE_APAP;
+//                sess->settings[CPAP_PressureMin] = min;
+//                sess->settings[CPAP_PressureMax] = max;
+//            }
+
+//            sess->eventlist.erase(sess->eventlist.find(CPAP_IPAP));
+//            sess->eventlist.erase(sess->eventlist.find(CPAP_EPAP));
+//            sess->m_min.erase(sess->m_min.find(CPAP_EPAP));
+//            sess->m_max.erase(sess->m_max.find(CPAP_EPAP));
+
+//            if (pres < min) {
+//                sess->settings[CPAP_RampPressure] = pres;
+//            }
 
             sess->set_first(first);
             sess->set_last(last);
@@ -417,8 +543,6 @@ int IntellipapLoader::Open(QString path)
             mach->AddSession(sess);
         }
     }
-
-    mach->properties[STR_PROP_DataVersion] = QString().sprintf("%i", intellipap_data_version);
 
     mach->Save();
 
@@ -430,52 +554,6 @@ int IntellipapLoader::Open(QString path)
 
     return 1;
 }
-
-Machine *IntellipapLoader::CreateMachine(QString serial)
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    qDebug() << "Create Machine " << serial;
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
-    bool found = false;
-    QList<Machine *>::iterator i;
-    Machine *m = nullptr;
-
-    for (i = ml.begin(); i != ml.end(); i++) {
-        if (((*i)->GetClass() == intellipap_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            MachList[serial] = *i; //static_cast<CPAP *>(*i);
-            found = true;
-            m = *i;
-            break;
-        }
-    }
-
-    if (!found) {
-        m = new Intellipap(0);
-    }
-
-    m->properties[STR_PROP_Brand] = "DeVilbiss";
-    m->properties[STR_PROP_Series] = STR_MACH_Intellipap;
-
-    if (found) {
-        return m;
-    }
-
-
-    MachList[serial] = m;
-    p_profile->AddMachine(m);
-
-    m->properties[STR_PROP_Serial] = serial;
-    m->properties[STR_PROP_DataVersion] = QString::number(intellipap_data_version);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + serial + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
-
 
 bool intellipap_initialized = false;
 void IntellipapLoader::Register()

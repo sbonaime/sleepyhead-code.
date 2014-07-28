@@ -189,14 +189,19 @@ class PRS1Loader : public MachineLoader
     //! \brief Returns the database version of this loader
     virtual int Version() { return prs1_data_version; }
 
-    //! \brief Return the ClassName, in this case "PRS1"
-    virtual const QString &ClassName() { return prs1_class_name; }
+    //! \brief Return the loaderName, in this case "PRS1"
+    virtual const QString &loaderName() { return prs1_class_name; }
 
-    //! \brief Create a new PRS1 machine record, indexed by Serial number.
-    Machine *CreateMachine(QString serial);
+    // //! \brief Create a new PRS1 machine record, indexed by Serial number.
+    //Machine *CreateMachine(QString serial);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_CPAP, prs1_class_name, QObject::tr("Philips Respironics"), QString(), QString(), QString(), QObject::tr("System One"), QDateTime::currentDateTime(), prs1_data_version);
+    }
+
 
     QHash<SessionID, PRS1FileGroup*> prs1sessions;
 

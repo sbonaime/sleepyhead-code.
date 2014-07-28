@@ -20,9 +20,6 @@ extern QProgressBar *qprogress;
 MSeries::MSeries(MachineID id)
     : CPAP(id)
 {
-    m_class = mseries_class_name;
-    properties[STR_PROP_Brand] = "Respironics";
-    properties[STR_PROP_Model] = STR_MACH_MSeries;
 }
 
 MSeries::~MSeries()
@@ -484,40 +481,6 @@ int MSeriesLoader::Open(QString path)
     return 1;
 }
 
-Machine *MSeriesLoader::CreateMachine(QString serial)
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    qDebug() << "Create Machine " << serial;
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
-    bool found = false;
-    QList<Machine *>::iterator i;
-
-    for (i = ml.begin(); i != ml.end(); i++) {
-        if (((*i)->GetClass() == mseries_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            MachList[serial] = *i;
-            found = true;
-            break;
-        }
-    }
-
-    if (found) { return *i; }
-
-    Machine *m = new MSeries(0);
-
-    MachList[serial] = m;
-    p_profile->AddMachine(m);
-
-    m->properties[STR_PROP_Serial] = serial;
-    m->properties[STR_PROP_DataVersion] = QString::number(mseries_data_version);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + serial + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
 
 bool mseries_initialized = false;
 void MSeriesLoader::Register()

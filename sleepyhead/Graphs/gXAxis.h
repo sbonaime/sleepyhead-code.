@@ -38,6 +38,8 @@ class gXAxis: public Layer
     bool ShowMajorTicks() { return m_show_major_ticks; }
     void setUtcFix(bool b) { m_utcfix = b; }
 
+    void setRoundDays(bool b) { m_roundDays = b; }
+
   protected:
     bool m_show_major_lines;
     bool m_show_minor_lines;
@@ -55,6 +57,8 @@ class gXAxis: public Layer
     float tz_hours;
 
     QImage m_image;
+
+    bool m_roundDays;
 };
 
 #endif // GXAXIS_H

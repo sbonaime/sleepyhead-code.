@@ -46,13 +46,13 @@ Machine::Machine(MachineID id)
 
     } else { m_id = id; }
 
-    qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
+   // qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
     m_type = MT_UNKNOWN;
     firstsession = true;
 }
 Machine::~Machine()
 {
-    qDebug() << "Destroy Machine" << m_class << hex << m_id;
+    qDebug() << "Destroy Machine" << info.loadername << hex << m_id;
 
     for (QMap<QDate, Day *>::iterator d = day.begin(); d != day.end(); d++) {
         delete d.value();
@@ -272,7 +272,7 @@ bool Machine::Purge(int secret)
     // Boring api key to stop this function getting called by accident :)
     if (secret != 3478216) { return false; }
 
-    QString path = p_profile->Get(properties[STR_PROP_Path]);
+    QString path = getDataPath();
 
     QDir dir(path);
 
@@ -284,7 +284,7 @@ bool Machine::Purge(int secret)
         return false;
     }
 
-    qDebug() << "Purging" << m_class << properties[STR_PROP_Serial] << dir.absoluteFilePath(path);
+    qDebug() << "Purging" << info.loadername << info.serial << dir.absoluteFilePath(path);
 
     // Remove any imported file list
     QFile impfile(getDataPath()+"/imported_files.csv");
@@ -298,7 +298,7 @@ bool Machine::Purge(int secret)
     for (int i=0; i < sessions.size(); ++i) {
         Session * sess = sessions[i];
         if (!sess->Destroy()) {
-            qDebug() << "Could not destroy "+ m_class+" ("+properties[STR_PROP_Serial]+") session" << sess->session();
+            qDebug() << "Could not destroy "+ info.loadername +" ("+info.serial+") session" << sess->session();
             success = false;
         } else {
 //            sessionlist.remove(sess->session());
@@ -346,15 +346,21 @@ bool Machine::Purge(int secret)
 }
 
 //const quint32 channel_version=1;
+
 const QString Machine::getDataPath()
 {
-    return p_profile->Get(properties[STR_PROP_Path]);
+    return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+}
+
+const QString Machine::getBackupPath()
+{
+    return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
 }
 
 
 bool Machine::Load()
 {
-    QString path = p_profile->Get(properties[STR_PROP_Path]);
+    QString path = getDataPath();
 
     QDir dir(path);
     qDebug() << "Loading " << QDir::toNativeSeparators(path);
@@ -424,7 +430,7 @@ bool Machine::Load()
 
 bool Machine::SaveSession(Session *sess)
 {
-    QString path = p_profile->Get(properties[STR_PROP_Path]);
+    QString path = getDataPath();
 
     if (sess->IsChanged()) { sess->Store(path); }
 
@@ -440,7 +446,7 @@ void Machine::queSaveList(Session * sess)
         QApplication::processEvents();
 
         sess->UpdateSummaries();
-        sess->Store(p_profile->Get(properties[STR_PROP_Path]));
+        sess->Store(getDataPath());
 
         if (!p_profile->session->cacheSessions()) {
             sess->TrashEvents();
@@ -474,7 +480,7 @@ void Machine::StartSaveThreads()
     m_savelist.clear();
     if (!p_profile->session->multithreading()) return;
 
-    QString path = p_profile->Get(properties[STR_PROP_Path]);
+    QString path = getDataPath();
 
     int threads = QThread::idealThreadCount();
     savelistSem = new QSemaphore(threads);
@@ -567,7 +573,7 @@ void SaveTask::run()
 {
     sess->UpdateSummaries();
     mach->saveMutex.lock();
-    sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+    sess->Store(mach->getDataPath());
     mach->saveMutex.unlock();
     sess->TrashEvents();
 }
@@ -609,7 +615,7 @@ bool Machine::Save()
     //int size;
     int cnt = 0;
 
-    QString path = p_profile->Get(properties[STR_PROP_Path]);
+    QString path = getDataPath();
     QDir dir(path);
 
     if (!dir.exists()) {
@@ -682,7 +688,7 @@ PositionSensor::~PositionSensor()
 ChannelID NoChannel, SESSION_ENABLED, CPAP_SummaryOnly;
 ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_Pressure,
           CPAP_PS, CPAP_Mode, CPAP_AHI,
-          CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive,
+          CPAP_PressureMin, CPAP_PressureMax, CPAP_Ramp, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive,
           CPAP_Hypopnea,
           CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_VSnore,
           CPAP_VSnore2,

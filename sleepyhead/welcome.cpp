@@ -130,15 +130,15 @@ QString GenerateWelcomeHTML()
             QDate date = p_profile->LastDay(MT_CPAP);
             Day *day = p_profile->GetDay(date, MT_CPAP);
             if (day) {
-                if (day->machine->GetClass() == STR_MACH_ResMed) cpapimage = "qrc:/icons/rms9.png";
-                else if (day->machine->GetClass() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
-                else if (day->machine->GetClass() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
+                if (day->machine->loaderName() == STR_MACH_ResMed) cpapimage = "qrc:/icons/rms9.png";
+                else if (day->machine->loaderName() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
+                else if (day->machine->loaderName() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
             }
             html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
             html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+
                     QString("<td align=center  onmouseover='ChangeColor(this, \"#efefa0\");' onmouseout='ChangeColor(this, \"#ffffc0\");' onclick='alert(\"daily=%1\");'>").arg(date.toString(Qt::ISODate))+"<b>"+
-                    QObject::tr("The last time you used your %1...").arg(day->machine->properties[STR_PROP_Brand]+" "+day->machine->properties[STR_PROP_Model])+"</b><br/>";
+                    QObject::tr("The last time you used your %1...").arg(day->machine->brand()+" "+day->machine->model())+"</b><br/>";
 
             int daysto = date.daysTo(QDate::currentDate());
             QString daystring;
@@ -199,10 +199,18 @@ QString GenerateWelcomeHTML()
                 EventDataType ipap = day->percentile(CPAP_IPAP, perc/100.0);
                 EventDataType epap = day->percentile(CPAP_EPAP, perc/100.0);
                 html += QObject::tr("Your machine was under %1-%2 %3 for %4% of the time.").arg(epap).arg(ipap).arg(schema::channel[CPAP_Pressure].units()).arg(perc);
-            } else {
-                EventDataType pressure = day->percentile(CPAP_Pressure, perc/100.0);
-                html += QObject::tr("Your EPAP pressure was under %1%2 for %3% of the time.").arg(pressure).arg(schema::channel[CPAP_EPAP].units()).arg(perc);
-                html += QObject::tr("Your IPAP pressure was under %1%2 for %3% of the time.").arg(pressure).arg(schema::channel[CPAP_EPAP].units()).arg(perc);
+            } else if (cpapmode == MODE_ASV){
+                EventDataType ipap = day->percentile(CPAP_IPAP, perc/100.0);
+                EventDataType epap = qRound(day->settings_wavg(CPAP_EPAP));
+
+                html += QObject::tr("Your EPAP pressure fixed at %1%2.").arg(epap).arg(schema::channel[CPAP_EPAP].units())+"<br/>";
+                html += QObject::tr("Your IPAP pressure was under %1%2 for %3% of the time.").arg(ipap).arg(schema::channel[CPAP_IPAP].units()).arg(perc);
+            } else if (cpapmode == MODE_ASV_VARIABLE_EPAP){
+                EventDataType ipap = day->percentile(CPAP_IPAP, perc/100.0);
+                EventDataType epap = day->percentile(CPAP_EPAP, perc/100.0);
+
+                html += QObject::tr("Your EPAP pressure was under %1%2 for %3% of the time.").arg(epap).arg(schema::channel[CPAP_EPAP].units()).arg(perc)+"<br/>";
+                html += QObject::tr("Your IPAP pressure was under %1%2 for %3% of the time.").arg(ipap).arg(schema::channel[CPAP_IPAP].units()).arg(perc);
             }
 
 

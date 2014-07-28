@@ -130,8 +130,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
     for (QStringList::iterator it = strfiles.begin(); it != strend; ++it) {
         EDFParser str(*it);
         if (!str.Parse()) continue;
-        if (mach->properties[STR_PROP_Serial] != str.serialnumber) {
-            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->properties[STR_PROP_Serial] << str.serialnumber;
+        if (mach->serial() != str.serialnumber) {
+            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->serial() << str.serialnumber;
             qDebug() << (*it);
             continue;
         }
@@ -750,7 +750,7 @@ void ResmedImport::run()
 
     // Save is not threadsafe
     loader->saveMutex.lock();
-    sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+    sess->Store(mach->getDataPath());
     loader->saveMutex.unlock();
 
     // Free the memory used by this session
@@ -764,52 +764,6 @@ ResmedLoader::ResmedLoader()
 ResmedLoader::~ResmedLoader()
 {
 }
-
-Machine *ResmedLoader::CreateMachine(QString serial)
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
-    bool found = false;
-    QList<Machine *>::iterator i;
-    Machine *m = nullptr;
-
-    for (i = ml.begin(); i != ml.end(); i++) {
-        if (((*i)->GetClass() == resmed_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            ResmedList[serial] = *i;
-            found = true;
-            m = *i;
-            break;
-        }
-    }
-
-    if (!found) {
-        m = new CPAP(0);
-    }
-
-    m->properties[STR_PROP_Brand] = STR_MACH_ResMed;
-    m->properties[STR_PROP_Series] = "S9";
-
-    if (found) {
-        return m;
-    }
-
-    qDebug() << "Create ResMed Machine" << serial;
-    m->SetClass(resmed_class_name);
-
-    ResmedList[serial] = m;
-    p_profile->AddMachine(m);
-
-    m->properties[STR_PROP_Serial] = serial;
-    m->properties[STR_PROP_DataVersion] = QString::number(resmed_data_version);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + serial + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
-
 
 void ResmedImportStage2::run()
 {
@@ -910,7 +864,7 @@ void ResmedImportStage2::run()
 
     loader->saveMutex.lock();
     mach->AddSession(sess);
-    sess->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+    sess->Store(mach->getDataPath());
     loader->saveMutex.unlock();
 }
 
@@ -941,6 +895,44 @@ bool ResmedLoader::Detect(const QString & givenpath)
 
     return true;
 }
+
+
+MachineInfo ResmedLoader::PeekInfo(const QString & path)
+{
+    if (!Detect(path)) return MachineInfo();
+
+    QFile f(path+"/"+RMS9_STR_idfile+"tgt");
+
+    // Abort if this file is dodgy..
+    if (!f.exists() || !f.open(QIODevice::ReadOnly)) {
+        return MachineInfo();
+    }
+    MachineInfo info = newInfo();
+
+    // Parse # entries into idmap.
+    while (!f.atEnd()) {
+        QString line = f.readLine().trimmed();
+
+        if (!line.isEmpty()) {
+            QString key = line.section(" ", 0, 0).section("#", 1);
+            QString value = line.section(" ", 1);
+
+            if (key == "SRN") { // Serial Number
+                info.serial = value;
+
+            } else if (key == "PNA") {  // Product Name
+                value.replace("_"," ");
+                info.model = value;
+
+            } else if (key == "PCD") { // Product Code
+                info.modelnumber = value;
+            }
+        }
+    }
+
+    return info;
+}
+
 
 
 struct EDFduration {
@@ -1071,14 +1063,12 @@ EDFduration getEDFDuration(QString filename)
 
 void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 {
+    QHash<QString, SessionID> skipfiles;
 
     bool create_backups = p_profile->session->backupCardData();
 
-    QString backup_path = p_profile->Get(mach->properties[STR_PROP_BackupPath]);
+    QString backup_path = mach->getBackupPath();
 
-    if (backup_path.isEmpty()) {
-        backup_path = p_profile->Get(mach->properties[STR_PROP_Path]) + "Backup/";
-    }
     QString dlog = datalog_path;
 
     if (datalog_path == backup_path + RMS9_STR_datalog + "/") {
@@ -1086,15 +1076,13 @@ void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         create_backups = false;
     }
 
-    skipfiles.clear();
-
     // Read the already imported file list
     QFile impfile(mach->getDataPath()+"/imported_files.csv");
     if (impfile.open(QFile::ReadOnly)) {
         QTextStream impstream(&impfile);
         QString serial;
         impstream >> serial;
-        if (mach->properties[STR_PROP_Serial] == serial) {
+        if (mach->serial() == serial) {
             QString line, file, str;
             SessionID sid;
             bool ok;
@@ -1279,6 +1267,7 @@ void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 
     if (impfile.open(QFile::WriteOnly)) {
         QTextStream out(&impfile);
+        out << mach->serial();
         QHash<QString, SessionID>::iterator skit;
         QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
         for (skit = skipfiles.begin(); skit != skit_end; ++skit) {
@@ -1294,7 +1283,6 @@ void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 int ResmedLoader::Open(QString path)
 {
 
-    QString serial;                 // Serial number
     QString key, value;
     QString line;
     QString newpath;
@@ -1335,6 +1323,7 @@ int ResmedLoader::Open(QString path)
     if (!f.exists() || !f.open(QIODevice::ReadOnly)) {
         return 0;
     }
+    MachineInfo info = newInfo();
 
     // Parse # entries into idmap.
     while (!f.atEnd()) {
@@ -1345,15 +1334,17 @@ int ResmedLoader::Open(QString path)
             value = line.section(" ", 1);
 
             if (key == "SRN") { // Serial Number
-                key = STR_PROP_Serial;
-                serial = value;
+                info.serial = value;
+                continue;
 
             } else if (key == "PNA") {  // Product Name
-                key = STR_PROP_Model;
                 value.replace("_"," ");
+                info.model = value;
+                continue;
 
             } else if (key == "PCD") { // Product Code
-                key = STR_PROP_ModelNumber;
+                info.modelnumber = value;
+                continue;
             }
 
             idmap[key] = value;
@@ -1363,7 +1354,7 @@ int ResmedLoader::Open(QString path)
     f.close();
 
     // Abort if no serial number
-    if (serial.isEmpty()) {
+    if (info.serial.isEmpty()) {
         qDebug() << "S9 Data card has no valid serial number in Indentification.tgt";
         return 0;
     }
@@ -1385,16 +1376,12 @@ int ResmedLoader::Open(QString path)
     ///////////////////////////////////////////////////////////////////////////////////
     // Create machine object (unless it's already registered)
     ///////////////////////////////////////////////////////////////////////////////////
-    Machine *m = CreateMachine(serial);
+    Machine *m = CreateMachine(info);
 
     bool create_backups = p_profile->session->backupCardData();
     bool compress_backups = p_profile->session->compressBackupData();
 
-    QString backup_path = p_profile->Get(m->properties[STR_PROP_BackupPath]);
-
-    if (backup_path.isEmpty()) {
-        backup_path = p_profile->Get(m->properties[STR_PROP_Path]) + "Backup/";
-    }
+    QString backup_path = m->getBackupPath();
 
     if (path == backup_path) {
         // Don't create backups if importing from backup folder
@@ -1437,7 +1424,7 @@ int ResmedLoader::Open(QString path)
         return 0;
     }
 
-    if (stredf.serialnumber != serial) {
+    if (stredf.serialnumber != info.serial) {
         qDebug() << "Identification.tgt Serial number doesn't match STR.edf!";
     }
 
@@ -1508,17 +1495,6 @@ int ResmedLoader::Open(QString path)
 
     int days = duration / 86400000L; // GetNumDataRecords = this.. Duh!
 
-    //QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
-    //QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
-    //QDate dd1=dt1.date();
-    //QDate dd2=dt2.date();
-
-    //    for (int s=0;s<stredf.GetNumSignals();s++) {
-    //        EDFSignal &es = stredf.edfsignals[s];
-    //        long recs=es.nr*stredf.GetNumDataRecords();
-    //        //qDebug() << "STREDF:" << es.label << recs;
-    //    }
-
     // Process STR.edf and find first and last time for each day
 
     QVector<qint8> dayused;
@@ -1530,166 +1506,8 @@ int ResmedLoader::Open(QString path)
     time = stredf.startdate / 1000;
 
     ///////////////////////////////////////////////////////////////////////////////////
-    // Open DATALOG file and build list of session files
+    // Scan DATALOG files, sort, and import any new sessions
     ///////////////////////////////////////////////////////////////////////////////////
-
-    scanFiles(m, newpath);
-
- /*   QStringList dirs;
-    dirs.push_back(newpath);
-    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    flist = dir.entryInfoList();
-    bool ok;
-
-    for (int i = 0; i < flist.size(); i++) {
-        QFileInfo fi = flist.at(i);
-        filename = fi.fileName();
-
-        if (filename.length() == 4) {
-            filename.toInt(&ok);
-
-            if (ok) {
-                dirs.push_back(fi.canonicalFilePath());
-            }
-        }
-    }
-
-    QString datestr;
-    SessionID sessionid;
-    QDateTime date;
-    QString fullname;
-    QString edftypestr;
-    bool gz;
-    int size;
-    QMap<SessionID, QStringList>::iterator si;
-
-    sessfiles.clear();
-
-    QMap<SessionID, EDFGroup> filegroups;
-    QMap<SessionID, EDFGroup>::iterator fgit;
-
-
-    QStringList files;
-
-    enum EDF_Type {
-        ET_ERR=0, BRP, EVE, PLD, SAD
-    } edftype;
-
-    SessionID lastsession = 0;
-
-    for (int dc = 0; dc < dirs.size(); dc++) {
-
-        dir.setPath(dirs.at(dc));
-        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-        dir.setSorting(QDir::Name);
-        flist = dir.entryInfoList();
-
-        size = flist.size();
-
-
-        // For each file in flist...
-        for (int i = 0; i < size; i++) {
-            QFileInfo fi = flist.at(i);
-            filename = fi.fileName();
-
-            // Forget about it if it can't be read.
-            if (!fi.isReadable()) {
-                continue;
-            }
-
-            if (filename.endsWith(STR_ext_gz)) {
-                filename.chop(3);
-                gz = true;
-            } else { gz = false; }
-
-            // Accept only .edf and .edf.gz files
-            if (filename.right(4).toLower() != "." + STR_ext_EDF) {
-                continue;
-            }
-
-            fullname = fi.canonicalFilePath();
-
-            // Extract the session date out of the filename
-            datestr = filename.section("_", 0, 1);
-
-            // Take the filename's date, and
-            date = QDateTime::fromString(datestr, "yyyyMMdd_HHmmss");
-            date = date.toUTC();
-
-            // Skip file if dates invalid, the filename is clearly wrong..
-            if (!date.isValid()) {
-                continue;
-            }
-
-            edftypestr = filename.section("_", 2).section(".", 0, 0);
-
-            // Could always just compare first letter, seeing date is already checked..
-            if (edftypestr.compare("BRP", Qt::CaseInsensitive) == 0) edftype = BRP;
-            else if (edftypestr.compare("EVE", Qt::CaseInsensitive) == 0) edftype = EVE;
-            else if (edftypestr.compare("PLD", Qt::CaseInsensitive) == 0) edftype = PLD;
-            else if (edftypestr.compare("SAD", Qt::CaseInsensitive) == 0) edftype = SAD;
-            else edftype = ET_ERR;
-
-            // convert this date to UNIX epoch to form the sessionID
-            sessionid = date.toTime_t();
-
-            fgit = filegroups.find(sessionid);
-            if (fgit == filegroups.end()) {
-                if ((edftype == EVE) || (edftype == BRP)) {
-                    fgit = filegroups.insert(sessionid,EDFGroup());
-                    lastsession = sessionid;
-                } else {
-                    ////////////////////////////////////////////////////////////////////////////////////////////
-                    // Resmed bugs up on the session filenames.. Biggest observed delay so far of 14 seconds
-                    // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
-                    // and provide firmware updates for free to your customers.
-                    ////////////////////////////////////////////////////////////////////////////////////////////
-
-                    // Check how long since last EVE/BRP session
-                    if ((sessionid - lastsession) < 30) {
-                        fgit = filegroups.find(lastsession);
-                    } else {
-                        // It appears we have a lonely PLD or SAD file...
-                        fgit = filegroups.insert(sessionid,EDFGroup());
-                    }
-                }
-            }
-
-            fullname = backup(fullname, backup_path);
-
-            switch (edftype) {
-            case BRP:
-                fgit.value().BRP = fullname;
-                break;
-            case EVE:
-                fgit.value().EVE = fullname;
-                break;
-            case PLD:
-                fgit.value().PLD = fullname;
-                break;
-            case SAD:
-                fgit.value().SAD = fullname;
-                break;
-            default:
-                break;
-                // No such thing..
-            }
-
-            if (qprogress) {
-                if ((i % 5) == 0) {
-                    qprogress->setValue((float(i + 1) / float(size) * 100.0));
-                    QApplication::processEvents();
-                }
-            }
-        }
-    }
-
-
-    Session *sess;
-    int cnt = 0;
-    size = filegroups.size();
-
-    backup_path += RMS9_STR_datalog + "/";
 
 #ifdef LOCK_RESMED_SESSIONS
     // Have to sacrifice these features to get access to summary data.
@@ -1698,16 +1516,12 @@ int ResmedLoader::Open(QString path)
     p_profile->session->setIgnoreShortSessions(false);
 #endif
 
-    /////////////////////////////////////////////////////////////////////////////
-    // Scan through new file list and import sessions
-    /////////////////////////////////////////////////////////////////////////////
-    m_totaltasks = filegroups.size();
-    for (fgit = filegroups.begin(); fgit != filegroups.end(); ++fgit) {
-        queTask(new ResmedImport(this, fgit.key(), fgit.value(), m));
-    }
-    runTasks(p_profile->session->multithreading()); */
+    scanFiles(m, newpath);
 
+
+    ////////////////////////////////////////////////////////////////////////////////////
     // Now look for any new summary data that can be extracted from STR.edf records
+    ////////////////////////////////////////////////////////////////////////////////////
     QMap<quint32, STRRecord>::iterator it;
     QMap<quint32, STRRecord>::iterator end = strsess.end();
 
@@ -1737,10 +1551,6 @@ int ResmedLoader::Open(QString path)
     bool ignoreold = p_profile->session->ignoreOlderSessions();
     // strsess end can change above.
     end = strsess.end();
-
-//    m->lockSaveMutex();
-//    m->setTotalTasks(m->totalTasks() + size);
-//    m->unlockSaveMutex();
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Scan through unmatched strsess records, and attempt to get at summary data

@@ -74,7 +74,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 #ifdef LOCK_RESMED_SESSIONS
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-        QString mclass=(*it)->GetClass();
+        const QString & mclass=(*it)->loaderName();
         if (mclass == STR_MACH_ResMed) {
             ui->combineSlider->setEnabled(false);
             ui->IgnoreSlider->setEnabled(false);
@@ -880,7 +880,7 @@ void PreferencesDialog::on_createSDBackups_toggled(bool checked)
         bool haveS9 = false;
 
         for (int i = 0; i < mach.size(); i++) {
-            if (mach[i]->GetClass() == STR_MACH_ResMed) {
+            if (mach[i]->loaderName() == STR_MACH_ResMed) {
                 haveS9 = true;
                 break;
             }

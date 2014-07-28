@@ -210,12 +210,12 @@ void ProfileSelect::deleteProfile()
         return;
     }
 
-    Profile *profile = Profiles::profiles[name];
-    profile->Open();
-    if (!profile) {
+    Profile * profile = Profiles::profiles[name];
+    p_profile = profile;
+    if (!profile->Open()) {
         QMessageBox::warning(this, STR_MessageBox_Error,
             QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
-            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + p_profile->user->userName())), QMessageBox::Ok);
+            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + profile->user->userName())), QMessageBox::Ok);
             return;
     }
     bool reallydelete = false;
@@ -267,6 +267,8 @@ void ProfileSelect::deleteProfile()
         }
 
         model->removeRow(ui->listView->currentIndex().row());
+        delete p_profile;
+        p_profile = nullptr;
     }
 }
 
@@ -334,6 +336,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             profile->removeLock();
         }
 
+        p_profile = profile;
         profile->Open();
         // Do this in case user renames the directory (otherwise it won't load)
         // Essentially makes the folder name the user name, but whatever..

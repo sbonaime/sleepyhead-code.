@@ -185,12 +185,12 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             QString submodel;
             cpapinfo += STR_TR_Machine + ": ";
 
-            if (cpap->machine->properties.find(STR_PROP_SubModel) != cpap->machine->properties.end()) {
-                submodel = "\n" + cpap->machine->properties[STR_PROP_SubModel];
-            }
+//            if (cpap->machine->properties.find(STR_PROP_SubModel) != cpap->machine->properties.end()) {
+//                submodel = "\n" + cpap->machine->info.modeproperties[STR_PROP_SubModel];
+//            }
 
-            cpapinfo += cpap->machine->properties[STR_PROP_Brand] + " " +
-                        cpap->machine->properties[STR_PROP_Model] + submodel;
+            cpapinfo += cpap->machine->brand() + " " +
+                        cpap->machine->model() + submodel;
             CPAPMode mode = (CPAPMode)(int)cpap->settings_max(CPAP_Mode);
             cpapinfo += "\n" + STR_TR_Mode + ": ";
 
@@ -306,13 +306,13 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             stats = QObject::tr("AI=%1 HI=%2 CAI=%3 ").arg(oai, 0, 'f', 2).arg(hi, 0, 'f', 2).arg(cai, 0, 'f',
                     2);
 
-            if (cpap->machine->GetClass() == STR_MACH_PRS1) {
+            if (cpap->machine->loaderName() == STR_MACH_PRS1) {
                 stats += QObject::tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%")
                          .arg(rei, 0, 'f', 2).arg(vsi, 0, 'f', 2)
                          .arg(fli, 0, 'f', 2).arg(csr, 0, 'f', 2);
-            } else if (cpap->machine->GetClass() == STR_MACH_ResMed) {
+            } else if (cpap->machine->loaderName() == STR_MACH_ResMed) {
                 stats += QObject::tr("UAI=%1 ").arg(uai, 0, 'f', 2);
-            } else if (cpap->machine->GetClass() == STR_MACH_Intellipap) {
+            } else if (cpap->machine->loaderName() == STR_MACH_Intellipap) {
                 stats += QObject::tr("NRI=%1 LKI=%2 EPI=%3").arg(nri, 0, 'f', 2).arg(lki, 0, 'f', 2).arg(exp, 0,
                          'f', 2);
             }

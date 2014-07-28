@@ -17,6 +17,7 @@
 #include <QVector>
 #include <QVariant>
 #include <QString>
+#include <QDateTime>
 #include <QDebug>
 using namespace std;
 
@@ -72,6 +73,35 @@ enum PRModes { //:short
 };
 
 
+struct MachineInfo {
+    MachineInfo() { type = MT_UNKNOWN; version = 0; }
+    MachineInfo(const MachineInfo & copy) {
+        type = copy.type;
+        loadername = copy.loadername;
+        brand = copy.brand;
+        model = copy.model;
+        modelnumber = copy.modelnumber;
+        serial = copy.serial;
+        series = copy.series;
+        version = copy.version;
+        lastimported = copy.lastimported;
+    }
+
+    MachineInfo(MachineType type, QString loadername, QString brand, QString model, QString modelnumber, QString serial, QString series, QDateTime lastimported, int version) :
+        type(type), loadername(loadername), brand(brand), model(model), modelnumber(modelnumber), serial(serial), series(series), lastimported(lastimported), version(version) {}
+
+    MachineType type;
+    QString loadername;
+    QString brand;
+    QString model;
+    QString modelnumber;
+    QString serial;
+    QString series;
+    QDateTime lastimported;
+    int version;
+};
+
+
 //extern map<ChannelID,QString> DefaultMCShortNames;
 //extern map<ChannelID,QString> DefaultMCLongNames;
 //extern map<PRTypes,QString> PressureReliefNames;
@@ -89,7 +119,7 @@ extern ChannelID NoChannel, SESSION_ENABLED, CPAP_SummaryOnly;
 extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi,
        CPAP_Pressure, CPAP_PS, CPAP_PSMin, CPAP_PSMax,
        CPAP_Mode, CPAP_AHI,
-       CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive,
+       CPAP_PressureMin, CPAP_PressureMax, CPAP_Ramp, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive,
        CPAP_Hypopnea,
        CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_VSnore,
        CPAP_VSnore2,

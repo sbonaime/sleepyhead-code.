@@ -101,7 +101,6 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 
 PRS1::PRS1(MachineID id): CPAP(id)
 {
-    m_class = prs1_class_name;
 }
 PRS1::~PRS1()
 {
@@ -130,49 +129,7 @@ PRS1Loader::PRS1Loader()
 PRS1Loader::~PRS1Loader()
 {
 }
-Machine *PRS1Loader::CreateMachine(QString serial)
-{
-    Q_ASSERT(p_profile != nullptr);
 
-    qDebug() << "Create Machine " << serial;
-
-    QList<Machine *> ml = p_profile->GetMachines(MT_CPAP);
-    bool found = false;
-    QList<Machine *>::iterator i;
-    Machine *m = nullptr;
-
-    for (i = ml.begin(); i != ml.end(); i++) {
-        if (((*i)->GetClass() == STR_MACH_PRS1) && ((*i)->properties[STR_PROP_Serial] == serial)) {
-            PRS1List[serial] = *i; //static_cast<CPAP *>(*i);
-            found = true;
-            m = *i;
-            break;
-        }
-    }
-
-    if (!found) {
-        m = new PRS1(0);
-    }
-
-    m->properties[STR_PROP_Brand] = "Philips Respironics";
-    m->properties[STR_PROP_Series] = "System One";
-
-    if (found) {
-        return m;
-    }
-
-    PRS1List[serial] = m;
-    p_profile->AddMachine(m);
-
-    m->properties[STR_PROP_Serial] = serial;
-    m->properties[STR_PROP_DataVersion] = QString::number(prs1_data_version);
-
-    QString path = "{" + STR_GEN_DataFolder + "}/" + m->GetClass() + "_" + serial + "/";
-    m->properties[STR_PROP_Path] = path;
-    m->properties[STR_PROP_BackupPath] = path + "Backup/";
-
-    return m;
-}
 bool isdigit(QChar c)
 {
     if ((c >= '0') && (c <= '9')) { return true; }
@@ -282,17 +239,18 @@ int PRS1Loader::Open(QString path)
     Machine *m;
 
     for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
-        QString s = *sn;
-        m = CreateMachine(s);
+        MachineInfo info = newInfo();
+        info.serial = *sn;
+        m = CreateMachine(info);
 
         try {
             if (m) {
-                OpenMachine(m, newpath + "/" + (*sn));
+                OpenMachine(m, newpath + "/" + info.serial);
             }
         } catch (OneTypePerDay e) {
             Q_UNUSED(e)
             p_profile->DelMachine(m);
-            PRS1List.erase(PRS1List.find(s));
+            PRS1List.erase(PRS1List.find(info.serial));
             QMessageBox::warning(nullptr, QObject::tr("Import Error"),
                                  QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),
                                  QMessageBox::Ok);
@@ -320,11 +278,11 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
     QString key, value;
 
     while (!f.atEnd()) {
-        key = s.section(sep, 0, 0); //BeforeFirst(sep);
+        key = s.section(sep, 0, 0);
 
         if (key == s) { continue; }
 
-        value = s.section(sep, 1).trimmed(); //AfterFirst(sep).Strip();
+        value = s.section(sep, 1).trimmed();
 
         if (value == s) { continue; }
 
@@ -338,11 +296,11 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 
     if (ok) {
         if (ModelMap.find(i) != ModelMap.end()) {
-            m->properties[STR_PROP_Model] = ModelMap[i];
+            m->setModel(ModelMap[i]);
         }
     }
 
-    if (prop["SerialNumber"] != m->properties[STR_PROP_Serial]) {
+    if (prop["SerialNumber"] != m->serial()) {
         qDebug() << "Serial Number in PRS1 properties.txt doesn't match directory structure";
     } else { prop.erase(prop.find("SerialNumber")); } // already got it stored.
 
@@ -354,31 +312,6 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
     return true;
 }
 
-void copyPath(QString src, QString dst)
-{
-    QDir dir(src);
-    if (!dir.exists())
-        return;
-
-    // Recursively handle directories
-    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QString dst_path = dst + QDir::separator() + d;
-        dir.mkpath(dst_path);
-        copyPath(src + QDir::separator() + d, dst_path);
-    }
-
-    // Files
-    foreach (QString f, dir.entryList(QDir::Files)) {
-        QString srcFile = src + QDir::separator() + f;
-        QString destFile = dst + QDir::separator() + f;
-
-        if (!QFile::exists(destFile)) {
-            QFile::copy(srcFile, destFile);
-        }
-    }
-}
-
-
 int PRS1Loader::OpenMachine(Machine *m, QString path)
 {
     Q_ASSERT(p_profile != nullptr);
@@ -389,9 +322,9 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     if (!dir.exists() || (!dir.isReadable())) {
         return 0;
     }
-    QString backupPath = p_profile->Get(m->properties[STR_PROP_BackupPath]) + path.section("/", -2);
+    QString backupPath = m->getBackupPath() + path.section("/", -2);
 
-    if (dir.absolutePath().compare(QDir(backupPath).absolutePath()) != 0) {
+    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
         copyPath(path, backupPath);
     }
 
@@ -420,7 +353,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
         }
     }
 
-    QString modelstr = m->properties["ModelNumber"];
+    QString modelstr = m->modelnumber();
 
     if (modelstr.endsWith("P"))
         modelstr.chop(1);
@@ -434,7 +367,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                                      QObject::tr("Non Data Capable Machine"),
                                      QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
                                              QObject::tr("I'm sorry to report that SleepyHead can only track hours of use for this machine.")).
-                                     arg(m->properties["ModelNumber"]),QMessageBox::Ok);
+                                     arg(m->modelnumber()),QMessageBox::Ok);
 
         }
 
@@ -448,7 +381,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
     SessionID sid;
     long ext;
-    QHash<SessionID, QStringList> sessfiles;
+
     int size = paths.size();
 
     prs1sessions.clear();
@@ -456,8 +389,6 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
 
     // Note, I have observed p0/p1/etc folders containing duplicates session files (in Robin Sanders data.)
-
-
 
     // for each p0/p1/p2/etc... folder
     for (int p=0; p < size; ++p) {
@@ -1496,7 +1427,7 @@ void PRS1Import::run()
 
         // Save is not threadsafe
         loader->saveMutex.lock();
-        sg->session->Store(p_profile->Get(mach->properties[STR_PROP_Path]));
+        sg->session->Store(mach->getDataPath());
         loader->saveMutex.unlock();
 
         sg->session->TrashEvents();

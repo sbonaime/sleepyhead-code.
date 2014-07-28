@@ -366,7 +366,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 continue;
             }
 
-            drift = (sess->machine()->GetType() == MT_CPAP) ? clockdrift : 0;
+            drift = (sess->machine()->type() == MT_CPAP) ? clockdrift : 0;
 
             if (!sess->enabled()) { continue; }
 

@@ -23,6 +23,8 @@
 #include "preferences.h"
 #include "profiles.h"
 #include "machine.h"
+#include "machine_common.h"
+
 #include "machine_loader.h"
 
 #include <QApplication>
@@ -117,6 +119,8 @@ QString Profile::checkLock()
 
 bool Profile::Open(QString filename)
 {
+    p_profile = this;
+
     if (filename.isEmpty()) {
         filename=p_filename;
     }
@@ -301,12 +305,12 @@ void Profile::DataFormatError(Machine *m)
 
     msg = "<font size=+1>"+QObject::tr("SleepyHead (%1) needs to upgrade its database for %2 %3 %4").
             arg(FullVersionString).
-            arg(m->properties[STR_PROP_Brand]).arg(m->properties[STR_PROP_Model]).arg(m->properties[STR_PROP_Serial])
+            arg(m->brand()).arg(m->model()).arg(m->serial())
             + "</font><br/><br/>";
 
     bool backups = false;
-    if (p_profile->session->backupCardData() && m->properties.contains(STR_PROP_BackupPath)) {
-        QString bpath = Get(m->properties[STR_PROP_BackupPath]);
+    if (p_profile->session->backupCardData()) {
+        QString bpath = m->getBackupPath();
         int cnt = dirCount(bpath);
         if (cnt > 0) backups = true;
     }
@@ -344,11 +348,11 @@ void Profile::DataFormatError(Machine *m)
         }
         // Note: I deliberately haven't added a Profile help for this
         if (backups) {
-            mainwin->importCPAP(Get(m->properties[STR_PROP_BackupPath]), QObject::tr("Rebuilding from %1 Backup").arg(m->properties[STR_PROP_Brand]));
+            mainwin->importCPAP(ImportPath(m->getBackupPath(), lookupLoader(m)), QObject::tr("Rebuilding from %1 Backup").arg(m->brand()));
         } else {
             if (!p_profile->session->backupCardData()) {
                 // Automatic backups not available for Intellipap users yet, so don't taunt them..
-                if (m->GetClass() != STR_MACH_Intellipap) {
+                if (m->loaderName() != STR_MACH_Intellipap) {
                     if (QMessageBox::question(nullptr, STR_MessageBox_Question, QObject::tr("Would you like to switch on automatic backups, so next time a new version of SleepyHead needs to do so, it can rebuild from these?"),
                                               QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)) {
                         p_profile->session->setBackupCardData(true);
@@ -356,7 +360,7 @@ void Profile::DataFormatError(Machine *m)
                 }
             }
             QMessageBox::information(nullptr, STR_MessageBox_Information,
-                                     QObject::tr("SleepyHead will now start the import wizard so you can reinstall your %1 data.").arg(m->properties[STR_PROP_Brand])
+                                     QObject::tr("SleepyHead will now start the import wizard so you can reinstall your %1 data.").arg(m->brand())
                                      ,QMessageBox::Ok, QMessageBox::Ok);
             mainwin->startImportDialog();
         }
@@ -386,25 +390,11 @@ void Profile::LoadMachineData()
     for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
         Machine *m = i.value();
 
-        MachineLoader *loader = GetLoader(m->GetClass());
+        MachineLoader *loader = lookupLoader(m);
 
         if (loader) {
-            long v = loader->Version();
-            long cv = 0;
-
-            if (m->properties.find(STR_PROP_DataVersion) == m->properties.end()) {
-                m->properties[STR_PROP_DataVersion] = "0";
-            }
-
-            bool ok;
-            cv = m->properties[STR_PROP_DataVersion].toLong(&ok);
-
-            if (!ok || cv < v) {
+            if (m->version() < loader->Version()) {
                 DataFormatError(m);
-                // It may exit above and not return here..
-                QString s;
-                s.sprintf("%li", v);
-                m->properties[STR_PROP_DataVersion] = s; // Dont need to nag again if they are too lazy.
             } else {
                 try {
                     m->Load();
@@ -419,13 +409,24 @@ void Profile::LoadMachineData()
     }
 }
 
+const QString STR_PROP_Brand = "brand";
+const QString STR_PROP_Model = "model";
+const QString STR_PROP_Series = "series";
+const QString STR_PROP_ModelNumber = "modelnumber";
+const QString STR_PROP_SubModel = "submodel";
+const QString STR_PROP_Serial = "serial";
+const QString STR_PROP_DataVersion = "dataversion";
+const QString STR_PROP_LastImported = "lastimported";
+
+
+
 /**
  * @brief Machine XML section in profile.
  * @param root
  */
 void Profile::ExtraLoad(QDomElement &root)
 {
-    if (root.tagName() != "Machines") {
+    if (root.tagName().toLower() != "machines") {
         qDebug() << "No Machines Tag in Profiles.xml";
         return;
     }
@@ -435,8 +436,8 @@ void Profile::ExtraLoad(QDomElement &root)
     while (!elem.isNull()) {
         QString pKey = elem.tagName();
 
-        if (pKey != "Machine") {
-            qWarning() << "Profile::ExtraLoad() pKey!=\"Machine\"";
+        if (pKey.toLower() != "machine") {
+            qWarning() << "Profile::ExtraLoad() pKey!=\"machine\"";
             elem = elem.nextSiblingElement();
             continue;
         }
@@ -449,33 +450,52 @@ void Profile::ExtraLoad(QDomElement &root)
         MachineType m_type = (MachineType)mt;
 
         QString m_class = elem.attribute("class", "");
-        //MachineLoader *ml=GetLoader(m_class);
-        Machine *m;
 
-        //if (ml) {
-        //   ml->CreateMachine
-        //}
-        if (m_type == MT_CPAP) {
-            m = new CPAP(m_id);
-        } else if (m_type == MT_OXIMETER) {
-            m = new Oximeter(m_id);
-        } else if (m_type == MT_SLEEPSTAGE) {
-            m = new SleepStage(m_id);
-        } else if (m_type == MT_POSITION) {
-            m = new PositionSensor(m_id);
-        } else {
-            m = new Machine(m_id);
-            m->SetType(m_type);
-        }
+        MachineInfo info;
 
-        m->SetClass(m_class);
-        AddMachine(m);
+        info.type = m_type;
+        info.loadername = m_class;
+
+        QHash<QString, QString> prop;
+
         QDomElement e = elem.firstChildElement();
 
         for (; !e.isNull(); e = e.nextSiblingElement()) {
             QString pKey = e.tagName();
-            m->properties[pKey] = e.text();
+            QString key = pKey.toLower();
+            if (key == STR_PROP_Brand) {
+                info.brand = e.text();
+            } else if (key == STR_PROP_Model) {
+                info.model = e.text();
+            } else if (key == STR_PROP_ModelNumber) {
+                info.modelnumber = e.text();
+            } else if (key == STR_PROP_Serial) {
+                info.serial = e.text();
+            } else if (key == STR_PROP_Series) {
+                info.series = e.text();
+            } else if (key == STR_PROP_DataVersion) {
+                info.version = e.text().toInt();
+            } else if (key == STR_PROP_LastImported) {
+                info.lastimported = QDateTime::fromString(e.text(), Qt::ISODate);
+            } else if (key == "properties") {
+                QDomElement pe = e.firstChildElement();
+                for (; !pe.isNull(); pe = pe.nextSiblingElement()) {
+                    prop[pe.tagName()] = pe.text();
+                }
+            } else {
+                // skip any old rubbish
+                if ((key == "backuppath") || (key == "path") || (key == "submodel")) continue;
+
+                prop[pKey] = e.text();
+            }
         }
+
+
+        Machine *m = nullptr;
+
+        m = MachineLoader::CreateMachine(info, m_id);
+        //m->setId(m_id);
+        if (m) m->properties = prop;
 
         elem = elem.nextSiblingElement();
     }
@@ -503,24 +523,51 @@ void Profile::DelMachine(Machine *m)
 // Potential Memory Leak Here..
 QDomElement Profile::ExtraSave(QDomDocument &doc)
 {
-    QDomElement mach = doc.createElement("Machines");
+    QDomElement mach = doc.createElement("machines");
 
     for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
-        QDomElement me = doc.createElement("Machine");
+        QDomElement me = doc.createElement("machine");
         Machine *m = i.value();
         me.setAttribute("id", (int)m->id());
-        me.setAttribute("type", (int)m->GetType());
-        me.setAttribute("class", m->GetClass());
+        me.setAttribute("type", (int)m->type());
+        me.setAttribute("class", m->loaderName());
 
-        if (!m->properties.contains(STR_PROP_Path)) { m->properties[STR_PROP_Path] = "{DataFolder}/" + m->GetClass() + "_" + m->hexid(); }
+        QDomElement pe = doc.createElement("properties");
+        me.appendChild(pe);
 
-        for (QHash<QString, QString>::iterator j = i.value()->properties.begin();
-                j != i.value()->properties.end(); j++) {
-            QDomElement mp = doc.createElement(j.key());
-            mp.appendChild(doc.createTextNode(j.value()));
-            //mp->LinkEndChild(new QDomText(j->second.toLatin1()));
-            me.appendChild(mp);
+        for (QHash<QString, QString>::iterator j = i.value()->properties.begin(); j != i.value()->properties.end(); j++) {
+            QDomElement pp = doc.createElement(j.key());
+            pp.appendChild(doc.createTextNode(j.value()));
+            pe.appendChild(pp);
         }
+
+        QDomElement mp = doc.createElement(STR_PROP_Brand);
+        mp.appendChild(doc.createTextNode(m->brand()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Model);
+        mp.appendChild(doc.createTextNode(m->model()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_ModelNumber);
+        mp.appendChild(doc.createTextNode(m->modelnumber()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Serial);
+        mp.appendChild(doc.createTextNode(m->serial()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Series);
+        mp.appendChild(doc.createTextNode(m->series()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_DataVersion);
+        mp.appendChild(doc.createTextNode(QString::number(m->version())));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_LastImported);
+        mp.appendChild(doc.createTextNode(m->lastImported().toString(Qt::ISODate)));
+        me.appendChild(mp);
 
         mach.appendChild(me);
     }
@@ -554,7 +601,7 @@ void Profile::AddDay(QDate date, Day *day, MachineType mt)
     QList<Day *> &dl = daylist[date];
 
     for (QList<Day *>::iterator a = dl.begin(); a != dl.end(); a++) {
-        if ((*a)->machine->GetType() == mt) {
+        if ((*a)->machine->type() == mt) {
 
             // disabled this because two machines isn't all that bad
             //            if (QMessageBox::question(nullptr,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
@@ -642,7 +689,7 @@ MachineLoader *GetLoader(QString name)
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
     Q_FOREACH(MachineLoader * loader, loaders) {
-        if (loader->ClassName() == name) {
+        if (loader->loaderName() == name) {
             return loader;
         }
     }
@@ -664,7 +711,7 @@ QList<Machine *> Profile::GetMachines(MachineType t)
             continue;
         }
 
-        MachineType mt = i.value()->GetType();
+        MachineType mt = i.value()->type();
 
         if ((t == MT_UNKNOWN) || (mt == t)) {
             vec.push_back(i.value());
@@ -781,6 +828,7 @@ Profile *Get(QString name)
 
     return nullptr;
 }
+
 Profile *Create(QString name)
 {
     QString path = PREF.Get("{home}/Profiles/") + name;
@@ -797,16 +845,12 @@ Profile *Create(QString name)
     p_profile->user->setUserName(name);
     //p_profile->Set("Realname",realname);
     //if (!password.isEmpty()) p_profile.user->setPassword(password);
-    p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) +
-              QString("}"));
+    p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) + QString("}"));
 
     Machine *m = new Machine(0);
-    m->SetClass("Journal");
-    m->properties[STR_PROP_Brand] = "Journal";
-    m->properties[STR_PROP_Model] = "Journal Data Machine Object";
-    m->properties[STR_PROP_Serial] = m->hexid();
-    m->properties[STR_PROP_Path] = "{DataFolder}/" + m->GetClass() + "_" + m->hexid();
-    m->SetType(MT_JOURNAL);
+    MachineInfo info(MT_JOURNAL, STR_MACH_Journal, "SleepyHead", STR_MACH_Journal, QString(), m->hexid(), QString(), QDateTime::currentDateTime(), 0);
+
+    m->setInfo(info);
     p_profile->AddMachine(m);
 
     p_profile->Save();
@@ -883,7 +927,7 @@ QList<Day *> Profile::getDays(MachineType mt, QDate start, QDate end)
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            if ((mt == MT_UNKNOWN) || (day->machine->GetType() == mt)) {
+            if ((mt == MT_UNKNOWN) || (day->machine->type() == mt)) {
                 daylist.push_back(day);
             }
         }
@@ -916,7 +960,7 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            if ((mt == MT_UNKNOWN) || (day->machine->GetType() == mt)) { days++; }
+            if ((mt == MT_UNKNOWN) || (day->machine->type() == mt)) { days++; }
         }
 
         date = date.addDays(1);
@@ -950,7 +994,7 @@ int Profile::countCompliantDays(MachineType mt, QDate start, QDate end)
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            if ((day->machine->GetType() == mt) && (day->hours() > compliance)) { days++; }
+            if ((day->machine->type() == mt) && (day->hours() > compliance)) { days++; }
         }
 
         date = date.addDays(1);

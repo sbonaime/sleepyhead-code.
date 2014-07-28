@@ -36,9 +36,14 @@ Q_OBJECT
     static void Register();
 
     virtual int Version() { return cms50_data_version; }
-    virtual const QString &ClassName() { return cms50_class_name; }
+    virtual const QString &loaderName() { return cms50_class_name; }
 
-    Machine *CreateMachine();
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_OXIMETER, cms50_class_name, QObject::tr("Contec"), QString(), QString(), QString(), QObject::tr("CMS50"), QDateTime::currentDateTime(), cms50_data_version);
+    }
+
+
+  //  Machine *CreateMachine();
 
     virtual void process();
 

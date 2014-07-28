@@ -56,11 +56,15 @@ class MSeriesLoader : public MachineLoader
     //! \brief Returns the database version of this loader
     virtual int Version() { return mseries_data_version; }
 
-    //! \brief Return the ClassName, in this case "MSeries"
-    virtual const QString &ClassName() { return mseries_class_name; }
+    //! \brief Return the loaderName, in this case "MSeries"
+    virtual const QString &loaderName() { return mseries_class_name; }
 
     //! \brief Create a new PRS1 machine record, indexed by Serial number.
-    Machine *CreateMachine(QString serial);
+   // Machine *CreateMachine(QString serial);
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_CPAP, mseries_class_name, QObject::tr("Respironics"), QString(), QString(), QString(), QObject::tr("M-Series"), QDateTime::currentDateTime(), mseries_data_version);
+    }
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();

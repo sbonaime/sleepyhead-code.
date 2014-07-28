@@ -36,9 +36,14 @@ Q_OBJECT
     static void Register();
 
     virtual int Version() { return md300w1_data_version; }
-    virtual const QString &ClassName() { return md300w1_class_name; }
+    virtual const QString &loaderName() { return md300w1_class_name; }
 
-    Machine *CreateMachine();
+    // Machine *CreateMachine();
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_OXIMETER, md300w1_class_name, QObject::tr("ChoiceMMed"), QString(), QString(), QString(), QObject::tr("MD300"), QDateTime::currentDateTime(), md300w1_data_version);
+    }
+
 
     virtual void process();
 

@@ -31,7 +31,7 @@ Day::~Day()
 }
 MachineType Day::machine_type() const
 {
-    return machine->GetType();
+    return machine->type();
 }
 Session *Day::find(SessionID sessid)
 {

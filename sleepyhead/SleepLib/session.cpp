@@ -115,7 +115,7 @@ bool Session::OpenEvents()
 
 bool Session::Destroy()
 {
-    QString path = p_profile->Get(s_machine->properties[STR_PROP_Path]);
+    QString path = s_machine->getDataPath();
 
     QDir dir(path);
     QString base;
@@ -475,7 +475,7 @@ bool Session::StoreEvents(QString filename)
 
     header << (quint16)compress;
 
-    header << (quint16)s_machine->GetType();// Machine Type
+    header << (quint16)s_machine->type();// Machine Type
 
     QByteArray databytes;
     QDataStream out(&databytes, QIODevice::WriteOnly);
@@ -916,7 +916,6 @@ void Session::UpdateSummaries()
     for (; c != ev_end; c++) {
         id = c.key();
 
-
         schema::ChanType ctype = schema::channel[id].type();
         if (ctype != schema::SETTING) {
             //sum(id); // avg calculates this and cnt.
@@ -1158,7 +1157,7 @@ qint64 Session::first(ChannelID id)
     if (i != m_firstchan.end()) {
         tmp = i.value();
 
-        if (s_machine->GetType() == MT_CPAP) {
+        if (s_machine->type() == MT_CPAP) {
             tmp += drift;
         }
 
@@ -1190,7 +1189,7 @@ qint64 Session::first(ChannelID id)
 
     m_firstchan[id] = min;
 
-    if (s_machine->GetType() == MT_CPAP) {
+    if (s_machine->type() == MT_CPAP) {
         min += drift;
     }
 
@@ -1205,7 +1204,7 @@ qint64 Session::last(ChannelID id)
     if (i != m_lastchan.end()) {
         tmp = i.value();
 
-        if (s_machine->GetType() == MT_CPAP) {
+        if (s_machine->type() == MT_CPAP) {
             tmp += drift;
         }
 
@@ -1238,7 +1237,7 @@ qint64 Session::last(ChannelID id)
 
     m_lastchan[id] = max;
 
-    if (s_machine->GetType() == MT_CPAP) {
+    if (s_machine->type() == MT_CPAP) {
         max += drift;
     }
 
@@ -1950,7 +1949,7 @@ qint64 Session::first()
 {
     qint64 start = s_first;
 
-    if (s_machine->GetType() == MT_CPAP) {
+    if (s_machine->type() == MT_CPAP) {
         start += qint64(p_profile->cpap->clockDrift()) * 1000L;
     }
 
@@ -1961,7 +1960,7 @@ qint64 Session::last()
 {
     qint64 last = s_last;
 
-    if (s_machine->GetType() == MT_CPAP) {
+    if (s_machine->type() == MT_CPAP) {
         last += qint64(p_profile->cpap->clockDrift()) * 1000L;
     }
 

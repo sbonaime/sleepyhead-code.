@@ -205,6 +205,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // Spans
     fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
     fg->AddLayer((new gFlagsLine(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), false, FT_Span)));
     // Flags
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
@@ -255,6 +256,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // Draw layer is important... spans first..
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
 
     // Then the graph itself
     FRW->AddLayer(l);
@@ -446,12 +448,14 @@ void Daily::showEvent(QShowEvent *)
 
 void Daily::closeEvent(QCloseEvent *event)
 {
+
     disconnect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
 
     if (previous_date.isValid())
         Unload(previous_date);
     GraphView->SaveSettings("Daily");
     QWidget::closeEvent(event);
+    event->accept();
 }
 
 
@@ -612,7 +616,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_VSnore)) continue;
 
             if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2) || (code==CPAP_UserFlag3))) continue;
-            drift=(*s)->machine()->GetType()==MT_CPAP ? clockdrift : 0;
+            drift=((*s)->machine()->type() == MT_CPAP) ? clockdrift : 0;
 
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -913,7 +917,7 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             int h=len/3600;
             int m=(len/60) % 60;
             int s1=len % 60;
-            tooltip=day->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
+            tooltip=day->machine->loaderName()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
 
 #define DEBUG_SESSIONS
 #ifdef DEBUG_SESSIONS
@@ -968,7 +972,7 @@ QString Daily::getMachineSettings(Day * cpap) {
             int j=cpap->settings_max(CPAP_PresReliefMode);
             QString flexstr;
 
-            if (cpap->machine->GetClass() == STR_MACH_ResMed) {
+            if (cpap->machine->loaderName() == STR_MACH_ResMed) {
                 // this is temporary..
                 flexstr = QString(tr("EPR:%1 EPR_LEVEL:%2")).arg(cpap->settings_max(RMS9_EPR)).arg(cpap->settings_max(RMS9_EPRLevel));
             } else {
@@ -980,7 +984,7 @@ QString Daily::getMachineSettings(Day * cpap) {
                     .arg(schema::channel[CPAP_PresReliefType].description())
                     .arg(flexstr);
         }
-        QString mclass=cpap->machine->GetClass();
+        QString mclass=cpap->machine->loaderName();
         if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
             int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
             html+=QString("<tr><td><a class='info' href='#'>"+STR_TR_Humidifier+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
@@ -1000,7 +1004,7 @@ QString Daily::getOximeterInformation(Day * oxi)
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+="<tr><td colspan=5 align=center>"+oxi->machine->properties[STR_PROP_Brand]+" "+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
+        html+="<tr><td colspan=5 align=center>"+oxi->machine->brand()+" "+oxi->machine->model()+"</td></tr>\n";
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
@@ -1017,15 +1021,12 @@ QString Daily::getCPAPInformation(Day * cpap)
     if (!cpap)
         return html;
 
-    QString brand=cpap->machine->properties[STR_PROP_Brand];
-    QString series=cpap->machine->properties[STR_PROP_Series];
-    QString model=cpap->machine->properties[STR_PROP_Model];
-    QString number=cpap->machine->properties[STR_PROP_ModelNumber];
+    MachineInfo info = cpap->machine->getInfo();
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    html+="<tr><td colspan=4 align=center><a class=info2 href='#'>"+model+"<span>";
-    QString tooltip=(brand+"\n"+series+" "+number+"\n"+cpap->machine->properties[STR_PROP_Serial]);
+    html+="<tr><td colspan=4 align=center><a class=info2 href='#'>"+info.model+"<span>";
+    QString tooltip=(info.brand+"\n"+info.series+" "+info.modelnumber+"\n"+info.serial);
     tooltip=tooltip.replace(" ","&nbsp;");
 
 
@@ -1157,14 +1158,27 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
-    } else
-    if (cpap && p_profile->cpap->showLeakRedline()) {
+    } else if (cpap && p_profile->cpap->showLeakRedline()) {
         float rlt = cpap->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
         float pc = 100.0 / cpap->hours() * rlt;
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
         html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
                 QString("</b></td><td colspan=2 bgcolor='white'>%1%</td></tr>").arg(pc, 0, 'f', 3);
     }
+
+    if (cpap) {
+        int l = cpap->sum(CPAP_Ramp);
+
+    //    if (l>0) {
+            int h = l / 3600;
+            int m = (l / 60) % 60;
+            int s = l % 60;
+            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time spent in ramp")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0'));
+//        }
+
+    }
+
 
     html+="</table>\n";
     html+="<hr/>\n";
@@ -1357,7 +1371,7 @@ void Daily::Load(QDate date)
             for (int i=0;i<numchans;i++) {
                 if (!cpap->channelHasData(chans[i].id))
                     continue;
-                if ((cpap->machine->GetClass()==STR_MACH_PRS1) && (chans[i].id==CPAP_VSnore))
+                if ((cpap->machine->loaderName() == STR_MACH_PRS1) && (chans[i].id == CPAP_VSnore))
                     continue;
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
                         .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(schema::channel[chans[i].id].fullname()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
@@ -1733,9 +1747,12 @@ Session * Daily::CreateJournalSession(QDate date)
     Machine *m=p_profile->GetMachine(MT_JOURNAL);
     if (!m) {
         m=new Machine(0);
-        m->SetClass("Journal");
-        m->properties[STR_PROP_Brand]="Virtual";
-        m->SetType(MT_JOURNAL);
+        MachineInfo info;
+        info.loadername = "Journal";
+        info.serial = m->hexid();
+        info.brand = "Journal";
+        info.type = MT_JOURNAL;
+        m->setInfo(info);
         p_profile->AddMachine(m);
     }
     Session *sess=new Session(m,0);

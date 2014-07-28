@@ -68,6 +68,7 @@ public:
     virtual void run() {}
 };
 
+class MachineLaoder;
 /*! \class Machine
     \brief This Machine class is the Heart of SleepyLib, representing a single Machine and holding it's data
 
@@ -75,6 +76,7 @@ public:
 class Machine
 {
     friend class SaveThread;
+    friend class MachineLaoder;
 
   public:
     /*! \fn Machine(MachineID id=0);
@@ -119,19 +121,8 @@ class Machine
     //! \brief Find the date this session belongs in, according to profile settings
     QDate pickDate(qint64 start);
 
-    //! \brief Sets the Class of machine (Used to reference the particular loader that created it)
-    void SetClass(QString t) { m_class = t; }
-
-    //! \brief Sets the type of machine, according to MachineType enum
-    void SetType(MachineType t) { m_type = t; }
-
-    //! \brief Returns the Class of machine (Used to reference the particular loader that created it)
-    const QString &GetClass() { return m_class; }
-
-    //! \brief Returns the type of machine, according to MachineType enum
-    const MachineType &GetType() const { return m_type; }
-
     const QString getDataPath();
+    const QString getBackupPath();
 
     //! \brief Returns the machineID as a lower case hexadecimal string
     QString hexid() { return QString().sprintf("%08lx", m_id); }
@@ -142,6 +133,7 @@ class Machine
 
     //! \brief Returns this objects MachineID
     const MachineID &id() { return m_id; }
+    void setId(MachineID id) { m_id = id; }
 
     //! \brief Returns the date of the first loaded Session
     const QDate &FirstDay() { return firstday; }
@@ -183,15 +175,34 @@ class Machine
     inline int doneTasks() { return m_donetasks; }
 
 
+    inline MachineType type() const { return info.type; }
+    inline QString brand() const { return info.brand; }
+    inline QString loaderName() const { return info.loadername; }
+    inline QString model() const { return info.model; }
+    inline QString modelnumber() const { return info.modelnumber; }
+    inline QString serial() const { return info.serial; }
+    inline QString series() const { return info.series; }
+    inline int version() const { return info.version; }
+    inline QDateTime lastImported() const { return info.lastimported; }
+
+    inline void setModel(QString value) { info.model = value; }
+    inline void setSerial(QString value) { info.serial = value; }
+    inline void setType(MachineType type) { info.type = type; }
+    inline void setLoaderName(QString value) { info.loadername = value;  }
+
     // much more simpler multithreading...
     void queTask(ImportTask * task);
     void runTasks();
     QMutex saveMutex;
+
+    void setInfo(MachineInfo inf) { info = inf; }
+    const MachineInfo getInfo() { return info; }
+
   protected:
+    MachineInfo info;
     QDate firstday, lastday;
     SessionID highest_sessionid;
     MachineID m_id;
-    QString m_class;
     MachineType m_type;
     QString m_path;
 
@@ -204,7 +215,6 @@ class Machine
     volatile bool m_save_threads_running;
 
     QList<ImportTask *> m_tasklist;
-
 };
 
 

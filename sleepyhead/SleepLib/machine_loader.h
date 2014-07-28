@@ -25,6 +25,7 @@ class MachineLoader;
 enum DeviceStatus { NEUTRAL, IMPORTING, LIVE };
 
 
+
 /*! \class MachineLoader
     \brief Base class to derive a new Machine importer from
     */
@@ -32,6 +33,7 @@ class MachineLoader: public QObject
 {
     Q_OBJECT
     friend class ImportThread;
+    friend class Machine;
   public:
     MachineLoader();
     virtual ~MachineLoader();
@@ -39,14 +41,22 @@ class MachineLoader: public QObject
     //! \brief Detect if the given path contains a valid folder structure
     virtual bool Detect(const QString & path) = 0;
 
+    //! \brief Look up and return machine model information stored at path
+    virtual MachineInfo PeekInfo(const QString & path) { Q_UNUSED(path); return MachineInfo(); }
+
     //! \brief Override this to scan path and detect new machine data
     virtual int Open(QString path) = 0;
 
     //! \brief Override to returns the Version number of this MachineLoader
     virtual int Version() = 0;
 
+    static Machine * CreateMachine(MachineInfo info, MachineID id = 0);
+
+    // !\\brief Used internally by loaders, override to return base MachineInfo record
+    virtual MachineInfo newInfo() { return MachineInfo(); }
+
     //! \brief Override to returns the class name of this MachineLoader
-    virtual const QString &ClassName() = 0;
+    virtual const QString &loaderName() = 0;
     inline MachineType type() { return m_type; }
 
 //    virtual bool openDevice() { return false; }
@@ -109,10 +119,28 @@ signals:
     QList<ImportTask *> m_tasklist;
 };
 
+struct ImportPath
+{
+    ImportPath() {
+        loader = nullptr;
+    }
+    ImportPath(const ImportPath & copy) {
+        loader = copy.loader;
+        path = copy.path;
+    }
+    ImportPath(QString path, MachineLoader * loader) :
+        path(path), loader(loader) {}
+
+    QString path;
+    MachineLoader * loader;
+};
+
 
 // Put in machine loader class as static??
 void RegisterLoader(MachineLoader *loader);
+MachineLoader * lookupLoader(Machine * m);
 void DestroyLoaders();
+
 bool compressFile(QString inpath, QString outpath = "");
 
 QList<MachineLoader *> GetLoaders(MachineType mt = MT_UNKNOWN);

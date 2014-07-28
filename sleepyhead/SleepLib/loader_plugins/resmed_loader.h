@@ -339,6 +339,11 @@ class ResmedLoader : public MachineLoader
     //! \brief Detect if the given path contains a valid Folder structure
     virtual bool Detect(const QString & path);
 
+
+    //! \brief Look up machine model information of ResMed file structure stored at path
+    virtual MachineInfo PeekInfo(const QString & path);
+
+
     //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
     virtual int Open(QString path);
 
@@ -346,14 +351,11 @@ class ResmedLoader : public MachineLoader
     virtual int Version() { return resmed_data_version; }
 
     //! \brief Returns the Machine class name of this loader. ("ResMed")
-    virtual const QString &ClassName() { return resmed_class_name; }
+    virtual const QString &loaderName() { return resmed_class_name; }
 
     //! \brief Converts EDFSignal data to time delta packed EventList, and adds to Session
     void ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, ChannelID code, long recs,
                      qint64 duration, EventDataType min = 0, EventDataType max = 0, bool square = false);
-
-    //! \brief Create Machine record, and index it by serial number
-    Machine *CreateMachine(QString serial);
 
     //! \brief Register the ResmedLoader with the list of other machine loaders
     static void Register();
@@ -374,24 +376,22 @@ class ResmedLoader : public MachineLoader
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
     bool LoadPLD(Session *sess, const QString & path);
 
-protected:
-    QHash<QString, Machine *> ResmedList;
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_CPAP, resmed_class_name, QObject::tr("ResMed"), QString(), QString(), QString(), QObject::tr("S9"), QDateTime::currentDateTime(), resmed_data_version);
+    }
 
+
+protected:
     void ParseSTR(Machine *mach, QStringList strfiles);
 
     //! \brief Scan for new files to import, group into sessions and add to task que
     void scanFiles(Machine * mach, QString datalog_path);
-
-
 
     QString backup(QString file, QString backup_path);
 
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;
     QMap<QDate, QList<STRRecord *> > strdate;
-
-    QHash<QString, SessionID> skipfiles;
-
 
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;

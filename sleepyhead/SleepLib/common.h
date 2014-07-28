@@ -41,6 +41,9 @@ struct ValueCount {
     double p;
 };
 
+void copyPath(QString src, QString dst);
+
+
 // Primarily sort by value
 bool operator <(const ValueCount &a, const ValueCount &b);
 
@@ -87,17 +90,6 @@ const QString STR_GEN_Off = QObject::tr("Off");
 const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
 const QString STR_PREF_ReimportBackup = "ReimportBackup";
 const QString STR_PREF_LastCPAPPath = "LastCPAPPath";
-
-const QString STR_PROP_Brand = "Brand";
-const QString STR_PROP_Model = "Model";
-const QString STR_PROP_Series = "Series";
-const QString STR_PROP_ModelNumber = "ModelNumber";
-const QString STR_PROP_SubModel = "SubModel";
-const QString STR_PROP_Serial = "Serial";
-const QString STR_PROP_DataVersion = "DataVersion";
-const QString STR_PROP_Path = "Path";
-const QString STR_PROP_BackupPath = "BackupPath";
-const QString STR_PROP_LastImported = "LastImported";
 
 const QString STR_MACH_ResMed = "ResMed";
 const QString STR_MACH_PRS1 = "PRS1";

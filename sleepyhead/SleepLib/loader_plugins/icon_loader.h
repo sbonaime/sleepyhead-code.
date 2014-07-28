@@ -70,10 +70,15 @@ class FPIconLoader : public MachineLoader
     virtual int Version() { return fpicon_data_version; }
 
     //! \brief Returns the machine class name of this CPAP machine, "FPIcon"
-    virtual const QString &ClassName() { return fpicon_class_name; }
+    virtual const QString &loaderName() { return fpicon_class_name; }
 
-    //! \brief Creates a machine object, indexed by serial number
-    Machine *CreateMachine(QString serial);
+    // ! \brief Creates a machine object, indexed by serial number
+    //Machine *CreateMachine(QString serial);
+
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_CPAP, fpicon_class_name, QObject::tr("Fisher & Paykel"), QString(), QString(), QString(), QObject::tr("ICON"), QDateTime::currentDateTime(), fpicon_data_version);
+    }
+
 
     //! \brief Registers this MachineLoader with the master list, so F&P Icon data can load
     static void Register();

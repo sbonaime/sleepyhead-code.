@@ -444,8 +444,19 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.drawLine( left+width, top, left, top);
 
     qint64 minx = w.min_x, maxx = w.max_x;
+
+    int days = ceil(double(maxx-minx) / 86400000.0);
+
+    if (days >= 1) {
+        minx = floor(double(minx)/86400000.0);
+        minx *= 86400000L;
+
+        maxx = minx + 86400000L * qint64(days)-1;
+    }
+
+
     qint64 xx = maxx - minx;
-    float days = double(xx) / 86400000.0;
+
 
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;

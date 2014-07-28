@@ -103,6 +103,32 @@ bool removeDir(const QString &path)
     return result;
 }
 
+void copyPath(QString src, QString dst)
+{
+    QDir dir(src);
+    if (!dir.exists())
+        return;
+
+    // Recursively handle directories
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src + QDir::separator() + d, dst_path);
+    }
+
+    // Files
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QString srcFile = src + QDir::separator() + f;
+        QString destFile = dst + QDir::separator() + f;
+
+        if (!QFile::exists(destFile)) {
+            QFile::copy(srcFile, destFile);
+        }
+    }
+}
+
+
+
 QString STR_UNIT_CM;
 QString STR_UNIT_INCH;
 QString STR_UNIT_FOOT;

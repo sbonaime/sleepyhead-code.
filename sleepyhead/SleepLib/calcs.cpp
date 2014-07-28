@@ -34,7 +34,7 @@ bool SearchEvent(Session * session, ChannelID code, qint64 time, int dur, bool u
     int cnt;
 
     //qint64 rate;
-//    bool fixdurations = (session->machine()->GetClass() != STR_MACH_ResMed);
+//    bool fixdurations = (session->machine()->loaderName() != STR_MACH_ResMed);
 
     if (!p_profile->cpap->resyncFromUserFlagging()) {
         update=false;
@@ -867,9 +867,9 @@ void FlowParser::flagEvents()
 
 void calcRespRate(Session *session, FlowParser *flowparser)
 {
-    if (session->machine()->GetType() != MT_CPAP) { return; }
+    if (session->machine()->type() != MT_CPAP) { return; }
 
-    //    if (session->machine()->GetClass()!=STR_MACH_PRS1) return;
+    //    if (session->machine()->loaderName() != STR_MACH_PRS1) return;
 
     if (!session->eventlist.contains(CPAP_FlowRate)) {
         //qDebug() << "calcRespRate called without FlowRate waveform available";
@@ -999,7 +999,7 @@ EventDataType calcAHI(Session *session, qint64 start, qint64 end)
 
 int calcAHIGraph(Session *session)
 {
-    bool calcrdi = session->machine()->GetClass() == "PRS1";
+    bool calcrdi = session->machine()->loaderName() == "PRS1";
     //p_profile->general->calculateRDI()
 
 
@@ -1009,7 +1009,7 @@ int calcAHIGraph(Session *session)
 
     bool zeroreset = p_profile->cpap->AHIReset();
 
-    if (session->machine()->GetType() != MT_CPAP) { return 0; }
+    if (session->machine()->type() != MT_CPAP) { return 0; }
 
     bool hasahi = session->eventlist.contains(CPAP_AHI);
     bool hasrdi = session->eventlist.contains(CPAP_RDI);
@@ -1692,7 +1692,7 @@ bool mmaskFirst = true;
 int calcLeaks(Session *session)
 {
 
-    if (session->machine()->GetType() != MT_CPAP) { return 0; }
+    if (session->machine()->type() != MT_CPAP) { return 0; }
 
     if (session->eventlist.contains(CPAP_Leak)) { return 0; } // abort if already there
 

@@ -33,10 +33,12 @@ class ZEOLoader : public MachineLoader
     static void Register();
 
     virtual int Version() { return zeo_data_version; }
-    virtual const QString &ClassName() { return zeo_class_name; }
+    virtual const QString &loaderName() { return zeo_class_name; }
 
-
-    Machine *CreateMachine(Profile *profile);
+    //Machine *CreateMachine();
+    virtual MachineInfo newInfo() {
+        return MachineInfo(MT_SLEEPSTAGE, zeo_class_name, QObject::tr("Zeo"), QString(), QString(), QString(), QObject::tr("Personal Sleep Coach"), QDateTime::currentDateTime(), zeo_data_version);
+    }
 
   protected:
   private:
