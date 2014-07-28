@@ -343,137 +343,137 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1038"/>
+        <location filename="../sleepyhead/daily.cpp" line="1037"/>
         <source>PAP Mode: %1&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1043"/>
+        <location filename="../sleepyhead/daily.cpp" line="1042"/>
         <source>This day has missing pressure, mode and settings data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1086"/>
+        <location filename="../sleepyhead/daily.cpp" line="1085"/>
         <source>%1%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1081"/>
+        <location filename="../sleepyhead/daily.cpp" line="1080"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1160"/>
+        <location filename="../sleepyhead/daily.cpp" line="1159"/>
         <source>This day just contains summary data, only limited information is available .</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1165"/>
+        <location filename="../sleepyhead/daily.cpp" line="1164"/>
         <source>Time over leak redline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1176"/>
+        <location filename="../sleepyhead/daily.cpp" line="1175"/>
         <source>Time spent in ramp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1210"/>
+        <location filename="../sleepyhead/daily.cpp" line="1209"/>
         <source>Sleep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1210"/>
+        <location filename="../sleepyhead/daily.cpp" line="1209"/>
         <source>Wake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1256"/>
+        <location filename="../sleepyhead/daily.cpp" line="1255"/>
         <source>Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1312"/>
+        <location filename="../sleepyhead/daily.cpp" line="1311"/>
         <source>No Graphs :(</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1390"/>
+        <location filename="../sleepyhead/daily.cpp" line="1389"/>
         <source>Event Breakdown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1424"/>
+        <location filename="../sleepyhead/daily.cpp" line="1423"/>
         <source>Sessions all off!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1425"/>
+        <location filename="../sleepyhead/daily.cpp" line="1424"/>
         <source>Sessions exist for this day but are switched off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1427"/>
+        <location filename="../sleepyhead/daily.cpp" line="1426"/>
         <source>Impossibly short session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1428"/>
+        <location filename="../sleepyhead/daily.cpp" line="1427"/>
         <source>Zero hours??</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1431"/>
+        <location filename="../sleepyhead/daily.cpp" line="1430"/>
         <source>BRICK :(</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1432"/>
+        <location filename="../sleepyhead/daily.cpp" line="1431"/>
         <source>Sorry, your machine only provides compliance data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1433"/>
+        <location filename="../sleepyhead/daily.cpp" line="1432"/>
         <source>Complain to your Equipment Provider!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1451"/>
+        <location filename="../sleepyhead/daily.cpp" line="1450"/>
         <source>No data available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1727"/>
+        <location filename="../sleepyhead/daily.cpp" line="1726"/>
         <source>Pick a Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2001"/>
+        <location filename="../sleepyhead/daily.cpp" line="2000"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2019"/>
+        <location filename="../sleepyhead/daily.cpp" line="2018"/>
         <source>Bookmark at %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2229"/>
+        <location filename="../sleepyhead/daily.cpp" line="2228"/>
         <source>Show all graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2235"/>
+        <location filename="../sleepyhead/daily.cpp" line="2234"/>
         <source>No Graphs On!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2243"/>
+        <location filename="../sleepyhead/daily.cpp" line="2242"/>
         <source>Summary Only :(</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2248"/>
+        <location filename="../sleepyhead/daily.cpp" line="2247"/>
         <source>Hide all graphs</source>
         <translation type="unfinished"></translation>
     </message>
