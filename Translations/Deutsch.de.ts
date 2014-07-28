@@ -487,6 +487,10 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
         <source>UF2</source>
         <translation>UF2</translation>
     </message>
+    <message>
+        <source>Time spent in ramp</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ExportCSV</name>
@@ -707,7 +711,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>CPAP data was recently purged and needs to be re-imported.</source>
-        <translation>CPAP-Daten wurden kürzlich gereinigt und mussen neu importiert werden.</translation>
+        <translation type="vanished">CPAP-Daten wurden kürzlich gereinigt und mussen neu importiert werden.</translation>
     </message>
     <message>
         <source>DISCLAIMER:</source>
@@ -754,10 +758,6 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
         <translation>Hinweis:</translation>
     </message>
     <message>
-        <source>Would you like to import from the path(s) shown above?</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Import &amp;ZEO Data</source>
         <translation>Import &amp;ZEO Daten</translation>
     </message>
@@ -791,7 +791,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Select another folder</source>
-        <translation>Wählen Sie einen anderen</translation>
+        <translation type="vanished">Wählen Sie einen anderen</translation>
     </message>
     <message>
         <source>Online Users &amp;Guide</source>
@@ -1019,7 +1019,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Would you like this done automatically from the Backup Folder?</source>
-        <translation>Möchten Sie diesen Import Standort für das nächste Mal merken?</translation>
+        <translation type="vanished">Möchten Sie diesen Import Standort für das nächste Mal merken?</translation>
     </message>
     <message>
         <source>Please wait, importing from backup folder(s)...</source>
@@ -1059,7 +1059,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Rebuild Oximetry Indices</source>
-        <translation>&amp;Wiederaufbau Oximeter-Indizes</translation>
+        <translation type="vanished">&amp;Wiederaufbau Oximeter-Indizes</translation>
     </message>
     <message>
         <source>branch</source>
@@ -1179,7 +1179,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>CPAP Datacard structures were detected at the following locations:</source>
-        <translation>CPAP Datacard Strukturen wurden an folgenden Orten festgestellt:</translation>
+        <translation type="vanished">CPAP Datacard Strukturen wurden an folgenden Orten festgestellt:</translation>
     </message>
     <message>
         <source>Statistics</source>
@@ -1363,7 +1363,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Purge CPAP Data</source>
-        <translation>&amp;Säuberung der CPAP Daten</translation>
+        <translation type="vanished">&amp;Säuberung der CPAP Daten</translation>
     </message>
     <message>
         <source>qrc:/docs/index.html</source>
@@ -1467,19 +1467,19 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Are you sure you want to purge all CPAP data for the following machine:</source>
-        <translation>Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
+        <translation type="vanished">Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
     </message>
     <message>
         <source>Not all session data could be removed, you have to delete the following folder manually.</source>
-        <translation>Da nicht alle Sitzungs-Daten entfernt werden konnten, müssen Sie den folgenden Ordner manuell löschen.</translation>
+        <translation type="vanished">Da nicht alle Sitzungs-Daten entfernt werden konnten, müssen Sie den folgenden Ordner manuell löschen.</translation>
     </message>
     <message>
         <source>Machine data has been successfully purged.</source>
-        <translation>Gerätedaten wurden erfolgreich gelöscht.</translation>
+        <translation type="vanished">Gerätedaten wurden erfolgreich gelöscht.</translation>
     </message>
     <message>
         <source>Would you like to reimport from the backup folder?</source>
-        <translation>Möchten Sie aus dem Backup-Ordner importieren?</translation>
+        <translation type="vanished">Möchten Sie aus dem Backup-Ordner importieren?</translation>
     </message>
     <message>
         <source>Please wait, importing...</source>
@@ -1557,6 +1557,70 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
+    <message>
+        <source>Rebuild CPAP Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Automatic Oximetry Cleanup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Foo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please insert your CPAP data card...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to rebuild all CPAP data for the following machine:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please note, that this could result in loss of graph data if SleepyHead&apos;s internal backups have been disabled or interfered with in any way.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For some reason, SleepyHead does not have internal backups for the following machine:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Provided you have made &lt;i&gt;your &lt;b&gt;own&lt;/b&gt; backups for ALL of your CPAP data&lt;/i&gt;, you can still complete this operation, but you will have to restore from your backups manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you really sure you want to do this?</source>
+        <translation type="unfinished">Sind Sie wirklich sicher, dass Sie das tun wollen?</translation>
+    </message>
+    <message>
+        <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Would you like to import from your own backups now? (you will have no data visible for this machine until you do)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A %1 file structure for a %2 was located at:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A %1 file structure was located at:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Would you like to import from this location?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Specify</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewProfile</name>
@@ -1618,7 +1682,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>qrc:/docs/update_notes.html</source>
-        <translation>qrc:/docs/intro.html</translation>
+        <translation type="vanished">qrc:/docs/intro.html</translation>
     </message>
     <message>
         <source>CPAP Treatment Information</source>
@@ -1811,6 +1875,10 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     <message>
         <source>Please provide a username for this profile</source>
         <translation>Bitte geben Sie einen Benutzernamen für dieses Profil an</translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation type="unfinished">Leere Seite</translation>
     </message>
 </context>
 <context>
@@ -5395,6 +5463,322 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
         <source>Severity (0-1)</source>
         <translation>Außergewöhnliche Schwere (0-1)</translation>
     </message>
+    <message>
+        <source>Fixed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fixed Bi-Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto Bi-Level (Fixed PS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV Fixed EPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV Variable EPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 %2</source>
+        <translation type="unfinished">%1 %2</translation>
+    </message>
+    <message>
+        <source>%1-%2 %3</source>
+        <translation type="unfinished">%1-%2 %3</translation>
+    </message>
+    <message>
+        <source>PS %3 over %1-%2 %4 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PS %4-%5 over %1-%3 %6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PS %4-%5 over EPAP %1-%2 Max %3 %6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fixed %1</source>
+        <translation type="unfinished">Fest %1</translation>
+    </message>
+    <message>
+        <source>Auto Bi-Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV AutoEPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Welcome to SleepyHead</source>
+        <translation type="unfinished">Willkommen bei SleepyHead</translation>
+    </message>
+    <message>
+        <source>What would you like to do?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please Import Some Data</source>
+        <translation type="unfinished">Bitte Importieren Sie einige Daten</translation>
+    </message>
+    <message>
+        <source>CPAP&lt;br/&gt;Importer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximetery&lt;br/&gt;Wizard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View&lt;br/&gt;Statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
+        <translation type="unfinished">Es könnte eine gute Idee sein, Vorlieben zuerst zu überprüfen, &lt;/ br&gt; da gibt es einige Optionen, die Sie verändern können.</translation>
+    </message>
+    <message>
+        <source>First import can take a few minutes.</source>
+        <translation type="unfinished">Der erste Import kann ein paar Minuten dauern.</translation>
+    </message>
+    <message>
+        <source>Click this box to see this in daily view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last time you used your %1...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>last night</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>yesterday</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%2 days ago</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>was %1 (on %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>perfect :)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>pretty darn good</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reasonably good</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>technically &quot;treated&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>not very good</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>horrible, please consult your doctor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your had an AHI of %1, which is considered %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 hours, %2 minutes and %3 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You slept for %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;font color = red&gt;You only had the mask on for %1.&lt;/font&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had no &lt;i&gt;major&lt;/i&gt; mask leaks (maximum was %1 %2).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had a small but acceptable amount of &lt;i&gt;major&lt;/i&gt; mask leakage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had significant periods of &lt;i&gt;major&lt;/i&gt; mask leakage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your mask is leaking way too much.. Talk to your CPAP advisor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your CPAP machine blasted you with a constant %1%2 of air</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your machine blasted you with a constant %1-%2 %3 of air.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your machine was under %1-%2 %3 for %4% of the time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your EPAP pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your IPAP pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No CPAP data has been imported yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Most recent Oximetery data: &lt;a onclick=&apos;alert(&quot;daily=%2&quot;);&apos;&gt;%1&lt;/a&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(last night)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(yesterday)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(%2 day ago)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No oximetery data has been imported yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Very Important Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;ALWAYS &lt;font size=+1 color=red&gt;&lt;b&gt;write protect&lt;/b&gt;&lt;/font&gt; CPAP SDCards before inserting them into your computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contec</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CMS50</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fisher &amp; Paykel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ICON</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DeVilbiss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Intellipap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ChoiceMMed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MD300</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Respironics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>M-Series</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Philips Respironics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System One</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ResMed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S9</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Somnopose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Somnopose Software</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zeo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Personal Sleep Coach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ramp Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ramp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your EPAP pressure fixed at %1%2.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QextSerialPort</name>
@@ -5520,11 +5904,11 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>PS %1</source>
-        <translation>PS %1</translation>
+        <translation type="vanished">PS %1</translation>
     </message>
     <message>
         <source>SleepyHead is pretty much useless without it.</source>
-        <translation>SleepyHead benötigt den durchschnittlichen Druck.</translation>
+        <translation type="vanished">SleepyHead benötigt den durchschnittlichen Druck.</translation>
     </message>
     <message>
         <source>Oximeter Statistics</source>
@@ -5640,7 +6024,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>First import can take a few minutes.</source>
-        <translation>Der erste Import kann ein paar Minuten dauern.</translation>
+        <translation type="vanished">Der erste Import kann ein paar Minuten dauern.</translation>
     </message>
     <message>
         <source>Pulse Rate</source>
@@ -5656,7 +6040,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>EPAP %1</source>
-        <translation>EPAP %1</translation>
+        <translation type="vanished">EPAP %1</translation>
     </message>
     <message>
         <source>Last Week</source>
@@ -5680,11 +6064,11 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>APAP %1 - %2</source>
-        <translation>APAP %1 - %2</translation>
+        <translation type="vanished">APAP %1 - %2</translation>
     </message>
     <message>
         <source>Please Import Some Data</source>
-        <translation>Bitte Importieren Sie einige Daten</translation>
+        <translation type="vanished">Bitte Importieren Sie einige Daten</translation>
     </message>
     <message>
         <source>Last Session</source>
@@ -5700,7 +6084,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>IPAP %1</source>
-        <translation>IPAP %1</translation>
+        <translation type="vanished">IPAP %1</translation>
     </message>
     <message>
         <source>Leak Statistics</source>
@@ -5708,7 +6092,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
-        <translation>Es könnte eine gute Idee sein, Vorlieben zuerst zu überprüfen, &lt;/ br&gt; da gibt es einige Optionen, die Sie verändern können.</translation>
+        <translation type="vanished">Es könnte eine gute Idee sein, Vorlieben zuerst zu überprüfen, &lt;/ br&gt; da gibt es einige Optionen, die Sie verändern können.</translation>
     </message>
     <message>
         <source>Average Hours per Night</source>
@@ -5728,7 +6112,39 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>Fixed %1</source>
-        <translation>Fest %1</translation>
+        <translation type="vanished">Fest %1</translation>
+    </message>
+    <message>
+        <source>I can haz data?!?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This lonely sleepy sheep has no data :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fixed %1 %2</source>
+        <translation type="unfinished">Fest %1 %2</translation>
+    </message>
+    <message>
+        <source>%1 - %2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPAP %1 %3 IPAP %2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PS %4 over %1 - %2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPAP %1, PS %2-%3 %4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPAP %1-%2, PS %3-%4 %5</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
