@@ -1025,22 +1025,21 @@ QString Daily::getCPAPInformation(Day * cpap)
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    html+="<tr><td colspan=4 align=center><a class=info2 href='#'>"+info.model+"<span>";
+    html+="<tr><td align=center><a class=info2 href='#'>"+info.model+"<span>";
     QString tooltip=(info.brand+"\n"+info.series+" "+info.modelnumber+"\n"+info.serial);
     tooltip=tooltip.replace(" ","&nbsp;");
-
 
     html+=tooltip;
     html+="</span></td></tr>\n";
     //CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
-    html+="<tr><td colspan=4 align=center>";
+    html+="<tr><td align=center>";
 
     html+=tr("PAP Mode: %1<br/>").arg(cpap->getCPAPMode());
     html+= cpap->getPressureSettings();
     html+="</td></tr>\n";
     if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
-        html+="<tr><td colspan=4>&nbsp;</td></tr>\n";
-        html+=QString("<tr><td colspan=4 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+":</b> "+ tr("This day has missing pressure, mode and settings data."));
+        html+="<tr><td>&nbsp;</td></tr>\n";
+        html+=QString("<tr><td colspan=2><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+":</b> "+ tr("This day has missing pressure, mode and settings data."));
     }
 
     html+="</table>\n";
@@ -1169,13 +1168,13 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     if (cpap) {
         int l = cpap->sum(CPAP_Ramp);
 
-    //    if (l>0) {
+        if (l>0) {
             int h = l / 3600;
             int m = (l / 60) % 60;
             int s = l % 60;
             html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time spent in ramp")+
                     QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0'));
-//        }
+        }
 
     }
 
@@ -1334,7 +1333,7 @@ void Daily::Load(QDate date)
             }
             html+="<tr>";
             html+=QString("<td colspan=4 bgcolor='%1' align=center><a class=info2 href='#'><font size=+4 color='%2'><b>%3</b></font><span>%4</span></a> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
-                        .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].description()).arg(ahi,0,'f',2);
+                        .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].fullname()).arg(ahi,0,'f',2);
             html+="</tr>\n";
             html+="</table>\n";
             html+=getCPAPInformation(cpap);

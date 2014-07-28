@@ -61,6 +61,9 @@ class MainWindow;
 
 extern QStatusBar *qstatusbar;
 
+QString getCPAPPixmap(QString mach_class);
+
+
 class Daily;
 class Report;
 class Overview;
