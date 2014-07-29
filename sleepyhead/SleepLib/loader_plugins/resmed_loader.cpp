@@ -1061,7 +1061,7 @@ EDFduration getEDFDuration(QString filename)
     return dur;
 }
 
-void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
+int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 {
     QHash<QString, SessionID> skipfiles;
 
@@ -1260,6 +1260,7 @@ void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     }
 
     // Run the tasks...
+    int c = countTasks();
     runTasks(p_profile->session->multithreading());
 
     newSkipFiles.append(skipfiles.keys());
@@ -1278,6 +1279,7 @@ void ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     }
     impfile.close();
 
+    return c;
 }
 
 int ResmedLoader::Open(QString path)
@@ -1310,7 +1312,7 @@ int ResmedLoader::Open(QString path)
 
     // Check DATALOG folder exists and is readable
     if (!QDir().exists(newpath)) {
-        return 0;
+        return -1;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1321,7 +1323,7 @@ int ResmedLoader::Open(QString path)
 
     // Abort if this file is dodgy..
     if (!f.exists() || !f.open(QIODevice::ReadOnly)) {
-        return 0;
+        return -1;
     }
     MachineInfo info = newInfo();
 
@@ -1356,7 +1358,7 @@ int ResmedLoader::Open(QString path)
     // Abort if no serial number
     if (info.serial.isEmpty()) {
         qDebug() << "S9 Data card has no valid serial number in Indentification.tgt";
-        return 0;
+        return -1;
     }
 
     // Early check for STR.edf file, so we can early exit before creating faulty machine record.
@@ -1369,7 +1371,7 @@ int ResmedLoader::Open(QString path)
 
         if (!f.exists()) {
             qDebug() << "Missing STR.edf file";
-            return 0;
+            return -1;
         }
     }
 
@@ -1516,8 +1518,7 @@ int ResmedLoader::Open(QString path)
     p_profile->session->setIgnoreShortSessions(false);
 #endif
 
-    scanFiles(m, newpath);
-
+    int new_sessions = scanFiles(m, newpath);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Now look for any new summary data that can be extracted from STR.edf records
@@ -1573,6 +1574,8 @@ int ResmedLoader::Open(QString path)
 
         queTask(new ResmedImportStage2(this, R, m));
     }
+
+    new_sessions += countTasks();
     runTasks();
 
 #ifdef DEBUG_EFFICIENCY
@@ -1609,7 +1612,7 @@ int ResmedLoader::Open(QString path)
     channel_time.clear();
 
     qDebug() << "Total Events " << event_cnt;
-    return 1;
+    return new_sessions;
 }
 
 

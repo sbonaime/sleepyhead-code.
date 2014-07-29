@@ -701,7 +701,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
 
     double xx = max_x - min_x;
-    double xmult = xx / w;
+    double xmult = xx / double(w);
 
     {
         xmult = (m_blockzoom ? (rmax_x - rmin_x) : (max_x - min_x)) / w;

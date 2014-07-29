@@ -75,7 +75,6 @@ class IntellipapLoader : public MachineLoader
     }
   protected:
     QString last;
-    QHash<QString, Machine *> MachList;
 
     unsigned char *m_buffer;
 };

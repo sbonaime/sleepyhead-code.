@@ -68,7 +68,7 @@ int IntellipapLoader::Open(QString path)
     QString dirtag = "SL";
 
     if (path.endsWith("/" + dirtag)) {
-        return 0;
+        return -1;
         //newpath=path;
     } else {
         newpath = path + "/" + dirtag;
@@ -82,7 +82,7 @@ int IntellipapLoader::Open(QString path)
     filename = newpath + "/SET1";
     QFile f(filename);
 
-    if (!f.exists()) { return 0; }
+    if (!f.exists()) { return -1; }
 
     f.open(QFile::ReadOnly);
     QTextStream tstream(&f);
@@ -228,7 +228,7 @@ int IntellipapLoader::Open(QString path)
 
     if (!mach) {
         qDebug() << "Couldn't get Intellipap machine record";
-        return 0;
+        return -1;
     }
 
     QString backupPath = mach->getBackupPath();
@@ -253,7 +253,7 @@ int IntellipapLoader::Open(QString path)
     filename = newpath + "/U";
     f.setFileName(filename);
 
-    if (!f.exists()) { return 0; }
+    if (!f.exists()) { return -1; }
 
     QVector<quint32> SessionStart;
     QVector<quint32> SessionEnd;
@@ -287,7 +287,7 @@ int IntellipapLoader::Open(QString path)
     filename = newpath + "/L";
     f.setFileName(filename);
 
-    if (!f.exists()) { return 0; }
+    if (!f.exists()) { return -1; }
 
     f.open(QFile::ReadOnly);
     long size = f.size();
@@ -296,12 +296,13 @@ int IntellipapLoader::Open(QString path)
 
     if (size != f.read((char *)m_buffer, size)) {
         qDebug()  << "Couldn't read 'L' data" << filename;
-        return 0;
+        return -1;
     }
 
     Session *sess;
     SessionID sid;
     QHash<SessionID,qint64> rampstart;
+    QHash<SessionID,qint64> rampend;
 
     for (int i = 0; i < SessionStart.size(); i++) {
         sid = SessionStart[i];
@@ -312,7 +313,12 @@ int IntellipapLoader::Open(QString path)
             SessionEnd[i] = 0;
         } else if (!Sessions.contains(sid)) {
             sess = Sessions[sid] = new Session(mach, sid);
+
+            sess->really_set_first(qint64(sid) * 1000L);
+         //   sess->really_set_last(qint64(SessionEnd[i]) * 1000L);
+
             rampstart[sid] = 0;
+            rampend[sid] = 0;
             sess->SetChanged(true);
             if (mode >= MODE_BILEVEL_FIXED) {
                 sess->AddEventList(CPAP_IPAP, EVL_Event);
@@ -354,6 +360,8 @@ int IntellipapLoader::Open(QString path)
 
     long pos = 0;
     int rampval = 0;
+    sid = 0;
+    SessionID lastsid = 0;
 
     for (int i = 0; i < recs; i++) {
         // convert timestamp to real epoch
@@ -366,6 +374,7 @@ int IntellipapLoader::Open(QString path)
 
             if ((ts1 >= (quint32)sid) && (ts1 <= SessionEnd[j])) {
                 Session *sess = Sessions[sid];
+
                 qint64 time = quint64(ts1) * 1000L;
                 sess->settings[CPAP_Mode] = mode;
 
@@ -403,6 +412,7 @@ int IntellipapLoader::Open(QString path)
                     if (!rs) {
                         rampstart[sid] = time;
                     }
+                    rampend[sid] = time;
                 } else {
                     if (rs > 0) {
                         if (!sess->eventlist.contains(CPAP_Ramp)) {
@@ -412,6 +422,7 @@ int IntellipapLoader::Open(QString path)
                         sess->eventlist[CPAP_Ramp][0]->AddEvent(time, duration);
 
                         rampstart[sid] = 0;
+                        //rampend[sid] = 0; // don't need to
                     }
                 }
 
@@ -477,10 +488,32 @@ int IntellipapLoader::Open(QString path)
                 sess->eventlist[CPAP_MinuteVent][0]->AddEvent(time, mv / 1000.0);
                 break;
             }
-
+            lastsid = sid;
         }
 
         pos += 26;
+    }
+
+    // Close any open ramps and store the event.
+    QHash<SessionID,qint64>::iterator rit;
+    QHash<SessionID,qint64>::iterator rit_end = rampstart.end();
+
+    for (rit = rampstart.begin(); rit != rit_end; ++rit) {
+        qint64 rs = rit.value();
+        SessionID sid = rit.key();
+        if (rs > 0) {
+            qint64 re = rampend[rit.key()];
+
+            Session *sess = Sessions[sid];
+            if (!sess->eventlist.contains(CPAP_Ramp)) {
+                sess->AddEventList(CPAP_Ramp, EVL_Event);
+            }
+
+            int duration = (re - rs) / 1000L;
+            sess->eventlist[CPAP_Ramp][0]->AddEvent(re, duration);
+            rit.value() = 0;
+
+        }
     }
 
     for (int i = 0; i < SessionStart.size(); i++) {
@@ -544,7 +577,8 @@ int IntellipapLoader::Open(QString path)
 
     f.close();
 
-    return 1;
+    int c = Sessions.size();
+    return c;
 }
 
 bool intellipap_initialized = false;

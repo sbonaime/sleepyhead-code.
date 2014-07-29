@@ -197,7 +197,7 @@ int PRS1Loader::Open(QString path)
     QDir dir(newpath);
 
     if ((!dir.exists() || !dir.isReadable())) {
-        return 0;
+        return -1;
     }
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -233,19 +233,24 @@ int PRS1Loader::Open(QString path)
         }
     }
 
-    if (SerialNumbers.empty()) { return 0; }
+    if (SerialNumbers.empty()) { return -1; }
 
     m_buffer = new unsigned char [max_load_buffer_size]; //allocate once and reuse.
     Machine *m;
 
+    int c = 0;
+
     for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
+        if (*sn == last) {
+        }
+
         MachineInfo info = newInfo();
         info.serial = *sn;
         m = CreateMachine(info);
 
         try {
             if (m) {
-                OpenMachine(m, newpath + "/" + info.serial);
+                c += OpenMachine(m, newpath + "/" + info.serial);
             }
         } catch (OneTypePerDay e) {
             Q_UNUSED(e)
@@ -259,7 +264,7 @@ int PRS1Loader::Open(QString path)
     }
 
     delete [] m_buffer;
-    return PRS1List.size();
+    return c;
 }
 
 bool PRS1Loader::ParseProperties(Machine *m, QString filename)

@@ -1117,10 +1117,12 @@ int calcAHIGraph(Session *session)
         }
     }
 
-    AHI->AddEvent(lastti, 0);
+    //if (lastti > last) lastti = last;
+
+    AHI->AddEvent(last, 0);
 
     if (calcrdi) {
-        RDI->AddEvent(lastti, 0);
+        RDI->AddEvent(last, 0);
     }
 
     if (!cnt) {

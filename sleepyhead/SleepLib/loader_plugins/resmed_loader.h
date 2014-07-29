@@ -385,7 +385,7 @@ protected:
     void ParseSTR(Machine *mach, QStringList strfiles);
 
     //! \brief Scan for new files to import, group into sessions and add to task que
-    void scanFiles(Machine * mach, QString datalog_path);
+    int scanFiles(Machine * mach, QString datalog_path);
 
     QString backup(QString file, QString backup_path);
 

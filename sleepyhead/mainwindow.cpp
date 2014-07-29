@@ -522,17 +522,41 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         return 0;
     }
 
-    QDialog popup(this, Qt::SplashScreen);
-    QLabel waitmsg(message);
-    QVBoxLayout waitlayout(&popup);
-    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
-    waitlayout.addWidget(qprogress,1);
+    QDialog * popup = new QDialog(this, Qt::SplashScreen);
+    QLabel * waitmsg = new QLabel(message);
+    QHBoxLayout *hlayout = new QHBoxLayout;
+
+    QLabel * imglabel = new QLabel(popup);
+    QPixmap image(getCPAPPixmap(import.loader->loaderName()));
+    image = image.scaled(64,64);
+    imglabel->setPixmap(image);
+
+
+    QVBoxLayout * vlayout = new QVBoxLayout;
+    popup->setLayout(vlayout);
+    vlayout->addLayout(hlayout);
+    hlayout->addWidget(imglabel);
+    hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
+    vlayout->addWidget(qprogress,1);
+
     qprogress->setVisible(true);
-    popup.show();
-    int c=import.loader->Open(import.path);;
-    popup.hide();
+    popup->show();
+    int c = import.loader->Open(import.path);
+
+    if (c > 0) {
+        Notify(tr("Imported %1 CPAP session(s) from\n\n%2").arg(c).arg(import.path), tr("Import Success"));
+    } else if (c == 0) {
+        Notify(tr("Already up to date with CPAP data at\n\n%1").arg(import.path), tr("Up to date"));
+    } else {
+        Notify(tr("Couldn't find any valid Machine Data at\n\n%1").arg(import.path),tr("Import Problem"));
+    }
+
+    popup->hide();
+    vlayout->removeWidget(qprogress);
     ui->statusbar->insertWidget(2,qprogress,1);
     qprogress->setVisible(false);
+
+    delete popup;
 
     return c;
 }
@@ -557,16 +581,11 @@ void MainWindow::importCPAPBackups()
 
     if (paths.size() > 0) {
         int c=0;
-        QString str=tr("Data successfully imported from the following locations:")+"\n\n";
         Q_FOREACH(ImportPath path, paths) {
             c+=importCPAP(path, tr("Please wait, importing from backup folder(s)..."));
-            str.append(QDir::toNativeSeparators(path.path)+"\n");
         }
         if (c>0) {
-            mainwin->Notify(str);
             finishCPAPImport();
-        } else {
-            mainwin->Notify(tr("Couldn't find any new Machine Data at the locations given."),tr("Import Problem"));
         }
     }
 }
@@ -752,15 +771,13 @@ void MainWindow::on_action_Import_Data_triggered()
         int res = mbox.exec();
 
         if (res == QMessageBox::Cancel) {
+            // Give the communal progress bar back
+            ui->statusbar->insertWidget(2,qprogress,1);
             return;
         } else if (res == QMessageBox::No) {
             waitmsg.setText(tr("Please wait, launching file dialog..."));
             datacards.clear();
             asknew = true;
-        } else {
-            // Give the communal progress bar back
-            ui->statusbar->insertWidget(2,qprogress,1);
-            return;
         }
 
     } else {
@@ -840,55 +857,50 @@ void MainWindow::on_action_Import_Data_triggered()
         }
     }
 
-    int successful = false;
+    bool newdata = false;
 
-    QStringList goodlocations;
+//    QStringList goodlocations;
 
-    waitmsg.setText(tr("Please wait, SleepyHead is importing data..."));
-    qprogress->setVisible(true);
+//    waitmsg.setText(tr("Please wait, SleepyHead is importing data..."));
+//    qprogress->setVisible(true);
 
-    popup.show();
+//    popup.show();
+
+    int c = -1;
     for (int i = 0; i < datacards.size(); i++) {
         QString dir = datacards[i].path;
         MachineLoader * loader = datacards[i].loader;
         if (!loader) continue;
 
         if (!dir.isEmpty()) {
-            qprogress->setValue(0);
-            qprogress->show();
-            qstatus->setText(tr("Importing Data"));
-            int c = loader->Open(dir);
+//            qprogress->setValue(0);
+//            qprogress->show();
+//            qstatus->setText(tr("Importing Data"));
+            c = importCPAP(datacards[i], tr("Importing Data"));
             qDebug() << "Finished Importing data" << c;
 
-            if (c) {
-                goodlocations.push_back(dir);
-
+            if (c >= 0) {
+            //    goodlocations.push_back(dir);
                 QDir d(dir.section("/",0,-2));
                 (*p_profile)[STR_PREF_LastCPAPPath] = d.absolutePath();
-
-                successful = true;
             }
 
-            qstatus->setText("");
-            qprogress->hide();
+            if (c > 0) {
+                newdata = true;
+            }
+
+//            qstatus->setText("");
+//            qprogress->hide();
         }
     }
-    popup.hide();
+//    popup.hide();
 
-    ui->statusbar->insertWidget(2,qprogress,1);
+//    ui->statusbar->insertWidget(2, qprogress,1);
 
-    if (successful) {
+    if (newdata)  {
         finishCPAPImport();
-
-        QString str=tr("Data successfully imported from the following locations\n\n");
-        for (int i=0; i<goodlocations.size(); i++) {
-            str += goodlocations.at(i) + "\n";
-        }
-        mainwin->Notify(str);
-    } else {
-        mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
+        PopulatePurgeMenu();
     }
-    PopulatePurgeMenu();
 }
 
 QMenu *MainWindow::CreateMenu(QString title)
@@ -1777,10 +1789,6 @@ void MainWindow::on_actionChange_User_triggered()
     RestartApplication(true);
 }
 
-void purgeCPAPDay(QDate date)
-{
-}
-
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
     QDate date = getDaily()->getDate();
@@ -1942,14 +1950,14 @@ void MainWindow::purgeMachine(Machine * mach)
 
 
     if (backups) {
-        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing..."));
+        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing from backup folder(s)..."));
     } else {
         if (QMessageBox::information(this, STR_MessageBox_Warning,
                                  tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+
                                  tr("Would you like to import from your own backups now? (you will have no data visible for this machine until you do)"),
                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
-        } else {
             on_action_Import_Data_triggered();
+        } else {
         }
     }
     if (overview) overview->ReloadGraphs();

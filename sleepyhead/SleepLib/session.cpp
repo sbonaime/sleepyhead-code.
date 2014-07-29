@@ -959,24 +959,37 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
     quint32 *tptr;
     int cnt;
 
-    if (code == CPAP_FlowRate) {
-        int i=5;
-    }
-
     EventDataType a,b,c,d,e;
-    double;
     if (it != eventlist.end()) {
         int el_size=it.value().size();
         for (int i = 0; i < el_size; i++)  {
             EventList *el = it.value()[i];
-            if ((time >= el->first())
-            && (time < el->last())) {
+            if ((time >= el->first()) && (time < el->last())) {
                 cnt = el->count();
 
                 if (el->type() == EVL_Waveform) {
                     qint64 tt = time - el->first();
-                    int i = tt / el->rate();
-                    return el->data(i);
+
+                    double i = tt / el->rate();
+
+                    int i1 = int(floor(i));
+                    int i2 = int(ceil(i));
+
+                    a = el->data(i1);
+
+                    if (i2 > cnt) { return a; }
+
+                    qint64 t1 = i1 * el->rate();
+                    qint64 t2 = i2 * el->rate();
+
+                    c = EventDataType(t2 - t1);
+                    d = EventDataType(t2 - tt);
+
+                    e = d/c;
+                    b = el->data(i2);
+
+                    return b + ((a-b) * e);
+
                 } else {
                     start = el->first();
                     tptr = el->rawTime();
@@ -994,11 +1007,9 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
                             b = el->data(j+1);
                             if (a == b) {
                                 return a;
-                            } else { //if (a > b) {
+                            } else {
                                 return b + ((a-b) * e);
-                            }// else { // a < b
-                              //  return a + ((b-a) * e);
-                            //}
+                            }
                         }
                     }
                 }

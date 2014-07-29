@@ -86,7 +86,7 @@ int FPIconLoader::Open(QString path)
     QDir dir(newpath);
 
     if ((!dir.exists() || !dir.isReadable())) {
-        return 0;
+        return -1;
     }
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -128,8 +128,8 @@ int FPIconLoader::Open(QString path)
             Q_UNUSED(e)
             p_profile->DelMachine(m);
             MachList.erase(MachList.find(info.serial));
-            QMessageBox::warning(nullptr, "Import Error",
-                                 "This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",
+            QMessageBox::warning(nullptr, tr("Import Error"),
+                                 tr("This Machine Record cannot be imported in this profile.")+"\n\n"+tr("The Day records overlap with already existing content."),
                                  QMessageBox::Ok);
             delete m;
         }
@@ -175,7 +175,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path)
     QDir dir(path);
 
     if (!dir.exists() || (!dir.isReadable())) {
-        return false;
+        return -1;
     }
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -290,9 +290,10 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path)
         //        qDebug() << chunk.file << ":" << i << zz << dur << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
         //    }
 
+    int c = Sessions.size();
     mach->Save();
 
-    return 1;
+    return c;
 }
 
 // !\brief Convert F&P 32bit date format to 32bit UNIX Timestamp

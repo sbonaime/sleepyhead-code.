@@ -270,12 +270,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
 
-    if (p_profile->appearance->lineCursorMode()) {
-        qint64 time = w.currentTime();
 
+    // Display Line Cursor
+    if (p_profile->appearance->lineCursorMode()) {
+        double time = w.currentTime();
 
         if ((time > minx) && (time < maxx)) {
-            double xpos = (time - minx) * xmult;
+            double xpos = (time - double(minx)) * xmult;
             painter.setPen(QPen(QBrush(QColor(0,255,0,255)),1));
             painter.drawLine(left+xpos, top-w.marginTop()-3, left+xpos, top+height+w.bottom-1);
         }
