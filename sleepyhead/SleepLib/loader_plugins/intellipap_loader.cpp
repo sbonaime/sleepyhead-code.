@@ -442,9 +442,7 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_ExP, EVL_Event);
                     }
 
-                   // for (int q = 0; q < m_buffer[pos + 0x5]; q++) {
-                        sess->eventlist[CPAP_ExP][0]->AddEvent(time, m_buffer[pos + 0x5]);
-                   // }
+                    sess->eventlist[CPAP_ExP][0]->AddEvent(time, m_buffer[pos + 0x5]);
                 }
 
                 if (m_buffer[pos + 0x10] > 0) {
@@ -452,9 +450,7 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     }
 
-                   // for (int q = 0; q < m_buffer[pos + 0x10]; q++) {
-                        sess->eventlist[CPAP_Obstructive][0]->AddEvent(time, m_buffer[pos + 0x10]);
-                   // }
+                    sess->eventlist[CPAP_Obstructive][0]->AddEvent(time, m_buffer[pos + 0x10]);
                 }
 
                 if (m_buffer[pos + 0x11] > 0) {
@@ -462,9 +458,7 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_Hypopnea, EVL_Event);
                     }
 
-                  //  for (int q = 0; q < m_buffer[pos + 0x11]; q++) {
-                        sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time, m_buffer[pos + 0x11]);
-                   // }
+                    sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time, m_buffer[pos + 0x11]);
                 }
 
                 if (m_buffer[pos + 0x12] > 0) { // NRI // is this == to RERA?? CA??
@@ -472,9 +466,7 @@ int IntellipapLoader::Open(QString path)
                         sess->AddEventList(CPAP_NRI, EVL_Event);
                     }
 
-                   // for (int q = 0; q < m_buffer[pos + 0x12]; q++) {
-                        sess->eventlist[CPAP_NRI][0]->AddEvent(time, m_buffer[pos + 0x12]);
-                   // }
+                    sess->eventlist[CPAP_NRI][0]->AddEvent(time, m_buffer[pos + 0x12]);
                 }
 
                 quint16 tv = (m_buffer[pos + 0x8] << 8) | m_buffer[pos + 0x9]; // correct

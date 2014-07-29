@@ -953,7 +953,7 @@ void Session::UpdateSummaries()
 
 EventDataType Session::SearchValue(ChannelID code, qint64 time)
 {
-    qint64 tt, start;
+    qint64 t1, t2, start;
     QHash<ChannelID, QVector<EventList *> >::iterator it;
     it = eventlist.find(code);
     quint32 *tptr;
@@ -963,6 +963,8 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
         int i=5;
     }
 
+    EventDataType a,b,c,d,e;
+    double;
     if (it != eventlist.end()) {
         int el_size=it.value().size();
         for (int i = 0; i < el_size; i++)  {
@@ -973,17 +975,30 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
 
                 if (el->type() == EVL_Waveform) {
                     qint64 tt = time - el->first();
-                    qint64 i = tt / el->rate();
+                    int i = tt / el->rate();
                     return el->data(i);
                 } else {
                     start = el->first();
                     tptr = el->rawTime();
 
-                    for (int j = 0; j < cnt-1; j++) {
+                    for (int j = 0; j < cnt-1; ++j) {
                         tptr++;
-                        tt = start + *tptr;
-                        if (tt > time) {
-                            return el->data(j);
+                        t2 = start + *tptr;
+                        if (t2 > time) {
+                            tptr--;
+                            t1 = start + *tptr;
+                            c = EventDataType(t2 - t1);
+                            d = EventDataType(t2 - time);
+                            e = d/c;
+                            a = el->data(j);
+                            b = el->data(j+1);
+                            if (a == b) {
+                                return a;
+                            } else { //if (a > b) {
+                                return b + ((a-b) * e);
+                            }// else { // a < b
+                              //  return a + ((b-a) * e);
+                            //}
                         }
                     }
                 }
