@@ -337,6 +337,14 @@ int IntellipapLoader::Open(QString path)
             sess->AddEventList(CPAP_MinuteVent, EVL_Event);
             sess->AddEventList(CPAP_RespRate, EVL_Event);
             sess->AddEventList(CPAP_Snore, EVL_Event);
+
+            sess->AddEventList(CPAP_Obstructive, EVL_Event);
+            sess->AddEventList(CPAP_Hypopnea, EVL_Event);
+            sess->AddEventList(CPAP_NRI, EVL_Event);
+            sess->AddEventList(CPAP_LeakFlag, EVL_Event);
+            sess->AddEventList(CPAP_ExP, EVL_Event);
+
+
         } else {
             // If there is a double up, null out the earlier session
             // otherwise there will be a crash on shutdown.
@@ -441,43 +449,24 @@ int IntellipapLoader::Open(QString path)
                 // 0x0f == Leak Event
                 // 0x04 == Snore?
                 if (m_buffer[pos + 0xf] > 0) { // Leak Event
-                    if (!sess->eventlist.contains(CPAP_LeakFlag)) {
-                        sess->AddEventList(CPAP_LeakFlag, EVL_Event);
-                    }
-
                     sess->eventlist[CPAP_LeakFlag][0]->AddEvent(time, m_buffer[pos + 0xf]);
                 }
 
                 if (m_buffer[pos + 0x5] > 4) { // This matches Exhale Puff.. not sure why 4
                     //MW: Are the lower 2 bits something else?
-                    if (!sess->eventlist.contains(CPAP_ExP)) {
-                        sess->AddEventList(CPAP_ExP, EVL_Event);
-                    }
 
                     sess->eventlist[CPAP_ExP][0]->AddEvent(time, m_buffer[pos + 0x5]);
                 }
 
                 if (m_buffer[pos + 0x10] > 0) {
-                    if (!sess->eventlist.contains(CPAP_Obstructive)) {
-                        sess->AddEventList(CPAP_Obstructive, EVL_Event);
-                    }
-
                     sess->eventlist[CPAP_Obstructive][0]->AddEvent(time, m_buffer[pos + 0x10]);
                 }
 
                 if (m_buffer[pos + 0x11] > 0) {
-                    if (!sess->eventlist.contains(CPAP_Hypopnea)) {
-                        sess->AddEventList(CPAP_Hypopnea, EVL_Event);
-                    }
-
                     sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time, m_buffer[pos + 0x11]);
                 }
 
                 if (m_buffer[pos + 0x12] > 0) { // NRI // is this == to RERA?? CA??
-                    if (!sess->eventlist.contains(CPAP_NRI)) {
-                        sess->AddEventList(CPAP_NRI, EVL_Event);
-                    }
-
                     sess->eventlist[CPAP_NRI][0]->AddEvent(time, m_buffer[pos + 0x12]);
                 }
 
