@@ -1000,8 +1000,6 @@ EventDataType calcAHI(Session *session, qint64 start, qint64 end)
 int calcAHIGraph(Session *session)
 {
     bool calcrdi = session->machine()->loaderName() == "PRS1";
-    //p_profile->general->calculateRDI()
-
 
     const qint64 window_step = 30000; // 30 second windows
     double window_size = p_profile->cpap->AHIWindow();
@@ -1116,8 +1114,6 @@ int calcAHIGraph(Session *session)
             ti += window_step;
         }
     }
-
-    //if (lastti > last) lastti = last;
 
     AHI->AddEvent(last, 0);
 

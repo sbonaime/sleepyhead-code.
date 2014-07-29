@@ -376,6 +376,7 @@ int IntellipapLoader::Open(QString path)
                 Session *sess = Sessions[sid];
 
                 qint64 time = quint64(ts1) * 1000L;
+                sess->really_set_last(time);
                 sess->settings[CPAP_Mode] = mode;
 
                 int minp = m_buffer[pos + 0x13];
@@ -521,51 +522,32 @@ int IntellipapLoader::Open(QString path)
 
         if (sid) {
             sess = Sessions[sid];
+            if (!sess) continue;
 
             quint64 first = qint64(sid) * 1000L;
             quint64 last = qint64(SessionEnd[i]) * 1000L;
 
-            sess->settings[CPAP_PresReliefType] = (PRTypes)PR_SMARTFLEX;
+            if (sess->last() > 0) {
+                sess->settings[CPAP_PresReliefType] = (PRTypes)PR_SMARTFLEX;
 
-            sess->settings[CPAP_PresReliefSet] = smartflex;
+                sess->settings[CPAP_PresReliefSet] = smartflex;
 
-            if (smartflexmode == 0) {
-                sess->settings[CPAP_PresReliefMode] = PM_FullTime;
+                if (smartflexmode == 0) {
+                    sess->settings[CPAP_PresReliefMode] = PM_FullTime;
+                } else {
+                    sess->settings[CPAP_PresReliefMode] = PM_RampOnly;
+                }
+
+                sess->settings[CPAP_RampPressure] = ramp_pressure;
+                sess->settings[CPAP_RampTime] = ramp_time;
+
+
+                sess->UpdateSummaries();
+                mach->AddSession(sess);
             } else {
-                sess->settings[CPAP_PresReliefMode] = PM_RampOnly;
+                delete sess;
             }
 
-            sess->settings[CPAP_RampPressure] = ramp_pressure;
-            sess->settings[CPAP_RampTime] = ramp_time;
-
-
-//            EventDataType max = sess->Max(CPAP_IPAP);
-//            EventDataType min = sess->Min(CPAP_EPAP);
-//            EventDataType pres = sess->Min(CPAP_Pressure);
-
-//            if (max == min) {
-//                sess->settings[CPAP_Mode] = (int)MODE_CPAP;
-//                sess->settings[CPAP_Pressure] = min;
-//            } else {
-//                sess->settings[CPAP_Mode] = (int)MODE_APAP;
-//                sess->settings[CPAP_PressureMin] = min;
-//                sess->settings[CPAP_PressureMax] = max;
-//            }
-
-//            sess->eventlist.erase(sess->eventlist.find(CPAP_IPAP));
-//            sess->eventlist.erase(sess->eventlist.find(CPAP_EPAP));
-//            sess->m_min.erase(sess->m_min.find(CPAP_EPAP));
-//            sess->m_max.erase(sess->m_max.find(CPAP_EPAP));
-
-//            if (pres < min) {
-//                sess->settings[CPAP_RampPressure] = pres;
-//            }
-
-            sess->set_first(first);
-            sess->set_last(last);
-
-            sess->UpdateSummaries();
-            mach->AddSession(sess);
         }
     }
 

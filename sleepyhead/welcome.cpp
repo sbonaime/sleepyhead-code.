@@ -161,7 +161,7 @@ QString GenerateWelcomeHTML()
             else if (ahi < 10) ahitext = QString("<font color=red>")+QObject::tr("not very good")+"</font>";
             else ahitext = QString("<font color=red>")+QObject::tr("horrible, please consult your doctor")+"</font>";
 
-            html += QObject::tr("Your had an AHI of %1, which is considered %2.").arg(ahi,0,'f',2).arg(ahitext)+"<br/>";
+            html += QObject::tr("Your had an AHI of %1, which is considered %2").arg(ahi,0,'f',2).arg(ahitext)+"<br/>";
 
             int seconds = int(hours * 3600.0) % 60;
             int minutes = int(hours * 60) % 60;
