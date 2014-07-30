@@ -914,9 +914,16 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
                 info.serial = value;
 
             } else if (key == "PNA") {  // Product Name
+                value.replace("S9", "");
                 value.replace("_"," ");
-                value.replace("S9 ", "");
-                info.model = value;
+                value.replace("(","");
+                value.replace(")","");
+                if (value.contains("Adapt", Qt::CaseInsensitive)) {
+                    if (!value.contains("VPAP")) {
+                        value.replace("Adapt", QObject::tr("VPAP Adapt"));
+                    }
+                }
+                info.model = value.trimmed();
             } else if (key == "PCD") { // Product Code
                 info.modelnumber = value;
             }
