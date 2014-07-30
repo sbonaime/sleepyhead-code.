@@ -913,6 +913,9 @@
           </disabled>
          </palette>
         </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
@@ -920,10 +923,10 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="tabShape">
-         <enum>QTabWidget::Triangular</enum>
+         <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -983,14 +986,14 @@ color: yellow;</string>
            </widget>
           </item>
           <item>
-           <widget class="QWebView" name="welcomeView">
+           <widget class="QWebView" name="welcomeView" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="url">
+            <property name="url" stdset="0">
              <url>
               <string>about:blank</string>
              </url>
@@ -1020,14 +1023,14 @@ color: yellow;</string>
            <number>0</number>
           </property>
           <item>
-           <widget class="QWebView" name="statisticsView">
+           <widget class="QWebView" name="statisticsView" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="url">
+            <property name="url" stdset="0">
              <url>
               <string>about:blank</string>
              </url>
@@ -1290,7 +1293,7 @@ color: yellow;</string>
               <number>0</number>
              </property>
              <item>
-              <widget class="QWebView" name="webView">
+              <widget class="QWebView" name="webView" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1309,7 +1312,7 @@ color: yellow;</string>
                  <height>200</height>
                 </size>
                </property>
-               <property name="url">
+               <property name="url" stdset="0">
                 <url>
                  <string>qrc:/docs/index.html</string>
                 </url>
@@ -1495,7 +1498,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>597</height>
          </rect>
         </property>
         <property name="palette">
@@ -1909,7 +1912,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>597</height>
          </rect>
         </property>
         <property name="palette">
@@ -2941,7 +2944,7 @@ border-radius: 10px;
           </widget>
          </item>
          <item>
-          <widget class="QWebView" name="bookmarkView">
+          <widget class="QWebView" name="bookmarkView" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -3042,7 +3045,7 @@ border-radius: 10px;
            <property name="styleSheet">
             <string notr="true">background: rgb(163, 190, 255)</string>
            </property>
-           <property name="url">
+           <property name="url" stdset="0">
             <url>
              <string>about:blank</string>
             </url>
@@ -3057,7 +3060,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>597</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3090,7 +3093,7 @@ border-radius: 10px;
           <number>0</number>
          </property>
          <item>
-          <widget class="QWebView" name="recordsBox">
+          <widget class="QWebView" name="recordsBox" native="true">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -3099,7 +3102,7 @@ border-radius: 10px;
            <property name="styleSheet">
             <string notr="true">background: rgb(163, 190, 255)</string>
            </property>
-           <property name="url">
+           <property name="url" stdset="0">
             <url>
              <string>about:blank</string>
             </url>
@@ -3119,7 +3122,7 @@ border-radius: 10px;
      <x>0</x>
      <y>0</y>
      <width>975</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="sizePolicy">
