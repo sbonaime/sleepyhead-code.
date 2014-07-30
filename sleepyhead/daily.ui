@@ -838,8 +838,11 @@ QToolButton:pressed {
          <height>0</height>
         </size>
        </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="movable">
         <bool>true</bool>
