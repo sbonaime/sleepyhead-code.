@@ -256,6 +256,7 @@ extern QString STR_TR_SleepyHead;
 extern QString STR_TR_Mode;
 extern QString STR_TR_Model;
 extern QString STR_TR_Brand;
+extern QString STR_TR_Series;
 extern QString STR_TR_Serial;
 extern QString STR_TR_Machine;
 extern QString STR_TR_Channel;

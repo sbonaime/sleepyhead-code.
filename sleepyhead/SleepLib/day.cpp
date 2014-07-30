@@ -55,6 +55,21 @@ void Day::AddSession(Session *s)
     sessions.push_back(s);
 }
 
+
+EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)
+{
+    QList<Session *>::iterator end = sessions.end();
+    int count = 0;
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            count += sess.countInsideSpan(span, code);
+        }
+    }
+    return count;
+}
+
 EventDataType Day::lookupValue(ChannelID code, qint64 time)
 {
     QList<Session *>::iterator end = sessions.end();

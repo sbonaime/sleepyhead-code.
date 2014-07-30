@@ -1166,14 +1166,23 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     }
 
     if (cpap) {
-        int l = cpap->sum(CPAP_Ramp);
+        int l = cpap->sum(CPAP_Ramp) - (15*60);
 
-        if (l>0) {
-            int h = l / 3600;
-            int m = (l / 60) % 60;
-            int s = l % 60;
-            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time spent in ramp")+
-                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0'));
+        if (l > 0) {
+            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Total ramp time")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(l / 3600, 2, 10, QChar('0')).arg((l / 60) % 60, 2, 10, QChar('0')).arg(l % 60, 2, 10, QChar('0'));
+            float v = (cpap->hours() - (float(l) / 3600.0));
+            int q = v * 3600.0;
+            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time outside of ramp")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(q / 3600, 2, 10, QChar('0')).arg((q / 60) % 60, 2, 10, QChar('0')).arg(q % 60, 2, 10, QChar('0'));
+
+            EventDataType hc = cpap->count(CPAP_Hypopnea) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
+            EventDataType oc = cpap->count(CPAP_Obstructive) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
+
+            EventDataType tc = cpap->count(CPAP_Hypopnea) + cpap->count(CPAP_Obstructive);
+            EventDataType ahi = (hc+oc) / (float(l)/3600.0);
+            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("AHI excluding ramp")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
         }
 
     }

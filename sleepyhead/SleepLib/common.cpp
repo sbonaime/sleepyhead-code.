@@ -276,6 +276,7 @@ QString STR_TR_Mode;
 QString STR_TR_Model;
 QString STR_TR_Brand;
 QString STR_TR_Serial;
+QString STR_TR_Series;
 QString STR_TR_Machine;
 QString STR_TR_Channel;
 QString STR_TR_Settings;
@@ -455,6 +456,7 @@ void initializeStrings()
     STR_TR_Model = QObject::tr("Model");
     STR_TR_Brand = QObject::tr("Brand");
     STR_TR_Serial = QObject::tr("Serial");
+    STR_TR_Series = QObject::tr("Series");
     STR_TR_Machine = QObject::tr("Machine");
     STR_TR_Channel = QObject::tr("Channel");
     STR_TR_Settings = QObject::tr("Settings");

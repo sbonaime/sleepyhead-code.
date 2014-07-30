@@ -1308,6 +1308,61 @@ bool Session::channelExists(ChannelID id)
     return true;
 }
 
+EventDataType Session::countInsideSpan(ChannelID span, ChannelID code)
+{
+    // TODO: Cache me!
+
+    QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(span);
+
+    if (j == eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> &evec = j.value();
+
+    qint64 t1,t2;
+
+    int evec_size=evec.size();
+
+    QList<qint64> start;
+    QList<qint64> end;
+
+    // Simplify the span flags to start and end times list
+    for (int el = 0; el < evec_size; ++el) {
+        EventList &ev = *evec[el];
+
+        for (quint32 i=0; i < ev.count(); ++i) {
+            end.push_back(t2=ev.time(i));
+            start.push_back(t2 - (qint64(ev.data(i)) * 1000L));
+        }
+    }
+
+    j = eventlist.find(code);
+
+    if (j == eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> &evec2 = j.value();
+    evec_size=evec2.size();
+    int count = 0;
+
+    int spans = start.size();
+
+    for (int el = 0; el < evec_size; ++el) {
+        EventList &ev = *evec2[el];
+
+        for (quint32 i=0; i < ev.count(); ++i) {
+            t1 = ev.time(i);
+            for (int z=0; z < spans; ++z) {
+                if ((t1 >= start.at(z)) && (t1 <= end.at(z))) {
+                    count++;
+                    break;
+                }
+            }
+        }
+    }
+    return count;
+}
+
 EventDataType Session::rangeCount(ChannelID id, qint64 first, qint64 last)
 {
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);

@@ -548,6 +548,7 @@ bool CMS50Loader::readSpoRFile(QString path)
 
     QByteArray data;
 
+    qint64 filesize = file.size();
     data = file.readAll();
     QDataStream in(data);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -557,6 +558,7 @@ bool CMS50Loader::readSpoRFile(QString path)
     in.skipRawData(pos - 2);
 
     //long size = data.size();
+    int bytes_per_record = 2;
 
     if (!spo2header) {
         // next is 0x0002
@@ -589,7 +591,7 @@ bool CMS50Loader::readSpoRFile(QString path)
             qWarning() << ".spo2 file" << path << "might be a different";
         }
 
-        // Unknown cruft...
+        // Unknown cruft header...
         in.skipRawData(200);
 
         in >> year >> month >> day;
@@ -601,18 +603,40 @@ bool CMS50Loader::readSpoRFile(QString path)
         pos += 0x1c + 200;
 
         in >> samples;
+
+        int remainder = filesize - pos;
+
+        bytes_per_record = remainder / samples;
+        qDebug() << samples << "samples of" << bytes_per_record << "bytes each";
+
+        // CMS50I .spo2 data have 4 digits, a 16bit, followed by spo2 then pulse
+
     }
 
     oxirec = new QVector<OxiRecord>;
     oxisessions[m_startTime] = oxirec;
 
     unsigned char o2, pr;
+    quint16 un;
 
     // Read all Pulse and SPO2 data
     do {
+        if (bytes_per_record > 2) {
+            in >> un;
+        }
         in >> o2;
         in >> pr;
-        oxirec->append(OxiRecord(pr, o2));
+
+        if ((o2 == 0x7f) && (pr == 0xff)) {
+            o2 = pr = 0;
+            un = 0;
+        }
+
+        if (spo2header) {
+            oxirec->append(OxiRecord(pr, o2));
+        } else {
+            oxirec->append(OxiRecord(o2, pr));
+        }
     } while (!in.atEnd());
 
 

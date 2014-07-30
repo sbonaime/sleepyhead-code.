@@ -106,6 +106,10 @@ class Day
     //! \brief Returns the value for Channel code at a given time
     EventDataType lookupValue(ChannelID code, qint64 time);
 
+    //! \brief Returns the count of code events inside span flag event durations
+    EventDataType countInsideSpan(ChannelID span, ChannelID code);
+
+
     //! \brief Returns the first session time of this day
     qint64 first();
 

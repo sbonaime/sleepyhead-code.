@@ -337,7 +337,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
     if (usepixmap && !m_image.isNull()) {
-        painter.drawImage(QPoint(left - 20, top + height - m_image.height() + 4), m_image);
+        painter.drawImage(QPoint(left - 20, top + height - m_image.height() + 5), m_image);
     }
 }
 

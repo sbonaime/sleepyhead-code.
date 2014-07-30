@@ -1215,14 +1215,16 @@ QString Statistics::GenerateHTML()
         html += QString("<table class=curved style=\"page-break-before:auto;\" "+table_width+">");
 
         html += "<thead>";
-        html += "<tr bgcolor='"+heading_color+"'><td colspan=5 align=center><font size=+2>" + tr("Machine Information") + "</font></td></tr>";
+        html += "<tr bgcolor='"+heading_color+"'><th colspan=7 align=center><font size=+2>" + tr("Machine Information") + "</font></th></tr>";
 
-        html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
+        html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</b></td></tr>")
                 .arg(STR_TR_Brand)
+                .arg(STR_TR_Series)
                 .arg(STR_TR_Model)
                 .arg(STR_TR_Serial)
                 .arg(tr("First Use"))
-                .arg(tr("Last Use"));
+                .arg(tr("Last Use"))
+                .arg(STR_TR_AHI);
 
         html += "</thead>";
 
@@ -1233,14 +1235,24 @@ QString Statistics::GenerateHTML()
 
             if (m->type() == MT_JOURNAL) { continue; }
 
+            QDate d1 = m->FirstDay();
+            QDate d2 = m->LastDay();
+            QString ahi;
+            if (m->type() == MT_CPAP) {
+                float a = calcAHI(d1,d2);
+                ahi = QString::number(a,'f',2);
+            }
             QString mn = m->modelnumber();
-            html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+            html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td></tr>")
                     .arg(m->brand())
+                    .arg(m->series())
                     .arg(m->model() +
                          (mn.isEmpty() ? "" : QString(" (") + mn + QString(")")))
                     .arg(m->serial())
-                    .arg(m->FirstDay().toString(Qt::SystemLocaleShortDate))
-                    .arg(m->LastDay().toString(Qt::SystemLocaleShortDate));
+                    .arg(d1.toString(Qt::SystemLocaleShortDate))
+                    .arg(d2.toString(Qt::SystemLocaleShortDate))
+                    .arg(ahi);
+
         }
 
         html += "</table>";

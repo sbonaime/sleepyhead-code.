@@ -224,6 +224,9 @@ class Session
     //! \brief Returns the maximum of events of type id between time range
     EventDataType rangeMax(ChannelID id, qint64 first, qint64 last);
 
+    //! \brief Returns the count of code events inside span flag event durations
+    EventDataType countInsideSpan(ChannelID span, ChannelID code);
+
     //! \brief Returns (and caches) the Sum of all events of type id
     double sum(ChannelID id);
 

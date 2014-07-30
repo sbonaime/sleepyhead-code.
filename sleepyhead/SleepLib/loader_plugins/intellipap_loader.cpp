@@ -511,12 +511,16 @@ int IntellipapLoader::Open(QString path)
 
         if (sid) {
             sess = Sessions[sid];
+
             if (!sess) continue;
 
-            quint64 first = qint64(sid) * 1000L;
+//            quint64 first = qint64(sid) * 1000L;
             quint64 last = qint64(SessionEnd[i]) * 1000L;
 
             if (sess->last() > 0) {
+                sess->really_set_last(last);
+
+
                 sess->settings[CPAP_PresReliefType] = (PRTypes)PR_SMARTFLEX;
 
                 sess->settings[CPAP_PresReliefSet] = smartflex;
