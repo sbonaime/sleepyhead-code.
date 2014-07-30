@@ -70,6 +70,14 @@ class MachineLoader: public QObject
 
     void queTask(ImportTask * task);
 
+    void addSession(Session * sess)
+    {
+        sessionMutex.lock();
+        new_sessions[sess->session()] = sess;
+        sessionMutex.unlock();
+    }
+
+
     //! \brief Process Task list using all available threads.
     void runTasks(bool threaded=true);
 
@@ -114,9 +122,12 @@ signals:
 
     DeviceStatus m_status;
 
+    void finishAddingSessions();
+    QMap<SessionID, Session *> new_sessions;
 
   private:
     QList<ImportTask *> m_tasklist;
+
 };
 
 struct ImportPath

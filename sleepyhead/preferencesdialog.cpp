@@ -71,18 +71,18 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         }*/
     }
 
-#ifdef LOCK_RESMED_SESSIONS
-    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
-    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-        const QString & mclass=(*it)->loaderName();
-        if (mclass == STR_MACH_ResMed) {
-            ui->combineSlider->setEnabled(false);
-            ui->IgnoreSlider->setEnabled(false);
-            ui->timeEdit->setEnabled(false);
-            break;
-        }
-    }
-#endif
+//#ifdef LOCK_RESMED_SESSIONS
+//    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+//    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
+//        const QString & mclass=(*it)->loaderName();
+//        if (mclass == STR_MACH_ResMed) {
+//            ui->combineSlider->setEnabled(false);
+//            ui->IgnoreSlider->setEnabled(false);
+//            ui->timeEdit->setEnabled(false);
+//            break;
+//        }
+//    }
+//#endif
 
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);
@@ -136,6 +136,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     if (val > 0) {
         ui->IgnoreLCD->display(val);
     } else { ui->IgnoreLCD->display(STR_GEN_Off); }
+
+    ui->LockSummarySessionSplitting->setChecked(profile->session->lockSummarySessions());
 
     ui->applicationFont->setCurrentFont(QApplication::font());
     //ui->applicationFont->setFont(QApplication::font());
@@ -348,6 +350,10 @@ bool PreferencesDialog::Save()
         needs_restart = true;
     }
 
+    if (profile->session->lockSummarySessions() != ui->LockSummarySessionSplitting->isChecked()) {
+        needs_restart = true;
+    }
+
     if (profile->cpap->userEventPieChart() != ui->showUserFlagsInPie->isChecked()) {
         // lazy.. fix me
         needs_restart = true;
@@ -403,6 +409,7 @@ bool PreferencesDialog::Save()
     }
 
     profile->cpap->setUserEventPieChart(ui->showUserFlagsInPie->isChecked());
+    profile->session->setLockSummarySessions(ui->LockSummarySessionSplitting->isChecked());
 
     profile->appearance->setAllowYAxisScaling(ui->allowYAxisScaling->isChecked());
     profile->appearance->setGraphTooltips(ui->graphTooltips->isChecked());

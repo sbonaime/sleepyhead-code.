@@ -293,6 +293,8 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path)
     int c = Sessions.size();
     mach->Save();
 
+    finishAddingSessions();
+
     return c;
 }
 
@@ -595,7 +597,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
     }
 
     if (newsess) {
-        mach->AddSession(sess);
+        addSession(sess);
     }
 
     if (p_profile->session->backupCardData()) {
@@ -748,7 +750,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
             sess->settings[CPAP_HumidSetting] = x2;
             //sess->settings[CPAP_PresReliefType]=PR_SENSAWAKE;
             Sessions[ts] = sess;
-            mach->AddSession(sess);
+            addSession(sess);
         }
     } while (!in.atEnd());
 
@@ -913,7 +915,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
 
         //  sess->really_set_last(ti-360000L);
         //        sess->SetChanged(true);
-        //       mach->AddSession(sess,profile);
+        //       addSession(sess,profile);
     }
     if (p_profile->session->backupCardData()) {
         unsigned char *data = (unsigned char *)index.data();

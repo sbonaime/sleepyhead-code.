@@ -368,6 +368,16 @@ p, li { white-space: pre-wrap; }
               </property>
              </spacer>
             </item>
+            <item>
+             <widget class="QCheckBox" name="LockSummarySessionSplitting">
+              <property name="toolTip">
+               <string>Summary only data is more accurate for ResMed users if this is left on.</string>
+              </property>
+              <property name="text">
+               <string>Lock Summary Session Splitting</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>

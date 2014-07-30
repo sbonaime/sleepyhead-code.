@@ -731,14 +731,7 @@ void ResmedImport::run()
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
 
         if (sess->length() > 0) {
-            loader->saveMutex.lock();
-
-            if (!mach->AddSession(sess)) {
-                delete sess;
-                loader->saveMutex.unlock();
-                return;
-            }
-            loader->saveMutex.unlock();
+            loader->addSession(sess);
         } else {
             delete sess;
             return;
@@ -862,8 +855,8 @@ void ResmedImportStage2::run()
         }
     }
 
+    loader->addSession(sess);
     loader->saveMutex.lock();
-    mach->AddSession(sess);
     sess->Store(mach->getDataPath());
     loader->saveMutex.unlock();
 }
@@ -922,8 +915,8 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
 
             } else if (key == "PNA") {  // Product Name
                 value.replace("_"," ");
+                value.replace("S9 ", "");
                 info.model = value;
-
             } else if (key == "PCD") { // Product Code
                 info.modelnumber = value;
             }
@@ -1340,8 +1333,16 @@ int ResmedLoader::Open(QString path)
                 continue;
 
             } else if (key == "PNA") {  // Product Name
+                value.replace("S9", "");
                 value.replace("_"," ");
-                info.model = value;
+                value.replace("(","");
+                value.replace(")","");
+                if (value.contains("Adapt", Qt::CaseInsensitive)) {
+                    if (!value.contains("VPAP")) {
+                        value.replace("Adapt", QObject::tr("VPAP Adapt"));
+                    }
+                }
+                info.model = value.trimmed();
                 continue;
 
             } else if (key == "PCD") { // Product Code
@@ -1511,13 +1512,6 @@ int ResmedLoader::Open(QString path)
     // Scan DATALOG files, sort, and import any new sessions
     ///////////////////////////////////////////////////////////////////////////////////
 
-#ifdef LOCK_RESMED_SESSIONS
-    // Have to sacrifice these features to get access to summary data.
-    p_profile->session->setCombineCloseSessions(0);
-    p_profile->session->setDaySplitTime(QTime(12,0,0));
-    p_profile->session->setIgnoreShortSessions(false);
-#endif
-
     int new_sessions = scanFiles(m, newpath);
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1577,6 +1571,8 @@ int ResmedLoader::Open(QString path)
 
     new_sessions += countTasks();
     runTasks();
+
+    finishAddingSessions();
 
 #ifdef DEBUG_EFFICIENCY
     {

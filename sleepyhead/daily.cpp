@@ -1004,7 +1004,7 @@ QString Daily::getOximeterInformation(Day * oxi)
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+="<tr><td colspan=5 align=center>"+oxi->machine->brand()+" "+oxi->machine->model()+"</td></tr>\n";
+        html+="<tr><td colspan=5 align=center>"+oxi->machine->brand()+" "+oxi->machine->series()+"</td></tr>\n";
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
@@ -1025,7 +1025,7 @@ QString Daily::getCPAPInformation(Day * cpap)
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    html+="<tr><td align=center><a class=info2 href='#'>"+info.model+"<span>";
+    html+="<tr><td align=center><a class=info2 href='#'>"+info.series+" "+info.model+"<span>";
     QString tooltip=(info.brand+"\n"+info.series+" "+info.modelnumber+"\n"+info.serial);
     tooltip=tooltip.replace(" ","&nbsp;");
 
@@ -1166,23 +1166,23 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     }
 
     if (cpap) {
-        int l = cpap->sum(CPAP_Ramp) - (15*60);
+        int l = cpap->sum(CPAP_Ramp);
 
         if (l > 0) {
-            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Total ramp time")+
-                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(l / 3600, 2, 10, QChar('0')).arg((l / 60) % 60, 2, 10, QChar('0')).arg(l % 60, 2, 10, QChar('0'));
+            html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("Total ramp time")+
+                    QString("</td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(l / 3600, 2, 10, QChar('0')).arg((l / 60) % 60, 2, 10, QChar('0')).arg(l % 60, 2, 10, QChar('0'));
             float v = (cpap->hours() - (float(l) / 3600.0));
             int q = v * 3600.0;
-            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time outside of ramp")+
-                    QString("</b></td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(q / 3600, 2, 10, QChar('0')).arg((q / 60) % 60, 2, 10, QChar('0')).arg(q % 60, 2, 10, QChar('0'));
+            html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("Time outside of ramp")+
+                    QString("</td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(q / 3600, 2, 10, QChar('0')).arg((q / 60) % 60, 2, 10, QChar('0')).arg(q % 60, 2, 10, QChar('0'));
 
             EventDataType hc = cpap->count(CPAP_Hypopnea) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
             EventDataType oc = cpap->count(CPAP_Obstructive) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
 
             EventDataType tc = cpap->count(CPAP_Hypopnea) + cpap->count(CPAP_Obstructive);
-            EventDataType ahi = (hc+oc) / (float(l)/3600.0);
-            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("AHI excluding ramp")+
-                    QString("</b></td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
+            EventDataType ahi = (hc+oc) / v;
+            html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("AHI excluding ramp")+
+                    QString("</td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
         }
 
     }

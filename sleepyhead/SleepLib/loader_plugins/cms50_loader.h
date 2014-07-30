@@ -39,7 +39,7 @@ Q_OBJECT
     virtual const QString &loaderName() { return cms50_class_name; }
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_OXIMETER, cms50_class_name, QObject::tr("Contec"), QString(), QString(), QString(), QObject::tr("CMS50"), QDateTime::currentDateTime(), cms50_data_version);
+        return MachineInfo(MT_OXIMETER, cms50_class_name, QObject::tr("Contec"), QObject::tr("CMS50"), QString(), QString(), QObject::tr("CMS50"), QDateTime::currentDateTime(), cms50_data_version);
     }
 
 

@@ -282,6 +282,9 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
     QChar sep = '=';
     QString key, value;
 
+    MachineInfo info = newInfo();
+    bool ok;
+
     while (!f.atEnd()) {
         key = s.section(sep, 0, 0);
 
@@ -291,23 +294,29 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 
         if (value == s) { continue; }
 
-        prop[key] = value;
+        if (key.toLower() == "serialnumber") {
+            info.serial = value;
+        } else if (key.toLower() == "modelnumber") {
+            info.modelnumber = value;
+        } else {
+            if (key.toLower() == "producttype") {
+                int i = value.toInt(&ok, 16);
+
+                if (ok) {
+                    if (ModelMap.find(i) != ModelMap.end()) {
+                        info.model = ModelMap[i];
+                    }
+                }
+            }
+            prop[key] = value;
+        }
         s = f.readLine();
     }
 
-    bool ok;
-    QString pt = prop["ProductType"];
-    int i = pt.toInt(&ok, 16);
-
-    if (ok) {
-        if (ModelMap.find(i) != ModelMap.end()) {
-            m->setModel(ModelMap[i]);
-        }
+    if (info.serial != m->serial()) {
+        qDebug() << "Serial Number in PRS1 properties.txt doesn't match machine record";
     }
-
-    if (prop["SerialNumber"] != m->serial()) {
-        qDebug() << "Serial Number in PRS1 properties.txt doesn't match directory structure";
-    } else { prop.erase(prop.find("SerialNumber")); } // already got it stored.
+    m->setInfo(info);
 
     for (QHash<QString, QString>::iterator i = prop.begin(); i != prop.end(); i++) {
         m->properties[i.key()] = i.value();
@@ -466,6 +475,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
     int tasks = countTasks();
     runTasks(p_profile->session->multithreading());
+    finishAddingSessions();
     return tasks;
 }
 
@@ -1423,9 +1433,7 @@ void PRS1Import::run()
         }
         sg->session->SetChanged(true);
 
-        loader->sessionMutex.lock();
-        mach->AddSession(sg->session);
-        loader->sessionMutex.unlock();
+        loader->addSession(sg->session);
 
         // Update indexes, process waveform and perform flagging
         sg->session->UpdateSummaries();

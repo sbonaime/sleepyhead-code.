@@ -127,6 +127,20 @@ MachineLoader::~MachineLoader()
     }
 }
 
+void MachineLoader::finishAddingSessions()
+{
+    QMap<SessionID, Session *>::iterator it;
+    QMap<SessionID, Session *>::iterator it_end = new_sessions.end();
+
+    // Using a map specifically so they are inserted in order.
+    for (it = new_sessions.begin(); it != it_end; ++it) {
+        Session * sess = it.value();
+        Machine * mach = sess->machine();
+        mach->AddSession(sess);
+    }
+    new_sessions.clear();
+}
+
 bool compressFile(QString inpath, QString outpath)
 {
     if (outpath.isEmpty()) {

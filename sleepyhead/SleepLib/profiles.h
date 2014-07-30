@@ -299,6 +299,7 @@ const QString STR_IS_CompressBackupData = "CompressBackupData";
 const QString STR_IS_CompressSessionData = "CompressSessionData";
 const QString STR_IS_IgnoreOlderSessions = "IgnoreOlderSessions";
 const QString STR_IS_IgnoreOlderSessionsDate = "IgnoreOlderSessionsDate";
+const QString STR_IS_LockSummarySessions = "LockSummarySessions";
 
 // AppearanceSettings Strings
 const QString STR_AS_GraphHeight = "GraphHeight";
@@ -621,6 +622,8 @@ class SessionSettings : public ProfileSettings
         initPref(STR_IS_CompressSessionData, false);
         initPref(STR_IS_IgnoreOlderSessions, false);
         initPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(QDate::currentDate().addYears(-1), daySplitTime()) );
+        initPref(STR_IS_LockSummarySessions, true);
+
     }
 
     QTime daySplitTime() const { return getPref(STR_IS_DaySplitTime).toTime(); }
@@ -633,6 +636,7 @@ class SessionSettings : public ProfileSettings
     bool backupCardData() const { return getPref(STR_IS_BackupCardData).toBool(); }
     bool ignoreOlderSessions() const { return getPref(STR_IS_IgnoreOlderSessions).toBool(); }
     QDateTime ignoreOlderSessionsDate() const { return getPref(STR_IS_IgnoreOlderSessionsDate).toDateTime(); }
+    bool lockSummarySessions() const { return getPref(STR_IS_LockSummarySessions).toBool(); }
 
     void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, time); }
     void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
@@ -644,6 +648,8 @@ class SessionSettings : public ProfileSettings
     void setCompressSessionData(bool enabled) { setPref(STR_IS_CompressSessionData, enabled); }
     void setIgnoreOlderSessions(bool enabled) { setPref(STR_IS_IgnoreOlderSessions, enabled); }
     void setIgnoreOlderSessionsDate(QDate date) { setPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(date, daySplitTime())); }
+    void setLockSummarySessions(bool b) { setPref(STR_IS_LockSummarySessions, b); }
+
 };
 
 /*! \class AppearanceSettings

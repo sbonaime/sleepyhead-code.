@@ -116,11 +116,19 @@ bool Machine::AddSession(Session *s)
         highest_sessionid = s->session();
     }
 
-    QTime split_time = p_profile->session->daySplitTime();
-    int combine_sessions = p_profile->session->combineCloseSessions();
-    int ignore_sessions = p_profile->session->ignoreShortSessions();
+    QTime split_time;
+    int combine_sessions;
+    bool locksessions = p_profile->session->lockSummarySessions();
 
-    // ResMed machines can't do this.. but don't really want to do a slow string compare here
+    if (locksessions) {
+        split_time = s->summaryOnly() ? QTime(12,0,0) : p_profile->session->daySplitTime();
+        combine_sessions = s->summaryOnly() ? 0 : p_profile->session->combineCloseSessions();
+    } else {
+        split_time = p_profile->session->daySplitTime();
+        combine_sessions = p_profile->session->combineCloseSessions();
+    }
+
+    int ignore_sessions = p_profile->session->ignoreShortSessions();
 
     int session_length = s->last() - s->first();
     session_length /= 60000;
@@ -139,6 +147,9 @@ bool Machine::AddSession(Session *s)
     bool combine_next_day = false;
     int closest_session = 0;
 
+
+    // Multithreaded import screws this up. :(
+
     if (time < split_time) {
         date = date.addDays(-1);
     } else if (combine_sessions > 0) {
@@ -150,6 +161,12 @@ bool Machine::AddSession(Session *s)
 
             if (closest_session < combine_sessions) {
                 date = date.addDays(-1);
+            } else {
+                if ((split_time < time) && (split_time.secsTo(time) < 2)) {
+                    if (s->machine()->loaderName() == STR_MACH_ResMed) {
+                        date = date.addDays(-1);
+                    }
+                }
             }
         } else {
             nextday = day.find(date.addDays(1)); // Check Day Afterwards
@@ -200,6 +217,7 @@ bool Machine::AddSession(Session *s)
     if (combine_next_day) {
         for (QList<Session *>::iterator i = nextday.value()->begin(); i != nextday.value()->end(); i++) {
             // i may need to do something here
+            if (locksessions && (*i)->summaryOnly()) continue; // can't move summary only sessions..
             unlinkSession(*i);
             // Add it back
 

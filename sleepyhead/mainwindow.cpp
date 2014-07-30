@@ -169,21 +169,21 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 #endif
 
-#ifdef LOCK_RESMED_SESSIONS
-    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
-    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-        QString mclass=(*it)->loaderName();
-        if (mclass == STR_MACH_ResMed) {
-            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
+//#ifdef LOCK_RESMED_SESSIONS
+//    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+//    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
+//        QString mclass=(*it)->loaderName();
+//        if (mclass == STR_MACH_ResMed) {
+//            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
 
-            // Have to sacrifice these features to get access to summary data.
-            p_profile->session->setCombineCloseSessions(0);
-            p_profile->session->setDaySplitTime(QTime(12,0,0));
-            p_profile->session->setIgnoreShortSessions(false);
-            break;
-        }
-    }
-#endif
+//            // Have to sacrifice these features to get access to summary data.
+//            p_profile->session->setCombineCloseSessions(0);
+//            p_profile->session->setDaySplitTime(QTime(12,0,0));
+//            p_profile->session->setIgnoreShortSessions(false);
+//            break;
+//        }
+//    }
+//#endif
 
     ui->actionToggle_Line_Cursor->setChecked(p_profile->appearance->lineCursorMode());
 
