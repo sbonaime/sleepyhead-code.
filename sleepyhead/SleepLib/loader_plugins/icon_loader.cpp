@@ -291,9 +291,9 @@ int FPIconLoader::OpenMachine(Machine *mach, QString &path)
         //    }
 
     int c = Sessions.size();
+    finishAddingSessions();
     mach->Save();
 
-    finishAddingSessions();
 
     return c;
 }

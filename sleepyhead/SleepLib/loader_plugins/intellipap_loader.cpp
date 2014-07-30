@@ -536,7 +536,7 @@ int IntellipapLoader::Open(QString path)
 
 
                 sess->UpdateSummaries();
-                mach->AddSession(sess);
+                addSession(sess);
             } else {
                 delete sess;
             }
@@ -544,7 +544,9 @@ int IntellipapLoader::Open(QString path)
         }
     }
 
+    finishAddingSessions();
     mach->Save();
+
 
     delete [] m_buffer;
 
