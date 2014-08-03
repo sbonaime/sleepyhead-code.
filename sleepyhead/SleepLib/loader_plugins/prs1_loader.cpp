@@ -1225,6 +1225,83 @@ bool PRS1SessionData::ParseSummaryF0()
 
 bool PRS1SessionData::ParseSummaryF0V4()
 {
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    CPAPMode cpapmode = MODE_UNKNOWN;
+
+    switch (data[0x02]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
+    case 0x00:
+        cpapmode = MODE_CPAP;
+        break;
+    case 0x20:
+        cpapmode = MODE_BILEVEL_FIXED;
+        break;
+    case 0x40:
+        cpapmode = MODE_APAP;
+        break;
+    case 0x60:
+        cpapmode = MODE_BILEVEL_AUTO_VARIABLE_PS;
+    }
+
+
+    EventDataType min_pressure = float(data[0x03]) / 10.0;
+    EventDataType max_pressure = float(data[0x04]) / 10.0;
+    EventDataType min_ps  = float(data[0x05]) / 10.0; // pressure support
+    EventDataType max_ps  = float(data[0x06]) / 10.0; // pressure support
+
+    if (cpapmode == MODE_CPAP) {
+        session->settings[CPAP_Pressure] = min_pressure;
+    } else if (cpapmode == MODE_APAP) {
+        session->settings[CPAP_PressureMin] = min_pressure;
+        session->settings[CPAP_PressureMax] = max_pressure;
+    } else if (cpapmode == MODE_BILEVEL_FIXED) {
+        session->settings[CPAP_EPAP] = min_pressure;
+        session->settings[CPAP_IPAP] = max_pressure;
+        session->settings[CPAP_PS] = max_pressure - min_pressure;
+    } else if (cpapmode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+        session->settings[CPAP_EPAPLo] = min_pressure;
+        session->settings[CPAP_EPAPHi] = max_pressure;
+        session->settings[CPAP_IPAPLo] = min_pressure + min_ps;
+        session->settings[CPAP_IPAPHi] = max_pressure;
+        session->settings[CPAP_PSMin] = min_ps;
+        session->settings[CPAP_PSMax] = max_ps;
+    }
+
+    quint8 flex = data[0x0a];
+
+    int flexlevel = flex & 0x03;
+    FlexMode flexmode = FLEX_Unknown;
+
+    flex &= 0xf8;
+    bool split = false;
+
+    if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
+        split = true;
+    }
+    if (flex & 0x80) { // CFlex bit
+        if (flex & 0x10) {
+            flexmode = FLEX_RiseTime;
+        } else if (flex & 8) { // Plus bit
+            if (split || (cpapmode == MODE_CPAP)) {
+                flexmode = FLEX_CFlexPlus;
+            } else if (cpapmode == MODE_APAP) {
+                flexmode = FLEX_AFlex;
+            }
+        } else {
+            // CFlex bits refer to Rise Time on BiLevel machines
+            flexmode = (cpapmode >= MODE_BILEVEL_FIXED) ? FLEX_BiFlex : FLEX_CFlex;
+        }
+    } else flexmode = FLEX_None;
+
+    session->settings[PRS1_FlexMode] = (int)flexmode;
+    session->settings[PRS1_FlexLevel] = (int)flexlevel;
+
+//    int duration = data[0x14] | data[0x15] << 8;
+
+//    session->set_last(qint64(summary->timestamp+duration) * 1000L);
+
+
+
     return true;
 }
 
@@ -1243,6 +1320,84 @@ bool PRS1SessionData::ParseSummaryF3()
 
 bool PRS1SessionData::ParseSummaryF5()
 {
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    CPAPMode cpapmode = MODE_UNKNOWN;
+
+//    switch (data[0x01]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
+//    case 0x00:
+//        cpapmode = MODE_CPAP;
+//        break;
+//    case 0x01:
+//        cpapmode = MODE_ASV;
+//        break;
+//    }
+
+    EventDataType min_epap = float(data[0x03]) / 10.0;
+    EventDataType max_epap = float(data[0x04]) / 10.0;
+
+    EventDataType min_ps = float(data[0x05]) / 10.0;  // this might be an implied 3.0
+    EventDataType max_ps = float(data[0x06]) / 10.0;
+    EventDataType max_pressure = float(data[0x02]) / 10.0;
+
+
+    cpapmode = MODE_ASV_VARIABLE_EPAP;
+
+    session->settings[CPAP_Mode] = (int)cpapmode;
+    if (cpapmode == MODE_CPAP) {
+        session->settings[CPAP_Pressure] = min_epap;
+    } else if (cpapmode == MODE_BILEVEL_FIXED) {
+        session->settings[CPAP_EPAP] = min_epap;
+        session->settings[CPAP_IPAP] = max_epap;
+    } else if (cpapmode == MODE_ASV_VARIABLE_EPAP) {
+        session->settings[CPAP_EPAPLo] = min_epap;
+        session->settings[CPAP_EPAPHi] = max_epap;
+        session->settings[CPAP_IPAPLo] = min_epap + min_ps;
+        session->settings[CPAP_IPAPHi] = max_pressure;
+        session->settings[CPAP_PSMin] = min_ps;
+        session->settings[CPAP_PSMax] = max_ps;
+    }
+
+    quint8 flex = data[0x0c];
+
+    int flexlevel = flex & 0x03;
+    FlexMode flexmode = FLEX_Unknown;
+
+    flex &= 0xf8;
+    bool split = false;
+
+    if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
+        split = true;
+    }
+    if (flex & 0x80) { // CFlex bit
+        if (flex & 0x10) {
+            flexmode = FLEX_RiseTime;
+        } else if (flex & 8) { // Plus bit
+            if (split || (cpapmode == MODE_CPAP)) {
+                flexmode = FLEX_CFlexPlus;
+            } else if (cpapmode == MODE_APAP) {
+                flexmode = FLEX_AFlex;
+            }
+        } else {
+            // CFlex bits refer to Rise Time on BiLevel machines
+            flexmode = (cpapmode >= MODE_BILEVEL_FIXED) ? FLEX_BiFlex : FLEX_CFlex;
+        }
+    } else flexmode = FLEX_None;
+
+    session->settings[PRS1_FlexMode] = (int)flexmode;
+    session->settings[PRS1_FlexLevel] = (int)flexlevel;
+
+
+    int ramp_time = data[0x0a];
+    EventDataType ramp_pressure = float(data[0x0b]) / 10.0;
+
+    session->settings[CPAP_RampTime] = (int)ramp_time;
+    session->settings[CPAP_RampPressure] = ramp_pressure;
+
+
+    int duration=data[0x1B] | data[0x1C] << 8;
+    session->set_last(qint64(summary->timestamp+duration) * 1000L);
+
     return true;
 
 }
@@ -1832,6 +1987,7 @@ void InitModelMap()
     ModelMap[0x37] = "RemStar BiPAP Auto with Bi-Flex";
     ModelMap[0x38] = "RemStar Plus :(";          // 150/250P/260P
     ModelMap[0x41] = "BiPAP autoSV Advanced";
+    ModelMap[0x4a] = "BiPAP autoSV Advanced 60 Series";
     ModelMap[0x4E] = "BiPAP AVAPS";
 }
 
