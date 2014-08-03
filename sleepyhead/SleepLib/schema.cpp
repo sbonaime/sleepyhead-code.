@@ -392,8 +392,33 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_SummaryOnly = 0x1026, SETTING,    SESSION,
                         "SummaryOnly",      QObject::tr("Summary Only"),
-                        QObject::tr("CPAP Session contains summary data onlyf"),  QObject::tr("Summary Only"),  STR_UNIT_Unknown,
+                        QObject::tr("CPAP Session contains summary data only"),  QObject::tr("Summary Only"),  STR_UNIT_Unknown,
                         DEFAULT,  Qt::black));
+
+    Channel *ch;
+    schema::channel.add(GRP_CPAP, ch = new Channel(CPAP_Mode = 0x1200, SETTING,    SESSION,
+                        "PAPMode",      QObject::tr("PAP Mode"),
+                        QObject::tr("PAP Mode"),  QObject::tr("PAP_Mode"),  STR_UNIT_Unknown,
+                        LOOKUP,  Qt::black));
+
+    ch->addOption(0, STR_TR_Unknown);
+    ch->addOption(1, STR_TR_CPAP);
+    ch->addOption(2, STR_TR_APAP);
+    ch->addOption(3, QObject::tr("Fixed Bi-Level"));
+    ch->addOption(4, QObject::tr("Auto Bi-Level (Fixed PS)"));
+    ch->addOption(5, QObject::tr("Auto Bi-Level (Variable PS)"));
+    ch->addOption(6, QObject::tr("ASV (Fixed EPAP)"));
+    ch->addOption(7, QObject::tr("ASV (Variable EPAP)"));
+
+
+//    <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
+//     <option id="0" value="CPAP"/>
+//     <option id="1" value="Auto"/>
+//     <option id="2" value="Fixed Bi-Level"/>
+//     <option id="3" value="Auto Bi-Level"/>
+//     <option id="4" value="ASV"/>
+//     <option id="5" value="ASV Auto EPAP"/>
+//    </channel>
 
 
     NoChannel = 0;
@@ -405,7 +430,7 @@ void init()
     //    CPAP_PS=schema::channel["PS"].id();
     //    CPAP_PSMin=schema::channel["PSMin"].id();
     //    CPAP_PSMax=schema::channel["PSMax"].id();
-    CPAP_Mode = schema::channel["PAPMode"].id();
+//    CPAP_Mode = schema::channel["PAPMode"].id();
     CPAP_BrokenSummary = schema::channel["BrokenSummary"].id();
     CPAP_BrokenWaveform = schema::channel["BrokenWaveform"].id();
     //    CPAP_PressureMin=schema::channel["PressureMin"].id();
@@ -446,20 +471,12 @@ void init()
     CPAP_Test1 = schema::channel["TestChan1"].id();
     CPAP_Test2 = schema::channel["TestChan2"].id();
 
-    CPAP_PresReliefSet = schema::channel["PresRelSet"].id();
-    CPAP_PresReliefMode = schema::channel["PresRelMode"].id();
-    CPAP_PresReliefType = schema::channel["PresRelType"].id();
-
     //    CPAP_UserFlag1=schema::channel["UserFlag1"].id();
     //    CPAP_UserFlag2=schema::channel["UserFlag2"].id();
     //    CPAP_UserFlag3=schema::channel["UserFlag3"].id();
     RMS9_E01 = schema::channel["RMS9_E01"].id();
     RMS9_E02 = schema::channel["RMS9_E02"].id();
-    RMS9_EPR = schema::channel["EPR"].id();
-    RMS9_EPRLevel = schema::channel["EPRLevel"].id();
-    RMS9_SetPressure = schema::channel["SetPressure"].id();
-    PRS1_FlexMode = schema::channel["FlexMode"].id();
-    PRS1_FlexSet = schema::channel["FlexSet"].id();
+    RMS9_SetPressure = schema::channel["SetPressure"].id(); // TODO: this isn't needed anymore
     PRS1_HumidStatus = schema::channel["HumidStat"].id();
     CPAP_HumidSetting = schema::channel["HumidSet"].id();
     PRS1_SysLock = schema::channel["SysLock"].id();

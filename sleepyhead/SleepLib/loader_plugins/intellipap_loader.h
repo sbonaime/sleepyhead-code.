@@ -39,6 +39,8 @@ class Intellipap: public CPAP
 
 const int intellipap_load_buffer_size = 1024 * 1024;
 
+extern ChannelID INTP_SmartFlexMode;
+extern ChannelID INTP_SmartFlexLevel;
 
 const QString intellipap_class_name = STR_MACH_Intellipap;
 
@@ -46,7 +48,7 @@ const QString intellipap_class_name = STR_MACH_Intellipap;
     \brief Loader for DeVilbiss Intellipap Auto data
     This is only relatively recent addition and still needs more work
     */
-class IntellipapLoader : public MachineLoader
+class IntellipapLoader : public CPAPLoader
 {
   public:
     IntellipapLoader();
@@ -71,8 +73,18 @@ class IntellipapLoader : public MachineLoader
     static void Register();
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, intellipap_class_name, QObject::tr("DeVilbiss"), QString(), QString(), QString(), QObject::tr("Intellipap"), QDateTime::currentDateTime(), intellipap_data_version);
+        return MachineInfo(MT_CPAP, 0, intellipap_class_name, QObject::tr("DeVilbiss"), QString(), QString(), QString(), QObject::tr("Intellipap"), QDateTime::currentDateTime(), intellipap_data_version);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Now for some CPAPLoader overrides
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual QString presRelLabel() { return QObject::tr("SmartFlex Settings"); } // might not need this one
+
+    virtual ChannelID presReliefMode() { return INTP_SmartFlexMode; }
+    virtual ChannelID presRelLevel() { return INTP_SmartFlexLevel; }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   protected:
     QString last;
 

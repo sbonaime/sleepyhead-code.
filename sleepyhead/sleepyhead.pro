@@ -177,7 +177,9 @@ SOURCES += \
     SleepLib/loader_plugins/md300w1_loader.cpp \
     Graphs/gSessionTimesChart.cpp \
     logger.cpp \
-    welcome.cpp
+    welcome.cpp \
+    SleepLib/machine_common.cpp \
+    SleepLib/loader_plugins/weinmann_loader.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -232,7 +234,8 @@ HEADERS  += \
     SleepLib/serialoximeter.h \
     SleepLib/loader_plugins/md300w1_loader.h \
     Graphs/gSessionTimesChart.h \
-    logger.h
+    logger.h \
+    SleepLib/loader_plugins/weinmann_loader.h
 
 FORMS += \
     daily.ui \

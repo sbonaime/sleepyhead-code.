@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  *
- * SleepLib Machine Loader Class Header
+ * SleepLib Common Machine Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -54,12 +54,31 @@ enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_PERC, ST_90P, ST_MIN, ST_
 enum MachineType { MT_UNKNOWN = 0, MT_CPAP, MT_OXIMETER, MT_SLEEPSTAGE, MT_JOURNAL, MT_POSITION };
 //void InitMapsWithoutAwesomeInitializerLists();
 
+// PAP Device Capabilities
+const quint32 CAP_Fixed               = 0x0000001;  // Constant PAP
+const quint32 CAP_Variable            = 0x0000002;  // Variable Base (EPAP) pressure
+const quint32 CAP_BiLevel             = 0x0000004;  // Fixed Pressure Support
+const quint32 CAP_Variable_PS         = 0x0000008;  // Pressure support can range
+const quint32 CAP_PressureRelief      = 0x0000010;  // Device has a pressure relief mode (EPR; Flex; SmartFlex)
+const quint32 CAP_Humidification      = 0x0000020;  // Device has a humidifier attached
+
+// PAP Mode Capabilities
+const quint32 PAP_CPAP                    = 0x0001;  // Fixed Pressure PAP
+const quint32 PAP_APAP                    = 0x0002;  // Auto Ranging PAP
+const quint32 PAP_BiLevelFixed            = 0x0004;  // Fixed BiLevel
+const quint32 PAP_BiLevelAutoFixed        = 0x0008;  // Auto BiLevel with Fixed EPAP
+const quint32 PAP_BiLevelAutoVariable     = 0x0010;  // Auto BiLevel with full ranging capabilities
+const quint32 PAP_ASV_Fixed               = 0x0020;  // ASV with fixed EPAP
+const quint32 PAP_ASV_Variable            = 0x0040;  // ASV with full ranging capabilities
+const quint32 PAP_SplitNight              = 0x8000;  // Split night capabilities
+
+
 
 /*! \enum CPAPMode
     \brief CPAP Machines mode of operation
   */
 enum CPAPMode { //:short
-    MODE_UNKNOWN = 0, MODE_CPAP, MODE_APAP, MODE_BILEVEL_FIXED, MODE_BILEVEL_AUTO_FIXED_PS, MODE_ASV, MODE_ASV_VARIABLE_EPAP
+    MODE_UNKNOWN = 0, MODE_CPAP, MODE_APAP, MODE_BILEVEL_FIXED, MODE_BILEVEL_AUTO_FIXED_PS, MODE_BILEVEL_AUTO_VARIABLE_PS, MODE_ASV, MODE_ASV_VARIABLE_EPAP
 };
 
 /*! \enum PRTypes
@@ -68,13 +87,13 @@ enum CPAPMode { //:short
 enum PRTypes { //:short
     PR_UNKNOWN = 0, PR_NONE, PR_CFLEX, PR_CFLEXPLUS, PR_AFLEX, PR_BIFLEX, PR_EPR, PR_SMARTFLEX, PR_EASYBREATHE, PR_SENSAWAKE
 };
-enum PRModes { //:short
+enum PRTimeModes { //:short
     PM_UNKNOWN = 0, PM_RampOnly, PM_FullTime
 };
 
 
 struct MachineInfo {
-    MachineInfo() { type = MT_UNKNOWN; version = 0; }
+    MachineInfo() { type = MT_UNKNOWN; version = 0; cap=0; }
     MachineInfo(const MachineInfo & copy) {
         type = copy.type;
         loadername = copy.loadername;
@@ -85,12 +104,14 @@ struct MachineInfo {
         series = copy.series;
         version = copy.version;
         lastimported = copy.lastimported;
+        cap = copy.cap;
     }
 
-    MachineInfo(MachineType type, QString loadername, QString brand, QString model, QString modelnumber, QString serial, QString series, QDateTime lastimported, int version) :
-        type(type), loadername(loadername), brand(brand), model(model), modelnumber(modelnumber), serial(serial), series(series), lastimported(lastimported), version(version) {}
+    MachineInfo(MachineType type, quint32 cap, QString loadername, QString brand, QString model, QString modelnumber, QString serial, QString series, QDateTime lastimported, int version) :
+        type(type), cap(cap), loadername(loadername), brand(brand), model(model), modelnumber(modelnumber), serial(serial), series(series), lastimported(lastimported), version(version) {}
 
     MachineType type;
+    quint32 cap;
     QString loadername;
     QString brand;
     QString model;
@@ -128,13 +149,12 @@ extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CP
        CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
        CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
        CPAP_UserFlag1, CPAP_UserFlag2, CPAP_UserFlag3, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
-       CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_Test1, CPAP_Test2;
+       CPAP_PresReliefMode, CPAP_PresReliefLevel, CPAP_Test1, CPAP_Test2;
 
-extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRLevel, RMS9_SetPressure, RMS9_MaskOnTime;
-extern ChannelID INTP_SmartFlex;
+extern ChannelID RMS9_E01, RMS9_E02, RMS9_SetPressure, RMS9_MaskOnTime;
 extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, CPAP_LargeLeak,
        PRS1_12,
-       PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, CPAP_HumidSetting, PRS1_SysLock,
+       PRS1_FlexMode, PRS1_FlexLevel, PRS1_HumidStatus, PRS1_HumitSetting, CPAP_HumidSetting, PRS1_SysLock,
        PRS1_SysOneResistStat,
        PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
 

@@ -46,6 +46,7 @@
 #include "SleepLib/loader_plugins/resmed_loader.h"
 #include "SleepLib/loader_plugins/intellipap_loader.h"
 #include "SleepLib/loader_plugins/icon_loader.h"
+#include "SleepLib/loader_plugins/weinmann_loader.h"
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -267,6 +268,7 @@ retry_directory:
     ResmedLoader::Register();
     IntellipapLoader::Register();
     FPIconLoader::Register();
+    WeinmannLoader::Register();
     CMS50Loader::Register();
     MD300W1Loader::Register();
     //ZEOLoader::Register(); // Use outside of directory importer..

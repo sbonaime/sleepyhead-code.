@@ -261,8 +261,8 @@ struct RXChange {
         per2 = copy.per2;
         highlight = copy.highlight;
         weighted = copy.weighted;
-        prelief = copy.prelief;
-        prelset = copy.prelset;
+        pressure_string = copy.pressure_string;
+        pr_relief_string = copy.pr_relief_string;
     }
     QDate first;
     QDate last;
@@ -270,6 +270,8 @@ struct RXChange {
     EventDataType ahi;
     EventDataType fl;
     CPAPMode mode;
+    QString pressure_string;
+    QString pr_relief_string;
     EventDataType min;
     EventDataType max;
     EventDataType ps;
@@ -278,9 +280,7 @@ struct RXChange {
     EventDataType per1;
     EventDataType per2;
     EventDataType weighted;
-    PRTypes prelief;
     Machine *machine;
-    short prelset;
     short highlight;
 };
 
@@ -744,8 +744,7 @@ QString Statistics::GenerateHTML()
         EventDataType cmin = 0, cmax = 0, cps = 0, cpshi = 0, cmaxipap = 0, min = 0, max = 0, maxipap = 0,
                       ps = 0, pshi = 0;
         Machine *mach = nullptr, *lastmach = nullptr;
-        PRTypes lastpr = PR_UNKNOWN, prelief = PR_UNKNOWN;
-        short prelset = 0, lastprelset = -1;
+        QString last_prel_str, last_pressure_str, prel_str, pressure_str;
         QDate date = lastcpap;
         Day *day;
         bool lastchanged = false;
@@ -757,7 +756,12 @@ QString Statistics::GenerateHTML()
         do {
             day = p_profile->GetGoodDay(date, MT_CPAP);
 
-            if (day) {
+
+            CPAPLoader * loader = nullptr;
+
+            if (day) loader = dynamic_cast<CPAPLoader *>(day->machine->loader());
+
+            if (day && loader) {
                 lastchanged = false;
 
                 hours = day->hours();
@@ -766,17 +770,20 @@ QString Statistics::GenerateHTML()
                     compliant++;
                 }
 
-                EventDataType ahi = day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(
-                                        CPAP_Apnea) + day->count(CPAP_ClearAirway);
+                EventDataType ahi = day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
 
                 if (p_profile->general->calculateRDI()) { ahi += day->count(CPAP_RERA); }
 
                 ahi /= hours;
                 AHI.push_back(UsageData(date, ahi, hours));
 
-                prelief = (PRTypes)(int)round(day->settings_wavg(CPAP_PresReliefType));
-                prelset = round(day->settings_max(CPAP_PresReliefSet));
+                prel_str = day->getPressureRelief();
+                pressure_str = day->getPressureSettings();
+
                 mode = (CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
+                if (mode ==0) {
+                    mode = (CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
+                }
                 mach = day->machine;
 
                 min = max = ps = pshi = maxipap = 0;
@@ -794,6 +801,12 @@ QString Statistics::GenerateHTML()
                     min = day->settings_min(CPAP_EPAPLo);
                     maxipap = max = day->settings_max(CPAP_IPAPHi);
                     ps = day->settings_min(CPAP_PS);
+                } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) { // Similar pressure control as ASV Variable EPAP
+                    min = day->settings_min(CPAP_EPAPLo);
+                    max = day->settings_min(CPAP_EPAPHi);
+                    ps = day->settings_min(CPAP_PSMin);
+                    pshi = day->settings_max(CPAP_PSMax);
+                    maxipap = max = day->settings_max(CPAP_IPAPHi);
                 } else if (mode ==  MODE_ASV) {
                     min = day->settings_min(CPAP_EPAPLo);
                     ps = day->settings_min(CPAP_PSMin);
@@ -805,48 +818,57 @@ QString Statistics::GenerateHTML()
                     ps = day->settings_min(CPAP_PSMin);
                     pshi = day->settings_max(CPAP_PSMax);
                     maxipap = max + pshi;
+
                 }
 
-                if ((mode != cmode) || (min != cmin) || (max != cmax) || (ps != cps) || (pshi != cpshi)
-                        || (maxipap != cmaxipap) || (mach != lastmach) || (prelset != lastprelset))  {
-                    if ((cmode != MODE_UNKNOWN) && (lastmach != nullptr)) {
-                        first = date.addDays(1);
-                        int days = p_profile->countDays(MT_CPAP, first, last);
-                        RXChange rx;
-                        rx.first = first;
-                        rx.last = last;
-                        rx.days = days;
-                        rx.ahi = calcAHI(first, last);
-                        rx.fl = calcFL(first, last);
-                        rx.mode = cmode;
-                        rx.min = cmin;
-                        rx.max = cmax;
-                        rx.ps = cps;
-                        rx.pshi = cpshi;
-                        rx.maxipap = cmaxipap;
-                        rx.prelief = lastpr;
-                        rx.prelset = lastprelset;
-                        rx.machine = lastmach;
-                        rx.per1 = 0;
+                if (lastmach == nullptr) {
+                    lastmach = mach;
+                    cmode = mode;
+                    last_pressure_str = pressure_str;
+                    last_prel_str = prel_str;
+
+                }
+
+                if ((mode != cmode) || (pressure_str != last_pressure_str) || (prel_str != last_prel_str) || (mach != lastmach)) {
+                    first = date.addDays(1);
+                    int days = p_profile->countDays(MT_CPAP, first, last);
+                    RXChange rx;
+                    rx.first = first;
+                    rx.last = last;
+                    rx.days = days;
+                    rx.ahi = calcAHI(first, last);
+                    rx.fl = calcFL(first, last);
+                    rx.mode = cmode;
+                    rx.pressure_string = last_pressure_str;
+                    rx.pr_relief_string = last_prel_str;
+                    rx.min = cmin;
+                    rx.max = cmax;
+                    rx.ps = cps;
+                    rx.pshi = cpshi;
+                    rx.maxipap = cmaxipap;
+                    rx.machine = lastmach;
+                    rx.per1 = 0;
+                    rx.per2 = 0;
+
+                    if (mode == MODE_APAP) {
+                        rx.per1 = p_profile->calcPercentile(CPAP_Pressure, percentile, MT_CPAP, first, last);
                         rx.per2 = 0;
-
-                        if (mode == MODE_APAP) {
-                            rx.per1 = p_profile->calcPercentile(CPAP_Pressure, percentile, MT_CPAP, first, last);
-                            rx.per2 = 0;
-                        } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-                            rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
-                            rx.per2 = p_profile->calcPercentile(CPAP_IPAP, percentile, MT_CPAP, first, last);
-                        } else if (mode == MODE_ASV) {
-                            rx.per1 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
-                            rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
-                        } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-                            rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
-                            rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
-                        }
-
-                        rx.weighted = float(rx.days) / float(cpapdays) * rx.ahi;
-                        rxchange.push_back(rx);
+                    } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+                        rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
+                        rx.per2 = p_profile->calcPercentile(CPAP_IPAP, percentile, MT_CPAP, first, last);
+                    } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+                        rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
+                        rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
+                    } else if (mode == MODE_ASV) {
+                        rx.per1 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
+                        rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
+                    } else if (mode == MODE_ASV_VARIABLE_EPAP) {
+                        rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
+                        rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
                     }
+
+                    rx.weighted = float(rx.days) / float(cpapdays) * rx.ahi;
+                    rxchange.push_back(rx);
 
                     cmode = mode;
                     cmin = min;
@@ -854,8 +876,8 @@ QString Statistics::GenerateHTML()
                     cps = ps;
                     cpshi = pshi;
                     cmaxipap = maxipap;
-                    lastpr = prelief;
-                    lastprelset = prelset;
+                    last_prel_str = prel_str;
+                    last_pressure_str = pressure_str;
                     last = date;
                     lastmach = mach;
                     lastchanged = true;
@@ -869,8 +891,9 @@ QString Statistics::GenerateHTML()
         // Sort list by AHI
         qSort(AHI);
 
-        lastchanged = false;
+       lastchanged = false;
 
+        // Add the final entry
         if (!lastchanged && (mach != nullptr)) {
             // last=date.addDays(1);
             first = firstcpap;
@@ -887,16 +910,20 @@ QString Statistics::GenerateHTML()
             rx.ps = ps;
             rx.pshi = pshi;
             rx.maxipap = maxipap;
-            rx.prelief = prelief;
-            rx.prelset = prelset;
             rx.machine = mach;
+            rx.pressure_string = pressure_str;
+            rx.pr_relief_string = prel_str;
 
+            // Todo: Clean up by Calculating this crap later..
             if (mode == MODE_APAP) {
                 rx.per1 = p_profile->calcPercentile(CPAP_Pressure, percentile, MT_CPAP, first, last);
                 rx.per2 = 0;
             } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
                 rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
                 rx.per2 = p_profile->calcPercentile(CPAP_IPAP, percentile, MT_CPAP, first, last);
+            } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+                rx.per1 = p_profile->calcPercentile(CPAP_EPAP, percentile, MT_CPAP, first, last);
+                rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
             } else if (mode == MODE_ASV) {
                 rx.per1 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
                 rx.per2 = p_profile->calcPercentile(CPAP_PS, percentile, MT_CPAP, first, last);
@@ -1013,11 +1040,14 @@ QString Statistics::GenerateHTML()
                     modestr = STR_TR_BiLevel;
                 } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
                     modestr = QObject::tr("Auto Bi-Level");
+                } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+                    modestr = QObject::tr("Auto Bi-Level");
                 } else if (mode == MODE_ASV) {
-                    modestr = QObject::tr("ASV");
+                    modestr = QObject::tr("ASV Fixed EPAP");
                 } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-                    modestr = QObject::tr("ASV AutoEPAP");
+                    modestr = QObject::tr("ASV Auto EPAP");
                 } else modestr = STR_TR_Unknown;
+
 
                 recbox += QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
                           .arg(idxstr[i]);
@@ -1080,7 +1110,7 @@ QString Statistics::GenerateHTML()
             hdrlist.push_back(STR_TR_SA);
         }
         hdrlist.push_back(STR_TR_Machine);
-        hdrlist.push_back(tr("Pr. Rel."));
+        hdrlist.push_back(tr("Pressure Relief"));
         hdrlist.push_back(STR_TR_Mode);
         hdrlist.push_back(tr("Pressure Settings"));
 
@@ -1135,40 +1165,38 @@ QString Statistics::GenerateHTML()
             //                    QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals).arg(percentile*100.0)+
             //                    STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             tooltip = QString("%1").arg(machstr);
-            if (mode == MODE_CPAP) {
-                extratxt += "<td colspan=2>"+QString(tr("Fixed %1 %2")+"</td>").arg(rx.min, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
-            } else if (mode == MODE_APAP) {
-                extratxt += "<td colspan=2>"+QString(tr("%1 - %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
-            } else if (mode == MODE_BILEVEL_FIXED) {
-                extratxt += "<td colspan=2>"+QString(tr("EPAP %1 %3 IPAP %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
-            } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-                extratxt += "<td colspan=2>"+QString(tr("PS %4 over %1 - %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units()).arg(rx.ps, 4, 'f', 1);
-            } else if (mode == MODE_ASV) {
-                extratxt += "<td colspan=2>"+QString(tr("EPAP %1, PS %2-%3 %4")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.ps, 4, 'f', 1).arg(rx.pshi, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
-                tooltip = QString("%1 %2% ").arg(machstr).arg(percentile * 100.0) +
-                          STR_TR_EPAP +
-                          QString("=%1<br/>%2% ").arg(rx.per1, 0, 'f', decimals)
-                          .arg(percentile * 100.0)
-                          + STR_TR_IPAP + QString("=%1").arg(rx.per2, 0, 'f', decimals);
-            } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-                extratxt += "<td colspan=2>"+QString(tr("EPAP %1-%2, PS %3-%4 %5")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(rx.ps, 4, 'f', 1).arg(rx.pshi, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
-                tooltip = QString("%1 %2% ").arg(machstr).arg(percentile * 100.0) +
-                          STR_TR_EPAP +
-                          QString("=%1<br/>%2% ").arg(rx.per1, 0, 'f', decimals)
-                          .arg(percentile * 100.0)
-                          + STR_TR_IPAP + QString("=%1").arg(rx.per2, 0, 'f', decimals);
-            } else {
-                    extratxt += "";
-                    tooltip = "";
-            }
+
+            extratxt += "<td colspan=2>"+rx.pressure_string+"</td>";
+//            if (mode == MODE_CPAP) {
+//                extratxt += "<td colspan=2>"+QString(tr("Fixed %1 %2")+"</td>").arg(rx.min, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//            } else if (mode == MODE_APAP) {
+//                extratxt += "<td colspan=2>"+QString(tr("%1 - %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//            } else if (mode == MODE_BILEVEL_FIXED) {
+//                extratxt += "<td colspan=2>"+QString(tr("EPAP %1 %3 IPAP %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//            } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+//                extratxt += "<td colspan=2>"+QString(tr("PS %4 over %1 - %2 %3")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units()).arg(rx.ps, 4, 'f', 1);
+//            } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+//                extratxt += "<td colspan=2>"+QString(tr("EPAP %1-%2, PS %3-%4 %5")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(rx.ps, 4, 'f', 1).arg(rx.pshi, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//            } else if (mode == MODE_ASV) {
+//                extratxt += "<td colspan=2>"+QString(tr("EPAP %1, PS %2-%3 %4")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.ps, 4, 'f', 1).arg(rx.pshi, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//                tooltip = QString("%1 %2% ").arg(machstr).arg(percentile * 100.0) +
+//                          STR_TR_EPAP +
+//                          QString("=%1<br/>%2% ").arg(rx.per1, 0, 'f', decimals)
+//                          .arg(percentile * 100.0)
+//                          + STR_TR_IPAP + QString("=%1").arg(rx.per2, 0, 'f', decimals);
+//            } else if (mode == MODE_ASV_VARIABLE_EPAP) {
+//                extratxt += "<td colspan=2>"+QString(tr("EPAP %1-%2, PS %3-%4 %5")+"</td>").arg(rx.min, 4, 'f', 1).arg(rx.max, 4, 'f', 1).arg(rx.ps, 4, 'f', 1).arg(rx.pshi, 4, 'f', 1).arg(schema::channel[CPAP_Pressure].units());
+//                tooltip = QString("%1 %2% ").arg(machstr).arg(percentile * 100.0) +
+//                          STR_TR_EPAP +
+//                          QString("=%1<br/>%2% ").arg(rx.per1, 0, 'f', decimals)
+//                          .arg(percentile * 100.0)
+//                          + STR_TR_IPAP + QString("=%1").arg(rx.per2, 0, 'f', decimals);
+//            } else {
+//                    extratxt += "";
+//                    tooltip = "";
+//            }
 
             extratxt += "</tr></table>";
-            QString presrel;
-
-            if (rx.prelset > 0) {
-                presrel = schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
-                presrel += QString(" x%1").arg(rx.prelset);
-            } else { presrel = STR_TR_None; }
 
             QString tooltipshow, tooltiphide;
 
@@ -1198,8 +1226,8 @@ QString Statistics::GenerateHTML()
                 html += QString("<td>%1</td>").arg(calcSA(rx.first, rx.last), 0, 'f', decimals);
             }
             html += QString("<td>%1</td>").arg(rx.machine->loaderName());
-            html += QString("<td>%1</td>").arg(presrel);
-            html += QString("<td>%1</td>").arg(schema::channel[CPAP_Mode].option(int(rx.mode) - 1));
+            html += QString("<td>%1</td>").arg(rx.pr_relief_string);
+            html += QString("<td>%1</td>").arg(schema::channel[CPAP_Mode].option(int(rx.mode)));
             html += QString("<td>%1</td>").arg(extratxt);
             html += "</tr>";
         }

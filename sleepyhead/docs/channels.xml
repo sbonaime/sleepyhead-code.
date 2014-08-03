@@ -20,19 +20,10 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1163" class="data" name="BrokenSummary" details="Broken Summary" label="Broken Summary" unit="" color="black"/>
   <channel id="0x1164" class="data" name="BrokenWaveform" details="Broken Waveform" label="Broken Waveform" unit="" color="black"/>
 
-  <channel id="0x1165" class="setting" scope="!session" name="SmartFlex" details="SmartFlex" label="SmartFlex" type="integer"/>
   <channel id="0x1166" class="data" name="PRS1_0F" details="Unknown 0F" label="U0F" unit="?" color="dark green"/>
   <channel id="0x1167" class="data" name="IntUnk1" details="Unknown 1" label="Unknown 1" unit="?" color="dark green"/>
   <channel id="0x1168" class="data" name="IntUnk2" details="Unknown 2" label="Unknown 2" unit="?" color="dark green"/>
 
-  <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
-   <option id="0" value="CPAP"/>
-   <option id="1" value="Auto"/>
-   <option id="2" value="Fixed Bi-Level"/>
-   <option id="3" value="Auto Bi-Level"/>
-   <option id="4" value="ASV"/>
-   <option id="5" value="ASV Auto EPAP"/>
-  </channel>
   <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
     <Option id="0" value=""/>
     <Option id="1" value="None"/>
@@ -105,19 +96,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
     <Option id="4" value="x4"/>
     <Option id="5" value="x5"/>
   </channel>
-  <channel id="0xe105" class="setting" scope="!session" name="FlexMode" details="Pressure Relief Mode" label="Flex Mode" type="integer">
-    <Option id="1" value="None"/>
-    <Option id="2" value="C-Flex"/>
-    <Option id="3" value="C-Flex+"/>
-    <Option id="4" value="A-Flex"/>
-    <Option id="5" value="Bi-Flex"/>
-  </channel>
-  <channel id="0xe106" class="setting" scope="!session" name="FlexSet" details="Pressure Relief Setting" label="Flex Set." type="integer">
-   <Option id="0" value=""/>
-   <Option id="1" value="x1"/>
-   <Option id="2" value="x2"/>
-   <Option id="3" value="x3"/>
-  </channel>
   <channel id="0xe107" class="setting" scope="!session" name="HoseDiam" details="Hose Diameter" label="Hose Diameter" type="bool">
    <Option id="0" value="22mm"/>
    <Option id="1" value="15mm"/>
@@ -157,18 +135,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
    <Option id="1" value="Auto"/>
    <Option id="2" value="VPAP"/>
    <Option id="3" value="ASV"/>
-  </channel>
-  <channel id="0xe201" class="setting" scope="!session" name="EPR" details="EPR Mode" label="EPR Mode" type="integer">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="Ramp Only"/>
-   <Option id="2" value="Full Time"/>
-   <Option id="3" value="EPR?"/>
-  </channel>
-  <channel id="0xe202" class="setting" scope="!session" name="EPRLevel" details="EPR Setting" label="EPR Setting" type="integer">
-   <Option id="0" value="0"/>
-   <Option id="1" value="1"/>
-   <Option id="2" value="2"/>
-   <Option id="3" value="3"/>
   </channel>
  </group>
  <group name="MACHINE">

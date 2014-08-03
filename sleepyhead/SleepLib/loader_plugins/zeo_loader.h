@@ -37,7 +37,7 @@ class ZEOLoader : public MachineLoader
 
     //Machine *CreateMachine();
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_SLEEPSTAGE, zeo_class_name, QObject::tr("Zeo"), QString(), QString(), QString(), QObject::tr("Personal Sleep Coach"), QDateTime::currentDateTime(), zeo_data_version);
+        return MachineInfo(MT_SLEEPSTAGE, 0, zeo_class_name, QObject::tr("Zeo"), QString(), QString(), QString(), QObject::tr("Personal Sleep Coach"), QDateTime::currentDateTime(), zeo_data_version);
     }
 
   protected:

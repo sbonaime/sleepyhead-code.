@@ -425,7 +425,7 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
 (Highly recomended, unless your short on disk space or don't care about the graph data)</string>
             </property>
             <property name="text">
-             <string>Create SD Card Backups during Import (This is fairly important for ResMed and FP ICON)</string>
+             <string>Create SD Card Backups during Import (Turn this off at your own peril!)</string>
             </property>
            </widget>
           </item>

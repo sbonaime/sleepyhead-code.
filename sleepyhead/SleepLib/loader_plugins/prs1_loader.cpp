@@ -99,6 +99,10 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 }
 #endif
 
+enum FlexMode { FLEX_None, FLEX_CFlex, FLEX_CFlexPlus, FLEX_AFlex, FLEX_RiseTime, FLEX_BiFlex, FLEX_Unknown  };
+
+
+
 PRS1::PRS1(MachineID id): CPAP(id)
 {
 }
@@ -212,6 +216,8 @@ int PRS1Loader::Open(QString path)
         QString filename = fi.fileName();
 
         if ((filename[0] == 'P') && (isdigit(filename[1])) && (isdigit(filename[2]))) {
+            SerialNumbers.push_back(filename);
+        } else if (isdigit(filename[0]) && isdigit(filename[1])) {
             SerialNumbers.push_back(filename);
         } else if (filename.toLower() == "last.txt") { // last.txt points to the current serial number
             QString file = fi.canonicalFilePath();
@@ -359,7 +365,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
         if ((filename[0].toLower() == 'p') && (isdigit(filename[1]))) {
             // p0, p1, p2.. etc.. folders contain the session data
             paths.push_back(fi.canonicalFilePath());
-        } else if (filename.toLower() == "properties.txt") {
+        } else if ((filename.toLower() == "properties.txt") || (filename.toLower() == "prop.txt")) {
             ParseProperties(m, fi.canonicalFilePath());
         } else if (filename.toLower() == "e") {
             // Error files..
@@ -839,18 +845,21 @@ bool PRS1SessionData::ParseF0Events()
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
 
-    EventList *CA = nullptr; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
-    EventList *VS = nullptr;
-    EventList *VS2 = nullptr;
-    EventList *FL = nullptr;
-    EventList *RE = nullptr;
+    EventList *PP = session->AddEventList(CPAP_PressurePulse, EVL_Event);
+    EventList *RE = session->AddEventList(CPAP_RERA, EVL_Event);
+    EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *FL = session->AddEventList(CPAP_FlowLimit, EVL_Event);
+    EventList *VS = session->AddEventList(CPAP_VSnore, EVL_Event);
+    EventList *VS2 = session->AddEventList(CPAP_VSnore2, EVL_Event);
+
+    Code[12] = session->AddEventList(PRS1_0B, EVL_Event);
+    Code[17] = session->AddEventList(PRS1_0E, EVL_Event);
+    Code[20] = session->AddEventList(CPAP_LargeLeak, EVL_Event);
 
     EventList *PRESSURE = nullptr;
     EventList *EPAP = nullptr;
     EventList *IPAP = nullptr;
     EventList *PS = nullptr;
-
-    EventList *PP = nullptr;
 
     //session->AddEventList(CPAP_VSnore, EVL_Event);
     //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
@@ -961,9 +970,6 @@ bool PRS1SessionData::ParseF0Events()
             break;
 
         case 0x04: // Pressure Pulse
-            if (!PP) {
-                if (!(PP = session->AddEventList(CPAP_PressurePulse, EVL_Event))) { return false; }
-            }
 
             PP->AddEvent(t, buffer[pos++]);
             break;
@@ -971,10 +977,6 @@ bool PRS1SessionData::ParseF0Events()
         case 0x05: // RERA
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
-
-            if (!RE) {
-                if (!(RE = session->AddEventList(CPAP_RERA, EVL_Event))) { return false; }
-            }
 
             RE->AddEvent(tt, data[0]);
             break;
@@ -989,10 +991,6 @@ bool PRS1SessionData::ParseF0Events()
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
 
-            if (!CA) {
-                if (!(CA = session->AddEventList(CPAP_ClearAirway, EVL_Event))) { return false; }
-            }
-
             CA->AddEvent(tt, data[0]);
             break;
 
@@ -1006,10 +1004,6 @@ bool PRS1SessionData::ParseF0Events()
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
 
-            if (!FL) {
-                if (!(FL = session->AddEventList(CPAP_FlowLimit, EVL_Event))) { return false; }
-            }
-
             FL->AddEvent(tt, data[0]);
             break;
 
@@ -1017,19 +1011,11 @@ bool PRS1SessionData::ParseF0Events()
             data[0] = buffer[pos++];
             data[1] = buffer[pos++];
 
-            if (!Code[12]) {
-                if (!(Code[12] = session->AddEventList(PRS1_0B, EVL_Event))) { return false; }
-            }
-
             // FIXME
             Code[12]->AddEvent(t, data[0]);
             break;
 
         case 0x0d: // Vibratory Snore
-            if (!VS) {
-                if (!(VS = session->AddEventList(CPAP_VSnore, EVL_Event))) { return false; }
-            }
-
             VS->AddEvent(t, 0);
             break;
 
@@ -1041,10 +1027,6 @@ bool PRS1SessionData::ParseF0Events()
             SNORE->AddEvent(t, data[1]);
 
             if (data[1] > 0) {
-                if (!VS2) {
-                    if (!(VS2 = session->AddEventList(CPAP_VSnore2, EVL_Event))) { return false; }
-                }
-
                 VS2->AddEvent(t, data[1]);
             }
 
@@ -1061,10 +1043,6 @@ bool PRS1SessionData::ParseF0Events()
             //pos+=2;
             data[2] = buffer[pos++];
 
-            if (!Code[17]) {
-                if (!(Code[17] = session->AddEventList(PRS1_0E, EVL_Event))) { return false; }
-            }
-
             tdata = unsigned(data[1]) << 8 | unsigned(data[0]);
             Code[17]->AddEvent(t, tdata);
             //qDebug() << hex << data[0] << data[1] << data[2];
@@ -1077,10 +1055,6 @@ bool PRS1SessionData::ParseF0Events()
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
             data[1] = buffer[pos++];
-
-            if (!Code[20]) {
-                if (!(Code[20] = session->AddEventList(CPAP_LargeLeak, EVL_Event))) { return false; }
-            }
 
             tt = t - qint64(data[1]) * 1000L;
             Code[20]->AddEvent(tt, data[0]);
@@ -1129,19 +1103,192 @@ bool PRS1SessionData::ParseF0Events()
 
 bool PRS1SessionData::ParseCompliance()
 {
+    // Bleh!! There is probably 10 different formats for these useless piece of junk machines
     if (!compliance) return false;
     return true;
 }
 
-bool PRS1SessionData::ParseSummary()
+bool PRS1SessionData::ParseSummaryF0()
 {
-    if (!summary) return false;
-    if (summary->m_data.size() < 59) {
-        return false;
-    }
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
+    CPAPMode cpapmode = MODE_UNKNOWN;
+
+    switch (data[0x02]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
+    case 0x00:
+        cpapmode = MODE_CPAP;
+        break;
+    case 0x01:
+        cpapmode = MODE_BILEVEL_FIXED;
+        break;
+    case 0x02:
+        cpapmode = MODE_APAP;
+        break;
+    case 0x03:
+        cpapmode = MODE_BILEVEL_AUTO_VARIABLE_PS;
+    }
+
+    EventDataType min_pressure = float(data[0x03]) / 10.0;
+    EventDataType max_pressure = float(data[0x04]) / 10.0;
+    EventDataType ps  = float(data[0x05]) / 10.0; // pressure support
+
+    if (cpapmode == MODE_CPAP) {
+        session->settings[CPAP_Pressure] = min_pressure;
+    } else if (cpapmode == MODE_APAP) {
+        session->settings[CPAP_PressureMin] = min_pressure;
+        session->settings[CPAP_PressureMax] = max_pressure;
+    } else if (cpapmode == MODE_BILEVEL_FIXED) {
+        session->settings[CPAP_EPAP] = min_pressure;
+        session->settings[CPAP_IPAP] = max_pressure;
+        session->settings[CPAP_PS] = ps;
+    } else if (cpapmode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+        session->settings[CPAP_EPAPLo] = min_pressure;
+        session->settings[CPAP_EPAPHi] = max_pressure - 2.0;
+        session->settings[CPAP_IPAPLo] = min_pressure + 2.0;
+        session->settings[CPAP_IPAPHi] = max_pressure;
+        session->settings[CPAP_PSMin] = 2.0f;
+        session->settings[CPAP_PSMax] = ps;
+    }
+
+    session->settings[CPAP_Mode] = (int)cpapmode;
+
+
+    int ramp_time = data[0x06];
+    EventDataType ramp_pressure = float(data[0x07]) / 10.0;
+
+    session->settings[CPAP_RampTime] = (int)ramp_time;
+    session->settings[CPAP_RampPressure] = ramp_pressure;
+
+    // Tubing lock has no setting byte
+
+//    int SysOneResistance = (data[0x0a] & 7);
+//    bool SysOneResistanceOn = (data[0x0a] & 0x40) ? true : false;
+//    bool SysOneResistanceLock = (data[0x0a] & 0x80) ? true : false;
+//    int humidifier = (data[0x09] & 7);
+//    bool autoOn = (data[0x0b] & 0x40) ? true : false; //?
+
+    // Menu Options
+    session->settings[PRS1_SysLock] = (bool) (data[0x0a] & 0x80); // System One Resistance Lock Setting
+    session->settings[PRS1_SysOneResistSet] = (int)data[0x0a] & 7;       // SYstem One Resistance setting value
+    session->settings[PRS1_SysOneResistStat] = (bool) (data[0x0a] & 0x40);  // System One Resistance Status bit
+    session->settings[PRS1_HoseDiam] = (data[0x0a] & 0x08) ? QObject::tr("15mm") : QObject::tr("22mm");
+    session->settings[PRS1_AutoOn] = (bool) (data[0x0b] & 0x40);
+    session->settings[PRS1_AutoOff] = (bool) (data[0x0c] & 0x10);
+    session->settings[PRS1_MaskAlert] = (bool) (data[0x0c] & 0x08);
+    session->settings[PRS1_ShowAHI] = (bool) (data[0x0c] & 0x04);
+    session->settings[PRS1_HumidStatus] = (bool)(data[0x09] & 0x80);        // Humidifier Connected
+    session->settings[PRS1_HumitSetting] = (int)(data[0x09] & 7);          // Humidifier Value
+
+   // session->
+
+    quint8 flex = data[0x08];
+
+    int flexlevel = flex & 0x03;
+    FlexMode flexmode = FLEX_Unknown;
+
+    // 88 CFlex+ / AFlex (depending on CPAP mode)
+    // 80 CFlex
+    // 00 NoFlex
+    // c0 Split CFlex then None
+    // c8 Split CFlex+ then None
+
+    flex &= 0xf8;
+    bool split = false;
+
+    if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
+        split = true;
+    }
+    if (flex & 0x80) { // CFlex bit
+        if (flex & 0x10) {
+            flexmode = FLEX_RiseTime;
+        } else if (flex & 8) { // Plus bit
+            if (split || (cpapmode == MODE_CPAP)) {
+                flexmode = FLEX_CFlexPlus;
+            } else if (cpapmode == MODE_APAP) {
+                flexmode = FLEX_AFlex;
+            }
+        } else {
+            // CFlex bits refer to Rise Time on BiLevel machines
+            flexmode = (cpapmode >= MODE_BILEVEL_FIXED) ? FLEX_BiFlex : FLEX_CFlex;
+        }
+    } else flexmode = FLEX_None;
+
+    session->settings[PRS1_FlexMode] = (int)flexmode;
+    session->settings[PRS1_FlexLevel] = (int)flexlevel;
+
+    int duration = data[0x14] | data[0x15] << 8;
+
+    session->set_last(qint64(summary->timestamp+duration) * 1000L);
+
+    return true;
+}
+
+bool PRS1SessionData::ParseSummaryF0V4()
+{
+    return true;
+}
+
+
+bool PRS1SessionData::ParseSummaryF3()
+{
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    EventDataType epap = data[0x04] | (data[0x05] << 8);
+    EventDataType ipap = data[0x06] | (data[0x07] << 8);
+
+    EventDataType f1 = data[0x08] | (data[0x09] << 8);
+
+    return true;
+}
+
+bool PRS1SessionData::ParseSummaryF5()
+{
+    return true;
+
+}
+
+
+
+bool PRS1SessionData::ParseSummary()
+{
+
+    // Family 0 = XPAP
+    // Family 3 = BIPAP AVAPS
+    // Family 5 = BIPAP AutoSV
+
+
+    if (!summary) return false;
+    if (summary->m_data.size() < 59) {
+        //return false;
+    }
+
+    session->setPhysMax(CPAP_LeakTotal, 120);
+    session->setPhysMin(CPAP_LeakTotal, 0);
+    session->setPhysMax(CPAP_Pressure, 25);
+    session->setPhysMin(CPAP_Pressure, 4);
+    session->setPhysMax(CPAP_IPAP, 25);
+    session->setPhysMin(CPAP_IPAP, 4);
+    session->setPhysMax(CPAP_EPAP, 25);
+    session->setPhysMin(CPAP_EPAP, 4);
+    session->setPhysMax(CPAP_PS, 25);
+    session->setPhysMin(CPAP_PS, 0);
+
     session->set_first(qint64(summary->timestamp) * 1000L);
+
+    if (this->session->session() == 3880) {
+        int i=5;
+    }
+
+    switch (summary->family) {
+    case 0:
+        return ParseSummaryF0();
+    case 3:
+        return ParseSummaryF3();
+    case 5:
+        return ParseSummaryF5();
+    }
+
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // ASV Codes (Family 5) Recheck 17/10/2013
@@ -1226,22 +1373,23 @@ bool PRS1SessionData::ParseSummary()
         session->settings[CPAP_Pressure] = (EventDataType)min;
     }
 
+
     if (data[offset + 0x08] & 0x80) { // Flex Setting
         if (data[offset + 0x08] & 0x08) {
             if (max > 0) {
                 if (summary->family == 5) {
-                    session->settings[CPAP_PresReliefType] = (int)PR_BIFLEX;
+                    session->settings[PRS1_FlexMode] = (int)PR_BIFLEX;
                 } else {
-                    session->settings[CPAP_PresReliefType] = (int)PR_AFLEX;
+                    session->settings[PRS1_FlexMode] = (int)PR_AFLEX;
                 }
-            } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEXPLUS; }
-        } else { session->settings[CPAP_PresReliefType] = (int)PR_CFLEX; }
-    } else { session->settings[CPAP_PresReliefType] = (int)PR_NONE; }
+            } else { session->settings[PRS1_FlexMode] = (int)PR_CFLEXPLUS; }
+        } else { session->settings[PRS1_FlexMode] = (int)PR_CFLEX; }
+    } else { session->settings[PRS1_FlexMode] = (int)PR_NONE; }
 
-    session->settings[CPAP_PresReliefMode] = (int)PM_FullTime; // only has one mode
+    // Map the channels
 
+    session->settings[PRS1_FlexLevel] = (int)(data[offset + 0x08] & 7);
 
-    session->settings[CPAP_PresReliefSet] = (int)(data[offset + 0x08] & 7);
     session->settings[PRS1_SysLock] = (data[offset + 0x0a] & 0x80) == 0x80;
     session->settings[PRS1_HoseDiam] = ((data[offset + 0x0a] & 0x08) ? "15mm" : "22mm");
     session->settings[PRS1_AutoOff] = (data[offset + 0x0c] & 0x10) == 0x10;
@@ -1274,16 +1422,7 @@ bool PRS1SessionData::ParseSummary()
 
 
     // Set recommended Graph values..
-    session->setPhysMax(CPAP_LeakTotal, 120);
-    session->setPhysMin(CPAP_LeakTotal, 0);
-    session->setPhysMax(CPAP_Pressure, 25);
-    session->setPhysMin(CPAP_Pressure, 4);
-    session->setPhysMax(CPAP_IPAP, 25);
-    session->setPhysMin(CPAP_IPAP, 4);
-    session->setPhysMax(CPAP_EPAP, 25);
-    session->setPhysMin(CPAP_EPAP, 4);
-    session->setPhysMax(CPAP_PS, 25);
-    session->setPhysMin(CPAP_PS, 0);
+
 
 
     if (summary->family == 0 && summary->familyVersion == 0) {
@@ -1307,32 +1446,34 @@ bool PRS1SessionData::ParseEvents()
         qDebug() << "Unknown PRS1 familyVersion" << event->familyVersion;
         return false;
     }
+
     if (res) {
         if (session->count(CPAP_IPAP) > 0) {
-            if (session->settings[CPAP_Mode].toInt() != (int)MODE_ASV) {
-                session->settings[CPAP_Mode] = MODE_BILEVEL_FIXED;
-            }
+//            if (session->settings[CPAP_Mode].toInt() != (int)MODE_ASV) {
+//                session->settings[CPAP_Mode] = MODE_BILEVEL_FIXED;
+//            }
 
-            if (session->settings[CPAP_PresReliefType].toInt() != PR_NONE) {
-                session->settings[CPAP_PresReliefType] = PR_BIFLEX;
-            }
+//            if (session->settings[CPAP_PresReliefType].toInt() != PR_NONE) {
+//                session->settings[CPAP_PresReliefType] = PR_BIFLEX;
+//            }
 
-            EventDataType min = session->settings[CPAP_PressureMin].toDouble();
-            EventDataType max = session->settings[CPAP_PressureMax].toDouble();
-            session->settings[CPAP_EPAP] = min;
-            session->settings[CPAP_IPAP] = max;
+//            EventDataType min = session->settings[CPAP_PressureMin].toDouble();
+//            EventDataType max = session->settings[CPAP_PressureMax].toDouble();
+//            session->settings[CPAP_EPAP] = min;
+//            session->settings[CPAP_IPAP] = max;
 
-            session->settings[CPAP_PS] = max - min;
-            session->settings.erase(session->settings.find(CPAP_PressureMin));
-            session->settings.erase(session->settings.find(CPAP_PressureMax));
+//            session->settings[CPAP_PS] = max - min;
+//            session->settings.erase(session->settings.find(CPAP_PressureMin));
+//            session->settings.erase(session->settings.find(CPAP_PressureMax));
 
-            session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
-            session->m_wavg.erase(session->m_wavg.find(CPAP_Pressure));
-            session->m_min.erase(session->m_min.find(CPAP_Pressure));
-            session->m_max.erase(session->m_max.find(CPAP_Pressure));
-            session->m_gain.erase(session->m_gain.find(CPAP_Pressure));
+//            session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
+//            session->m_wavg.erase(session->m_wavg.find(CPAP_Pressure));
+//            session->m_min.erase(session->m_min.find(CPAP_Pressure));
+//            session->m_max.erase(session->m_max.find(CPAP_Pressure));
+//            session->m_gain.erase(session->m_gain.find(CPAP_Pressure));
 
         } else {
+            session->setSummaryOnly(true);
 
             if (!session->settings.contains(CPAP_Pressure) && !session->settings.contains(CPAP_PressureMin)) {
                 session->settings[CPAP_BrokenSummary] = true;
@@ -1691,6 +1832,7 @@ void InitModelMap()
     ModelMap[0x37] = "RemStar BiPAP Auto with Bi-Flex";
     ModelMap[0x38] = "RemStar Plus :(";          // 150/250P/260P
     ModelMap[0x41] = "BiPAP autoSV Advanced";
+    ModelMap[0x4E] = "BiPAP AVAPS";
 }
 
 bool initialized = false;
@@ -1709,10 +1851,40 @@ void PRS1Loader::Register()
     initialized = true;
 
     channel.add(GRP_CPAP, new Channel(CPAP_PressurePulse = 0x1009, MINOR_FLAG,    SESSION,
-        "PressurePulse",  QObject::tr("Pressure Pulse"),
+        "PressurePulse",
+        QObject::tr("Pressure Pulse"),
         QObject::tr("A pulse of pressure 'pinged' to detect a closed airway."),
-        QObject::tr("PP"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark red")));
+        QObject::tr("PP"),
+        STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark red")));
 
+
+
+    Channel * chan = nullptr;
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexMode = 0xe105, SETTING,   SESSION,
+        "PRS1FlexMode", QObject::tr("Flex Mode"),
+        QObject::tr("PRS1 pressure relief mode."),
+        QObject::tr("Flex Mode"),
+        "", DEFAULT, Qt::green));
+
+
+    chan->addOption(FLEX_None, STR_TR_None);
+    chan->addOption(FLEX_CFlex, QObject::tr("C-Flex"));
+    chan->addOption(FLEX_CFlexPlus, QObject::tr("C-Flex+"));
+    chan->addOption(FLEX_AFlex, QObject::tr("A-Flex"));
+    chan->addOption(FLEX_RiseTime, QObject::tr("Rise Time"));
+    chan->addOption(FLEX_BiFlex, QObject::tr("Bi-Flex"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexLevel = 0xe106, SETTING,   SESSION,
+        "PRS1FlexSet",
+        QObject::tr("Flex Level"),
+        QObject::tr("PRS1 pressure relief setting."),
+        QObject::tr("Flex Level"),
+        "", DEFAULT, Qt::blue));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("x1"));
+    chan->addOption(2, QObject::tr("x2"));
+    chan->addOption(3, QObject::tr("x3"));
 
     QString unknowndesc=QObject::tr("Unknown PRS1 Code %1");
     QString unknownname=QObject::tr("PRS1_%1");

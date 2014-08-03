@@ -221,6 +221,26 @@ void MachineLoader::runTasks(bool threaded)
     }
 }
 
+
+QList<ChannelID> CPAPLoader::eventFlags(Day * day)
+{
+    Machine * mach = day->machine;
+
+    QList<ChannelID> list;
+
+    if (mach->loader() != this) {
+        qDebug() << "Trying to ask" << loaderName() << "for" << mach->loaderName() << "data";
+        return list;
+    }
+
+    list.push_back(CPAP_ClearAirway);
+    list.push_back(CPAP_Obstructive);
+    list.push_back(CPAP_Hypopnea);
+    list.push_back(CPAP_Apnea);
+
+    return list;
+}
+
 /*const QString machine_profile_name="MachineList.xml";
 
 void MachineLoader::LoadMachineList()

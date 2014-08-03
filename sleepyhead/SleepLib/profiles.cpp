@@ -686,7 +686,7 @@ int Profile::Import(QString path)
 
 MachineLoader *GetLoader(QString name)
 {
-    QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
+    QList<MachineLoader *>loaders = GetLoaders();
 
     Q_FOREACH(MachineLoader * loader, loaders) {
         if (loader->loaderName() == name) {
@@ -848,7 +848,7 @@ Profile *Create(QString name)
     p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) + QString("}"));
 
     Machine *m = new Machine(0);
-    MachineInfo info(MT_JOURNAL, STR_MACH_Journal, "SleepyHead", STR_MACH_Journal, QString(), m->hexid(), QString(), QDateTime::currentDateTime(), 0);
+    MachineInfo info(MT_JOURNAL, 0, STR_MACH_Journal, "SleepyHead", STR_MACH_Journal, QString(), m->hexid(), QString(), QDateTime::currentDateTime(), 0);
 
     m->setInfo(info);
     p_profile->AddMachine(m);

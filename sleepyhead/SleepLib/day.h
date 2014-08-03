@@ -179,8 +179,11 @@ class Day
     bool removeSession(Session *sess);
 
 
+    // Some ugly CPAP specific stuff
     QString getCPAPMode();
+    QString getPressureRelief();
     QString getPressureSettings();
+
     QList<Session *> sessions;
 
   protected:

@@ -48,7 +48,7 @@ public:
     virtual int Version()=0;
     virtual const QString &loaderName()=0;
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_OXIMETER, "", QString(), QString(), QString(), QString(), "Generic", QDateTime::currentDateTime(), 0);
+        return MachineInfo(MT_OXIMETER, 0, "", QString(), QString(), QString(), QString(), "Generic", QDateTime::currentDateTime(), 0);
     }
 
     // Serial Stuff

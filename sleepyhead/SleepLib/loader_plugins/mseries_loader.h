@@ -63,7 +63,7 @@ class MSeriesLoader : public MachineLoader
    // Machine *CreateMachine(QString serial);
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, mseries_class_name, QObject::tr("Respironics"), QString(), QString(), QString(), QObject::tr("M-Series"), QDateTime::currentDateTime(), mseries_data_version);
+        return MachineInfo(MT_CPAP, 0, mseries_class_name, QObject::tr("Respironics"), QString(), QString(), QString(), QObject::tr("M-Series"), QDateTime::currentDateTime(), mseries_data_version);
     }
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.

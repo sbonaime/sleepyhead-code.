@@ -59,15 +59,6 @@ class MachineLoader: public QObject
     virtual const QString &loaderName() = 0;
     inline MachineType type() { return m_type; }
 
-//    virtual bool openDevice() { return false; }
-//    virtual void closeDevice() {}
-//    virtual bool scanDevice(QString keyword="", quint16 vendor_id=0, quint16 product_id=0) {
-//        Q_UNUSED(keyword)
-//        Q_UNUSED(vendor_id)
-//        Q_UNUSED(product_id)
-//        return false;
-//    }
-
     void queTask(ImportTask * task);
 
     void addSession(Session * sess)
@@ -76,7 +67,6 @@ class MachineLoader: public QObject
         new_sessions[sess->session()] = sess;
         sessionMutex.unlock();
     }
-
 
     //! \brief Process Task list using all available threads.
     void runTasks(bool threaded=true);
@@ -96,16 +86,6 @@ class MachineLoader: public QObject
 
 signals:
     void updateProgress(int cnt, int total);
-//    void updateDisplay(MachineLoader *);
-
-//protected slots:
-//    virtual void dataAvailable() {}
-//    virtual void resetImportTimeout() {}
-//    virtual void startImportTimeout() {}
-
-//protected:
-//    virtual void killTimers(){}
-//    virtual void resetDevice(){}
 
   protected:
     //! \brief Contains a list of Machine records known by this loader
@@ -127,6 +107,21 @@ signals:
 
   private:
     QList<ImportTask *> m_tasklist;
+
+};
+
+class CPAPLoader:public MachineLoader
+{
+    Q_OBJECT
+public:
+    CPAPLoader() : MachineLoader() {}
+    virtual ~CPAPLoader() {}
+
+    virtual QList<ChannelID> eventFlags(Day * day);
+
+    virtual QString PresReliefLabel() { return QString(""); }
+    virtual ChannelID PresReliefMode() { return NoChannel; }
+    virtual ChannelID PresReliefLevel() { return NoChannel; }
 
 };
 

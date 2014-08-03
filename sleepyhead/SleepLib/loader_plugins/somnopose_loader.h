@@ -36,7 +36,7 @@ class SomnoposeLoader : public MachineLoader
     virtual const QString &loaderName() { return somnopose_class_name; }
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_POSITION, somnopose_class_name, QObject::tr("Somnopose"), QString(), QString(), QString(), QObject::tr("Somnopose Software"), QDateTime::currentDateTime(), somnopose_data_version);
+        return MachineInfo(MT_POSITION, 0, somnopose_class_name, QObject::tr("Somnopose"), QString(), QString(), QString(), QObject::tr("Somnopose Software"), QDateTime::currentDateTime(), somnopose_data_version);
     }
 
 

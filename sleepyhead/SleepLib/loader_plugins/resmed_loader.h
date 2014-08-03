@@ -328,7 +328,7 @@ protected:
 /*! \class ResmedLoader
     \brief Importer for ResMed S9 Data
     */
-class ResmedLoader : public MachineLoader
+class ResmedLoader : public CPAPLoader
 {
     friend class ResmedImport;
     friend class ResmedImportStage2;
@@ -377,8 +377,18 @@ class ResmedLoader : public MachineLoader
     bool LoadPLD(Session *sess, const QString & path);
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, resmed_class_name, QObject::tr("ResMed"), QString(), QString(), QString(), QObject::tr("S9"), QDateTime::currentDateTime(), resmed_data_version);
+        return MachineInfo(MT_CPAP, 0, resmed_class_name, QObject::tr("ResMed"), QString(), QString(), QString(), QObject::tr("S9"), QDateTime::currentDateTime(), resmed_data_version);
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Now for some CPAPLoader overrides
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual QString PresReliefLabel() { return QObject::tr("EPR: "); }
+
+    virtual ChannelID PresReliefMode();
+    virtual ChannelID PresReliefLevel();
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 protected:

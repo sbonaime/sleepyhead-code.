@@ -959,7 +959,9 @@ bool Day::removeSession(Session *sess)
 
 QString Day::getCPAPMode()
 {
-    CPAPMode mode = (CPAPMode)(int)settings_max(CPAP_Mode);
+    Q_ASSERT(machine_type() == MT_CPAP);
+
+    CPAPMode mode = (CPAPMode)(int)qRound(settings_wavg(CPAP_Mode));
     if (mode == MODE_CPAP) {
         return QObject::tr("Fixed");
     } else if (mode == MODE_APAP) {
@@ -968,31 +970,59 @@ QString Day::getCPAPMode()
         return QObject::tr("Fixed Bi-Level");
     } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
         return QObject::tr("Auto Bi-Level (Fixed PS)");
-    } else if (mode == MODE_ASV) {
+    } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+        return QObject::tr("Auto Bi-Level (Variable PS)");
+    }  else if (mode == MODE_ASV) {
         return QObject::tr("ASV Fixed EPAP");
-    } else if (mode ==  MODE_ASV_VARIABLE_EPAP) {
+    } else if (mode == MODE_ASV_VARIABLE_EPAP) {
         return QObject::tr("ASV Variable EPAP");
     }
     return STR_TR_Unknown;
 }
 
+QString Day::getPressureRelief()
+{
+    CPAPLoader * loader = qobject_cast<CPAPLoader *>(machine->loader());
+
+    if (!loader) return STR_MessageBox_Error;
+
+    QString pr_str;
+
+    ChannelID pr_level_chan = loader->PresReliefLevel();
+    ChannelID pr_mode_chan = loader->PresReliefMode();
+
+    if ((pr_level_chan != NoChannel) && settingExists(pr_level_chan)) {
+        int pr_level = qRound(settings_wavg(pr_level_chan));
+        int pr_mode = qRound(settings_wavg(pr_mode_chan));
+            pr_str = QObject::tr("%1%2").arg(loader->PresReliefLabel()).
+                arg(schema::channel[pr_mode_chan].option(pr_mode));
+            if (pr_mode > 0) pr_str += QString(" %1").arg(schema::channel[pr_level_chan].option(pr_level));
+    } else pr_str = STR_TR_None;
+    return pr_str;
+}
+
+
 QString Day::getPressureSettings()
 {
+    Q_ASSERT(machine_type() == MT_CPAP);
+
     CPAPMode mode = (CPAPMode)(int)settings_max(CPAP_Mode);
     QString units = schema::channel[CPAP_Pressure].units();
 
     if (mode == MODE_CPAP) {
-        return QObject::tr("%1 %2").arg(settings_min(CPAP_Pressure)).arg(units);
+        return QObject::tr("Fixed %1 (%2)").arg(settings_min(CPAP_Pressure)).arg(units);
     } else if (mode == MODE_APAP) {
-        return QObject::tr("%1-%2 %3").arg(settings_min(CPAP_PressureMin)).arg(settings_max(CPAP_PressureMax)).arg(units);
+        return QObject::tr("Min %1 Max %2 (%3)").arg(settings_min(CPAP_PressureMin)).arg(settings_max(CPAP_PressureMax)).arg(units);
     } else if (mode == MODE_BILEVEL_FIXED ) {
-        return QObject::tr("%1-%2 %3").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_max(CPAP_IPAP),0,'f',1).arg(units);
+        return QObject::tr("IPAP %1 EPAP %2 (%3)").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_max(CPAP_IPAP),0,'f',1).arg(units);
     } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-        return QObject::tr("PS %3 over %1-%2 %4 ").arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(settings_max(CPAP_PS),0,'f',1).arg(units);
+        return QObject::tr("PS %3 over %1-%2 (%4)").arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(settings_max(CPAP_PS),0,'f',1).arg(units);
+    } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+        return QObject::tr("Min EPAP %3 Max IPAP %4 PS %1-%2 (%5)").arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(units);
     } else if (mode == MODE_ASV) {
-        return QObject::tr("PS %4-%5 over %1-%3 %6").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_max(CPAP_IPAP),0,'f',1).arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(units);
+        return QObject::tr("PS %4-%5 over %1-%3 (%6)").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_max(CPAP_IPAP),0,'f',1).arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(units);
     } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-        return QObject::tr("PS %4-%5 over EPAP %1-%2 Max %3 %6").arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_EPAPHi),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(units);
+        return QObject::tr("PS %4-%5 over EPAP %1-%2 Max %3 (%6)").arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_EPAPHi),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(units);
     }
 
     return STR_TR_Unknown;

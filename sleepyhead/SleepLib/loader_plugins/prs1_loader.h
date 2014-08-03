@@ -115,6 +115,12 @@ public:
     bool ParseEvents();
     bool ParseWaveforms();
 
+    bool ParseSummaryF0();
+    bool ParseSummaryF0V4();
+    bool ParseSummaryF3();
+    bool ParseSummaryF5();
+
+
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
     bool ParseF0Events();
 
@@ -174,7 +180,7 @@ protected:
 /*! \class PRS1Loader
     \brief Philips Respironics System One Loader Module
     */
-class PRS1Loader : public MachineLoader
+class PRS1Loader : public CPAPLoader
 {
   public:
     PRS1Loader();
@@ -199,9 +205,12 @@ class PRS1Loader : public MachineLoader
     static void Register();
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, prs1_class_name, QObject::tr("Philips Respironics"), QString(), QString(), QString(), QObject::tr("System One"), QDateTime::currentDateTime(), prs1_data_version);
+        return MachineInfo(MT_CPAP, 0, prs1_class_name, QObject::tr("Philips Respironics"), QString(), QString(), QString(), QObject::tr("System One"), QDateTime::currentDateTime(), prs1_data_version);
     }
 
+    virtual QString PresReliefLabel() { return QObject::tr(""); }
+    virtual ChannelID PresReliefMode() { return PRS1_FlexMode; }
+    virtual ChannelID PresReliefLevel() { return PRS1_FlexLevel; }
 
     QHash<SessionID, PRS1FileGroup*> prs1sessions;
 

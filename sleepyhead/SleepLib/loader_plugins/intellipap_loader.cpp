@@ -17,6 +17,8 @@
 
 extern QProgressBar *qprogress;
 
+ChannelID INTP_SmartFlexMode, INTP_SmartFlexLevel;
+
 Intellipap::Intellipap(MachineID id)
     : CPAP(id)
 {
@@ -339,6 +341,7 @@ int IntellipapLoader::Open(QString path)
             sess->AddEventList(CPAP_Snore, EVL_Event);
 
             sess->AddEventList(CPAP_Obstructive, EVL_Event);
+            sess->AddEventList(CPAP_VSnore, EVL_Event);
             sess->AddEventList(CPAP_Hypopnea, EVL_Event);
             sess->AddEventList(CPAP_NRI, EVL_Event);
             sess->AddEventList(CPAP_LeakFlag, EVL_Event);
@@ -371,6 +374,8 @@ int IntellipapLoader::Open(QString path)
     sid = 0;
     SessionID lastsid = 0;
 
+    int last_minp=0, last_maxp=0, last_ps=0, last_pres = 0;
+
     for (int i = 0; i < recs; i++) {
         // convert timestamp to real epoch
         ts1 = ((m_buffer[pos] << 24) | (m_buffer[pos + 1] << 16) | (m_buffer[pos + 2] << 8) | m_buffer[pos + 3]) + ep;
@@ -393,32 +398,21 @@ int IntellipapLoader::Open(QString path)
                 int pres = m_buffer[pos + 0xd];
 
                 if (mode >= MODE_BILEVEL_FIXED) {
-
-                    sess->settings[CPAP_EPAP] = float(minp) / 10.0;
-                    sess->settings[CPAP_IPAP] = float(maxp) / 10.0;
-
-                    sess->settings[CPAP_PS] = float(ps) / 10.0;
-
-
-                    sess->eventlist[CPAP_IPAP][0]->AddEvent(time, float(pres) / 10.0);
-                    sess->eventlist[CPAP_EPAP][0]->AddEvent(time, float(pres-ps) / 10.0);
                     rampval = maxp;
-
                 } else {
-                    sess->eventlist[CPAP_Pressure][0]->AddEvent(time, float(pres) / 10.0); // current pressure
                     rampval = minp;
-
-                    if (mode == MODE_APAP) {
-                        sess->settings[CPAP_PressureMin] = float(minp) / 10.0;
-                        sess->settings[CPAP_PressureMax] = float(maxp) / 10.0;
-                    } else if (mode == MODE_CPAP) {
-                        sess->settings[CPAP_Pressure] = float(maxp) / 10.0;
-                    }
                 }
+
                 qint64 rs = rampstart[sid];
 
                 if (pres < rampval) {
                     if (!rs) {
+                        // ramp started
+
+
+//                        int rv = pres-rampval;
+//                        double ramp =
+
                         rampstart[sid] = time;
                     }
                     rampend[sid] = time;
@@ -430,8 +424,34 @@ int IntellipapLoader::Open(QString path)
                         int duration = (time - rs) / 1000L;
                         sess->eventlist[CPAP_Ramp][0]->AddEvent(time, duration);
 
-                        rampstart[sid] = 0;
-                        //rampend[sid] = 0; // don't need to
+                        rampstart.remove(sid);
+                        rampend.remove(sid);
+                    }
+                }
+
+
+                // Do this after ramp, because ramp calcs might need to insert interpolated pressure samples
+                if (mode >= MODE_BILEVEL_FIXED) {
+
+                    sess->settings[CPAP_EPAP] = float(minp) / 10.0;
+                    sess->settings[CPAP_IPAP] = float(maxp) / 10.0;
+
+                    sess->settings[CPAP_PS] = float(ps) / 10.0;
+
+
+                    sess->eventlist[CPAP_IPAP][0]->AddEvent(time, float(pres) / 10.0);
+                    sess->eventlist[CPAP_EPAP][0]->AddEvent(time, float(pres-ps) / 10.0);
+//                   rampval = maxp;
+
+                } else {
+                    sess->eventlist[CPAP_Pressure][0]->AddEvent(time, float(pres) / 10.0); // current pressure
+//                    rampval = minp;
+
+                    if (mode == MODE_APAP) {
+                        sess->settings[CPAP_PressureMin] = float(minp) / 10.0;
+                        sess->settings[CPAP_PressureMax] = float(maxp) / 10.0;
+                    } else if (mode == MODE_CPAP) {
+                        sess->settings[CPAP_Pressure] = float(maxp) / 10.0;
                     }
                 }
 
@@ -445,6 +465,10 @@ int IntellipapLoader::Open(QString path)
                 sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time, m_buffer[pos + 0xc]);
 
                 sess->eventlist[CPAP_Snore][0]->AddEvent(time, m_buffer[pos + 0x4]); //4/5??
+
+                if (m_buffer[pos+0x4] > 0) {
+                    sess->eventlist[CPAP_VSnore][0]->AddEvent(time, m_buffer[pos + 0x5]);
+                }
 
                 // 0x0f == Leak Event
                 // 0x04 == Snore?
@@ -477,6 +501,7 @@ int IntellipapLoader::Open(QString path)
                 EventDataType mv = tv * rr; // MinuteVent=TidalVolume * Respiratory Rate
                 sess->eventlist[CPAP_MinuteVent][0]->AddEvent(time, mv / 1000.0);
                 break;
+            } else {
             }
             lastsid = sid;
         }
@@ -521,14 +546,12 @@ int IntellipapLoader::Open(QString path)
              //   sess->really_set_last(last);
 
 
-                sess->settings[CPAP_PresReliefType] = (PRTypes)PR_SMARTFLEX;
-
-                sess->settings[CPAP_PresReliefSet] = smartflex;
+                sess->settings[INTP_SmartFlexLevel] = smartflex;
 
                 if (smartflexmode == 0) {
-                    sess->settings[CPAP_PresReliefMode] = PM_FullTime;
+                    sess->settings[INTP_SmartFlexMode] = PM_FullTime;
                 } else {
-                    sess->settings[CPAP_PresReliefMode] = PM_RampOnly;
+                    sess->settings[INTP_SmartFlexMode] = PM_RampOnly;
                 }
 
                 sess->settings[CPAP_RampPressure] = ramp_pressure;
@@ -567,4 +590,23 @@ void IntellipapLoader::Register()
     RegisterLoader(new IntellipapLoader());
     //InitModelMap();
     intellipap_initialized = true;
+
+    using namespace schema;
+    Channel * chan = nullptr;
+    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexMode = 0x1165, SETTING,   SESSION,
+        "INTPSmartFlexMode", QObject::tr("SmartFlex Mode"),
+        QObject::tr("Intellipap pressure relief mode."),
+        QObject::tr("SmartFlex Mode"),
+        "", DEFAULT, Qt::green));
+
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("Ramp Only"));
+    chan->addOption(2, QObject::tr("Full Time"));
+
+    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexLevel = 0x1169, SETTING,   SESSION,
+        "INTPSmartFlexLevel", QObject::tr("SmartFlex Level"),
+        QObject::tr("Intellipap pressure relief level."),
+        QObject::tr("SmartFlex Level"),
+        "", DEFAULT, Qt::green));
 }

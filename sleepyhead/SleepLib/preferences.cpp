@@ -218,7 +218,7 @@ bool Preferences::Open(QString filename)
         if (!e.isNull()) {
             QString name = e.tagName();
             QString type = e.attribute("type").toLower();
-            QString value = e.text();;
+            QString value = e.text();
 
             if (type == "double") {
                 double d;

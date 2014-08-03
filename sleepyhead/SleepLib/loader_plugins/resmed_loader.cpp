@@ -34,6 +34,9 @@ QHash<QString, QList<quint16> > Resmed_Model_Map;
 
 const QString STR_UnknownModel = "Resmed S9 ???";
 
+ChannelID RMS9_EPR, RMS9_EPRLevel;
+
+
 // Return the model name matching the supplied model number.
 const QString & lookupModel(quint16 model)
 {
@@ -274,25 +277,37 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(CPAP_PSMin))) {
                     R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+
+                EventDataType epr = -1, epr_level = -1;
                 if ((sig = str.lookupSignal(RMS9_EPR))) {
-                    R.epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
                 if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
-                    R.epr_level = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                if ((epr >= 0) && (epr_level >= 0)) {
+                    R.epr_level = epr_level;
+                    R.epr = epr;
+                } else {
+                    if (epr >= 0) {
+                        static bool warn=false;
+                        if (!warn) { // just nag once
+                            qDebug() << "If you can read this, please tell Jedimark you found a ResMed with EPR but no EPR_LEVEL so he can remove this warning";
+                            warn = true;
+                        }
+
+                        R.epr = (epr > 0) ? 1 : 0;
+                        R.epr_level = epr;
+                    } else if (epr_level >= 0) {
+                        R.epr_level = epr_level;
+                        R.epr = (epr_level > 0) ? 1 : 0;
+                    }
                 }
 
                 if ((sig = str.lookupSignal(CPAP_Mode))) {
                     int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     CPAPMode mode;
-
-//                    if (R.epap > 0) {
-//                        if (R.max_epap < 0) R.max_epap = R.epap;
-//                        if (R.min_epap < 0) R.min_epap = R.epap;
-//                    }
-//                    if (R.ipap > 0) {
-//                        if (R.max_ipap < 0) R.max_ipap = R.ipap;
-//                        if (R.min_ipap < 0) R.min_ipap = R.ipap;
-//                    }
 
                     if (mod >= 8) {       // mod 8 == vpap adapt variable epap
                         mode = MODE_ASV_VARIABLE_EPAP;
@@ -720,12 +735,9 @@ void ResmedImport::run()
 
         if (R.epr >= 0) {
             sess->settings[RMS9_EPR] = (int)R.epr;
-            sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
-            sess->settings[CPAP_PresReliefSet] = (int)R.epr;
         }
         if (R.epr_level >= 0) {
             sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
-            sess->settings[CPAP_PresReliefMode] = (int)R.epr_level;
         }
 
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
@@ -788,12 +800,9 @@ void ResmedImportStage2::run()
     if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
     if (R.epr >= 0) {
         sess->settings[RMS9_EPR] = (int)R.epr;
-        sess->settings[CPAP_PresReliefType] = (int)PR_EPR;
-        sess->settings[CPAP_PresReliefSet] = (int)R.epr;
     }
     if (R.epr_level >= 0) {
         sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
-        sess->settings[CPAP_PresReliefMode] = (int)R.epr_level;
     }
     if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
     if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
@@ -2341,6 +2350,21 @@ void ResInitModelMap()
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 }
 
+//<channel id="0xe201" class="setting" scope="!session" name="EPR" details="EPR Mode" label="EPR Mode" type="integer">
+// <Option id="0" value="Off"/>
+// <Option id="1" value="Ramp Only"/>
+// <Option id="2" value="Full Time"/>
+// <Option id="3" value="EPR?"/>
+//</channel>
+//<channel id="0xe202" class="setting" scope="!session" name="EPRLevel" details="EPR Setting" label="EPR Setting" type="integer">
+// <Option id="0" value="0"/>
+// <Option id="1" value="1"/>
+// <Option id="2" value="2"/>
+// <Option id="3" value="3"/>
+//</channel>
+
+ChannelID ResmedLoader::PresReliefMode() { return RMS9_EPR; }
+ChannelID ResmedLoader::PresReliefLevel() { return RMS9_EPRLevel; }
 
 bool resmed_initialized = false;
 void ResmedLoader::Register()
@@ -2351,6 +2375,31 @@ void ResmedLoader::Register()
     RegisterLoader(new ResmedLoader());
     ResInitModelMap();
     resmed_initialized = true;
+
+    using namespace schema;
+    Channel * chan = nullptr;
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING,   SESSION,
+        "EPR", QObject::tr("EPR Mode"),
+        QObject::tr("ResMed Exhale Pressure Relief Mode."),
+        QObject::tr("EPR Mode"),
+        "", DEFAULT, Qt::green));
+
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("Ramp Only"));
+    chan->addOption(2, QObject::tr("Full Time"));
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPRLevel = 0xe202, SETTING,   SESSION,
+        "EPRLevel", QObject::tr("EPR Level"),
+        QObject::tr("Exhale Pressure Relief Level"),
+        QObject::tr("EPR Level"),
+        "", DEFAULT, Qt::blue));
+
+    chan->addOption(0, QObject::tr("0cmH2O"));
+    chan->addOption(1, QObject::tr("1cmH2O"));
+    chan->addOption(2, QObject::tr("2cmH2O"));
+    chan->addOption(3, QObject::tr("3cmH2O"));
+    chan->addOption(4, QObject::tr("Patient"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

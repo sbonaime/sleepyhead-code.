@@ -68,7 +68,7 @@ public:
     virtual void run() {}
 };
 
-class MachineLaoder;
+class MachineLoader;
 /*! \class Machine
     \brief This Machine class is the Heart of SleepyLib, representing a single Machine and holding it's data
 
@@ -182,20 +182,26 @@ class Machine
     inline QString modelnumber() const { return info.modelnumber; }
     inline QString serial() const { return info.serial; }
     inline QString series() const { return info.series; }
+    inline quint32 cap() const { return info.cap; }
+
     inline int version() const { return info.version; }
     inline QDateTime lastImported() const { return info.lastimported; }
 
     inline void setModel(QString value) { info.model = value; }
     inline void setSerial(QString value) { info.serial = value; }
     inline void setType(MachineType type) { info.type = type; }
-    inline void setLoaderName(QString value) { info.loadername = value;  }
+    inline void setCap(quint32 value) { info.cap = value; }
+
+    void setLoaderName(QString value);
+
+    MachineLoader * loader() { return m_loader; }
 
     // much more simpler multithreading...
     void queTask(ImportTask * task);
     void runTasks();
     QMutex saveMutex;
 
-    void setInfo(MachineInfo inf) { info = inf; }
+    void setInfo(MachineInfo inf);
     const MachineInfo getInfo() { return info; }
 
   protected:
@@ -205,6 +211,8 @@ class Machine
     MachineID m_id;
     MachineType m_type;
     QString m_path;
+
+    MachineLoader * m_loader;
 
     bool changed;
     bool firstsession;
@@ -226,6 +234,7 @@ class CPAP: public Machine
   public:
     CPAP(MachineID id = 0);
     virtual ~CPAP();
+
 };
 
 

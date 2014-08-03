@@ -232,8 +232,9 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     set = new SummaryChart("", GT_POINTS);
     //set->addSlice(PRS1_SysOneResistSet,COLOR_Gray,ST_SETAVG);
     set->addSlice(CPAP_HumidSetting, COLOR_Blue, ST_SETWAVG);
-    set->addSlice(CPAP_PresReliefSet, COLOR_Red, ST_SETWAVG);
-    set->addSlice(RMS9_EPRLevel,COLOR_Green,ST_SETWAVG);
+    set->addSlice(CPAP_PresReliefLevel, COLOR_Red, ST_SETWAVG);
+    set->addSlice(CPAP_PresReliefMode, COLOR_Red, ST_SETWAVG);
+//    set->addSlice(RMS9_EPRLevel,COLOR_Green,ST_SETWAVG);
     //set->addSlice(INTP_SmartFlex,COLOR_Purple,ST_SETWAVG);
     SET->AddLayer(set);
 

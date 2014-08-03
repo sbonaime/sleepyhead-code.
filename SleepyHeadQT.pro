@@ -12,4 +12,5 @@ TRANSLATIONS += \
     Translations/Svenska.se.ts \
     Translations/Espaniol.es.ts \
     Translations/Bulgarian.bg.ts \
-    Translations/English.en_UK.ts
+    Translations/English.en_UK.ts \
+    Translations/Portugues.pt.ts

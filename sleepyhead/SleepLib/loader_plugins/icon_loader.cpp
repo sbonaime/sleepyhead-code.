@@ -537,6 +537,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
     const int samples_per_block = 50;
     const double rate = 1000.0 / double(samples_per_block);
 
+
     // F&P Overwrites this file, not appends to it.
     flow = new EventList(EVL_Waveform, 1.0F, 0, 0, 0, rate);
     pressure = new EventList(EVL_Event, 0.01F, 0, 0, 0, rate * double(samples_per_block));

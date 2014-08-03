@@ -48,7 +48,7 @@ const QString fpicon_class_name = STR_MACH_FPIcon;
     This is only relatively recent addition and still needs more work
     */
 
-class FPIconLoader : public MachineLoader
+class FPIconLoader : public CPAPLoader
 {
   public:
     FPIconLoader();
@@ -76,12 +76,22 @@ class FPIconLoader : public MachineLoader
     //Machine *CreateMachine(QString serial);
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, fpicon_class_name, QObject::tr("Fisher & Paykel"), QString(), QString(), QString(), QObject::tr("ICON"), QDateTime::currentDateTime(), fpicon_data_version);
+        return MachineInfo(MT_CPAP, 0, fpicon_class_name, QObject::tr("Fisher & Paykel"), QString(), QString(), QString(), QObject::tr("ICON"), QDateTime::currentDateTime(), fpicon_data_version);
     }
 
 
     //! \brief Registers this MachineLoader with the master list, so F&P Icon data can load
     static void Register();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Now for some CPAPLoader overrides
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual QString presRelType() { return QObject::tr(""); } // might not need this one
+
+    virtual ChannelID presRelSet() { return NoChannel; }
+    virtual ChannelID presRelLevel() { return NoChannel; }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   protected:
     QDateTime readFPDateTime(quint8 *data);
