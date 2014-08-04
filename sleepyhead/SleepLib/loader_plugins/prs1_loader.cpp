@@ -1297,6 +1297,7 @@ bool PRS1Import::ParseSummaryF0V4()
         session->settings[CPAP_PSMin] = min_ps;
         session->settings[CPAP_PSMax] = max_ps;
     }
+    session->settings[CPAP_Mode] = (int)cpapmode;
 
     quint8 flex = data[0x0a];
 
@@ -1471,7 +1472,11 @@ bool PRS1Import::ParseSummary()
 
     switch (summary->family) {
     case 0:
-        return ParseSummaryF0();
+        if (summary->familyVersion == 4) {
+            return ParseSummaryF0V4();
+        } else {
+            return ParseSummaryF0();
+        }
     case 3:
         return ParseSummaryF3();
     case 5:
