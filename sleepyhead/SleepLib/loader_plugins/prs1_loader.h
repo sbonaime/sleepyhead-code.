@@ -87,28 +87,32 @@ public:
     QList<PRS1Waveform> waveformInfo;
 };
 
-class PRS1SessionData
+class PRS1Loader;
+
+
+class PRS1Import:public ImportTask
 {
 public:
-    PRS1SessionData() {
-        compliance = summary = event = nullptr;
+    PRS1Import(PRS1Loader * l, SessionID s, Machine * m): loader(l), sessionid(s), mach(m) {
+        summary = nullptr;
+        compliance = nullptr;
+        event = nullptr;
         session = nullptr;
     }
-    PRS1SessionData(const PRS1SessionData & copy) {
-        session = copy.session;
-        compliance = copy.compliance;
-        summary = copy.summary;
-        event = copy.event;
-        waveforms = copy.waveforms;
-    }
-    ~PRS1SessionData() {
+    virtual ~PRS1Import() {
         delete compliance;
         delete summary;
         delete event;
-        Q_FOREACH(PRS1DataChunk * c, waveforms) {
-            delete c;
-        }
+        for (int i=0;i < waveforms.size(); ++i) {delete waveforms.at(i); }
     }
+    virtual void run();
+
+    PRS1DataChunk * compliance;
+    PRS1DataChunk * summary;
+    PRS1DataChunk * event;
+    QList<PRS1DataChunk *> waveforms;
+
+    QString waveform;
 
     bool ParseCompliance();
     bool ParseSummary();
@@ -127,53 +131,10 @@ public:
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool ParseF5Events();
 
-    Session * session;
-
-    PRS1DataChunk * compliance;
-    PRS1DataChunk * summary;
-    PRS1DataChunk * event;
-    QList<PRS1DataChunk *> waveforms;
-};
-
-class PRS1Loader;
-
-struct PRS1FileGroup
-{
-    PRS1FileGroup() { loader = NULL; }
-    PRS1FileGroup(const PRS1FileGroup & copy) {
-        compliance = copy.compliance;
-        summary = copy.summary;
-        event = copy.event;
-        waveform = copy.waveform;
-        loader = copy.loader;
-    }
-    ~PRS1FileGroup() {
-    }
-
-    QString compliance;
-    QString summary;
-    QString event;
-    QString waveform;
-
-    bool ParseFile(QString path);
-    void ParseChunks(PRS1Loader *);
-
-    PRS1Loader * loader;
-
-    QMap<SessionID, PRS1SessionData*> sessions;
-};
-
-class PRS1Import:public ImportTask
-{
-public:
-    PRS1Import(PRS1Loader * l, SessionID s, PRS1FileGroup *g, Machine * m): loader(l), sessionid(s), group(g), mach(m) {}
-    virtual ~PRS1Import() {}
-    virtual void run();
-
 protected:
+    Session * session;
     PRS1Loader * loader;
     SessionID sessionid;
-    PRS1FileGroup *group;
     Machine * mach;
 };
 
@@ -201,6 +162,8 @@ class PRS1Loader : public CPAPLoader
     // //! \brief Create a new PRS1 machine record, indexed by Serial number.
     //Machine *CreateMachine(QString serial);
 
+    QList<PRS1DataChunk *> ParseFile(QString path);
+
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
 
@@ -208,11 +171,12 @@ class PRS1Loader : public CPAPLoader
         return MachineInfo(MT_CPAP, 0, prs1_class_name, QObject::tr("Philips Respironics"), QString(), QString(), QString(), QObject::tr("System One"), QDateTime::currentDateTime(), prs1_data_version);
     }
 
+
     virtual QString PresReliefLabel() { return QObject::tr(""); }
     virtual ChannelID PresReliefMode() { return PRS1_FlexMode; }
     virtual ChannelID PresReliefLevel() { return PRS1_FlexLevel; }
 
-    QHash<SessionID, PRS1FileGroup*> prs1sessions;
+    QHash<SessionID, PRS1Import*> sesstasks;
 
   protected:
     QString last;
@@ -241,6 +205,7 @@ class PRS1Loader : public CPAPLoader
 
     //! \brief Open a PRS1 data file, and break into data chunks, delivering them to the correct parser.
     bool OpenFile(Machine *mach, QString filename);
+
 
     //bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos);
     //bool Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos);

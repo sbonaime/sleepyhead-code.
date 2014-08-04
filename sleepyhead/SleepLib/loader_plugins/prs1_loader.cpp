@@ -404,10 +404,11 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
     int size = paths.size();
 
-    prs1sessions.clear();
+    sesstasks.clear();
     new_sessions.clear(); // this hash is used by OpenFile
 
 
+    PRS1Import * task = nullptr;
     // Note, I have observed p0/p1/etc folders containing duplicates session files (in Robin Sanders data.)
 
     // for each p0/p1/p2/etc... folder
@@ -421,16 +422,18 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
         // Scan for individual session files
         for (int i = 0; i < flist.size(); i++) {
             QFileInfo fi = flist.at(i);
-            QString ext_s = fi.fileName().section(".", -1);
-            QString session_s = fi.fileName().section(".", 0, -2);
 
-            ext = ext_s.toLong(&ok);
-            if (!ok) { // not a numerical extension
+            QString ext_s = fi.fileName().section(".", -1);
+            ext = ext_s.toInt(&ok);
+            if (!ok) {
+                // not a numerical extension
                 continue;
             }
 
-            sid = session_s.toLong(&ok);
-            if (!ok) { // not a numerical session ID
+            QString session_s = fi.fileName().section(".", 0, -2);
+            sid = session_s.toInt(&ok);
+            if (!ok) {
+                // not a numerical session ID
                 continue;
             }
 
@@ -439,41 +442,57 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                 continue;
             }
 
-            PRS1FileGroup * group = nullptr;
+            if (ext == 5) {
+                // Waveform files aren't grouped... so we just want to add the filename for later
+                QHash<SessionID, PRS1Import *>::iterator it = sesstasks.find(sid);
+                if (it != sesstasks.end()) {
+                    task = it.value();
+                } else {
+                    // Create the group if we see it first..
+                    task = new PRS1Import(this, sid, m);
+                    sesstasks[sid] = task;
+                    queTask(task);
+                }
 
-            // There is a Problem here
-            // The previous session could have a data chunk that encompasses this sessions data, causing duplicate sessions during initial import.
+                if (!task->waveform.isEmpty()) continue;
+                task->waveform = fi.canonicalFilePath();
 
-            QHash<SessionID, PRS1FileGroup*>::iterator it = prs1sessions.find(sid);
-            if (it != prs1sessions.end()) {
-                group = it.value();
-            } else {
-                group = new PRS1FileGroup();
-                prs1sessions[sid] = group;
-                // save a loop an que this now
-                queTask(new PRS1Import(this, sid, group, m));
-           }
+                continue;
+            }
 
+            // Parse the data chunks and read the files..
+            QList<PRS1DataChunk *> Chunks = ParseFile(fi.canonicalFilePath());
 
-            switch (ext) {
-            case 0:
-                if (!group->compliance.isEmpty()) continue;
-                group->compliance = fi.canonicalFilePath();
-                break;
-            case 1:
-                if (!group->summary.isEmpty()) continue;
-                group->summary = fi.canonicalFilePath();
-                break;
-            case 2:
-                if (!group->event.isEmpty()) continue;
-                group->event = fi.canonicalFilePath();
-                break;
-            case 5:
-                if (!group->waveform.isEmpty()) continue;
-                group->waveform = fi.canonicalFilePath();
-                break;
-            default:
-                break;
+            for (int i=0; i < Chunks.size(); ++i) {
+                PRS1DataChunk * chunk = Chunks.at(i);
+                sid = chunk->sessionid;
+
+                task = nullptr;
+                QHash<SessionID, PRS1Import *>::iterator it = sesstasks.find(sid);
+                if (it != sesstasks.end()) {
+                    task = it.value();
+                } else {
+                    task = new PRS1Import(this, sid, m);
+                    sesstasks[sid] = task;
+                    // save a loop an que this now
+                    queTask(task);
+                }
+                switch (ext) {
+                case 0:
+                    if (task->compliance) continue;
+                    task->compliance = chunk;
+                    break;
+                case 1:
+                    if (task->summary) continue;
+                    task->summary = chunk;
+                    break;
+                case 2:
+                    if (task->event) continue;
+                    task->event = chunk;
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
@@ -485,7 +504,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     return tasks;
 }
 
-bool PRS1SessionData::ParseF5Events()
+bool PRS1Import::ParseF5Events()
 {
     ChannelID Codes[] = {
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
@@ -826,7 +845,7 @@ bool PRS1SessionData::ParseF5Events()
 
 }
 
-bool PRS1SessionData::ParseF0Events()
+bool PRS1Import::ParseF0Events()
 {
     unsigned char code=0;
     EventList *Code[0x20] = {0};
@@ -1101,16 +1120,22 @@ bool PRS1SessionData::ParseF0Events()
 }
 
 
-bool PRS1SessionData::ParseCompliance()
+bool PRS1Import::ParseCompliance()
 {
     // Bleh!! There is probably 10 different formats for these useless piece of junk machines
     if (!compliance) return false;
     return true;
 }
 
-bool PRS1SessionData::ParseSummaryF0()
+bool PRS1Import::ParseSummaryF0()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
@@ -1223,9 +1248,15 @@ bool PRS1SessionData::ParseSummaryF0()
     return true;
 }
 
-bool PRS1SessionData::ParseSummaryF0V4()
+bool PRS1Import::ParseSummaryF0V4()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
@@ -1306,9 +1337,15 @@ bool PRS1SessionData::ParseSummaryF0V4()
 }
 
 
-bool PRS1SessionData::ParseSummaryF3()
+bool PRS1Import::ParseSummaryF3()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
 
     EventDataType epap = data[0x04] | (data[0x05] << 8);
     EventDataType ipap = data[0x06] | (data[0x07] << 8);
@@ -1318,9 +1355,15 @@ bool PRS1SessionData::ParseSummaryF3()
     return true;
 }
 
-bool PRS1SessionData::ParseSummaryF5()
+bool PRS1Import::ParseSummaryF5()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
@@ -1404,7 +1447,7 @@ bool PRS1SessionData::ParseSummaryF5()
 
 
 
-bool PRS1SessionData::ParseSummary()
+bool PRS1Import::ParseSummary()
 {
 
     // Family 0 = XPAP
@@ -1413,9 +1456,6 @@ bool PRS1SessionData::ParseSummary()
 
 
     if (!summary) return false;
-    if (summary->m_data.size() < 59) {
-        //return false;
-    }
 
     session->setPhysMax(CPAP_LeakTotal, 120);
     session->setPhysMin(CPAP_LeakTotal, 0);
@@ -1428,11 +1468,6 @@ bool PRS1SessionData::ParseSummary()
     session->setPhysMax(CPAP_PS, 25);
     session->setPhysMin(CPAP_PS, 0);
 
-    session->set_first(qint64(summary->timestamp) * 1000L);
-
-    if (this->session->session() == 3880) {
-        int i=5;
-    }
 
     switch (summary->family) {
     case 0:
@@ -1586,7 +1621,7 @@ bool PRS1SessionData::ParseSummary()
     return true;
 }
 
-bool PRS1SessionData::ParseEvents()
+bool PRS1Import::ParseEvents()
 {
     bool res = false;
     if (!event) return false;
@@ -1652,7 +1687,7 @@ bool PRS1SessionData::ParseEvents()
     return res;
 }
 
-bool PRS1SessionData::ParseWaveforms()
+bool PRS1Import::ParseWaveforms()
 {
     int size = waveforms.size();
 
@@ -1702,80 +1737,53 @@ bool PRS1SessionData::ParseWaveforms()
 
 void PRS1Import::run()
 {
-    group->ParseChunks(loader);
+    session = new Session(mach, sessionid);
 
-    QMap<SessionID, PRS1SessionData*>::iterator it;
-
-    // Do session lists..
-    for (it = group->sessions.begin(); it != group->sessions.end(); ++it) {
-        PRS1SessionData * sg = it.value();
-
-        sg->session = new Session(mach, it.key());
-
-        if (!sg->ParseSummary()) {
-//            delete sg->session;
-//            continue;
+    if (summary && ParseSummary()) {
+        if (event && !ParseEvents()) {
         }
-        if (!sg->ParseEvents()) {
-           // delete sg->session;
-           // continue;
+        waveforms = loader->ParseFile(waveform);
+        ParseWaveforms();
+
+        if (session->first() > 0) {
+            if (session->last() < session->first()) {
+                // if last isn't set, duration couldn't be gained from summary, parsing events or waveforms..
+                // This session is dodgy, so kill it
+                session->really_set_last(session->first());
+            }
+            session->SetChanged(true);
+
+            loader->addSession(session);
+
+            // Update indexes, process waveform and perform flagging
+            session->UpdateSummaries();
+
+            // Save is not threadsafe
+            loader->saveMutex.lock();
+            session->Store(mach->getDataPath());
+            loader->saveMutex.unlock();
+
+            session->TrashEvents();
         }
-        sg->ParseWaveforms();
 
-        if (sg->session->last() < sg->session->first()) {
-            // if last isn't set, duration couldn't be gained from summary, parsing events or waveforms..
-            // This session is dodgy, so kill it
-            sg->session->really_set_last(sg->session->first());
-        }
-        sg->session->SetChanged(true);
-
-        loader->addSession(sg->session);
-
-        // Update indexes, process waveform and perform flagging
-        sg->session->UpdateSummaries();
-
-        // Save is not threadsafe
-        loader->saveMutex.lock();
-        sg->session->Store(mach->getDataPath());
-        loader->saveMutex.unlock();
-
-        sg->session->TrashEvents();
-
-        delete sg;
     }
-    delete group;
 }
 
-void PRS1FileGroup::ParseChunks(PRS1Loader * ldr)
+QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
 {
-    loader = ldr;
+    QList<PRS1DataChunk *> CHUNKS;
 
-//    qDebug() << "Parsing chunks for session" <<  summary << event;
-    if (ParseFile(compliance)) {
-        // Compliance only piece of crap machine, nothing else to do.. :(
-   //     return;
-    }
-
-    ParseFile(summary);
-    ParseFile(event);
-    ParseFile(waveform);
-
-
-}
-
-bool PRS1FileGroup::ParseFile(QString path)
-{
     if (path.isEmpty())
-        return false;
+        return CHUNKS;
 
     QFile f(path);
 
     if (!f.exists()) {
-        return false;
+        return CHUNKS;
     }
 
     if (!f.open(QIODevice::ReadOnly)) {
-        return false;
+        return CHUNKS;
     }
 
     PRS1DataChunk *chunk = nullptr, *lastchunk = nullptr;
@@ -1791,6 +1799,7 @@ bool PRS1FileGroup::ParseFile(QString path)
 
     int cruft = 0;
     int firstsession = 0;
+
 
     do {
         QByteArray headerBA = f.read(16);
@@ -1888,27 +1897,13 @@ bool PRS1FileGroup::ParseFile(QString path)
         lastheadersize = headersize;
         blocksize -= headersize;
 
-
-
         // Check header checksum
         quint8 csum = 0;
         for (int i=0; i < headersize-1; ++i) csum += header[i];
         if (csum != header[headersize-1]) {
             // header checksum error.
             delete chunk;
-            return false;
-        }
-
-        // Check for a valid file group with this sessionid
-        if ((chunk->sessionid != firstsession) && (loader->prs1sessions.find(chunk->sessionid) != loader->prs1sessions.end())) {
-            delete chunk;
-            return true;
-
-            // I don't see a point in skipping this block, because the next sessions files are present
-
-//            if (!f.seek(f.pos()+blocksize)) {
-//                return;
-//            }
+            return CHUNKS;
         }
 
         // Read data block
@@ -1925,9 +1920,11 @@ bool PRS1FileGroup::ParseFile(QString path)
         chunk->m_data.chop(2);
 
 #ifdef PRS1_CRC_CHECK
+        // This fails.. it needs to include the header!
         quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
         if (calc16 != crc16) {
             // corrupt data block.. bleh..
+         //   qDebug() << "CRC16 doesn't match for chunk" << chunk->sessionid << "for" << path;
         }
 #endif
 
@@ -1949,34 +1946,12 @@ bool PRS1FileGroup::ParseFile(QString path)
             }
         }
 
-        QMap<SessionID, PRS1SessionData*>::iterator it = sessions.find(chunk->sessionid);
-        if (it == sessions.end()) {
-            it = sessions.insert(chunk->sessionid, new PRS1SessionData());
-        }
-
-        switch (chunk->ext) {
-        case 0:
-            it.value()->compliance = chunk;
-            break;
-        case 1:
-            it.value()->summary = chunk;
-            break;
-        case 2:
-            it.value()->event = chunk;
-            break;
-        case 5:
-            it.value()->waveforms.append(chunk);
-            break;
-        default:
-            qDebug() << "Cruft file in PRS1FileGroup::ParseFile " << path;
-            delete chunk;
-            return false;
-        }
+        CHUNKS.append(chunk);
 
         lastchunk = chunk;
         cnt++;
     } while (!f.atEnd());
-    return true;
+    return CHUNKS;
 }
 
 void InitModelMap()
