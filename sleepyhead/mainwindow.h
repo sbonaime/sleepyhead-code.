@@ -307,6 +307,8 @@ class MainWindow : public QMainWindow
 
     void on_reportModeStandard_clicked();
 
+    void on_actionRebuildCPAP(QAction *action);
+
     void on_actionPurgeMachine(QAction *action);
 
     void on_reportModeRange_clicked();

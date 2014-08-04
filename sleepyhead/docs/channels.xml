@@ -72,49 +72,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
  </group>
  <group name="PRS1">
   <!-- PRS1 Settings -->
-  <channel id="0xe103" class="setting" scope="!session" name="SysOneResistStat" details="System One Resistance Status" label="S1 Resist. Status" type="bool">
-    <Option id="0" value="Off"/>
-    <Option id="1" value="On"/>
-  </channel>
-  <channel id="0xe104" class="setting" scope="!session" name="SysOneResistSet" details="System One Resistance Setting" label="S1 Resist. Setting" type="integer">
-    <Option id="0" value="Off"/>
-    <Option id="1" value="x1"/>
-    <Option id="2" value="x2"/>
-    <Option id="3" value="x3"/>
-    <Option id="4" value="x4"/>
-    <Option id="5" value="x5"/>
-  </channel>
-  <channel id="0xe107" class="setting" scope="!session" name="HoseDiam" details="Hose Diameter" label="Hose Diameter" type="bool">
-   <Option id="0" value="22mm"/>
-   <Option id="1" value="15mm"/>
-  </channel>
-  <channel id="0xe108" class="setting" scope="!session" name="SysLock" details="System Lock Status" label="Sys Lock" type="bool">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="On"/>
-  </channel>
-  <channel id="0xe109" class="setting" scope="!session" name="AutoOn" details="Auto On" label="Auto On" type="bool">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="On"/>
-  </channel>
-  <channel id="0xe10a" class="setting" scope="!session" name="AutoOff" details="Auto Off" label="Auto Off" type="bool">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="On"/>
-  </channel>
-  <channel id="0xe10b" class="setting" scope="!session" name="MaskAlert" details="Mask Alert" label="Mask Alert" type="bool">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="On"/>
-  </channel>
-  <channel id="0xe10c" class="setting" scope="!session" name="ShowAHI" details="Show AHI" label="Show AHI" type="bool">
-   <Option id="0" value="Off"/>
-   <Option id="1" value="On"/>
-  </channel>
-
-  <channel id="0xe10d" class="setting" scope="!session" name="PRS1Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
-   <Option id="0" value="CPAP"/>
-   <Option id="1" value="Auto"/>
-   <Option id="2" value="BIPAP"/>
-   <Option id="3" value="AutoSV"/>
-  </channel>
  </group>
  <group name="RMS9">
   <!-- RESMED Settings -->

@@ -51,6 +51,20 @@ MachineLoader * lookupLoader(Machine * m)
 QHash<QString, QHash<QString, Machine *> > MachineList;
 
 
+void MachineLoader::removeMachine(Machine * m)
+{
+    m_machlist.removeAll(m);
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(m->loaderName());
+
+    if (mlit != MachineList.end()) {
+        QHash<QString, Machine *>::iterator mit = mlit.value().find(m->serial());
+        if (mit != mlit.value().end()) {
+            mlit.value().erase(mit);
+        }
+    }
+
+}
+
 Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
 {
     Q_ASSERT(p_profile != nullptr);

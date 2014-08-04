@@ -84,6 +84,8 @@ class MachineLoader: public QObject
     QMutex sessionMutex;
     QMutex saveMutex;
 
+    void removeMachine(Machine * m);
+
 signals:
     void updateProgress(int cnt, int total);
 

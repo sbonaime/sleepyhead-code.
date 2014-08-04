@@ -718,26 +718,59 @@ void ResmedImport::run()
         // Save maskon time in session setting so we can use it later to avoid doubleups.
         sess->settings[RMS9_MaskOnTime] = R.maskon;
 
-        // Grab all the system settings
-        if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
-        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-        if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
+        if (R.mode >= 0) {
+            sess->settings[CPAP_Mode] = R.mode;
+            if (R.mode == MODE_CPAP) {
+                if (R.set_pressure >= 0) {
+                    sess->settings[CPAP_Pressure] = R.set_pressure;
+                }
+            } else if (R.mode == MODE_APAP) {
+                if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+                if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+            } else if (R.mode == MODE_BILEVEL_FIXED) {
+                if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+                if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+                if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+            } else if (R.mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+                if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+                if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+            } else if (R.mode == MODE_ASV) {
+                if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+                if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+                if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            } else if (R.mode == MODE_ASV_VARIABLE_EPAP) {
+                if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+                if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+                if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+                if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+                if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+            }
+        } else {
+            if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
+            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+        }
 
         if (R.epr >= 0) {
             sess->settings[RMS9_EPR] = (int)R.epr;
-        }
-        if (R.epr_level >= 0) {
-            sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+            if (R.epr > 0) {
+                if (R.epr_level >= 0) {
+                    sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+                }
+            }
+
         }
 
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
@@ -784,25 +817,60 @@ void ResmedImportStage2::run()
     sess->SetChanged(true);
 
     // First take the settings
-    if (R.set_pressure >= 0)
-        sess->settings[CPAP_Pressure] = R.set_pressure;
-    if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-    if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-    if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-    if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-    if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-    if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-    if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-    if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-    if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-    if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-    if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-    if (R.mode >= 0) sess->settings[CPAP_Mode] = R.mode;
+
+    if (R.mode >= 0) {
+        sess->settings[CPAP_Mode] = R.mode;
+        if (R.mode == MODE_CPAP) {
+            if (R.set_pressure >= 0) {
+                sess->settings[CPAP_Pressure] = R.set_pressure;
+            }
+        } else if (R.mode == MODE_APAP) {
+            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        } else if (R.mode == MODE_BILEVEL_FIXED) {
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        } else if (R.mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        } else if (R.mode == MODE_ASV) {
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        } else if (R.mode == MODE_ASV_VARIABLE_EPAP) {
+            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        }
+    } else {
+        if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
+        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+    }
+
+
     if (R.epr >= 0) {
         sess->settings[RMS9_EPR] = (int)R.epr;
-    }
-    if (R.epr_level >= 0) {
-        sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+        if (R.epr > 0) {
+            if (R.epr_level >= 0) {
+                sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+            }
+        }
     }
     if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
     if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
@@ -2373,16 +2441,14 @@ void ResmedLoader::Register()
 
     qDebug() << "Registering ResmedLoader";
     RegisterLoader(new ResmedLoader());
-    ResInitModelMap();
-    resmed_initialized = true;
 
     using namespace schema;
     Channel * chan = nullptr;
     channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING,   SESSION,
-        "EPR", QObject::tr("EPR Mode"),
-        QObject::tr("ResMed Exhale Pressure Relief Mode."),
-        QObject::tr("EPR Mode"),
-        "", DEFAULT, Qt::green));
+        "EPR", QObject::tr("EPR"),
+        QObject::tr("ResMed Exhale Pressure Relief"),
+        QObject::tr("EPR"),
+        "", LOOKUP, Qt::green));
 
 
     chan->addOption(0, STR_TR_Off);
@@ -2393,13 +2459,16 @@ void ResmedLoader::Register()
         "EPRLevel", QObject::tr("EPR Level"),
         QObject::tr("Exhale Pressure Relief Level"),
         QObject::tr("EPR Level"),
-        "", DEFAULT, Qt::blue));
+        "", LOOKUP, Qt::blue));
 
     chan->addOption(0, QObject::tr("0cmH2O"));
     chan->addOption(1, QObject::tr("1cmH2O"));
     chan->addOption(2, QObject::tr("2cmH2O"));
     chan->addOption(3, QObject::tr("3cmH2O"));
-    chan->addOption(4, QObject::tr("Patient"));
+    chan->addOption(4, QObject::tr("Patient")); // Think this isn't real..
+
+    ResInitModelMap();
+    resmed_initialized = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

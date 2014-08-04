@@ -118,11 +118,11 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMin   = 0x1020, SETTING, SESSION,
                         "PressureMin",   QObject::tr("Min Pressure") ,   QObject::tr("Minimum Therapy Pressure"),
-                        QObject::tr("Pr. Min"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+                        QObject::tr("Pressure Min"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMax   = 0x1021, SETTING, SESSION,
                         "PressureMax",   QObject::tr("Max Pressure"),    QObject::tr("Maximum Therapy Pressure"),
-                        QObject::tr("Pr. Max"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+                        QObject::tr("Pressure Max"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RampTime      = 0x1022, SETTING, SESSION,
                         "RampTime",      QObject::tr("Ramp Time") ,      QObject::tr("Ramp Delay Period"),
@@ -130,7 +130,7 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RampPressure  = 0x1023, SETTING, SESSION,
                         "RampPressure",  QObject::tr("Ramp Pressure"),   QObject::tr("Starting Ramp Pressure"),
-                        QObject::tr("Ramp Pr."),    STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+                        QObject::tr("Ramp Pressure"),    STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_Ramp      = 0x1027, SPAN, SESSION,
@@ -398,7 +398,8 @@ void init()
     Channel *ch;
     schema::channel.add(GRP_CPAP, ch = new Channel(CPAP_Mode = 0x1200, SETTING,    SESSION,
                         "PAPMode",      QObject::tr("PAP Mode"),
-                        QObject::tr("PAP Mode"),  QObject::tr("PAP_Mode"),  STR_UNIT_Unknown,
+                        QObject::tr("PAP Device Mode"),
+                        QObject::tr("PAP Mode"),  QString(),
                         LOOKUP,  Qt::black));
 
     ch->addOption(0, STR_TR_Unknown);
@@ -478,14 +479,6 @@ void init()
     RMS9_E02 = schema::channel["RMS9_E02"].id();
     RMS9_SetPressure = schema::channel["SetPressure"].id(); // TODO: this isn't needed anymore
     CPAP_HumidSetting = schema::channel["HumidSet"].id();
-    PRS1_SysLock = schema::channel["SysLock"].id();
-    PRS1_SysOneResistStat = schema::channel["SysOneResistStat"].id();
-    PRS1_SysOneResistSet = schema::channel["SysOneResistSet"].id();
-    PRS1_HoseDiam = schema::channel["HoseDiam"].id();
-    PRS1_AutoOn = schema::channel["AutoOn"].id();
-    PRS1_AutoOff = schema::channel["AutoOff"].id();
-    PRS1_MaskAlert = schema::channel["MaskAlert"].id();
-    PRS1_ShowAHI = schema::channel["ShowAHI"].id();
     INTELLIPAP_Unknown1 = schema::channel["IntUnk1"].id();
     INTELLIPAP_Unknown2 = schema::channel["IntUnk2"].id();
     //    OXI_Pulse=schema::channel["Pulse"].id();

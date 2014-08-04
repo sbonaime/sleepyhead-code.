@@ -61,6 +61,7 @@ class Channel
 
     const int &id() { return m_id; }
     const ChanType &type() { return m_type; }
+    const DataType &datatype() { return m_datatype; }
     const QString &code() { return m_code; }
     const QString &fullname() { return m_fullname; }
     const QString &description() { return m_description; }

@@ -446,11 +446,11 @@ QIcon getCPAPIcon(QString mach_class)
 
 void MainWindow::PopulatePurgeMenu()
 {
-    QList<QAction *> actions = ui->menu_Rebuild_CPAP_Data->actions();
-
-    ui->menu_Rebuild_CPAP_Data->disconnect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
-
+    ui->menu_Rebuild_CPAP_Data->disconnect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionRebuildCPAP(QAction *)));
     ui->menu_Rebuild_CPAP_Data->clear();
+
+    ui->menuPurge_CPAP_Data->disconnect(ui->menuPurge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction *)));
+    ui->menuPurge_CPAP_Data->clear();
 
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (int i=0; i < machines.size(); ++i) {
@@ -464,8 +464,16 @@ void MainWindow::PopulatePurgeMenu()
         action->setIcon(getCPAPIcon(mach->loaderName()));
         action->setData(mach->loaderName()+":"+mach->serial());
         ui->menu_Rebuild_CPAP_Data->addAction(action);
+
+        action = new QAction(name.replace("&","&&"), ui->menuPurge_CPAP_Data);
+        action->setIconVisibleInMenu(true);
+        action->setIcon(getCPAPIcon(mach->loaderName()));
+        action->setData(mach->loaderName()+":"+mach->serial());
+
+        ui->menuPurge_CPAP_Data->addAction(action);
     }
-    ui->menu_Rebuild_CPAP_Data->connect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
+    ui->menu_Rebuild_CPAP_Data->connect(ui->menu_Rebuild_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionRebuildCPAP(QAction*)));
+    ui->menuPurge_CPAP_Data->connect(ui->menuPurge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
 }
 
 QString GenerateWelcomeHTML();
@@ -1870,7 +1878,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     getDaily()->LoadDate(date);
 }
 
-void MainWindow::on_actionPurgeMachine(QAction *action)
+void MainWindow::on_actionRebuildCPAP(QAction *action)
 {
     QString data = action->data().toString();
     QString cls = data.section(":",0,0);
@@ -1885,12 +1893,6 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
         }
     }
     if (!mach) return;
-    purgeMachine(mach);
-}
-
-void MainWindow::purgeMachine(Machine * mach)
-{
-    // detect backups
     QString bpath = mach->getBackupPath();
     bool backups = (dirCount(bpath) > 0) ? true : false;
 
@@ -1918,6 +1920,64 @@ void MainWindow::purgeMachine(Machine * mach)
             return;
         }
     }
+
+    purgeMachine(mach);
+
+    if (backups) {
+        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing from backup folder(s)..."));
+    } else {
+        if (QMessageBox::information(this, STR_MessageBox_Warning,
+                                 tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+
+                                 tr("Would you like to import from your own backups now? (you will have no data visible for this machine until you do)"),
+                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+            on_action_Import_Data_triggered();
+        } else {
+        }
+    }
+    if (overview) overview->ReloadGraphs();
+    if (daily) {
+        daily->clearLastDay(); // otherwise Daily will crash
+        daily->ReloadGraphs();
+    }
+    GenerateStatistics();
+    p_profile->Save();
+}
+
+void MainWindow::on_actionPurgeMachine(QAction *action)
+{
+    QString data = action->data().toString();
+    QString cls = data.section(":",0,0);
+    QString serial = data.section(":", 1);
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+    Machine * mach = nullptr;
+    for (int i=0; i < machines.size(); ++i) {
+        Machine * m = machines.at(i);
+        if ((m->loaderName() == cls) && (m->serial() == serial)) {
+            mach = m;
+            break;
+        }
+    }
+    if (!mach) return;
+
+    if (QMessageBox::question(this, STR_MessageBox_Warning, "<p><b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to <font size=+2>obliterate</font> SleepyHead's machine database for the following machine:")+"</p>"+
+                              "<p>"+mach->brand() + " " + mach->model() + " " +
+                              mach->modelnumber() + " (" + mach->serial() + ")" + "</p>"+
+                              "<p>"+tr("Note as a precaution, the backup folder will be left in place.")+"</p>"+
+                              "<p>"+tr("Are you <b>absolutely sure</b> you want to proceed?")+"</p>", QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
+
+        purgeMachine(mach);
+
+        p_profile->DelMachine(mach);
+        delete mach;
+        PopulatePurgeMenu();
+
+    }
+
+}
+
+void MainWindow::purgeMachine(Machine * mach)
+{
+    // detect backups
     daily->Unload(daily->getDate());
 
     // Technicially the above won't sessions under short session limit.. Using Purge to clean up the rest.
@@ -1947,26 +2007,6 @@ void MainWindow::purgeMachine(Machine * mach)
     }
     GenerateStatistics();
     QApplication::processEvents();
-
-
-    if (backups) {
-        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing from backup folder(s)..."));
-    } else {
-        if (QMessageBox::information(this, STR_MessageBox_Warning,
-                                 tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+
-                                 tr("Would you like to import from your own backups now? (you will have no data visible for this machine until you do)"),
-                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
-            on_action_Import_Data_triggered();
-        } else {
-        }
-    }
-    if (overview) overview->ReloadGraphs();
-    if (daily) {
-        daily->clearLastDay(); // otherwise Daily will crash
-        daily->ReloadGraphs();
-    }
-    GenerateStatistics();
-    p_profile->Save();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

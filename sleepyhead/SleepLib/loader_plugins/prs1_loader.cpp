@@ -2000,7 +2000,7 @@ void PRS1Loader::Register()
         "PRS1FlexMode", QObject::tr("Flex Mode"),
         QObject::tr("PRS1 pressure relief mode."),
         QObject::tr("Flex Mode"),
-        "", DEFAULT, Qt::green));
+        "", LOOKUP, Qt::green));
 
 
     chan->addOption(FLEX_None, STR_TR_None);
@@ -2015,34 +2015,120 @@ void PRS1Loader::Register()
         QObject::tr("Flex Level"),
         QObject::tr("PRS1 pressure relief setting."),
         QObject::tr("Flex Level"),
-        "", DEFAULT, Qt::blue));
+        "", LOOKUP, Qt::blue));
 
-    chan->addOption(0, STR_TR_Off);
-    chan->addOption(1, QObject::tr("x1"));
-    chan->addOption(2, QObject::tr("x2"));
-    chan->addOption(3, QObject::tr("x3"));
-
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidStatus = 0xe101, SETTING,   SESSION,
-        "PRS1HumidStat",
-        QObject::tr("Humidifier Status"),
-        QObject::tr("PRS1 humidifier connected?"),
-        QObject::tr("Humidifier Status"),
-        "", DEFAULT, Qt::green));
-    chan->addOption(0, STR_TR_No);
-    chan->addOption(1, STR_TR_Yes);
-
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,   SESSION,
-        "PRS1HumidLevel",
-        QObject::tr("Humidification Level"),
-        QObject::tr("PRS1 Humidification level"),
-        QObject::tr("Humid. Lvl."),
-        "", DEFAULT, Qt::green));
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, QObject::tr("x1"));
     chan->addOption(2, QObject::tr("x2"));
     chan->addOption(3, QObject::tr("x3"));
     chan->addOption(4, QObject::tr("x4"));
     chan->addOption(5, QObject::tr("x5"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidStatus = 0xe101, SETTING,   SESSION,
+        "PRS1HumidStat",
+        QObject::tr("Humidifier Status"),
+        QObject::tr("PRS1 humidifier connected?"),
+        QObject::tr("Humidifier Status"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, QObject::tr("Disconnected"));
+    chan->addOption(1, QObject::tr("Connected"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,   SESSION,
+        "PRS1HumidLevel",
+        QObject::tr("Humidification Level"),
+        QObject::tr("PRS1 Humidification level"),
+        QObject::tr("Humid. Lvl."),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("x1"));
+    chan->addOption(2, QObject::tr("x2"));
+    chan->addOption(3, QObject::tr("x3"));
+    chan->addOption(4, QObject::tr("x4"));
+    chan->addOption(5, QObject::tr("x5"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe103, SETTING,   SESSION,
+        "SysOneResistStat",
+        QObject::tr("System One Resistance Status"),
+        QObject::tr("System One Resistance Status"),
+        QObject::tr("Sys1 Resist. Status"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistSet = 0xe104, SETTING,   SESSION,
+        "SysOneResistSet",
+        QObject::tr("System One Resistance Setting"),
+        QObject::tr("System One Mask Resistance Setting"),
+        QObject::tr("Sys1 Resist. Set"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("x1"));
+    chan->addOption(2, QObject::tr("x2"));
+    chan->addOption(3, QObject::tr("x3"));
+    chan->addOption(4, QObject::tr("x4"));
+    chan->addOption(5, QObject::tr("x5"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HoseDiam = 0xe107, SETTING,   SESSION,
+        "PRS1HoseDiam",
+        QObject::tr("Hose Diameter"),
+        QObject::tr("Diameter of primary CPAP hose"),
+        QObject::tr("Hose Diameter"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, QObject::tr("22mm"));
+    chan->addOption(1, QObject::tr("15mm"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe108, SETTING,   SESSION,
+        "SysOneLock",
+        QObject::tr("System One Resistance Lock"),
+        QObject::tr("Whether System One resistance settings are available to you."),
+        QObject::tr("Sys1 Resist. Lock"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOn = 0xe109, SETTING,   SESSION,
+        "PRS1AutoOn",
+        QObject::tr("Auto On"),
+        QObject::tr("A few breaths automatically starts machine"),
+        QObject::tr("Auto On"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOff = 0xe10a, SETTING,   SESSION,
+        "PRS1AutoOff",
+        QObject::tr("Auto Off"),
+        QObject::tr("Machine automatically switches off"),
+        QObject::tr("Auto Off"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10b, SETTING,   SESSION,
+        "PRS1MaskAlert",
+        QObject::tr("Mask Alert"),
+        QObject::tr("Whether or not machine allows Mask checking."),
+        QObject::tr("Mask Alert"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10c, SETTING,   SESSION,
+        "PRS1ShowAHI",
+        QObject::tr("Show AHI"),
+        QObject::tr("Whether or not machine shows AHI via LCD panel."),
+        QObject::tr("Show AHI"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+//    <channel id="0xe10d" class="setting" scope="!session" name="PRS1Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
+//     <Option id="0" value="CPAP"/>
+//     <Option id="1" value="Auto"/>
+//     <Option id="2" value="BIPAP"/>
+//     <Option id="3" value="AutoSV"/>
+//    </channel>
+
 
 
     QString unknowndesc=QObject::tr("Unknown PRS1 Code %1");

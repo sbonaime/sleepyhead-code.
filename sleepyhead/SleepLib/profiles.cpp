@@ -508,7 +508,8 @@ void Profile::AddMachine(Machine *m)
     }
 
     machlist[m->id()] = m;
-};
+}
+
 void Profile::DelMachine(Machine *m)
 {
     if (!m) {
@@ -516,8 +517,9 @@ void Profile::DelMachine(Machine *m)
         return;
     }
 
+    m->loader()->removeMachine(m);
     machlist.erase(machlist.find(m->id()));
-};
+}
 
 
 // Potential Memory Leak Here..

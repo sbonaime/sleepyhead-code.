@@ -991,12 +991,15 @@ QString Day::getPressureRelief()
     ChannelID pr_level_chan = loader->PresReliefLevel();
     ChannelID pr_mode_chan = loader->PresReliefMode();
 
-    if ((pr_level_chan != NoChannel) && settingExists(pr_level_chan)) {
-        int pr_level = qRound(settings_wavg(pr_level_chan));
+    if ((pr_mode_chan != NoChannel) && settingExists(pr_mode_chan)) {
         int pr_mode = qRound(settings_wavg(pr_mode_chan));
-            pr_str = QObject::tr("%1%2").arg(loader->PresReliefLabel()).
-                arg(schema::channel[pr_mode_chan].option(pr_mode));
-            if (pr_mode > 0) pr_str += QString(" %1").arg(schema::channel[pr_level_chan].option(pr_level));
+        pr_str = QObject::tr("%1%2").arg(loader->PresReliefLabel()).arg(schema::channel[pr_mode_chan].option(pr_mode));
+
+        int pr_level = -1;
+        if (pr_level_chan != NoChannel && settingExists(pr_level_chan)) {
+            pr_level = qRound(settings_wavg(pr_level_chan));
+        }
+        if (pr_level >= 0) pr_str += QString(" %1").arg(schema::channel[pr_level_chan].option(pr_level));
     } else pr_str = STR_TR_None;
     return pr_str;
 }

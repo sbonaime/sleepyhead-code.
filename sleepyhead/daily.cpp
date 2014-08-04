@@ -65,8 +65,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     lastcpapday=nullptr;
 
     QList<int> a;
-    a.push_back(300);
-    a.push_back(this->width()-300);
+
+    int panel_width = 350;
+    a.push_back(panel_width);
+    a.push_back(this->width() - panel_width);
     ui->splitter_2->setStretchFactor(1,1);
     ui->splitter_2->setSizes(a);
     ui->splitter_2->setStretchFactor(1,1);
@@ -933,7 +935,7 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
                 sess->settings[SESSION_ENABLED]=true;
             }
             bool b=sess->settings[SESSION_ENABLED].toBool();
-            html+=QString("<tr>"
+            html+=QString("<tr class='datarow'>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
                           "<img src='qrc:/icons/session-%4.png' width=24px></a></td>"
                           "<td align=center>%5</td>"
@@ -970,7 +972,64 @@ QString Daily::getMachineSettings(Day * cpap) {
             return html;
         }
 
-        ChannelID pr_level_chan = NoChannel;
+        QMap<QString, QString> other;
+        QHash<ChannelID, QVariant>::iterator it = cpap->sessions.at(0)->settings.begin();
+        QHash<ChannelID, QVariant>::iterator it_end = cpap->sessions.at(0)->settings.end();
+        QMap<int, QString> first;
+        for (; it != it_end; ++it) {
+            ChannelID code = it.key();
+
+            if ((code <= 1) || (code == RMS9_MaskOnTime)) continue;
+
+            schema::Channel & chan = schema::channel[code];
+
+            QString data;
+
+            if (chan.datatype() == schema::LOOKUP) {
+                data = chan.option(it.value().toInt());
+            } else if (chan.datatype() == schema::BOOL) {
+                data = (it.value().toBool() ? STR_TR_Yes : STR_TR_No);
+            } else if (chan.datatype() == schema::DOUBLE) {
+                data = QString().number(it.value().toDouble(),'f',1) + " "+chan.units();
+            } else {
+                data = it.value().toString() + " "+ chan.units();
+            }
+            QString tmp = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                    .arg(schema::channel[code].label())
+                    .arg(schema::channel[code].description())
+                    .arg(data);
+
+
+            if ((code == CPAP_Mode)
+            || (code == CPAP_IPAP)
+            || (code == CPAP_EPAP)
+            || (code == CPAP_IPAPHi)
+            || (code == CPAP_EPAPHi)
+            || (code == CPAP_IPAPLo)
+            || (code == CPAP_EPAPLo)
+            || (code == CPAP_PressureMin)
+            || (code == CPAP_PressureMax)
+            || (code == CPAP_Pressure)
+            || (code == CPAP_PSMin)
+            || (code == CPAP_PSMax)
+            || (code == CPAP_PS)) {
+                first[code] = tmp;
+            } else {
+                other[schema::channel[code].label()] = tmp;
+            }
+        }
+
+        ChannelID order[] = { CPAP_Mode, CPAP_Pressure, CPAP_PressureMin, CPAP_PressureMax, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_PS, CPAP_PSMin, CPAP_PSMax };
+        int os = sizeof(order) / sizeof(ChannelID);
+        for (int i=0 ;i < os; ++i) {
+            if (first.contains(order[i])) html += first[order[i]];
+        }
+
+        for (QMap<QString,QString>::iterator it = other.begin(); it != other.end(); ++it) {
+            html += it.value();
+        }
+
+  /*      ChannelID pr_level_chan = NoChannel;
         ChannelID pr_mode_chan = NoChannel;
         ChannelID hum_stat_chan = NoChannel;
         ChannelID hum_level_chan = NoChannel;
@@ -997,7 +1056,7 @@ QString Daily::getMachineSettings(Day * cpap) {
             html+=QString("<tr><td><a class='info' href='#'>"+schema::channel[hum_level_chan].label()+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
                 .arg(schema::channel[hum_level_chan].description())
                 .arg(humid == 0 ? STR_GEN_Off : "x"+QString::number(humid));
-        }
+        } */
         html+="</table>";
         html+="<hr/>\n";
     }
@@ -1150,7 +1209,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
                 }
             }
 
-            html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+            html+=QString("<tr class='datarow'><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
                 .arg(schema::channel[code].label())
                 .arg(mn,0,'f',2)
                 .arg(med,0,'f',2)
@@ -1282,6 +1341,10 @@ void Daily::Load(QDate date)
     QString html="<html><head><style type='text/css'>"
     "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
     "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
+    "tr.datarow:nth-child(even) {"
+    "background-color: #f8f8f8;"
+    "}"
+
     "</style>"
     "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
     "<script language='javascript'><!--"
