@@ -23,4 +23,4 @@ if [[ -z ${QMAKE} ]]; then
 fi
 
 # Finally, configure the build.
-qmake-qt5 "${DIR}"
+${QMAKE} "${DIR}"

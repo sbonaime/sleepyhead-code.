@@ -323,6 +323,10 @@ class MainWindow : public QMainWindow
 
     void on_actionToggle_Line_Cursor_toggled(bool arg1);
 
+    void on_actionLeft_Daily_Sidebar_toggled(bool arg1);
+
+    void on_actionDaily_Calendar_toggled(bool arg1);
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();

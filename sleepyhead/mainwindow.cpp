@@ -2495,3 +2495,13 @@ void MainWindow::on_actionToggle_Line_Cursor_toggled(bool b)
         getOverview()->graphView()->timedRedraw(0);
     }
 }
+
+void MainWindow::on_actionLeft_Daily_Sidebar_toggled(bool visible)
+{
+    getDaily()->setSidebarVisible(visible);
+}
+
+void MainWindow::on_actionDaily_Calendar_toggled(bool visible)
+{
+    getDaily()->setCalendarVisible(visible);
+}

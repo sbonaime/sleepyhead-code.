@@ -1876,7 +1876,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
         timedRedraw(0);
     }
-    if (event->key() == Qt::Key_F10) {
+    if ((event->key() == Qt::Key_F10) && (event->modifiers() == Qt::ShiftModifier)) {
         dumpInfo();
     }
 

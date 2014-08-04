@@ -51,6 +51,23 @@ inline QString channelInfo(ChannelID code) {
     return schema::channel[code].fullname()+"\n"+schema::channel[code].description()+"\n("+schema::channel[code].units()+")";
 }
 
+void Daily::setCalendarVisible(bool visible)
+{
+    on_calButton_toggled(visible);
+}
+
+void Daily::setSidebarVisible(bool visible)
+{
+    QList<int> a;
+
+    int panel_width = visible ? 350 : 0;
+    a.push_back(panel_width);
+    a.push_back(this->width() - panel_width);
+    ui->splitter_2->setStretchFactor(1,1);
+    ui->splitter_2->setSizes(a);
+    ui->splitter_2->setStretchFactor(1,1);
+}
+
 Daily::Daily(QWidget *parent,gGraphView * shared)
     :QWidget(parent), ui(new Ui::Daily)
 {

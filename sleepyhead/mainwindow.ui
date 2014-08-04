@@ -3163,6 +3163,8 @@ border-radius: 10px;
     <addaction name="separator"/>
     <addaction name="actionToggle_Line_Cursor"/>
     <addaction name="action_Sidebar_Toggle"/>
+    <addaction name="actionLeft_Daily_Sidebar"/>
+    <addaction name="actionDaily_Calendar"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -3479,6 +3481,34 @@ border-radius: 10px;
   <action name="action">
    <property name="text">
     <string> </string>
+   </property>
+  </action>
+  <action name="actionLeft_Daily_Sidebar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Daily Sidebar</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionDaily_Calendar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Daily Calendar</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
    </property>
   </action>
  </widget>

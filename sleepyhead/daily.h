@@ -139,6 +139,10 @@ public:
         */
     void Unload(QDate date=QDate());
 
+    void setSidebarVisible(bool visible);
+    void setCalendarVisible(bool visible);
+
+
 private slots:
 
     /*! \fn on_calendar_currentPageChanged(int year, int month);
