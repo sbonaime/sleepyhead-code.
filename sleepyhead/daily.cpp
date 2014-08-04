@@ -972,10 +972,14 @@ QString Daily::getMachineSettings(Day * cpap) {
 
         ChannelID pr_level_chan = NoChannel;
         ChannelID pr_mode_chan = NoChannel;
+        ChannelID hum_stat_chan = NoChannel;
+        ChannelID hum_level_chan = NoChannel;
         CPAPLoader * loader = dynamic_cast<CPAPLoader *>(cpap->machine->loader());
         if (loader) {
             pr_level_chan = loader->PresReliefLevel();
             pr_mode_chan = loader->PresReliefMode();
+            hum_stat_chan = loader->HumidifierConnected();
+            hum_level_chan = loader->HumidifierLevel();
         }
 
         if ((pr_level_chan != NoChannel) && (cpap->settingExists(pr_level_chan))) {
@@ -987,12 +991,12 @@ QString Daily::getMachineSettings(Day * cpap) {
                     .arg(flexstr);
         }
 
-        QString mclass=cpap->machine->loaderName();
-        if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
-            int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
-            html+=QString("<tr><td><a class='info' href='#'>"+STR_TR_Humidifier+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
-                .arg(schema::channel[CPAP_HumidSetting].description())
-                .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
+
+        if (cpap->settingExists(hum_level_chan)) {
+            int humid=round(cpap->settings_wavg(hum_level_chan));
+            html+=QString("<tr><td><a class='info' href='#'>"+schema::channel[hum_level_chan].label()+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
+                .arg(schema::channel[hum_level_chan].description())
+                .arg(humid == 0 ? STR_GEN_Off : "x"+QString::number(humid));
         }
         html+="</table>";
         html+="<hr/>\n";

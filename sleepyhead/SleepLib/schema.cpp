@@ -477,7 +477,6 @@ void init()
     RMS9_E01 = schema::channel["RMS9_E01"].id();
     RMS9_E02 = schema::channel["RMS9_E02"].id();
     RMS9_SetPressure = schema::channel["SetPressure"].id(); // TODO: this isn't needed anymore
-    PRS1_HumidStatus = schema::channel["HumidStat"].id();
     CPAP_HumidSetting = schema::channel["HumidSet"].id();
     PRS1_SysLock = schema::channel["SysLock"].id();
     PRS1_SysOneResistStat = schema::channel["SysOneResistStat"].id();

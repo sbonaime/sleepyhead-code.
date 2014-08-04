@@ -176,6 +176,10 @@ class PRS1Loader : public CPAPLoader
     virtual ChannelID PresReliefMode() { return PRS1_FlexMode; }
     virtual ChannelID PresReliefLevel() { return PRS1_FlexLevel; }
 
+    virtual ChannelID HumidifierConnected() { return PRS1_HumidStatus; }
+    virtual ChannelID HumidifierLevel() { return PRS1_HumidLevel; }
+
+
     QHash<SessionID, PRS1Import*> sesstasks;
 
   protected:

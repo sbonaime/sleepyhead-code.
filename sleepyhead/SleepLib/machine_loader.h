@@ -122,6 +122,8 @@ public:
     virtual QString PresReliefLabel() { return QString(""); }
     virtual ChannelID PresReliefMode() { return NoChannel; }
     virtual ChannelID PresReliefLevel() { return NoChannel; }
+    virtual ChannelID HumidifierConnected() { return NoChannel; }
+    virtual ChannelID HumidifierLevel() { return CPAP_HumidSetting; }
 
 };
 

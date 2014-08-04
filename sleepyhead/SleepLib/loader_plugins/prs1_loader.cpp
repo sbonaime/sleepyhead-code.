@@ -1202,7 +1202,7 @@ bool PRS1Import::ParseSummaryF0()
     session->settings[PRS1_MaskAlert] = (bool) (data[0x0c] & 0x08);
     session->settings[PRS1_ShowAHI] = (bool) (data[0x0c] & 0x04);
     session->settings[PRS1_HumidStatus] = (bool)(data[0x09] & 0x80);        // Humidifier Connected
-    session->settings[PRS1_HumitSetting] = (int)(data[0x09] & 7);          // Humidifier Value
+    session->settings[PRS1_HumidLevel] = (int)(data[0x09] & 7);          // Humidifier Value
 
    // session->
 
@@ -2021,6 +2021,29 @@ void PRS1Loader::Register()
     chan->addOption(1, QObject::tr("x1"));
     chan->addOption(2, QObject::tr("x2"));
     chan->addOption(3, QObject::tr("x3"));
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidStatus = 0xe101, SETTING,   SESSION,
+        "PRS1HumidStat",
+        QObject::tr("Humidifier Status"),
+        QObject::tr("PRS1 humidifier connected?"),
+        QObject::tr("Humidifier Status"),
+        "", DEFAULT, Qt::green));
+    chan->addOption(0, STR_TR_No);
+    chan->addOption(1, STR_TR_Yes);
+
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,   SESSION,
+        "PRS1HumidLevel",
+        QObject::tr("Humidification Level"),
+        QObject::tr("PRS1 Humidification level"),
+        QObject::tr("Humid. Lvl."),
+        "", DEFAULT, Qt::green));
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, QObject::tr("x1"));
+    chan->addOption(2, QObject::tr("x2"));
+    chan->addOption(3, QObject::tr("x3"));
+    chan->addOption(4, QObject::tr("x4"));
+    chan->addOption(5, QObject::tr("x5"));
+
 
     QString unknowndesc=QObject::tr("Unknown PRS1 Code %1");
     QString unknownname=QObject::tr("PRS1_%1");

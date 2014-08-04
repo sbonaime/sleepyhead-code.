@@ -284,6 +284,8 @@ extern QString STR_TR_Start;
 extern QString STR_TR_End;
 extern QString STR_TR_On;
 extern QString STR_TR_Off;
+extern QString STR_TR_Yes;
+extern QString STR_TR_No;
 
 
 extern QString STR_TR_Min;    // Minimum

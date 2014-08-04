@@ -72,18 +72,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
  </group>
  <group name="PRS1">
   <!-- PRS1 Settings -->
-  <channel id="0xe101" class="setting" scope="!session" name="HumidStat" details="Humidifier Status" label="Hum. Status" type="bool">
-    <option id="0" value="Off"/>
-    <option id="1" value="On"/>
-  </channel>
-  <channel id="0xe102" class="setting" scope="!session" name="HumidSet" details="Humidifier Setting" label="Hum. Setting" type="integer">
-    <Option id="0" value="Off"/>
-    <Option id="1" value="x1"/>
-    <Option id="2" value="x2"/>
-    <Option id="3" value="x3"/>
-    <Option id="4" value="x4"/>
-    <Option id="5" value="x5"/>
-  </channel>
   <channel id="0xe103" class="setting" scope="!session" name="SysOneResistStat" details="System One Resistance Status" label="S1 Resist. Status" type="bool">
     <Option id="0" value="Off"/>
     <Option id="1" value="On"/>
