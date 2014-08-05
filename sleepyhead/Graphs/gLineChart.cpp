@@ -34,6 +34,14 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
 }
 gLineChart::~gLineChart()
 {
+    QHash<ChannelID, gLineOverlayBar *>::iterator fit;
+    for (fit = flags.begin(); fit != flags.end(); ++fit) {
+        // destroy any overlay bar from previous day
+        delete fit.value();
+    }
+
+    flags.clear();
+
 }
 
 bool gLineChart::isEmpty()
@@ -851,7 +859,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             legendx -= bw*2;
         }
     }
-    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate || mouseover))) {
+    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
         QHash<ChannelID, gLineOverlayBar *>::iterator fit;
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
             fit.value()->paint(painter, w, region);
