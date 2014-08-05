@@ -19,6 +19,8 @@
 
 #include "common.h"
 #include "schema.h"
+#include "common_gui.h"
+
 
 namespace schema {
 
@@ -142,7 +144,7 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, SPAN,    SESSION, "CSR",
                         QObject::tr("Periodic Breathing"),
                         QObject::tr("A period of periodic breathing"),
-                        QObject::tr("PB"),       STR_UNIT_Percentage,            DEFAULT,    QColor("light green")));
+                        QObject::tr("PB"),       STR_UNIT_Percentage,            DEFAULT,    COLOR_CSR));
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, FLAG,    SESSION,
@@ -523,7 +525,8 @@ Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QSt
     m_upperThreshold(0),
     m_lowerThreshold(0),
     m_upperThresholdColor(Qt::red),
-    m_lowerThresholdColor(Qt::green)
+    m_lowerThresholdColor(Qt::green),
+    m_enabled(true)
 {
 }
 bool Channel::isNull()

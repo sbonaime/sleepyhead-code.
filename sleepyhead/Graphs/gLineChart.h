@@ -18,6 +18,7 @@
 #include "Graphs/layer.h"
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
+#include "Graphs/gLineOverlay.h"
 
 /*! \class gLineChart
     \brief Draws a 2D linechart from all Session data in a day. EVL_Waveforms typed EventLists are accelerated.
@@ -102,6 +103,7 @@ class gLineChart: public Layer
     QVector<QColor> m_colors;
     QVector<bool> m_square;
     QHash<ChannelID, bool> m_enabled;
+    QHash<ChannelID, gLineOverlayBar *> flags;
 
     QVector<QLine> lines;
 

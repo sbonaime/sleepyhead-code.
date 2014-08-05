@@ -81,14 +81,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     lastcpapday=nullptr;
 
-    QList<int> a;
-
-    int panel_width = 350;
-    a.push_back(panel_width);
-    a.push_back(this->width() - panel_width);
-    ui->splitter_2->setStretchFactor(1,1);
-    ui->splitter_2->setSizes(a);
-    ui->splitter_2->setStretchFactor(1,1);
+    setSidebarVisible(true);
 
     layout=new QHBoxLayout();
     layout->setSpacing(0);
@@ -273,43 +266,43 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gGraph *FRW = graphlist[schema::channel[CPAP_FlowRate].code()];
 
     // Draw layer is important... spans first..
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
 
     // Then the graph itself
     FRW->AddLayer(l);
 
     // Then the LineOverlaySummaries
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,COLOR_Hypopnea,STR_TR_H))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
-    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
+//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,COLOR_Hypopnea,STR_TR_H))));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
+//    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
 
-    gLineOverlayBar * rera = new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE);
-    if (p_profile->general->calculateRDI()) {
-        FRW->AddLayer(AddCPAP(los->add(rera)));
-    } else {
-        FRW->AddLayer(AddCPAP(rera));
-    }
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
-    if (p_profile->cpap->userEventFlagging()) {
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1, COLOR_Yellow, tr("U1"),FT_Bar)));
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
-    }
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
+//    gLineOverlayBar * rera = new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE);
+//    if (p_profile->general->calculateRDI()) {
+//        FRW->AddLayer(AddCPAP(los->add(rera)));
+//    } else {
+//        FRW->AddLayer(AddCPAP(rera));
+//    }
+//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
+//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
+//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
+//    if (p_profile->cpap->userEventFlagging()) {
+//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1, COLOR_Yellow, tr("U1"),FT_Bar)));
+//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
+//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
+//    }
+//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
 
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
     //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Dot)));
 
-    FRW->AddLayer(AddCPAP(los));
+//    FRW->AddLayer(AddCPAP(los));
 
     bool square=p_profile->appearance->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, COLOR_Pressure, square);
@@ -1399,8 +1392,38 @@ void Daily::Load(QDate date)
     bool isBrick=false;
 
     updateGraphCombo();
+    ui->eventsCombo->clear();
 
     if (cpap) {
+        QMap<QString, schema::Channel *> flags;
+        for (int i=0; i< cpap->size(); ++i) {
+            Session * sess = cpap->sessions.at(i);
+            QHash<ChannelID, QVector<EventList *> >::iterator it;
+            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+                ChannelID code = it.key();
+                schema::Channel * chan = &schema::channel[code];
+                const QString & str = chan->label();
+                if (flags.contains(str)) continue;
+
+                if ((chan->type() == schema::FLAG) || (chan->type() == schema::MINOR_FLAG) || (chan->type() == schema::SPAN)) {
+                    flags[str] = chan;
+                }
+            }
+        }
+
+        QMap<QString, schema::Channel *>::iterator fit;
+        int c = 0;
+        for (fit = flags.begin(); fit != flags.end(); ++fit) {
+            ui->eventsCombo->addItem(fit.value()->enabled() ? *icon_on : * icon_off, fit.key(), fit.value()->id());
+            ui->eventsCombo->setItemData(c, fit.value()->description(), Qt::ToolTipRole);
+            c++;
+        }
+    }
+
+    if (cpap) {
+        //QHash<schema::ChanType, QList<schema::Channel *> > list;
+
+
         float hours=cpap->hours();
         if (GraphView->isEmpty() && (hours>0)) {
             if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
@@ -2326,6 +2349,7 @@ void Daily::updateCube()
         ui->toggleGraphs->setChecked(true);
         ui->toggleGraphs->blockSignals(false);
 
+
         if (ui->graphCombo->count() > 0) {
             GraphView->setEmptyText(tr("No Graphs On!"));
         } else {
@@ -2345,7 +2369,6 @@ void Daily::updateCube()
         ui->toggleGraphs->setChecked(false);
         ui->toggleGraphs->blockSignals(false);
     }
-
 }
 
 
@@ -2377,6 +2400,7 @@ void Daily::updateGraphCombo()
         g=(*GraphView)[i];
         if (g->isEmpty()) continue;
 
+
         if (g->visible()) {
             ui->graphCombo->addItem(*icon_on,g->title(),true);
         } else {
@@ -2384,6 +2408,8 @@ void Daily::updateGraphCombo()
         }
     }
     ui->graphCombo->setCurrentIndex(0);
+
+
     updateCube();
 }
 
@@ -2396,4 +2422,43 @@ void Daily::on_zoomFullyOut_clicked()
 void Daily::on_resetLayoutButton_clicked()
 {
     GraphView->resetLayout();
+}
+
+void Daily::on_eventsCombo_activated(int index)
+{
+    if (index<0)
+        return;
+
+
+    ChannelID code = ui->eventsCombo->itemData(index, Qt::UserRole).toUInt();
+    schema::Channel * chan = &schema::channel[code];
+
+    bool b = !chan->enabled();
+    chan->setEnabled(b);
+
+    ui->eventsCombo->setItemIcon(index,b ? *icon_on : *icon_off);
+
+    GraphView->redraw();
+}
+
+void Daily::on_toggleEvents_clicked(bool checked)
+{
+    QString s;
+    QIcon *icon=checked ? icon_on : icon_off;
+
+    ui->toggleEvents->setArrowType(checked ? Qt::DownArrow : Qt::UpArrow);
+    ui->toggleEvents->setToolTip(checked ? tr("Hide all events") : tr("Show all events"));
+//    ui->toggleEvents->blockSignals(true);
+//    ui->toggleEvents->setChecked(false);
+//    ui->toggleEvents->blockSignals(false);
+
+    for (int i=0;i<ui->eventsCombo->count();i++) {
+//        s=ui->eventsCombo->itemText(i);
+        ui->eventsCombo->setItemIcon(i,*icon);
+        ChannelID code = ui->eventsCombo->itemData(i).toUInt();
+        schema::channel[code].setEnabled(checked);
+    }
+
+    updateCube();
+    GraphView->redraw();
 }

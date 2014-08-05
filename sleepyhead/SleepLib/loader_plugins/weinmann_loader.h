@@ -116,7 +116,7 @@ class WeinmannLoader : public CPAPLoader
     static void Register();
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, 0, weinmann_class_name, QObject::tr("Weinmann"), QString(), QString(), QString(), QObject::tr("Weinmann"), QDateTime::currentDateTime(), weinmann_data_version);
+        return MachineInfo(MT_CPAP, 0, weinmann_class_name, QObject::tr("Weinmann"), QObject::tr("SOMNOsoft2"), QString(), QString(), QObject::tr(""), QDateTime::currentDateTime(), weinmann_data_version);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////

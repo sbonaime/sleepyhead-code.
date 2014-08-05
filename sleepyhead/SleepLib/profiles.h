@@ -26,7 +26,6 @@ class Machine;
 
 enum Gender { GenderNotSpecified, Male, Female };
 enum MaskType { Mask_Unknown, Mask_NasalPillows, Mask_Hybrid, Mask_StandardNasal, Mask_FullFace };
-enum OverlayDisplayType { ODT_Bars, ODT_TopAndBottom };
 enum OverviewLinechartModes { OLC_Bartop, OLC_Lines };
 
 class DoctorInfo;

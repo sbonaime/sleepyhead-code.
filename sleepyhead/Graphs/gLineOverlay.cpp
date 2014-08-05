@@ -14,8 +14,9 @@
 #include "gLineOverlay.h"
 
 gLineOverlayBar::gLineOverlayBar(ChannelID code, QColor color, QString label, FlagType flt)
-    : Layer(code), m_flag_color(color), m_label(label), m_flt(flt)
+    : Layer(code), m_flag_color(color), m_label(label), m_flt(flt), m_odt(ODT_TopAndBottom)
 {
+
 }
 gLineOverlayBar::~gLineOverlayBar()
 {
@@ -25,6 +26,9 @@ QColor brighten(QColor color);
 
 void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    if (!schema::channel[m_code].enabled())
+        return;
+
     int left = region.boundingRect().left();
     int topp = region.boundingRect().top(); // FIXME: Misspelling intentional.
     int width = region.boundingRect().width();
@@ -71,7 +75,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
     EventStoreType *dptr, *eptr;
     qint64 stime;
 
-    OverlayDisplayType odt = p_profile->appearance->overlayType();
+    OverlayDisplayType odt = m_odt;
     QHash<ChannelID, QVector<EventList *> >::iterator cei;
     int count;
 

@@ -977,7 +977,7 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
 
                     a = el->data(i1);
 
-                    if (i2 > cnt) { return a; }
+                    if (i2 >= cnt) { return a; }
 
                     qint64 t1 = i1 * el->rate();
                     qint64 t2 = i2 * el->rate();
@@ -993,6 +993,7 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
                 } else {
                     start = el->first();
                     tptr = el->rawTime();
+                    // TODO: square plots need fixing
 
                     for (int j = 0; j < cnt-1; ++j) {
                         tptr++;

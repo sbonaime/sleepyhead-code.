@@ -1093,11 +1093,11 @@ bool PRS1Import::ParseF0Events()
             data[2] = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
 
-            if (!Code[24]) {
-                if (!(Code[24] = session->AddEventList(PRS1_12, EVL_Event))) { return false; }
-            }
+//            if (!Code[24]) {
+//                if (!(Code[24] = session->AddEventList(PRS1_12, EVL_Event))) { return false; }
+//            }
 
-            Code[24]->AddEvent(t, data[0]);
+//            Code[24]->AddEvent(t, data[0]);
             break;
 
         default:

@@ -20,6 +20,7 @@
 #include "Graphs/gGraph.h"
 #include "Graphs/gGraphView.h"
 #include "SleepLib/profiles.h"
+#include "Graphs/gLineOverlay.h"
 
 #define EXTRA_ASSERTS 1
 gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disable_accel)
@@ -140,6 +141,40 @@ skipcheck:
     }
 
     subtract_offset = 0;
+
+    QHash<ChannelID, gLineOverlayBar *>::iterator fit;
+    for (fit = flags.begin(); fit != flags.end(); ++fit) {
+        // destroy any overlay bar from previous day
+        delete fit.value();
+    }
+
+    flags.clear();
+
+    for (int i=0; i< m_day->size(); ++i) {
+        Session * sess = m_day->sessions.at(i);
+        QHash<ChannelID, QVector<EventList *> >::iterator it;
+        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+            ChannelID code = it.key();
+
+            if (flags.contains(code)) continue;
+
+            schema::Channel * chan = &schema::channel[code];
+            gLineOverlayBar * lob = nullptr;
+
+            if (chan->type() == schema::FLAG) {
+                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
+            } else if (chan->type() == schema::MINOR_FLAG) {
+                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
+            } else if (chan->type() == schema::SPAN) {
+                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
+            }
+            if (lob != nullptr) {
+                lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+                lob->SetDay(m_day);
+                flags[code] = lob;
+            }
+        }
+    }
 }
 EventDataType gLineChart::Miny()
 {
@@ -204,11 +239,12 @@ QString gLineChart::getMetaString(qint64 time)
 // Time Domain Line Chart
 void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    QRect rect = region.boundingRect();
     // TODO: Just use QRect directly.
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    int left = rect.left();
+    int top = rect.top();
+    int width = rect.width();
+    int height = rect.height();
 
     if (!m_visible) {
         return;
@@ -268,6 +304,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         if (miny == 0) {
             return;
         }
+    }
+
+    bool mouseover = false;
+    if (rect.contains(w.graphView()->currentMousePos())) {
+        mouseover = true;
+
+        painter.fillRect(rect, QBrush(QColor(255,255,245,128)));
     }
 
 
@@ -779,6 +822,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
         }
 
+
 //        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
 //        painter.drawLines(lines);
 //        w.graphView()->lines_drawn_this_frame+=lines.count();
@@ -807,6 +851,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             legendx -= bw*2;
         }
     }
+    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate || mouseover))) {
+        QHash<ChannelID, gLineOverlayBar *>::iterator fit;
+        for (fit = flags.begin(); fit != flags.end(); ++fit) {
+            fit.value()->paint(painter, w, region);
+        }
+    }
+
 
     if (!total_points) { // No Data?
 

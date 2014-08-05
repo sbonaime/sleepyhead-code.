@@ -151,11 +151,46 @@ int WeinmannLoader::Open(QString path)
     Machine * mach = CreateMachine(info);
 
 
+    int WeekComplianceOffset = index["WeekComplianceOffset"];
+    int WCD_Pin_Offset = index["WCD_Pin_Offset"];
+    int WCD_Pex_Offset = index["WCD_Pex_Offset"];
+    int WCD_Snore_Offset = index["WCD_Snore_Offset"];
+    int WCD_Lf_Offset = index["WCD_Lf_Offset"];
+    int WCD_Events_Offset = index["WCD_Events_Offset"];
+    int WCD_IO_Offset = index["WCD_IO_Offset"];
+    int comp_start = index[CompOffset];
+
+    int wccount = index["WeekComplianceCount"];
+
+    int size = WCD_Pin_Offset - WeekComplianceOffset;
+
+    unsigned char weekco[size];
+    memset(weekco, 0, size);
+    wmdata.seek(WeekComplianceOffset);
+    wmdata.read((char *)weekco, size);
+
+    unsigned char *p = weekco;
+    for (int c=0; c < wccount; ++c) {
+        int year = QString().sprintf("%02i%02i", p[0], p[1]).toInt();
+        int month = p[2];
+        int day = p[3];
+        int hour = p[5];
+        int minute = p[6];
+        int second = p[7];
+        QDateTime date = QDateTime(QDate(year,month,day), QTime(hour,minute,second));
+        quint32 ts = date.toTime_t();
+        if (!mach->SessionExists(ts)) {
+            qDebug() << date;
+        }
+
+        p+=0x84;
+    }
+
+
     //////////////////////////////////////////////////////////////////////
     // Read Day Compliance Information....
     //////////////////////////////////////////////////////////////////////
 
-    int comp_start = index[CompOffset];
     int comp_end = index[FlowOffset];
     int comp_size = comp_end - comp_start;
 
@@ -165,7 +200,7 @@ int WeinmannLoader::Open(QString path)
     wmdata.seek(comp_start);
     wmdata.read((char *)comp, comp_size);
 
-    unsigned char * p = comp;
+    p = comp;
 
     QDateTime dt_epoch(QDate(2000,1,1), QTime(0,0,0));
     int epoch = dt_epoch.toTime_t();
@@ -190,6 +225,8 @@ int WeinmannLoader::Open(QString path)
         if (mach->SessionExists(ts)) continue;
 
         Session * sess = new Session(mach, ts);
+        sess->SetChanged(true);
+
 
         // Flow Waveform
         quint32 fs = p[8] | p[9] << 8 | p[10] << 16 | p[11] << 24;
@@ -220,7 +257,7 @@ int WeinmannLoader::Open(QString path)
         sess->really_set_last(qint64(ts+dur) * 1000L);
         sessions[ts] = sess;
 
-        qDebug() << date << ts << dur << QString().sprintf("%02i:%02i:%02i", dur / 3600, dur/60 % 60, dur % 60);
+//        qDebug() << date << ts << dur << QString().sprintf("%02i:%02i:%02i", dur / 3600, dur/60 % 60, dur % 60);
 
         p += 0xd6;
     }
@@ -441,6 +478,7 @@ int WeinmannLoader::Open(QString path)
 
 
     }
+    mach->Save();
 
     return 1;
 

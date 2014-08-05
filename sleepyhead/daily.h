@@ -266,6 +266,10 @@ private slots:
 
     void doToggleSession(Session *);
 
+    void on_eventsCombo_activated(int index);
+
+    void on_toggleEvents_clicked(bool checked);
+
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void showEvent(QShowEvent *);

@@ -12,7 +12,9 @@
 #ifndef GLINEOVERLAY_H
 #define GLINEOVERLAY_H
 
+#include "SleepLib/common.h"
 #include "gGraphView.h"
+
 
 /*! \class gLineOverlayBar
     \brief Shows a flag line, a dot, or a span over the top of a 2D line chart.
@@ -38,6 +40,9 @@ class gLineOverlayBar: public Layer
     int count() { return m_count; }
     double sum() { return m_sum; }
     FlagType flagtype() { return m_flt; }
+
+    inline void setOverlayDisplayType(OverlayDisplayType odt) { m_odt = odt; }
+    inline OverlayDisplayType overlayDisplayType() { return m_odt; }
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
@@ -45,6 +50,7 @@ class gLineOverlayBar: public Layer
     QColor m_flag_color;
     QString m_label;
     FlagType m_flt;
+    OverlayDisplayType m_odt;
     int m_count;
     double m_sum;
 };

@@ -349,12 +349,61 @@ gGraphView::~gGraphView()
 
 void gGraphView::dumpInfo()
 {
-    QDateTime dt=QDateTime::fromMSecsSinceEpoch(currentTime());
-    QString text = "==================== Line Cursor Dump ====================\n"+dt.toString("MMM dd - HH:mm:ss:zzz");
+    QDate date = mainwin->getDaily()->getDate();
+    QString text = "==================== CPAP Information Dump ====================";
     mainwin->log(text);
-    for (int i=0;i<m_graphs.size();i++) {
-        m_graphs[i]->dumpInfo();
+
+    Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+    if (day) {
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(day->first());
+
+        mainwin->log(QString("Available Channels for %1").arg(dt.toString("MMM dd yyyy")));
+        QHash<schema::ChanType, QList<schema::Channel *> > list;
+
+        for (int i=0; i< day->size(); ++i) {
+            Session * sess = day->sessions.at(i);
+            QHash<ChannelID, QVector<EventList *> >::iterator it;
+            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+                ChannelID code = it.key();
+                schema::Channel * chan = &schema::channel[code];
+                list[chan->type()].append(chan);
+            }
+        }
+
+        QHash<schema::ChanType, QList<schema::Channel *> >::iterator lit;
+        for (lit = list.begin(); lit != list.end(); ++lit) {
+            switch (lit.key()) {
+            case schema::DATA:
+                text = "DATA: ";
+                break;
+            case schema::SETTING:
+                text = "SETTING: ";
+                break;
+            case schema::FLAG:
+                text = "FLAG: ";
+                break;
+            case schema::MINOR_FLAG:
+                text = "MINOR_FLAG: ";
+                break;
+            case schema::SPAN:
+                text = "SPAN: ";
+                break;
+            case schema::WAVEFORM:
+                text = "WAVEFORM: ";
+                break;
+            }
+            QStringList str;
+            for (int i=0; i< lit.value().size(); ++i) {
+                str.append(lit.value().at(i)->code());
+            }
+            str.sort();
+            text.append(str.join(", "));
+            mainwin->log(text);
+        }
     }
+//    for (int i=0;i<m_graphs.size();i++) {
+//        m_graphs[i]->dumpInfo();
+//    }
 }
 
 bool gGraphView::usePixmapCache()
@@ -1876,7 +1925,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
         timedRedraw(0);
     }
-    if ((event->key() == Qt::Key_F10) && (event->modifiers() == Qt::ShiftModifier)) {
+    if ((event->key() == Qt::Key_F1)) {
         dumpInfo();
     }
 

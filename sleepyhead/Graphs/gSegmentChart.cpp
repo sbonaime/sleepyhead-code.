@@ -118,7 +118,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         // Pie Chart
         /////////////////////////////////////////////////////////////////////////////////////
         if (m_graph_type == GST_Pie) {
-            QColor &col = schema::channel[m_codes[m % m_colors.size()]].defaultColor();
+            const QColor col = schema::channel[m_codes[m % m_colors.size()]].defaultColor();
 
             // length of this segment in degrees
             float len = 360.0 / float(m_total) * float(data);

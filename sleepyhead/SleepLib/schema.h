@@ -52,28 +52,28 @@ extern Channel EmptyChannel;
 class Channel
 {
   public:
-    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0;}
+    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; }
     Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
             QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
             int link = 0);
     void addColor(Function f, QColor color) { m_colors[f] = color; }
     void addOption(int i, QString option) { m_options[i] = option; }
 
-    const int &id() { return m_id; }
-    const ChanType &type() { return m_type; }
-    const DataType &datatype() { return m_datatype; }
+    inline ChannelID id() const { return m_id; }
+    inline ChanType type() const { return m_type; }
+    inline DataType datatype() const { return m_datatype; }
     const QString &code() { return m_code; }
     const QString &fullname() { return m_fullname; }
     const QString &description() { return m_description; }
     const QString &label() { return m_label; }
     const QString &units() { return m_unit; }
 
-    const EventDataType &upperThreshold() { return m_upperThreshold; }
-    const EventDataType &lowerThreshold() { return m_lowerThreshold; }
-    const QColor &upperThresholdColor() { return m_upperThresholdColor; }
-    const QColor &lowerThresholdColor() { return m_lowerThresholdColor; }
+    inline EventDataType upperThreshold() const { return m_upperThreshold; }
+    inline EventDataType lowerThreshold() const { return m_lowerThreshold; }
+    inline QColor upperThresholdColor() const { return m_upperThresholdColor; }
+    inline QColor lowerThresholdColor() const { return m_lowerThresholdColor; }
 
-    const int &linkid() { return m_link; }
+    inline ChannelID linkid() const { return m_link; }
 
 
     void setLabel(QString label) { m_label = label; }
@@ -91,12 +91,15 @@ class Channel
 
         return QString();
     }
-    QColor &defaultColor() { return m_defaultcolor; }
-    void setDefaultColor(QColor color) { m_defaultcolor = color; }
+    inline QColor defaultColor() const { return m_defaultcolor; }
+    inline void setDefaultColor(QColor color) { m_defaultcolor = color; }
     QHash<int, QString> m_options;
     QHash<Function, QColor> m_colors;
     QList<Channel *> m_links;              // better versions of this data type
     bool isNull();
+
+    inline bool enabled() const { return m_enabled; }
+    void setEnabled(bool value) { m_enabled = value; }
   protected:
     int m_id;
     ChanType m_type;
@@ -116,6 +119,8 @@ class Channel
     EventDataType m_lowerThreshold;
     QColor m_upperThresholdColor;
     QColor m_lowerThresholdColor;
+
+    bool m_enabled;
 };
 
 /*! \class ChannelList
@@ -136,7 +141,7 @@ class ChannelList
     void add(QString group, Channel *chan);
 
     //! \brief Looks up Channel in this List with the index idx, returns EmptyChannel if not found
-    Channel &operator[](ChannelID idx) {
+    Channel & operator[](ChannelID idx) {
         if (channels.contains(idx)) {
             return *channels[idx];
         } else {

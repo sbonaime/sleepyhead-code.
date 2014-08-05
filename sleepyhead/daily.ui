@@ -1512,6 +1512,51 @@ QToolButton:pressed {
            </widget>
           </item>
           <item>
+           <widget class="QToolButton" name="toggleEvents">
+            <property name="styleSheet">
+             <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>false</bool>
+            </property>
+            <property name="arrowType">
+             <enum>Qt::DownArrow</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Flags:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="eventsCombo"/>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="sessionBarLayout">
             <property name="sizeConstraint">
              <enum>QLayout::SetMaximumSize</enum>
