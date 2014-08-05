@@ -1683,6 +1683,53 @@ void zMaskProfile::updateProfile(Session *session)
     //    }
 }
 
+
+void flagLargeLeaks(Session *session)
+{
+    if (session->eventlist.contains(CPAP_LargeLeak))
+        return;
+
+
+    EventDataType threshold = p_profile->cpap->leakRedline();
+
+    if (threshold <= 0) {
+        return;
+    }
+
+    QVector<EventList *> & EVL = session->eventlist[CPAP_Leak];
+    int evlsize = EVL.size();
+    EventList * LL = nullptr;
+
+    for (int ec = 0; ec < evlsize; ++ec) {
+        EventList &el = *EVL[ec];
+        int count = el.count();
+        if (!count) continue;
+
+        qint64 leaktime = 0;
+        EventDataType leakvalue = 0, lastvalue = -1;
+
+
+        for (int i=0; i < count; ++i) {
+            qint64 time = el.time(i);
+            EventDataType value = el.data(i);
+            if (value >= threshold) {
+                if (lastvalue < threshold) {
+                    leaktime = time;
+                    leakvalue = value;
+                }
+            } else if (lastvalue > threshold) {
+                if (!LL) {
+                    LL=session->AddEventList(CPAP_LargeLeak, EVL_Event);
+                }
+                int duration = (time - leaktime) / 1000L;
+                LL->AddEvent(time, duration);
+            }
+            lastvalue = value;
+        }
+
+    }
+}
+
 QMutex zMaskmutex;
 zMaskProfile mmaskProfile(Mask_NasalPillows, "ResMed Swift FX");
 bool mmaskFirst = true;
@@ -1784,6 +1831,7 @@ int calcLeaks(Session *session)
     }
 
     zMaskmutex.unlock();
+
     return leak->count();
 }
 

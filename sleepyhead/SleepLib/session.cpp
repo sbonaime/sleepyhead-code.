@@ -907,6 +907,8 @@ void Session::UpdateSummaries()
     calcRespRate(this);
 
     calcLeaks(this);
+    flagLargeLeaks(this);
+
     calcSPO2Drop(this);
     calcPulseChange(this);
 

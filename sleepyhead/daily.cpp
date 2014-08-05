@@ -1415,7 +1415,7 @@ void Daily::Load(QDate date)
         int c = 0;
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
             ui->eventsCombo->addItem(fit.value()->enabled() ? *icon_on : * icon_off, fit.key(), fit.value()->id());
-            ui->eventsCombo->setItemData(c, fit.value()->description(), Qt::ToolTipRole);
+            ui->eventsCombo->setItemData(c, fit.value()->fullname(), Qt::ToolTipRole);
             c++;
         }
     }
