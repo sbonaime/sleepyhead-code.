@@ -65,7 +65,7 @@ class Session
     inline bool isEmpty() { return (s_first == s_last); }
 
     //! \brief Search for Event code happening at supplied time (ms since epoch)
-    EventDataType SearchValue(ChannelID code, qint64 time);
+    EventDataType SearchValue(ChannelID code, qint64 time, bool square);
 
     //! \brief Return the sessionID
     inline const SessionID &session() {

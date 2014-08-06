@@ -253,10 +253,11 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                            // col = QColor("gold");
                             hover = true;
+                            painter.setPen(QPen(col,3));
                         } else {
                             painter.setPen(QPen(col,1));
-                            painter.drawLine(x1, top, x1, bottom);
                         }
+                        painter.drawLine(x1, top, x1, bottom);
                         if (xx < (3600000)) {
                             QString lab = QString("%1").arg(m_label);
                             GetTextExtent(lab, x, y);

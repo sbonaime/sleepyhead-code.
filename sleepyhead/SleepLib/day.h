@@ -104,7 +104,7 @@ class Day
     EventDataType timeBelowThreshold(ChannelID code, EventDataType threshold);
 
     //! \brief Returns the value for Channel code at a given time
-    EventDataType lookupValue(ChannelID code, qint64 time);
+    EventDataType lookupValue(ChannelID code, qint64 time, bool square);
 
     //! \brief Returns the count of code events inside span flag event durations
     EventDataType countInsideSpan(ChannelID span, ChannelID code);

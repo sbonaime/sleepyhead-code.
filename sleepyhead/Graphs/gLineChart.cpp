@@ -222,7 +222,7 @@ QString gLineChart::getMetaString(qint64 time)
     for (int i=0; i<m_codes.size(); ++i) {
         ChannelID code = m_codes[i];
         if (m_day->channelHasData(code)) {
-            val = m_day->lookupValue(code, time);
+            val = m_day->lookupValue(code, time, m_square_plot);
             lasttext += " "+QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val,0,'f',2).arg(schema::channel[code].units());
 
             if (code == CPAP_IPAP) {

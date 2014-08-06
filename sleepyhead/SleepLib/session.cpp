@@ -953,7 +953,7 @@ void Session::UpdateSummaries()
     }
 }
 
-EventDataType Session::SearchValue(ChannelID code, qint64 time)
+EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)
 {
     qint64 t1, t2, start;
     QHash<ChannelID, QVector<EventList *> >::iterator it;
@@ -996,22 +996,31 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time)
                     start = el->first();
                     tptr = el->rawTime();
                     // TODO: square plots need fixing
-
-                    for (int j = 0; j < cnt-1; ++j) {
-                        tptr++;
-                        t2 = start + *tptr;
-                        if (t2 > time) {
-                            tptr--;
-                            t1 = start + *tptr;
-                            c = EventDataType(t2 - t1);
-                            d = EventDataType(t2 - time);
-                            e = d/c;
-                            a = el->data(j);
-                            b = el->data(j+1);
-                            if (a == b) {
-                                return a;
-                            } else {
-                                return b + ((a-b) * e);
+                    if (square) {
+                        for (int j = 0; j < cnt-1; ++j) {
+                            tptr++;
+                            t2 = start + *tptr;
+                            if (t2 > time) {
+                                return el->data(j);
+                            }
+                        }
+                    } else {
+                        for (int j = 0; j < cnt-1; ++j) {
+                            tptr++;
+                            t2 = start + *tptr;
+                            if (t2 > time) {
+                                tptr--;
+                                t1 = start + *tptr;
+                                c = EventDataType(t2 - t1);
+                                d = EventDataType(t2 - time);
+                                e = d/c;
+                                a = el->data(j);
+                                b = el->data(j+1);
+                                if (a == b) {
+                                    return a;
+                                } else {
+                                    return b + ((a-b) * e);
+                                }
                             }
                         }
                     }

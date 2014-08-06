@@ -70,7 +70,7 @@ EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)
     return count;
 }
 
-EventDataType Day::lookupValue(ChannelID code, qint64 time)
+EventDataType Day::lookupValue(ChannelID code, qint64 time, bool square)
 {
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
@@ -78,7 +78,7 @@ EventDataType Day::lookupValue(ChannelID code, qint64 time)
 
         if (sess.enabled()) {
             if ((time > sess.first()) && (time < sess.last())) {
-                return sess.SearchValue(code,time);
+                return sess.SearchValue(code,time,square);
             }
         }
     }
