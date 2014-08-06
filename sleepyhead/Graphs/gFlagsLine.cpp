@@ -148,7 +148,7 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                     // Display tooltip
                     QString ttip = schema::channel[fl->code()].fullname() + "\n" +
                                    schema::channel[fl->code()].description();
-                    graph->ToolTip(ttip, event->x(), event->y() - 15);
+                    graph->ToolTip(ttip, event->x()+15, event->y(), TT_AlignLeft);
                     graph->timedRedraw(30);
                 }
             }

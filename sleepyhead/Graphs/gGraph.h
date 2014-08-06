@@ -239,7 +239,7 @@ class gGraph : public QObject
     virtual void paint(QPainter &painter, const QRegion &region);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
-    void ToolTip(QString text, int x, int y, int timeout = 0);
+    void ToolTip(QString text, int x, int y, ToolTipAlignment align = TT_AlignCenter, int timeout = 0);
 
     //! \brief Public version of updateGL(), to redraw all graphs.. Not for normal use
     void redraw();

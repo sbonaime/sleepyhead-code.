@@ -1252,11 +1252,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
             }
 
-            graph->ToolTip(z, x, y - 15, p_profile->general->tooltipTimeout());
+            graph->ToolTip(z, x, y - 15);
             return true;
         } else {
             QString z = dt.toString(Qt::SystemLocaleShortDate) + "\r\nNo Data";
-            graph->ToolTip(z, x, y - 15, p_profile->general->tooltipTimeout());
+            graph->ToolTip(z, x, y - 15);
             return true;
         }
     }

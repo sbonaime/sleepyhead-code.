@@ -25,6 +25,8 @@ class LayerGroup;
 
 enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, LayerOverlay };
 
+enum ToolTipAlignment { TT_AlignCenter, TT_AlignLeft, TT_AlignRight };
+
 /*! \class Layer
     \brief The base component for all individual Graph layers
     */

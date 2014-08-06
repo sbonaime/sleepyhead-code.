@@ -47,6 +47,7 @@ gToolTip::gToolTip(gGraphView *graphview)
     m_pos.setX(0);
     m_pos.setY(0);
     m_visible = false;
+    m_alignment = TT_AlignCenter;
     m_spacer = 8; // pixels around text area
     timer = new QTimer(graphview);
     connect(timer, SIGNAL(timeout()), SLOT(timerDone()));
@@ -64,11 +65,12 @@ w+=m_spacer*2;
 h+=m_spacer*2; */
 //}
 
-void gToolTip::display(QString text, int x, int y, int timeout)
+void gToolTip::display(QString text, int x, int y, ToolTipAlignment align, int timeout)
 {
     if (timeout <= 0) {
         timeout = p_profile->general->tooltipTimeout();
     }
+    m_alignment = align;
 
     m_text = text;
     m_visible = true;
@@ -104,6 +106,7 @@ void gToolTip::paint(QPainter &painter)     //actually paints it.
     int y = m_pos.y();
 
     QRect rect(x, y, 0, 0);
+
     painter.setFont(*defaultfont);
 
     rect = painter.boundingRect(rect, Qt::AlignCenter, m_text);
@@ -130,6 +133,16 @@ void gToolTip::paint(QPainter &painter)     //actually paints it.
         rect.setY(0);
         rect.setHeight(h);
     }
+
+    if (m_alignment == TT_AlignRight) {
+        rect.moveTopRight(m_pos);
+        if ((x-w) < 0) {
+            rect.moveLeft(0);
+        }
+    } else if (m_alignment == TT_AlignLeft) {
+        rect.moveTopLeft(m_pos);
+    }
+
 
     QBrush brush(QColor(255, 255, 128, 230));
     brush.setStyle(Qt::SolidPattern);

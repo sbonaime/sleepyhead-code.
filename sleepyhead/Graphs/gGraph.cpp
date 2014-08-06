@@ -509,13 +509,13 @@ void gGraph::ResetBounds()
     max_y = MaxY();
 }
 
-void gGraph::ToolTip(QString text, int x, int y, int timeout)
+void gGraph::ToolTip(QString text, int x, int y, ToolTipAlignment align, int timeout)
 {
     if (timeout <= 0) {
         timeout = p_profile->general->tooltipTimeout();
     }
 
-    m_graphview->m_tooltip->display(text, x, y, timeout);
+    m_graphview->m_tooltip->display(text, x, y, align, timeout);
 }
 
 // YAxis Autoscaling code

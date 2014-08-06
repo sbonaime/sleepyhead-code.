@@ -401,7 +401,7 @@ bool gYAxis::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     int y = event->y();
 
     if (!graph->units().isEmpty()) {
-        graph->ToolTip(graph->units(), x, y - 20, 0);
+        graph->ToolTip(graph->units(), x+10, y+10, TT_AlignLeft);
         //   graph->redraw();
     }
 

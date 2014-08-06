@@ -215,16 +215,19 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
                     if ((m_flt == FT_Bar) && (odt == ODT_Bars)) { // || (xx < 3600000)) {
-                        QRect rect(x1-d1-2, top, d1+2, height);
+                        QRect rect(x1-d1, top, d1+4, height);
                         QColor col = m_flag_color;
 
 
                         painter.setPen(QPen(col,4));
                         painter.drawPoint(x1, top);
 
-                        if (rect.contains(mouse)) {
+                        if (!m_blockhover && rect.contains(mouse) && !m_hover) {
+                            m_hover = true;
+
+
                             QColor col2(230,230,230,128);
-                            QRect rect(x1-d1, start_py+2, d1, height-2);
+                            QRect rect((x1-d1), start_py+2, d1, height-2);
                             if (rect.x() < left) {
                                 rect.setX(left);
                             }
@@ -232,6 +235,18 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.fillRect(rect, QBrush(col2));
                             painter.setPen(col);
                             painter.drawRect(rect);
+
+                            // Draw text label
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
+                            GetTextExtent(lab, x, y);
+
+                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+
+                            //painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
+//                            painter.setPen(QPen(Qt::gray,1));
+//                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
+//                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
+
 //                            painter.drawLine(rect.x(), top, rect.x()+d1, top);
 //                            painter.drawLine(rect.x(), bottom, rect.x()+d1, bottom);
 //                            painter.drawLine(rect.x(), top, rect.x(), bottom);
@@ -242,21 +257,10 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.setPen(QPen(col,1));
                             painter.drawLine(x1, top, x1, bottom);
                         }
-                        QColor txcol = hover ? Qt::red: Qt::black;
-
-                        if (xx < 300000) {
-                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
+                        if (xx < (3600000)) {
+                            QString lab = QString("%1").arg(m_label).arg(raw);
                             GetTextExtent(lab, x, y);
-                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
-                        } else if (xx < (3600000)) {
-                            if (!hover) {
-                                GetTextExtent(m_label, x, y);
-                                w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
-                            } else {
-                                QString lab = QString("%1 (%2)").arg(m_label).arg(raw);
-                                GetTextExtent(lab, x, y);
-                                w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
-                            }
+                            w.renderText(lab, x1 - (x / 2), top - y + (3 * w.printScaleY()),0);
                         }
 
 
@@ -272,11 +276,14 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                             // Draw text label
                             QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
-                            GetTextExtent(lab, x, y);
-                            painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
-                            painter.setPen(QPen(Qt::gray,1));
-                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
-                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
+                            GetTextExtent(lab, x, y, defaultfont);
+
+                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+
+//                            painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
+//                            painter.setPen(QPen(Qt::gray,1));
+//                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
+//                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
 
                             //x1-=1;
                             QColor col = m_flag_color;

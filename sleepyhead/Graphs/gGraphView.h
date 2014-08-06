@@ -124,7 +124,7 @@ class gToolTip : public QObject
     /*! \fn virtual void display(QString text, int x, int y, int timeout=2000);
         \brief Set the tooltips display message, position, and timeout value
         */
-    virtual void display(QString text, int x, int y, int timeout = 0);
+    virtual void display(QString text, int x, int y, ToolTipAlignment align = TT_AlignCenter, int timeout = 0);
 
     //! \brief Draw the tooltip
     virtual void paint(QPainter &paint); //actually paints it.
@@ -145,6 +145,7 @@ class gToolTip : public QObject
     int m_spacer;
     QImage m_image;
     bool m_invalidate;
+    ToolTipAlignment m_alignment;
 
   protected slots:
 
