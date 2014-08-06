@@ -118,7 +118,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         // Pie Chart
         /////////////////////////////////////////////////////////////////////////////////////
         if (m_graph_type == GST_Pie) {
-            const QColor col = schema::channel[m_codes[m % m_colors.size()]].defaultColor();
+            const QColor col = schema::channel[m_codes[m]].defaultColor();
 
             // length of this segment in degrees
             float len = 360.0 / float(m_total) * float(data);
@@ -151,7 +151,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 double tpx = (pierect.x() + pierect.width()/2)  + (sin((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
                 double tpy = (pierect.y() + pierect.height()/2) + (cos((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
 
-                QString txt = m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
+                QString txt = schema::channel[m_codes[m]].label(); //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 int x, y;
                 GetTextExtent(txt, x, y);
                 // antialiasing looks like crap here..

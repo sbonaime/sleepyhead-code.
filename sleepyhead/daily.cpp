@@ -215,27 +215,27 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
     // Spans
-    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), false, FT_Span)));
-    // Flags
-    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
-    fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
-    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea, COLOR_Hypopnea, STR_TR_H,true)));
-    fg->AddLayer((new gFlagsLine(CPAP_ExP, COLOR_ExP, STR_TR_EP,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag, COLOR_LeakFlag, STR_TR_LE,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_NRI, COLOR_NRI, STR_TR_NRI,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
-    fg->AddLayer((new gFlagsLine(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
-    fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
-    if (p_profile->cpap->userEventFlagging()) {
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1, COLOR_Yellow, STR_TR_UF1)));
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2, COLOR_DarkGreen, STR_TR_UF2)));
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3, COLOR_Brown, STR_TR_UF3)));
-    }
+//    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
+//    fg->AddLayer((new gFlagsLine(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
+//    fg->AddLayer((new gFlagsLine(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), false, FT_Span)));
+//    // Flags
+//    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
+//    fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
+//    fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
+//    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea, COLOR_Hypopnea, STR_TR_H,true)));
+//    fg->AddLayer((new gFlagsLine(CPAP_ExP, COLOR_ExP, STR_TR_EP,false)));
+//    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag, COLOR_LeakFlag, STR_TR_LE,false)));
+//    fg->AddLayer((new gFlagsLine(CPAP_NRI, COLOR_NRI, STR_TR_NRI,false)));
+//    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+//    fg->AddLayer((new gFlagsLine(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
+//    fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
+//    fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
+//    fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
+//    if (p_profile->cpap->userEventFlagging()) {
+//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1, COLOR_Yellow, STR_TR_UF1)));
+//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2, COLOR_DarkGreen, STR_TR_UF2)));
+//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3, COLOR_Brown, STR_TR_UF3)));
+//    }
     //fg->AddLayer((new gFlagsLine(PRS1_0B,COLOR_DarkGreen,tr("U0B"))));
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());

@@ -49,23 +49,11 @@ class gFlagsLine: public Layer
         \param always_visible  Whether to always show this line, even if empty
         \param Type of Flag, either FT_Bar, or FT_Span
         */
-    gFlagsLine(ChannelID code, QColor col = Qt::black, QString label = "", bool always_visible = false,
-               FlagType flt = FT_Bar);
+    gFlagsLine(ChannelID code);
     virtual ~gFlagsLine();
 
     //! \brief Drawing code to add the flags and span markers to the Vertex buffers.
     virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
-
-    //! \brief Returns true if should always show this flag, even if it's empty
-    bool isAlwaysVisible() { return m_always_visible; }
-    //! \brief Set this to true to make a flag line always visible
-    void setAlwaysVisible(bool b) { m_always_visible = b; }
-
-    //! \brief Returns the label for this individual Event Flags line
-    QString label() { return m_label; }
-
-    //! \brief Sets the label for this individual Event Flags line
-    void setLabel(QString s) { m_label = s; }
 
     void setTotalLines(int i) { total_lines = i; }
     void setLineNum(int i) { line_num = i; }
@@ -73,11 +61,8 @@ class gFlagsLine: public Layer
 
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
-    QString m_label;
     bool m_always_visible;
     int total_lines, line_num;
-    FlagType m_flt;
-    QColor m_flag_color;
     int m_lx, m_ly;
 };
 
@@ -115,8 +100,12 @@ class gFlagsGroup: public LayerGroup
     //! Returns a list of Visible gFlagsLine layers to draw
     QVector<gFlagsLine *> &visibleLayers() { return lvisible; }
 
+    void alwaysVisible(ChannelID code) { m_alwaysvisible.push_back(code); }
+
   protected:
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
+
+    QList<ChannelID> m_alwaysvisible;
 
     QVector<gFlagsLine *> lvisible;
     float m_barh;

@@ -53,7 +53,7 @@ extern Channel EmptyChannel;
 class Channel
 {
   public:
-    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; }
+    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; m_order = 255; }
     Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
             QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
             int link = 0);
@@ -68,6 +68,7 @@ class Channel
     const QString &description() { return m_description; }
     const QString &label() { return m_label; }
     const QString &units() { return m_unit; }
+    inline short order() const { return m_order; }
 
     inline EventDataType upperThreshold() const { return m_upperThreshold; }
     inline EventDataType lowerThreshold() const { return m_lowerThreshold; }
@@ -85,6 +86,7 @@ class Channel
     void setUpperThresholdColor(QColor color) { m_upperThresholdColor = color; }
     void setLowerThreshold(EventDataType value) { m_lowerThreshold = value; }
     void setLowerThresholdColor(QColor color) { m_lowerThresholdColor = color; }
+    void setOrder(short order) { m_order = order; }
 
     QString option(int i) {
         if (m_options.contains(i)) {
@@ -123,6 +125,7 @@ class Channel
     QColor m_lowerThresholdColor;
 
     bool m_enabled;
+    short m_order;
 };
 
 /*! \class ChannelList

@@ -57,32 +57,109 @@ qint64 gFlagsGroup::Maxx()
 void gFlagsGroup::SetDay(Day *d)
 {
     LayerGroup::SetDay(d);
-    lvisible.clear();
     int cnt = 0;
 
-    for (int i = 0; i < layers.size(); i++) {
-        gFlagsLine *f = dynamic_cast<gFlagsLine *>(layers[i]);
+    if (!d) {
+        m_empty = true;
+        return;
+    }
+    QHash<ChannelID, schema::Channel *> chans;
 
-        if (!f) { continue; }
+    schema::channel[CPAP_CSR].setOrder(1);
+    schema::channel[CPAP_CSR].setOrder(1);
+    schema::channel[CPAP_Ramp].setOrder(2);
+    schema::channel[CPAP_LargeLeak].setOrder(2);
+    schema::channel[CPAP_ClearAirway].setOrder(3);
+    schema::channel[CPAP_Obstructive].setOrder(4);
+    schema::channel[CPAP_Apnea].setOrder(4);
+    schema::channel[CPAP_NRI].setOrder(3);
+    schema::channel[CPAP_Hypopnea].setOrder(5);
+    schema::channel[CPAP_FlowLimit].setOrder(6);
+    schema::channel[CPAP_RERA].setOrder(6);
+    schema::channel[CPAP_VSnore].setOrder(7);
+    schema::channel[CPAP_VSnore2].setOrder(8);
+    schema::channel[CPAP_ExP].setOrder(6);
 
-        bool e = f->isEmpty();
+    alwaysVisible(CPAP_LargeLeak);
+    alwaysVisible(CPAP_Hypopnea);
+    alwaysVisible(CPAP_Obstructive);
 
-        if (!e || f->isAlwaysVisible()) {
-            lvisible.push_back(f);
 
-            if (!e) {
-                cnt++;
+    for (int i=0; i< m_day->size(); ++i) {
+        Session * sess = m_day->sessions.at(i);
+        QHash<ChannelID, QVector<EventList *> >::iterator it;
+        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+            ChannelID code = it.key();
+            if (chans.contains(code)) continue;
+
+            schema::Channel * chan = &schema::channel[code];
+
+            if (chan->type() == schema::FLAG) {
+                chans[code] = chan;
+            } else if (chan->type() == schema::MINOR_FLAG) {
+             //   chans[code] = chan;
+            } else if (chan->type() == schema::SPAN) {
+                chans[code] = chan;
             }
         }
     }
 
-    m_empty = (cnt == 0);
-
-    if (m_empty) {
-        if (d) {
-            m_empty = !d->channelExists(CPAP_Pressure);
+    for (int i=0; i < m_alwaysvisible.size(); ++i) {
+        ChannelID code = m_alwaysvisible.at(i);
+        if (!chans.contains(code)) {
+            schema::Channel * chan = &schema::channel[code];
+            chans[code] = chan;
         }
     }
+
+    QMultiMap<int, schema::Channel *> order;
+    QHash<ChannelID, schema::Channel *>::iterator cit;
+
+    for (cit = chans.begin(); cit != chans.end(); ++cit) {
+        int ord = schema::channel[cit.key()].order();
+        order.insert(ord, cit.value());
+    }
+
+    QMultiMap<int, schema::Channel *>::iterator it;
+
+    for (int i=0;i <lvisible.size(); i++) {
+        delete lvisible.at(i);
+    }
+    lvisible.clear();
+    for (it = order.begin(); it != order.end(); ++it) {
+        schema::Channel * chan = it.value();
+
+        gFlagsLine * fl = new gFlagsLine(chan->id());
+        fl->SetDay(d);
+        lvisible.push_back(fl);
+    }
+
+
+    cnt = lvisible.size();
+
+//    for (int i = 0; i < layers.size(); i++) {
+//        gFlagsLine *f = dynamic_cast<gFlagsLine *>(layers[i]);
+
+//        if (!f) { continue; }
+
+//        bool e = f->isEmpty();
+
+//        if (!e || f->isAlwaysVisible()) {
+//            lvisible.push_back(f);
+
+//            if (!e) {
+//                cnt++;
+//            }
+//        }
+//    }
+
+    m_empty = (cnt == 0);
+
+//    if (m_empty) {
+//        if (d) {
+//            m_empty = !d->channelExists(CPAP_Pressure);
+//        }
+//    }
 
     m_barh = 0;
 }
@@ -98,13 +175,21 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 
     if (!m_day) { return; }
 
-    int vis = lvisible.size();
+
+    QVector<gFlagsLine *> visflags;
+
+    for (int i = 0; i < lvisible.size(); i++) {
+        if (schema::channel[lvisible.at(i)->code()].enabled())
+            visflags.push_back(lvisible.at(i));
+    }
+
+    int vis = visflags.size();
     m_barh = float(height) / float(vis);
     float linetop = top;
 
     QColor barcol;
 
-    for (int i = 0; i < lvisible.size(); i++) {
+    for (int i = 0; i < visflags.size(); i++) {
         // Alternating box color
         if (i & 1) { barcol = COLOR_ALT_BG1; }
         else { barcol = COLOR_ALT_BG2; }
@@ -113,8 +198,8 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 
         // Paint the actual flags
         QRect rect(left, linetop, width, m_barh);
-        lvisible[i]->m_rect = rect;
-        lvisible[i]->paint(painter, g, QRegion(rect));
+        visflags[i]->m_rect = rect;
+        visflags[i]->paint(painter, g, QRegion(rect));
         linetop += m_barh;
     }
 
@@ -160,10 +245,8 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 }
 
 
-gFlagsLine::gFlagsLine(ChannelID code, QColor flag_color, QString label, bool always_visible,
-                       FlagType flt)
-    : Layer(code), m_label(label), m_always_visible(always_visible), m_flt(flt),
-      m_flag_color(flag_color)
+gFlagsLine::gFlagsLine(ChannelID code)
+    : Layer(code)
 {
 }
 gFlagsLine::~gFlagsLine()
@@ -197,11 +280,12 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     double xmult = width / xx;
 
-    QString label = schema::channel[m_code].label();
-    GetTextExtent(label, m_lx, m_ly);
+    schema::Channel & chan = schema::channel[m_code];
+
+    GetTextExtent(chan.label(), m_lx, m_ly);
 
     // Draw text label
-    w.renderText(label, left - m_lx - 10, top + (height / 2) + (m_ly / 2));
+    w.renderText(chan.label(), left - m_lx - 10, top + (height / 2) + (m_ly / 2));
 
     float x1, x2;
 
@@ -223,6 +307,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QColor color=schema::channel[m_code].defaultColor();
     QBrush brush(color);
 
+    bool hover = false;
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
         if (!(*s)->enabled()) {
             continue;
@@ -264,7 +349,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             np -= idx;
 
-            if (m_flt == FT_Bar) {
+            if (chan.type() == schema::FLAG) {
                 ///////////////////////////////////////////////////////////////////////////
                 // Draw Event Flag Bars
                 ///////////////////////////////////////////////////////////////////////////
@@ -277,9 +362,22 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     }
 
                     x1 = (X - minx) * xmult + left;
+
+                    if (!hover && QRect(x1-3, bartop-2, 6, bottom-bartop+4).contains(w.graphView()->currentMousePos())) {
+                        hover = true;
+                        painter.setPen(QPen(Qt::red,1));
+
+                        painter.drawRect(x1-2, bartop-2, 4, bottom-bartop+4);
+                        int x,y;
+                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
+                        GetTextExtent(lab, x, y);
+
+                        w.ToolTip(lab, x1 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                    }
+
                     vlines.append(QLine(x1, bartop, x1, bottom));
                 }
-            } else if (m_flt == FT_Span) {
+            } else if (chan.type() == schema::SPAN) {
                 ///////////////////////////////////////////////////////////////////////////
                 // Draw Event Flag Spans
                 ///////////////////////////////////////////////////////////////////////////
@@ -297,7 +395,20 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     x1 = double(X - minx) * xmult + left;
                     x2 = double(X2 - minx) * xmult + left;
 
+                    brush = QBrush(color);
                     painter.fillRect(x2, bartop, x1-x2, bottom-bartop, brush);
+                    if (!hover && QRect(x2, bartop, x1-x2, bottom-bartop).contains(w.graphView()->currentMousePos())) {
+                        hover = true;
+                        painter.setPen(QPen(Qt::red,1));
+
+                        painter.drawRect(x2, bartop, x1-x2, bottom-bartop);
+                        int x,y;
+                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
+                        GetTextExtent(lab, x, y);
+
+                        w.ToolTip(lab, x2 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+
+                    }
                 }
             }
         }

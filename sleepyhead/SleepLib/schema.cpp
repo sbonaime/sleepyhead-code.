@@ -548,7 +548,8 @@ Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QSt
     m_lowerThreshold(0),
     m_upperThresholdColor(Qt::red),
     m_lowerThresholdColor(Qt::green),
-    m_enabled(true)
+    m_enabled(true),
+    m_order(255)
 {
 }
 bool Channel::isNull()
