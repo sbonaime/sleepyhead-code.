@@ -1025,7 +1025,12 @@ QString Day::getPressureSettings()
     } else if (mode == MODE_ASV) {
         return QObject::tr("EPAP %1 PS %2-%3 (%6)").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_min(CPAP_PSMin),0,'f',1).arg(settings_max(CPAP_PSMax),0,'f',1).arg(units);
     } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-        return QObject::tr("Min EPAP %1 Max IPAP %2 PS %3-%4 (%5)").arg(settings_min(CPAP_EPAPLo),0,'f',1).arg(settings_max(CPAP_IPAPHi),0,'f',1).arg(settings_max(CPAP_PSMin),0,'f',1).arg(settings_min(CPAP_PSMax),0,'f',1).arg(units);
+        return QObject::tr("Min EPAP %1 Max IPAP %2 PS %3-%4 (%5)").
+                arg(settings_min(CPAP_EPAPLo),0,'f',1).
+                arg(settings_max(CPAP_IPAPHi),0,'f',1).
+                arg(settings_max(CPAP_PSMin),0,'f',1).
+                arg(settings_min(CPAP_PSMax),0,'f',1).
+                arg(units);
     }
 
     return STR_TR_Unknown;

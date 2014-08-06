@@ -237,7 +237,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.drawRect(rect);
 
                             // Draw text label
-                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
                             GetTextExtent(lab, x, y);
 
                             w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
@@ -258,7 +258,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.drawLine(x1, top, x1, bottom);
                         }
                         if (xx < (3600000)) {
-                            QString lab = QString("%1").arg(m_label).arg(raw);
+                            QString lab = QString("%1").arg(m_label);
                             GetTextExtent(lab, x, y);
                             w.renderText(lab, x1 - (x / 2), top - y + (3 * w.printScaleY()),0);
                         }
@@ -275,7 +275,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             b = true;
 
                             // Draw text label
-                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
                             GetTextExtent(lab, x, y, defaultfont);
 
                             w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());

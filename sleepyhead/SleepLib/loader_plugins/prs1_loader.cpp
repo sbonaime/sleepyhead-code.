@@ -101,7 +101,7 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 
 enum FlexMode { FLEX_None, FLEX_CFlex, FLEX_CFlexPlus, FLEX_AFlex, FLEX_RiseTime, FLEX_BiFlex, FLEX_Unknown  };
 
-
+ChannelID PRS1_TimedBreath = 0;
 
 PRS1::PRS1(MachineID id): CPAP(id)
 {
@@ -521,6 +521,7 @@ bool PRS1Import::ParseF5Events()
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
     EventList *CSR = session->AddEventList(CPAP_CSR, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
+    EventList *LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
     EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F);
     EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F);
@@ -529,12 +530,16 @@ bool PRS1Import::ParseF5Events()
     EventList *IPAPHi = session->AddEventList(CPAP_IPAPHi, EVL_Event, 0.1F);
     EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
     EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
+    EventList *TB = session->AddEventList(PRS1_TimedBreath, EVL_Event);
 
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
     EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10.0F);
 
-    EventList *CA = nullptr; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
-    EventList *VS = nullptr, * FL = nullptr; //,* RE=nullptr,* VS2=nullptr;
+
+    EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *FL = session->AddEventList(CPAP_FlowLimit, EVL_Event);
+    EventList *VS = session->AddEventList(CPAP_VSnore, EVL_Event);
+  //  EventList *VS2 = session->AddEventList(CPAP_VSnore2, EVL_Event);
 
     //EventList * PRESSURE=nullptr;
     //EventList * PP=nullptr;
@@ -627,11 +632,11 @@ bool PRS1Import::ParseF5Events()
         case 0x04: // Pressure Pulse??
             data[0] = buffer[pos++];
 
-            if (!Code[3]) {
-                if (!(Code[3] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
-            }
+//            if (!Code[3]) {
+//                if (!(Code[3] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+//            }
 
-            Code[3]->AddEvent(t, data[0]);
+            TB->AddEvent(t, data[0]);
             break;
 
         case 0x05:
@@ -645,10 +650,6 @@ bool PRS1Import::ParseF5Events()
             //code=CPAP_ClearAirway;
             data[0] = buffer[pos++];
             tt -= qint64(data[0]) * 1000L; // Subtract Time Offset
-
-            if (!CA) {
-                if (!(CA = session->AddEventList(cpapcode, EVL_Event))) { return false; }
-            }
 
             CA->AddEvent(tt, data[0]);
             break;
@@ -679,10 +680,6 @@ bool PRS1Import::ParseF5Events()
             //code=CPAP_FlowLimit;
             data[0] = buffer[pos++];
             tt -= qint64(data[0]) * 1000L; // Subtract Time Offset
-
-            if (!FL) {
-                if (!(FL = session->AddEventList(cpapcode, EVL_Event))) { return false; }
-            }
 
             FL->AddEvent(tt, data[0]);
 
@@ -792,10 +789,17 @@ bool PRS1Import::ParseF5Events()
             break;
 
         case 0x10: // Unknown
-            qDebug() << "0x10 Observed in ASV data!!????";
-            data[0] = buffer[pos++]; // << 8) | buffer[pos];
+            data[0] = buffer[pos + 1] << 8 | buffer[pos];
+            pos += 2;
             data[1] = buffer[pos++];
-            data[2] = buffer[pos++];
+
+            tt = t - qint64(data[1]) * 1000L;
+            LL->AddEvent(tt, data[0]);
+
+//            qDebug() << "0x10 Observed in ASV data!!????";
+//            data[0] = buffer[pos++]; // << 8) | buffer[pos];
+//            data[1] = buffer[pos++];
+//            data[2] = buffer[pos++];
             //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
             break;
 
@@ -873,7 +877,7 @@ bool PRS1Import::ParseF0Events()
 
     Code[12] = session->AddEventList(PRS1_0B, EVL_Event);
     Code[17] = session->AddEventList(PRS1_0E, EVL_Event);
-    Code[20] = session->AddEventList(CPAP_LargeLeak, EVL_Event);
+    EventList * LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
 
     EventList *PRESSURE = nullptr;
     EventList *EPAP = nullptr;
@@ -1076,7 +1080,7 @@ bool PRS1Import::ParseF0Events()
             data[1] = buffer[pos++];
 
             tt = t - qint64(data[1]) * 1000L;
-            Code[20]->AddEvent(tt, data[0]);
+            LL->AddEvent(tt, data[0]);
             break;
 
         case 0x0f: // Cheyne Stokes Respiration
@@ -1377,29 +1381,33 @@ bool PRS1Import::ParseSummaryF5()
 //        break;
 //    }
 
-    EventDataType min_epap = float(data[0x03]) / 10.0;
-    EventDataType max_epap = float(data[0x04]) / 10.0;
-
-    EventDataType min_ps = float(data[0x05]) / 10.0;  // this might be an implied 3.0
-    EventDataType max_ps = float(data[0x06]) / 10.0;
-    EventDataType max_pressure = float(data[0x02]) / 10.0;
-
+    int imin_epap = data[0x3];
+    int imax_epap = data[0x4];
+    int imin_ps = data[0x5];
+    int imax_ps = data[0x6];
+    int imax_pressure = data[0x2];
 
     cpapmode = MODE_ASV_VARIABLE_EPAP;
 
     session->settings[CPAP_Mode] = (int)cpapmode;
+
     if (cpapmode == MODE_CPAP) {
-        session->settings[CPAP_Pressure] = min_epap;
+        session->settings[CPAP_Pressure] = imin_epap/10.0f;
+
     } else if (cpapmode == MODE_BILEVEL_FIXED) {
-        session->settings[CPAP_EPAP] = min_epap;
-        session->settings[CPAP_IPAP] = max_epap;
+        session->settings[CPAP_EPAP] = imin_epap/10.0f;
+        session->settings[CPAP_IPAP] = imax_epap/10.0f;
+
     } else if (cpapmode == MODE_ASV_VARIABLE_EPAP) {
-        session->settings[CPAP_EPAPLo] = min_epap;
-        session->settings[CPAP_EPAPHi] = max_epap;
-        session->settings[CPAP_IPAPLo] = min_epap + min_ps;
-        session->settings[CPAP_IPAPHi] = max_pressure;
-        session->settings[CPAP_PSMin] = min_ps;
-        session->settings[CPAP_PSMax] = max_ps;
+        int imax_ipap = imax_epap + imax_ps;
+        int imin_ipap = imin_epap + imin_ps;
+
+        session->settings[CPAP_EPAPLo] = imin_epap / 10.0f;
+        session->settings[CPAP_EPAPHi] = imax_epap / 10.0f;
+        session->settings[CPAP_IPAPLo] = imin_ipap / 10.0f;
+        session->settings[CPAP_IPAPHi] = imax_pressure / 10.0f;
+        session->settings[CPAP_PSMin] = imin_ps / 10.0f;
+        session->settings[CPAP_PSMax] = imax_ps / 10.0f;
     }
 
     quint8 flex = data[0x0c];
@@ -2192,6 +2200,15 @@ void PRS1Loader::Register()
         QString(unknownname).arg(0x12,2,16,QChar('0')),
         QString(unknowndesc).arg(0x12,2,16,QChar('0')),
         QString(unknownshort).arg(0x12,2,16,QChar('0')),
+        STR_UNIT_Unknown,
+        DEFAULT,    QColor("black")));
+
+
+    channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG,    SESSION,
+        "PRS1TimedBreath",
+        QObject::tr("Timed Breath").arg(0x12,2,16,QChar('0')),
+        QObject::tr("").arg(0x12,2,16,QChar('0')),
+        QObject::tr("TB").arg(0x12,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
