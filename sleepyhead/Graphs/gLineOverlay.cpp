@@ -50,7 +50,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     if (xx <= 0) { return; }
 
-    float x1, x2;
+    double x1, x2;
 
     int x, y;
 
@@ -261,7 +261,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
                     } else {
-                        if (!m_blockhover && QRect(x1-d1-2, topp, d1+6, height).contains(mouse)) {
+                        if (!m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse)) {
                             if (!m_hover) {
                                 m_hover = true;
 
@@ -271,8 +271,10 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                                 painter.setPen(QPen(Qt::gray,1));
                                 painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
                                 w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
-                                x1-=1;
+                                //x1-=1;
                                 painter.setPen(QPen(m_flag_color,4));
+                            } else {
+                                painter.setPen(QPen(m_flag_color,1));
                             }
                         } else {
                             painter.setPen(QPen(m_flag_color,1));

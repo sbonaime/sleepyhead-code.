@@ -514,7 +514,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
                 painter.rotate(+q.angle);
                 painter.translate(-xxx, -yyy);
             } else {
-                painter.drawPixmap(QRect(q.x - buf / 2, q.y - h + buf, w, h), pm);
+                painter.drawPixmap(QRect(q.x - buf / 2 + 4, q.y - h + buf, w, h), pm);
             }
         } else {
             // Just draw the fonts..

@@ -172,7 +172,7 @@ skipcheck:
             if (chan->type() == schema::FLAG) {
                 lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
             } else if (chan->type() == schema::MINOR_FLAG) {
-                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
+                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
             } else if (chan->type() == schema::SPAN) {
                 lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
             }
