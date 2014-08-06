@@ -383,6 +383,7 @@ class gGraphView
     inline QPoint currentMousePos() const { return m_mouse; }
 
     void dumpInfo();
+    void resetMouse() { m_mouse = QPoint(0,0); }
 
     // for profiling purposes, a count of lines drawn in a single frame
     int lines_drawn_this_frame;

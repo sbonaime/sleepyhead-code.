@@ -874,6 +874,7 @@ bool PRS1Import::ParseF0Events()
     EventList *FL = session->AddEventList(CPAP_FlowLimit, EVL_Event);
     EventList *VS = session->AddEventList(CPAP_VSnore, EVL_Event);
     EventList *VS2 = session->AddEventList(CPAP_VSnore2, EVL_Event);
+    EventList *T1 = session->AddEventList(CPAP_Test1, EVL_Event, 0.1);
 
     Code[12] = session->AddEventList(PRS1_0B, EVL_Event);
     Code[17] = session->AddEventList(PRS1_0E, EVL_Event);
@@ -1054,12 +1055,15 @@ bool PRS1Import::ParseF0Events()
             }
 
             if ((event->family == 0) && (event->familyVersion >= 4)) {
+                data[0] = buffer[pos];
+
                 pos++;
             }
 
             break;
 
         case 0x0e: // Unknown
+
             data[0] = ((char *)buffer)[pos++];
             data[1] = buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
             //data[0]/=10.0;
@@ -1074,7 +1078,7 @@ bool PRS1Import::ParseF0Events()
             //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
             break;
 
-        case 0x10: // Unknown, Large Leak
+        case 0x10: // Large Leak
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
             data[1] = buffer[pos++];

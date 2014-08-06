@@ -161,6 +161,7 @@ void gToolTip::timerDone()
 {
     m_visible = false;
     m_graphview->redraw();
+    m_graphview->resetMouse();
 }
 
 #ifdef ENABLE_THREADED_DRAWING

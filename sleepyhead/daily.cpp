@@ -153,7 +153,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ChannelID cpapcodes[] = {
         CPAP_FlowRate, CPAP_MaskPressure, CPAP_Pressure, CPAP_Leak, CPAP_Snore, CPAP_RespRate,
         CPAP_TidalVolume, CPAP_MinuteVent, CPAP_FLG, CPAP_PTB, CPAP_RespEvent, CPAP_Ti, CPAP_Te,
-        CPAP_IE, ZEO_SleepStage, POS_Inclination, POS_Orientation
+        CPAP_IE, ZEO_SleepStage, POS_Inclination, POS_Orientation, CPAP_Test1
     };
 
     int cpapsize = sizeof(cpapcodes) / sizeof(ChannelID);
@@ -338,6 +338,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     graphlist[schema::channel[CPAP_Snore].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
 
     graphlist[schema::channel[CPAP_PTB].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
+    graphlist[schema::channel[CPAP_Test1].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_Test1, COLOR_PTB, false)));
 
 
     gLineChart *lc = nullptr;

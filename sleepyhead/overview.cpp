@@ -135,7 +135,8 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     SET = createGraph("Settings", STR_TR_Settings, STR_TR_Settings);
     LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
     TOTLK = createGraph("TotalLeaks", STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
-    NPB = createGraph("TimeInPB", tr("% in PB"), tr("Periodic\nBreathing\n(% of night)"));
+    NPB = createGraph("TimeInPB", tr("% in %1").arg(schema::channel[CPAP_CSR].label()), tr("%1\n(% of night)").arg(schema::channel[CPAP_LargeLeak].description()));
+    NLL = createGraph("TimeInLL", tr("% in %1").arg(schema::channel[CPAP_LargeLeak].label()), tr("Large Leaks\n(% of night)"));
 
     if (ahicode == CPAP_RDI) {
         AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
@@ -296,7 +297,10 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     TOTLK->AddLayer(totlk);
 
     NPB->AddLayer(npb = new SummaryChart(tr("% PB"), GT_POINTS));
-    npb->addSlice(CPAP_CSR, COLOR_DarkGreen, ST_SPH);
+    npb->addSlice(CPAP_CSR, schema::channel[CPAP_CSR].defaultColor(), ST_SPH);
+
+    NLL->AddLayer(nll = new SummaryChart(tr("% %1").arg(schema::channel[CPAP_LargeLeak].fullname()), GT_POINTS));
+    nll->addSlice(CPAP_LargeLeak, schema::channel[CPAP_LargeLeak].defaultColor(), ST_SPH);
     // <--- The code to the previous marker is crap
 
     GraphView->LoadSettings("Overview"); //no trans

@@ -11,8 +11,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 
 
 
-  <channel id="0x111e" class="data" name="TestChan1" details="Respiratory Rate" label="Mark's Resp. Rate" unit="breaths/min" color="black"/>
-  <channel id="0x111f" class="data" name="TestChan2" details="Tidal Volume" label="Tidal Volume" unit="L/min" color="blue"/>
+  <channel id="0x111e" class="data" name="TestChan1" details="Debugging Channel #2" label="Test #1" unit="" color="pink"/>
+  <channel id="0x111f" class="data" name="TestChan2" details="Debugging Channel #2" label="Test #2" unit="" color="blue"/>
 
   <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
   <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="E02" unit="" color="black"/>
