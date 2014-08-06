@@ -16,7 +16,8 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code, QColor color, QString label, FlagType flt)
     : Layer(code), m_flag_color(color), m_label(label), m_flt(flt), m_odt(ODT_TopAndBottom)
 {
-
+    m_hover = false;
+    m_blockhover = false;
 }
 gLineOverlayBar::~gLineOverlayBar()
 {
@@ -26,8 +27,10 @@ QColor brighten(QColor color);
 
 void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    m_hover = false;
     if (!schema::channel[m_code].enabled())
         return;
+
 
     int left = region.boundingRect().left();
     int topp = region.boundingRect().top(); // FIXME: Misspelling intentional.
@@ -258,15 +261,19 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
                     } else {
-                        QRect rect(x1-d1-2, topp, d1+6, height);
+                        if (!m_blockhover && QRect(x1-d1-2, topp, d1+6, height).contains(mouse)) {
+                            if (!m_hover) {
+                                m_hover = true;
 
-                        if (rect.contains(mouse)) {
-                            painter.setPen(QPen(m_flag_color,4));
-
-                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
-                            GetTextExtent(lab, x, y);
-                            w.renderText(lab, x1 - (x / 2)+2, start_py + 14 + y + (3 * w.printScaleY()),0);
-                            x1-=1;
+                                QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
+                                GetTextExtent(lab, x, y);
+                                painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
+                                painter.setPen(QPen(Qt::gray,1));
+                                painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
+                                w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
+                                x1-=1;
+                                painter.setPen(QPen(m_flag_color,4));
+                            }
                         } else {
                             painter.setPen(QPen(m_flag_color,1));
                         }

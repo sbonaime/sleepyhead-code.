@@ -873,8 +873,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipping(false);
     if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
         QHash<ChannelID, gLineOverlayBar *>::iterator fit;
+        bool blockhover = false;
+
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
-            fit.value()->paint(painter, w, region);
+            gLineOverlayBar * lob = fit.value();
+            lob->setBlockHover(blockhover);
+            lob->paint(painter, w, region);
+            if (lob->hover()) blockhover = true; // did it render a hover over?
         }
     }
     painter.setRenderHint(QPainter::Antialiasing, false);

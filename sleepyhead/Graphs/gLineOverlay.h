@@ -40,6 +40,9 @@ class gLineOverlayBar: public Layer
     int count() { return m_count; }
     double sum() { return m_sum; }
     FlagType flagtype() { return m_flt; }
+    bool hover() { return m_hover; }
+
+    void setBlockHover(bool b) { m_blockhover = b; }
 
     inline void setOverlayDisplayType(OverlayDisplayType odt) { m_odt = odt; }
     inline OverlayDisplayType overlayDisplayType() { return m_odt; }
@@ -53,6 +56,8 @@ class gLineOverlayBar: public Layer
     OverlayDisplayType m_odt;
     int m_count;
     double m_sum;
+    bool m_hover;
+    bool m_blockhover;
 };
 
 /*! \class gLineOverlaySummary
