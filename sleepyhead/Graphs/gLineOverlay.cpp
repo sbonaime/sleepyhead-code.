@@ -178,17 +178,17 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     m_count++;
                     m_sum += raw;
 
-                    if ((odt == ODT_Bars) || (xx < 3600000)) {
+//                    if ((odt == ODT_Bars) || (xx < 3600000)) {
                         // show the fat dots in the middle
                         painter.setPen(QPen(m_flag_color,4));
 
                         painter.drawPoint(x1, double(height) / double(yy)*double(-20 - w.min_y) + topp);
                         painter.setPen(QPen(m_flag_color,1));
 
-                    } else {
-                        // thin lines down the bottom
-                        painter.drawLine(x1, start_py + 1, x1, start_py + 1 + 12);
-                    }
+//                    } else {
+//                        // thin lines down the bottom
+//                        painter.drawLine(x1, start_py + 1, x1, start_py + 1 + 12);
+//                    }
                 }
             } else if (m_flt == FT_Bar) {
                 ////////////////////////////////////////////////////////////////////////////
@@ -203,18 +203,18 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         break;
                     }
 
-                    x1 = jj * double(X - w.min_x) + left;
+                    x1 = jj * (double(X) - double(w.min_x)) + left;
                     m_count++;
                     m_sum += raw;
                     int z = start_py + height;
 
+                    double d1 = jj * double(raw) * 1000.0;
 
-                    if ((odt == ODT_Bars) || (xx < 3600000)) {
-                        z = top;
-                        double d1 = jj * double(raw) * 1000.0;
 
+                    if ((odt == ODT_Bars)) { // || (xx < 3600000)) {
                         QRect rect(x1-d1-2, top, d1+2, height);
                         QColor col = m_flag_color;
+
 
                         painter.setPen(QPen(col,4));
                         painter.drawPoint(x1, top);
@@ -239,26 +239,40 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.setPen(QPen(col,1));
                             painter.drawLine(x1, top, x1, bottom);
                         }
+                        QColor txcol = hover ? Qt::red: Qt::black;
+
+                        if (xx < 300000) {
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
+                            GetTextExtent(lab, x, y);
+                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
+                        } else if (xx < (3600000)) {
+                            if (!hover) {
+                                GetTextExtent(m_label, x, y);
+                                w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
+                            } else {
+                                QString lab = QString("%1 (%2)").arg(m_label).arg(raw);
+                                GetTextExtent(lab, x, y);
+                                w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
+                            }
+                        }
 
 
                     } else {
-                        painter.drawLine(x1, z, x1, z - 12);
-                    }
+                        QRect rect(x1-d1-2, topp, d1+6, height);
 
-                    QColor txcol = hover ? Qt::red: Qt::black;
-                    if (xx < 300000) {
-                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
-                        GetTextExtent(lab, x, y);
-                        w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
-                    } else if (xx < (3600000)) {
-                        if (!hover) {
-                            GetTextExtent(m_label, x, y);
-                            w.renderText(m_label, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
-                        } else {
-                            QString lab = QString("%1 (%2)").arg(m_label).arg(raw);
+                        if (rect.contains(mouse)) {
+                            painter.setPen(QPen(m_flag_color,4));
+
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
                             GetTextExtent(lab, x, y);
-                            w.renderText(lab, x1 - (x / 2)+2, top - y + (3 * w.printScaleY()),0,txcol);
+                            w.renderText(lab, x1 - (x / 2)+2, start_py + 14 + y + (3 * w.printScaleY()),0);
+                            x1-=1;
+                        } else {
+                            painter.setPen(QPen(m_flag_color,1));
                         }
+
+                        painter.drawLine(x1, z, x1, z - 12);
+                        painter.drawLine(x1, start_py+2, x1, start_py + 14);
                     }
                 }
             }

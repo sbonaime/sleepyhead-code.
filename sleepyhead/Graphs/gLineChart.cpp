@@ -859,12 +859,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             legendx -= bw*2;
         }
     }
-    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
-        QHash<ChannelID, gLineOverlayBar *>::iterator fit;
-        for (fit = flags.begin(); fit != flags.end(); ++fit) {
-            fit.value()->paint(painter, w, region);
-        }
-    }
 
 
     if (!total_points) { // No Data?
@@ -877,5 +871,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
     painter.setClipping(false);
+    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
+        QHash<ChannelID, gLineOverlayBar *>::iterator fit;
+        for (fit = flags.begin(); fit != flags.end(); ++fit) {
+            fit.value()->paint(painter, w, region);
+        }
+    }
     painter.setRenderHint(QPainter::Antialiasing, false);
 }
