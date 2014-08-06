@@ -442,7 +442,7 @@ void loadChannels()
         in >> lowerThresholdColor;
         in >> upperThreshold;
         in >> upperThresholdColor;
-        if (!chan) {
+        if (chan->isNull()) {
             qDebug() << "loadChannels has idea about channel" << name;
             if (in.atEnd()) return;
             continue;
