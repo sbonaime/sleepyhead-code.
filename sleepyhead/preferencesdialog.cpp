@@ -315,17 +315,17 @@ void PreferencesDialog::InitChanInfo()
     ui->chanView->setAlternatingRowColors(true);
 
     // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
-    chanModel->setColumnCount(5);
+    chanModel->setColumnCount(4);
     QStringList headers;
     headers.append(tr("Name"));
     headers.append(tr("Color"));
     headers.append(tr("Label"));
     headers.append(tr("Details"));
-    headers.append(tr("ID"));
+//    headers.append(tr("ID"));
     chanModel->setHorizontalHeaderLabels(headers);
     ui->chanView->setColumnWidth(0, 200);
     ui->chanView->setColumnWidth(1, 50);
-    ui->chanView->setColumnWidth(2, 150);
+    ui->chanView->setColumnWidth(2, 100);
     ui->chanView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->chanView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
@@ -359,9 +359,9 @@ void PreferencesDialog::InitChanInfo()
         it->setEditable(true);
         items.push_back(it);
 
-        it = new QStandardItem(QString().number(chan->id(),16));
-        it->setEditable(false);
-        items.push_back(it);
+//        it = new QStandardItem(QString().number(chan->id(),16));
+//        it->setEditable(false);
+//        items.push_back(it);
 
         row = toprows[chan->type()]++;
         toplevel[chan->type()]->insertRow(row, items);

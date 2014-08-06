@@ -197,10 +197,11 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     double xmult = width / xx;
 
-    GetTextExtent(m_label, m_lx, m_ly);
+    QString label = schema::channel[m_code].label();
+    GetTextExtent(label, m_lx, m_ly);
 
     // Draw text label
-    w.renderText(m_label, left - m_lx - 10, top + (height / 2) + (m_ly / 2));
+    w.renderText(label, left - m_lx - 10, top + (height / 2) + (m_ly / 2));
 
     float x1, x2;
 
