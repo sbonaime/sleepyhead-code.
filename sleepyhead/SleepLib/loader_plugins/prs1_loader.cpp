@@ -1727,7 +1727,7 @@ bool PRS1Import::ParseWaveforms()
             }
 
             if (data[1].size() > 0) {
-                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[1].size());
+                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, dur / data[1].size());
                 pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), dur);
             }
 

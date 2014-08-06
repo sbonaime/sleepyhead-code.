@@ -163,7 +163,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     painter.fillRect(rect, QBrush(col));
                 }
-            } else if (m_flt == FT_Dot) {
+            }/* else if (m_flt == FT_Dot) {
                 ////////////////////////////////////////////////////////////////////////////
                 // FT_Dot
                 ////////////////////////////////////////////////////////////////////////////
@@ -193,7 +193,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 //                        painter.drawLine(x1, start_py + 1, x1, start_py + 1 + 12);
 //                    }
                 }
-            } else if (m_flt == FT_Bar) {
+            } */else if ((m_flt == FT_Bar) || (m_flt == FT_Dot)) {
                 ////////////////////////////////////////////////////////////////////////////
                 // FT_Bar
                 ////////////////////////////////////////////////////////////////////////////
@@ -214,7 +214,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     double d1 = jj * double(raw) * 1000.0;
 
 
-                    if ((odt == ODT_Bars)) { // || (xx < 3600000)) {
+                    if ((m_flt == FT_Bar) && (odt == ODT_Bars)) { // || (xx < 3600000)) {
                         QRect rect(x1-d1-2, top, d1+2, height);
                         QColor col = m_flag_color;
 
@@ -261,27 +261,44 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
                     } else {
-                        if (!m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse)) {
-                            if (!m_hover) {
-                                m_hover = true;
+                        //////////////////////////////////////////////////////////////////////////////////////
+                        // Top and bottom markers
+                        //////////////////////////////////////////////////////////////////////////////////////
+                        bool b = false;
+                        if (!m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse) && !m_hover) {
+                            // only want to draw the highlight/label once per frame
+                            m_hover = true;
+                            b = true;
 
-                                QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
-                                GetTextExtent(lab, x, y);
-                                painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
-                                painter.setPen(QPen(Qt::gray,1));
-                                painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
-                                w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
-                                //x1-=1;
-                                painter.setPen(QPen(m_flag_color,4));
-                            } else {
-                                painter.setPen(QPen(m_flag_color,1));
-                            }
+                            // Draw text label
+                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].label()).arg(raw);
+                            GetTextExtent(lab, x, y);
+                            painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
+                            painter.setPen(QPen(Qt::gray,1));
+                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
+                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
+
+                            //x1-=1;
+                            QColor col = m_flag_color;
+                            col.setAlpha(60);
+                            painter.setPen(QPen(col, 4));
+
+                            painter.drawLine(x1, start_py+14, x1, z - 12);
+                            painter.setPen(QPen(m_flag_color,4));
+
+                            painter.drawLine(x1, z, x1, z - 14);
+                            painter.drawLine(x1, start_py+2, x1, start_py + 16);
                         } else {
+                            QColor col = m_flag_color;
+                            col.setAlpha(10);
+                            painter.setPen(QPen(col,1));
+                            painter.drawLine(x1, start_py+14, x1, z - 12);
                             painter.setPen(QPen(m_flag_color,1));
+                            painter.drawLine(x1, z, x1, z - 12);
+                            painter.drawLine(x1, start_py+2, x1, start_py + 14);
                         }
 
-                        painter.drawLine(x1, z, x1, z - 12);
-                        painter.drawLine(x1, start_py+2, x1, start_py + 14);
+
                     }
                 }
             }
