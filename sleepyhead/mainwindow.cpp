@@ -443,7 +443,7 @@ void loadChannels()
         in >> upperThreshold;
         in >> upperThresholdColor;
         if (chan->isNull()) {
-            qDebug() << "loadChannels has idea about channel" << name;
+            qDebug() << "loadChannels has no idea about channel" << name;
             if (in.atEnd()) return;
             continue;
         }
