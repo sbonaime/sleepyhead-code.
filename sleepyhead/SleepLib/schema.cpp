@@ -88,7 +88,7 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAP          = 0x110D, WAVEFORM,    SESSION, "IPAP",
                         STR_TR_IPAP,                    QObject::tr("Inspiratory Pressure"),          STR_TR_IPAP,
-                        STR_UNIT_CMH2O,         DEFAULT,    QColor("orange")));
+                        STR_UNIT_CMH2O,         DEFAULT,    QColor("red")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAPLo        = 0x1110, WAVEFORM,    SESSION, "IPAPLo",
                         STR_TR_IPAPLo,                  QObject::tr("Lower Inspiratory Pressure"),    STR_TR_IPAPLo,
@@ -100,7 +100,7 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAP          = 0x110E, WAVEFORM,    SESSION, "EPAP",
                         STR_TR_EPAP,                    QObject::tr("Expiratory Pressure"),           STR_TR_EPAP,
-                        STR_UNIT_CMH2O,         DEFAULT,    QColor("light blue")));
+                        STR_UNIT_CMH2O,         DEFAULT,    QColor("green")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_EPAPLo        = 0x111C, WAVEFORM,    SESSION, "EPAPLo",
                         STR_TR_EPAPLo,                  QObject::tr("Lower Expiratory Pressure"),     STR_TR_EPAPLo,
@@ -290,12 +290,12 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressure      = 0x1101, WAVEFORM,    SESSION,
                         "MaskPressure",      QObject::tr("Mask Pressure"),
                         QObject::tr("Mask Pressure"),                                QObject::tr("Mask Pressure"),
-                        STR_UNIT_CMH2O,    DEFAULT,    QColor("black")));
+                        STR_UNIT_CMH2O,    DEFAULT,    QColor("blue")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_MaskPressureHi    = 0x1102, WAVEFORM,    SESSION,
                         "MaskPressureHi",    QObject::tr("Mask Pressure"),
                         QObject::tr("Mask Pressure (High resolution)"),              QObject::tr("Mask Pressure"),
-                        STR_UNIT_CMH2O,    DEFAULT,    QColor("black"), 0x1101)); // linked to CPAP_MaskPressure
+                        STR_UNIT_CMH2O,    DEFAULT,    QColor("blue"), 0x1101)); // linked to CPAP_MaskPressure
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_TidalVolume       = 0x1103, WAVEFORM,    SESSION,
                         "TidalVolume",       QObject::tr("Tidal Volume"),

@@ -695,9 +695,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
                     }
 
-                    painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(chan.defaultColor(),p_profile->appearance->lineThickness()));
                     painter.drawLines(lines);
-                    w.graphView()->lines_drawn_this_frame+=lines.count();
+                    w.graphView()->lines_drawn_this_frame += lines.count();
                     lines.clear();
 
 
@@ -819,7 +819,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             }
                         }
                     }
-                    painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(chan.defaultColor(),p_profile->appearance->lineThickness()));
                     painter.drawLines(lines);
                     w.graphView()->lines_drawn_this_frame+=lines.count();
                     lines.clear();
@@ -853,7 +853,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             painter.setClipping(false);
             w.renderText(text, legendx, top - 4);
             legendx -= bw /2;
-            painter.fillRect(legendx - bw, top - w.marginTop()-2, bh, w.marginTop()+1, QBrush(m_colors[gi]));
+            painter.fillRect(legendx - bw, top - w.marginTop()-2, bh, w.marginTop()+1, QBrush(chan.defaultColor()));
             painter.setClipping(true);
 
             legendx -= bw*2;
