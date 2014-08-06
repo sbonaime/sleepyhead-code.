@@ -104,7 +104,7 @@ class gGraph : public QObject
     //! \brief Returns true if none of the included layers have data attached
     bool isEmpty();
 
-    qint64 currentTime() const;
+    double currentTime() const;
 
 
     //! \brief Add Layer l to graph object, allowing you to specify position,
@@ -350,7 +350,7 @@ class gGraph : public QObject
 
     qint64 m_selectedDuration;
 
-    qint64 m_currentTime;
+    double m_currentTime;
     qint64 m_clickTime;
 
     QString m_selDurString;

@@ -375,9 +375,9 @@ class gGraphView
     void setMetaSelect(bool b) { m_metaselect = b; }
 
     //! \brief The current time the mouse pointer is hovering over
-    inline qint64 currentTime() { return m_currenttime; }
+    inline double currentTime() { return m_currenttime; }
 
-    inline void setCurrentTime(qint64 time) { m_currenttime = time; }
+    inline void setCurrentTime(double time) { m_currenttime = time; }
 
     inline QPoint currentMousePos() const { return m_mouse; }
 

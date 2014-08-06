@@ -671,7 +671,7 @@ void gGraph::timedRedraw(int ms)
     m_graphview->timedRedraw(ms);
 }
 
-qint64 gGraph::currentTime() const
+double gGraph::currentTime() const
 {
     return m_graphview->currentTime();
 }
