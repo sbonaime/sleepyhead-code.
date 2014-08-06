@@ -118,6 +118,8 @@ class WeinmannLoader : public CPAPLoader
     virtual MachineInfo newInfo() {
         return MachineInfo(MT_CPAP, 0, weinmann_class_name, QObject::tr("Weinmann"), QObject::tr("SOMNOsoft2"), QString(), QString(), QObject::tr(""), QDateTime::currentDateTime(), weinmann_data_version);
     }
+    virtual void initChannels();
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Now for some CPAPLoader overrides

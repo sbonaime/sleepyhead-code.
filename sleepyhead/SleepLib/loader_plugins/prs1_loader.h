@@ -179,6 +179,8 @@ class PRS1Loader : public CPAPLoader
     virtual ChannelID HumidifierConnected() { return PRS1_HumidStatus; }
     virtual ChannelID HumidifierLevel() { return PRS1_HumidLevel; }
 
+    void initChannels();
+
 
     QHash<SessionID, PRS1Import*> sesstasks;
 

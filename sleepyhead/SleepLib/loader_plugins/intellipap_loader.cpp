@@ -581,16 +581,8 @@ int IntellipapLoader::Open(QString path)
     return c;
 }
 
-bool intellipap_initialized = false;
-void IntellipapLoader::Register()
+void IntellipapLoader::initChannels()
 {
-    if (intellipap_initialized) { return; }
-
-    qDebug() << "Registering IntellipapLoader";
-    RegisterLoader(new IntellipapLoader());
-    //InitModelMap();
-    intellipap_initialized = true;
-
     using namespace schema;
     Channel * chan = nullptr;
     channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexMode = 0x1165, SETTING,   SESSION,
@@ -609,4 +601,16 @@ void IntellipapLoader::Register()
         QObject::tr("Intellipap pressure relief level."),
         QObject::tr("SmartFlex Level"),
         "", DEFAULT, Qt::green));
+}
+
+bool intellipap_initialized = false;
+void IntellipapLoader::Register()
+{
+    if (intellipap_initialized) { return; }
+
+    qDebug() << "Registering IntellipapLoader";
+    RegisterLoader(new IntellipapLoader());
+    //InitModelMap();
+    intellipap_initialized = true;
+
 }

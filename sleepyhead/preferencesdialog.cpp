@@ -96,7 +96,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->startedUsingMask->calendarWidget()->setFirstDayOfWeek(dow);
 
-    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->colourTab));
+    //ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->colourTab));
 
     // Stop both calendar drop downs highlighting weekends in red
     QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
@@ -252,38 +252,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->showUserFlagsInPie->setChecked(profile->cpap->userEventPieChart());
 
-    ui->eventTable->setColumnWidth(0, 40);
-    ui->eventTable->setColumnWidth(1, 55);
-    ui->eventTable->setColumnHidden(3, true);
-    int row = 0;
-    QTableWidgetItem *item;
-    QHash<QString, schema::Channel *>::iterator ci;
-
-    for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
-        if (ci.value()->type() == schema::DATA) {
-            ui->eventTable->insertRow(row);
-            int id = ci.value()->id();
-            ui->eventTable->setItem(row, 3, new QTableWidgetItem(QString::number(id)));
-            item = new QTableWidgetItem(ci.value()->description());
-            ui->eventTable->setItem(row, 2, item);
-            QCheckBox *c = new QCheckBox(ui->eventTable);
-            c->setChecked(true);
-            QLabel *pb = new QLabel(ui->eventTable);
-            pb->setText("foo");
-            ui->eventTable->setCellWidget(row, 0, c);
-            ui->eventTable->setCellWidget(row, 1, pb);
-
-
-            QColor a = ci.value()->defaultColor(); //(rand() % 255, rand() % 255, rand() % 255, 255);
-            QPalette p(a, a, a, a, a, a, a);
-
-            pb->setPalette(p);
-            pb->setAutoFillBackground(true);
-            pb->setBackgroundRole(QPalette::Background);
-            row++;
-        }
-    }
-
     /*    QLocale locale=QLocale::system();
         QString shortformat=locale.dateFormat(QLocale::ShortFormat);
         if (!shortformat.toLower().contains("yyyy")) {
@@ -299,38 +267,113 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     resetGraphModel();
 
-    //    tree->sortByColumn(0,Qt::AscendingOrder);
+    chanFilterModel = new MySortFilterProxyModel(this);
+    chanModel = new QStandardItemModel(this);
+    chanFilterModel->setSourceModel(chanModel);
+    chanFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    chanFilterModel->setFilterKeyColumn(0);
+    ui->chanView->setModel(chanFilterModel);
+
+    InitChanInfo();
+
 }
 
+void PreferencesDialog::InitChanInfo()
+{
+    QHash<schema::ChanType, int> toprows;
+
+    chanModel->clear();
+    toplevel.clear();
+    toprows.clear();
+
+    QStandardItem *hdr = nullptr;
+
+    toplevel[schema::SPAN] = hdr = new QStandardItem(tr("Span Events"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::FLAG] = hdr = new QStandardItem(tr("Flags"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::MINOR_FLAG] = hdr = new QStandardItem(tr("Minor Flags"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::WAVEFORM] = hdr = new QStandardItem(tr("Waveforms"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::DATA] = hdr = new QStandardItem(tr("Data Channels"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::SETTING] = hdr = new QStandardItem(tr("Settings Channels"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    ui->chanView->setAlternatingRowColors(true);
+
+    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
+    chanModel->setColumnCount(5);
+    QStringList headers;
+    headers.append(tr("Name"));
+    headers.append(tr("Color"));
+    headers.append(tr("Label"));
+    headers.append(tr("Details"));
+    headers.append(tr("ID"));
+    chanModel->setHorizontalHeaderLabels(headers);
+    ui->chanView->setColumnWidth(0, 200);
+    ui->chanView->setColumnWidth(1, 50);
+    ui->chanView->setColumnWidth(2, 150);
+    ui->chanView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->chanView->setSelectionBehavior(QAbstractItemView::SelectItems);
+
+    QHash<QString, schema::Channel *>::iterator ci;
+
+    int row = 0;
+    for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
+        schema::Channel * chan = ci.value();
+
+        QList<QStandardItem *> items;
+        QStandardItem *it = new QStandardItem(chan->fullname());
+        it->setCheckable(true);
+        it->setCheckState(chan->enabled() ? Qt::Checked : Qt::Unchecked);
+        it->setEditable(true);
+        it->setData(chan->id(), Qt::UserRole);
+        items.push_back(it);
+
+
+        it = new QStandardItem();
+        it->setBackground(QBrush(chan->defaultColor()));
+        it->setEditable(false);
+        it->setData(chan->defaultColor().rgba(), Qt::UserRole);
+        it->setSelectable(false);
+        items.push_back(it);
+
+        it = new QStandardItem(chan->label());
+        it->setEditable(true);
+        items.push_back(it);
+
+        it = new QStandardItem(chan->description());
+        it->setEditable(true);
+        items.push_back(it);
+
+        it = new QStandardItem(QString().number(chan->id(),16));
+        it->setEditable(false);
+        items.push_back(it);
+
+        row = toprows[chan->type()]++;
+        toplevel[chan->type()]->insertRow(row, items);
+    }
+    ui->chanView->expandAll();
+}
 
 PreferencesDialog::~PreferencesDialog()
 {
     disconnect(graphModel, SIGNAL(itemChanged(QStandardItem *)), this,
                SLOT(graphModel_changed(QStandardItem *)));
     delete ui;
-}
-
-void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
-{
-    int row = index.row();
-    int col = index.column();
-    bool ok;
-    int id = ui->eventTable->item(row, 3)->text().toInt(&ok);
-
-    if (col == 1) {
-        QWidget *w = ui->eventTable->cellWidget(row, col);
-        QColorDialog a;
-        QColor color = w->palette().background().color();
-        a.setCurrentColor(color);
-
-        if (a.exec() == QColorDialog::Accepted) {
-            QColor c = a.currentColor();
-            QPalette p(c, c, c, c, c, c, c);
-            w->setPalette(p);
-            m_new_colors[id] = c;
-            //qDebug() << "Color accepted" << col << id;
-        }
-    }
 }
 
 bool PreferencesDialog::Save()
@@ -555,13 +598,27 @@ bool PreferencesDialog::Save()
     bigfont->setWeight(ui->bigFontBold->isChecked() ? QFont::Bold : QFont::Normal);
     bigfont->setItalic(ui->bigFontItalic->isChecked());
 
-    // Process color changes
-    for (QHash<int, QColor>::iterator i = m_new_colors.begin(); i != m_new_colors.end(); i++) {
-        schema::Channel &chan = schema::channel[i.key()];
 
-        if (!chan.isNull()) {
-            qDebug() << "TODO: Change" << chan.code() << "color to" << i.value();
-            chan.setDefaultColor(i.value());
+    int toprows = chanModel->rowCount();
+
+    bool ok;
+    for (int i=0; i < toprows; i++) {
+        QStandardItem * topitem = chanModel->item(i,0);
+
+        if (!topitem) continue;
+        int rows = topitem->rowCount();
+        for (int j=0; j< rows; ++j) {
+            QStandardItem * item = topitem->child(j, 0);
+            if (!item) continue;
+
+            ChannelID id = item->data(Qt::UserRole).toUInt(&ok);
+            schema::Channel & chan = schema::channel[id];
+            if (chan.isNull()) continue;
+            chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
+            chan.setFullname(item->text());
+            chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
+            chan.setLabel(topitem->child(j,2)->text());
+            chan.setDescription(topitem->child(j,3)->text());
         }
     }
 
@@ -805,6 +862,7 @@ void PreferencesDialog::resetGraphModel()
             SLOT(graphModel_changed(QStandardItem *)));
 
     ui->graphView->expandAll();
+
 }
 
 void PreferencesDialog::on_resetGraphButton_clicked()
@@ -929,6 +987,14 @@ void PreferencesDialog::on_tooltipTimeoutSlider_valueChanged(int value)
     ui->tooltipMS->display(value * 50);
 }
 
+void PreferencesDialog::on_resetChannelDefaults_clicked()
+{
+    if (QMessageBox::question(this, STR_MessageBox_Warning, QObject::tr("Are you sure you want to reset all your channel colors and settings to defaults?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
+        schema::resetChannels();
+        InitChanInfo();
+    }
+}
+
 void PreferencesDialog::on_createSDBackups_clicked(bool checked)
 {
     if (!checked && p_profile->session->backupCardData()) {
@@ -937,5 +1003,30 @@ void PreferencesDialog::on_createSDBackups_clicked(bool checked)
         } else {
             ui->createSDBackups->setChecked(true);
         }
+    }
+}
+
+void PreferencesDialog::on_channelSearch_textChanged(const QString &arg1)
+{
+    chanFilterModel->setFilterFixedString(arg1);
+}
+
+void PreferencesDialog::on_chanView_doubleClicked(const QModelIndex &index)
+{
+    if (index.column() == 1) {
+        QColorDialog a;
+
+        quint32 color = index.data(Qt::UserRole).toUInt();
+
+        a.setCurrentColor(QColor((QRgb)color));
+
+        if (a.exec() == QColorDialog::Accepted) {
+            quint32 cv = a.currentColor().rgba();
+
+            chanFilterModel->setData(index, cv, Qt::UserRole);
+            chanFilterModel->setData(index, a.currentColor(), Qt::BackgroundRole);
+
+        }
+
     }
 }

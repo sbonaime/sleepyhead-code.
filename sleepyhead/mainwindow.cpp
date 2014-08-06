@@ -123,6 +123,9 @@ void MainWindow::logMessage(QString msg)
     ui->logText->appendPlainText(msg);
 }
 
+void loadChannels();
+void saveChannels();
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -325,6 +328,7 @@ MainWindow::MainWindow(QWidget *parent) :
     wtimer.setParent(this);
     warnidx = 0;
     wtimer.singleShot(0, this, SLOT(on_changeWarningMessage()));
+    loadChannels();
 }
 
 void MainWindow::on_changeWarningMessage()
@@ -335,8 +339,133 @@ void MainWindow::on_changeWarningMessage()
     wtimer.singleShot(10000, this, SLOT(on_changeWarningMessage()));
 }
 
+
+quint16 chandata_version = 0;
+
+void saveChannels()
+{
+    QString filename = p_profile->Get("{DataFolder}/") + "channels.dat";
+    QFile f(filename);
+    qDebug() << "Saving Channel States";
+    f.open(QFile::WriteOnly);
+    QDataStream out(&f);
+    out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << (quint32)magic;
+    out << (quint16)chandata_version;
+
+    quint16 size = schema::channel.channels.size();
+    out << size;
+
+    QHash<ChannelID, schema::Channel *>::iterator it;
+    QHash<ChannelID, schema::Channel *>::iterator it_end = schema::channel.channels.end();
+
+    for (it = schema::channel.channels.begin(); it != it_end; ++it) {
+        schema::Channel * chan = it.value();
+        out << it.key();
+        out << chan->code();
+        out << chan->enabled();
+        out << chan->defaultColor();
+        out << chan->fullname();
+        out << chan->label();
+        out << chan->description();
+        out << chan->lowerThreshold();
+        out << chan->lowerThresholdColor();
+        out << chan->upperThreshold();
+        out << chan->upperThresholdColor();
+    }
+
+    f.close();
+
+}
+
+
+void loadChannels()
+{
+    QString filename = p_profile->Get("{DataFolder}/") + "channels.dat";
+    QFile f(filename);
+    if (!f.open(QFile::ReadOnly)) {
+        return;
+    }
+    qDebug() << "Loading Channel States";
+
+    QDataStream in(&f);
+    in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 mag;
+    in >> mag;
+
+    if (magic != mag)  {
+        qDebug() << "LoadChannels: Faulty data";
+        return;
+    }
+    quint16 version;
+    in >> version;
+
+    if (version < chandata_version) {
+        return;
+        //upgrade here..
+    }
+
+    quint16 size;
+    in >> size;
+
+    QString name;
+    ChannelID code;
+    bool enabled;
+    QColor color;
+    EventDataType lowerThreshold;
+    QColor lowerThresholdColor;
+    EventDataType upperThreshold;
+    QColor upperThresholdColor;
+
+    QString fullname;
+    QString label;
+    QString description;
+
+    for (int i=0; i < size; i++) {
+        in >> code;
+        schema::Channel * chan = &schema::channel[code];
+        in >> name;
+        if (chan->code() != name) {
+            qDebug() << "Looking up channel" << name << "by name, as it's ChannedID must have changed";
+            chan = &schema::channel[name];
+        }
+        in >> enabled;
+        in >> color;
+        in >> fullname;
+        in >> label;
+        in >> description;
+        in >> lowerThreshold;
+        in >> lowerThresholdColor;
+        in >> upperThreshold;
+        in >> upperThresholdColor;
+        if (!chan) {
+            qDebug() << "loadChannels has idea about channel" << name;
+            if (in.atEnd()) return;
+            continue;
+        }
+        chan->setEnabled(enabled);
+        chan->setDefaultColor(color);
+        chan->setFullname(fullname);
+        chan->setLabel(label);
+        chan->setDescription(description);
+        chan->setLowerThreshold(lowerThreshold);
+        chan->setLowerThresholdColor(lowerThresholdColor);
+        chan->setUpperThreshold(upperThreshold);
+        chan->setUpperThresholdColor(upperThresholdColor);
+        if (in.atEnd()) return;
+    }
+
+    f.close();
+}
+
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+    saveChannels();
+
     if (daily) {
         daily->close();
         daily->deleteLater();

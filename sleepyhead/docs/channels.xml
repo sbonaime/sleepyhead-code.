@@ -92,11 +92,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
    <option id="4" value="Journal"/>
    <option id="5" value="EEG"/>
   </channel>
-  <channel id="0xf001" class="setting" scope="!machine" name="Brand" details="Brand" label="Brand" type="string"/>
-  <channel id="0xf002" class="setting" scope="!machine" name="Model" details="Model" label="Model" type="string"/>
-  <channel id="0xf003" class="setting" scope="!machine" name="ModelNumber" details="Model Number" label="Model Number" type="string"/>
-  <channel id="0xf004" class="setting" scope="!machine" name="SubModel" details="Sub-Model" label="Sub Model" type="string"/>
-  <channel id="0xf005" class="setting" scope="!machine" name="Serial" details="Serial" label="Serial" type="string"/>
   <channel id="0xf006" class="setting" scope="!machine" name="Notes" details="Machine Notes" label="Notes" type="richtext"/>
  </group>
 </channels>

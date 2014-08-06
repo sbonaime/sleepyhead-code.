@@ -571,16 +571,8 @@ int WeinmannLoader::Open(QString path)
     return 1;*/
 }
 
-bool weinmann_initialized = false;
-void WeinmannLoader::Register()
+void WeinmannLoader::initChannels()
 {
-    if (weinmann_initialized) { return; }
-
-    qDebug() << "Registering WeinmannLoader";
-    RegisterLoader(new WeinmannLoader());
-    //InitModelMap();
-    weinmann_initialized = true;
-
     using namespace schema;
     Channel * chan = nullptr;
 //    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlex = 0x1165, SETTING,   SESSION,
@@ -591,4 +583,15 @@ void WeinmannLoader::Register()
 
 
 //    chan->addOption(1, STR_TR_None);
+}
+
+bool weinmann_initialized = false;
+void WeinmannLoader::Register()
+{
+    if (weinmann_initialized) { return; }
+
+    qDebug() << "Registering WeinmannLoader";
+    RegisterLoader(new WeinmannLoader());
+    //InitModelMap();
+    weinmann_initialized = true;
 }

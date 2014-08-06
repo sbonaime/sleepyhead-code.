@@ -69,7 +69,6 @@ class PreferencesDialog : public QDialog
     void RefreshLastChecked();
 
   private slots:
-    void on_eventTable_doubleClicked(const QModelIndex &index);
     void on_combineSlider_valueChanged(int value);
 
     void on_IgnoreSlider_valueChanged(int value);
@@ -98,18 +97,30 @@ class PreferencesDialog : public QDialog
 
     void on_createSDBackups_clicked(bool checked);
 
+    void on_resetChannelDefaults_clicked();
+
+    void on_channelSearch_textChanged(const QString &arg1);
+
+    void on_chanView_doubleClicked(const QModelIndex &index);
+
 private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();
+    void InitChanInfo();
 
+    QHash<schema::ChanType, QStandardItem *> toplevel;
 
     Ui::PreferencesDialog *ui;
     Profile *profile;
-    QHash<int, QColor> m_new_colors;
+    QHash<ChannelID, QColor> m_new_colors;
+
     QStringList importLocations;
     QStringListModel *importModel;
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
+
+    MySortFilterProxyModel * chanFilterModel;
+    QStandardItemModel *chanModel;
 };
 
 

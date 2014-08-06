@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1163,7 +1163,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
      </widget>
      <widget class="QWidget" name="colourTab">
       <attribute name="title">
-       <string>&amp;Events</string>
+       <string>C&amp;hannels</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
@@ -1173,7 +1173,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
         <number>0</number>
        </property>
        <property name="topMargin">
-        <number>4</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
         <number>0</number>
@@ -1182,53 +1182,54 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Not entirely sure if this will get to live or not..</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_19">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="channelSearch"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QTableWidget" name="eventTable">
-         <property name="sortingEnabled">
-          <bool>true</bool>
-         </property>
-         <property name="rowCount">
-          <number>0</number>
-         </property>
-         <property name="columnCount">
-          <number>4</number>
-         </property>
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>true</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string>Show</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Colour</string>
-          </property>
-          <property name="textAlignment">
-           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Event</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>ID</string>
-          </property>
-         </column>
-        </widget>
+        <widget class="QTreeView" name="chanView"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_20">
+         <item>
+          <widget class="QPushButton" name="resetChannelDefaults">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Reset &amp;Defaults</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_51">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it's good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -1297,7 +1298,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&amp;Defaults</string>
+             <string>Reset &amp;Defaults</string>
             </property>
            </widget>
           </item>
@@ -1305,6 +1306,9 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
            <widget class="QLabel" name="label_9">
             <property name="text">
              <string>Double click on the (Y-axis) min/max values to edit them</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>

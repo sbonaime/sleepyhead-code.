@@ -21,8 +21,12 @@
 #include "schema.h"
 #include "common_gui.h"
 
+#include "SleepLib/profiles.h"
+
 
 namespace schema {
+
+void resetChannels();
 
 ChannelList channel;
 Channel EmptyChannel;
@@ -190,13 +194,13 @@ void init()
 
     // This Large Leak record is just a flag marker, used by Intellipap for one
     schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakFlag      = 0x100a, FLAG,    SESSION,
-                        "LeakFlag",       QObject::tr("Large Leak"),
+                        "LeakFlag",       QObject::tr("Leak Flag"),
                         QObject::tr("A large mask leak affecting machine performance."),
-                        QObject::tr("LL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light gray")));
+                        QObject::tr("LF"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light gray")));
 
     // The following is a Large Leak record that references a waveform span
     schema::channel.add(GRP_CPAP, new Channel(CPAP_LargeLeak = 0x1158,      SPAN,    SESSION,
-                        "LeakFlagSpan",       QObject::tr("Large Leak"),
+                        "LeakSpan",       QObject::tr("Large Leak"),
                         QObject::tr("A large mask leak affecting machine performance."),
                         QObject::tr("LL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light gray")));
 
@@ -508,6 +512,24 @@ void init()
     ZEO_TimeInDeep = schema::channel["TimeInDeep"].id();
     ZEO_TimeToZ = schema::channel["TimeToZ"].id();
 }
+
+
+void resetChannels()
+{
+    schema::channel.channels.clear();
+    schema::channel.names.clear();
+    schema::channel.groups.clear();
+
+    schema_initialized = false;
+    init();
+
+    QList<MachineLoader *> list = GetLoaders();
+    for (int i=0; i< list.size(); ++i) {
+        MachineLoader * loader = list.at(i);
+        loader->initChannels();
+    }
+}
+
 
 Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
                  QString description, QString label, QString unit, DataType datatype, QColor color, int link):

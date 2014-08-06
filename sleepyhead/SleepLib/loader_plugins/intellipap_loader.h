@@ -75,6 +75,8 @@ class IntellipapLoader : public CPAPLoader
     virtual MachineInfo newInfo() {
         return MachineInfo(MT_CPAP, 0, intellipap_class_name, QObject::tr("DeVilbiss"), QString(), QString(), QString(), QObject::tr("Intellipap"), QDateTime::currentDateTime(), intellipap_data_version);
     }
+    virtual void initChannels();
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Now for some CPAPLoader overrides

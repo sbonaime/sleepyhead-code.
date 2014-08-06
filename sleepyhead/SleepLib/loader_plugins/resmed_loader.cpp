@@ -2334,6 +2334,7 @@ void ResInitModelMap()
     // to signal names crop short
     // Read this from a table?
 
+    resmed_codes.clear();
 
     resmed_codes[CPAP_FlowRate].push_back("Flow");
     resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
@@ -2418,30 +2419,11 @@ void ResInitModelMap()
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 }
 
-//<channel id="0xe201" class="setting" scope="!session" name="EPR" details="EPR Mode" label="EPR Mode" type="integer">
-// <Option id="0" value="Off"/>
-// <Option id="1" value="Ramp Only"/>
-// <Option id="2" value="Full Time"/>
-// <Option id="3" value="EPR?"/>
-//</channel>
-//<channel id="0xe202" class="setting" scope="!session" name="EPRLevel" details="EPR Setting" label="EPR Setting" type="integer">
-// <Option id="0" value="0"/>
-// <Option id="1" value="1"/>
-// <Option id="2" value="2"/>
-// <Option id="3" value="3"/>
-//</channel>
-
 ChannelID ResmedLoader::PresReliefMode() { return RMS9_EPR; }
 ChannelID ResmedLoader::PresReliefLevel() { return RMS9_EPRLevel; }
 
-bool resmed_initialized = false;
-void ResmedLoader::Register()
+void ResmedLoader::initChannels()
 {
-    if (resmed_initialized) { return; }
-
-    qDebug() << "Registering ResmedLoader";
-    RegisterLoader(new ResmedLoader());
-
     using namespace schema;
     Channel * chan = nullptr;
     channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING,   SESSION,
@@ -2454,6 +2436,7 @@ void ResmedLoader::Register()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, QObject::tr("Ramp Only"));
     chan->addOption(2, QObject::tr("Full Time"));
+    chan->addOption(3, QObject::tr("Patient???"));
 
     channel.add(GRP_CPAP, chan = new Channel(RMS9_EPRLevel = 0xe202, SETTING,   SESSION,
         "EPRLevel", QObject::tr("EPR Level"),
@@ -2465,9 +2448,20 @@ void ResmedLoader::Register()
     chan->addOption(1, QObject::tr("1cmH2O"));
     chan->addOption(2, QObject::tr("2cmH2O"));
     chan->addOption(3, QObject::tr("3cmH2O"));
-    chan->addOption(4, QObject::tr("Patient")); // Think this isn't real..
 
+    // Modelmap needs channels initalized above!!!
     ResInitModelMap();
+
+}
+
+bool resmed_initialized = false;
+void ResmedLoader::Register()
+{
+    if (resmed_initialized) { return; }
+
+    qDebug() << "Registering ResmedLoader";
+    RegisterLoader(new ResmedLoader());
+
     resmed_initialized = true;
 }
 

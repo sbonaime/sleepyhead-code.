@@ -116,6 +116,7 @@ Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
 
 void RegisterLoader(MachineLoader *loader)
 {
+    loader->initChannels();
     m_loaders.push_back(loader);
 }
 void DestroyLoaders()

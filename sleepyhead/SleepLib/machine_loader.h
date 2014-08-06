@@ -86,6 +86,8 @@ class MachineLoader: public QObject
 
     void removeMachine(Machine * m);
 
+    virtual void initChannels() {}
+
 signals:
     void updateProgress(int cnt, int total);
 
@@ -126,7 +128,7 @@ public:
     virtual ChannelID PresReliefLevel() { return NoChannel; }
     virtual ChannelID HumidifierConnected() { return NoChannel; }
     virtual ChannelID HumidifierLevel() { return CPAP_HumidSetting; }
-
+    virtual void initChannels() {}
 };
 
 struct ImportPath

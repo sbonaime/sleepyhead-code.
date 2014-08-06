@@ -1447,7 +1447,7 @@ bool PRS1Import::ParseSummaryF5()
     session->settings[CPAP_RampPressure] = ramp_pressure;
 
 
-    int duration=data[0x1B] | data[0x1C] << 8;
+    int duration=data[0x18] | data[0x19] << 8;
     session->set_last(qint64(summary->timestamp+duration) * 1000L);
 
     return true;
@@ -1985,14 +1985,9 @@ using namespace schema;
 
 Channel PRS1Channels;
 
-void PRS1Loader::Register()
+void PRS1Loader::initChannels()
 {
-    if (initialized) { return; }
-
-    qDebug() << "Registering PRS1Loader";
-    RegisterLoader(new PRS1Loader());
-    InitModelMap();
-    initialized = true;
+    Channel * chan = nullptr;
 
     channel.add(GRP_CPAP, new Channel(CPAP_PressurePulse = 0x1009, MINOR_FLAG,    SESSION,
         "PressurePulse",
@@ -2001,9 +1996,6 @@ void PRS1Loader::Register()
         QObject::tr("PP"),
         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark red")));
 
-
-
-    Channel * chan = nullptr;
     channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexMode = 0xe105, SETTING,   SESSION,
         "PRS1FlexMode", QObject::tr("Flex Mode"),
         QObject::tr("PRS1 pressure relief mode."),
@@ -2137,8 +2129,6 @@ void PRS1Loader::Register()
 //     <Option id="3" value="AutoSV"/>
 //    </channel>
 
-
-
     QString unknowndesc=QObject::tr("Unknown PRS1 Code %1");
     QString unknownname=QObject::tr("PRS1_%1");
     QString unknownshort=QObject::tr("PRS1_%1");
@@ -2206,13 +2196,21 @@ void PRS1Loader::Register()
 
     channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG,    SESSION,
         "PRS1TimedBreath",
-        QObject::tr("Timed Breath").arg(0x12,2,16,QChar('0')),
-        QObject::tr("").arg(0x12,2,16,QChar('0')),
-        QObject::tr("TB").arg(0x12,2,16,QChar('0')),
+        QObject::tr("Timed Breath"),
+        QObject::tr("Machine Initiated Breath"),
+        QObject::tr("TB"),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
+}
 
+void PRS1Loader::Register()
+{
+    if (initialized) { return; }
 
+    qDebug() << "Registering PRS1Loader";
+    RegisterLoader(new PRS1Loader());
+    InitModelMap();
+    initialized = true;
 }
 
 

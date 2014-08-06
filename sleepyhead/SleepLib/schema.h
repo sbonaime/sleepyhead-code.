@@ -28,6 +28,7 @@ const quint32 YGrid = 32;
 }
 
 namespace schema {
+void resetChannels();
 
 enum Function {
     NONE = 0, AVG, WAVG, MIN, MAX, SUM, CNT, P90, CPH, SPH, HOURS, SET
@@ -76,6 +77,7 @@ class Channel
     inline ChannelID linkid() const { return m_link; }
 
 
+    void setFullname(QString fullname) { m_fullname = fullname; }
     void setLabel(QString label) { m_label = label; }
     void setUnit(QString unit) { m_unit = unit; }
     void setDescription(QString desc) { m_description = desc; }
