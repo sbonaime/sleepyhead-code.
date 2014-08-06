@@ -442,6 +442,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     }
     GraphView->setEmptyText(STR_TR_NoData);
     previous_date=QDate();
+
+    ui->calButton->setChecked(p_profile->appearance->calendarVisible() ? Qt::Checked : Qt::Unchecked);
+    on_calButton_toggled(p_profile->appearance->calendarVisible());
+
+
 }
 
 
@@ -2042,6 +2047,7 @@ void Daily::on_calButton_toggled(bool checked)
 {
     bool b=checked;
     ui->calendarFrame->setVisible(b);
+    p_profile->appearance->setCalendarVisible(b);
 
     if (!b) {
         ui->calButton->setArrowType(Qt::DownArrow);

@@ -313,6 +313,7 @@ const QString STR_AS_AllowYAxisScaling = "AllowYAxisScaling";
 const QString STR_AS_GraphTooltips = "GraphTooltips";
 const QString STR_AS_LineThickness = "LineThickness";
 const QString STR_AS_LineCursorMode = "LineCursorMode";
+const QString STR_AS_CalendarVisible = "CalendarVisible";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem = "UnitSystem";
@@ -673,6 +674,7 @@ class AppearanceSettings : public ProfileSettings
         initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
         initPref(STR_AS_LineThickness, 1.0);
         initPref(STR_AS_LineCursorMode, false);
+        initPref(STR_AS_CalendarVisible, true);
     }
 
     //! \brief Returns the normal (unscaled) height of a graph
@@ -695,6 +697,8 @@ class AppearanceSettings : public ProfileSettings
     float lineThickness() const { return getPref(STR_AS_LineThickness).toFloat(); }
     //! \brief Whether to show line cursor
     bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
+    //! \brief Whether to show the calendar
+    bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
 
 
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
@@ -732,6 +736,8 @@ class AppearanceSettings : public ProfileSettings
     void setLineThickness(float size) { setPref(STR_AS_LineThickness, size); }
     //! \brief Sets whether to display Line Cursor
     void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
+    //! \brief Sets whether to display the (Daily View) Calendar
+    void setCalendarVisible(bool b) { setPref(STR_AS_CalendarVisible, b); }
 };
 
 /*! \class UserSettings
