@@ -145,6 +145,7 @@ public:
     void addBookmark(qint64 st, qint64 et, QString text);
 
 private slots:
+    void on_ReloadDay();
 
     /*! \fn on_calendar_currentPageChanged(int year, int month);
         \brief Scans through all days for this month, updating the day colors for the calendar object

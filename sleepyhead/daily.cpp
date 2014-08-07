@@ -776,8 +776,12 @@ void Daily::LoadDate(QDate date)
     ui->calendar->blockSignals(false);
     on_calendar_selectionChanged();
 }
-
 void Daily::on_calendar_selectionChanged()
+{
+    QTimer::singleShot(0, this, SLOT(on_ReloadDay()));
+}
+
+void Daily::on_ReloadDay()
 {
     graphView()->releaseKeyboard();
     QTime time;
@@ -1763,6 +1767,7 @@ void Daily::Unload(QDate date)
             return;
         }
     }
+
     webView->setHtml("");
     Session *journal=GetJournalSession(date);
 

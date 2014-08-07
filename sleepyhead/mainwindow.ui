@@ -1498,7 +1498,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>598</height>
          </rect>
         </property>
         <property name="palette">
@@ -1603,7 +1603,7 @@ QToolBox::tab:selected  {
           <normaloff>:/icons/bob-v3.0.png</normaloff>:/icons/bob-v3.0.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>&amp;Navigation</string>
+         <string>Navigation</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -1912,7 +1912,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>598</height>
          </rect>
         </property>
         <property name="palette">
@@ -1990,7 +1990,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <normaloff>:/icons/bookmark.png</normaloff>:/icons/bookmark.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>&amp;Bookmarks</string>
+         <string>Bookmarks</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="spacing">
@@ -3060,7 +3060,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>598</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3074,7 +3074,7 @@ border-radius: 10px;
           <normaloff>:/icons/trophy.png</normaloff>:/icons/trophy.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>&amp;Records</string>
+         <string>Records</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <property name="spacing">
@@ -3122,7 +3122,7 @@ border-radius: 10px;
      <x>0</x>
      <y>0</y>
      <width>975</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -3480,7 +3480,7 @@ border-radius: 10px;
   </action>
   <action name="action">
    <property name="text">
-    <string> </string>
+    <string/>
    </property>
   </action>
   <action name="actionLeft_Daily_Sidebar">
