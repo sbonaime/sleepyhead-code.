@@ -29,7 +29,7 @@ const quint16 filetype_data = 1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version = 14;
+const quint16 summary_version = 15;
 const quint16 events_version = 10;
 
 Session::Session(Machine *m, SessionID session)
@@ -199,11 +199,26 @@ bool Session::StoreSummary(QString filename)
     out << m_firstchan;
     out << m_lastchan;
 
+    // <- 8
     out << m_valuesummary;
     out << m_timesummary;
-    out << m_gain;
+    // 8 ->
 
+    // <- 9
+    out << m_gain;
+    // 9 ->
+
+    // <- 15
+    out << m_availableChannels;
+    out << m_timeAboveTheshold;
+    out << m_upperThreshold;
+    out << m_timeBelowTheshold;
+    out << m_lowerThreshold;
+    // 15 ->
+
+    // <- 13
     out << s_summaryOnly;
+    // 13 ->
 
     file.close();
     return true;
@@ -421,6 +436,15 @@ bool Session::LoadSummary(QString filename)
                 in >> m_gain;
             }
         }
+
+        // screwed up with version 14
+        if (version >= 15) {
+            in >> m_availableChannels;
+            in >> m_timeAboveTheshold;
+            in >> m_upperThreshold;
+            in >> m_timeBelowTheshold;
+            in >> m_lowerThreshold;
+        } // else this is ugly.. forced machine database upgrade will solve it though.
 
         if (version == 13) {
             QHash<ChannelID, QVariant>::iterator it = settings.find(CPAP_SummaryOnly);
@@ -900,6 +924,7 @@ void Session::updateCountSummary(ChannelID code)
 
 void Session::UpdateSummaries()
 {
+
     ChannelID id;
     calcAHIGraph(this);
 
@@ -915,8 +940,11 @@ void Session::UpdateSummaries()
     QHash<ChannelID, QVector<EventList *> >::iterator c = eventlist.begin();
     QHash<ChannelID, QVector<EventList *> >::iterator ev_end = eventlist.end();
 
+    m_availableChannels.clear();
+
     for (; c != ev_end; c++) {
         id = c.key();
+        m_availableChannels.push_back(id);
 
         schema::ChanType ctype = schema::channel[id].type();
         if (ctype != schema::SETTING) {
@@ -951,6 +979,7 @@ void Session::UpdateSummaries()
             wavg(id);
         }
     }
+    timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline());
 }
 
 EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)
@@ -1789,6 +1818,17 @@ EventDataType Session::sph(ChannelID id) // sum per hour, assuming id is a time 
 
 EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
 {
+    QHash<ChannelID, EventDataType>::iterator th = m_upperThreshold.find(id);
+    if (th != m_upperThreshold.end()) {
+        if (fabs(th.value()-threshold) < 0.00000001) { // close enough
+            th = m_timeAboveTheshold.find(id);
+            if (th != m_timeAboveTheshold.end()) {
+                return th.value();
+            }
+        }
+    }
+    bool loaded = s_events_loaded;
+
     this->OpenEvents();
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
     if (j == eventlist.end()) {
@@ -1825,11 +1865,26 @@ EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
         total += ti-started;
     }
     EventDataType time = double(total) / 60000.0;
+
+    m_timeAboveTheshold[id] = time;
+    m_upperThreshold[id] = threshold;
+    if (!loaded) this->TrashEvents(); // otherwise leave it open
     return time;
 }
 
 EventDataType Session::timeBelowThreshold(ChannelID id, EventDataType threshold)
 {
+    QHash<ChannelID, EventDataType>::iterator th = m_lowerThreshold.find(id);
+    if (th != m_lowerThreshold.end()) {
+        if (fabs(th.value()-threshold) < 0.00000001) { // close enough
+            th = m_timeBelowTheshold.find(id);
+            if (th != m_timeBelowTheshold.end()) {
+                return th.value();
+            }
+        }
+    }
+    bool loaded = s_events_loaded;
+
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
     if (j == eventlist.end()) {
         return 0.0f;
@@ -1867,6 +1922,11 @@ EventDataType Session::timeBelowThreshold(ChannelID id, EventDataType threshold)
     }
 
     EventDataType time = double(total) / 60000.0;
+
+    m_timeBelowTheshold[id] = time;
+    m_lowerThreshold[id] = threshold;
+    if (!loaded) this->TrashEvents(); // otherwise leave it open
+
     return time;
 }
 

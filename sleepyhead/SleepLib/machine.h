@@ -29,7 +29,7 @@
 #include "SleepLib/machine_common.h"
 #include "SleepLib/event.h"
 #include "SleepLib/session.h"
-
+#include "SleepLib/schema.h"
 #include "SleepLib/day.h"
 
 
@@ -193,6 +193,8 @@ class Machine
     inline void setCap(quint32 value) { info.cap = value; }
 
     void setLoaderName(QString value);
+
+    QList<ChannelID> availableChannels(schema::ChanType chantype);
 
     MachineLoader * loader() { return m_loader; }
 

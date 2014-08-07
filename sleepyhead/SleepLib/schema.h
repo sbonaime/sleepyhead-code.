@@ -35,7 +35,14 @@ enum Function {
 };
 
 enum ChanType {
-    DATA = 0, SETTING, FLAG, MINOR_FLAG, SPAN, WAVEFORM
+    DATA = 1,
+    SETTING = 2,
+    FLAG = 4,
+    MINOR_FLAG = 8,
+    SPAN = 16,
+    WAVEFORM = 32,
+
+    ALL = 0xFFFF
 };
 
 enum DataType {

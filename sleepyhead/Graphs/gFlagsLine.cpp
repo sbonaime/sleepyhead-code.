@@ -240,8 +240,6 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
         }
     }
-
-    return false;
 }
 
 
@@ -424,5 +422,5 @@ bool gFlagsLine::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     Q_UNUSED(graph)
     //  qDebug() << code() << event->x() << event->y() << graph->rect();
 
-    return false;
+    return true;
 }

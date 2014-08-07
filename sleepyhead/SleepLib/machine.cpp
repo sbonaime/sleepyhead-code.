@@ -23,6 +23,7 @@
 #include "profiles.h"
 #include <algorithm>
 #include "SleepLib/schema.h"
+#include "SleepLib/day.h"
 
 extern QProgressBar *qprogress;
 
@@ -389,7 +390,6 @@ const QString Machine::getBackupPath()
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
 }
 
-
 bool Machine::Load()
 {
     QString path = getDataPath();
@@ -669,6 +669,27 @@ bool Machine::Save()
     runTasks();
     return true;
 }
+
+QList<ChannelID> Machine::availableChannels(schema::ChanType chantype)
+{
+    QHash<ChannelID, int> chanhash;
+
+    // look through the daylist and return a list of available channels for this machine
+    QMap<QDate, Day *>::iterator dit;
+    QMap<QDate, Day *>::iterator day_end = day.end();
+    for (dit = day.begin(); dit != day_end; ++dit) {
+        QList<Session *>::iterator sess_end = dit.value()->end();
+        for (QList<Session *>::iterator sit = dit.value()->begin(); sit != sess_end; ++sit) {
+            // sessions desperately need to cache this..
+            ///sit.value
+        }
+    }
+    QList<ChannelID> channels;
+
+    return channels;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CPAP implmementation

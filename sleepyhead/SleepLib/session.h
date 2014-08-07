@@ -168,6 +168,15 @@ class Session
     QHash<ChannelID, QHash<EventStoreType, quint32> > m_timesummary;
     QHash<ChannelID, EventDataType> m_gain;
 
+    QHash<ChannelID, EventDataType> m_lowerThreshold;
+    QHash<ChannelID, EventDataType> m_timeBelowTheshold;
+    QHash<ChannelID, EventDataType> m_upperThreshold;
+    QHash<ChannelID, EventDataType> m_timeAboveTheshold;
+
+    QList<ChannelID> m_availableChannels;
+
+    const QList<ChannelID> & availableChannels() { return m_availableChannels; }
+
     //! \brief Generates sum and time data for each distinct value in 'code' events..
     void updateCountSummary(ChannelID code);
 

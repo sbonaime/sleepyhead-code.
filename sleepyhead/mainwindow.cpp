@@ -877,10 +877,11 @@ void MainWindow::on_action_Import_Data_triggered()
     time.start();
     QDialog popup(this, Qt::FramelessWindowHint);
     popup.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
-    QVBoxLayout waitlayout(&popup);
-    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
-    waitlayout.addWidget(qprogress,1);
+    QLabel * waitmsg = new QLabel(tr("Please wait, scanning for CPAP data cards..."));
+    QVBoxLayout *waitlayout = new QVBoxLayout();
+    waitlayout->addWidget(waitmsg,1,Qt::AlignCenter);
+    waitlayout->addWidget(qprogress,1);
+    popup.setLayout(waitlayout);
 
     bool asknew = false;
     qprogress->setVisible(false);
@@ -912,13 +913,13 @@ void MainWindow::on_action_Import_Data_triggered()
             ui->statusbar->insertWidget(2,qprogress,1);
             return;
         } else if (res == QMessageBox::No) {
-            waitmsg.setText(tr("Please wait, launching file dialog..."));
+            waitmsg->setText(tr("Please wait, launching file dialog..."));
             datacards.clear();
             asknew = true;
         }
 
     } else {
-        waitmsg.setText(tr("No CPAP data card detected, launching file dialog..."));
+        waitmsg->setText(tr("No CPAP data card detected, launching file dialog..."));
         asknew = true;
     }
 
