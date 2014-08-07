@@ -247,6 +247,8 @@ class gGraph : public QObject
     //! \brief Asks the main gGraphView to redraw after ms milliseconds
     void timedRedraw(int ms);
 
+    double screenToTime(int xpos);
+
     //! \brief Sets the margins for the four sides of this graph.
     void setMargins(short left, short right, short top, short bottom) {
         m_marginleft = left;
@@ -313,6 +315,11 @@ class gGraph : public QObject
 
     //! \brief Key Pressed event
     virtual void keyReleaseEvent(QKeyEvent *event);
+
+    void cancelSelection() {
+        m_selecting_area = false;
+        m_selection = QRect(0,0,0,0);
+    }
 
     void dumpInfo();
 

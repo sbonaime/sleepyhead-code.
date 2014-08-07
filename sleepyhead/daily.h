@@ -142,6 +142,7 @@ public:
     void setSidebarVisible(bool visible);
     void setCalendarVisible(bool visible);
 
+    void addBookmark(qint64 st, qint64 et, QString text);
 
 private slots:
 

@@ -385,6 +385,8 @@ class gGraphView
     void dumpInfo();
     void resetMouse() { m_mouse = QPoint(0,0); }
 
+    void getSelectionTimes(qint64 & start, qint64 & end);
+
     // for profiling purposes, a count of lines drawn in a single frame
     int lines_drawn_this_frame;
     int quads_drawn_this_frame;

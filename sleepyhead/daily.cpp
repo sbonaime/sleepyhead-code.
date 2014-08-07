@@ -1888,7 +1888,7 @@ Session * Daily::CreateJournalSession(QDate date)
     } else {
         QDateTime dt(date,QTime(20,0));
         st=qint64(dt.toTime_t())*1000L;
-        et=st+3600000;
+        et=st+3600000L;
     }
     sess->set_first(st);
     sess->set_last(et);
@@ -2133,15 +2133,13 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     GraphView->redraw();
 }
 
-void Daily::on_addBookmarkButton_clicked()
+void Daily::addBookmark(qint64 st, qint64 et, QString text)
 {
-    qint64 st,et;
     ui->bookmarkTable->blockSignals(true);
-    GraphView->GetXBounds(st,et);
     QDateTime d=QDateTime::fromTime_t(st/1000L);
     int row=ui->bookmarkTable->rowCount();
     ui->bookmarkTable->insertRow(row);
-    QTableWidgetItem *tw=new QTableWidgetItem(tr("Bookmark at %1").arg(d.time().toString("HH:mm:ss")));
+    QTableWidgetItem *tw=new QTableWidgetItem(text);
     QTableWidgetItem *dw=new QTableWidgetItem(d.time().toString("HH:mm:ss"));
     dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     ui->bookmarkTable->setItem(row,0,dw);
@@ -2160,8 +2158,15 @@ void Daily::on_addBookmarkButton_clicked()
     update_Bookmarks();
     mainwin->updateFavourites();
 
-    //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
-    //ui->bookmarkTable->setItem(row,3,new QTableWidgetItem(QString::number(et)));
+}
+
+void Daily::on_addBookmarkButton_clicked()
+{
+    qint64 st,et;
+    GraphView->GetXBounds(st,et);
+    QDateTime d=QDateTime::fromTime_t(st/1000L);
+
+    addBookmark(st,et, tr("Bookmark at %1").arg(d.time().toString("HH:mm:ss")));
 }
 void Daily::update_Bookmarks()
 {

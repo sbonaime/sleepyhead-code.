@@ -675,6 +675,16 @@ double gGraph::currentTime() const
 {
     return m_graphview->currentTime();
 }
+double gGraph::screenToTime(int xpos)
+{
+    double w = m_rect.width() - left - right;
+    double xx = m_blockzoom ? rmax_x - rmin_x : max_x - min_x;
+    double xmult = xx / w;
+    double x = xpos - m_rect.left() - left;
+    double res = xmult * x;
+    res += m_blockzoom ? rmin_x : min_x;
+    return res;
+}
 
 void gGraph::mouseMoveEvent(QMouseEvent *event)
 {
@@ -849,7 +859,6 @@ void gGraph::mousePressEvent(QMouseEvent *event)
     }*/
     //qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
 }
-
 
 void gGraph::mouseReleaseEvent(QMouseEvent *event)
 {

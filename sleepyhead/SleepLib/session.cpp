@@ -70,6 +70,10 @@ void Session::TrashEvents()
     QHash<ChannelID, QVector<EventList *> >::iterator i;
     QHash<ChannelID, QVector<EventList *> >::iterator i_end=eventlist.end();
 
+    if (s_changed) {
+        // Save first..
+    }
+
     for (i = eventlist.begin(); i != i_end; ++i) {
         j_end=i.value().end();
         for (j = i.value().begin(); j != j_end; ++j) {

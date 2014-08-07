@@ -1923,10 +1923,43 @@ void gGraphView::wheelEvent(QWheelEvent *event)
     }
 }
 
+void gGraphView::getSelectionTimes(qint64 & start, qint64 & end)
+{
+    if (m_graph_index >= 0) {
+        gGraph *g = m_graphs[m_graph_index];
+        if (!g) {
+            start = 0;
+            end = 0;
+            return;
+        }
+        int x1 = qMin(m_point_clicked.x(), m_point_released.x());
+        int x2 = qMax(m_point_clicked.x(), m_point_released.x());
+        start = g->screenToTime(x1);
+        end = g->screenToTime(x2);
+    }
+}
+
 void gGraphView::keyPressEvent(QKeyEvent *event)
 {
-//    bool meta = m_metaselect;
     m_metaselect = event->modifiers() & Qt::AltModifier;
+    if (m_metaselect && ((event->key() == Qt::Key_B) || (event->key() == 8747))) {
+        if (mainwin->getDaily()->graphView() == this) {
+            if (m_graph_index >= 0) {
+                m_metaselect=false;
+                qint64 start,end;
+                getSelectionTimes(start,end);
+                QDateTime d1 = QDateTime::fromMSecsSinceEpoch(start);
+        //        QDateTime d2 = QDateTime::fromMSecsSinceEpoch(end);
+
+                mainwin->getDaily()->addBookmark(start, end, QString("Bookmark at %1").arg(d1.time().toString("HH:mm:ss")));
+                m_graphs[m_graph_index]->cancelSelection();
+                m_graph_index = -1;
+                timedRedraw(0);
+            }
+            event->accept();
+            return;
+        }
+    }
 
     if ((m_metaselect) && (event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9)) {
         int bk = (int)event->key()-Qt::Key_0;
