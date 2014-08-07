@@ -78,11 +78,13 @@ void gFlagsGroup::SetDay(Day *d)
     schema::channel[CPAP_VSnore].setOrder(7);
     schema::channel[CPAP_VSnore2].setOrder(8);
     schema::channel[CPAP_ExP].setOrder(6);
+    schema::channel[CPAP_UserFlag1].setOrder(256);
+    schema::channel[CPAP_UserFlag2].setOrder(257);
 
 
-    availableChans.clear();
-    availableChans.append(d->machine->availableChannels(schema::FLAG));
-    availableChans.append(d->machine->availableChannels(schema::SPAN));
+    quint32 z = schema::FLAG | schema::SPAN;
+    if (p_profile->general->showUnknownFlags()) z |= schema::UNKNOWN;
+    availableChans = d->getSortedMachineChannels(z);
 
     m_rebuild_cpap = (availableChans.size() == 0);
 
@@ -99,33 +101,22 @@ void gFlagsGroup::SetDay(Day *d)
                 schema::Channel * chan = &schema::channel[code];
 
                 if (chan->type() == schema::FLAG) {
-                    chans[code] = chan;
+                    availableChans.push_back(code);
                 } else if (chan->type() == schema::MINOR_FLAG) {
-                 //   chans[code] = chan;
+                    availableChans.push_back(code);
                 } else if (chan->type() == schema::SPAN) {
-                    chans[code] = chan;
+                    availableChans.push_back(code);
+                } else if (chan->type() == schema::UNKNOWN) {
+                    availableChans.push_back(code);
                 }
             }
         }
         availableChans = chans.keys();
     }
 
-    QMultiMap<int, ChannelID> order;
-
+    lvisible.clear();
     for (int i=0; i < availableChans.size(); ++i) {
         ChannelID code = availableChans.at(i);
-        order.insert(schema::channel[code].order(), code);
-    }
-
-    QMultiMap<int, ChannelID>::iterator it;
-
-    for (int i=0;i <lvisible.size(); i++) {
-        delete lvisible.at(i);
-    }
-    lvisible.clear();
-
-    for (it = order.begin(); it != order.end(); ++it) {
-        ChannelID code = it.value();
 //        const schema::Channel & chan = schema::channel[code];
 
         gFlagsLine * fl = new gFlagsLine(code);
@@ -355,35 +346,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             np -= idx;
 
-            if (chan.type() == schema::FLAG) {
-                ///////////////////////////////////////////////////////////////////////////
-                // Draw Event Flag Bars
-                ///////////////////////////////////////////////////////////////////////////
-
-                for (int i = 0; i < np; i++) {
-                    X = start + *tptr++;
-
-                    if (X > maxx) {
-                        break;
-                    }
-
-                    x1 = (X - minx) * xmult + left;
-
-                    if (!hover && QRect(x1-3, bartop-2, 6, bottom-bartop+4).contains(w.graphView()->currentMousePos())) {
-                        hover = true;
-                        painter.setPen(QPen(Qt::red,1));
-
-                        painter.drawRect(x1-2, bartop-2, 4, bottom-bartop+4);
-                        int x,y;
-                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
-                        GetTextExtent(lab, x, y);
-
-                        w.ToolTip(lab, x1 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
-                    }
-
-                    vlines.append(QLine(x1, bartop, x1, bottom));
-                }
-            } else if (chan.type() == schema::SPAN) {
+            if (chan.type() == schema::SPAN) {
                 ///////////////////////////////////////////////////////////////////////////
                 // Draw Event Flag Spans
                 ///////////////////////////////////////////////////////////////////////////
@@ -415,6 +378,35 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         w.ToolTip(lab, x2 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
 
                     }
+                }
+
+            } else { //if (chan.type() == schema::FLAG) {
+                ///////////////////////////////////////////////////////////////////////////
+                // Draw Event Flag Bars
+                ///////////////////////////////////////////////////////////////////////////
+
+                for (int i = 0; i < np; i++) {
+                    X = start + *tptr++;
+
+                    if (X > maxx) {
+                        break;
+                    }
+
+                    x1 = (X - minx) * xmult + left;
+
+                    if (!hover && QRect(x1-3, bartop-2, 6, bottom-bartop+4).contains(w.graphView()->currentMousePos())) {
+                        hover = true;
+                        painter.setPen(QPen(Qt::red,1));
+
+                        painter.drawRect(x1-2, bartop-2, 4, bottom-bartop+4);
+                        int x,y;
+                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
+                        GetTextExtent(lab, x, y);
+
+                        w.ToolTip(lab, x1 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                    }
+
+                    vlines.append(QLine(x1, bartop, x1, bottom));
                 }
             }
         }

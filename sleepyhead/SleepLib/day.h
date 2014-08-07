@@ -176,8 +176,11 @@ class Day
     //! \brief Returns true if this day contains the supplied settings Channel id
     bool settingExists(ChannelID id);
 
+    //! \brief Removes a session from this day
     bool removeSession(Session *sess);
 
+    //! \brief Returns a list of channels of supplied types, according to channel orders
+    QList<ChannelID> getSortedMachineChannels(quint32 chantype);
 
     // Some ugly CPAP specific stuff
     QString getCPAPMode();

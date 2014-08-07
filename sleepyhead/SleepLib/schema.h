@@ -41,6 +41,7 @@ enum ChanType {
     MINOR_FLAG = 8,
     SPAN = 16,
     WAVEFORM = 32,
+    UNKNOWN = 64,
 
     ALL = 0xFFFF
 };

@@ -900,6 +900,27 @@ void Day::CloseEvents()
     }
 }
 
+QList<ChannelID> Day::getSortedMachineChannels(quint32 chantype)
+{
+    QList<ChannelID> available = machine->availableChannels(chantype);
+
+    QMultiMap<int, ChannelID> order;
+
+    for (int i=0; i < available.size(); ++i) {
+        ChannelID code = available.at(i);
+        order.insert(schema::channel[code].order(), code);
+    }
+
+    QMultiMap<int, ChannelID>::iterator it;
+
+    QList<ChannelID> channels;
+    for (it = order.begin(); it != order.end(); ++it) {
+        ChannelID code = it.value();
+        channels.append(code);
+    }
+    return channels;
+}
+
 qint64 Day::first()
 {
     qint64 date = 0;

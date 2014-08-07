@@ -158,31 +158,55 @@ skipcheck:
 
     flags.clear();
 
-    for (int i=0; i< m_day->size(); ++i) {
-        Session * sess = m_day->sessions.at(i);
-        QHash<ChannelID, QVector<EventList *> >::iterator it;
-        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
-            ChannelID code = it.key();
+    quint32 z = schema::FLAG | schema::MINOR_FLAG | schema::SPAN;
+    if (p_profile->general->showUnknownFlags()) z |= schema::UNKNOWN;
+    QList<ChannelID> available = m_day->getSortedMachineChannels(z);
 
-            if (flags.contains(code)) continue;
+    for (int i=0; i < available.size(); ++i) {
+        ChannelID code = available.at(i);
 
-            schema::Channel * chan = &schema::channel[code];
-            gLineOverlayBar * lob = nullptr;
+        schema::Channel * chan = &schema::channel[code];
+        gLineOverlayBar * lob = nullptr;
 
-            if (chan->type() == schema::FLAG) {
-                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
-            } else if (chan->type() == schema::MINOR_FLAG) {
-                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
-            } else if (chan->type() == schema::SPAN) {
-                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
-            }
-            if (lob != nullptr) {
-                lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
-                lob->SetDay(m_day);
-                flags[code] = lob;
-            }
+        if (chan->type() == schema::FLAG) {
+            lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
+        } else if ((chan->type() == schema::MINOR_FLAG) || (chan->type() == schema::UNKNOWN)) {
+            lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
+        } else if (chan->type() == schema::SPAN) {
+            lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
+        }
+        if (lob != nullptr) {
+            lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+            lob->SetDay(m_day);
+            flags[code] = lob;
         }
     }
+
+//    for (int i=0; i< m_day->size(); ++i) {
+//        Session * sess = m_day->sessions.at(i);
+//        QHash<ChannelID, QVector<EventList *> >::iterator it;
+//        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+//            ChannelID code = it.key();
+
+//            if (flags.contains(code)) continue;
+
+//            schema::Channel * chan = &schema::channel[code];
+//            gLineOverlayBar * lob = nullptr;
+
+//            if (chan->type() == schema::FLAG) {
+//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
+//            } else if (chan->type() == schema::MINOR_FLAG) {
+//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
+//            } else if (chan->type() == schema::SPAN) {
+//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
+//            }
+//            if (lob != nullptr) {
+//                lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+//                lob->SetDay(m_day);
+//                flags[code] = lob;
+//            }
+//        }
+//    }
 }
 EventDataType gLineChart::Miny()
 {

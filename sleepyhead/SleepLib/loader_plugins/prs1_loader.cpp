@@ -874,7 +874,7 @@ bool PRS1Import::ParseF0Events()
     EventList *FL = session->AddEventList(CPAP_FlowLimit, EVL_Event);
     EventList *VS = session->AddEventList(CPAP_VSnore, EVL_Event);
     EventList *VS2 = session->AddEventList(CPAP_VSnore2, EVL_Event);
-    EventList *T1 = session->AddEventList(CPAP_Test1, EVL_Event, 0.1);
+    //EventList *T1 = session->AddEventList(CPAP_Test1, EVL_Event, 0.1);
 
     Code[12] = session->AddEventList(PRS1_0B, EVL_Event);
     Code[17] = session->AddEventList(PRS1_0E, EVL_Event);
@@ -2137,7 +2137,7 @@ void PRS1Loader::initChannels()
     QString unknownname=QObject::tr("PRS1_%1");
     QString unknownshort=QObject::tr("PRS1_%1");
 
-    channel.add(GRP_CPAP, new Channel(PRS1_00 = 0x1150, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_00 = 0x1150, UNKNOWN,    SESSION,
         "PRS1_00",
         QString(unknownname).arg(0,2,16,QChar('0')),
         QString(unknowndesc).arg(0,2,16,QChar('0')),
@@ -2145,7 +2145,7 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_01 = 0x1151, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_01 = 0x1151, UNKNOWN,    SESSION,
         "PRS1_01",
         QString(unknownname).arg(1,2,16,QChar('0')),
         QString(unknowndesc).arg(1,2,16,QChar('0')),
@@ -2153,7 +2153,7 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_08 = 0x1152, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_08 = 0x1152, UNKNOWN,    SESSION,
         "PRS1_08",
         QString(unknownname).arg(8,2,16,QChar('0')),
         QString(unknowndesc).arg(8,2,16,QChar('0')),
@@ -2161,41 +2161,41 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_0A = 0x1154, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0A = 0x1154, UNKNOWN,    SESSION,
         "PRS1_0A",
         QString(unknownname).arg(0xa,2,16,QChar('0')),
         QString(unknowndesc).arg(0xa,2,16,QChar('0')),
         QString(unknownshort).arg(0xa,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, UNKNOWN,    SESSION,
         "PRS1_0B",
         QString(unknownname).arg(0xb,2,16,QChar('0')),
         QString(unknowndesc).arg(0xb,2,16,QChar('0')),
         QString(unknownshort).arg(0xb,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0C = 0x1156, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0C = 0x1156, UNKNOWN,    SESSION,
         "PRS1_0C",
         QString(unknownname).arg(0xc,2,16,QChar('0')),
         QString(unknowndesc).arg(0xc,2,16,QChar('0')),
         QString(unknownshort).arg(0xc,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0E = 0x1157, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0E = 0x1157, UNKNOWN,    SESSION,
         "PRS1_0E",
         QString(unknownname).arg(0xe,2,16,QChar('0')),
         QString(unknowndesc).arg(0xe,2,16,QChar('0')),
         QString(unknownshort).arg(0xe,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_12 = 0x1159, MINOR_FLAG,    SESSION,
-        "PRS1_12",
-        QString(unknownname).arg(0x12,2,16,QChar('0')),
-        QString(unknowndesc).arg(0x12,2,16,QChar('0')),
-        QString(unknownshort).arg(0x12,2,16,QChar('0')),
-        STR_UNIT_Unknown,
-        DEFAULT,    QColor("black")));
+//    channel.add(GRP_CPAP, new Channel(PRS1_12 = 0x1159, UNKNOWN,    SESSION,
+//        "PRS1_12",
+//        QString(unknownname).arg(0x12,2,16,QChar('0')),
+//        QString(unknowndesc).arg(0x12,2,16,QChar('0')),
+//        QString(unknownshort).arg(0x12,2,16,QChar('0')),
+//        STR_UNIT_Unknown,
+//        DEFAULT,    QColor("black")));
 
 
     channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG,    SESSION,

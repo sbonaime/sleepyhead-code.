@@ -405,6 +405,11 @@ void gGraphView::dumpInfo()
             case schema::WAVEFORM:
                 text = "WAVEFORM: ";
                 break;
+            case schema::UNKNOWN:
+                text = "UNKNOWN: ";
+                break;
+            default:
+                break;
             }
             QStringList str;
             for (int i=0; i< lit.value().size(); ++i) {

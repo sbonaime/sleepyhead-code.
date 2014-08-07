@@ -1285,6 +1285,10 @@ QString Daily::getEventBreakdown(Day * cpap)
     return html;
 }
 
+float brightness(QColor color) {
+    return color.redF()*0.299 + color.greenF()*0.587 + color.blueF()*0.114;
+}
+
 QString Daily::getSleepTime(Day * cpap, Day * oxi)
 {
     QString html;
@@ -1315,6 +1319,7 @@ QString Daily::getSleepTime(Day * cpap, Day * oxi)
 
     return html;
 }
+
 
 
 void Daily::Load(QDate date)
@@ -1401,28 +1406,17 @@ void Daily::Load(QDate date)
     ui->eventsCombo->clear();
 
     if (cpap) {
-        QMap<QString, schema::Channel *> flags;
-        for (int i=0; i< cpap->size(); ++i) {
-            Session * sess = cpap->sessions.at(i);
-            QHash<ChannelID, QVector<EventList *> >::iterator it;
-            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
-                ChannelID code = it.key();
-                schema::Channel * chan = &schema::channel[code];
-                const QString & str = chan->label();
-                if (flags.contains(str)) continue;
+        quint32 chans = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
+        if (p_profile->general->showUnknownFlags()) chans |= schema::UNKNOWN;
 
-                if ((chan->type() == schema::FLAG) || (chan->type() == schema::MINOR_FLAG) || (chan->type() == schema::SPAN)) {
-                    flags[str] = chan;
-                }
-            }
-        }
+        QList<ChannelID> available = cpap->getSortedMachineChannels(chans);
 
-        QMap<QString, schema::Channel *>::iterator fit;
-        int c = 0;
-        for (fit = flags.begin(); fit != flags.end(); ++fit) {
-            ui->eventsCombo->addItem(fit.value()->enabled() ? *icon_on : * icon_off, fit.key(), fit.value()->id());
-            ui->eventsCombo->setItemData(c, fit.value()->fullname(), Qt::ToolTipRole);
-            c++;
+        for (int i=0; i < available.size(); ++i) {
+            ChannelID code = available.at(i);
+            schema::Channel & chan = schema::channel[code];
+            ui->eventsCombo->addItem(chan.enabled() ? *icon_on : * icon_off, chan.label(), code);
+            ui->eventsCombo->setItemData(i, chan.fullname(), Qt::ToolTipRole);
+
         }
     }
 
@@ -1464,46 +1458,52 @@ void Daily::Load(QDate date)
             html+=getCPAPInformation(cpap);
             html+=getSleepTime(cpap,oxi);
 
-            struct ChannelInfo {
-                ChannelID id;
-                QColor color;
-                QColor color2;
-                EventDataType value;
-            };
-            ChannelInfo chans[]={
-                { CPAP_Hypopnea,    COLOR_Hypopnea,     Qt::white, hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours },
-                { CPAP_Obstructive, COLOR_Obstructive,  Qt::black, oai=cpap->count(CPAP_Obstructive)/hours },
-                { CPAP_Apnea,       COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
-                { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
-                { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
-                { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
-                { CPAP_SensAwake,   COLOR_SensAwake,    Qt::black, sai=cpap->count(CPAP_SensAwake)/hours },
-                { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
-                { CPAP_RERA,        COLOR_RERA,         Qt::black, rei=cpap->count(CPAP_RERA)/hours },
-                { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
-                { CPAP_VSnore2,     COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
-                { CPAP_LeakFlag,    COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
-                { CPAP_LargeLeak,   COLOR_LargeLeak,    Qt::black, lk2=(100.0/cpap->hours())*(cpap->sum(CPAP_LargeLeak)/3600.0) },
-                { CPAP_CSR,         COLOR_CSR,          Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) },
-                { CPAP_UserFlag1,   COLOR_UserFlag1,    Qt::black, uf1=cpap->count(CPAP_UserFlag1)/hours },
-                { CPAP_UserFlag2,   COLOR_UserFlag2,    Qt::black, uf2=cpap->count(CPAP_UserFlag2)/hours },
-
-            };
-            int numchans=sizeof(chans)/sizeof(ChannelInfo);
-
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-            for (int i=0;i<numchans;i++) {
-                if (!cpap->channelHasData(chans[i].id))
-                    continue;
-                if ((cpap->machine->loaderName() == STR_MACH_PRS1) && (chans[i].id == CPAP_VSnore))
-                    continue;
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
-                        .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(schema::channel[chans[i].id].fullname()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
 
-                // keep in case tooltips are needed
-                //html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                // .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(schema::channel[chans[i].id].description()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
+
+            quint32 zchans = schema::SPAN | schema::FLAG;
+            bool show_minors = true;
+            if (p_profile->general->showUnknownFlags()) zchans |= schema::UNKNOWN;
+
+            if (show_minors) zchans |= schema::MINOR_FLAG;
+            QList<ChannelID> available = cpap->getSortedMachineChannels(zchans);
+
+            for (int i=0; i < available.size(); ++i) {
+                ChannelID code = available.at(i);
+                schema::Channel & chan = schema::channel[code];
+                if (!chan.enabled()) continue;
+                QString data;
+                if (chan.type() == schema::SPAN) {
+                    EventDataType val = (100.0 / hours)*(cpap->sum(code)/3600.0);
+                    data = QString("%1%").arg(val,0,'f',2);
+                } else if (chan.type() == schema::FLAG) {
+                    EventDataType val = vs=cpap->count(code) / hours;
+                    data = QString("%1").arg(val,0,'f',2);
+                } else if (chan.type() == schema::MINOR_FLAG) {
+                    EventDataType val = vs=cpap->count(code) / hours;
+                    data = QString("%1").arg(val,0,'f',2);
+                } else if (chan.type() == schema::UNKNOWN) {
+                    EventDataType val = vs=cpap->count(code) / hours;
+                    data = QString("%1").arg(val,0,'f',2);
+                }
+                QColor altcolor = (brightness(chan.defaultColor()) < 0.3) ? Qt::white : Qt::black; // pick a contrasting color
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
+                        .arg(chan.defaultColor().name()).arg(altcolor.name()).arg(chan.fullname()).arg(data).arg(code);
             }
+
+
+//            for (int i=0;i<numchans;i++) {
+//                if (!cpap->channelHasData(chans[i].id))
+//                    continue;
+//                if ((cpap->machine->loaderName() == STR_MACH_PRS1) && (chans[i].id == CPAP_VSnore))
+//                    continue;
+//                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
+//                        .arg(schema::channel[chans[i].id].defaultColor().name()).arg(chans[i].color2.name()).arg(schema::channel[chans[i].id].fullname()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
+
+//                // keep in case tooltips are needed
+//                //html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+//                // .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(schema::channel[chans[i].id].description()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
+//            }
             html+="</table>";
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";

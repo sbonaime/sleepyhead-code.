@@ -329,6 +329,7 @@ const QString STR_US_PrefCalcPercentile = "PrefCalcPercentile";
 const QString STR_US_PrefCalcMax = "PrefCalcMax";
 const QString STR_US_TooltipTimeout = "TooltipTimeout";
 const QString STR_US_ScrollDampening = "ScrollDampening";
+const QString STR_US_ShowUnknownFlags = "ShowUnknownFlags";
 const QString STR_US_StatReportMode = "StatReportMode";
 
 // Parent class for subclasses that manipulate the profile.
@@ -763,6 +764,7 @@ class UserSettings : public ProfileSettings
         initPref(STR_US_TooltipTimeout, (int)2500);
         initPref(STR_US_ScrollDampening, (int)50);
         initPref(STR_US_StatReportMode, 0);
+        initPref(STR_US_ShowUnknownFlags, false);
     }
 
     UnitSystem unitSystem() const { return (UnitSystem)getPref(STR_US_UnitSystem).toInt(); }
@@ -779,6 +781,7 @@ class UserSettings : public ProfileSettings
     int tooltipTimeout() const { return getPref(STR_US_TooltipTimeout).toInt(); }
     int scrollDampening() const { return getPref(STR_US_ScrollDampening).toInt(); }
     int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
+    bool showUnknownFlags() const { return getPref(STR_US_ShowUnknownFlags).toBool(); }
 
     void setUnitSystem(UnitSystem us) { setPref(STR_US_UnitSystem, (int)us); }
     void setEventWindowSize(double size) { setPref(STR_US_EventWindowSize, size); }
@@ -794,6 +797,7 @@ class UserSettings : public ProfileSettings
     void setTooltipTimeout(int i) { setPref(STR_US_TooltipTimeout, i); }
     void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, i); }
     void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
+    void setShowUnknownFlags(bool b) { setPref(STR_US_ShowUnknownFlags, b); }
 };
 
 //! \brief Returns a count of all files & directories in a supplied folder

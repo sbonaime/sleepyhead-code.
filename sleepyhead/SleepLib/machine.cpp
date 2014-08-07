@@ -670,7 +670,7 @@ bool Machine::Save()
     return true;
 }
 
-QList<ChannelID> Machine::availableChannels(schema::ChanType chantype)
+QList<ChannelID> Machine::availableChannels(quint32 chantype)
 {
     QHash<ChannelID, int> chanhash;
 
@@ -687,7 +687,7 @@ QList<ChannelID> Machine::availableChannels(schema::ChanType chantype)
             for (int i=0; i < size; ++i) {
                 ChannelID code = sess->availableChannels().at(i);
                 const schema::Channel & chan = schema::channel[code];
-                if (chan.type() == chantype) {
+                if (chan.type() & chantype) {
                     chanhash[code]++;
                 }
             }

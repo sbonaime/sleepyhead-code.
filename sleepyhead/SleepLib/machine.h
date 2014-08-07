@@ -194,7 +194,7 @@ class Machine
 
     void setLoaderName(QString value);
 
-    QList<ChannelID> availableChannels(schema::ChanType chantype);
+    QList<ChannelID> availableChannels(quint32 chantype);
 
     MachineLoader * loader() { return m_loader; }
 

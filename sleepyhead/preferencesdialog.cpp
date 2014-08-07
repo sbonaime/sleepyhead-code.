@@ -189,6 +189,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->clockDrift->setValue(profile->cpap->clockDrift());
 
     ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
+    ui->showUnknownFlags->setChecked(profile->general->showUnknownFlags());
     ui->enableMultithreading->setChecked(profile->session->multithreading());
     ui->cacheSessionData->setChecked(profile->session->cacheSessions());
     ui->animationsAndTransitionsCheckbox->setChecked(profile->appearance->animations());
@@ -309,6 +310,10 @@ void PreferencesDialog::InitChanInfo()
     chanModel->appendRow(hdr);
 
     toplevel[schema::SETTING] = hdr = new QStandardItem(tr("Settings Channels"));
+    hdr->setEditable(false);
+    chanModel->appendRow(hdr);
+
+    toplevel[schema::UNKNOWN] = hdr = new QStandardItem(tr("Unknown Channels"));
     hdr->setEditable(false);
     chanModel->appendRow(hdr);
 
@@ -468,6 +473,7 @@ bool PreferencesDialog::Save()
     profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value() * 50);
     profile->general->setScrollDampening(ui->scrollDampeningSlider->value() * 10);
 
+    profile->general->setShowUnknownFlags(ui->showUnknownFlags->isChecked());
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
     profile->cpap->setMaskDescription(ui->maskDescription->text());

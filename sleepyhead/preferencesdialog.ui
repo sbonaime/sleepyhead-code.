@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1750,6 +1750,16 @@ as this is the only value available on summary-only days.</string>
             <property name="spacing">
              <number>4</number>
             </property>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="skipLoginScreen">
+              <property name="toolTip">
+               <string>Bypass the login screen and load the most recent User Profile</string>
+              </property>
+              <property name="text">
+               <string>Skip Login Screen</string>
+              </property>
+             </widget>
+            </item>
             <item row="5" column="0">
              <widget class="QCheckBox" name="skipEmptyDays">
               <property name="toolTip">
@@ -1771,13 +1781,13 @@ Mainly affects the importer.</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="skipLoginScreen">
+            <item row="5" column="1">
+             <widget class="QCheckBox" name="showUnknownFlags">
               <property name="toolTip">
-               <string>Bypass the login screen and load the most recent User Profile</string>
+               <string>Show flags for machine detected events that haven't been identified yet.</string>
               </property>
               <property name="text">
-               <string>Skip Login Screen</string>
+               <string>Show Unknown Flags</string>
               </property>
              </widget>
             </item>
