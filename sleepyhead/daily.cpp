@@ -1452,7 +1452,6 @@ void Daily::Load(QDate date)
         EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
         if (p_profile->general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
         ahi/=hours;
-        EventDataType csr,uai,oai,hi,cai,rei,fli,sai,nri,lki,vs,vs2,exp,lk2,uf1, uf2;
 
         if (!isBrick && hours>0) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -1480,24 +1479,21 @@ void Daily::Load(QDate date)
             if (show_minors) zchans |= schema::MINOR_FLAG;
             QList<ChannelID> available = cpap->getSortedMachineChannels(zchans);
 
+            EventDataType val;
+            QHash<ChannelID, EventDataType> values;
             for (int i=0; i < available.size(); ++i) {
                 ChannelID code = available.at(i);
                 schema::Channel & chan = schema::channel[code];
                 if (!chan.enabled()) continue;
                 QString data;
                 if (chan.type() == schema::SPAN) {
-                    EventDataType val = (100.0 / hours)*(cpap->sum(code)/3600.0);
+                    val = (100.0 / hours)*(cpap->sum(code)/3600.0);
                     data = QString("%1%").arg(val,0,'f',2);
-                } else if (chan.type() == schema::FLAG) {
-                    EventDataType val = vs=cpap->count(code) / hours;
-                    data = QString("%1").arg(val,0,'f',2);
-                } else if (chan.type() == schema::MINOR_FLAG) {
-                    EventDataType val = vs=cpap->count(code) / hours;
-                    data = QString("%1").arg(val,0,'f',2);
-                } else if (chan.type() == schema::UNKNOWN) {
-                    EventDataType val = vs=cpap->count(code) / hours;
+                } else {
+                    val = cpap->count(code) / hours;
                     data = QString("%1").arg(val,0,'f',2);
                 }
+                values[code] = val;
                 QColor altcolor = (brightness(chan.defaultColor()) < 0.3) ? Qt::white : Qt::black; // pick a contrasting color
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
                         .arg(chan.defaultColor().name()).arg(altcolor.name()).arg(chan.fullname()).arg(data).arg(code);
@@ -1521,7 +1517,7 @@ void Daily::Load(QDate date)
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             // Show Event Breakdown pie chart
             if ((hours > 0) && p_profile->appearance->graphSnapshots()) {  // AHI Pie Chart
-                if ((oai+hi+cai+uai+rei+fli+sai)>0) {
+                if ((values[CPAP_Obstructive] + values[CPAP_Hypopnea] + values[CPAP_ClearAirway] + values[CPAP_Apnea] + values[CPAP_RERA] + values[CPAP_FlowLimit] + values[CPAP_SensAwake])>0) {
                     html+="<tr><td align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     eventBreakdownPie()->setShowTitle(false);
