@@ -674,19 +674,26 @@ QList<ChannelID> Machine::availableChannels(schema::ChanType chantype)
 {
     QHash<ChannelID, int> chanhash;
 
+
     // look through the daylist and return a list of available channels for this machine
     QMap<QDate, Day *>::iterator dit;
     QMap<QDate, Day *>::iterator day_end = day.end();
     for (dit = day.begin(); dit != day_end; ++dit) {
         QList<Session *>::iterator sess_end = dit.value()->end();
+
         for (QList<Session *>::iterator sit = dit.value()->begin(); sit != sess_end; ++sit) {
-            // sessions desperately need to cache this..
-            ///sit.value
+            Session * sess = (*sit);
+            int size = sess->availableChannels().size();
+            for (int i=0; i < size; ++i) {
+                ChannelID code = sess->availableChannels().at(i);
+                const schema::Channel & chan = schema::channel[code];
+                if (chan.type() == chantype) {
+                    chanhash[code]++;
+                }
+            }
         }
     }
-    QList<ChannelID> channels;
-
-    return channels;
+    return chanhash.keys();
 }
 
 

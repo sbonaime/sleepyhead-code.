@@ -64,6 +64,7 @@ class gFlagsLine: public Layer
     bool m_always_visible;
     int total_lines, line_num;
     int m_lx, m_ly;
+
 };
 
 /*! \class gFlagsGroup
@@ -107,9 +108,12 @@ class gFlagsGroup: public LayerGroup
 
     QList<ChannelID> m_alwaysvisible;
 
+    QList<ChannelID> availableChans;
+
     QVector<gFlagsLine *> lvisible;
     float m_barh;
     bool m_empty;
+    bool m_rebuild_cpap;
 };
 
 #endif // GFLAGSLINE_H

@@ -63,7 +63,6 @@ void gFlagsGroup::SetDay(Day *d)
         m_empty = true;
         return;
     }
-    QHash<ChannelID, schema::Channel *> chans;
 
     schema::channel[CPAP_CSR].setOrder(1);
     schema::channel[CPAP_CSR].setOrder(1);
@@ -80,56 +79,56 @@ void gFlagsGroup::SetDay(Day *d)
     schema::channel[CPAP_VSnore2].setOrder(8);
     schema::channel[CPAP_ExP].setOrder(6);
 
-    alwaysVisible(CPAP_LargeLeak);
-    alwaysVisible(CPAP_Hypopnea);
-    alwaysVisible(CPAP_Obstructive);
 
+    availableChans.clear();
+    availableChans.append(d->machine->availableChannels(schema::FLAG));
+    availableChans.append(d->machine->availableChannels(schema::SPAN));
 
-    for (int i=0; i< m_day->size(); ++i) {
-        Session * sess = m_day->sessions.at(i);
-        QHash<ChannelID, QVector<EventList *> >::iterator it;
-        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
-            ChannelID code = it.key();
-            if (chans.contains(code)) continue;
+    m_rebuild_cpap = (availableChans.size() == 0);
 
-            schema::Channel * chan = &schema::channel[code];
+    if (m_rebuild_cpap) {
+        QHash<ChannelID, schema::Channel *> chans;
 
-            if (chan->type() == schema::FLAG) {
-                chans[code] = chan;
-            } else if (chan->type() == schema::MINOR_FLAG) {
-             //   chans[code] = chan;
-            } else if (chan->type() == schema::SPAN) {
-                chans[code] = chan;
+        for (int i=0; i< m_day->size(); ++i) {
+            Session * sess = m_day->sessions.at(i);
+            QHash<ChannelID, QVector<EventList *> >::iterator it;
+            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+                ChannelID code = it.key();
+                if (chans.contains(code)) continue;
+
+                schema::Channel * chan = &schema::channel[code];
+
+                if (chan->type() == schema::FLAG) {
+                    chans[code] = chan;
+                } else if (chan->type() == schema::MINOR_FLAG) {
+                 //   chans[code] = chan;
+                } else if (chan->type() == schema::SPAN) {
+                    chans[code] = chan;
+                }
             }
         }
+        availableChans = chans.keys();
     }
 
-    for (int i=0; i < m_alwaysvisible.size(); ++i) {
-        ChannelID code = m_alwaysvisible.at(i);
-        if (!chans.contains(code)) {
-            schema::Channel * chan = &schema::channel[code];
-            chans[code] = chan;
-        }
+    QMultiMap<int, ChannelID> order;
+
+    for (int i=0; i < availableChans.size(); ++i) {
+        ChannelID code = availableChans.at(i);
+        order.insert(schema::channel[code].order(), code);
     }
 
-    QMultiMap<int, schema::Channel *> order;
-    QHash<ChannelID, schema::Channel *>::iterator cit;
-
-    for (cit = chans.begin(); cit != chans.end(); ++cit) {
-        int ord = schema::channel[cit.key()].order();
-        order.insert(ord, cit.value());
-    }
-
-    QMultiMap<int, schema::Channel *>::iterator it;
+    QMultiMap<int, ChannelID>::iterator it;
 
     for (int i=0;i <lvisible.size(); i++) {
         delete lvisible.at(i);
     }
     lvisible.clear();
-    for (it = order.begin(); it != order.end(); ++it) {
-        schema::Channel * chan = it.value();
 
-        gFlagsLine * fl = new gFlagsLine(chan->id());
+    for (it = order.begin(); it != order.end(); ++it) {
+        ChannelID code = it.value();
+//        const schema::Channel & chan = schema::channel[code];
+
+        gFlagsLine * fl = new gFlagsLine(code);
         fl->SetDay(d);
         lvisible.push_back(fl);
     }
@@ -155,11 +154,11 @@ void gFlagsGroup::SetDay(Day *d)
 
     m_empty = (cnt == 0);
 
-//    if (m_empty) {
-//        if (d) {
-//            m_empty = !d->channelExists(CPAP_Pressure);
-//        }
-//    }
+    if (m_empty) {
+        if (d) {
+            m_empty = !d->channelExists(CPAP_Pressure);
+        }
+    }
 
     m_barh = 0;
 }
@@ -208,6 +207,14 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
     painter.drawLine(left - 1, top + height, left + width, top + height);
     painter.drawLine(left + width, top + height, left + width, top);
     painter.drawLine(left + width, top, left - 1, top);
+
+    if (m_rebuild_cpap) {
+
+        QString txt = QObject::tr("Database Outdated\nPlease Rebuild CPAP Data");
+        painter.setFont(*bigfont);
+        painter.setPen(QPen(QColor(0,0,0,32)));
+        painter.drawText(region.boundingRect(), Qt::AlignCenter | Qt::AlignVCenter, txt);
+    }
 }
 
 bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
@@ -240,6 +247,7 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
         }
     }
+    return true;
 }
 
 
