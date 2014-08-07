@@ -1239,15 +1239,27 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
-    } else if (cpap && p_profile->cpap->showLeakRedline()) {
-        float rlt = cpap->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
-        float pc = 100.0 / cpap->hours() * rlt;
+    } else if (cpap) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
-        html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
-                QString("</b></td><td colspan=2 bgcolor='white'>%1%</td></tr>").arg(pc, 0, 'f', 3);
-    }
 
-    if (cpap) {
+        if ((cpap->machine->loaderName() == STR_MACH_ResMed) || ((cpap->machine->loaderName() == STR_MACH_PRS1) && (p_profile->cpap->resyncFromUserFlagging()))) {
+            int ttia = cpap->sum(CPAP_Obstructive) + cpap->sum(CPAP_ClearAirway) + cpap->sum(CPAP_Apnea) + cpap->sum(CPAP_Hypopnea);
+            int h = ttia / 3600;
+            int m = ttia / 60 % 60;
+            int s = ttia % 60;
+            if (ttia > 0) {
+                html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Total time in apnea")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
+            }
+
+        }
+
+        if (p_profile->cpap->showLeakRedline()) {
+            float rlt = cpap->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
+            float pc = 100.0 / cpap->hours() * rlt;
+            html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
+                    QString("</b></td><td colspan=2 bgcolor='white'>%1%</td></tr>").arg(pc, 0, 'f', 3);
+        }
         int l = cpap->sum(CPAP_Ramp);
 
         if (l > 0) {

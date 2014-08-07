@@ -100,7 +100,7 @@ bool SearchApnea(Session *session, qint64 time, double dur)
     if (SearchEvent(session, CPAP_ClearAirway, time, dur))
         return true;
 
-    if (SearchEvent(session, CPAP_Hypopnea, time, dur, false))
+    if (SearchEvent(session, CPAP_Hypopnea, time, dur))
         return true;
 
     if (SearchEvent(session, CPAP_UserFlag1, time, dur, false))

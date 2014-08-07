@@ -1682,7 +1682,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
         if (m_metaselect) {
             m_point_released = event->pos();
         } else {
-            if (m_graphs[m_graph_index]) {
+            if ((m_graph_index >= 0) && (m_graphs[m_graph_index])) {
                 m_graphs[m_graph_index]->mouseReleaseEvent(event);
             }
         }
@@ -1937,8 +1937,8 @@ void gGraphView::getSelectionTimes(qint64 & start, qint64 & end)
             end = 0;
             return;
         }
-        int x1 = qMin(m_point_clicked.x(), m_point_released.x());
-        int x2 = qMax(m_point_clicked.x(), m_point_released.x());
+        int x1 = g->m_selection.x() + titleWidth;
+        int x2 = x1 + g->m_selection.width();
         start = g->screenToTime(x1);
         end = g->screenToTime(x2);
     }
