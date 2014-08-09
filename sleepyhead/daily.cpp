@@ -604,6 +604,19 @@ void Daily::ReloadGraphs()
     graphView()->redraw();
 }
 
+void Daily::hideSpaceHogs()
+{
+    if (p_profile->appearance->calendarVisible()) {
+        ui->calendarFrame->setVisible(false);
+    }
+}
+void Daily::showSpaceHogs()
+{
+    if (p_profile->appearance->calendarVisible()) {
+        ui->calendarFrame->setVisible(true);
+    }
+}
+
 void Daily::on_calendar_currentPageChanged(int year, int month)
 {
     QDate d(year,month,1);

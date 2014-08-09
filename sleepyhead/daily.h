@@ -143,6 +143,8 @@ public:
     void setCalendarVisible(bool visible);
 
     void addBookmark(qint64 st, qint64 et, QString text);
+    void hideSpaceHogs();
+    void showSpaceHogs();
 
 private slots:
     void on_ReloadDay();

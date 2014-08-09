@@ -1502,8 +1502,12 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
     w->checkForUpdates();
 }
 
+bool toolbox_visible = false;
 void MainWindow::on_action_Screenshot_triggered()
 {
+    getDaily()->hideSpaceHogs();
+    toolbox_visible = ui->toolBox->isVisible();
+    ui->toolBox->hide();
     QTimer::singleShot(250, this, SLOT(DelayedScreenshot()));
 }
 void MainWindow::DelayedScreenshot()
@@ -1536,6 +1540,9 @@ void MainWindow::DelayedScreenshot()
     } else {
         Notify(tr("Screenshot saved to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     }
+    getDaily()->showSpaceHogs();
+    ui->toolBox->setVisible(toolbox_visible);
+
 }
 
 void MainWindow::on_actionView_Oximetry_triggered()

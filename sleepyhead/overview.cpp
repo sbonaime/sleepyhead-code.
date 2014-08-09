@@ -227,8 +227,8 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     if (p_profile->general->calculateRDI()) {
         bc->addSlice(CPAP_RERA, COLOR_RERA, ST_CPH);
     }
-    bc->addSlice(CPAP_UserFlag1, COLOR_UserFlag1, ST_CPH);
-    bc->addSlice(CPAP_UserFlag2, COLOR_UserFlag2, ST_CPH);
+//    bc->addSlice(CPAP_UserFlag1, COLOR_UserFlag1, ST_CPH);
+//    bc->addSlice(CPAP_UserFlag2, COLOR_UserFlag2, ST_CPH);
 
 
     AHI->AddLayer(bc);
