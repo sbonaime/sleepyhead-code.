@@ -655,8 +655,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
     //if (m_enforceMaxY) { maxy=f_maxy; }
 }
 
-void gGraph::AddLayer(Layer *l, LayerPosition position, short width, short height, short order,
-                      bool movable, short x, short y)
+void gGraph::AddLayer(Layer *l, LayerPosition position, short width, short height, short order, bool movable, short x, short y)
 {
     l->setLayout(position, width, height, order);
     l->setMovable(movable);

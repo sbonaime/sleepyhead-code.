@@ -141,7 +141,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    int default_height=p_profile->appearance->graphHeight();
+    int default_height = p_profile->appearance->graphHeight();
 
     gGraph *GAHI = nullptr,
 //            *TAP = nullptr,
@@ -150,11 +150,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     const QString STR_GRAPH_DailySummary = "DailySummary";
 
-    gGraph * SG;
-    graphlist[STR_GRAPH_DailySummary] = SG =new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
-   // SG->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
-    SG->AddLayer(AddCPAP(new gDailySummary()));
-
+//    gGraph * SG;
+//    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
+//    SG->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+//    SG->AddLayer(AddCPAP(new gDailySummary()));
 
     graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);
