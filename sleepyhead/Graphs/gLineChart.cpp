@@ -207,6 +207,45 @@ skipcheck:
 //            }
 //        }
 //    }
+    CPAPMode mode = (CPAPMode)m_day->settings_wavg(CPAP_Mode);
+    float perc = p_profile->general->prefCalcPercentile();
+    for (int i=0; i<m_codes.size(); ++i) {
+        ChannelID code = m_codes.at(i);
+        schema::Channel & chan = schema::channel[code];
+        if (code == CPAP_Pressure) {
+            if (mode == MODE_APAP) {
+                float f = m_day->percentile(code, perc / 100.0);
+                chan.setUpperThreshold(f);
+                chan.setUpperThresholdColor(Qt::black);
+                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+            } else {
+                chan.setUpperThreshold(0);
+                m_threshold.push_back(QString());
+            }
+        } else if (code == CPAP_IPAP) {
+            if (mode >= MODE_BILEVEL_AUTO_FIXED_PS) {
+                float f = m_day->percentile(code,perc / 100.0);
+                chan.setUpperThreshold(f);
+                chan.setUpperThresholdColor(Qt::black);
+                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+            } else {
+                chan.setUpperThreshold(0);
+                m_threshold.push_back(QString());
+            }
+        } else if (code == CPAP_EPAP) {
+            if ((mode >= MODE_BILEVEL_AUTO_FIXED_PS) && (mode != MODE_ASV)) {
+                float f = m_day->percentile(code,perc / 100.0);
+                chan.setUpperThreshold(f);
+                chan.setUpperThresholdColor(Qt::black);
+                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+            } else {
+                chan.setUpperThreshold(0);
+                m_threshold.push_back(QString());
+            }
+        } else if (code == CPAP_Leak) {
+            m_threshold.push_back(QObject::tr("%1 threshold").arg(chan.fullname()));
+        } else m_threshold.push_back(QString());
+    }
 }
 EventDataType gLineChart::Miny()
 {
@@ -415,18 +454,20 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         if (chan.upperThreshold() > 0) {
             QColor color = chan.upperThresholdColor();
             color.setAlpha(100);
-            painter.setPen(color);
+            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
 
             EventDataType y=top + height + 1 - ((chan.upperThreshold() - miny) * ymult);
             painter.drawLine(left + 1, y, left + 1 + width, y);
+            painter.drawText(left+4, y-2, m_threshold.at(gi));
         }
         if (chan.lowerThreshold() > 0) {
             QColor color = chan.lowerThresholdColor();
             color.setAlpha(100);
-            painter.setPen(color);
+            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
 
             EventDataType y=top + height + 1 - ((chan.lowerThreshold() - miny) * ymult);
             painter.drawLine(left+1, y, left + 1 + width, y);
+            painter.drawText(left+4, y-2, m_threshold.at(gi));
         }
 
         lines.clear();
@@ -719,7 +760,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
                     }
 
-                    painter.setPen(QPen(chan.defaultColor(),p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(chan.defaultColor(), p_profile->appearance->lineThickness()));
                     painter.drawLines(lines);
                     w.graphView()->lines_drawn_this_frame += lines.count();
                     lines.clear();

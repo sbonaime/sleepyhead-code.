@@ -1363,8 +1363,6 @@ void MainWindow::on_action_About_triggered()
                 "<p><b>" + tr("3rd Party Libaries:") + "</b> " +
                 tr("SleepyHead is built using the <a href=\"http://qt-project.org\">Qt Application Framework</a>.")
                 + " " +
-                tr("It uses the cross platform <a href=\"http://code.google.com/p/qextserialport\">QExtSerialPort</a> library for serial port access in the Oximetry module.")
-                + " " +
                 tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")
                 + "<br/>"
                 "<p>" + tr("Special thanks to Pugsy from <a href='http://cpaptalk.com'>CPAPTalk</a> for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")
@@ -1522,7 +1520,17 @@ void MainWindow::DelayedScreenshot()
     h /= pr;
 #endif
 
-    QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), w, h);
+#ifdef Q_OS_WIN32
+     QRect rec = QApplication::desktop()->screenGeometry();
+
+     // grab the whole screen
+     QPixmap desktop = QPixmap::grabWindow(this->winId(), 0, 0, rec.width(), rec.height());
+
+     QPixmap pixmap = desktop.copy(x() * devicePixelRatio(), y() * devicePixelRatio(), width() * devicePixelRatio(), (height()+20) * devicePixelRatio());
+
+#else
+    QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), w, h+10);
+#endif
 
     QString a = PREF.Get("{home}/Screenshots");
     QDir dir(a);

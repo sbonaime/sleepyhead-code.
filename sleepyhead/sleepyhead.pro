@@ -119,7 +119,6 @@ unix {
     HEADERS  += build_number.h
 }
 
-#include(..3rdparty/qextserialport/src/qextserialport.pri)
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
 
 #include(SleepLib2/sleeplib.pri)

@@ -75,7 +75,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     if (rect.width() > rect.height()) {
         left = rect.left() + (rect.width() - rect.height());
     }
-    left --;
+    //left --;
     if (!m_visible) { return; }
 
     if (!m_day) { return; }

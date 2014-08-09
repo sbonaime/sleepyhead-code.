@@ -100,6 +100,7 @@ class gLineChart: public Layer
     int subtract_offset;
 
     QVector<ChannelID> m_codes;
+    QStringList m_threshold;
     QVector<QColor> m_colors;
     QVector<bool> m_square;
     QHash<ChannelID, bool> m_enabled;
