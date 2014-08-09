@@ -1498,7 +1498,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>598</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="palette">
@@ -1912,7 +1912,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>598</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="palette">
@@ -3060,7 +3060,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>598</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3122,7 +3122,7 @@ border-radius: 10px;
      <x>0</x>
      <y>0</y>
      <width>975</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -3162,9 +3162,9 @@ border-radius: 10px;
     <addaction name="action_Reset_Graph_Layout"/>
     <addaction name="separator"/>
     <addaction name="actionToggle_Line_Cursor"/>
-    <addaction name="action_Sidebar_Toggle"/>
     <addaction name="actionLeft_Daily_Sidebar"/>
     <addaction name="actionDaily_Calendar"/>
+    <addaction name="action_Sidebar_Toggle"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -3405,7 +3405,7 @@ border-radius: 10px;
     <string>Right &amp;Sidebar</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string>F10</string>
    </property>
   </action>
   <action name="actionView_Statistics">
@@ -3494,7 +3494,7 @@ border-radius: 10px;
     <string>Daily Sidebar</string>
    </property>
    <property name="shortcut">
-    <string>F9</string>
+    <string>F8</string>
    </property>
   </action>
   <action name="actionDaily_Calendar">
@@ -3508,7 +3508,7 @@ border-radius: 10px;
     <string>Daily Calendar</string>
    </property>
    <property name="shortcut">
-    <string>F10</string>
+    <string>F9</string>
    </property>
   </action>
  </widget>

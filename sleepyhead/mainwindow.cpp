@@ -265,7 +265,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
     daily = new Daily(ui->tabWidget, nullptr);
-    ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
+    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
 
 
     // Start with the Summary Tab

@@ -147,7 +147,7 @@ void gFlagsGroup::SetDay(Day *d)
 
     if (m_empty) {
         if (d) {
-            m_empty = !d->channelExists(CPAP_Pressure);
+            m_empty = !(d->channelExists(CPAP_Pressure) || d->channelExists(CPAP_IPAP) || d->channelExists(CPAP_EPAP));
         }
     }
 
