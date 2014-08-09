@@ -1520,15 +1520,15 @@ void MainWindow::DelayedScreenshot()
     h /= pr;
 #endif
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_LINUX)
      QRect rec = QApplication::desktop()->screenGeometry();
 
      // grab the whole screen
-     QPixmap desktop = QPixmap::grabWindow(this->winId(), 0, 0, rec.width(), rec.height());
+     QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
 
-     QPixmap pixmap = desktop.copy(x() * devicePixelRatio(), y() * devicePixelRatio(), width() * devicePixelRatio(), (height()+20) * devicePixelRatio());
+     QPixmap pixmap = desktop.copy(x() * devicePixelRatio(), y() * devicePixelRatio(), (width()+6) * devicePixelRatio(), (height()+22) * devicePixelRatio());
 
-#else
+#elif defined(Q_OS_MAC)
     QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), w, h+10);
 #endif
 
