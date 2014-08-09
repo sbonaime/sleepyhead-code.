@@ -12,6 +12,11 @@
 #include <cmath>
 #include "glcommon.h"
 
+float brightness(QColor color) {
+    return color.redF()*0.299 + color.greenF()*0.587 + color.blueF()*0.114;
+}
+
+
 #ifdef BUILD_WITH_MSVC
 
 #if (_MSC_VER < 1800)

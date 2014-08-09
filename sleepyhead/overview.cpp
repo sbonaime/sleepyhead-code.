@@ -219,14 +219,17 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
         bc = new SummaryChart(STR_TR_AHI, GT_BAR);
     }
 
-    bc->addSlice(CPAP_Hypopnea, COLOR_Hypopnea, ST_CPH);
-    bc->addSlice(CPAP_Apnea, COLOR_Apnea, ST_CPH);
-    bc->addSlice(CPAP_Obstructive, COLOR_Obstructive, ST_CPH);
     bc->addSlice(CPAP_ClearAirway, COLOR_ClearAirway, ST_CPH);
+    bc->addSlice(CPAP_Obstructive, COLOR_Obstructive, ST_CPH);
+    bc->addSlice(CPAP_Apnea, COLOR_Apnea, ST_CPH);
+    bc->addSlice(CPAP_Hypopnea, COLOR_Hypopnea, ST_CPH);
 
     if (p_profile->general->calculateRDI()) {
         bc->addSlice(CPAP_RERA, COLOR_RERA, ST_CPH);
     }
+    bc->addSlice(CPAP_UserFlag1, COLOR_UserFlag1, ST_CPH);
+    bc->addSlice(CPAP_UserFlag2, COLOR_UserFlag2, ST_CPH);
+
 
     AHI->AddLayer(bc);
 

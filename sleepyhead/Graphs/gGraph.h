@@ -17,6 +17,7 @@
 #include <QString>
 #include <QPainter>
 
+#include "Graphs/glcommon.h"
 #include "Graphs/layer.h"
 
 class gGraphView;
@@ -48,7 +49,7 @@ class gGraph : public QObject
         \param short group containing which graph-link group this graph belongs to
         */
     gGraph(QString name, gGraphView *graphview = nullptr, QString title = "", QString units = "",
-           int height = 100, short group = 0);
+           int height = 0, short group = 0);
     virtual ~gGraph();
 
     //! \brief Tells all Layers to deselect any highlighting
@@ -83,7 +84,8 @@ class gGraph : public QObject
     //! \brief Set the height element. (relative to the total of all heights)
     void setHeight(float height) { m_height = height; invalidate_yAxisImage = true; }
 
-    int minHeight() { return m_min_height; }
+    //! \brief Return minimum height this graph is allowed to (considering layer preferences too)
+    int minHeight();
     void setMinHeight(int height) { m_min_height = height; }
 
     int maxHeight() { return m_max_height; }

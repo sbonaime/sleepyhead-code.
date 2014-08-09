@@ -74,8 +74,8 @@ class SummaryChart: public Layer
     //QVector<bool> m_zeros;
     QVector<SummaryType> m_type;
     QVector<EventDataType> m_typeval;
-    QHash<int, QHash<short, EventDataType> > m_values;
-    QHash<int, QHash<short, EventDataType> > m_times;
+    QHash<int, QMap<short, EventDataType> > m_values;
+    QHash<int, QMap<short, EventDataType> > m_times;
     QHash<int, EventDataType> m_hours;
     QHash<int, Day *> m_days;
 

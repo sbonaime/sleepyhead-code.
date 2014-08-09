@@ -70,6 +70,9 @@ class Layer
     //! \brief Deselect any highlighted components
     virtual void deselect() { }
 
+    //! \brief Override to set the minimum allowed height for this layer
+    virtual int minimumHeight() { return 0; }
+
     //! \brief Return this layers physical minimum date boundary
     virtual qint64 Minx() { return m_day ? m_day->first() : m_minx; }
 

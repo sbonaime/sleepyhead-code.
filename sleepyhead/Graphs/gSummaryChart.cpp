@@ -504,7 +504,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     lastY.resize(numcodes);
     int zd = minx / 86400000L;
     zd--;
-    QHash<int, QHash<short, EventDataType> >::iterator d = m_values.find(zd);
+    QHash<int, QMap<short, EventDataType> >::iterator d = m_values.find(zd);
 
     QVector<bool> goodcodes;
     goodcodes.resize(m_goodcodes.size());
@@ -629,7 +629,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             if (graphtype == GT_SESSIONS) {
                 int j;
-                QHash<int, QHash<short, EventDataType> >::iterator times = m_times.find(zd);
+                QHash<int, QMap<short, EventDataType> >::iterator times = m_times.find(zd);
                 QColor col = m_colors[0];
                 //if (hours<compliance_hours) col=QColor("#f03030");
 
@@ -702,7 +702,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 bool good;
                 SummaryType type;
 
-                for (QHash<short, EventDataType>::iterator g = d.value().begin(); g != d.value().end(); g++) {
+                for (QMap<short, EventDataType>::iterator g = d.value().begin(); g != d.value().end(); g++) {
                     short j = g.key();
 
                     if (!j) { continue; }
@@ -1092,9 +1092,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         hl_day = zd;
         graph->Trigger(2000);
 
-        QHash<int, QHash<short, EventDataType> >::iterator d = m_values.find(hl_day);
+        QHash<int, QMap<short, EventDataType> >::iterator d = m_values.find(hl_day);
 
-        QHash<short, EventDataType> &valhash = d.value();
+        QMap<short, EventDataType> &valhash = d.value();
 
         x += m_rect.left(); //gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
         int y = event->y() - m_rect.top() + rtop - 15;

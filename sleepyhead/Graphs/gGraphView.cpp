@@ -891,6 +891,9 @@ bool gGraphView::renderGraphs(QPainter &painter)
     int pinned_graphs = 0; // count
 
     for (int i = 0; i < m_graphs.size(); i++) {
+        if (m_graphs[i]->height() < m_graphs[i]->minHeight()) {
+            m_graphs[i]->setHeight(m_graphs[i]->minHeight());
+        }
         if (m_graphs[i]->isEmpty()) { continue; }
 
         if (!m_graphs[i]->visible()) { continue; }

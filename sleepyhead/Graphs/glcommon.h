@@ -18,6 +18,9 @@
 #define nullptr NULL
 #endif
 
+//! \brief Returns the grayscale brightness (between 0 and 1) of a color
+float brightness(QColor color);
+
 #define MIN(a,b) (((a)<(b)) ? (a) : (b));
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
 

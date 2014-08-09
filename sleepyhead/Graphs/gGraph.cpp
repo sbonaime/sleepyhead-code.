@@ -117,9 +117,11 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
       m_graphview(graphview),
       m_title(title),
       m_units(units),
-      m_height(height),
       m_visible(true)
 {
+    if (height == 0) {
+        height = p_profile->appearance->graphHeight();
+    }
     if (graphview->contains(name)) {
         qDebug() << "Trying to duplicate " << name << " when a graph with the same name already exists";
         name+="-1";
@@ -1381,6 +1383,18 @@ Layer *gGraph::getLineChart()
 
     return nullptr;
 }
+int gGraph::minHeight()
+{
+    int minheight = m_min_height;
+
+    for (int i=0; i<m_layers.size(); ++i) {
+        int mh = m_layers[i]->minimumHeight();
+        mh += m_margintop + m_marginbottom;
+        if (mh > minheight) minheight = mh;
+    }
+    // layers need to set their own too..
+    return minheight;
+}
 
 void GetTextExtent(QString text, int &width, int &height, QFont *font)
 {
@@ -1390,7 +1404,7 @@ void GetTextExtent(QString text, int &width, int &height, QFont *font)
 #endif
     QFontMetrics fm(*font);
     //#ifdef Q_OS_WIN32
-    QRect r = fm.tightBoundingRect(text);
+    QRect r = fm.boundingRect(text);
     width = r.width();
     height = r.height();
     //#else

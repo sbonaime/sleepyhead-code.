@@ -65,11 +65,17 @@ bool gSegmentChart::isEmpty()
 
 void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    QRect rect = region.boundingRect();
+    int height = qMin(rect.height(), rect.width());
+    int width = qMin(rect.height(), rect.width());
 
+    int left = rect.left();
+    int top = rect.top();
+
+    if (rect.width() > rect.height()) {
+        left = rect.left() + (rect.width() - rect.height());
+    }
+    left --;
     if (!m_visible) { return; }
 
     if (!m_day) { return; }

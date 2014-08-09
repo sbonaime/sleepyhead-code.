@@ -42,6 +42,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gSegmentChart.h"
 #include "Graphs/gStatsLine.h"
+#include "Graphs/gdailysummary.h"
 
 //extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
@@ -147,6 +148,14 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
             *SF = nullptr,
             *AHI = nullptr;
 
+    const QString STR_GRAPH_DailySummary = "DailySummary";
+
+    gGraph * SG;
+    graphlist[STR_GRAPH_DailySummary] = SG =new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
+   // SG->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+    SG->AddLayer(AddCPAP(new gDailySummary()));
+
+
     graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);
 
@@ -209,8 +218,19 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         evseg->AddSlice(CPAP_UserFlag2,QColor(0xc0,0xc0,0xe0,0xff),tr("UF2"));
     }
 
+
+
     GAHI->AddLayer(AddCPAP(evseg));
     GAHI->setMargins(0,0,0,0);
+
+
+//    gSegmentChart * evseg2=new gSegmentChart(GST_Pie);
+//    evseg2->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
+//    evseg2->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),STR_TR_UA);
+//    evseg2->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),STR_TR_OA);
+//    evseg2->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),STR_TR_CA);
+
+//    SG->AddLayer(AddCPAP(evseg2), LayerRight, default_height, default_height, 0, false, default_height);
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
@@ -247,8 +267,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     // The following list contains graphs that don't have standard xgrid/yaxis labels
     QStringList skipgraph;
-    skipgraph.push_back("EventBreakdown");
-    skipgraph.push_back("SF");
+    skipgraph.push_back(STR_GRAPH_EventBreakdown);
+    skipgraph.push_back(STR_GRAPH_SleepFlags);
+    skipgraph.push_back(STR_GRAPH_DailySummary);
 
     QHash<QString, gGraph *>::iterator it;
 
@@ -1299,10 +1320,6 @@ QString Daily::getEventBreakdown(Day * cpap)
 
     html+="</table>";
     return html;
-}
-
-float brightness(QColor color) {
-    return color.redF()*0.299 + color.greenF()*0.587 + color.blueF()*0.114;
 }
 
 QString Daily::getSleepTime(Day * cpap, Day * oxi)
