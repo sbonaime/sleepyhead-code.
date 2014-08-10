@@ -1358,6 +1358,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                 if (x >= titleWidth + 10) {
                     this->setCursor(Qt::ArrowCursor);
                 } else {
+                    m_tooltip->display("Double click title to pin\nClick and drag to reorder graphs", x + 10, y, TT_AlignLeft);
+                    timedRedraw(30);
+
                     this->setCursor(Qt::OpenHandCursor);
                 }
 
