@@ -1698,19 +1698,26 @@ void flagLargeLeaks(Session *session)
 
     QVector<EventList *> & EVL = session->eventlist[CPAP_Leak];
     int evlsize = EVL.size();
-    EventList * LL = nullptr;
 
+    if (evlsize == 0)
+        return;
+
+    EventList * LL = nullptr;
+    qint64 time = 0;
+    EventDataType lastvalue;
+    qint64 leaktime;
     for (int ec = 0; ec < evlsize; ++ec) {
         EventList &el = *EVL[ec];
         int count = el.count();
         if (!count) continue;
 
-        qint64 leaktime = 0;
-        EventDataType leakvalue = 0, lastvalue = -1;
+        leaktime = 0;
+        EventDataType leakvalue = 0;
+        lastvalue = -1;
 
 
         for (int i=0; i < count; ++i) {
-            qint64 time = el.time(i);
+            time = el.time(i);
             EventDataType value = el.data(i);
             if (value >= threshold) {
                 if (lastvalue < threshold) {
@@ -1727,6 +1734,14 @@ void flagLargeLeaks(Session *session)
             lastvalue = value;
         }
 
+    }
+
+    if (lastvalue > threshold) {
+        if (!LL) {
+            LL=session->AddEventList(CPAP_LargeLeak, EVL_Event);
+        }
+        int duration = (time - leaktime) / 1000L;
+        LL->AddEvent(time, duration);
     }
 }
 
