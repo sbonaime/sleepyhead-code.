@@ -300,9 +300,9 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             QColor col = m_flag_color;
                             col.setAlpha(10);
                             painter.setPen(QPen(col,1));
-                            painter.drawLine(x1, start_py+14, x1, z - 12);
+                            painter.drawLine(x1, start_py+14, x1, z);
                             painter.setPen(QPen(m_flag_color,1));
-                            painter.drawLine(x1, z, x1, z - 12);
+                          //  painter.drawLine(x1, z, x1, z - 12);
                             painter.drawLine(x1, start_py+2, x1, start_py + 14);
                         }
 
