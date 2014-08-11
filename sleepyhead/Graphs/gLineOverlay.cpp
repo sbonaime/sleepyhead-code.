@@ -222,7 +222,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         painter.setPen(QPen(col,4));
                         painter.drawPoint(x1, top);
 
-                        if (!m_blockhover && rect.contains(mouse) && !m_hover) {
+                        if (!w.selectingArea() && !m_blockhover && rect.contains(mouse) && !m_hover) {
                             m_hover = true;
 
 
@@ -270,7 +270,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         // Top and bottom markers
                         //////////////////////////////////////////////////////////////////////////////////////
                         bool b = false;
-                        if (!m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse) && !m_hover) {
+                        if (!w.selectingArea() && !m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse) && !m_hover) {
                             // only want to draw the highlight/label once per frame
                             m_hover = true;
                             b = true;
@@ -401,11 +401,12 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
 
     QString a;
 
-    if ((w.graphView()->selectionInProgress() || w.graphView()->metaSelect()) && (!w.selDurString().isEmpty())) {
+    if (0) { //(w.graphView()->selectionInProgress())) { // || w.graphView()->metaSelect()) && (!w.selDurString().isEmpty())) {
         a = QObject::tr("Duration")+": "+w.selDurString();
     } else {
         a = QObject::tr("Events") + ": " + QString::number(cnt) + ", " +
-                QObject::tr("Duration") + " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " + m_text + ": " + QString::number(val, 'f', 2);
+            QObject::tr("Duration") + " " + QString().sprintf("%02i:%02i:%02i", h, m, s) + ", " +
+            m_text + ": " + QString::number(val, 'f', 2);
     }
     if (isSpan) {
         float sph;

@@ -936,16 +936,80 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
     painter.setClipping(false);
+
+
+    // Calculate combined session times within selected area...
+    double first, last;
+    double time = 0;
+
+    // Calculate the session time.
+    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
+        if (!(*s)->enabled()) { continue; }
+
+        first = (*s)->first();
+        last = (*s)->last();
+
+        if (last < w.min_x) { continue; }
+        if (first > w.max_x) { continue; }
+
+        if (first < w.min_x) {
+            first = w.min_x;
+        }
+
+        if (last > w.max_x) {
+            last = w.max_x;
+        }
+
+        time += last - first;
+    }
+
+
+    time /= 1000;
+
+    QList<ChannelID> ahilist;
+    ahilist.push_back(CPAP_Hypopnea);
+    ahilist.push_back(CPAP_Obstructive);
+    ahilist.push_back(CPAP_Apnea);
+    ahilist.push_back(CPAP_ClearAirway);
+
+    QList<ChannelID> extras;
+    ahilist.push_back(CPAP_NRI);
+    ahilist.push_back(CPAP_UserFlag1);
+    ahilist.push_back(CPAP_UserFlag2);
+
+    double sum = 0;
+    int cnt = 0;
+
+    // Draw the linechart overlays
     if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
         QHash<ChannelID, gLineOverlayBar *>::iterator fit;
         bool blockhover = false;
 
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
+            ChannelID code = fit.key();
             gLineOverlayBar * lob = fit.value();
             lob->setBlockHover(blockhover);
             lob->paint(painter, w, region);
             if (lob->hover()) blockhover = true; // did it render a hover over?
+
+            if (ahilist.contains(code)) {
+                sum += lob->sum();
+                cnt += lob->count();
+            }
         }
     }
+    if (m_codes[0] == CPAP_FlowRate) {
+        float hours = float(time) / 3600.0;
+        int h = time / 3600;
+        int m = int(time / 60) % 60;
+        int s = int(time) % 60;
+
+        float f = float(cnt) / hours; // / (sum / 3600.0);
+        QString txt = QObject::tr("Duration %1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')) + " "+
+                QObject::tr("AHI: %1").arg(f,0,'f',2);
+        painter.setPen(Qt::black);
+        painter.drawText(left,top-4,txt);
+    }
+
     painter.setRenderHint(QPainter::Antialiasing, false);
 }

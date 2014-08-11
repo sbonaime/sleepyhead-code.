@@ -366,7 +366,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     brush = QBrush(color);
                     painter.fillRect(x2, bartop, x1-x2, bottom-bartop, brush);
-                    if (!hover && QRect(x2, bartop, x1-x2, bottom-bartop).contains(w.graphView()->currentMousePos())) {
+                    if (!w.selectingArea() && !hover && QRect(x2, bartop, x1-x2, bottom-bartop).contains(w.graphView()->currentMousePos())) {
                         hover = true;
                         painter.setPen(QPen(Qt::red,1));
 
@@ -394,7 +394,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     x1 = (X - minx) * xmult + left;
 
-                    if (!hover && QRect(x1-3, bartop-2, 6, bottom-bartop+4).contains(w.graphView()->currentMousePos())) {
+                    if (!w.selectingArea() && !hover && QRect(x1-3, bartop-2, 6, bottom-bartop+4).contains(w.graphView()->currentMousePos())) {
                         hover = true;
                         painter.setPen(QPen(Qt::red,1));
 

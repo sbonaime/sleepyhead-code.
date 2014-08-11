@@ -106,7 +106,11 @@ class gGraph : public QObject
     //! \brief Returns true if none of the included layers have data attached
     bool isEmpty();
 
+    //! \brief Returns true if the user is currently dragging the mouse to select an area
+    bool selectingArea();
+
     double currentTime() const;
+
 
 
     //! \brief Add Layer l to graph object, allowing you to specify position,

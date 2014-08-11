@@ -766,6 +766,10 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                 m_selDurString.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
             }
 
+            ToolTipAlignment align = x >= x2 ? TT_AlignLeft : TT_AlignRight;
+            int offset = (x >= x2) ? 20 : - 20;
+            ToolTip(m_selDurString, m_rect.left() + x + offset, m_rect.top() + y + 20, align);
+
             if (qstatus2) {
                 qstatus2->setText(m_selDurString);
             }
@@ -836,6 +840,9 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     //        //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
     //    }
 }
+
+bool gGraph::selectingArea() { return m_selecting_area || m_graphview->metaSelect(); }
+
 void gGraph::mousePressEvent(QMouseEvent *event)
 {
     int y = event->pos().y();
