@@ -45,16 +45,17 @@ void MinutesAtPressure::SetDay(Day *day)
 {
     Layer::SetDay(day);
 
-
     m_empty = false;
     m_recalculating = false;
     m_lastminx = 0;
     m_lastmaxx = 0;
+    m_empty = !m_day || !(m_day->channelExists(CPAP_Pressure) || m_day->channelExists(CPAP_IPAP));
 }
 
 
 bool MinutesAtPressure::isEmpty()
 {
+
     return m_empty;
 }
 
@@ -127,10 +128,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     QMap<EventStoreType, EventDataType>::iterator vit;
 
     int row = 0;
-    for (eit = events.begin(); eit != ev_end; ++eit) {
-        ChannelID code = eit.key();
+    int numchans = chans.size();
+    for (int i=0; i< numchans; ++i) {
+        ChannelID code = chans.at(i);
 
         schema::Channel & chan = schema::channel[code];
+        eit = events.find(code);
+
         xpos = left;
 
         QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
@@ -157,14 +161,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         row++;
     }
 
-
-
     timelock.unlock();
 
     if (m_recalculating) {
-        painter.setFont(*defaultfont);
-        painter.setPen(QColor(0,0,0,125));
-        painter.drawText(region.boundingRect(), Qt::AlignCenter, QObject::tr("Recalculating..."));
+//        painter.setFont(*defaultfont);
+//        painter.setPen(QColor(0,0,0,125));
+//        painter.drawText(region.boundingRect(), Qt::AlignCenter, QObject::tr("Recalculating..."));
     }
 
     // Draw the goodies...
