@@ -1061,6 +1061,7 @@ EDFduration getEDFDuration(QString filename)
         num_records = bytes.toInt(&ok1);
         bytes = file.read(8).trimmed();
         rec_duration = bytes.toDouble(&ok2);
+
         file.close();
     } else {
         gzFile f = gzopen(filename.toLatin1(), "rb");
@@ -1125,11 +1126,16 @@ EDFduration getEDFDuration(QString filename)
 
     if (ext == "EVE") {
         // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
-        // It could be avoided by parsing the EDF annotations completely, but on days with no events, this would be pointless.
+        // It could partially be avoided by parsing the EDF annotations completely, but on days with no events, this would be pointless.
 
-        // Add 45 seconds to make sure some overlap happens with related sessions.
+        // Add some seconds to make sure some overlap happens with related sessions.
 
-        end += 45;
+        // ************** Be cautious with this value **************
+
+        // A Firmware bug causes (perhaps with failing SD card) sessions to sometimes take a long time to write, and it can screw this up
+        // I've really got no way of detecting the other condition.. I can either have one or the other.
+
+        end += 20;
     }
 
     start = qMin(st2, start);
