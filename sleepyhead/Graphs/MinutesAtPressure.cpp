@@ -133,6 +133,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         ChannelID code = chans.at(i);
 
         schema::Channel & chan = schema::channel[code];
+        schema::ChanType type = chan.type();
         eit = events.find(code);
 
         xpos = left;
@@ -146,14 +147,20 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
 
         for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
-            float duration = float(it.value()) * 60.0;
-            float value = (vit.value()) ;
+            float minutes = float(it.value()) / 60.0;
+            float value = vit.value();
+
+            if (type != schema::SPAN) {
+                value = (minutes > 0.000001) ? (value * 60.0) / minutes : 0;
+            } else {
+                value = (minutes > 0.000001) ? (100/minutes) * (value / 60.0) : 0;
+            }
 
             QRect rec(xpos, ypos, pix-1, hh);
             if (row & 1) {
                 painter.fillRect(rec, QColor(240,240,240,240));
             }
-            painter.drawText(rec, Qt::AlignCenter, QString("%1").arg(value,5,'f',1));
+            painter.drawText(rec, Qt::AlignCenter, QString("%1").arg(value,5,'f',2));
             xpos += pix;
 
         }
@@ -195,7 +202,7 @@ void RecalcMAP::run()
     QList<ChannelID> badchans;
     for (int i=0 ; i < chans.size(); ++i) {
         code = chans.at(i);
-        if (!day->channelExists(code)) badchans.push_back(code);
+      //  if (!day->channelExists(code)) badchans.push_back(code);
     }
 
     for (int i=0; i < badchans.size(); ++i) {
@@ -308,6 +315,11 @@ skip:
 
     for (it = times.begin(); it != times_end; ++it) {
         maxtime = qMax(it.value(), maxtime);
+    }
+    chans.push_front(CPAP_AHI);
+
+    for (int i=3; i<30; i++) {
+        events[CPAP_AHI].insert(i,events[CPAP_Obstructive][i] + events[CPAP_Hypopnea][i] + events[CPAP_Apnea][i] + events[CPAP_ClearAirway][i]);
     }
 
 
