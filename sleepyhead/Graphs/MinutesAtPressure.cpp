@@ -269,8 +269,11 @@ void RecalcMAP::run()
                 }
 
                 if ((lastdata != data) || (time > maxx)) {
+                    qint64 d1 = qMax(minx, lasttime);
+                    qint64 d2 = qMin(maxx, time);
 
-                    int duration = (time - lasttime) / 1000L;
+
+                    int duration = (d2 - d1) / 1000L;
                     EventStoreType key = floor(lastdata * gain);
                     if (key <= 30) {
                         times[key] += duration;
@@ -278,9 +281,9 @@ void RecalcMAP::run()
                             ChannelID code = chans.at(c);
                             schema::Channel & chan = schema::channel[code];
                             if (chan.type() == schema::SPAN) {
-                                events[code][key] += sess->rangeSum(code, qMax(minx, lasttime), qMin(maxx, time));
+                                events[code][key] += sess->rangeSum(code, d1, d2);
                             } else {
-                                events[code][key] += sess->rangeCount(code, qMax(minx, lasttime), qMin(maxx, time));
+                                events[code][key] += sess->rangeCount(code, d1, d2);
                             }
                         }
                     }
