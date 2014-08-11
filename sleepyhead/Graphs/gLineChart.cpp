@@ -399,9 +399,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             getMetaString(time);
         }
 
-        // YEOWCH!!!! SLLLLLLLLLLOOOOOOOOWWWWWW.. Month name lookup is hideously slow on mac..
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
-        QString text = dt.toString("MMM dd - HH:mm:ss:zzz") + lasttext;
+        QString text = w.graphView()->currentTimeString() + lasttext;
 
         int wid, h;
         GetTextExtent(text, wid, h);

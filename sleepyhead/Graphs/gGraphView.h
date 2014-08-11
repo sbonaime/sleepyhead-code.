@@ -378,7 +378,13 @@ class gGraphView
     //! \brief The current time the mouse pointer is hovering over
     inline double currentTime() { return m_currenttime; }
 
-    inline void setCurrentTime(double time) { m_currenttime = time; }
+    inline QString currentTimeString() { return m_currentTimeString; }
+
+    inline void setCurrentTime(double time) {
+        m_currenttime = time;
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
+        m_currentTimeString = dt.toString("MMM dd - HH:mm:ss:zzz");
+    }
 
     inline QPoint currentMousePos() const { return m_mouse; }
 
@@ -501,7 +507,7 @@ class gGraphView
 
     QPoint m_mouse;
     qint64 m_currenttime;
-
+    QString m_currentTimeString;
 
     QTime m_animationStarted;
 
