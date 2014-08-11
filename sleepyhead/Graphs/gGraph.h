@@ -79,10 +79,13 @@ class gGraph : public QObject
     bool visible() { return m_visible; }
 
     //! \brief Return height element. This is used by the scaler in gGraphView.
-    float height() { return m_height; }
+    inline const float & height() { return m_height; }
 
     //! \brief Set the height element. (relative to the total of all heights)
-    void setHeight(float height) { m_height = height; invalidate_yAxisImage = true; }
+    void setHeight(float height) {
+        m_height = height;
+        invalidate_yAxisImage = true;
+    }
 
     //! \brief Return minimum height this graph is allowed to (considering layer preferences too)
     int minHeight();

@@ -253,7 +253,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 #else
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering | QGL::HasOverlay | QGL::Rgba),parent,shared),
 #endif
-      m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
+      m_offsetY(0), m_offsetX(0), m_scaleY(0.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
@@ -599,7 +599,7 @@ void gGraphView::addGraph(gGraph *g, short group)
         if (!m_graphsbyname.contains(g->name())) {
             m_graphsbyname[g->name()] = g;
         } else {
-            qDebug() << "Can't have to graphs with the same title in one GraphView!!";
+            qDebug() << "Can't have two graphs with the same code string in the same GraphView!!";
         }
 
         // updateScrollBar();
@@ -612,9 +612,10 @@ float gGraphView::totalHeight()
     float th = 0;
 
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) { continue; }
+        gGraph * g = m_graphs[i];
+        if (g->isEmpty() || (!g->visible())) { continue; }
 
-        th += m_graphs[i]->height() + graphSpacer;
+        th += g->height() + graphSpacer;
     }
 
     return ceil(th);
@@ -650,8 +651,14 @@ float gGraphView::scaleHeight()
 
 void gGraphView::updateScale()
 {
+    if (!isVisible()) {
+        m_scaleY = 0.0;
+        return;
+    }
+
     float th = totalHeight(); // height of all graphs
     float h = height();     // height of main widget
+
 
     if (th < h) {
         th -= visibleGraphs() * graphSpacer;   // compensate for spacer height
@@ -666,13 +673,16 @@ void gGraphView::updateScale()
 
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
-    QWidget::resizeEvent(e); // This ques a redraw event..
+//    QWidget::resizeEvent(e); // This ques a redraw event..
 
     updateScale();
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->resize(e->size().width(), m_graphs[i]->height()*m_scaleY);
+    if (m_scaleY > 0.0001) {
+        for (int i = 0; i < m_graphs.size(); i++) {
+            m_graphs[i]->resize(e->size().width(), m_graphs[i]->height() * m_scaleY);
+        }
     }
+    e->accept();
 }
 
 void gGraphView::scrollbarValueChanged(int val)
@@ -880,7 +890,11 @@ bool gGraphView::renderGraphs(QPainter &painter)
     } else threaded=false; */
     //#endif
     //threaded=false;
+    if (height() < 40) return false;
 
+    if (m_scaleY < 0.0000001) {
+        updateScale();
+    }
 
     lines_drawn_this_frame = 0;
     quads_drawn_this_frame = 0;
@@ -889,18 +903,21 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     float pinned_height = 0; // pixel height total
     int pinned_graphs = 0; // count
+    gGraph * g = nullptr;
 
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->height() < m_graphs[i]->minHeight()) {
-            m_graphs[i]->setHeight(m_graphs[i]->minHeight());
+        g = m_graphs[i];
+        int minh = g->minHeight();
+        if (g->height() < minh) {
+            g->setHeight(minh);
         }
-        if (m_graphs[i]->isEmpty()) { continue; }
+        if (g->isEmpty()) { continue; }
 
-        if (!m_graphs[i]->visible()) { continue; }
+        if (!g->visible()) { continue; }
 
-        if (!m_graphs[i]->isPinned()) { continue; }
+        if (!g->isPinned()) { continue; }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
         pinned_height += h + graphSpacer;
         pinned_graphs++;
     }
@@ -909,14 +926,15 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     // Draw non pinned graphs
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty()) { continue; }
+        g = m_graphs[i];
+        if (g->isEmpty()) { continue; }
 
-        if (!m_graphs[i]->visible()) { continue; }
+        if (!g->visible()) { continue; }
 
-        if (m_graphs[i]->isPinned()) { continue; }
+        if (g->isPinned()) { continue; }
 
         numgraphs++;
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
 
         // set clipping?
 
@@ -926,9 +944,9 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
         if ((py + h + graphSpacer) >= 0) {
             w = width();
-            int tw = (m_graphs[i]->showTitle() ? titleWidth : 0);
+            int tw = (g->showTitle() ? titleWidth : 0);
 
-            queGraph(m_graphs[i], px + tw, py, width() - tw, h);
+            queGraph(g, px + tw, py, width() - tw, h);
 
             if ((m_graphs.size() > 1) && m_showsplitter) {
                 // draw the splitter handle
@@ -951,7 +969,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     int s = m_drawlist.size();
 
     for (int i = 0; i < s; i++) {
-        gGraph *g = m_drawlist.at(0);
+        g = m_drawlist.at(0);
         m_drawlist.pop_front();
         g->paint(painter, QRegion(g->m_rect));
     }
@@ -971,13 +989,14 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     // Draw Pinned graphs
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty()) { continue; }
+        g = m_graphs[i];
+        if (g->isEmpty()) { continue; }
 
-        if (!m_graphs[i]->visible()) { continue; }
+        if (!g->visible()) { continue; }
 
-        if (!m_graphs[i]->isPinned()) { continue; }
+        if (!g->isPinned()) { continue; }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = g->height() * m_scaleY;
         numgraphs++;
 
         if (py > height()) {
@@ -986,9 +1005,9 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
         if ((py + h + graphSpacer) >= 0) {
             w = width();
-            int tw = (m_graphs[i]->showTitle() ? titleWidth : 0);
+            int tw = (g->showTitle() ? titleWidth : 0);
 
-            queGraph(m_graphs[i], px + tw, py, width() - tw, h);
+            queGraph(g, px + tw, py, width() - tw, h);
 
             if ((m_graphs.size() > 1) && m_showsplitter) {
                 // draw the splitter handle
@@ -1022,7 +1041,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
         s = m_drawlist.size();
 
         for (int i = 0; i < s; i++) {
-            gGraph *g = m_drawlist.at(0);
+            g = m_drawlist.at(0);
             m_drawlist.pop_front();
             g->paint(painter, QRegion(g->m_rect));
         }
@@ -1048,6 +1067,11 @@ void gGraphView::paintEvent(QPaintEvent *)
 void gGraphView::paintGL()
 #endif
 {
+
+    if (!isVisible()) {
+        // wtf is this even getting CALLED??
+        return;
+    }
 #ifdef DEBUG_EFFICIENCY
     QElapsedTimer time;
     time.start();
@@ -2192,7 +2216,9 @@ bool gGraphView::LoadSettings(QString title)
     QString filename = p_profile->Get("{DataFolder}/") + title.toLower() + ".shg";
     QFile f(filename);
 
-    if (!f.exists()) { return false; }
+    if (!f.exists()) {
+        return false;
+    }
 
     f.open(QFile::ReadOnly);
     QDataStream in(&f);
@@ -2230,7 +2256,6 @@ bool gGraphView::LoadSettings(QString title)
 
     for (int i = 0; i < siz; i++) {
         in >> name;
-
         in >> hght;
         in >> vis;
         in >> recminy;
@@ -2251,7 +2276,7 @@ bool gGraphView::LoadSettings(QString title)
             g = nullptr;
             for (int z=0; z<m_graphs.size(); ++z) {
                 if (m_graphs[z]->title() == name) {
-                    g=m_graphs[z];
+                    g = m_graphs[z];
                     break;
                 }
             }

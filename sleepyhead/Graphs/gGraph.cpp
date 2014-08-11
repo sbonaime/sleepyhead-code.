@@ -446,14 +446,15 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->hideSplitter();
     gGraphView *tgv = m_graphview;
+
     m_graphview = sg;
 
     sg->setMinimumSize(w, h);
     sg->setMaximumSize(w, h);
     sg->setFixedSize(w, h);
 
-    float tmp = m_height;
-    m_height = h;
+    float tmp = height();
+    setHeight(h);
     sg->trashGraphs();
     sg->addGraph(this);
 
@@ -476,7 +477,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     m_graphview = tgv;
 
-    m_height = tmp;
+    setHeight(tmp);
 
     defaultfont = _defaultfont;
     mediumfont = _mediumfont;
@@ -1393,6 +1394,9 @@ int gGraph::minHeight()
 {
     int minheight = m_min_height;
 
+    int top = 0;
+    int center = 0;
+    int bottom = 0;
     for (int i=0; i<m_layers.size(); ++i) {
         int mh = m_layers[i]->minimumHeight();
         mh += m_margintop + m_marginbottom;

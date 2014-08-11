@@ -443,7 +443,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->evViewSlider->setValue(ews);
     ui->evViewLCD->display(ews);
 
-    GraphView->LoadSettings("Daily");
 
     icon_on=new QIcon(":/icons/session-on.png");
     icon_off=new QIcon(":/icons/session-off.png");
@@ -466,7 +465,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->calButton->setChecked(p_profile->appearance->calendarVisible() ? Qt::Checked : Qt::Unchecked);
     on_calButton_toggled(p_profile->appearance->calendarVisible());
 
-
+    GraphView->resetLayout();
+    GraphView->LoadSettings("Daily");
 }
 
 
@@ -494,6 +494,7 @@ void Daily::closeEvent(QCloseEvent *event)
 
     if (previous_date.isValid())
         Unload(previous_date);
+
     GraphView->SaveSettings("Daily");
     QWidget::closeEvent(event);
     event->accept();
