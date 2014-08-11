@@ -306,6 +306,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     nll->addSlice(CPAP_LargeLeak, schema::channel[CPAP_LargeLeak].defaultColor(), ST_SPH);
     // <--- The code to the previous marker is crap
 
+    GraphView->resetLayout();
     GraphView->LoadSettings("Overview"); //no trans
     AHI->setPinned(false);
     ui->rangeCombo->setCurrentIndex(6);

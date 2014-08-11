@@ -1006,8 +1006,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         float f = float(cnt) / hours; // / (sum / 3600.0);
         QString txt = QObject::tr("Duration %1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')) + " "+
                 QObject::tr("AHI %1").arg(f,0,'f',2);
-        painter.setPen(Qt::black);
-        painter.drawText(left,top-4,txt);
+        w.renderText(txt,left,top-4);
     }
 
     painter.setRenderHint(QPainter::Antialiasing, false);
