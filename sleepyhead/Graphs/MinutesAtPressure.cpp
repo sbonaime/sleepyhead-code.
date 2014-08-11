@@ -239,7 +239,7 @@ void RecalcMAP::run()
         Session * sess = (*sit);
         QHash<ChannelID, QVector<EventList *> >::iterator ei = sess->eventlist.find(prescode);
         if (ei == sess->eventlist.end())
-            break;
+            continue;
 
         const QVector<EventList *> & evec = ei.value();
         int esize = evec.size();
@@ -318,7 +318,7 @@ skip:
     }
     chans.push_front(CPAP_AHI);
 
-    for (int i=3; i<30; i++) {
+    for (int i=3; i<=30; i++) {
         events[CPAP_AHI].insert(i,events[CPAP_Obstructive][i] + events[CPAP_Hypopnea][i] + events[CPAP_Apnea][i] + events[CPAP_ClearAirway][i]);
     }
 
