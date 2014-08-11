@@ -48,9 +48,11 @@ class Layer
           m_width(0), m_height(0),
           m_X(0), m_Y(0),
           m_order(0),
-          m_position(LayerCenter)
+          m_position(LayerCenter),
+          m_recalculating(false)
     { }
 
+    virtual void recalculate(gGraph * graph) { Q_UNUSED(graph)};
     virtual ~Layer();
 
     //! \brief This gets called on day selection, allowing this layer to precalculate any drawing data
@@ -107,13 +109,15 @@ class Layer
     void setVisible(bool b) { m_visible = b; }
 
     //! \brief Return this layers Visibility status
-    bool visible() const { return m_visible; }
+    inline bool visible() const { return m_visible; }
 
     //! \brief Set this layers Moveability status (not really used yet)
     void setMovable(bool b) { m_movable = b; }
 
     //! \brief Return this layers Moveability status (not really used yet)
-    bool movable() const { return m_movable; }
+    inline bool movable() const { return m_movable; }
+
+    inline bool recalculating() const { return m_recalculating; }
 
     /*! \brief Override this for the drawing code, using GLBuffer components for drawing
         \param gGraph & gv    Graph Object that holds this layer
@@ -129,8 +133,8 @@ class Layer
 
     void setPos(short x, short y) { m_X = x; m_Y = y; }
 
-    int Width() { return m_width; }
-    int Height() { return m_height; }
+    inline int Width() const { return m_width; }
+    inline int Height() const { return m_height; }
 
     //! \brief Return this Layers Layout Position.
     LayerPosition position() { return m_position; }
@@ -169,6 +173,8 @@ class Layer
     LayerPosition m_position;
     QRect m_rect;
     bool m_mouseover;
+    volatile bool m_recalculating;
+
 
 //    //! \brief A vector containing all this layers custom drawing buffers
 //    QVector<GLBuffer *> mgl_buffers;
@@ -272,6 +278,7 @@ class LayerGroup : public Layer
 
     //! \brief A key was pressed on the keyboard while the graph area was focused.
     virtual bool keyPressEvent(QKeyEvent *event, gGraph *graph);
+
 };
 
 #endif // graphs_layer_h

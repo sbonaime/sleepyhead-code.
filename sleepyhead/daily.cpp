@@ -43,6 +43,7 @@
 #include "Graphs/gSegmentChart.h"
 #include "Graphs/gStatsLine.h"
 #include "Graphs/gdailysummary.h"
+#include "Graphs/MinutesAtPressure.h"
 
 //extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
@@ -149,6 +150,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
             *AHI = nullptr;
 
     const QString STR_GRAPH_DailySummary = "DailySummary";
+    const QString STR_GRAPH_TAP = "TimeAtPressure";
 
 //    gGraph * SG;
 //    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
@@ -269,6 +271,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     skipgraph.push_back(STR_GRAPH_EventBreakdown);
     skipgraph.push_back(STR_GRAPH_SleepFlags);
     skipgraph.push_back(STR_GRAPH_DailySummary);
+    skipgraph.push_back(STR_GRAPH_TAP);
 
     QHash<QString, gGraph *>::iterator it;
 
@@ -334,6 +337,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     pc->addPlot(CPAP_IPAPLo, COLOR_IPAPLo, square);
     pc->addPlot(CPAP_IPAP, COLOR_IPAP, square);
     pc->addPlot(CPAP_IPAPHi, COLOR_IPAPHi, square);
+
+    gGraph * TAP2;
+    graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("Time @ Pressure"), QObject::tr("Time at Pressure"), default_height);
+    TAP2->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+    TAP2->AddLayer(AddCPAP(new MinutesAtPressure()));
 
     if (p_profile->general->calculateRDI()) {
         AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI, COLOR_RDI, square)));

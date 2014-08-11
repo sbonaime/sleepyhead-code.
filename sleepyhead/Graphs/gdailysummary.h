@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  *
- * gDailySummary Graph Implementation
+ * gDailySummary Graph Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -30,6 +30,8 @@ public:
 
     virtual int minimumHeight() { return m_minimum_height; }
     bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
+    bool mousePressEvent(QMouseEvent *event, gGraph *graph);
+    bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph);
 
 protected:
     QList<QString> flag_values;
@@ -38,12 +40,20 @@ protected:
     QList<QColor> flag_foreground;
     QList<QColor> flag_background;
 
+
+    QList<ChannelID> pie_chan;
+    QList<EventDataType> pie_data;
+    QList<QString> pie_labels;
+    EventDataType pie_total;
+
     QList<QString> info_labels;
     QList<QString> info_values;
 
     float flag_height;
     float flag_label_width;
     float flag_value_width;
+
+    double ahi;
 
     int info_height;
     int info_label_width;

@@ -64,23 +64,6 @@ void gFlagsGroup::SetDay(Day *d)
         return;
     }
 
-    schema::channel[CPAP_CSR].setOrder(1);
-    schema::channel[CPAP_CSR].setOrder(1);
-    schema::channel[CPAP_Ramp].setOrder(2);
-    schema::channel[CPAP_LargeLeak].setOrder(2);
-    schema::channel[CPAP_ClearAirway].setOrder(3);
-    schema::channel[CPAP_Obstructive].setOrder(4);
-    schema::channel[CPAP_Apnea].setOrder(4);
-    schema::channel[CPAP_NRI].setOrder(3);
-    schema::channel[CPAP_Hypopnea].setOrder(5);
-    schema::channel[CPAP_FlowLimit].setOrder(6);
-    schema::channel[CPAP_RERA].setOrder(6);
-    schema::channel[CPAP_VSnore].setOrder(7);
-    schema::channel[CPAP_VSnore2].setOrder(8);
-    schema::channel[CPAP_ExP].setOrder(6);
-    schema::channel[CPAP_UserFlag1].setOrder(256);
-    schema::channel[CPAP_UserFlag2].setOrder(257);
-
 
     quint32 z = schema::FLAG | schema::SPAN;
     if (p_profile->general->showUnknownFlags()) z |= schema::UNKNOWN;

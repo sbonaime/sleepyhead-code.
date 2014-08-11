@@ -54,6 +54,48 @@ void Day::AddSession(Session *s)
 
     sessions.push_back(s);
 }
+EventDataType Day::calcMiddle(ChannelID code)
+{
+    int c = p_profile->general->prefCalcMiddle();
+
+    if (c == 0) {
+        return percentile(code, 0.5); // Median
+    } else if (c == 1 ) {
+        return wavg(code); // Weighted Average
+    } else {
+        return avg(code); // Average
+    }
+}
+EventDataType Day::calcMax(ChannelID code)
+{
+    return p_profile->general->prefCalcMax() ? percentile(code, 0.995) : Max(code);
+}
+EventDataType Day::calcPercentile(ChannelID code)
+{
+    double p = p_profile->general->prefCalcPercentile() / 100.0;
+    return percentile(code, p);
+}
+
+QString Day::calcMiddleLabel(ChannelID code)
+{
+    int c = p_profile->general->prefCalcMiddle();
+    if (c == 0) {
+        return QObject::tr("%1 %2").arg(STR_TR_Median).arg(schema::channel[code].fullname());
+    } else if (c == 1) {
+        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].fullname());
+    } else {
+        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].fullname());
+    }
+}
+QString Day::calcMaxLabel(ChannelID code)
+{
+    return QObject::tr("%1 %2").arg(p_profile->general->prefCalcMax() ? QObject::tr("Peak") : QObject::tr("Maximum")).arg(schema::channel[code].fullname());
+}
+QString Day::calcPercentileLabel(ChannelID code)
+{
+    return QObject::tr("%1% %2").arg(p_profile->general->prefCalcPercentile(),0, 'f').arg(schema::channel[code].fullname());
+}
+
 
 
 EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)

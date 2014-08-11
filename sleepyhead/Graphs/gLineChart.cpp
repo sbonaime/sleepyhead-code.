@@ -176,7 +176,7 @@ skipcheck:
             lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
         }
         if (lob != nullptr) {
-            lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+            lob->setOverlayDisplayType(((m_codes[0] == CPAP_FlowRate) || (m_codes[0] == CPAP_MaskPressureHi))? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
             lob->SetDay(m_day);
             flags[code] = lob;
         }
@@ -207,6 +207,15 @@ skipcheck:
 //            }
 //        }
 //    }
+
+    QList<ChannelID> middles;
+
+    middles.push_back(CPAP_RespRate);
+    middles.push_back(CPAP_TidalVolume);
+    middles.push_back(CPAP_MinuteVent);
+    middles.push_back(CPAP_Ti);
+    middles.push_back(CPAP_Te);
+
     CPAPMode mode = (CPAPMode)m_day->settings_wavg(CPAP_Mode);
     float perc = p_profile->general->prefCalcPercentile();
     for (int i=0; i<m_codes.size(); ++i) {
@@ -244,7 +253,16 @@ skipcheck:
             }
         } else if (code == CPAP_Leak) {
             m_threshold.push_back(QObject::tr("%1 threshold").arg(chan.fullname()));
-        } else m_threshold.push_back(QString());
+        } else if (middles.contains(code)) {
+            float f = m_day->calcMiddle(code);
+
+            chan.setUpperThreshold(f);
+            chan.setUpperThresholdColor(Qt::black);
+            m_threshold.push_back(m_day->calcMiddleLabel(code));
+        } else {
+            chan.setUpperThreshold(0);
+            m_threshold.push_back(QString());
+        }
     }
 }
 EventDataType gLineChart::Miny()
@@ -445,6 +463,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipping(true);
     painter.setRenderHint(QPainter::Antialiasing, p_profile->appearance->antiAliasing());
 
+    painter.setFont(*defaultfont);
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
@@ -986,6 +1005,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
             ChannelID code = fit.key();
+            if (!m_day->channelExists(code)) continue;
             gLineOverlayBar * lob = fit.value();
             lob->setBlockHover(blockhover);
             lob->paint(painter, w, region);
@@ -998,14 +1018,16 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
     if (m_codes[0] == CPAP_FlowRate) {
-        float hours = float(time) / 3600.0;
+        float hours = time / 3600.0;
         int h = time / 3600;
         int m = int(time / 60) % 60;
         int s = int(time) % 60;
 
-        float f = float(cnt) / hours; // / (sum / 3600.0);
+        double f = double(cnt) / hours; // / (sum / 3600.0);
         QString txt = QObject::tr("Duration %1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')) + " "+
-                QObject::tr("AHI %1").arg(f,0,'f',2);
+                QObject::tr("AHI %1").arg(f,0,'f',2) +" " +
+                QObject::tr("Events %1").arg(cnt) + " " +
+                QObject::tr("Hours %1").arg(hours,0,'f',2);
         w.renderText(txt,left,top-4);
     }
 

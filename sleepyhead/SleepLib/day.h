@@ -187,6 +187,58 @@ class Day
     QString getPressureRelief();
     QString getPressureSettings();
 
+    // Some more very much CPAP only related stuff
+
+    //! \brief Calculate AHI (Apnea Hypopnea Index)
+    EventDataType calcAHI() {
+        EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway);
+        EventDataType minutes = hours() * 60.0;
+        return (c * 60.0) / minutes;
+    }
+
+    //! \brief Calculate RDI (Respiratory Disturbance Index)
+    EventDataType calcRDI() {
+        EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway) + count(CPAP_RERA);
+        EventDataType minutes = hours() * 60.0;
+        return (c * 60.0) / minutes;
+    }
+
+    //! \brief Percent of night for specified channel
+    EventDataType calcPON(ChannelID code) {
+        EventDataType c = sum(code);
+        EventDataType minutes = hours() * 60.0;
+
+        return (100.0 / minutes) * (c / 60.0);
+    }
+
+    //! \brief Calculate index (count per hour) for specified channel
+    EventDataType calcIdx(ChannelID code) {
+        EventDataType c = count(code);
+        EventDataType minutes = hours() * 60.0;
+
+        return (c * 60.0) / minutes;
+    }
+
+    //! \brief SleepyyHead Events Index, AHI combined with SleepyHead detected events.. :)
+    EventDataType calcSHEI() {
+        EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway) + count(CPAP_UserFlag1) + count(CPAP_UserFlag2);
+        EventDataType minutes = hours() * 60.0;
+        return (c * 60.0) / minutes;
+    }
+    //! \brief Total duration of all Apnea/Hypopnea events in seconds,
+    EventDataType calcTTIA() {
+        EventDataType c = sum(CPAP_Hypopnea) + sum(CPAP_Obstructive) + sum(CPAP_Apnea) + sum(CPAP_ClearAirway);
+        return c;
+    }
+
+    // According to preferences..
+    EventDataType calcMiddle(ChannelID code);
+    EventDataType calcMax(ChannelID code);
+    EventDataType calcPercentile(ChannelID code);
+    QString calcMiddleLabel(ChannelID code);
+    QString calcMaxLabel(ChannelID code);
+    QString calcPercentileLabel(ChannelID code);
+
     QList<Session *> sessions;
 
   protected:

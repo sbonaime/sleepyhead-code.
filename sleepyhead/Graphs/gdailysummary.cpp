@@ -22,6 +22,20 @@ gDailySummary::gDailySummary() : Layer(NoChannel)
 
 void gDailySummary::SetDay(Day *day)
 {
+    QList<ChannelID> piechans;
+
+    piechans.append(CPAP_ClearAirway);
+    piechans.append(CPAP_Obstructive);
+    piechans.append(CPAP_Apnea);
+    piechans.append(CPAP_Hypopnea);
+    piechans.append(CPAP_RERA);
+    piechans.append(CPAP_FlowLimit);
+
+    pie_data.clear();
+    pie_chan.clear();
+    pie_labels.clear();
+    pie_total = 0;
+
     m_day = day;
     if (day) {
         m_minx = m_day->first();
@@ -48,20 +62,27 @@ void gDailySummary::SetDay(Day *day)
         for (int i=0; i < available.size(); ++i) {
             ChannelID code = available.at(i);
             schema::Channel & chan = schema::channel[code];
-            QString data;
+            QString str;
             if (chan.type() == schema::SPAN) {
                 val = (100.0 / hours)*(day->sum(code)/3600.0);
-                data = QString("%1%").arg(val,0,'f',2);
+                str = QString("%1%").arg(val,0,'f',2);
             } else {
                 val = day->count(code) / hours;
-                data = QString("%1").arg(val,0,'f',2);
+                str = QString("%1").arg(val,0,'f',2);
             }
-            flag_values.push_back(data);
+            flag_values.push_back(str);
             flag_codes.push_back(code);
             flag_background.push_back(chan.defaultColor());
             flag_foreground.push_back((brightness(chan.defaultColor()) < 0.3) ? Qt::white : Qt::black); // pick a contrasting color
-
             QString label = chan.fullname();
+
+            if (piechans.contains(code)) {
+                pie_data.push_back(val);
+                pie_labels.push_back(chan.label());
+                pie_chan.append(code);
+                pie_total += val;
+            }
+
             flag_labels.push_back(label);
             GetTextExtent(label, x, y, defaultfont);
 
@@ -69,14 +90,15 @@ void gDailySummary::SetDay(Day *day)
             if (y > flag_height) flag_height = y;
             if (x > flag_label_width) flag_label_width  = x;
 
-            GetTextExtent(data, x, y, defaultfont);
+            GetTextExtent(str, x, y, defaultfont);
             if (x > flag_value_width) flag_value_width = x;
             if (y > flag_height) flag_height = y;
         }
-        m_empty = (available.size() > 0);
 
         info_labels.clear();
         info_values.clear();
+
+        ahi = day->calcAHI();
 
         QDateTime dt = QDateTime::fromMSecsSinceEpoch(day->first());
         info_labels.append(QObject::tr("Date"));
@@ -107,6 +129,9 @@ void gDailySummary::SetDay(Day *day)
 
         m_minimum_height = flag_values.size() * flag_height;
 
+        m_empty = !(day->channelExists(CPAP_Pressure) || day->channelExists(CPAP_IPAP));
+
+
     } else {
         m_minx = m_maxx = 0;
         m_miny = m_maxy = 0;
@@ -118,8 +143,7 @@ void gDailySummary::SetDay(Day *day)
 
 bool gDailySummary::isEmpty()
 {
-
-    return false;
+    return m_empty;
 }
 
 
@@ -128,10 +152,10 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     QRect rect = region.boundingRect();
 
-    int top = rect.top();
+    int top = rect.top()-10;
     int left = rect.left();
     int width = rect.width();
-    int height = rect.height();
+    int height = rect.height()+10;
 
     // Draw bounding box
     painter.setPen(QColor(Qt::black));
@@ -140,6 +164,8 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     QRectF rect1, rect2;
     int size;
+
+
 //    QFontMetrics fm(*mediumfont);
 //    top += fm.height();
 //    painter.setFont(*mediumfont);
@@ -157,16 +183,29 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 //    row += rect1.height()+rect2.height()-5;
 //    column = left + 10;
 
+    float row = top + 10;
+    float column = left+10;
+
+    rect1 = QRectF(column - 10, row -5, 0, 0);
+    painter.setFont(*mediumfont);
+    QString txt = QString::number(ahi, 'f', 2);
+    QString ahi = QString("%1: %2").arg(STR_TR_AHI).arg(txt);
+    rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, ahi);
+    rect1.setWidth(rect1.width()*2);
+    rect1.setHeight(rect1.height() * 1.5);
+    painter.fillRect(rect1, QColor("orange"));
+    painter.setPen(Qt::black);
+    painter.drawText(rect1, Qt::AlignCenter, ahi);
+    painter.drawRoundedRect(rect1, 5, 5);
+
+    column += rect1.width() + 10;
+
     size = flag_values.size();
-
-
     int vis = 0;
     for (int i=0; i < size; ++i) {
         schema::Channel & chan = schema::channel[flag_codes.at(i)];
         if (chan.enabled()) vis++;
     }
-    float row = top + 10;
-    float column = left+10;
 
     flag_value_width = 0;
     flag_label_width = 0;
@@ -176,6 +215,8 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QFont font(defaultfont->family());
     font.setPixelSize(hpl*0.75);
 
+    font.setBold(true);
+    font.setItalic(true);
     painter.setFont(font);
 
     for (int i=0; i < size; ++i) {
@@ -196,6 +237,10 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QRect flag_outline(column -5, row -5, (flag_value_width + flag_label_width + 20 + 4) + 10, (hpl * vis) + 10);
     painter.setPen(QPen(Qt::gray, 1));
     painter.drawRoundedRect(flag_outline, 5, 5);
+
+    font.setBold(false);
+    font.setItalic(false);
+    painter.setFont(font);
 
 
     for (int i=0; i < size; ++i) {
@@ -226,13 +271,63 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         row += (flag_height);
 
-//        if (row > (top + rect.height() - flag_height - 4)) {
-//            row = top;
-//            column += flag_label_width + 20 + flag_value_width + 5;
-//        }
     }
+    column += 22 + flag_label_width + flag_value_width + 20;
+    row = top + 10;
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Pie Chart
+    ////////////////////////////////////////////////////////////////////////////////
+    painter.setRenderHint(QPainter::Antialiasing);
+    QRect pierect(column, row, height-30, height-30);
+
+    float sum = -90.0;
+
+    int slices = pie_data.size();
+    EventDataType data;
+    for (int i=0; i < slices; ++i) {
+        data = pie_data[i];
+
+        if (data == 0) { continue; }
+
+        // Setup the shiny radial gradient
+        float len = 360.0 / float(pie_total) * float(data);
+        QColor col = schema::channel[pie_chan[i]].defaultColor();
+
+        painter.setPen(QPen(col, 0));
+        QRadialGradient gradient(pierect.center(), float(pierect.width()) / 2.0, pierect.center());
+        gradient.setColorAt(0, Qt::white);
+        gradient.setColorAt(1, col);
+
+        // draw filled pie
+        painter.setBrush(gradient);
+        painter.setBackgroundMode(Qt::OpaqueMode);
+        painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+
+        // draw outline
+        painter.setBackgroundMode(Qt::TransparentMode);
+        painter.setBrush(QBrush(col,Qt::NoBrush));
+        painter.setPen(QPen(QColor(Qt::black),1.5));
+        painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+        sum += len;
+
+    }
+
 }
 
+bool gDailySummary::mousePressEvent(QMouseEvent *event, gGraph *graph)
+{
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
+    return true;
+}
+bool gDailySummary::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
+{
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
+    return true;
+}
 
 bool gDailySummary::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
