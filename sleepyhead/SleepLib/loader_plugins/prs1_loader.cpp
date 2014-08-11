@@ -101,7 +101,7 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 
 enum FlexMode { FLEX_None, FLEX_CFlex, FLEX_CFlexPlus, FLEX_AFlex, FLEX_RiseTime, FLEX_BiFlex, FLEX_Unknown  };
 
-ChannelID PRS1_TimedBreath = 0;
+ChannelID PRS1_TimedBreath = 0, PRS1_HeatedTubing = 0;
 
 PRS1::PRS1(MachineID id): CPAP(id)
 {
@@ -1333,8 +1333,19 @@ bool PRS1Import::ParseSummaryF0V4()
         }
     } else flexmode = FLEX_None;
 
+    int ramp_time = data[0x08];
+    EventDataType ramp_pressure = float(data[0x09]) / 10.0;
+
+    session->settings[CPAP_RampTime] = (int)ramp_time;
+    session->settings[CPAP_RampPressure] = ramp_pressure;
+
     session->settings[PRS1_FlexMode] = (int)flexmode;
     session->settings[PRS1_FlexLevel] = (int)flexlevel;
+
+    session->settings[PRS1_HumidStatus] = (bool)(data[0x0b] & 0x80);        // Humidifier Connected
+    session->settings[PRS1_HeatedTubing] = (bool)(data[0x0b] & 0x10);        // Heated Hose??
+    session->settings[PRS1_HumidLevel] = (int)(data[0x0b] & 7);          // Humidifier Value
+
 
 //    int duration = data[0x14] | data[0x15] << 8;
 
@@ -1449,6 +1460,11 @@ bool PRS1Import::ParseSummaryF5()
 
     session->settings[CPAP_RampTime] = (int)ramp_time;
     session->settings[CPAP_RampPressure] = ramp_pressure;
+
+    session->settings[PRS1_HumidStatus] = (bool)(data[0x0d] & 0x80);        // Humidifier Connected
+    session->settings[PRS1_HeatedTubing] = (bool)(data[0x0d] & 0x10);        // Heated Hose??
+    session->settings[PRS1_HumidLevel] = (int)(data[0x0d] & 7);          // Humidifier Value
+
 
 
     int duration=data[0x18] | data[0x19] << 8;
@@ -2037,6 +2053,15 @@ void PRS1Loader::initChannels()
     chan->addOption(0, QObject::tr("Disconnected"));
     chan->addOption(1, QObject::tr("Connected"));
 
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HeatedTubing = 0xe10d, SETTING,   SESSION,
+        "PRS1HeatedTubing",
+        QObject::tr("Heated Tubing"),
+        QObject::tr("Heated Tubing Connected"),
+        QObject::tr("Headed Tubing"),
+        "", LOOKUP, Qt::green));
+    chan->addOption(0, QObject::tr("Yes"));
+    chan->addOption(1, QObject::tr("No"));
+
     channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,   SESSION,
         "PRS1HumidLevel",
         QObject::tr("Humidification Level"),
@@ -2126,7 +2151,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-//    <channel id="0xe10d" class="setting" scope="!session" name="PRS1Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
+//    <channel id="0xe10e" class="setting" scope="!session" name="PRS1Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
 //     <Option id="0" value="CPAP"/>
 //     <Option id="1" value="Auto"/>
 //     <Option id="2" value="BIPAP"/>
