@@ -164,6 +164,8 @@ skipcheck:
 
     for (int i=0; i < available.size(); ++i) {
         ChannelID code = available.at(i);
+        if (!m_day->channelExists(code)) continue;
+
 
         schema::Channel * chan = &schema::channel[code];
         gLineOverlayBar * lob = nullptr;
@@ -991,9 +993,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     ahilist.push_back(CPAP_ClearAirway);
 
     QList<ChannelID> extras;
-    ahilist.push_back(CPAP_NRI);
-    ahilist.push_back(CPAP_UserFlag1);
-    ahilist.push_back(CPAP_UserFlag2);
+    extras.push_back(CPAP_NRI);
+    extras.push_back(CPAP_UserFlag1);
+    extras.push_back(CPAP_UserFlag2);
 
     double sum = 0;
     int cnt = 0;
@@ -1025,9 +1027,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         double f = double(cnt) / hours; // / (sum / 3600.0);
         QString txt = QObject::tr("Duration %1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')) + " "+
-                QObject::tr("AHI %1").arg(f,0,'f',2) +" " +
-                QObject::tr("Events %1").arg(cnt) + " " +
-                QObject::tr("Hours %1").arg(hours,0,'f',2);
+                QObject::tr("AHI %1").arg(f,0,'f',2);// +" " +
+//                QObject::tr("Events %1").arg(cnt) + " " +
+//                QObject::tr("Hours %1").arg(hours,0,'f',2);
         w.renderText(txt,left,top-4);
     }
 
