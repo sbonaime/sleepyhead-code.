@@ -339,8 +339,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     pc->addPlot(CPAP_IPAPHi, COLOR_IPAPHi, square);
 
     gGraph * TAP2;
-    graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("Time @ Pressure"), QObject::tr("Time at Pressure"), default_height);
-    TAP2->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+    graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("By Pressure"), QObject::tr("Statistics at Pressure"), default_height);
+//    TAP2->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
     TAP2->AddLayer(AddCPAP(new MinutesAtPressure()));
     TAP2->setBlockSelect(true);
 

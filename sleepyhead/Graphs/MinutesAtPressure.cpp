@@ -20,6 +20,8 @@
 #include "SleepLib/profiles.h"
 
 #include "Graphs/gXAxis.h"
+#include "Graphs/gYAxis.h"
+
 
 
 MinutesAtPressure::MinutesAtPressure() :Layer(NoChannel)
@@ -110,13 +112,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 {
     QRect rect = region.boundingRect();
 
-    float width = rect.width();
 
     float cells = m_maxpressure-m_minpressure+1;
 
-    float pix = width / cells;
 
-    float left = rect.left();
+    float width = rect.width() - gYAxis::Margin;
+    float left = rect.left() + gYAxis::Margin;
+    float pix = width / cells;
 
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
@@ -136,24 +138,29 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     timelock.lock();
 
     QMap<EventStoreType, int>::iterator times_end = times.end();
+    QPoint mouse = graph.graphView()->currentMousePos();
 
-    QString text = STR_TR_Pressure;
-    QRect rec(left,top, pix * 3,0);
+    QString text = schema::channel[m_presChannel].label();
+    QRectF rec(left,top, pix * 3,0);
     rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignRight, text);
     rec.moveRight(left-4);
     painter.drawText(rec, Qt::AlignRight | Qt::AlignVCenter, text);
+    if (rec.contains(mouse)) {
+        QString text = schema::channel[m_presChannel].description();
+        graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
+    }
 
     text = STR_UNIT_Minutes;
-    QRect rec2(left, top + rec.height(),pix * 3, 0);
+    QRectF rec2(left, top + rec.height(),pix * 3, 0);
     rec2 = painter.boundingRect(rec2, Qt::AlignTop | Qt::AlignRight, text);
     rec2.moveRight(left-4);
     painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
 
-    int xpos = left;
+    float xpos = left;
     for (it = times.begin(); it != times_end; ++it) {
         QString text = QString::number(it.key());
         QString value = QString("%1").arg(float(it.value()) / 60.0, 5, 'f', 1);
-        QRect rec(xpos, top, pix-1, 0);
+        QRectF rec(xpos, top, pix-1, 0);
         rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignLeft, text);
         rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignLeft, value);
         rec.setWidth(pix - 1);
@@ -168,11 +175,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     float hh = rec.height();
 
-    int ypos = top + hh * 2;
+    float ypos = top + hh * 2;
 
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
     QMap<EventStoreType, EventDataType>::iterator vit;
+
 
     int row = 0;
     int numchans = chans.size();
@@ -188,26 +196,39 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
 
         QString text = chan.label();
-        QRect rec2(xpos, ypos, pix * 3, hh);
+        QRectF rec2(xpos, ypos, pix * 3, hh);
         rec2 = painter.boundingRect(rec2, Qt::AlignTop | Qt::AlignRight, text);
         rec2.moveRight(left-4);
+
+        if (rec2.contains(mouse)) {
+                QString text = chan.fullname();
+                if (type == schema::SPAN) {
+                    text += "\n"+QObject::tr("(% of time)");
+                }
+                graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
+        }
         painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
 
         for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
             float minutes = float(it.value()) / 60.0;
             float value = vit.value();
 
+            QString fmt = "%1";
             if (type != schema::SPAN) {
+                //fmt = "%1";
                 value = (minutes > 0.000001) ? (value * 60.0) / minutes : 0;
             } else {
+                //fmt = "%1%";
                 value = (minutes > 0.000001) ? (100/minutes) * (value / 60.0) : 0;
             }
 
-            QRect rec(xpos, ypos, pix-1, hh);
+            QRectF rec(xpos, ypos, pix-1, hh);
             if ((row & 1) == 0) {
                 painter.fillRect(rec, QColor(245,245,255,240));
             }
-            painter.drawText(rec, Qt::AlignCenter, QString("%1").arg(value,5,'f',2));
+
+
+            painter.drawText(rec, Qt::AlignCenter, QString(fmt).arg(value,5,'f',2));
             xpos += pix;
 
         }
@@ -391,6 +412,7 @@ skip:
     map->events = events;
     map->maxtime = maxtime;
     map->chans = chans;
+    map->m_presChannel = prescode;
     timelock.unlock();
 
     map->recalcFinished();
