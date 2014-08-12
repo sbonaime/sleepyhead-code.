@@ -25,6 +25,8 @@
 MinutesAtPressure::MinutesAtPressure() :Layer(NoChannel)
 {
     m_remap = nullptr;
+    m_minpressure = 3;
+    m_maxpressure = 30;
 }
 MinutesAtPressure::~MinutesAtPressure()
 {
@@ -45,11 +47,46 @@ void MinutesAtPressure::SetDay(Day *day)
 {
     Layer::SetDay(day);
 
+    // look at session summaryValues.
+    if (day) {
+        QList<Session *>::iterator sit;
+        EventDataType minpressure = 40;
+        EventDataType maxpressure = 0;
+
+        Machine * mach = day->machine;
+        QMap<QDate, Day *>::iterator it;
+        QMap<QDate, Day *>::iterator day_end = mach->day.end();
+        // look at overall pressure ranges and find the max
+
+        for (it = mach->day.begin(); it != day_end; ++it) {
+            Day * d = it.value();
+            QList<Session *>::iterator sess_end = d->end();
+            for (sit = d->begin(); sit != sess_end; ++sit) {
+                Session * sess = (*sit);
+                if (sess->channelExists(CPAP_Pressure)) {
+                    minpressure = qMin(sess->Min(CPAP_Pressure), minpressure);
+                    maxpressure = qMax(sess->Max(CPAP_Pressure), maxpressure);
+                }
+                if (sess->channelExists(CPAP_EPAP)) {
+                    minpressure = qMin(sess->Min(CPAP_EPAP), minpressure);
+                    maxpressure = qMax(sess->Max(CPAP_EPAP), maxpressure);
+                }
+                if (sess->channelExists(CPAP_IPAP)) {
+                    minpressure = qMin(sess->Min(CPAP_IPAP), minpressure);
+                    maxpressure = qMax(sess->Max(CPAP_IPAP), maxpressure);
+                }
+            }
+        }
+
+        m_minpressure = floor(minpressure);
+        m_maxpressure = floor(maxpressure);
+    }
+
     m_empty = false;
     m_recalculating = false;
     m_lastminx = 0;
     m_lastmaxx = 0;
-    m_empty = !m_day || !(m_day->channelExists(CPAP_Pressure) || m_day->channelExists(CPAP_IPAP));
+    m_empty = !m_day || !(m_day->channelExists(CPAP_Pressure) || m_day->channelExists(CPAP_EPAP));
 }
 
 
@@ -157,8 +194,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
 
             QRect rec(xpos, ypos, pix-1, hh);
-            if (row & 1) {
-                painter.fillRect(rec, QColor(240,240,240,240));
+            if ((row & 1) == 0) {
+                painter.fillRect(rec, QColor(245,245,255,240));
             }
             painter.drawText(rec, Qt::AlignCenter, QString("%1").arg(value,5,'f',2));
             xpos += pix;
@@ -213,7 +250,7 @@ void RecalcMAP::run()
 
     int numchans = chans.size();
     // Zero the pressure counts
-    for (int i=3; i<=30; i++) {
+    for (int i=map->m_minpressure; i <= map->m_maxpressure; i++) {
         times[i] = 0;
 
         for (int c = 0; c < numchans; ++c) {
@@ -222,11 +259,9 @@ void RecalcMAP::run()
         }
     }
 
+    ChannelID prescode = CPAP_Pressure;
 
-    ChannelID prescode;
-    if (day->channelExists(CPAP_Pressure)) {
-        prescode = CPAP_Pressure;
-    } else if (day->channelExists(CPAP_IPAP)) {
+    if (day->channelExists(CPAP_IPAP)) {
         prescode = CPAP_IPAP;
     } else if (day->channelExists(CPAP_EPAP)) {
         prescode = CPAP_EPAP;
@@ -313,14 +348,34 @@ skip:
     QMap<EventStoreType, int>::iterator times_end = times.end();
     int maxtime = 0;
 
+    QList<EventStoreType> trash;
     for (it = times.begin(); it != times_end; ++it) {
-        maxtime = qMax(it.value(), maxtime);
+        EventStoreType key = it.key();
+        int value = it.value();
+//        if (value == 0) {
+//            trash.append(key);
+//        } else {
+            maxtime = qMax(value, maxtime);
+//        }
     }
     chans.push_front(CPAP_AHI);
 
-    for (int i=3; i<=30; i++) {
+    for (int i = map->m_minpressure; i <= map->m_maxpressure; i++) {
         events[CPAP_AHI].insert(i,events[CPAP_Obstructive][i] + events[CPAP_Hypopnea][i] + events[CPAP_Apnea][i] + events[CPAP_ClearAirway][i]);
     }
+
+    QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
+
+//    for (int i=0; i< trash.size(); ++i) {
+//        EventStoreType key = trash.at(i);
+
+//        times.remove(key);
+//        for (eit = events.begin(); eit != events.end(); ++eit) {
+//            eit.value().remove(key);
+//        }
+//    }
+
+
 
 
     QMutexLocker timelock(&map->timelock);

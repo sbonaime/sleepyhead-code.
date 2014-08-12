@@ -279,7 +279,7 @@ int WeinmannLoader::Open(QString path)
     float dt = 1.0 / (1000.0 / flow_sample_duration); // samples per second
 
     // Centre Waveform using High Pass Filter
-    HighPass(data, flowsize, 0.6, dt);
+    HighPass(data, flowsize, 0.1, dt);
 
     //////////////////////////////////////////////////////////////////////
     // Read Status....
