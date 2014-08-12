@@ -265,6 +265,12 @@ void gGraph::renderText(QString text, int x, int y, float angle, QColor color, Q
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
 }
 
+void gGraph::renderText(QString text, QRectF rect, int flags, float angle, QColor color, QFont *font, bool antialias)
+{
+    m_graphview->AddTextQue(text, rect, flags, angle, color, font, antialias);
+}
+
+
 void gGraph::paint(QPainter &painter, const QRegion &region)
 {
     m_rect = region.boundingRect();
@@ -702,7 +708,8 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     for (int i = 0; i < m_layers.size(); i++) {
         if (m_layers[i]->m_rect.contains(x, y))
             if (m_layers[i]->mouseMoveEvent(event, this)) {
-                doredraw = true;
+                return;
+//                doredraw = true;
             }
     }
 

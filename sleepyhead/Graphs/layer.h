@@ -174,7 +174,7 @@ class Layer
     QRect m_rect;
     bool m_mouseover;
     volatile bool m_recalculating;
-
+public:
 
 //    //! \brief A vector containing all this layers custom drawing buffers
 //    QVector<GLBuffer *> mgl_buffers;

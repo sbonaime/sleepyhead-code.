@@ -15,15 +15,15 @@
 #include "gFlagsLine.h"
 #include "gYAxis.h"
 
-gFlagsLabelArea::gFlagsLabelArea(gFlagsGroup *group)
+gLabelArea::gLabelArea(Layer * layer)
     : gSpacer(20)
 {
-    m_group = group;
+    m_mainlayer = layer;
 }
-bool gFlagsLabelArea::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
+bool gLabelArea::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
-    if (m_group) {
-        return m_group->mouseMoveEvent(event, graph);
+    if (m_mainlayer) {
+        return m_mainlayer->mouseMoveEvent(event, graph);
     }
 
     return false;
@@ -221,7 +221,7 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
         }
     }
-    return true;
+    return false;
 }
 
 
@@ -405,5 +405,5 @@ bool gFlagsLine::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
     Q_UNUSED(graph)
     //  qDebug() << code() << event->x() << event->y() << graph->rect();
 
-    return true;
+    return false;
 }

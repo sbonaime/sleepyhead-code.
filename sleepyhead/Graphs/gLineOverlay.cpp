@@ -319,7 +319,7 @@ bool gLineOverlayBar::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event)
     Q_UNUSED(graph)
-    return true;
+    return false;
 }
 
 

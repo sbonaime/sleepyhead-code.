@@ -108,6 +108,7 @@ bool MinutesAtPressure::isEmpty()
     return m_empty;
 }
 
+
 void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
     QRect rect = region.boundingRect();
@@ -116,8 +117,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     float cells = m_maxpressure-m_minpressure+1;
 
 
-    float width = rect.width() - gYAxis::Margin;
-    float left = rect.left() + gYAxis::Margin;
+    float width = rect.width();
+    float left = rect.left();
     float pix = width / cells;
 
     m_minx = graph.min_x;
@@ -140,21 +141,31 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     QMap<EventStoreType, int>::iterator times_end = times.end();
     QPoint mouse = graph.graphView()->currentMousePos();
 
+
+    float ypos = top;
+
     QString text = schema::channel[m_presChannel].label();
-    QRectF rec(left,top, pix * 3,0);
+    QRectF rec(left - gYAxis::Margin, top, gYAxis::Margin,0);
     rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignRight, text);
     rec.moveRight(left-4);
-    painter.drawText(rec, Qt::AlignRight | Qt::AlignVCenter, text);
+    graph.renderText(text, rec, Qt::AlignRight | Qt::AlignVCenter);
+
+    //painter.drawText(rec, Qt::AlignRight | Qt::AlignVCenter, text);
     if (rec.contains(mouse)) {
         QString text = schema::channel[m_presChannel].description();
         graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
     }
 
+    double tmph = rec.height();
+
     text = STR_UNIT_Minutes;
-    QRectF rec2(left, top + rec.height(),pix * 3, 0);
+    QRectF rec2(left - gYAxis::Margin, top + rec.height(), gYAxis::Margin, 0);
     rec2 = painter.boundingRect(rec2, Qt::AlignTop | Qt::AlignRight, text);
     rec2.moveRight(left-4);
-    painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
+    //painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
+    graph.renderText(text, rec2, Qt::AlignRight | Qt::AlignVCenter);
+
+    tmph += rec2.height();
 
     float xpos = left;
     for (it = times.begin(); it != times_end; ++it) {
@@ -166,16 +177,19 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         rec.setWidth(pix - 1);
 
         painter.fillRect(rec, QColor("orange"));
-        painter.drawText(rec, Qt::AlignCenter, text);
+        graph.renderText(text, rec, Qt::AlignCenter);
+        //painter.drawText(rec, Qt::AlignCenter, text);
         rec.moveTop(top + rec.height());
-        painter.drawText(rec, Qt::AlignCenter, value);
+        graph.renderText(value, rec, Qt::AlignCenter);
+        //painter.drawText(rec, Qt::AlignCenter, value);
 
         xpos += pix;
     }
 
-    float hh = rec.height();
+    ypos = top + tmph;
+    left = rect.left();
 
-    float ypos = top + hh * 2;
+    float hh = rec.height();
 
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
@@ -196,8 +210,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
 
         QString text = chan.label();
-        QRectF rec2(xpos, ypos, pix * 3, hh);
-        rec2 = painter.boundingRect(rec2, Qt::AlignTop | Qt::AlignRight, text);
+        QRectF rec2(xpos - gYAxis::Margin, ypos, gYAxis::Margin, hh);
+        rec2 = painter.boundingRect(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
         rec2.moveRight(left-4);
 
         if (rec2.contains(mouse)) {
@@ -207,7 +221,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 }
                 graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
         }
-        painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
+        graph.renderText(text, rec2, Qt::AlignRight | Qt::AlignVCenter);
+        //painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
 
         for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
             float minutes = float(it.value()) / 60.0;
@@ -228,7 +243,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
 
 
-            painter.drawText(rec, Qt::AlignCenter, QString(fmt).arg(value,5,'f',2));
+            graph.renderText(QString(fmt).arg(value,5,'f',2), rec, Qt::AlignCenter);
+          //  painter.drawText(rec, Qt::AlignCenter, QString(fmt).arg(value,5,'f',2));
             xpos += pix;
 
         }
@@ -456,21 +472,36 @@ void MinutesAtPressure::recalcFinished()
 
 bool MinutesAtPressure::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
-    Q_UNUSED(event);
-    Q_UNUSED(graph);
-    return true;
+//    int y = event->y() - m_rect.top();
+//    int x = event->x() - graph->graphView()->titleWidth;
+
+//    double w = m_rect.width() - gYAxis::Margin;
+
+//    double xmult = (graph->blockZoom() ? double(graph->rmax_x - graph->rmin_x) : double(graph->max_x - graph->min_x)) / w;
+
+//    double a = x - gYAxis::Margin;
+//    if (a < 0) a = 0;
+//    if (a > w) a = w;
+
+//    double b = a * xmult;
+//    double c= b + (graph->blockZoom() ? graph->rmin_x : graph->min_x);
+
+//    graph->graphView()->setCurrentTime(c);
+
+    graph->timedRedraw(0);
+    return false;
 }
 
 bool MinutesAtPressure::mousePressEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event);
     Q_UNUSED(graph);
-    return true;
+    return false;
 }
 
 bool MinutesAtPressure::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event);
     Q_UNUSED(graph);
-    return true;
+    return false;
 }

@@ -405,7 +405,7 @@ bool gYAxis::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         //   graph->redraw();
     }
 
-    return true;
+    return false;
 }
 
 bool gYAxis::mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph)

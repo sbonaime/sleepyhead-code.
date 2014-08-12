@@ -447,11 +447,23 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int days = ceil(double(maxx-minx) / 86400000.0);
 
+    double lcursor = w.graphView()->currentTime();
     if (days >= 1) {
+
+        double b = w.max_x - w.min_x;
+        double a = lcursor - w.min_x;
+        double c = a / b;
+
         minx = floor(double(minx)/86400000.0);
         minx *= 86400000L;
 
         maxx = minx + 86400000L * qint64(days)-1;
+
+        b = maxx - minx;
+        double d = c * b;
+        lcursor = d + minx;
+
+
     }
 
 
@@ -511,8 +523,9 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     lastdaygood = true;
 
+    // Display Line Cursor
     if (p_profile->appearance->lineCursorMode()) {
-        qint64 time = w.currentTime();
+        qint64 time = lcursor;
         double xmult = double(width) / xx;
 
         if ((time > minx) && (time < maxx)) {
@@ -1063,6 +1076,7 @@ QString formatTime(EventDataType v, bool show_seconds = false, bool duration = f
 
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
+    graph->timedRedraw(0);
     int x = event->x();
     int y = event->y();
 
@@ -1253,11 +1267,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
             }
 
             graph->ToolTip(z, x, y - 15);
-            return true;
+            return false;
         } else {
             QString z = dt.toString(Qt::SystemLocaleShortDate) + "\r\nNo Data";
             graph->ToolTip(z, x, y - 15);
-            return true;
+            return false;
         }
     }
 

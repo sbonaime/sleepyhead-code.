@@ -72,6 +72,39 @@ struct TextQue {
     bool antialias;
 };
 
+struct TextQueRect {
+    TextQueRect() {
+    }
+    TextQueRect(QRectF rect, int flags, QString text, float angle, QColor color, QFont * font, bool antialias):
+    rect(rect), flags(flags), text(text), angle(angle), color(color), font(font), antialias(antialias)
+    {
+    }
+    TextQueRect(const TextQueRect & copy) {
+        rect = copy.rect;
+        flags = copy.flags;
+        text = copy.text;
+        angle = copy.angle;
+        color = copy.color;
+        font = copy.font;
+        antialias = copy.antialias;
+    }
+
+    //! \variable contains the QRect containing the text object
+    QRectF rect;
+    //! \variable Qt alignment flags..
+    int flags;
+    //! \variable the actual text to draw
+    QString text;
+    //! \variable the angle in degrees for drawing rotated text
+    float angle;
+    //! \variable the color the text will be drawn in
+    QColor color;
+    //! \variable a pointer to the QFont to use to draw this text
+    QFont *font;
+    //! \variable whether to use antialiasing to draw this text
+    bool antialias;
+};
+
 /*! \class MyScrollBar
     \brief An custom scrollbar to interface with gGraphWindow
     */
@@ -296,6 +329,10 @@ class gGraphView
     void updateSelectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
+    void AddTextQue(const QString &text, QRectF rect, int flags, float angle = 0.0,
+                    QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
+
+    //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
     void AddTextQue(const QString &text, short x, short y, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
@@ -485,6 +522,9 @@ class gGraphView
 
     //! \brief List of all queue text to draw.. not sure why I didn't use a vector here.. Might of been a leak issue
     QVector<TextQue> m_textque;
+
+    //! \brief ANother text que with rect alignment capabilities...
+    QVector<TextQueRect> m_textqueRect;
 
     int m_lastxpos, m_lastypos;
 

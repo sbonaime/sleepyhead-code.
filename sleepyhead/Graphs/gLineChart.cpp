@@ -288,7 +288,9 @@ bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
     Q_UNUSED(event)
     Q_UNUSED(graph)
-    return true;
+    graph->timedRedraw(0);
+
+    return false;
 }
 
 QString gLineChart::getMetaString(qint64 time)

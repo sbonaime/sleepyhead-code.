@@ -20,17 +20,17 @@ class gFlagsGroup;
 /*! \class gYSpacer
     \brief A dummy vertical spacer object
    */
-class gFlagsLabelArea: public gSpacer
+class gLabelArea: public gSpacer
 {
   public:
-    gFlagsLabelArea(gFlagsGroup *group);
+    gLabelArea(Layer * layer);
     virtual void paint(QPainter &painter, gGraph &w, const QRegion &region) {
         Q_UNUSED(w);
         Q_UNUSED(painter);
         Q_UNUSED(region);
     }
   protected:
-    gFlagsGroup *m_group;
+    Layer *m_mainlayer;
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 };
 

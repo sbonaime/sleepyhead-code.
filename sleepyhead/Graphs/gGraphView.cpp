@@ -440,8 +440,8 @@ void gGraphView::DrawTextQue(QPainter &painter)
 
     // not sure if global antialiasing would be better..
     //painter.setRenderHint(QPainter::TextAntialiasing, p_profile->appearance->antiAliasing());
-    int m_textque_items = m_textque.size();
-    for (int i = 0; i < m_textque_items; ++i) {
+    int items = m_textque.size();
+    for (int i = 0; i < items; ++i) {
         TextQue &q = m_textque[i];
         painter.setPen(q.color);
         painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
@@ -466,6 +466,37 @@ void gGraphView::DrawTextQue(QPainter &painter)
     }
 
     m_textque.clear();
+
+    items = m_textqueRect.size();
+    for (int i=0; i< items; ++i) {
+        TextQueRect &q = m_textqueRect[i];
+        painter.setPen(q.color);
+        painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
+        QFont font = *q.font;
+        painter.setFont(font);
+
+        if (q.angle == 0) { // normal text
+
+            painter.drawText(q.rect, q.flags, q.text);
+        } else { // rotated text
+
+            int x = q.rect.x();
+            int y = q.rect.y();
+            w = painter.fontMetrics().width(q.text);
+            h = painter.fontMetrics().xHeight() + 2;
+
+            painter.translate(x, y);
+            painter.rotate(-q.angle);
+            painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
+            painter.rotate(+q.angle);
+            painter.translate(-x, -y);
+        }
+        strings_drawn_this_frame++;
+        q.text.clear();
+
+    }
+
+    m_textqueRect.clear();
 }
 
 #else
@@ -476,7 +507,6 @@ void gGraphView::DrawTextQue(QPainter &painter)
     int m_textque_items = m_textque.size();
 
     int h,w;
-
 
     for (int i = 0; i < m_textque_items; ++i) {
         TextQue &q = m_textque[i];
@@ -563,11 +593,114 @@ void gGraphView::DrawTextQue(QPainter &painter)
     }
 
     m_textque.clear();
+
+    ////////////////////////////////////////////////////////////////////////
+    // Text Rectangle Queues..
+    ////////////////////////////////////////////////////////////////////////
+    int items = m_textqueRect.size();
+
+    float ww, hh;
+    for (int i = 0; i < items; ++i) {
+        TextQueRect &q = m_textqueRect[i];
+
+        // can do antialiased text via texture cache fine on mac
+        if (usePixmapCache()) {
+            // Generate the pixmap cache "key"
+            QString hstr = QString("%1:%2:%3").
+                    arg(q.text).
+                    arg(q.color.name()).
+                    arg(q.font->pointSize());
+
+            QPixmap pm;
+            const int buf = 8;
+            if (!QPixmapCache::find(hstr, &pm)) {
+
+                ww = q.rect.width();
+                hh = q.rect.height();
+
+                pm=QPixmap(ww, hh);
+                pm.fill(Qt::transparent);
+
+                QPainter imgpainter(&pm);
+
+                imgpainter.setPen(q.color);
+
+                imgpainter.setFont(*q.font);
+
+                imgpainter.setRenderHint(QPainter::Antialiasing, true);
+                imgpainter.setRenderHint(QPainter::TextAntialiasing, true);
+                QRectF rect(0,0, ww, hh);
+                imgpainter.drawText(rect, q.flags, q.text);
+                imgpainter.end();
+
+                QPixmapCache::insert(hstr, pm);
+                strings_drawn_this_frame++;
+            } else {
+                //cached
+                strings_cached_this_frame++;
+            }
+
+            hh = pm.height();
+            ww = pm.width();
+            if (q.angle != 0) {
+                float xxx = q.rect.x() - hh - (hh / 2);
+                float yyy = q.rect.y() + ww / 2; // + buf / 2;
+
+                xxx+=4;
+                yyy+=4;
+
+                painter.translate(xxx, yyy);
+                painter.rotate(-q.angle);
+                painter.drawPixmap(QRect(0, hh / 2, ww, hh), pm);
+                painter.rotate(+q.angle);
+                painter.translate(-xxx, -yyy);
+            } else {
+                painter.drawPixmap(QRect(q.rect.x(), q.rect.y(), ww, hh), pm);
+            }
+        } else {
+            // Just draw the fonts..
+            painter.setPen(QColor(q.color));
+            painter.setFont(*q.font);
+
+            if (q.angle == 0) {
+                painter.drawText(q.rect, q.flags, q.text);
+            } else {
+                painter.setFont(*q.font);
+
+                w = painter.fontMetrics().width(q.text);
+                h = painter.fontMetrics().xHeight() + 2;
+
+                painter.translate(q.rect.x(), q.rect.y());
+                painter.rotate(-q.angle);
+                painter.drawText(floor(-ww / 2.0), floor(-hh / 2.0), q.text);
+                painter.rotate(+q.angle);
+                painter.translate(-q.rect.x(), -q.rect.y());
+            }
+            strings_drawn_this_frame++;
+
+        }
+
+        //q.text.clear();
+        //q.text.squeeze();
+    }
+
+    m_textqueRect.clear();
+
 }
 #endif
 
-void gGraphView::AddTextQue(const QString &text, short x, short y, float angle, QColor color,
-                            QFont *font, bool antialias)
+void gGraphView::AddTextQue(const QString &text, QRectF rect, int flags, float angle, QColor color, QFont *font, bool antialias)
+{
+#ifdef ENABLED_THREADED_DRAWING
+    text_mutex.lock();
+#endif
+    m_textqueRect.append(TextQueRect(rect,flags,text,angle,color,font,antialias));
+#ifdef ENABLED_THREADED_DRAWING
+    text_mutex.unlock();
+#endif
+}
+
+void gGraphView::AddTextQue(const QString &text, short x, short y, float angle, QColor color, QFont *font, bool antialias)
 {
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.lock();
@@ -576,13 +709,6 @@ void gGraphView::AddTextQue(const QString &text, short x, short y, float angle, 
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.unlock();
 #endif
-//    q.text = text;
-//    q.x = x;
-//    q.y = y;
-//    q.angle = angle;
-//    q.color = color;
-//    q.font = font;
-//    q.antialias = antialias;
 }
 
 void gGraphView::addGraph(gGraph *g, short group)

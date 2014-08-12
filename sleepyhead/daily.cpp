@@ -261,7 +261,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
 
-    SF->AddLayer(new gFlagsLabelArea(fg),LayerLeft,gYAxis::Margin);
+    SF->AddLayer(new gLabelArea(fg),LayerLeft,gYAxis::Margin);
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
     SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
 
@@ -340,8 +340,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gGraph * TAP2;
     graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("By Pressure"), QObject::tr("Statistics at Pressure"), default_height);
-//    TAP2->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
-    TAP2->AddLayer(AddCPAP(new MinutesAtPressure()));
+    MinutesAtPressure * map;
+    TAP2->AddLayer(AddCPAP(map = new MinutesAtPressure()));
+    TAP2->AddLayer(new gLabelArea(map),LayerLeft,gYAxis::Margin);
     TAP2->setBlockSelect(true);
 
     if (p_profile->general->calculateRDI()) {
