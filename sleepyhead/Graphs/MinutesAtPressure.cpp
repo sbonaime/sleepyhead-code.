@@ -306,11 +306,9 @@ void RecalcMAP::run()
                 EventStoreType data = EL->raw(e);
 
                 if ((time < minx)) {
-                    if (first) {
-                        lasttime = time;
-                        lastdata = data;
-                        first = false;
-                    }
+                    lasttime = time;
+                    lastdata = data;
+                    first = false;
                     goto skip;
                 }
 
