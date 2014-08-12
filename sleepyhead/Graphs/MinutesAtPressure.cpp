@@ -80,16 +80,18 @@ void MinutesAtPressure::SetDay(Day *day)
             }
         }
 
-        m_minpressure = floor(minpressure);
-        m_maxpressure = floor(maxpressure);
+        m_minpressure = qMax(float(4), floor(minpressure));
+        m_maxpressure = ceil(maxpressure);
 
-        const int minimum_cells = 12;
+        const int minimum_cells = 16;
         int c = m_maxpressure - m_minpressure;
+
 
         if (c < minimum_cells) {
             int v = minimum_cells - c;
-            m_minpressure -= v/2;
-            m_minpressure = qMin((EventStoreType)4, m_minpressure);
+            m_minpressure -= v/2.0;
+            m_minpressure = qMax((EventStoreType)4, m_minpressure);
+
             m_maxpressure = m_minpressure + minimum_cells;
         }
     }
@@ -114,12 +116,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     QRect rect = region.boundingRect();
 
 
-    float cells = m_maxpressure-m_minpressure+1;
+    int cells = m_maxpressure-m_minpressure+1;
 
 
     float width = rect.width();
     float left = rect.left();
-    float pix = width / cells;
+    float pix = width / float(cells);
 
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
@@ -131,7 +133,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_lastmaxx = m_maxx;
 
     QMap<EventStoreType, int>::iterator it;
-    int top = rect.top();
+    int top = rect.top()+1;
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
 
@@ -202,6 +204,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         ChannelID code = chans.at(i);
 
         schema::Channel & chan = schema::channel[code];
+        if (!chan.enabled())
+            continue;
         schema::ChanType type = chan.type();
         eit = events.find(code);
 
@@ -259,6 +263,10 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 //        painter.setPen(QColor(0,0,0,125));
 //        painter.drawText(region.boundingRect(), Qt::AlignCenter, QObject::tr("Recalculating..."));
     }
+
+//    painter.setPen(QPen(Qt::black,1));
+//    painter.drawRect(rect);
+
 
     // Draw the goodies...
 }
