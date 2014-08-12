@@ -80,6 +80,16 @@ void MinutesAtPressure::SetDay(Day *day)
 
         m_minpressure = floor(minpressure);
         m_maxpressure = floor(maxpressure);
+
+        const int minimum_cells = 12;
+        int c = m_maxpressure - m_minpressure;
+
+        if (c < minimum_cells) {
+            int v = minimum_cells - c;
+            m_minpressure -= v/2;
+            m_minpressure = qMin((EventStoreType)4, m_minpressure);
+            m_maxpressure = m_minpressure + minimum_cells;
+        }
     }
 
     m_empty = false;
@@ -102,7 +112,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     float width = rect.width();
 
-    float cells = 28;
+    float cells = m_maxpressure-m_minpressure+1;
 
     float pix = width / cells;
 
