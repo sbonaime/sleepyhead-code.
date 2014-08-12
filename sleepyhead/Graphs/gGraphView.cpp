@@ -1508,9 +1508,9 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(py); // point at top of graph..
                     this->setCursor(Qt::ClosedHandCursor);
-                } else
+                } else if (!g->blockSelect()) {
 
-                {
+
                     if (m_metaselect) {
                         if (m_selected_graph) {
                             m_selected_graph->m_selecting_area = false;
@@ -1575,10 +1575,8 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         m_sizer_point.setX(x);
                         m_sizer_point.setY(py); // point at top of graph..
                         this->setCursor(Qt::ClosedHandCursor);
-                    }
-
-                    {
-                        if (m_metaselect) {
+                    } else if (!g->blockSelect()) {
+                       if (m_metaselect) {
                             if (m_selected_graph) {
                                 m_selected_graph->m_selecting_area = false;
                             }

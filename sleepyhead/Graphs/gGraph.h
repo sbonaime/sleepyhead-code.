@@ -303,6 +303,9 @@ class gGraph : public QObject
     inline qint64 selectedDuration() const { return m_selectedDuration; }
     inline QString selDurString() const { return m_selDurString; }
 
+    inline bool blockSelect() const { return m_block_select; }
+    void setBlockSelect(bool b) { m_block_select = b; }
+
   protected:
     //! \brief Mouse Wheel events
     virtual void wheelEvent(QWheelEvent *event);
@@ -362,6 +365,7 @@ class gGraph : public QObject
     bool m_printing;
     bool m_pinned;
     short m_zoomY;
+    bool m_block_select;
     QRect m_rect;
 
     qint64 m_selectedDuration;
