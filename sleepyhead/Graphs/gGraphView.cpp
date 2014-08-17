@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gGraphView Implementation
+/* gGraphView Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -38,6 +35,41 @@
 
 extern MainWindow *mainwin;
 extern QLabel *qstatus2;
+
+#include <QApplication>
+
+
+MyLabel::MyLabel(QWidget * parent):
+QWidget(parent)
+{
+    m_font = QApplication::font();
+}
+MyLabel::~MyLabel()
+{
+}
+void MyLabel::setText(QString text) {
+    m_text = text;
+    repaint();
+}
+void MyLabel::setFont(QFont & font)
+{
+    m_font=font;
+}
+
+void MyLabel::setAlignment(Qt::Alignment alignment) {
+    m_alignment = alignment;
+    repaint();
+}
+
+
+void MyLabel::paintEvent(QPaintEvent * event)
+{
+    QRectF rect(event->rect());
+    QPainter painter(this);
+    painter.setFont(m_font);
+    painter.drawText(rect, m_alignment, m_text);
+}
+
 
 
 gToolTip::gToolTip(gGraphView *graphview)
@@ -303,6 +335,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_blockUpdates = false;
     use_pixmap_cache = p_profile->appearance->usePixmapCaching();
 
+    pin_graph = nullptr;
    // pixmapcache.setCacheLimit(10240*2);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
@@ -314,6 +347,28 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
 #endif
+
+    context_menu = new QMenu(this);
+    pin_action = context_menu->addAction(QString(), this, SLOT(togglePin()));
+    pin_icon = QPixmap(":/icons/pushpin.png");
+    context_menu->addSeparator();
+
+    context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
+    context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
+
+    context_menu->addSeparator();
+    plots_menu = context_menu->addMenu(tr("Plots"));
+    connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
+    lines_menu = context_menu->addMenu(tr("Dotted Lines"));
+    connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
+}
+
+void gGraphView::togglePin()
+{
+    if (pin_graph) {
+        pin_graph->setPinned(!pin_graph->isPinned());
+        timedRedraw(0);
+    }
 }
 
 void gGraphView::closeEvent(QCloseEvent * event)
@@ -503,97 +558,99 @@ void gGraphView::DrawTextQue(QPainter &painter)
 // Render graphs with QPainter or pixmap caching, depending on preferences
 void gGraphView::DrawTextQue(QPainter &painter)
 {
-    // process the text drawing queue
-    int m_textque_items = m_textque.size();
+    {
+        // process the text drawing queue
+        int m_textque_items = m_textque.size();
 
-    int h,w;
+        int h,w;
 
-    for (int i = 0; i < m_textque_items; ++i) {
-        TextQue &q = m_textque[i];
+        for (int i = 0; i < m_textque_items; ++i) {
+            const TextQue &q = m_textque.at(i);
 
-        // can do antialiased text via texture cache fine on mac
-        if (usePixmapCache()) {
-            // Generate the pixmap cache "key"
-            QString hstr = QString("%1:%2:%3").
-                    arg(q.text).
-                    arg(q.color.name()).
-                    arg(q.font->pointSize());
+            // can do antialiased text via texture cache fine on mac
+            if (usePixmapCache()) {
+                // Generate the pixmap cache "key"
+                QString hstr = QString("%1:%2:%3").
+                        arg(q.text).
+                        arg(q.color.name()).
+                        arg(q.font->pointSize());
 
-            QPixmap pm;
-            const int buf = 8;
-            if (!QPixmapCache::find(hstr, &pm)) {
+                QPixmap pm;
+                const int buf = 8;
+                if (!QPixmapCache::find(hstr, &pm)) {
 
-                QFontMetrics fm(*q.font);
-               // QRect rect=fm.tightBoundingRect(q.text);
-                w = fm.width(q.text);
-                h = fm.height()+buf;
+                    QFontMetrics fm(*q.font);
+                   // QRect rect=fm.tightBoundingRect(q.text);
+                    w = fm.width(q.text);
+                    h = fm.height()+buf;
 
-                pm=QPixmap(w, h);
-                pm.fill(Qt::transparent);
+                    pm=QPixmap(w, h);
+                    pm.fill(Qt::transparent);
 
-                QPainter imgpainter(&pm);
+                    QPainter imgpainter(&pm);
 
-                imgpainter.setPen(q.color);
+                    imgpainter.setPen(q.color);
 
-                imgpainter.setFont(*q.font);
+                    imgpainter.setFont(*q.font);
 
-                imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-                imgpainter.drawText(0, h-buf, q.text);
-                imgpainter.end();
+                    imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
+                    imgpainter.drawText(0, h-buf, q.text);
+                    imgpainter.end();
 
-                QPixmapCache::insert(hstr, pm);
-                strings_drawn_this_frame++;
+                    QPixmapCache::insert(hstr, pm);
+                    strings_drawn_this_frame++;
+                } else {
+                    //cached
+                    strings_cached_this_frame++;
+                }
+
+                h = pm.height();
+                w = pm.width();
+                if (q.angle != 0) {
+                    float xxx = q.x - h - (h / 2);
+                    float yyy = q.y + w / 2; // + buf / 2;
+
+                    xxx+=4;
+                    yyy+=4;
+
+                    painter.translate(xxx, yyy);
+                    painter.rotate(-q.angle);
+                    painter.drawPixmap(QRect(0, h / 2, w, h), pm);
+                    painter.rotate(+q.angle);
+                    painter.translate(-xxx, -yyy);
+                } else {
+                    QRect r1(q.x - buf / 2 + 4, q.y - h + buf, w, h);
+                    painter.drawPixmap(r1, pm);
+                }
             } else {
-                //cached
-                strings_cached_this_frame++;
-            }
-
-            h = pm.height();
-            w = pm.width();
-            if (q.angle != 0) {
-                float xxx = q.x - h - (h / 2);
-                float yyy = q.y + w / 2; // + buf / 2;
-
-                xxx+=4;
-                yyy+=4;
-
-                painter.translate(xxx, yyy);
-                painter.rotate(-q.angle);
-                painter.drawPixmap(QRect(0, h / 2, w, h), pm);
-                painter.rotate(+q.angle);
-                painter.translate(-xxx, -yyy);
-            } else {
-                painter.drawPixmap(QRect(q.x - buf / 2 + 4, q.y - h + buf, w, h), pm);
-            }
-        } else {
-            // Just draw the fonts..
-            painter.setPen(QColor(q.color));
-            painter.setFont(*q.font);
-
-            if (q.angle == 0) {
-                painter.drawText(q.x, q.y, q.text);
-            } else {
+                // Just draw the fonts..
+                painter.setPen(QColor(q.color));
                 painter.setFont(*q.font);
 
-                w = painter.fontMetrics().width(q.text);
-                h = painter.fontMetrics().xHeight() + 2;
+                if (q.angle == 0) {
+                    painter.drawText(q.x, q.y, q.text);
+                } else {
+                    painter.setFont(*q.font);
 
-                painter.translate(q.x, q.y);
-                painter.rotate(-q.angle);
-                painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
-                painter.rotate(+q.angle);
-                painter.translate(-q.x, -q.y);
+                    w = painter.fontMetrics().width(q.text);
+                    h = painter.fontMetrics().xHeight() + 2;
+
+                    painter.translate(q.x, q.y);
+                    painter.rotate(-q.angle);
+                    painter.drawText(floor(-w / 2.0)-6, floor(-h / 2.0), q.text);
+                    painter.rotate(+q.angle);
+                    painter.translate(-q.x, -q.y);
+                }
+                strings_drawn_this_frame++;
+
             }
-            strings_drawn_this_frame++;
 
+            //q.text.clear();
+            //q.text.squeeze();
         }
 
-        //q.text.clear();
-        //q.text.squeeze();
+        m_textque.clear();
     }
-
-    m_textque.clear();
-
     ////////////////////////////////////////////////////////////////////////
     // Text Rectangle Queues..
     ////////////////////////////////////////////////////////////////////////
@@ -601,7 +658,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
 
     float ww, hh;
     for (int i = 0; i < items; ++i) {
-        TextQueRect &q = m_textqueRect[i];
+        const TextQueRect &q = m_textqueRect.at(i);
 
         // can do antialiased text via texture cache fine on mac
         if (usePixmapCache()) {
@@ -612,17 +669,19 @@ void gGraphView::DrawTextQue(QPainter &painter)
                     arg(q.font->pointSize());
 
             QPixmap pm;
-            const int buf = 8;
             if (!QPixmapCache::find(hstr, &pm)) {
 
                 ww = q.rect.width();
                 hh = q.rect.height();
 
                 pm=QPixmap(ww, hh);
+
+                int aaw1 = pm.width();
                 pm.fill(Qt::transparent);
 
                 QPainter imgpainter(&pm);
 
+                int aaw2 = pm.width();
                 imgpainter.setPen(q.color);
 
                 imgpainter.setFont(*q.font);
@@ -631,9 +690,11 @@ void gGraphView::DrawTextQue(QPainter &painter)
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, true);
                 QRectF rect(0,0, ww, hh);
                 imgpainter.drawText(rect, q.flags, q.text);
+                int aaw3 = pm.width();
                 imgpainter.end();
 
                 QPixmapCache::insert(hstr, pm);
+                int aaw4 = pm.width();
                 strings_drawn_this_frame++;
             } else {
                 //cached
@@ -655,7 +716,8 @@ void gGraphView::DrawTextQue(QPainter &painter)
                 painter.rotate(+q.angle);
                 painter.translate(-xxx, -yyy);
             } else {
-                painter.drawPixmap(QRect(q.rect.x(), q.rect.y(), ww, hh), pm);
+                //painter.drawPixmap(QPoint(q.rect.x(), q.rect.y()), pm);
+                painter.drawPixmap(q.rect,pm, QRect(0,0,ww,hh));
             }
         } else {
             // Just draw the fonts..
@@ -667,8 +729,8 @@ void gGraphView::DrawTextQue(QPainter &painter)
             } else {
                 painter.setFont(*q.font);
 
-                w = painter.fontMetrics().width(q.text);
-                h = painter.fontMetrics().xHeight() + 2;
+                ww = painter.fontMetrics().width(q.text);
+                hh = painter.fontMetrics().xHeight() + 2;
 
                 painter.translate(q.rect.x(), q.rect.y());
                 painter.rotate(-q.angle);
@@ -689,7 +751,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
 }
 #endif
 
-void gGraphView::AddTextQue(const QString &text, QRectF rect, int flags, float angle, QColor color, QFont *font, bool antialias)
+void gGraphView::AddTextQue(const QString &text, QRectF rect, quint32 flags, float angle, QColor color, QFont *font, bool antialias)
 {
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.lock();
@@ -1305,6 +1367,32 @@ void gGraphView::paintGL()
         redrawtimer->setSingleShot(true);
         redrawtimer->start();
     }
+
+    if (p_profile->appearance->lineCursorMode()) {
+        emit updateCurrentTime(m_currenttime);
+    } else {
+        emit updateRange(m_minx, m_maxx);
+    }
+}
+
+QString gGraphView::getRangeString()
+{
+    QString fmt;
+
+    qint64 diff = m_maxx - m_minx;
+
+    if (diff > 86400000) {
+    } else if (diff > 60000) {
+        fmt = "HH:mm:ss";
+    } else {
+        fmt = "HH:mm:ss:zzz";
+    }
+    QDateTime st = QDateTime::fromMSecsSinceEpoch(m_minx);
+    QDateTime et = QDateTime::fromMSecsSinceEpoch(m_maxx);
+
+    QString txt = st.toString(QObject::tr("d MMM [ %1 - %2 ]").arg(fmt).arg(et.toString(fmt))) ;
+
+    return txt;
 }
 
 void gGraphView::leaveEvent(QEvent * event)
@@ -1459,7 +1547,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                 this->setCursor(Qt::ArrowCursor);
             } else {
                 m_tooltip->display("Double click title to pin / unpin\nClick and drag to reorder graphs", x + 10, y, TT_AlignLeft);
-                timedRedraw(30);
+                timedRedraw(0);
 
                 this->setCursor(Qt::OpenHandCursor);
             }
@@ -1512,7 +1600,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                     this->setCursor(Qt::ArrowCursor);
                 } else {
                     m_tooltip->display("Double click title to pin / unpin\nClick and drag to reorder graphs", x + 10, y, TT_AlignLeft);
-                    timedRedraw(30);
+                    timedRedraw(0);
 
                     this->setCursor(Qt::OpenHandCursor);
                 }
@@ -1588,6 +1676,99 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
 
 }
 
+Layer * gGraphView::findLayer(gGraph * graph, LayerType type)
+{
+    for (int i=0; i< graph->layers().size(); i++) {
+        Layer * l = graph->layers()[i];
+        if (l->layerType() == type) {
+            return l;
+        }
+    }
+    return nullptr;
+}
+
+void gGraphView::populateMenu(gGraph * graph)
+{
+    // First check for any linechart for this graph..
+    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
+    if (lc) {
+        lines_menu->clear();
+        for (int i=0; i < lc->m_dotlines.size(); i++) {
+            DottedLine & dot = lc->m_dotlines[i];
+            schema::Channel &chan = schema::channel[dot.code];
+
+            if (dot.available) {
+                QAction *action = lines_menu->addAction(chan.calc[dot.type].label());
+                action->setData(graph->name());
+                action->setCheckable(true);
+                action->setChecked(chan.calc[dot.type].enabled);
+            }
+
+        }
+        lines_menu->menuAction()->setVisible(true);
+        plots_menu->clear();
+        for (int i=0; i <lc->m_codes.size(); i++) {
+            ChannelID code = lc->m_codes[i];
+            if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
+            QAction * action = plots_menu->addAction(schema::channel[code].label());
+            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
+            action->setCheckable(true);
+            action->setChecked(lc->m_enabled[code]);
+        }
+        if (plots_menu->actions().size() > 0) {
+            plots_menu->menuAction()->setVisible(true);
+        }
+    } else {
+        lines_menu->clear();
+        lines_menu->menuAction()->setVisible(false);
+        plots_menu->clear();
+        plots_menu->menuAction()->setVisible(false);
+    }
+}
+
+void gGraphView::onPlotsClicked(QAction *action)
+{
+    QString name = action->data().toString().section("|",0,0);
+    ChannelID code = action->data().toString().section("|",-1).toInt();
+
+    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    if (it == m_graphsbyname.end()) return;
+
+    gGraph * graph = it.value();
+
+    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
+
+    if (!lc) return;
+
+    lc->m_enabled[code] = !lc->m_enabled[code];
+    graph->min_y = graph->MinY();
+    graph->max_y = graph->MaxY();
+//    lc->Miny();
+//    lc->Maxy();
+}
+
+void gGraphView::onLinesClicked(QAction *action)
+{
+    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(action->data().toString());
+    if (it == m_graphsbyname.end()) return;
+
+    gGraph * graph = it.value();
+
+    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
+
+    if (!lc) return;
+    for (int i=0; i<lc->m_dotlines.size(); i++) {
+        DottedLine & dot = lc->m_dotlines[i];
+        schema::Channel &chan = schema::channel[dot.code];
+
+        if (chan.calc[dot.type].label() == action->text()) {
+            chan.calc[dot.type].enabled = !chan.calc[dot.type].enabled;
+            dot.enabled = !dot.enabled;
+        }
+    }
+}
+
+
 void gGraphView::mousePressEvent(QMouseEvent *event)
 {
     int x = event->x();
@@ -1623,7 +1804,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                 done = true;
             } else if ((y >= py) && (y < py + h)) {
                 //qDebug() << "Clicked" << i;
-                if (x < titleWidth + 20) {
+                if ((event->button() == Qt::LeftButton) && (x < titleWidth + 20)) {
                     // clicked on title to drag graph..
                     // Note: reorder has to be limited to pinned graphs.
                     m_graph_dragging = true;
@@ -1634,9 +1815,15 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(py); // point at top of graph..
                     this->setCursor(Qt::ClosedHandCursor);
+                    done=true;
+                } else if ((event->button() == Qt::RightButton) && (x < (titleWidth + gYAxis::Margin))) {
+                    this->setCursor(Qt::ArrowCursor);
+                    pin_action->setText(QObject::tr("Unpin %1 Graph").arg(g->title()));
+                    pin_graph = g;
+                    populateMenu(g);
+                    context_menu->popup(event->globalPos());
+                    done=true;
                 } else if (!g->blockSelect()) {
-
-
                     if (m_metaselect) {
                         if (m_selected_graph) {
                             m_selected_graph->m_selecting_area = false;
@@ -1691,9 +1878,11 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(y);
                     //qDebug() << "Sizer clicked" << i;
+                    done=true;
                 } else if ((y >= py) && (y < py + h)) {
                     //qDebug() << "Clicked" << i;
-                    if (x < titleWidth + 20) { // clicked on title to drag graph..
+
+                    if ((event->button() == Qt::LeftButton) && (x < (titleWidth + 20))) { // clicked on title to drag graph..
                         m_graph_dragging = true;
                         m_tooltip->cancel();
                         redraw();
@@ -1701,6 +1890,15 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         m_sizer_point.setX(x);
                         m_sizer_point.setY(py); // point at top of graph..
                         this->setCursor(Qt::ClosedHandCursor);
+                        done=true;
+                    } else if ((event->button() == Qt::RightButton) && (x < (titleWidth + gYAxis::Margin))) {
+                        this->setCursor(Qt::ArrowCursor);
+                        pin_action->setText(QObject::tr("Pin %1 Graph").arg(g->title()));
+                        pin_graph = g;
+                        populateMenu(g);
+
+                        context_menu->popup(event->globalPos());
+                        done=true;
                     } else if (!g->blockSelect()) {
                        if (m_metaselect) {
                             if (m_selected_graph) {
@@ -1723,7 +1921,16 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
             }
 
             py += h + graphSpacer;
+            done=true;
         }
+
+    if (!done) {
+//        if (event->button() == Qt::RightButton) {
+//            this->setCursor(Qt::ArrowCursor);
+//            context_menu->popup(event->globalPos());
+//            done=true;
+//        }
+    }
 }
 
 void gGraphView::mouseReleaseEvent(QMouseEvent *event)
@@ -1844,6 +2051,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
             }
         }
     }
+    timedRedraw(0);
 }
 
 void gGraphView::keyReleaseEvent(QKeyEvent *event)
@@ -2127,7 +2335,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         int bk = (int)event->key()-Qt::Key_0;
         m_metaselect = false;
 
-        timedRedraw(30);
+        timedRedraw(0);
     }
 
     if (event->key() == Qt::Key_F3) {

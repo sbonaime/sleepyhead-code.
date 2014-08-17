@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Welcome Page
+/* Welcome Page Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -168,7 +165,7 @@ QString GenerateWelcomeHTML()
             int hour = hours;
             QString timestr = QObject::tr("%1 hours, %2 minutes and %3 seconds").arg(hour).arg(minutes).arg(seconds);
 
-            if (hours > 4) html += QObject::tr("You slept for %1.").arg(timestr)+"<br/>";
+            if (hours > 4) html += QObject::tr("You machine was on for %1.").arg(timestr)+"<br/>";
             else html += QObject::tr("<font color = red>You only had the mask on for %1.</font>").arg(timestr)+"<br/>";
 
 
@@ -235,11 +232,13 @@ QString GenerateWelcomeHTML()
     }
     html += QString("<div align=center><table class=curved cellpadding=3 width=45%>")+
     "<tr>"
-    "<td align=center colspan=2><b>"+QObject::tr("Very Important Warning")+"</b></td></tr>"
+    "<td align=center colspan=2><font size=+1><b>"+QObject::tr("Very Important Warning")+"</b></font></td></tr>"
     "<tr><td align=left>"+
     QObject::tr("<p>ALWAYS <font size=+1 color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p>"+
-    QObject::tr("<span title=\"Mac OSX and Win8.1\"  onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'><font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+"</td>"
-    "<td><img src=\"qrc:/icons/sdcard-lock.png\"></td>"
+    QObject::tr("<p><span title=\"Mac OSX and Win8.1\"  onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'><font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+"</p>"+
+    QObject::tr("<p>As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!</p>")+
+    "</td>"
+    "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=128px></td>"
     "</tr>"
     "</table>"
     "</td></tr></table></div>"

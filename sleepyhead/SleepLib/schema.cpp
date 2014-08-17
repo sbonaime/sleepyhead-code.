@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Schema Implementation (Parse Channel XML data)
+/* Channel / Schema Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -22,6 +19,27 @@
 #include "common_gui.h"
 
 #include "SleepLib/profiles.h"
+
+QColor adjustcolor(QColor color, float ar=1.0, float ag=1.0, float ab=1.0)
+{
+    int r = color.red();
+    int g = color.green();
+    int b = color.blue();
+
+    r += rand() & 64;
+    g += rand() & 64;
+    b += rand() & 64;
+
+    r = qMin(int(r * ar), 255);
+    g = qMin(int(g * ag), 255);
+    b = qMin(int(b * ab), 255);
+
+    return QColor(r,g,b, color.alpha());
+}
+
+
+QColor darken(QColor color, float p);
+
 
 
 namespace schema {
@@ -410,7 +428,7 @@ void init()
 
     ch->addOption(0, STR_TR_Unknown);
     ch->addOption(1, STR_TR_CPAP);
-    ch->addOption(2, STR_TR_APAP);
+    ch->addOption(2, QObject::tr("APAP (Variable)"));
     ch->addOption(3, QObject::tr("Fixed Bi-Level"));
     ch->addOption(4, QObject::tr("Auto Bi-Level (Fixed PS)"));
     ch->addOption(5, QObject::tr("Auto Bi-Level (Variable PS)"));
@@ -498,6 +516,7 @@ void init()
     Journal_Weight = schema::channel["Weight"].id();
     Journal_BMI = schema::channel["BMI"].id();
     Journal_ZombieMeter = schema::channel["ZombieMeter"].id();
+    LastUpdated = schema::channel["LastUpdated"].id();
     Bookmark_Start = schema::channel["BookmarkStart"].id();
     Bookmark_End = schema::channel["BookmarkEnd"].id();
     Bookmark_Notes = schema::channel["BookmarkNotes"].id();
@@ -530,7 +549,6 @@ void resetChannels()
     }
 }
 
-
 Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
                  QString description, QString label, QString unit, DataType datatype, QColor color, int link):
     m_id(id),
@@ -551,6 +569,16 @@ Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QSt
     m_enabled(true),
     m_order(255)
 {
+    if (type == WAVEFORM) {
+        calc[Calc_Min] = ChannelCalc(id, Calc_Min, adjustcolor(color, 0.25, 1, 1.3), false);
+        calc[Calc_Middle] = ChannelCalc(id, Calc_Middle, adjustcolor(color, 1.3, 1, 1), false);
+        calc[Calc_Perc] = ChannelCalc(id, Calc_Perc, adjustcolor(color, 1.1, 1.2, 1), false);
+        calc[Calc_Max] = ChannelCalc(id, Calc_Max,  adjustcolor(color, 0.5, 1.2, 1), false);
+
+        calc[Calc_Zero] = ChannelCalc(id, Calc_Zero, Qt::red, false);
+        calc[Calc_LowerThresh] = ChannelCalc(id, Calc_LowerThresh, Qt::blue, false);
+        calc[Calc_UpperThresh] = ChannelCalc(id, Calc_UpperThresh, Qt::red, false);
+    }
 }
 bool Channel::isNull()
 {
@@ -792,9 +820,102 @@ void ChannelList::add(QString group, Channel *chan)
 
 bool ChannelList::Save(QString filename)
 {
-    Q_UNUSED(filename)
-    return false;
+    if (filename.isEmpty()) {
+        filename = p_profile->Get("{DataFolder}/") + "channels.xml";
+    }
+
+    QDomDocument doc("channels");
+
+    QDomElement droot = doc.createElement(STR_AppName);
+    doc.appendChild(droot);
+
+    QDomElement root = doc.createElement("channels");
+    droot.appendChild(root);
+
+    QHash<QString, QHash<QString, Channel *> >::iterator git;
+    QHash<QString, QHash<QString, Channel *> >::iterator groups_end = groups.end();
+
+    for (git = groups.begin(); git != groups_end; ++git) {
+        QHash<QString, Channel *> & chanlist = git.value();
+        QHash<QString, Channel *>::iterator it;
+        QHash<QString, Channel *>::iterator chend = chanlist.end();
+
+        QDomElement grp = doc.createElement("group");
+        grp.setAttribute("name", git.key());
+        root.appendChild(grp);
+
+        for (it =chanlist.begin(); it!= chend; ++it) {
+            Channel * chan = it.value();
+            QDomElement cn = doc.createElement("channel");
+            cn.setAttribute("id", chan->id());
+            cn.setAttribute("code", it.key());
+            cn.setAttribute("label", chan->label());
+            cn.setAttribute("name", chan->fullname());
+            cn.setAttribute("description", chan->description());
+            cn.setAttribute("color", chan->defaultColor().name());
+            cn.setAttribute("upper", chan->upperThreshold());
+            cn.setAttribute("lower", chan->lowerThreshold());
+            cn.setAttribute("order", chan->order());
+            cn.setAttribute("type", chan->type());
+            cn.setAttribute("datatype", chan->datatype());
+            QHash<int, QString>::iterator op;
+            for (op = chan->m_options.begin(); op!=chan->m_options.end(); ++op) {
+                QDomElement c2 = doc.createElement("option");
+                c2.setAttribute("key", op.key());
+                c2.setAttribute("value", op.value());
+                cn.appendChild(c2);
+            }
+
+            //cn.appendChild(doc.createTextNode(i.value().toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+            grp.appendChild(cn);
+        }
+
+    }
+
+
+    QFile file(filename);
+
+    if (!file.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    QTextStream ts(&file);
+    ts << doc.toString();
+    file.close();
+
+    return true;
 }
+
+}
+
+QString ChannelCalc::label()
+{
+    QString lab = schema::channel[code].label();
+    QString m_label;
+    switch(type) {
+    case Calc_Min:
+        m_label = QString("%1 %2").arg(STR_TR_Min).arg(lab);
+        break;
+    case Calc_Middle:
+        m_label = Day::calcMiddleLabel(code);
+        break;
+    case Calc_Perc:
+        m_label = Day::calcPercentileLabel(code);
+        break;
+    case Calc_Max:
+        m_label = Day::calcMaxLabel(code);
+        break;
+    case Calc_Zero:
+        m_label = QObject::tr("Zero");
+        break;
+    case Calc_UpperThresh:
+        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Threshold"));
+        break;
+    case Calc_LowerThresh:
+        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Threshold"));
+        break;
+    }
+    return m_label;
 
 }
 

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Common Machine Header
+/* SleepLib Common Machine Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -163,7 +160,7 @@ extern ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 extern ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
 
 extern ChannelID Journal_Notes, Journal_Weight, Journal_BMI, Journal_ZombieMeter, Bookmark_Start,
-       Bookmark_End, Bookmark_Notes;
+       Bookmark_End, Bookmark_Notes, LastUpdated;
 
 extern ChannelID ZEO_SleepStage, ZEO_ZQ, ZEO_TotalZ, ZEO_TimeToZ, ZEO_TimeInWake, ZEO_TimeInREM,
        ZEO_TimeInLight, ZEO_TimeInDeep, ZEO_Awakenings,

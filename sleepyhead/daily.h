@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Daily GUI Headers
+/* Daily GUI Headers
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -146,6 +143,12 @@ public:
     void hideSpaceHogs();
     void showSpaceHogs();
 
+    QLabel * getDateDisplay();
+
+public slots:
+    void on_LineCursorUpdate(double time);
+    void on_RangeUpdate(double minx, double maxx);
+
 private slots:
     void on_ReloadDay();
 
@@ -245,10 +248,6 @@ private slots:
 
     void on_toggleGraphs_clicked(bool checked);
 
-    void on_zoomFullyOut_clicked();
-
-    void on_resetLayoutButton_clicked();
-
     /*! \fn on_weightSpinBox_editingFinished();
         \brief Called when weight has changed.. Updates the BMI dislpay and journal objects.
 
@@ -273,6 +272,8 @@ private slots:
     void on_eventsCombo_activated(int index);
 
     void on_toggleEvents_clicked(bool checked);
+
+
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -311,6 +312,7 @@ private:
 
     void updateCube();
     void updateGraphCombo();
+
 
     QString getSessionInformation(Day *cpap, Day *oxi, Day *stage, Day *posit);
     QString getMachineSettings(Day *cpap);
@@ -353,7 +355,7 @@ private:
     QIcon * icon_off;
 
     SessionBar * sessbar;
-    QLabel * dateDisplay;
+    MyLabel * dateDisplay;
 
     MyWebView * webView;
     Day * lastcpapday;

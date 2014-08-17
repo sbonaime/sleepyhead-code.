@@ -1,5 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
+/* Graph Layer Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -27,6 +26,8 @@ enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, 
 
 enum ToolTipAlignment { TT_AlignCenter, TT_AlignLeft, TT_AlignRight };
 
+enum LayerType { LT_Other = 0, LT_LineChart, LT_SummaryChart };
+
 /*! \class Layer
     \brief The base component for all individual Graph layers
     */
@@ -49,10 +50,11 @@ class Layer
           m_X(0), m_Y(0),
           m_order(0),
           m_position(LayerCenter),
-          m_recalculating(false)
+          m_recalculating(false),
+          m_layertype(LT_Other)
     { }
 
-    virtual void recalculate(gGraph * graph) { Q_UNUSED(graph)};
+    virtual void recalculate(gGraph * graph) { Q_UNUSED(graph)}
     virtual ~Layer();
 
     //! \brief This gets called on day selection, allowing this layer to precalculate any drawing data
@@ -61,7 +63,9 @@ class Layer
     //! \brief Set the ChannelID used in this layer
     virtual void SetCode(ChannelID c) { m_code = c; }
     //! \brief Return the ChannelID used in this layer
-    const ChannelID &code() { return m_code; }
+    const ChannelID & code() { return m_code; }
+
+    const LayerType & layerType() { return m_layertype; }
 
     //! \brief returns true if this layer contains no data.
     virtual bool isEmpty();
@@ -174,6 +178,7 @@ class Layer
     QRect m_rect;
     bool m_mouseover;
     volatile bool m_recalculating;
+    LayerType m_layertype;
 public:
 
 //    //! \brief A vector containing all this layers custom drawing buffers

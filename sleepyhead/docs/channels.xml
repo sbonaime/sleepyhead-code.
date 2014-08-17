@@ -68,6 +68,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x0807" class="data" name="ZombieMeter" details="How good you feel." label="Alive" unit="0-10" color="orange"/>
   <channel id="0x0808" class="data" name="BookmarkStart" details="Session Bookmark Start" label="Bookmark Start" unit="duration" color="orange"/>
   <channel id="0x0809" class="data" name="BookmarkEnd" details="Session Bookmark End" label="Bookmark End" unit="duration" color="orange"/>
+  <channel id="0x080a" class="data" scope="!day" name="LastUpdated" details="Last Updated" label="Last Updated" unit="timestamp" color="orange"/>
   <channel id="0xd000" class="data" scope="!day" unique="true" name="Journal" details="Journal Notes" label="Journal" type="richtext"/>
  </group>
  <group name="PRS1">

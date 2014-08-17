@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Daily Panel
+/* Daily Panel
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -90,9 +87,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->setMargin(0);
     layout->setContentsMargins(0,0,0,0);
 
-    dateDisplay=new QLabel("",this);
+    dateDisplay=new MyLabel(this);
     dateDisplay->setAlignment(Qt::AlignCenter);
-    dateDisplay->setTextFormat(Qt::RichText);
+    QFont font = dateDisplay->font();
+    font.setPointSizeF(font.pointSizeF()*1.3F);
+    dateDisplay->setFont(font);
+    QPalette palette = dateDisplay->palette();
+    palette.setColor(QPalette::Base, Qt::blue);
+    dateDisplay->setPalette(palette);
+    //dateDisplay->setTextFormat(Qt::RichText);
     ui->sessionBarLayout->addWidget(dateDisplay,1);
 
 //    const bool sessbar_under_graphs=false;
@@ -152,10 +155,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     const QString STR_GRAPH_DailySummary = "DailySummary";
     const QString STR_GRAPH_TAP = "TimeAtPressure";
 
-//    gGraph * SG;
-//    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
-//    SG->AddLayer(new gFlagsLabelArea(nullptr),LayerLeft,gYAxis::Margin);
-//    SG->AddLayer(AddCPAP(new gDailySummary()));
+    gGraph * SG;
+    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
+    SG->AddLayer(new gLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+    SG->AddLayer(AddCPAP(new gDailySummary()));
 
     graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);
@@ -283,7 +286,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,COLOR_Black,false,false);
-    gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
+    //gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
 
     gGraph *FRW = graphlist[schema::channel[CPAP_FlowRate].code()];
@@ -477,6 +480,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     GraphView->resetLayout();
     GraphView->LoadSettings("Daily");
+
+    connect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
+    connect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
 }
 
 
@@ -942,18 +948,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
     bool corrupted_waveform=false;
     QString tooltip;
 
-    html+=QString("<tr>"
-                  "<td><b>"+STR_TR_On+"</b></td>"
-                  "<td align=center><b>"+STR_TR_Date+"</b></td>"
-                  "<td align=center><b>"+STR_TR_Start+"</b></td>"
-                  "<td align=center><b>"+STR_TR_End+"</b></td>"
-                  "<td align=left><b>"+tr("Duration")+"</b></td></tr>");
     QList<Day *>::iterator di;
     QString type;
 
     for (di=list.begin();di!=list.end();di++) {
         Day * day=*di;
-        html+="<tr><td align=left colspan=5><i>";
+        html+="<tr><td colspan=5 align=center><i>";
         switch (day->machine_type()) {
         case MT_CPAP: type="cpap";
             html+=tr("CPAP Sessions");
@@ -974,6 +974,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             break;
         }
         html+="</i></td></tr>\n";
+        html+=QString("<tr>"
+                      "<th>"+STR_TR_On+"</th>"
+                      "<th>"+STR_TR_Date+"</th>"
+                      "<th>"+STR_TR_Start+"</th>"
+                      "<th>"+STR_TR_End+"</th>"
+                      "<th>"+tr("Duration")+"</th></tr>");
         for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
 
             if ((day->machine_type()==MT_CPAP) &&
@@ -986,12 +992,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             int h=len/3600;
             int m=(len/60) % 60;
             int s1=len % 60;
-            tooltip=day->machine->loaderName()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
+            //tooltip=day->machine->loaderName()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
 
-#define DEBUG_SESSIONS
-#ifdef DEBUG_SESSIONS
-            tooltip += " "+QString::number(len)+"s";
-#endif
+//#define DEBUG_SESSIONS
+//#ifdef DEBUG_SESSIONS
+//            tooltip += " "+QString::number(len)+"s";
+//#endif
             // tooltip needs to lookup language.. :-/
 
             Session *sess=*s;
@@ -999,16 +1005,19 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
                 sess->settings[SESSION_ENABLED]=true;
             }
             bool b=sess->settings[SESSION_ENABLED].toBool();
-            html+=QString("<tr class='datarow'>"
+            html+=QString("<tr class='datarow'><td colspan=5><table>"
+                          "<tr><td colspan=5 align=center>%2</td></tr>"
+                          "<tr>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
                           "<img src='qrc:/icons/session-%4.png' width=24px></a></td>"
                           "<td align=center>%5</td>"
                           "<td align=center>%6</td>"
                           "<td align=center>%7</td>"
-                          "<td align=left><a class=info href='"+type+"=%1'>%3<span>%2</span></a></td>"
-                          "</tr>")
+                          "<td align=left>%3</td></tr>"
+                          "</table></td></tr>"
+                          )
                     .arg((*s)->session())
-                    .arg(tooltip)
+                    .arg(QObject::tr("%1 Session #%2").arg((*s)->machine()->loaderName()).arg((*s)->session(),8,10,QChar('0')))
                     .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
                     .arg((b ? "on" : "off"))
                     .arg(fd.date().toString(Qt::SystemLocaleShortDate))
@@ -1836,6 +1845,7 @@ void Daily::Unload(QDate date)
             }
         }
         if (journal->IsChanged()) {
+            journal->settings[LastUpdated]=QDateTime::currentDateTime();
             // blah.. was updating overview graphs here.. Was too slow.
         }
         Machine *jm=p_profile->GetMachine(MT_JOURNAL);
@@ -2016,6 +2026,26 @@ void Daily::RedrawGraphs()
 
     GraphView->redraw();
 }
+
+void Daily::on_LineCursorUpdate(double time)
+{
+    QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
+    QString txt = dt.toString("MMM dd HH:mm:ss:zzz");
+    dateDisplay->setText(txt);
+}
+
+void Daily::on_RangeUpdate(double minx, double maxx)
+{
+//    static qint64 last_minx = 0;
+//    static qint64 last_maxx = 0;
+
+    //if ((last_minx != minx) || (last_maxx != maxx)) {
+        dateDisplay->setText(GraphView->getRangeString());
+    //}
+//    last_minx=minx;
+//    last_maxx=maxx;
+}
+
 
 void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
@@ -2242,6 +2272,7 @@ void Daily::update_Bookmarks()
     journal->settings[Bookmark_Start]=start;
     journal->settings[Bookmark_End]=end;
     journal->settings[Bookmark_Notes]=notes;
+    journal->settings[LastUpdated]=QDateTime::currentDateTime();
     journal->SetChanged(true);
     BookmarksChanged=true;
     mainwin->updateFavourites();
@@ -2476,17 +2507,6 @@ void Daily::updateGraphCombo()
 
 
     updateCube();
-}
-
-void Daily::on_zoomFullyOut_clicked()
-{
-    GraphView->ResetBounds(true);
-    GraphView->redraw();
-}
-
-void Daily::on_resetLayoutButton_clicked()
-{
-    GraphView->resetLayout();
 }
 
 void Daily::on_eventsCombo_activated(int index)

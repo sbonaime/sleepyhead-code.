@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>735</height>
+    <width>1005</width>
+    <height>849</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1498,7 +1498,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>710</height>
          </rect>
         </property>
         <property name="palette">
@@ -1634,12 +1634,12 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="icon">
             <iconset resource="Resources.qrc">
-             <normaloff>:/icons/go-home.png</normaloff>:/icons/go-home.png</iconset>
+             <normaloff>:/icons/eye.png</normaloff>:/icons/eye.png</iconset>
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="toolButtonStyle">
@@ -1688,8 +1688,8 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="toolButtonStyle">
@@ -1732,8 +1732,8 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="toolButtonStyle">
@@ -1776,8 +1776,8 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="toolButtonStyle">
@@ -1826,8 +1826,8 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="checkable">
@@ -1876,8 +1876,8 @@ border: 2px solid #56789a; border-radius: 30px;
            </property>
            <property name="iconSize">
             <size>
-             <width>48</width>
-             <height>48</height>
+             <width>64</width>
+             <height>64</height>
             </size>
            </property>
            <property name="toolButtonStyle">
@@ -1912,7 +1912,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>710</height>
          </rect>
         </property>
         <property name="palette">
@@ -3060,7 +3060,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>596</height>
+          <height>710</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3121,7 +3121,7 @@ border-radius: 10px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>975</width>
+     <width>1005</width>
      <height>22</height>
     </rect>
    </property>
@@ -3141,6 +3141,8 @@ border-radius: 10px;
     <addaction name="separator"/>
     <addaction name="actionPrint_Report"/>
     <addaction name="actionExp_ort"/>
+    <addaction name="separator"/>
+    <addaction name="actionExport_Journal"/>
     <addaction name="separator"/>
     <addaction name="actionChange_User"/>
     <addaction name="actionChange_Data_Folder"/>
@@ -3361,7 +3363,7 @@ border-radius: 10px;
   </action>
   <action name="actionExp_ort">
    <property name="text">
-    <string>Exp&amp;ort</string>
+    <string>Exp&amp;ort Data</string>
    </property>
   </action>
   <action name="actionOnline_Users_Guide">
@@ -3509,6 +3511,11 @@ border-radius: 10px;
    </property>
    <property name="shortcut">
     <string>F9</string>
+   </property>
+  </action>
+  <action name="actionExport_Journal">
+   <property name="text">
+    <string>Backup &amp;Journal</string>
    </property>
   </action>
  </widget>

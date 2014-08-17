@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Schema Header (Parse Channel XML data)
+/* Schema Header (Parse Channel XML data)
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -26,6 +23,35 @@ const quint32 YTicker = 8;
 const quint32 XGrid = 16;
 const quint32 YGrid = 32;
 }
+
+enum ChannelCalcType {
+    Calc_Zero, Calc_Min, Calc_Middle, Calc_Perc, Calc_Max, Calc_UpperThresh, Calc_LowerThresh
+};
+
+struct ChannelCalc {
+public:
+    ChannelCalc() {
+        code = 0;
+        enabled = false;
+        color = Qt::black;
+        type = Calc_Zero;
+    }
+    ChannelCalc(const ChannelCalc & copy) {
+        code = copy.code;
+        color = copy.color;
+        enabled = copy.enabled;
+        type = copy.type;
+    }
+    ChannelCalc(ChannelID code, ChannelCalcType type, QColor color, bool enabled):
+        code(code), type(type), color(color), enabled(enabled) {}
+
+    QString label();
+
+    ChannelID code;
+    ChannelCalcType type;
+    QColor color;
+    bool enabled;
+};
 
 namespace schema {
 void resetChannels();
@@ -112,6 +138,9 @@ class Channel
 
     inline bool enabled() const { return m_enabled; }
     void setEnabled(bool value) { m_enabled = value; }
+
+    QHash<ChannelCalcType, ChannelCalc> calc;
+
   protected:
     int m_id;
     ChanType m_type;
@@ -132,6 +161,7 @@ class Channel
     QColor m_upperThresholdColor;
     QColor m_lowerThresholdColor;
 
+
     bool m_enabled;
     short m_order;
 };
@@ -149,7 +179,7 @@ class ChannelList
     bool Load(QString filename);
 
     //! \brief Stores Channel list to XML file specified by filename
-    bool Save(QString filename);
+    bool Save(QString filename = QString());
 
     void add(QString group, Channel *chan);
 

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Machine Class Implementation
+/* SleepLib Machine Class Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -11,11 +8,17 @@
 
 #include <QApplication>
 #include <QDir>
-#include <QProgressBar>
 #include <QDebug>
 #include <QString>
 #include <QObject>
 #include <QThreadPool>
+
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QProgressBar>
+#include "mainwindow.h"
 
 #include <time.h>
 
@@ -390,16 +393,67 @@ const QString Machine::getBackupPath()
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
 }
 
+class ProgressDialog:public QDialog {
+public:
+    explicit ProgressDialog(QWidget * parent);
+    virtual ~ProgressDialog();
+
+    void setMessage(QString msg) { waitmsg->setText(msg); }
+    void setPixmap(QPixmap &pixmap) { imglabel->setPixmap(pixmap); }
+    QProgressBar * progress;
+
+protected:
+    QLabel * waitmsg;
+    QHBoxLayout *hlayout;
+    QLabel * imglabel;
+    QVBoxLayout * vlayout;
+
+};
+ProgressDialog::ProgressDialog(QWidget * parent):
+    QDialog(parent, Qt::SplashScreen)
+{
+    waitmsg = new QLabel(QObject::tr("PLease Wait..."));
+    hlayout = new QHBoxLayout;
+
+    imglabel = new QLabel(this);
+
+    vlayout = new QVBoxLayout;
+    progress = new QProgressBar(this);
+    this->setLayout(vlayout);
+    vlayout->addLayout(hlayout);
+    hlayout->addWidget(imglabel);
+    hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
+    vlayout->addWidget(progress,1);
+    progress->setMaximum(100);
+
+
+}
+ProgressDialog::~ProgressDialog()
+{
+}
+
+
 bool Machine::Load()
 {
     QString path = getDataPath();
 
     QDir dir(path);
-    qDebug() << "Loading " << QDir::toNativeSeparators(path);
+    qDebug() << "Loading Database" << QDir::toNativeSeparators(path);
 
     if (!dir.exists() || !dir.isReadable()) {
         return false;
     }
+
+    ProgressDialog * popup = new ProgressDialog(nullptr);
+    QPixmap image(getCPAPPixmap(info.loadername));
+    if (!image.isNull()) {
+        image = image.scaled(64,64);
+        popup->setPixmap(image);
+    }
+    popup->setMessage(QObject::tr("Loading %1 data...").arg(info.brand));
+    popup->show();
+
+    QProgressBar * progress = popup->progress;
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -438,7 +492,7 @@ bool Machine::Load()
 
     for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
         if ((++cnt % 50) == 0) { // This is slow.. :-/
-            if (qprogress) { qprogress->setValue((float(cnt) / float(size) * 100.0)); }
+            if (progress) { progress->setValue((float(cnt) / float(size) * 100.0)); }
 
             QApplication::processEvents();
         }
@@ -455,7 +509,10 @@ bool Machine::Load()
         }
     }
 
-    if (qprogress) { qprogress->setValue(100); }
+    if (progress) { progress->setValue(100); }
+    QApplication::processEvents();
+    popup->hide();
+    delete popup;
 
     return true;
 }

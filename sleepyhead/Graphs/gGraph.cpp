@@ -1,5 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
+/* gGraph Implemntation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -265,7 +264,7 @@ void gGraph::renderText(QString text, int x, int y, float angle, QColor color, Q
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
 }
 
-void gGraph::renderText(QString text, QRectF rect, int flags, float angle, QColor color, QFont *font, bool antialias)
+void gGraph::renderText(QString text, QRectF rect, quint32 flags, float angle, QColor color, QFont *font, bool antialias)
 {
     m_graphview->AddTextQue(text, rect, flags, angle, color, font, antialias);
 }
@@ -304,6 +303,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         QString & txt = title();
         graphView()->AddTextQue(txt, marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
+
         left += title_x;
     } else { left = 0; }
 
@@ -413,18 +413,15 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 //        quads()->add(originX + m_selection.x() + m_selection.width(), originY + height - bottom,
 //                     originX + m_selection.x(), originY + height - bottom, col.rgba());
     }
+
+    if (isPinned()) {
+        painter.drawPixmap(-5, originY-10, m_graphview->pin_icon);
+    }
+
 }
 
 QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 {
-    gGraphView *sg = mainwin->snapshotGraph();
-
-    if (!sg) {
-        return QPixmap();
-    }
-
-    // Pixmap caching screws up font sizes when printing
-    sg->setUsePixmapCache(false);
 
     QFont *_defaultfont = defaultfont;
     QFont *_mediumfont = mediumfont;
@@ -438,54 +435,34 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     m_printing = printing;
 
     if (printing) {
-        fa.setPixelSize(30);
-        fb.setPixelSize(35);
-        fc.setPixelSize(80);
-        sg->setPrintScaleX(3);
-        sg->setPrintScaleY(3);
+        fa.setPixelSize(28);
+        fb.setPixelSize(32);
+        fc.setPixelSize(70);
+        graphView()->setPrintScaleX(2.5);
+        graphView()->setPrintScaleY(2.2);
     } else {
-        sg->setPrintScaleX(1);
-        sg->setPrintScaleY(1);
+        graphView()->setPrintScaleX(1);
+        graphView()->setPrintScaleY(1);
     }
 
     defaultfont = &fa;
     mediumfont = &fb;
     bigfont = &fc;
 
-    sg->hideSplitter();
-    gGraphView *tgv = m_graphview;
-
-    m_graphview = sg;
-
-    sg->setMinimumSize(w, h);
-    sg->setMaximumSize(w, h);
-    sg->setFixedSize(w, h);
-
-    float tmp = height();
-    setHeight(h);
-    sg->trashGraphs();
-    sg->addGraph(this);
-
-    sg->setScaleY(1.0);
-
-//    float dpr = sg->devicePixelRatio();
-//    sg->setDevicePixelRatio(1);
-
-//    bool b = sg->usePixmapCache();
     QPixmap pm(w,h);
 
+    graphView()->setUsePixmapCache(false);
     QPainter painter(&pm);
     painter.fillRect(0,0,w,h,QBrush(QColor(Qt::white)));
-    sg->renderGraphs(painter);
+    QRegion region(0,0,w,h);
+    paint(painter, region);
+    DrawTextQue(painter);
+    graphView()->setUsePixmapCache(p_profile->appearance->usePixmapCaching());
     painter.end();
 
-//    sg->setDevicePixelRatio(dpr);
-    //sg->doneCurrent();
-    sg->trashGraphs();
+    graphView()->setPrintScaleX(1);
+    graphView()->setPrintScaleY(1);
 
-    m_graphview = tgv;
-
-    setHeight(tmp);
 
     defaultfont = _defaultfont;
     mediumfont = _mediumfont;
@@ -840,7 +817,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     //if (!nolayer) { // no mouse button
     if (doredraw) {
-        m_graphview->timedRedraw(30);
+        m_graphview->timedRedraw(0);
     }
 
     //}

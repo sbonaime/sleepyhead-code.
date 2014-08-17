@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gLineChart Implementation
+/* gLineChart Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -23,6 +20,17 @@
 #include "Graphs/gLineOverlay.h"
 
 #define EXTRA_ASSERTS 1
+
+QColor darken(QColor color, float p)
+{
+    int r = qMin(int(color.red() * p), 255);
+    int g = qMin(int(color.green() * p), 255);
+    int b = qMin(int(color.blue() * p), 255);
+
+
+    return QColor(r,g,b, color.alpha());
+}
+
 gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disable_accel)
     : Layer(code), m_square_plot(square_plot), m_disable_accel(disable_accel)
 {
@@ -31,6 +39,7 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     m_report_empty = false;
     lines.reserve(50000);
     lasttime = 0;
+    m_layertype = LT_LineChart;
 }
 gLineChart::~gLineChart()
 {
@@ -62,6 +71,7 @@ bool gLineChart::isEmpty()
 
     return true;
 }
+
 
 void gLineChart::SetDay(Day *d)
 {
@@ -183,6 +193,30 @@ skipcheck:
             flags[code] = lob;
         }
     }
+    m_dotlines.clear();
+
+    for (int i=0; i< m_codes.size(); i++) {
+        ChannelID code = m_codes[i];
+        schema::Channel & chan = schema::channel[code];
+        addDotLine(DottedLine(code, Calc_Max,chan.calc[Calc_Max].enabled));
+        if ((code != CPAP_FlowRate) && (code != CPAP_MaskPressure) && (code != CPAP_MaskPressureHi)) {
+            addDotLine(DottedLine(code, Calc_Perc,chan.calc[Calc_Perc].enabled));
+            addDotLine(DottedLine(code, Calc_Middle, chan.calc[Calc_Middle].enabled));
+        }
+        addDotLine(DottedLine(code, Calc_Min, chan.calc[Calc_Min].enabled));
+    }
+    if (m_codes[0] == CPAP_Leak) {
+        addDotLine(DottedLine(CPAP_Leak, Calc_UpperThresh, schema::channel[CPAP_Leak].calc[Calc_UpperThresh].enabled));
+    } else if (m_codes[0] == CPAP_FlowRate) {
+        addDotLine(DottedLine(CPAP_FlowRate, Calc_Zero, schema::channel[CPAP_FlowRate].calc[Calc_Zero].enabled));
+    }
+
+
+    if (m_day) {
+        for (int i=0; i < m_dotlines.size(); i++) {
+            m_dotlines[i].calc(m_day);
+        }
+    }
 
 //    for (int i=0; i< m_day->size(); ++i) {
 //        Session * sess = m_day->sessions.at(i);
@@ -210,13 +244,15 @@ skipcheck:
 //        }
 //    }
 
-    QList<ChannelID> middles;
+/*    QList<ChannelID> middles;
 
     middles.push_back(CPAP_RespRate);
     middles.push_back(CPAP_TidalVolume);
     middles.push_back(CPAP_MinuteVent);
     middles.push_back(CPAP_Ti);
     middles.push_back(CPAP_Te);
+
+
 
     CPAPMode mode = (CPAPMode)m_day->settings_wavg(CPAP_Mode);
     float perc = p_profile->general->prefCalcPercentile();
@@ -227,8 +263,8 @@ skipcheck:
             if (mode == MODE_APAP) {
                 float f = m_day->percentile(code, perc / 100.0);
                 chan.setUpperThreshold(f);
-                chan.setUpperThresholdColor(Qt::black);
-                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+                chan.setUpperThresholdColor(darken(schema::channel[CPAP_Pressure].defaultColor()));
+                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.label()).arg(f,0,'f',2));
             } else {
                 chan.setUpperThreshold(0);
                 m_threshold.push_back(QString());
@@ -237,8 +273,9 @@ skipcheck:
             if (mode >= MODE_BILEVEL_AUTO_FIXED_PS) {
                 float f = m_day->percentile(code,perc / 100.0);
                 chan.setUpperThreshold(f);
-                chan.setUpperThresholdColor(Qt::black);
-                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+                QColor color = darken(schema::channel[CPAP_IPAP].defaultColor());
+                chan.setUpperThresholdColor(color);
+                m_threshold.push_back(QString("%1% %2").arg(perc, 0, 'f', 0).arg(chan.label()));//.arg(f,0,'f',2));
             } else {
                 chan.setUpperThreshold(0);
                 m_threshold.push_back(QString());
@@ -247,41 +284,89 @@ skipcheck:
             if ((mode >= MODE_BILEVEL_AUTO_FIXED_PS) && (mode != MODE_ASV)) {
                 float f = m_day->percentile(code,perc / 100.0);
                 chan.setUpperThreshold(f);
-                chan.setUpperThresholdColor(Qt::black);
-                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.fullname()).arg(f,0,'f',2));
+                QColor color = darken(schema::channel[CPAP_EPAP].defaultColor());
+                chan.setUpperThresholdColor(color);
+                m_threshold.push_back(QString("%1% %2").arg(perc, 0, 'f', 0).arg(chan.label()));//.arg(f,0,'f',2));
             } else {
                 chan.setUpperThreshold(0);
                 m_threshold.push_back(QString());
             }
         } else if (code == CPAP_Leak) {
-            m_threshold.push_back(QObject::tr("%1 threshold").arg(chan.fullname()));
+            m_threshold.push_back(QObject::tr("%1 threshold").arg(chan.label()));
         } else if (middles.contains(code)) {
             float f = m_day->calcMiddle(code);
 
             chan.setUpperThreshold(f);
-            chan.setUpperThresholdColor(Qt::black);
+            chan.setUpperThresholdColor(darken(schema::channel[code].defaultColor()));
             m_threshold.push_back(m_day->calcMiddleLabel(code));
         } else {
             chan.setUpperThreshold(0);
             m_threshold.push_back(QString());
         }
-    }
+    }*/
 }
 EventDataType gLineChart::Miny()
 {
-    int m = Layer::Miny();
+    int size = m_codes.size();
+    if (size == 0) return 0;
+    if (!m_day) return 0;
 
-    if (subtract_offset > 0) {
-        m -= subtract_offset;
+    bool first = false;
+    EventDataType min = 0, tmp;
 
-        if (m < 0) { m = 0; }
+    for (int i=0; i< size; ++i) {
+        ChannelID code = m_codes[i];
+        if (!m_enabled[code]) continue;
+
+        tmp = m_day->Min(code);
+
+        if (!first) {
+            min = tmp;
+        } else {
+            min = qMin(tmp, min);
+        }
     }
+    if (!first) min = 0;
 
-    return m;
+    m_miny = min;
+
+    return min;
+//    int m = Layer::Miny();
+
+//    if (subtract_offset > 0) {
+//        m -= subtract_offset;
+
+//        if (m < 0) { m = 0; }
+//    }
+
+//    return m;
 }
 EventDataType gLineChart::Maxy()
 {
-    return Layer::Maxy() - subtract_offset;
+    int size = m_codes.size();
+    if (size == 0) return 0;
+    if (!m_day) return 0;
+
+    bool first = false;
+    EventDataType max = 0, tmp;
+
+    for (int i=0; i< size; ++i) {
+        ChannelID code = m_codes[i];
+        if (!m_enabled[code]) continue;
+
+        tmp = m_day->Max(code);
+        if (!first) {
+            max = tmp;
+            first = true;
+        } else {
+            max = qMax(tmp, max);
+        }
+    }
+    if (!first) max = 0;
+    m_maxy = max;
+    return max;
+
+//    return Layer::Maxy() - subtract_offset;
 }
 
 bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
@@ -308,7 +393,7 @@ QString gLineChart::getMetaString(qint64 time)
         ChannelID code = m_codes[i];
         if (m_day->channelHasData(code)) {
             val = m_day->lookupValue(code, time, m_square_plot);
-            lasttext += " "+QString("%1: %2 %3").arg(schema::channel[code].label()).arg(val,0,'f',2).arg(schema::channel[code].units());
+            lasttext += " "+QString("%1: %2").arg(schema::channel[code].label()).arg(val,0,'f',2); //.arg(schema::channel[code].units());
 
             if (code == CPAP_IPAP) {
                 ipap = val;
@@ -322,7 +407,7 @@ QString gLineChart::getMetaString(qint64 time)
     }
     if (addPS) {
         val = ipap - epap;
-        lasttext += " "+QString("%1: %2 %3").arg(schema::channel[CPAP_PS].label()).arg(val,0,'f',2).arg(schema::channel[CPAP_PS].units());
+        lasttext += " "+QString("%1: %2").arg(schema::channel[CPAP_PS].label()).arg(val,0,'f',2);//.arg(schema::channel[CPAP_PS].units());
     }
 
     lasttime = time;
@@ -381,6 +466,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     // the middle of minx and maxy does not have to be the center...
 
+    double logX = painter.device()->logicalDpiX();
+    double physX = painter.device()->physicalDpiX();
+    double ratioX = physX / logX * w.printScaleX();
+    double logY = painter.device()->logicalDpiY();
+    double physY = painter.device()->physicalDpiY();
+    double ratioY = physY / logY * w.printScaleY();
 
     double xx = maxx - minx;
     double xmult = double(width) / xx;
@@ -407,8 +498,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
 
+    bool linecursormode = p_profile->appearance->lineCursorMode();
+    ////////////////////////////////////////////////////////////////////////
     // Display Line Cursor
-    if (p_profile->appearance->lineCursorMode()) {
+    ////////////////////////////////////////////////////////////////////////
+    if (linecursormode) {
         double time = w.currentTime();
 
         if ((time > minx) && (time < maxx)) {
@@ -421,12 +515,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             getMetaString(time);
         }
 
-        QString text = w.graphView()->currentTimeString() + lasttext;
+        if (m_codes[0] != CPAP_FlowRate) {
+            QString text = lasttext;
 
-        int wid, h;
-        GetTextExtent(text, wid, h);
-        w.renderText(text, left + width/2 - wid/2, top-h+5);
-
+            int wid, h;
+            GetTextExtent(text, wid, h);
+            w.renderText(text, left , top-h+5);  //+ width/2 - wid/2
+        }
     }
 
     EventDataType lastpx, lastpy;
@@ -468,29 +563,66 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setRenderHint(QPainter::Antialiasing, p_profile->appearance->antiAliasing());
 
     painter.setFont(*defaultfont);
+    bool showDottedLines = true;
+
+    int dotlinesize = m_dotlines.size();
+
+    // Unset Dotted lines visible status, so we only draw necessary labels later
+    for (int i=0; i < dotlinesize; i++) {
+        DottedLine & dot = m_dotlines[i];
+        dot.visible = false;
+    }
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
         schema::Channel &chan = schema::channel[code];
 
-        if (chan.upperThreshold() > 0) {
-            QColor color = chan.upperThresholdColor();
-            color.setAlpha(100);
-            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
+        ////////////////////////////////////////////////////////////////////////
+        // Draw the Channel Threshold dotted lines, and flow waveform centreline
+        ////////////////////////////////////////////////////////////////////////
+        if (showDottedLines) {
+            for (int i=0; i < dotlinesize; i++) {
+                DottedLine & dot = m_dotlines[i];
+                if ((dot.code != code) || (!dot.enabled) || (!dot.available)) {
+                    continue;
+                }
+                schema::Channel & chan = schema::channel[code];
 
-            EventDataType y=top + height + 1 - ((chan.upperThreshold() - miny) * ymult);
-            painter.drawLine(left + 1, y, left + 1 + width, y);
-            painter.drawText(left+4, y-2, m_threshold.at(gi));
-        }
-        if (chan.lowerThreshold() > 0) {
-            QColor color = chan.lowerThresholdColor();
-            color.setAlpha(100);
-            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
+                dot.visible = true;
+                QColor color = chan.calc[dot.type].color;
+                color.setAlpha(200);
+                painter.setPen(QPen(QBrush(color),1.5,Qt::DotLine));
+                EventDataType y=top + height + 1 - ((dot.value - miny) * ymult);
+                painter.drawLine(left + 1, y, left + 1 + width, y);
 
-            EventDataType y=top + height + 1 - ((chan.lowerThreshold() - miny) * ymult);
-            painter.drawLine(left+1, y, left + 1 + width, y);
-            painter.drawText(left+4, y-2, m_threshold.at(gi));
+            }
+//            if (chan.upperThreshold() > 0) {
+//                QColor color = chan.upperThresholdColor();
+//                color.setAlpha(200);
+//                painter.setPen(QPen(QBrush(color),1.5,Qt::DotLine));
+
+//                EventDataType y=top + height + 1 - ((chan.upperThreshold() - miny) * ymult);
+//                painter.drawLine(left + 1, y, left + 1 + width, y);
+//            }
+//            if (chan.lowerThreshold() > 0) {
+//                QColor color = chan.lowerThresholdColor();
+//                color.setAlpha(200);
+//                painter.setPen(QPen(QBrush(color),1.5 ,Qt::DotLine));
+
+//                EventDataType y=top + height + 1 - ((chan.lowerThreshold() - miny) * ymult);
+//                painter.drawLine(left+1, y, left + 1 + width, y);
+//            }
+//            if (chan.id() == CPAP_FlowRate) {
+//                QColor color(Qt::red);
+//                color.setAlpha(200);
+//                painter.setPen(QPen(QBrush(color),1.5 ,Qt::DotLine));
+
+//                EventDataType y=top + height + 1 - ((0 - miny) * ymult);
+//                painter.drawLine(left+1, y, left + 1 + width, y);
+//            }
         }
+        if (!m_enabled[code]) continue;
+
 
         lines.clear();
 
@@ -927,38 +1059,109 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         // Draw Legends on the top line
         ////////////////////////////////////////////////////////////////////
 
-        QFontMetrics fm(*defaultfont);
-        int bw = fm.width('X');
-        int bh = fm.height() / 1.8;
-
-
         if ((codepoints > 0)) {
             QString text = schema::channel[code].label();
-            int wid, hi;
-            GetTextExtent(text, wid, hi);
-            legendx -= wid;
+            QRectF rec(0, rect.top()-3, 0,0);
+            rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
+            rec.moveRight(legendx);
+            legendx -= rec.width();
             painter.setClipping(false);
-            w.renderText(text, legendx, top - 4);
-            legendx -= bw /2;
-            painter.fillRect(legendx - bw, top - w.marginTop()-2, bh, w.marginTop()+1, QBrush(chan.defaultColor()));
+            painter.setPen(Qt::black);
+            painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
+
+            painter.setPen(QPen(chan.defaultColor(), 1 * ratioY));
+            int linewidth = (10 * ratioX);
+            int yp = rec.top()+(rec.height()/2);
+            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+
             painter.setClipping(true);
 
-            legendx -= bw*2;
-        }
-    }
-
-
-    if (!total_points) { // No Data?
-
-        if (m_report_empty) {
-            QString msg = QObject::tr("No Waveform Available");
-            int x, y;
-            GetTextExtent(msg, x, y, bigfont);
-            //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
+            legendx -= linewidth + (2*ratioX);
         }
     }
     painter.setClipping(false);
 
+    ////////////////////////////////////////////////////////////////////
+    // Draw Channel Threshold legend markers
+    ////////////////////////////////////////////////////////////////////
+    for (int i=0; i < dotlinesize; i++) {
+        DottedLine & dot = m_dotlines[i];
+        if (!dot.visible) continue;
+        ChannelID code = dot.code;
+        schema::Channel &chan = schema::channel[code];
+        int linewidth = (10 * ratioX);
+        QRectF rec(0, rect.top()-3, 0,0);
+
+        QString text = chan.calc[dot.type].label();
+        rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
+        rec.moveRight(legendx);
+        legendx -= rec.width();
+        painter.setPen(Qt::black);
+        painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
+
+        QColor color = chan.calc[dot.type].color;
+        color.setAlpha(200);
+        painter.setPen(QPen(QBrush(color),1 * ratioY,Qt::DotLine));
+
+        int yp = rec.top()+(rec.height()/2);
+        painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+        legendx -= linewidth + (2*ratioX);
+
+
+    }
+//    for (int gi = 0; gi < m_codes.size(); gi++) {
+//        ChannelID code = m_codes[gi];
+//        schema::Channel &chan = schema::channel[code];
+
+//        int linewidth = (10 * ratioX);
+//        QRectF rec(0, rect.top()-3, 0,0);
+//        if (chan.upperThreshold() > 0) {
+//            QString text = m_threshold.at(gi);
+//            rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
+//            rec.moveRight(legendx);
+//            legendx -= rec.width();
+//            painter.setPen(Qt::black);
+//            painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
+
+//            QColor color = chan.upperThresholdColor();
+//            color.setAlpha(200);
+//            painter.setPen(QPen(QBrush(color),1 * ratioY,Qt::DotLine));
+
+//            int yp = rec.top()+(rec.height()/2);
+//            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+//            legendx -= linewidth + (2*ratioX);
+//        }
+//        if (chan.lowerThreshold() > 0) {
+//            QString text = m_threshold.at(gi);
+//            rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
+//            rec.moveRight(legendx);
+//            legendx -= rec.width();
+//            painter.setPen(Qt::black);
+//            painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
+
+//            QColor color = chan.lowerThresholdColor();
+//            color.setAlpha(200);
+//            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
+
+//            int yp = rec.top()+(rec.height()/2);
+//            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+//            legendx -= linewidth + (2*ratioX);
+//        }
+
+//    }
+    painter.setClipping(true);
+
+    if (!total_points) { // No Data?
+   //     if (m_report_empty) {
+            QString msg = QObject::tr("Plots Disabled");
+            int x, y;
+            GetTextExtent(msg, x, y, bigfont);
+            w.renderText(msg, rect, Qt::AlignCenter, 0, Qt::gray, bigfont);
+//            DrawText(w,msg,left+(width/2.0)-(x/2.0),rect.top()-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
+//        }
+    }
+
+    painter.setClipping(false);
 
     // Calculate combined session times within selected area...
     double first, last;
@@ -1032,8 +1235,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 QObject::tr("AHI %1").arg(f,0,'f',2);// +" " +
 //                QObject::tr("Events %1").arg(cnt) + " " +
 //                QObject::tr("Hours %1").arg(hours,0,'f',2);
+
+        if (linecursormode) txt+=lasttext;
+
         w.renderText(txt,left,top-4);
     }
+
 
     painter.setRenderHint(QPainter::Antialiasing, false);
 }

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Minutes At Pressure Graph Header
+/* Minutes At Pressure Graph Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -42,6 +39,7 @@ public:
     virtual void SetDay(Day *d);
 
     virtual bool isEmpty();
+    virtual int minimumHeight();
 
     //! Draw filled rectangles behind Event Flag's, and an outlines around them all, Calls the individual paint for each gFlagLine
     virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
@@ -58,6 +56,7 @@ protected:
     QMutex mutex;
 
     bool m_empty;
+    int m_minimum_height;
 
     qint64 m_lastminx;
     qint64 m_lastmaxx;

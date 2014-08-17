@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Preferences Implementation
+/* SleepLib Preferences Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -181,7 +178,7 @@ bool Preferences::Open(QString filename)
 
     QDomDocument doc(p_name);
     QFile file(p_filename);
-    qDebug() << "Scanning " << QDir::toNativeSeparators(p_filename);
+    qDebug() << "Reading " << QDir::toNativeSeparators(p_filename);
 
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open" << QDir::toNativeSeparators(p_filename);

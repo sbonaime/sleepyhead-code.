@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Day Class Implementation
+/* SleepLib Day Class Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -80,23 +77,21 @@ QString Day::calcMiddleLabel(ChannelID code)
 {
     int c = p_profile->general->prefCalcMiddle();
     if (c == 0) {
-        return QObject::tr("%1 %2").arg(STR_TR_Median).arg(schema::channel[code].fullname());
+        return QObject::tr("%1 %2").arg(STR_TR_Median).arg(schema::channel[code].label());
     } else if (c == 1) {
-        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].fullname());
+        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].label());
     } else {
-        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].fullname());
+        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].label());
     }
 }
 QString Day::calcMaxLabel(ChannelID code)
 {
-    return QObject::tr("%1 %2").arg(p_profile->general->prefCalcMax() ? QObject::tr("Peak") : QObject::tr("Maximum")).arg(schema::channel[code].fullname());
+    return QObject::tr("%1 %2").arg(p_profile->general->prefCalcMax() ? QObject::tr("Peak") : STR_TR_Max).arg(schema::channel[code].label());
 }
 QString Day::calcPercentileLabel(ChannelID code)
 {
-    return QObject::tr("%1% %2").arg(p_profile->general->prefCalcPercentile(),0, 'f').arg(schema::channel[code].fullname());
+    return QObject::tr("%1% %2").arg(p_profile->general->prefCalcPercentile(),0, 'f',0).arg(schema::channel[code].label());
 }
-
-
 
 EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)
 {
@@ -1097,4 +1092,36 @@ QString Day::getPressureSettings()
     }
 
     return STR_TR_Unknown;
+}
+
+
+EventDataType Day::calc(ChannelID code, ChannelCalcType type)
+{
+    EventDataType value;
+
+    switch(type) {
+    case Calc_Min:
+        value = Min(code);
+        break;
+    case Calc_Middle:
+        value = calcMiddle(code);
+        break;
+    case Calc_Perc:
+        value = calcPercentile(code);
+        break;
+    case Calc_Max:
+        value = calcMax(code);
+        break;
+    case Calc_UpperThresh:
+        value = schema::channel[code].upperThreshold();
+        break;
+    case Calc_LowerThresh:
+        value = schema::channel[code].lowerThreshold();
+        break;
+    case Calc_Zero:
+    default:
+        value = 0;
+        break;
+    };
+    return value;
 }

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib PRS1 Loader Header
+/* SleepLib PRS1 Loader Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -122,7 +119,8 @@ public:
     bool ParseSummaryF0();
     bool ParseSummaryF0V4();
     bool ParseSummaryF3();
-    bool ParseSummaryF5();
+    bool ParseSummaryF5V0();
+    bool ParseSummaryF5V1();
 
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
@@ -136,6 +134,8 @@ protected:
     PRS1Loader * loader;
     SessionID sessionid;
     Machine * mach;
+
+    int summary_duration;
 };
 
 /*! \class PRS1Loader

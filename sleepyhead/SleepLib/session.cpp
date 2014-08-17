@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Session Implementation
+/* SleepLib Session Implementation
  * This stuff contains the base calculation smarts
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
@@ -1018,6 +1015,7 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)
                     qint64 t2 = i2 * el->rate();
 
                     c = EventDataType(t2 - t1);
+                    if (c == 0) return 0;
                     d = EventDataType(t2 - tt);
 
                     e = d/c;

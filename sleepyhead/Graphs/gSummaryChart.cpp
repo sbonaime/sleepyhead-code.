@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gSummaryChart Implementation
+/* gSummaryChart Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -28,7 +25,7 @@ SummaryChart::SummaryChart(QString label, GraphType type)
     d1.setTimeSpec(Qt::UTC);
     tz_offset = d2.secsTo(d1);
     tz_hours = tz_offset / 3600.0;
-
+    m_layertype = LT_SummaryChart;
 }
 SummaryChart::~SummaryChart()
 {

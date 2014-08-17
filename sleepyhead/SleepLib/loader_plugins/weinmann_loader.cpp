@@ -1,8 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib (DeVilbiss) Weinmann Loader Implementation
- * Notes: Weinmann requires the SmartLink attachment to access this data.
+/* SleepLib Weinmann SOMNOsoft/Balance Loader Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *

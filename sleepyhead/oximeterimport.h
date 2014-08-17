@@ -1,3 +1,11 @@
+/* Oximeter Import Wizard Header
+ *
+ * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
+ *
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License. See the file COPYING in the main directory of the Linux
+ * distribution for more details. */
+
 #ifndef OXIMETERIMPORT_H
 #define OXIMETERIMPORT_H
 

@@ -49,5 +49,7 @@
         <file>icons/cms50f.png</file>
         <file>icons/rms9.png</file>
         <file>icons/intellipap.png</file>
+        <file>icons/pushpin.png</file>
+        <file>icons/eye.png</file>
     </qresource>
 </RCC>

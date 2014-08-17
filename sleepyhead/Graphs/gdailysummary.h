@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gDailySummary Graph Header
+/* gDailySummary Graph Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -46,8 +43,10 @@ protected:
     QList<QString> pie_labels;
     EventDataType pie_total;
 
-    QList<QString> info_labels;
-    QList<QString> info_values;
+    QList<QString> settings;
+    QList<QString> info;
+    QList<QColor> info_background;
+    QList<QColor> info_foreground;
 
     float flag_height;
     float flag_label_width;
@@ -56,8 +55,7 @@ protected:
     double ahi;
 
     int info_height;
-    int info_label_width;
-    int info_value_width;
+    int info_width;
 
     int m_minimum_height;
     bool m_empty;

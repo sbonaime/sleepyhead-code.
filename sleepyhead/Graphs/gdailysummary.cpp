@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gDailySummary Graph Implementation
+/* gDailySummary Graph Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -95,36 +92,71 @@ void gDailySummary::SetDay(Day *day)
             if (y > flag_height) flag_height = y;
         }
 
-        info_labels.clear();
-        info_values.clear();
+        info.clear();
+        info_background.clear();
+        settings.clear();
 
         ahi = day->calcAHI();
 
-        QDateTime dt = QDateTime::fromMSecsSinceEpoch(day->first());
-        info_labels.append(QObject::tr("Date"));
-        info_values.append(dt.date().toString(Qt::LocaleDate));
-        info_labels.append(QObject::tr("Sleep"));
-        info_values.append(dt.time().toString());
-        QDateTime wake = QDateTime::fromMSecsSinceEpoch(day->last());
-        info_labels.append(QObject::tr("Wake"));
-        info_values.append(wake.time().toString());
+        CPAPMode mode = (CPAPMode)round(day->settings_wavg(CPAP_Mode));
+
+        info.append(QObject::tr("%1: %2").arg(STR_TR_AHI).arg(day->calcAHI(),0,'f',2));
+        info_background.append(QColor("orange"));
+
+        settings.append(day->machine->brand()+ " " + day->machine->series());
+        settings.append(day->machine->model()+ " " + day->machine->modelnumber());
+        settings.append(schema::channel[CPAP_Mode].option(mode));
+
+        if (mode == MODE_CPAP) {
+            EventDataType p = round(day->settings_max(CPAP_Pressure));
+            settings.append(QString("Fixed %1%2").arg(p,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        } else if (mode == MODE_APAP) {
+            EventDataType min = round(day->settings_min(CPAP_PressureMin));
+            EventDataType max = round(day->settings_max(CPAP_PressureMax));
+            settings.append(QString("Min Pressure %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max Pressure %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+            EventDataType min = round(day->settings_min(CPAP_EPAPLo));
+            EventDataType max = round(day->settings_max(CPAP_IPAPHi));
+            EventDataType ps = round(day->settings_max(CPAP_PS));
+            settings.append(QString("Min EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1%2").arg(ps,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        } else if (mode == MODE_BILEVEL_FIXED) {
+            EventDataType min = round(day->settings_min(CPAP_EPAP));
+            EventDataType max = round(day->settings_max(CPAP_IPAP));
+            settings.append(QString("EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+            EventDataType min = round(day->settings_min(CPAP_EPAPLo));
+            EventDataType max = round(day->settings_max(CPAP_IPAPHi));
+            EventDataType ps = round(day->settings_max(CPAP_PSMin));
+            EventDataType pshi = round(day->settings_max(CPAP_PSMax));
+            settings.append(QString("Min EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1-%2%3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        } else if (mode == MODE_ASV) {
+            EventDataType min = round(day->settings_min(CPAP_EPAP));
+            EventDataType ps = round(day->settings_max(CPAP_PSMin));
+            EventDataType pshi = round(day->settings_max(CPAP_PSMax));
+            settings.append(QString("EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1-%2%3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+        }
+        settings.append(QObject::tr("Relief: %1").arg(day->getPressureRelief()));
+
         int secs = hours * 3600.0;
         int h = secs / 3600;
         int m = secs / 60 % 60;
         int s  = secs % 60;
-        info_labels.append(QObject::tr("Hours"));
-        info_values.append(QString().sprintf("%ih, %im, %is",h,m,s));
+        info.append(QObject::tr("Hours: %1h, %2m, %3s").arg(h).arg(m).arg(s));
+        info_background.append(QColor("light blue"));
 
-        info_value_width = info_label_width = info_height = 0;
+        info_width = info_height = 0;
 
-        for (int i=0; i < info_labels.size(); ++i) {
-            GetTextExtent(info_labels.at(i), x, y, mediumfont);
+        for (int i=0; i < info.size(); ++i) {
+            GetTextExtent(info.at(i), x, y, mediumfont);
             if (y > info_height) info_height = y;
-            if (x > info_label_width) info_label_width  = x;
-
-            GetTextExtent(info_values.at(i), x, y, mediumfont);
-            if (y > info_height) info_height = y;
-            if (x > info_value_width) info_value_width  = x;
+            if (x > info_width) info_width  = x;
         }
 
         m_minimum_height = flag_values.size() * flag_height;
@@ -186,19 +218,90 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
     float row = top + 10;
     float column = left+10;
 
-    rect1 = QRectF(column - 10, row -5, 0, 0);
     painter.setFont(*mediumfont);
-    QString txt = QString::number(ahi, 'f', 2);
-    QString ahi = QString("%1: %2").arg(STR_TR_AHI).arg(txt);
-    rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, ahi);
-    rect1.setWidth(rect1.width()*2);
-    rect1.setHeight(rect1.height() * 1.5);
-    painter.fillRect(rect1, QColor("orange"));
-    painter.setPen(Qt::black);
-    painter.drawText(rect1, Qt::AlignCenter, ahi);
-    painter.drawRoundedRect(rect1, 5, 5);
 
-    column += rect1.width() + 10;
+    size = info.size();
+    float xpos = left + 10;;
+    float ypos = top + 10;
+    double maxwidth = 0 ;
+
+    for (int i=0; i< info.size(); ++i) {
+        rect1 = QRectF(xpos, ypos, 0, 0);
+        QString txt = info.at(i);
+
+        rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, txt);
+        rect1.setHeight(rect1.height() * 1.25);
+
+        maxwidth = qMax(rect1.width(), maxwidth);
+        ypos += rect1.height() + 5;
+    }
+    painter.setFont(*defaultfont);
+    float tpos = ypos+5;
+    for (int i=0; i< settings.size(); ++i) {
+        rect1 = QRectF(xpos, tpos, 0, 0);
+        QString txt = settings.at(i);
+
+        rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, txt);
+        rect1.setHeight(rect1.height() * 1.25);
+
+        maxwidth = qMax(rect1.width(), maxwidth);
+        tpos += rect1.height();
+    }
+
+    maxwidth *= 1.1;
+
+    QRectF rect3 = QRectF(xpos, tpos, 0, 0);
+    QString machinfo = QObject::tr("Machine Information");
+
+    rect3 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, machinfo);
+    maxwidth = qMax(rect1.width(), maxwidth);
+
+    painter.drawRect(QRect(xpos, ypos + rect3.height()+4, maxwidth, tpos-ypos));
+    ypos = top + 10;
+
+    painter.setFont(*mediumfont);
+    for (int i=0; i< info.size(); ++i) {
+        rect1 = QRectF(xpos, ypos, 0, 0);
+        QString txt = info.at(i);
+
+        rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, txt);
+        rect1.setWidth(maxwidth);
+        rect1.setHeight(rect1.height() * 1.25);
+        painter.fillRect(rect1, QColor(info_background.at(i)));
+        painter.setPen(Qt::black);
+        painter.drawText(rect1, Qt::AlignCenter, txt);
+        painter.drawRoundedRect(rect1, 5, 5);
+        ypos += rect1.height() + 5;
+    }
+
+    rect3.moveTop(ypos+1);
+    rect3.setWidth(maxwidth);
+    QFont ffont = *defaultfont;
+    ffont.setBold(true);
+    painter.setFont(ffont);
+
+    painter.drawText(rect3, Qt::AlignCenter, machinfo);
+
+    painter.setFont(*defaultfont);
+    ypos += 6 + rect3.height();
+
+
+    for (int i=0; i< settings.size(); ++i) {
+        rect1 = QRectF(xpos, ypos, 0, 0);
+        QString txt = settings.at(i);
+
+        rect1 = painter.boundingRect(rect1, Qt::AlignTop || Qt::AlignLeft, txt);
+        rect1.setWidth(maxwidth);
+        rect1.setHeight(rect1.height() * 1.25);
+//        painter.fillRect(rect1, QColor("orange"));
+        painter.setPen(Qt::black);
+        painter.drawText(rect1, Qt::AlignCenter, txt);
+//        painter.drawRoundedRect(rect1, 5, 5);
+        ypos += rect1.height();
+    }
+
+
+    column += rect1.width() + 15;
 
     size = flag_values.size();
     int vis = 0;
@@ -331,6 +434,7 @@ bool gDailySummary::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 
 bool gDailySummary::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
+    graph->timedRedraw(0);
     Q_UNUSED(event)
     Q_UNUSED(graph)
     return true;

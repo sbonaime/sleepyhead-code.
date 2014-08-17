@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Day Class Header
+/* SleepLib Day Class Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -235,9 +232,11 @@ class Day
     EventDataType calcMiddle(ChannelID code);
     EventDataType calcMax(ChannelID code);
     EventDataType calcPercentile(ChannelID code);
-    QString calcMiddleLabel(ChannelID code);
-    QString calcMaxLabel(ChannelID code);
-    QString calcPercentileLabel(ChannelID code);
+    static QString calcMiddleLabel(ChannelID code);
+    static QString calcMaxLabel(ChannelID code);
+    static QString calcPercentileLabel(ChannelID code);
+
+    EventDataType calc(ChannelID code, ChannelCalcType type);
 
     QList<Session *> sessions;
 

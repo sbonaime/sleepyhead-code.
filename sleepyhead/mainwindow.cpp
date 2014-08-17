@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * MainWindow Implementation
+/* SleepyHead MainWindow Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -318,12 +315,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Translators, these are only temporary messages, don't bother unless you really want to..
 
-    warnmsg.push_back(tr("<b>Warning:</b> This pre-release build is meant for beta testers only. Please do <b>NOT</b> share outside the SleepyHead Testing Forum."));
-    warnmsg.push_back(tr("Please report bugs for this build to the SleepyHead Testing Forum, but first, check the release thread to ensure you are running the latest version."));
+    warnmsg.push_back(tr("<b>Warning:</b> This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes."));
+    warnmsg.push_back(tr("If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu."));
+    warnmsg.push_back(tr("Make sure your keep your SleepyHead data folder backed up when trying testing versions."));
+    warnmsg.push_back(tr("Please ensure you are running the latest version before reporting any bugs."));
     warnmsg.push_back(tr("When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model."));
-    warnmsg.push_back(tr("<b>Warning:</b> This reports this software generates are not fit for compliance or medical diagnostic purposes."));
+    warnmsg.push_back(tr("Make sure your willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report."));
+    warnmsg.push_back(tr("Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!"));
+    warnmsg.push_back(tr("This red message line is intentional, and will not be a feature in the final version..."));
     warnmsg.push_back(tr(""));
-    warnmsg.push_back(tr("These messages are only a temporary feature. Some people thought they were an error."));
 
     wtimer.setParent(this);
     warnidx = 0;
@@ -465,6 +465,7 @@ void loadChannels()
 void MainWindow::closeEvent(QCloseEvent * event)
 {
     saveChannels();
+    schema::channel.Save();
 
     if (daily) {
         daily->close();
@@ -618,18 +619,19 @@ void MainWindow::Startup()
 
     PopulatePurgeMenu();
 
-    SnapshotGraph = new gGraphView(this, daily->graphView());
+//    SnapshotGraph = new gGraphView(this, daily->graphView());
 
-    // Snapshot graphs mess up with pixmap cache
-    SnapshotGraph->setUsePixmapCache(false);
+//    // Snapshot graphs mess up with pixmap cache
+//    SnapshotGraph->setUsePixmapCache(false);
 
-   // SnapshotGraph->setFormat(daily->graphView()->format());
-    //SnapshotGraph->setMaximumSize(1024,512);
-    //SnapshotGraph->setMinimumSize(1024,512);
-    SnapshotGraph->hide();
+//   // SnapshotGraph->setFormat(daily->graphView()->format());
+//    //SnapshotGraph->setMaximumSize(1024,512);
+//    //SnapshotGraph->setMinimumSize(1024,512);
+//    SnapshotGraph->hide();
 
     overview = new Overview(ui->tabWidget, daily->graphView());
     ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
+
 
 //    GenerateStatistics();
 
@@ -2649,4 +2651,18 @@ void MainWindow::on_actionLeft_Daily_Sidebar_toggled(bool visible)
 void MainWindow::on_actionDaily_Calendar_toggled(bool visible)
 {
     getDaily()->setCalendarVisible(visible);
+}
+
+void MainWindow::on_actionExport_Journal_triggered()
+{
+    QString folder;
+#if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
+    folder = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+#else
+    folder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
+    folder += QDir::separator() + tr("%1's Journal").arg(p_profile->user->userName()) + ".xml";
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Choose where to save journal"), folder, tr("XML Files (*.xml)"));
+
 }

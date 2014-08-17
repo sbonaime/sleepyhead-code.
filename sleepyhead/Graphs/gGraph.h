@@ -1,5 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
+/* gGraph Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -127,7 +126,7 @@ class gGraph : public QObject
     void renderText(QString text, int x, int y, float angle = 0.0, QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
     //! \brief Queues text for gGraphView object to draw it, using given rect.
-    void renderText(QString text, QRectF rect, int flags = Qt::AlignCenter, float angle = 0.0, QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
+    void renderText(QString text, QRectF rect, quint32 flags = Qt::AlignCenter, float angle = 0.0, QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
     //! \brief Rounds Y scale values to make them look nice..
     //         Applies the Graph Preference min/max settings.
@@ -308,6 +307,8 @@ class gGraph : public QObject
 
     inline bool blockSelect() const { return m_block_select; }
     void setBlockSelect(bool b) { m_block_select = b; }
+
+    inline bool printing() const { return m_printing; }
 
   protected:
     //! \brief Mouse Wheel events

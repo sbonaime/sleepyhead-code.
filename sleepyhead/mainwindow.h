@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * MainWindow Headers
+/* SleepyHead MainWindow Headers
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -24,6 +21,7 @@
 #include "preferencesdialog.h"
 
 extern Profile *profile;
+QString getCPAPPixmap(QString mach_class);
 
 namespace Ui {
 class MainWindow;
@@ -108,9 +106,9 @@ class MainWindow : public QMainWindow
         */
     void Notify(QString s, QString title = "", int ms = 5000);
 
-    /*! \fn gGraphView *snapshotGraph()
-        \brief Returns the current snapshotGraph object used by the report printing system */
-    gGraphView *snapshotGraph() { return SnapshotGraph; }
+//    /*! \fn gGraphView *snapshotGraph()
+//        \brief Returns the current snapshotGraph object used by the report printing system */
+//    gGraphView *snapshotGraph() { return SnapshotGraph; }
 
     //! \brief Returns the Daily Tab object
     Daily *getDaily() { return daily; }
@@ -327,6 +325,8 @@ class MainWindow : public QMainWindow
 
     void on_actionDaily_Calendar_toggled(bool arg1);
 
+    void on_actionExport_Journal_triggered();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();
@@ -343,7 +343,7 @@ private:
     QTime logtime;
     QSystemTrayIcon *systray;
     QMenu *systraymenu;
-    gGraphView *SnapshotGraph;
+//    gGraphView *SnapshotGraph;
     QString bookmarkFilter;
     bool m_restartRequired;
     volatile bool m_inRecalculation;

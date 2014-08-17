@@ -180,7 +180,8 @@ SOURCES += \
     SleepLib/machine_common.cpp \
     SleepLib/loader_plugins/weinmann_loader.cpp \
     Graphs/gdailysummary.cpp \
-    Graphs/MinutesAtPressure.cpp
+    Graphs/MinutesAtPressure.cpp \
+    SleepLib/journal.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -238,7 +239,8 @@ HEADERS  += \
     logger.h \
     SleepLib/loader_plugins/weinmann_loader.h \
     Graphs/gdailysummary.h \
-    Graphs/MinutesAtPressure.h
+    Graphs/MinutesAtPressure.h \
+    SleepLib/journal.h
 
 FORMS += \
     daily.ui \

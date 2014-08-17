@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib Fisher & Paykel Icon Loader Implementation
+/* SleepLib Fisher & Paykel Icon Loader Implementation
  *
  * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
  *

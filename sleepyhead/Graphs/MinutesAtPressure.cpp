@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * MinutesAtPressure Graph Implementation
+/* MinutesAtPressure Graph Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -29,6 +26,7 @@ MinutesAtPressure::MinutesAtPressure() :Layer(NoChannel)
     m_remap = nullptr;
     m_minpressure = 3;
     m_maxpressure = 30;
+    m_minimum_height = 0;
 }
 MinutesAtPressure::~MinutesAtPressure()
 {
@@ -83,7 +81,7 @@ void MinutesAtPressure::SetDay(Day *day)
         m_minpressure = qMax(float(4), floor(minpressure));
         m_maxpressure = ceil(maxpressure);
 
-        const int minimum_cells = 16;
+        const int minimum_cells = 12;
         int c = m_maxpressure - m_minpressure;
 
 
@@ -94,7 +92,11 @@ void MinutesAtPressure::SetDay(Day *day)
 
             m_maxpressure = m_minpressure + minimum_cells;
         }
+        QFontMetrics FM(*defaultfont);
+        QList<ChannelID> chans = day->getSortedMachineChannels(schema::SPAN | schema::FLAG | schema::MINOR_FLAG);
+        m_minimum_height = (chans.size()+3) * FM.height() - 5;
     }
+
 
     m_empty = false;
     m_recalculating = false;
@@ -102,6 +104,12 @@ void MinutesAtPressure::SetDay(Day *day)
     m_lastmaxx = 0;
     m_empty = !m_day || !(m_day->channelExists(CPAP_Pressure) || m_day->channelExists(CPAP_EPAP));
 }
+
+ int MinutesAtPressure::minimumHeight()
+{
+    return m_minimum_height;
+}
+
 
 
 bool MinutesAtPressure::isEmpty()
@@ -119,9 +127,19 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     int cells = m_maxpressure-m_minpressure+1;
 
 
+    int top = rect.top()-10;
     float width = rect.width();
+    float height = rect.height();
     float left = rect.left();
     float pix = width / float(cells);
+
+
+    int numchans = chans.size();
+
+    int cells_high = numchans + 2;
+
+    //height += 10;
+    float hix = height / cells_high;
 
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
@@ -133,7 +151,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_lastmaxx = m_maxx;
 
     QMap<EventStoreType, int>::iterator it;
-    int top = rect.top()+1;
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
 
@@ -143,55 +160,49 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     QMap<EventStoreType, int>::iterator times_end = times.end();
     QPoint mouse = graph.graphView()->currentMousePos();
 
-
     float ypos = top;
 
-    QString text = schema::channel[m_presChannel].label();
-    QRectF rec(left - gYAxis::Margin, top, gYAxis::Margin,0);
-    rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignRight, text);
-    rec.moveRight(left-4);
-    graph.renderText(text, rec, Qt::AlignRight | Qt::AlignVCenter);
+    int titleWidth = graph.graphView()->titleWidth;
+    int marginWidth = gYAxis::Margin;
 
-    //painter.drawText(rec, Qt::AlignRight | Qt::AlignVCenter, text);
+    QString text = schema::channel[m_presChannel].label();
+    QRectF rec(titleWidth-4, ypos, marginWidth, hix);
+    rec.moveRight(left - 4);
+//    graph.renderText(text, rec, Qt::AlignRight | Qt::AlignVCenter);
+
     if (rec.contains(mouse)) {
         QString text = schema::channel[m_presChannel].description();
         graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
     }
-
-    double tmph = rec.height();
+    int w,h;
+    GetTextExtent(text, w,h);
+    graph.renderText(text, (left-4) - w, ypos + hix/2.0 + float(h)/2.0);
 
     text = STR_UNIT_Minutes;
-    QRectF rec2(left - gYAxis::Margin, top + rec.height(), gYAxis::Margin, 0);
-    rec2 = painter.boundingRect(rec2, Qt::AlignTop | Qt::AlignRight, text);
-    rec2.moveRight(left-4);
-    //painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
-    graph.renderText(text, rec2, Qt::AlignRight | Qt::AlignVCenter);
+    rec = QRectF(titleWidth-4, ypos+hix, marginWidth, hix);
+    rec.moveRight(left - 4);
 
-    tmph += rec2.height();
+    GetTextExtent(text, w,h);
+    graph.renderText(text, (left-4) - w, ypos + hix + hix/2.0 + float(h)/2.0);
+//    graph.renderText(text, rec, Qt::AlignRight | Qt::AlignVCenter);
 
     float xpos = left;
     for (it = times.begin(); it != times_end; ++it) {
         QString text = QString::number(it.key());
         QString value = QString("%1").arg(float(it.value()) / 60.0, 5, 'f', 1);
-        QRectF rec(xpos, top, pix-1, 0);
-        rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignLeft, text);
-        rec = painter.boundingRect(rec, Qt::AlignTop | Qt::AlignLeft, value);
-        rec.setWidth(pix - 1);
+        QRectF rec(xpos, top, pix-1, hix);
 
         painter.fillRect(rec, QColor("orange"));
         graph.renderText(text, rec, Qt::AlignCenter);
-        //painter.drawText(rec, Qt::AlignCenter, text);
-        rec.moveTop(top + rec.height());
+
+        rec.moveTop(top + hix);
         graph.renderText(value, rec, Qt::AlignCenter);
-        //painter.drawText(rec, Qt::AlignCenter, value);
 
         xpos += pix;
     }
 
-    ypos = top + tmph;
-    left = rect.left();
-
-    float hh = rec.height();
+    ypos += hix * 2;
+  //  left = rect.left();
 
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
@@ -199,7 +210,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
     int row = 0;
-    int numchans = chans.size();
     for (int i=0; i< numchans; ++i) {
         ChannelID code = chans.at(i);
 
@@ -214,19 +224,20 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
 
         QString text = chan.label();
-        QRectF rec2(xpos - gYAxis::Margin, ypos, gYAxis::Margin, hh);
-        rec2 = painter.boundingRect(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
-        rec2.moveRight(left-4);
+        rec = QRectF(titleWidth, ypos, marginWidth, hix);
+        rec.moveRight(xpos - 4);
 
-        if (rec2.contains(mouse)) {
+        if (rec.contains(mouse)) {
                 QString text = chan.fullname();
                 if (type == schema::SPAN) {
                     text += "\n"+QObject::tr("(% of time)");
                 }
                 graph.ToolTip(text, mouse.x() + 10, mouse.y(), TT_AlignLeft);
         }
-        graph.renderText(text, rec2, Qt::AlignRight | Qt::AlignVCenter);
-        //painter.drawText(rec2, Qt::AlignRight | Qt::AlignVCenter, text);
+
+        GetTextExtent(text, w,h);
+
+        graph.renderText(text, (left-4) - w, ypos + hix/2.0 + float(h)/2.0);
 
         for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
             float minutes = float(it.value()) / 60.0;
@@ -241,7 +252,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 value = (minutes > 0.000001) ? (100/minutes) * (value / 60.0) : 0;
             }
 
-            QRectF rec(xpos, ypos, pix-1, hh);
+            QRectF rec(xpos, ypos, pix-1, hix);
             if ((row & 1) == 0) {
                 painter.fillRect(rec, QColor(245,245,255,240));
             }
@@ -252,7 +263,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             xpos += pix;
 
         }
-        ypos += hh;
+        ypos += hix;
         row++;
     }
 
@@ -429,8 +440,6 @@ skip:
 //    }
 
 
-
-
     QMutexLocker timelock(&map->timelock);
     map->times = times;
     map->events = events;
@@ -457,7 +466,11 @@ void MinutesAtPressure::recalculate(gGraph * graph)
     QThreadPool * tp = QThreadPool::globalInstance();
 //    tp->reserveThread();
 
-    while(!tp->tryStart(m_remap));
+    if (graph->printing()) {
+        m_remap->run();
+    } else {
+        while(!tp->tryStart(m_remap));
+    }
 
 
     // Start recalculating in another thread, organize a callback to redraw when done..

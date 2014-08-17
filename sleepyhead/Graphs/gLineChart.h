@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gLineChart Header
+/* gLineChart Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -20,11 +17,55 @@
 #include "SleepLib/day.h"
 #include "Graphs/gLineOverlay.h"
 
+enum DottedLineCalc {
+    DLC_Zero, DLC_Min, DLC_Mid, DLC_Perc, DLC_Max, DLC_UpperThresh, DLC_LowerThresh
+};
+
+QColor darken(QColor color, float p = 0.5);
+
+struct DottedLine {
+public:
+    DottedLine() {
+        code = NoChannel;
+        type = Calc_Zero;
+        value = 0;
+        enabled = true;
+        visible = false;
+        available = false;
+    }
+    DottedLine(const DottedLine & copy) {
+        code = copy.code;
+        type = copy.type;
+        value = copy.value;
+        available = copy.available;
+        enabled = copy.enabled;
+        visible = copy.visible;
+    }
+    DottedLine(ChannelID code, ChannelCalcType type, bool enabled = true, bool available = false):
+        code(code), type(type), enabled(enabled), available(available) {}
+
+    EventDataType calc(Day * day) {
+        Q_ASSERT(day != nullptr);
+
+        available = day->channelExists(code);
+        value = day->calc(code, type);
+        return value;
+    }
+
+    ChannelID code;
+    ChannelCalcType type;
+    EventDataType value;
+    bool enabled;
+    bool visible;
+    bool available;
+};
+
 /*! \class gLineChart
     \brief Draws a 2D linechart from all Session data in a day. EVL_Waveforms typed EventLists are accelerated.
     */
 class gLineChart: public Layer
 {
+    friend class gGraphView;
   public:
     /*! \brief Creates a new 2D gLineChart Layer
         \param code  The Channel that gets drawn by this layer
@@ -80,6 +121,9 @@ class gLineChart: public Layer
     void setPlotEnabled(ChannelID code, bool b) { m_enabled[code] = b; }
 
     QString getMetaString(qint64 time);
+
+    void addDotLine(DottedLine dot) { m_dotlines.append(dot); }
+    QList<DottedLine> m_dotlines;
 
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)

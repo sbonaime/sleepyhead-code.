@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>942</width>
+    <width>1211</width>
     <height>666</height>
    </rect>
   </property>
@@ -842,7 +842,7 @@ QToolButton:pressed {
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -1451,67 +1451,6 @@ QSlider::handle:horizontal  {
            <number>0</number>
           </property>
           <item>
-           <widget class="QToolButton" name="zoomFullyOut">
-            <property name="toolTip">
-             <string>Zoom fully out</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QToolButton {
- background: transparent;
- border-radius: 8px;
- border: 2px solid transparent;
-}
-
-QToolButton:hover {
- border: 2px solid #456789;
-}
-
-QToolButton:pressed {
- border: 2px solid #456789;
- background-color: #89abcd;
-}</string>
-            </property>
-            <property name="text">
-             <string>100%</string>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="resetLayoutButton">
-            <property name="toolTip">
-             <string>Reset the graph heights to uniform sizes</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QToolButton {
- background: transparent;
- border-radius: 8px;
- border: 2px solid transparent;
-}
-
-QToolButton:hover {
- border: 2px solid #456789;
-}
-
-QToolButton:pressed {
- border: 2px solid #456789;
- background-color: #89abcd;
-}</string>
-            </property>
-            <property name="text">
-             <string>Reset</string>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-            <property name="arrowType">
-             <enum>Qt::NoArrow</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QToolButton" name="toggleEvents">
             <property name="styleSheet">
              <string notr="true">QToolButton {
@@ -1530,13 +1469,16 @@ QToolButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>...</string>
+             <string>Flags</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
             <property name="autoRaise">
              <bool>false</bool>
@@ -1547,14 +1489,11 @@ QToolButton:pressed {
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Flags:</string>
+           <widget class="QComboBox" name="eventsCombo">
+            <property name="maxVisibleItems">
+             <number>12</number>
             </property>
            </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="eventsCombo"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="sessionBarLayout">
@@ -1582,13 +1521,13 @@ QToolButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string/>
+             <string>Graphs</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonIconOnly</enum>
+             <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
             <property name="autoRaise">
              <bool>false</bool>

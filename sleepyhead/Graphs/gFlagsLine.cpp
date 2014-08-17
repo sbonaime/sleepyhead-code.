@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gFlagsLine Implementation
+/* gFlagsLine Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -38,6 +35,8 @@ gFlagsGroup::gFlagsGroup()
 gFlagsGroup::~gFlagsGroup()
 {
 }
+
+
 qint64 gFlagsGroup::Minx()
 {
     if (m_day) {
@@ -136,6 +135,13 @@ void gFlagsGroup::SetDay(Day *d)
 
     m_barh = 0;
 }
+bool gFlagsGroup::isEmpty()
+{
+    if (m_day) {
+        return !(m_day->hasEnabledSessions()) || m_empty;
+    }
+    return m_empty;
+}
 
 void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 {
@@ -194,9 +200,9 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
 
-    if (p_profile->appearance->lineCursorMode()) {
+    //if (p_profile->appearance->lineCursorMode()) {
         graph->timedRedraw(0);
-    }
+   // }
 
     if (!p_profile->appearance->graphTooltips()) {
         return false;
@@ -215,7 +221,7 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                     QString ttip = schema::channel[fl->code()].fullname() + "\n" +
                                    schema::channel[fl->code()].description();
                     graph->ToolTip(ttip, event->x()+15, event->y(), TT_AlignLeft);
-                    graph->timedRedraw(30);
+                    graph->timedRedraw(0);
                 }
             }
 

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * Reports/Printing Module
+/* Reports/Printing Module
  *
  * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -607,11 +604,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         //painter.beginNativePainting();
         //g->showTitle(false);
         int hhh = full_graph_height - normal_height;
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
         QPixmap pm2 = g->renderPixmap(virt_width, hhh, 1);
-#else
-        QPixmap pm2 = g->renderPixmap(virt_width, hhh, 1);
-#endif
         QImage pm = pm2.toImage(); //fscale);
         pm2.detach();
         //g->showTitle(true);

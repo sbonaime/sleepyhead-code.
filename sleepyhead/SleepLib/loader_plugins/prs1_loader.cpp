@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * SleepLib PRS1 Loader Implementation
+/* SleepLib PRS1 Loader Implementation
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -1194,12 +1191,6 @@ bool PRS1Import::ParseSummaryF0()
 
     // Tubing lock has no setting byte
 
-//    int SysOneResistance = (data[0x0a] & 7);
-//    bool SysOneResistanceOn = (data[0x0a] & 0x40) ? true : false;
-//    bool SysOneResistanceLock = (data[0x0a] & 0x80) ? true : false;
-//    int humidifier = (data[0x09] & 7);
-//    bool autoOn = (data[0x0b] & 0x40) ? true : false; //?
-
     // Menu Options
     session->settings[PRS1_SysLock] = (bool) (data[0x0a] & 0x80); // System One Resistance Lock Setting
     session->settings[PRS1_SysOneResistSet] = (int)data[0x0a] & 7;       // SYstem One Resistance setting value
@@ -1249,9 +1240,7 @@ bool PRS1Import::ParseSummaryF0()
     session->settings[PRS1_FlexMode] = (int)flexmode;
     session->settings[PRS1_FlexLevel] = (int)flexlevel;
 
-    int duration = data[0x14] | data[0x15] << 8;
-
-    session->set_last(qint64(summary->timestamp+duration) * 1000L);
+    summary_duration = data[0x14] | data[0x15] << 8;
 
     return true;
 }
@@ -1347,11 +1336,7 @@ bool PRS1Import::ParseSummaryF0V4()
     session->settings[PRS1_HumidLevel] = (int)(data[0x0b] & 7);          // Humidifier Value
 
 
-//    int duration = data[0x14] | data[0x15] << 8;
-
-//    session->set_last(qint64(summary->timestamp+duration) * 1000L);
-
-
+    summary_duration = data[0x14] | data[0x15] << 8;
 
     return true;
 }
@@ -1375,7 +1360,7 @@ bool PRS1Import::ParseSummaryF3()
     return true;
 }
 
-bool PRS1Import::ParseSummaryF5()
+bool PRS1Import::ParseSummaryF5V0()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
@@ -1386,15 +1371,6 @@ bool PRS1Import::ParseSummaryF5()
     session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
-
-//    switch (data[0x01]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
-//    case 0x00:
-//        cpapmode = MODE_CPAP;
-//        break;
-//    case 0x01:
-//        cpapmode = MODE_ASV;
-//        break;
-//    }
 
     int imin_epap = data[0x3];
     int imax_epap = data[0x4];
@@ -1465,15 +1441,96 @@ bool PRS1Import::ParseSummaryF5()
     session->settings[PRS1_HeatedTubing] = (bool)(data[0x0d] & 0x10);        // Heated Hose??
     session->settings[PRS1_HumidLevel] = (int)(data[0x0d] & 7);          // Humidifier Value
 
-
-
-    int duration=data[0x18] | data[0x19] << 8;
-    session->set_last(qint64(summary->timestamp+duration) * 1000L);
+    summary_duration = data[0x18] | data[0x19] << 8;
 
     return true;
-
 }
 
+bool PRS1Import::ParseSummaryF5V1()
+{
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+    CPAPMode cpapmode = MODE_UNKNOWN;
+
+    int imin_epap = data[0x3];
+    int imax_epap = data[0x4];
+    int imin_ps = data[0x5];
+    int imax_ps = data[0x6];
+    int imax_pressure = data[0x2];
+
+    cpapmode = MODE_ASV_VARIABLE_EPAP;
+
+    session->settings[CPAP_Mode] = (int)cpapmode;
+
+    if (cpapmode == MODE_CPAP) {
+        session->settings[CPAP_Pressure] = imin_epap/10.0f;
+
+    } else if (cpapmode == MODE_BILEVEL_FIXED) {
+        session->settings[CPAP_EPAP] = imin_epap/10.0f;
+        session->settings[CPAP_IPAP] = imax_epap/10.0f;
+
+    } else if (cpapmode == MODE_ASV_VARIABLE_EPAP) {
+        int imax_ipap = imax_epap + imax_ps;
+        int imin_ipap = imin_epap + imin_ps;
+
+        session->settings[CPAP_EPAPLo] = imin_epap / 10.0f;
+        session->settings[CPAP_EPAPHi] = imax_epap / 10.0f;
+        session->settings[CPAP_IPAPLo] = imin_ipap / 10.0f;
+        session->settings[CPAP_IPAPHi] = imax_pressure / 10.0f;
+        session->settings[CPAP_PSMin] = imin_ps / 10.0f;
+        session->settings[CPAP_PSMax] = imax_ps / 10.0f;
+    }
+
+    quint8 flex = data[0x0c];
+
+    int flexlevel = flex & 0x03;
+    FlexMode flexmode = FLEX_Unknown;
+
+    flex &= 0xf8;
+    bool split = false;
+
+    if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
+        split = true;
+    }
+    if (flex & 0x80) { // CFlex bit
+        if (flex & 0x10) {
+            flexmode = FLEX_RiseTime;
+        } else if (flex & 8) { // Plus bit
+            if (split || (cpapmode == MODE_CPAP)) {
+                flexmode = FLEX_CFlexPlus;
+            } else if (cpapmode == MODE_APAP) {
+                flexmode = FLEX_AFlex;
+            }
+        } else {
+            // CFlex bits refer to Rise Time on BiLevel machines
+            flexmode = (cpapmode >= MODE_BILEVEL_FIXED) ? FLEX_BiFlex : FLEX_CFlex;
+        }
+    } else flexmode = FLEX_None;
+
+    session->settings[PRS1_FlexMode] = (int)flexmode;
+    session->settings[PRS1_FlexLevel] = (int)flexlevel;
+
+
+    int ramp_time = data[0x0a];
+    EventDataType ramp_pressure = float(data[0x0b]) / 10.0;
+
+    session->settings[CPAP_RampTime] = (int)ramp_time;
+    session->settings[CPAP_RampPressure] = ramp_pressure;
+
+    session->settings[PRS1_HumidStatus] = (bool)(data[0x0d] & 0x80);        // Humidifier Connected
+    session->settings[PRS1_HeatedTubing] = (bool)(data[0x0d] & 0x10);        // Heated Hose??
+    session->settings[PRS1_HumidLevel] = (int)(data[0x0d] & 7);          // Humidifier Value
+
+    summary_duration = data[0x18] | data[0x19] << 8;
+
+    return true;
+}
 
 
 bool PRS1Import::ParseSummary()
@@ -1508,8 +1565,14 @@ bool PRS1Import::ParseSummary()
     case 3:
         return ParseSummaryF3();
     case 5:
-        return ParseSummaryF5();
+        if (summary->familyVersion == 0) {
+            return ParseSummaryF5V0();
+        } else {
+            return ParseSummaryF5V1();
+        }
     }
+
+    // Else machine is unsupported
 
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
@@ -1782,7 +1845,8 @@ void PRS1Import::run()
             if (session->last() < session->first()) {
                 // if last isn't set, duration couldn't be gained from summary, parsing events or waveforms..
                 // This session is dodgy, so kill it
-                session->really_set_last(session->first());
+                session->setSummaryOnly(true);
+                session->really_set_last(session->first()+(qint64(summary_duration) * 1000L));
             }
             session->SetChanged(true);
 

@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gGraphView Header
+/* gGraphView Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -21,6 +18,7 @@
 #include <QPixmap>
 #include <QRect>
 #include <QPixmapCache>
+#include <QMenu>
 
 #ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
@@ -31,6 +29,24 @@
 #include <SleepLib/day.h>
 
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
+
+class MyLabel:public QWidget
+{
+public:
+    MyLabel(QWidget * parent);
+    virtual ~MyLabel();
+
+    void setText(QString text);
+    void setAlignment(Qt::Alignment alignment);
+
+    void setFont(QFont & font);
+    QFont & font() { return m_font; }
+    virtual void paintEvent(QPaintEvent * event);
+
+    QFont m_font;
+    QString m_text;
+    Qt::Alignment m_alignment;
+};
 
 class gGraphView;
 
@@ -75,8 +91,8 @@ struct TextQue {
 struct TextQueRect {
     TextQueRect() {
     }
-    TextQueRect(QRectF rect, int flags, QString text, float angle, QColor color, QFont * font, bool antialias):
-    rect(rect), flags(flags), text(text), angle(angle), color(color), font(font), antialias(antialias)
+    TextQueRect(QRectF r, quint32 flags, QString text, float angle, QColor color, QFont * font, bool antialias):
+    rect(r), flags(flags), text(text), angle(angle), color(color), font(font), antialias(antialias)
     {
     }
     TextQueRect(const TextQueRect & copy) {
@@ -92,7 +108,7 @@ struct TextQueRect {
     //! \variable contains the QRect containing the text object
     QRectF rect;
     //! \variable Qt alignment flags..
-    int flags;
+    quint32 flags;
     //! \variable the actual text to draw
     QString text;
     //! \variable the angle in degrees for drawing rotated text
@@ -221,6 +237,7 @@ class gGraphView
         :public QGLWidget
 #endif
 {
+    friend class gGraph;
     Q_OBJECT
   public:
     /*! \fn explicit gGraphView(QWidget *parent = 0,gGraphView * shared=0);
@@ -329,7 +346,7 @@ class gGraphView
     void updateSelectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
-    void AddTextQue(const QString &text, QRectF rect, int flags, float angle = 0.0,
+    void AddTextQue(const QString &text, QRectF rect, quint32 flags, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
@@ -359,9 +376,6 @@ class gGraphView
 
     //! \brief Called on resize, fits graphs when too few to show, by scaling to fit screen size. Calls updateScrollBar()
     void updateScale();         // update scale & Scrollbar
-
-    //! \brief Resets all contained graphs to have a uniform height.
-    void resetLayout();
 
     //! \brief Returns a count of all visible, non-empty Graphs.
     int visibleGraphs();
@@ -415,12 +429,18 @@ class gGraphView
     //! \brief The current time the mouse pointer is hovering over
     inline double currentTime() { return m_currenttime; }
 
-    inline QString currentTimeString() { return m_currentTimeString; }
+    //! \brief Returns a context formatted text string with the currently selected time range
+    QString getRangeString();
+
+    Layer * findLayer(gGraph * graph, LayerType type);
+
+    void populateMenu(gGraph *);
+    QMenu * lines_menu;
+    QMenu * plots_menu;
+
 
     inline void setCurrentTime(double time) {
         m_currenttime = time;
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
-        m_currentTimeString = dt.toString("MMM dd - HH:mm:ss:zzz");
     }
 
     inline QPoint currentMousePos() const { return m_mouse; }
@@ -547,7 +567,6 @@ class gGraphView
 
     QPoint m_mouse;
     qint64 m_currenttime;
-    QString m_currentTimeString;
 
     QTime m_animationStarted;
 
@@ -556,6 +575,14 @@ class gGraphView
     QPixmapCache pixmapcache;
 
     QTime horizScrollTime, vertScrollTime;
+    QMenu * context_menu;
+    QAction * pin_action;
+    QPixmap pin_icon;
+    gGraph *pin_graph;
+
+  signals:
+    void updateCurrentTime(double);
+    void updateRange(double,double);
 
   public slots:
     //! \brief Callback from the ScrollBar, to change scroll position
@@ -567,6 +594,17 @@ class gGraphView
     //! \brief Call UpdateGL unless animation is in progress
     void redraw();
 
+    //! \brief Resets all contained graphs to have a uniform height.
+    void resetLayout();
+
+    void resetZoom() {
+        ResetBounds(true);
+    }
+
+    void togglePin();
+protected slots:
+    void onLinesClicked(QAction *);
+    void onPlotsClicked(QAction *);
 };
 
 #endif // GGRAPHVIEW_H

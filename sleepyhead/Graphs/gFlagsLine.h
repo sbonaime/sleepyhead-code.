@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * gFlagsLine Header
+/* gFlagsLine Header
  *
  * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -90,7 +87,7 @@ class gFlagsGroup: public LayerGroup
     virtual void SetDay(Day *);
 
     //! Returns true if none of the gFlagLine objects contain any data for this day
-    virtual bool isEmpty() { return m_empty; }
+    virtual bool isEmpty();
 
     //! Returns the count of visible flag line entries
     int count() { return lvisible.size(); }
