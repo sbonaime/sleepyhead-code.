@@ -1695,6 +1695,9 @@ void gGraphView::populateMenu(gGraph * graph)
         lines_menu->clear();
         for (int i=0; i < lc->m_dotlines.size(); i++) {
             DottedLine & dot = lc->m_dotlines[i];
+
+            if (!lc->m_enabled[dot.code]) continue;
+
             schema::Channel &chan = schema::channel[dot.code];
 
             if (dot.available) {

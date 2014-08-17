@@ -69,12 +69,10 @@ class gLineChart: public Layer
   public:
     /*! \brief Creates a new 2D gLineChart Layer
         \param code  The Channel that gets drawn by this layer
-        \param col  Color of the Plot
         \param square_plot Whether or not to use square plots (only effective for EVL_Event typed EventList data)
         \param disable_accel Whether or not to disable acceleration for EVL_Waveform typed EventList data
         */
-    gLineChart(ChannelID code, const QColor col = QColor("black"), bool square_plot = false,
-               bool disable_accel = false);
+    gLineChart(ChannelID code, bool square_plot = false, bool disable_accel = false);
     virtual ~gLineChart();
 
     //! \brief The drawing code that fills the vertex buffers
@@ -112,7 +110,7 @@ class gLineChart: public Layer
     virtual bool isEmpty();
 
     //! \brief Add Subplot 'code'. Note the first one is added in the constructor.
-    void addPlot(ChannelID code, QColor color, bool square) { m_codes.push_back(code); m_colors.push_back(color); m_enabled[code] = true; m_square.push_back(square); }
+    void addPlot(ChannelID code, bool square) { m_codes.push_back(code); m_enabled[code] = true; m_square.push_back(square); }
 
     //! \brief Returns true of the subplot 'code' is enabled.
     bool plotEnabled(ChannelID code) { if ((m_enabled.contains(code)) && m_enabled[code]) { return true; } else { return false; } }
@@ -133,7 +131,6 @@ class gLineChart: public Layer
     bool m_report_empty;
     bool m_square_plot;
     bool m_disable_accel;
-    QColor m_line_color;
 
     //! \brief Used by accelerated waveform plots. Must be >= Screen Resolution (or at least graph width)
     static const int max_drawlist_size = 10000;
@@ -145,7 +142,6 @@ class gLineChart: public Layer
 
     QVector<ChannelID> m_codes;
     QStringList m_threshold;
-    QVector<QColor> m_colors;
     QVector<bool> m_square;
     QHash<ChannelID, bool> m_enabled;
     QHash<ChannelID, gLineOverlayBar *> flags;

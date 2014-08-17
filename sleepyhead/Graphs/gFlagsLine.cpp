@@ -129,7 +129,7 @@ void gFlagsGroup::SetDay(Day *d)
 
     if (m_empty) {
         if (d) {
-            m_empty = !(d->channelExists(CPAP_Pressure) || d->channelExists(CPAP_IPAP) || d->channelExists(CPAP_EPAP));
+            m_empty = !d->hasEvents();
         }
     }
 
@@ -138,9 +138,10 @@ void gFlagsGroup::SetDay(Day *d)
 bool gFlagsGroup::isEmpty()
 {
     if (m_day) {
-        return !(m_day->hasEnabledSessions()) || m_empty;
+        if (m_day->hasEnabledSessions() && m_day->hasEvents())
+            return false;
     }
-    return m_empty;
+    return true;
 }
 
 void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)

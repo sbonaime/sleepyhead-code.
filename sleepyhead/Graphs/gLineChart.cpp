@@ -31,11 +31,10 @@ QColor darken(QColor color, float p)
     return QColor(r,g,b, color.alpha());
 }
 
-gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disable_accel)
+gLineChart::gLineChart(ChannelID code, bool square_plot, bool disable_accel)
     : Layer(code), m_square_plot(square_plot), m_disable_accel(disable_accel)
 {
-    addPlot(code, col, square_plot);
-    m_line_color = col;
+    addPlot(code, square_plot);
     m_report_empty = false;
     lines.reserve(50000);
     lasttime = 0;
@@ -100,6 +99,7 @@ void gLineChart::SetDay(Day *d)
             if (code == CPAP_MaskPressure) {
                 if (sess->channelExists(CPAP_MaskPressureHi)) {
                     code = m_codes[j] = CPAP_MaskPressureHi;
+                    m_enabled[code] = schema::channel[CPAP_MaskPressureHi].enabled();
                     goto skipcheck; // why not :P
                 }
             }
@@ -322,6 +322,7 @@ EventDataType gLineChart::Miny()
 
         if (!first) {
             min = tmp;
+            first = true;
         } else {
             min = qMin(tmp, min);
         }
@@ -583,7 +584,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         if (showDottedLines) {
             for (int i=0; i < dotlinesize; i++) {
                 DottedLine & dot = m_dotlines[i];
-                if ((dot.code != code) || (!dot.enabled) || (!dot.available)) {
+                if ((dot.code != code) || (!dot.enabled) || (!dot.available) || (!m_enabled[dot.code])) {
                     continue;
                 }
                 schema::Channel & chan = schema::channel[code];

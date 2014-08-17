@@ -227,6 +227,7 @@ class Day
         EventDataType c = sum(CPAP_Hypopnea) + sum(CPAP_Obstructive) + sum(CPAP_Apnea) + sum(CPAP_ClearAirway);
         return c;
     }
+    bool hasEvents();
 
     // According to preferences..
     EventDataType calcMiddle(ChannelID code);

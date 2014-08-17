@@ -898,6 +898,13 @@ bool Day::channelExists(ChannelID id)
 
     return false;
 }
+bool Day::hasEvents() {
+    int s=sessions.size();
+    for (int i=0; i<s; ++i) {
+        if (sessions.at(i)->eventlist.size() > 0) return true;
+    }
+    return false;
+}
 
 bool Day::channelHasData(ChannelID id)
 {
