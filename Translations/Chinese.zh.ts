@@ -68,15 +68,15 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <source>U1</source>
-        <translation>U1</translation>
+        <translation type="vanished">U1</translation>
     </message>
     <message>
         <source>U2</source>
-        <translation>U2</translation>
+        <translation type="vanished">U2</translation>
     </message>
     <message>
         <source>U3</source>
-        <translation>U3</translation>
+        <translation type="vanished">U3</translation>
     </message>
     <message>
         <source> i </source>
@@ -464,7 +464,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <source>EPR:%1 EPR_LEVEL:%2</source>
-        <translation>EPR:%1 EPR_LEVEL:%2</translation>
+        <translation type="vanished">EPR:%1 EPR_LEVEL:%2</translation>
     </message>
     <message>
         <source>This day has missing pressure, mode and settings data.</source>
@@ -495,7 +495,31 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished">UF2</translation>
     </message>
     <message>
-        <source>Time spent in ramp</source>
+        <source>Flags:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total time in apnea</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total ramp time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time outside of ramp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AHI excluding ramp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide all events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show all events</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -660,6 +684,21 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <source>Sessions</source>
         <translation>会话</translation>
+    </message>
+</context>
+<context>
+    <name>FPIconLoader</name>
+    <message>
+        <source>Import Error</source>
+        <translation type="unfinished">导入出错</translation>
+    </message>
+    <message>
+        <source>This Machine Record cannot be imported in this profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Day records overlap with already existing content.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -929,7 +968,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <source>Import Problem
 
 Couldn&apos;t find any new Machine Data at the locations given</source>
-        <translation>导入出错
+        <translation type="vanished">导入出错
 
 没有发现新的数据</translation>
     </message>
@@ -1033,7 +1072,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>It uses the cross platform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; library for serial port access in the Oximetry module.</source>
-        <translation>血氧仪模块通信串口使用支持多平台的 &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; 数据库.</translation>
+        <translation type="vanished">血氧仪模块通信串口使用支持多平台的 &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; 数据库.</translation>
     </message>
     <message>
         <source>Import</source>
@@ -1089,7 +1128,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>&amp;Bookmarks</source>
-        <translation>&amp;标记</translation>
+        <translation type="vanished">&amp;标记</translation>
     </message>
     <message>
         <source>Right &amp;Sidebar</source>
@@ -1169,7 +1208,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>&amp;Records</source>
-        <translation>&amp;保存</translation>
+        <translation type="vanished">&amp;保存</translation>
     </message>
     <message>
         <source>Use &amp;AntiAliasing</source>
@@ -1451,13 +1490,13 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Please wait, SleepyHead is importing data...</source>
-        <translation>请稍等,SleepyHead正在导入数据...</translation>
+        <translation type="vanished">请稍等,SleepyHead正在导入数据...</translation>
     </message>
     <message>
         <source>Data successfully imported from the following locations
 
 </source>
-        <translation>数据已有如下位置成功导入
+        <translation type="vanished">数据已有如下位置成功导入
 
 </translation>
     </message>
@@ -1483,7 +1522,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>&amp;Navigation</source>
-        <translation>&amp;导航</translation>
+        <translation type="vanished">&amp;导航</translation>
     </message>
     <message>
         <source>Are you sure?</source>
@@ -1531,11 +1570,11 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Data successfully imported from the following locations:</source>
-        <translation>数据已从以下位置成功导入:</translation>
+        <translation type="vanished">数据已从以下位置成功导入:</translation>
     </message>
     <message>
         <source>Couldn&apos;t find any new Machine Data at the locations given.</source>
-        <translation>指定位置未发现可用数据.</translation>
+        <translation type="vanished">指定位置未发现可用数据.</translation>
     </message>
     <message>
         <source>Import Problem</source>
@@ -1595,7 +1634,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Please wait, importing...</source>
-        <translation>请稍后.正在导入...</translation>
+        <translation type="vanished">请稍后.正在导入...</translation>
     </message>
     <message>
         <source>Are you sure you want to delete oximetry data for %1</source>
@@ -1623,10 +1662,6 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Toggle &amp;Line Cursor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1683,6 +1718,80 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Specify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Navigation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bookmarks</source>
+        <translation type="unfinished">标记簇</translation>
+    </message>
+    <message>
+        <source>Records</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purge ALL CPAP Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F10</source>
+        <translation type="unfinished">F10</translation>
+    </message>
+    <message>
+        <source>Ctrl+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily Sidebar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily Calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F9</source>
+        <translation type="unfinished">F9</translation>
+    </message>
+    <message>
+        <source>Imported %1 CPAP session(s) from
+
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import Success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already up to date with CPAP data at
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up to date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t find any valid Machine Data at
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are about to &lt;font size=+2&gt;obliterate&lt;/font&gt; SleepyHead&apos;s machine database for the following machine:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note as a precaution, the backup folder will be left in place.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you &lt;b&gt;absolutely sure&lt;/b&gt; you want to proceed?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2148,7 +2257,7 @@ Index</source>
     </message>
     <message>
         <source>% in PB</source>
-        <translation>% 周期性呼吸</translation>
+        <translation type="vanished">% 周期性呼吸</translation>
     </message>
     <message>
         <source>Last 6 Months</source>
@@ -2224,7 +2333,7 @@ Ventilation
         <source>Periodic
 Breathing
 (% of night)</source>
-        <translation>周期性
+        <translation type="vanished">周期性
 呼吸
 (% 夜)</translation>
     </message>
@@ -2261,6 +2370,24 @@ Volume
         <translation>呼吸
 容量
 （毫升）</translation>
+    </message>
+    <message>
+        <source>% in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1
+(% of night)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Large Leaks
+(% of night)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2765,7 +2892,7 @@ Would you like to store it first?</source>
     </message>
     <message>
         <source>ID</source>
-        <translation>编号</translation>
+        <translation type="vanished">编号</translation>
     </message>
     <message>
         <source>&amp;Ok</source>
@@ -2801,7 +2928,7 @@ Would you like to store it first?</source>
     </message>
     <message>
         <source>Show</source>
-        <translation>显示</translation>
+        <translation type="vanished">显示</translation>
     </message>
     <message>
         <source>Size</source>
@@ -2851,7 +2978,7 @@ SleepyHead可以从本地硬盘导入备份文件..
     </message>
     <message>
         <source>Event</source>
-        <translation>事件</translation>
+        <translation type="vanished">事件</translation>
     </message>
     <message>
         <source>Event Duration</source>
@@ -3069,7 +3196,7 @@ Would you like do this now?</source>
     </message>
     <message>
         <source>Not entirely sure if this will get to live or not..</source>
-        <translation>不完全确定是否已经成功..</translation>
+        <translation type="vanished">不完全确定是否已经成功..</translation>
     </message>
     <message>
         <source>Discard chunks under</source>
@@ -3103,7 +3230,7 @@ Note: Statistical Model is experimental.</source>
     </message>
     <message>
         <source>Colour</source>
-        <translation>颜色</translation>
+        <translation type="vanished">颜色</translation>
     </message>
     <message>
         <source>Minimum duration of pulse change event.</source>
@@ -3435,7 +3562,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     </message>
     <message>
         <source>&amp;Events</source>
-        <translation>&amp;事件</translation>
+        <translation type="vanished">&amp;事件</translation>
     </message>
     <message>
         <source>Use Anti-Aliasing</source>
@@ -3483,7 +3610,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     </message>
     <message>
         <source>&amp;Defaults</source>
-        <translation>&amp;默认值</translation>
+        <translation type="vanished">&amp;默认值</translation>
     </message>
     <message>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
@@ -3717,7 +3844,7 @@ Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)<
     </message>
     <message>
         <source>Create SD Card Backups during Import (This is fairly important for ResMed and FP ICON)</source>
-        <translation>在导入SD卡数据时自动备份(对瑞思迈和费雪机型尤其重要)</translation>
+        <translation type="vanished">在导入SD卡数据时自动备份(对瑞思迈和费雪机型尤其重要)</translation>
     </message>
     <message>
         <source>User definable threshold considered large leak</source>
@@ -3777,6 +3904,78 @@ Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)<
     </message>
     <message>
         <source>Resync Machine Detected Events (Experimental)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary only data is more accurate for ResMed users if this is left on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t Split Summary Days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create SD Card Backups during Import (Turn this off at your own peril!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C&amp;hannels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset &amp;Defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it&apos;s good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show flags for machine detected events that haven&apos;t been identified yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Unknown Flags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Span Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minor Flags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings Channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">姓名</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished">颜色</translation>
+    </message>
+    <message>
+        <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4813,11 +5012,11 @@ This folder currently resides at the following location:
     </message>
     <message>
         <source>Pr. Min</source>
-        <translation>最小压力</translation>
+        <translation type="vanished">最小压力</translation>
     </message>
     <message>
         <source>Pr. Max</source>
-        <translation>最大压力</translation>
+        <translation type="vanished">最大压力</translation>
     </message>
     <message>
         <source>I:E Ratio</source>
@@ -4869,7 +5068,7 @@ This folder currently resides at the following location:
     </message>
     <message>
         <source>Ramp Pr.</source>
-        <translation>斜坡升压.</translation>
+        <translation type="vanished">斜坡升压.</translation>
     </message>
     <message>
         <source>Language</source>
@@ -5574,7 +5773,7 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>CPAP Session contains summary data onlyf</source>
-        <translation>CPAP会话信息仅含有概要数据</translation>
+        <translation type="vanished">CPAP会话信息仅含有概要数据</translation>
     </message>
     <message>
         <source>Look for this build in &lt;a href=&apos;%1&apos;&gt;SleepyHead&apos;s files hosted on Sourceforge&lt;/a&gt;.</source>
@@ -5726,19 +5925,7 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>%1-%2 %3</source>
-        <translation type="unfinished">%1-%2 %3</translation>
-    </message>
-    <message>
-        <source>PS %3 over %1-%2 %4 </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PS %4-%5 over %1-%3 %6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PS %4-%5 over EPAP %1-%2 Max %3 %6</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">%1-%2 %3</translation>
     </message>
     <message>
         <source>Range</source>
@@ -5750,10 +5937,6 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>Auto Bi-Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ASV AutoEPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5834,10 +6017,6 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>horrible, please consult your doctor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Your had an AHI of %1, which is considered %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6010,6 +6189,415 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>Your EPAP pressure fixed at %1%2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database Outdated
+Please Rebuild CPAP Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sleep</source>
+        <translation type="unfinished">睡</translation>
+    </message>
+    <message>
+        <source>Wake</source>
+        <translation type="unfinished">醒</translation>
+    </message>
+    <message>
+        <source>Series</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation type="unfinished">是的</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto Bi-Level (Variable PS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1%2</source>
+        <translation type="unfinished">%1%2</translation>
+    </message>
+    <message>
+        <source>Fixed %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min %1 Max %2 (%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPAP %1 IPAP %2 (%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PS %1 over %2-%3 (%4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min EPAP %1 Max IPAP %2 PS %3-%4 (%5)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPAP %1 PS %2-%3 (%6)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SmartFlex Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Intellipap pressure relief mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ramp Only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SmartFlex Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Intellipap pressure relief level.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SmartFlex Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>22mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flex Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRS1 pressure relief mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C-Flex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C-Flex+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A-Flex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rise Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bi-Flex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flex Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRS1 pressure relief setting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>x1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>x2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>x3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>x4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>x5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidifier Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRS1 humidifier connected?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidification Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRS1 Humidification level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humid. Lvl.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System One Resistance Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sys1 Resist. Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System One Resistance Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System One Mask Resistance Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sys1 Resist. Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hose Diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diameter of primary CPAP hose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System One Resistance Lock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Whether System One resistance settings are available to you.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sys1 Resist. Lock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A few breaths automatically starts machine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machine automatically switches off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mask Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Whether or not machine allows Mask checking.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show AHI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Whether or not machine shows AHI via LCD panel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timed Breath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machine Initiated Breath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPAP Adapt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ResMed Exhale Pressure Relief</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Patient???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPR Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exhale Pressure Relief Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>0cmH2O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1cmH2O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2cmH2O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3cmH2O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EPR: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weinmann</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SOMNOsoft2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pressure Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pressure Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leak Flag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CPAP Session contains summary data only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PAP Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PAP Device Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV (Fixed EPAP)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV (Variable EPAP)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to reset all your channel colors and settings to defaults?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASV Auto EPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had an AHI of %1, which is considered %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(% of time)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duration %1:%2:%3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AHI %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Peak</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1% %2</source>
+        <translation type="unfinished">%1% %2</translation>
+    </message>
+    <message>
+        <source>Heated Tubing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Heated Tubing Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Headed Tubing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>By Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Statistics at Pressure</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6227,7 +6815,7 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>Pr. Rel.</source>
-        <translation>压力释放.</translation>
+        <translation type="vanished">压力释放.</translation>
     </message>
     <message>
         <source>Max %1</source>
@@ -6383,26 +6971,10 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>Fixed %1 %2</source>
-        <translation type="unfinished">固定%1 %2</translation>
+        <translation type="obsolete">固定%1 %2</translation>
     </message>
     <message>
-        <source>%1 - %2 %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EPAP %1 %3 IPAP %2 %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PS %4 over %1 - %2 %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EPAP %1, PS %2-%3 %4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EPAP %1-%2, PS %3-%4 %5</source>
+        <source>Pressure Relief</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
