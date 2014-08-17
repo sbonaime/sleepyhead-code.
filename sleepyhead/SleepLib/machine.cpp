@@ -17,8 +17,9 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QProgressBar>
 #include "mainwindow.h"
+
+#include "progressdialog.h"
 
 #include <time.h>
 
@@ -392,46 +393,6 @@ const QString Machine::getBackupPath()
 {
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
 }
-
-class ProgressDialog:public QDialog {
-public:
-    explicit ProgressDialog(QWidget * parent);
-    virtual ~ProgressDialog();
-
-    void setMessage(QString msg) { waitmsg->setText(msg); }
-    void setPixmap(QPixmap &pixmap) { imglabel->setPixmap(pixmap); }
-    QProgressBar * progress;
-
-protected:
-    QLabel * waitmsg;
-    QHBoxLayout *hlayout;
-    QLabel * imglabel;
-    QVBoxLayout * vlayout;
-
-};
-ProgressDialog::ProgressDialog(QWidget * parent):
-    QDialog(parent, Qt::SplashScreen)
-{
-    waitmsg = new QLabel(QObject::tr("PLease Wait..."));
-    hlayout = new QHBoxLayout;
-
-    imglabel = new QLabel(this);
-
-    vlayout = new QVBoxLayout;
-    progress = new QProgressBar(this);
-    this->setLayout(vlayout);
-    vlayout->addLayout(hlayout);
-    hlayout->addWidget(imglabel);
-    hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
-    vlayout->addWidget(progress,1);
-    progress->setMaximum(100);
-
-
-}
-ProgressDialog::~ProgressDialog()
-{
-}
-
 
 bool Machine::Load()
 {

@@ -54,6 +54,7 @@
 #include "Graphs/glcommon.h"
 #include "UpdaterWindow.h"
 #include "SleepLib/calcs.h"
+#include "SleepLib/progressdialog.h"
 #include "version.h"
 
 #include "reports.h"
