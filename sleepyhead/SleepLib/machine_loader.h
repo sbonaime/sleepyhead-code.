@@ -19,7 +19,7 @@
 #include "zlib.h"
 
 class MachineLoader;
-enum DeviceStatus { NEUTRAL, IMPORTING, LIVE };
+enum DeviceStatus { NEUTRAL, IMPORTING, LIVE, DETECTING };
 
 
 

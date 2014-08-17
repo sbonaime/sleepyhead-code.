@@ -182,7 +182,8 @@ SOURCES += \
     Graphs/gdailysummary.cpp \
     Graphs/MinutesAtPressure.cpp \
     SleepLib/journal.cpp \
-    SleepLib/progressdialog.cpp
+    SleepLib/progressdialog.cpp \
+    SleepLib/loader_plugins/cms50f37_loader.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -242,7 +243,8 @@ HEADERS  += \
     Graphs/gdailysummary.h \
     Graphs/MinutesAtPressure.h \
     SleepLib/journal.h \
-    SleepLib/progressdialog.h
+    SleepLib/progressdialog.h \
+    SleepLib/loader_plugins/cms50f37_loader.h
 
 FORMS += \
     daily.ui \

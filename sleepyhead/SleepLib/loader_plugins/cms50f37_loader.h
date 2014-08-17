@@ -6,37 +6,37 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#ifndef CMS50LOADER_H
-#define CMS50LOADER_H
+#ifndef CMS50F37LOADER_H
+#define CMS50F37LOADER_H
 
 #include "SleepLib/serialoximeter.h"
 
-const QString cms50_class_name = "CMS50";
-const int cms50_data_version = 4;
+const QString cms50f37_class_name = "CMS50F37";
+const int cms50f37_data_version = 0;
 
 
-/*! \class CMS50Loader
-    \brief Importer for CMS50 Oximeter
+/*! \class CMS5037Loader
+    \brief Bulk Importer for newer CMS50 oximeters
     */
-class CMS50Loader : public SerialOximeter
+class CMS50F37Loader : public SerialOximeter
 {
 Q_OBJECT
   public:
 
 
-    CMS50Loader();
-    virtual ~CMS50Loader();
+    CMS50F37Loader();
+    virtual ~CMS50F37Loader();
 
     virtual bool Detect(const QString &path);
     virtual int Open(QString path);
 
     static void Register();
 
-    virtual int Version() { return cms50_data_version; }
-    virtual const QString &loaderName() { return cms50_class_name; }
+    virtual int Version() { return cms50f37_data_version; }
+    virtual const QString &loaderName() { return cms50f37_class_name; }
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_OXIMETER, 0, cms50_class_name, QObject::tr("Contec"), QObject::tr("CMS50"), QString(), QString(), QObject::tr("CMS50"), QDateTime::currentDateTime(), cms50_data_version);
+        return MachineInfo(MT_OXIMETER, 0, cms50f37_class_name, QObject::tr("Contec"), QObject::tr("CMS50F3.7"), QString(), QString(), QObject::tr("CMS50F"), QDateTime::currentDateTime(), cms50f37_data_version);
     }
 
 
@@ -52,6 +52,9 @@ protected slots:
     virtual void startImportTimeout();
     virtual void shutdownPorts();
 
+    void nextCommand();
+
+
 protected:
 
     bool readSpoRFile(QString path);
@@ -62,13 +65,20 @@ protected:
 
     virtual void killTimers();
 
-    // Switch CMS50D+ device to live streaming mode
+    void sendCommand(unsigned char c);
+    QList<unsigned char> cmdQue;
+
+
+    // Switch device to live streaming mode
     virtual void resetDevice();
 
-    // Switch CMS50D+ device to record transmission mode
+    // Switch device to record transmission mode
     void requestData();
 
+
   private:
+    int sequence;
+
     EventList *PULSE;
     EventList *SPO2;
 
@@ -92,4 +102,4 @@ protected:
 };
 
 
-#endif // CMS50LOADER_H
+#endif // CMS50F37LOADER_H

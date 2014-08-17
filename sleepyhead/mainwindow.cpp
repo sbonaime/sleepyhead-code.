@@ -684,7 +684,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
 
     popup->hide();
     vlayout->removeWidget(qprogress);
-    ui->statusbar->insertWidget(2,qprogress,1);
+    ui->statusbar->insertWidget(1,qprogress,1);
     qprogress->setVisible(false);
 
     delete popup;

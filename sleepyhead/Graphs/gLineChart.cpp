@@ -203,7 +203,9 @@ skipcheck:
             addDotLine(DottedLine(code, Calc_Perc,chan.calc[Calc_Perc].enabled));
             addDotLine(DottedLine(code, Calc_Middle, chan.calc[Calc_Middle].enabled));
         }
-        addDotLine(DottedLine(code, Calc_Min, chan.calc[Calc_Min].enabled));
+        if ((code != CPAP_Snore) && (code != CPAP_FlowLimit) && (code != CPAP_RDI) && (code != CPAP_AHI)) {
+            addDotLine(DottedLine(code, Calc_Min, chan.calc[Calc_Min].enabled));
+        }
     }
     if (m_codes[0] == CPAP_Leak) {
         addDotLine(DottedLine(CPAP_Leak, Calc_UpperThresh, schema::channel[CPAP_Leak].calc[Calc_UpperThresh].enabled));
@@ -592,7 +594,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 dot.visible = true;
                 QColor color = chan.calc[dot.type].color;
                 color.setAlpha(200);
-                painter.setPen(QPen(QBrush(color),1.5,Qt::DotLine));
+                painter.setPen(QPen(QBrush(color), p_profile->appearance->lineThickness(), Qt::DotLine));
                 EventDataType y=top + height + 1 - ((dot.value - miny) * ymult);
                 painter.drawLine(left + 1, y, left + 1 + width, y);
 

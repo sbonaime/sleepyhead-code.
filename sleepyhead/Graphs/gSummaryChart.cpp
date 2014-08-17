@@ -466,6 +466,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     qint64 xx = maxx - minx;
 
 
+
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;
 
