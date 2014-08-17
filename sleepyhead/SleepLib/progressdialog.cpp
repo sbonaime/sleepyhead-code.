@@ -24,11 +24,15 @@ ProgressDialog::ProgressDialog(QWidget * parent):
     hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
     vlayout->addWidget(progress,1);
     progress->setMaximum(100);
-
-
 }
 
 ProgressDialog::~ProgressDialog()
 {
+}
+
+void ProgressDialog::doUpdateProgress(int cnt, int total)
+{
+    progress->setMaximum(total);
+    progress->setValue(cnt);
 }
 

@@ -60,6 +60,9 @@ protected:
     bool newsession;
 };
 
+void BackupJournal(QString filename);
+
+
 class DayController
 {
     DayController();

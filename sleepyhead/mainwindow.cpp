@@ -62,7 +62,6 @@
 
 QProgressBar *qprogress;
 QLabel *qstatus;
-QLabel *qstatus2;
 QStatusBar *qstatusbar;
 
 extern Profile *profile;
@@ -198,19 +197,11 @@ MainWindow::MainWindow(QWidget *parent) :
     qstatusbar = ui->statusbar;
     qprogress = new QProgressBar(this);
     qprogress->setMaximum(100);
-    qstatus2 = new QLabel(tr("Welcome"), this);
-    qstatus2->setFrameStyle(QFrame::Raised);
-    qstatus2->setFrameShadow(QFrame::Sunken);
-    qstatus2->setFrameShape(QFrame::Box);
-    //qstatus2->setMinimumWidth(100);
-    qstatus2->setMaximumWidth(100);
-    qstatus2->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     qstatus = new QLabel("", this);
     qprogress->hide();
     ui->statusbar->setMinimumWidth(200);
     ui->statusbar->addPermanentWidget(qstatus, 0);
     ui->statusbar->addPermanentWidget(qprogress, 1);
-    ui->statusbar->addPermanentWidget(qstatus2, 0);
 
     ui->actionDebug->setChecked(p_profile->general->showDebug());
 
@@ -1257,7 +1248,6 @@ void MainWindow::on_dailyButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(daily);
     daily->RedrawGraphs();
-    qstatus2->setText(STR_TR_Daily);
 }
 void MainWindow::JumpDaily()
 {
@@ -1267,7 +1257,6 @@ void MainWindow::JumpDaily()
 void MainWindow::on_overviewButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(overview);
-    qstatus2->setText(STR_TR_Overview);
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)
@@ -2232,17 +2221,7 @@ void MainWindow::LinkHovered(const QString &link, const QString &title, const QS
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     Q_UNUSED(index);
-    QWidget *widget = ui->tabWidget->currentWidget();
-
-    if ((widget == ui->statisticsTab) || (widget == ui->helpTab)) {
-        qstatus2->setVisible(false);
-    } else if (widget == daily) {
-        qstatus2->setVisible(true);
-        daily->graphView()->updateSelectionTime();
-    } else if (widget == overview) {
-        qstatus2->setVisible(true);
-        overview->graphView()->updateSelectionTime();
-    }
+   // QWidget *widget = ui->tabWidget->currentWidget();
 }
 
 
@@ -2654,6 +2633,8 @@ void MainWindow::on_actionDaily_Calendar_toggled(bool visible)
     getDaily()->setCalendarVisible(visible);
 }
 
+#include "SleepLib/journal.h"
+
 void MainWindow::on_actionExport_Journal_triggered()
 {
     QString folder;
@@ -2666,4 +2647,5 @@ void MainWindow::on_actionExport_Journal_triggered()
 
     QString filename = QFileDialog::getSaveFileName(this, tr("Choose where to save journal"), folder, tr("XML Files (*.xml)"));
 
+    BackupJournal(filename);
 }

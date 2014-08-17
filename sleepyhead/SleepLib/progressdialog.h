@@ -23,6 +23,8 @@ public:
     void setMessage(QString msg) { waitmsg->setText(msg); }
     void setPixmap(QPixmap &pixmap) { imglabel->setPixmap(pixmap); }
     QProgressBar * progress;
+public slots:
+    void doUpdateProgress(int cnt, int total);
 
 protected:
     QLabel * waitmsg;

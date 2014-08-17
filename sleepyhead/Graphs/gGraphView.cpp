@@ -34,7 +34,6 @@
 #include "SleepLib/profiles.h"
 
 extern MainWindow *mainwin;
-extern QLabel *qstatus2;
 
 #include <QApplication>
 
@@ -882,31 +881,6 @@ void gGraphView::scrollbarValueChanged(int val)
     }
 }
 
-void gGraphView::updateSelectionTime()
-{
-    qint64 xx = m_maxx - m_minx;
-    double d = xx / 86400000L;
-    int h = xx / 3600000L;
-    int m = (xx / 60000) % 60;
-    int s = (xx / 1000) % 60;
-    int ms(xx % 1000);
-    QString str;
-
-    if (d > 1) {
-        /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
-        QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
-        d=p_profile->countDays(MT_CPAP,d1,d2); */
-
-        str.sprintf("%1.0f days", ceil(d));
-    } else {
-        str.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
-    }
-
-    if (qstatus2) {
-        qstatus2->setText(str);
-    }
-
-}
 void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
 {
     //qint64 m1=0,m2=0;
@@ -954,28 +928,6 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     m_minx = g->min_x;
     m_maxx = g->max_x;
 
-    qint64 xx = g->max_x - g->min_x;
-    double d = xx / 86400000L;
-    int h = xx / 3600000L;
-    int m = (xx / 60000) % 60;
-    int s = (xx / 1000) % 60;
-    int ms(xx % 1000);
-    QString str;
-
-    if (d > 1) {
-        /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
-        QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
-        d=p_profile->countDays(MT_CPAP,d1,d2); */
-
-        str.sprintf("%1.0f days", ceil(d));
-    } else {
-        str.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
-    }
-
-    if (qstatus2) {
-        qstatus2->setText(str);
-    }
-
     updateScale();
 }
 
@@ -995,24 +947,6 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
 
     m_minx = minx;
     m_maxx = maxx;
-
-    qint64 xx = maxx - minx;
-    double d = xx / 86400000L;
-    int h = xx / 3600000L;
-    int m = (xx / 60000) % 60;
-    int s = (xx / 1000) % 60;
-    int ms(xx % 1000);
-    QString str = "";
-
-    if (d > 1) {
-        str.sprintf("%1.0f days", ceil(xx / 86400000.0));
-    } else {
-        str.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);
-    }
-
-    if (qstatus2) {
-        qstatus2->setText(str);
-    }
 
     if (refresh) { redraw(); }
 }

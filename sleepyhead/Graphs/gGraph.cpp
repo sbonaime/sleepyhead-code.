@@ -18,7 +18,6 @@
 #include "Graphs/layer.h"
 #include "SleepLib/profiles.h"
 
-extern QLabel *qstatus2;
 extern MainWindow *mainwin;
 
 // Graph globals.
@@ -756,10 +755,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
             ToolTipAlignment align = x >= x2 ? TT_AlignLeft : TT_AlignRight;
             int offset = (x >= x2) ? 20 : - 20;
             ToolTip(m_selDurString, m_rect.left() + x + offset, m_rect.top() + y + 20, align);
-
-            if (qstatus2) {
-                qstatus2->setText(m_selDurString);
-            }
 
             doredraw = true;
         } else if (event->buttons() & Qt::RightButton) {    // Right Mouse button dragging

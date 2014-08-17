@@ -342,9 +342,6 @@ class gGraphView
     gToolTip *m_tooltip;
     QTimer *timer;
 
-    //! \brief Updates the current selection time in the statusbar area
-    void updateSelectionTime();
-
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
     void AddTextQue(const QString &text, QRectF rect, quint32 flags, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);

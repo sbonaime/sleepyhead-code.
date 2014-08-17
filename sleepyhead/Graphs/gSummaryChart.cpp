@@ -12,7 +12,6 @@
 #include "gYAxis.h"
 #include "gSummaryChart.h"
 
-extern QLabel *qstatus2;
 SummaryChart::SummaryChart(QString label, GraphType type)
     : Layer(NoChannel), m_label(label), m_graphtype(type)
 {
