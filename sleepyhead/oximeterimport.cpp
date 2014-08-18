@@ -22,6 +22,7 @@
 extern MainWindow * mainwin;
 
 #include "SleepLib/loader_plugins/cms50_loader.h"
+#include "SleepLib/loader_plugins/cms50f37_loader.h"
 
 Qt::DayOfWeek firstDayOfWeekFromLocale();
 QList<SerialOximeter *> GetOxiLoaders();
@@ -155,7 +156,15 @@ SerialOximeter * OximeterImport::detectOximeter()
 
     ui->retryButton->setVisible(false);
 
-    QList<SerialOximeter *> loaders = GetOxiLoaders();
+    QList<SerialOximeter *> loaders; //= GetOxiLoaders();
+
+    if (p_profile->oxi->oximeterType() == "Contec CMS50D+/E/F") {
+        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50_class_name));
+        loaders.push_back(oxi);
+    } else if (p_profile->oxi->oximeterType() == "Contec CMS50F v3.7+") {
+        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50f37_class_name));
+        loaders.push_back(oxi);
+    } else return nullptr;
 
 
     updateStatus(tr("Scanning for compatible oximeters"));

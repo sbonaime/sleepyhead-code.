@@ -45,6 +45,16 @@ MachineLoader * lookupLoader(Machine * m)
     return nullptr;
 }
 
+MachineLoader * lookupLoader(QString loaderName)
+{
+    for (int i=0; i < m_loaders.size(); ++i) {
+        MachineLoader * loader = m_loaders.at(i);
+        if (loader->loaderName() == loaderName)
+            return loader;
+    }
+    return nullptr;
+}
+
 QHash<QString, QHash<QString, Machine *> > MachineList;
 
 

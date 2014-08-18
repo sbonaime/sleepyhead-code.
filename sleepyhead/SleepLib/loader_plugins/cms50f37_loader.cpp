@@ -35,9 +35,6 @@ using namespace std;
 
 extern QProgressBar *qprogress;
 
-static unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa3, 0xab, 0xa4, 0xa5, 0xaf, 0xa7, 0xa2, 0xa6 };
-int cms50_seqlength = sizeof(cms50_sequence);
-
 CMS50F37Loader::CMS50F37Loader()
 {
     m_type = MT_OXIMETER;
@@ -116,9 +113,22 @@ int CMS50F37Loader::Open(QString path)
     return 0;
 }
 
+static unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa3, 0xab, 0xa4, 0xa5, 0xaf, 0xa7, 0xa2, 0xa6 };
+int cms50_seqlength = sizeof(cms50_sequence);
+
 
 void CMS50F37Loader::processBytes(QByteArray bytes)
 {
+    if (sequence < cms50_seqlength) {
+        unsigned char cmd = cms50_sequence[sequence];
+
+        if (cmd == 0xa5) { // DateTime
+//            > 7d 81 a5 80 80 80 80 80 80
+//            < 07 80 80 80 94 8e 88 92
+//            < 12 80 80 80 80 a3 bb 80
+
+        }
+    }
 
     QStringList data;
 

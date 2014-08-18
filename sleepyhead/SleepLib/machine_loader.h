@@ -148,6 +148,8 @@ struct ImportPath
 // Put in machine loader class as static??
 void RegisterLoader(MachineLoader *loader);
 MachineLoader * lookupLoader(Machine * m);
+MachineLoader * lookupLoader(QString loaderName);
+
 void DestroyLoaders();
 
 bool compressFile(QString inpath, QString outpath = "");
