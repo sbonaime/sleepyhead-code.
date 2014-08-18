@@ -58,6 +58,35 @@ CMS50F37Loader::~CMS50F37Loader()
 {
 }
 
+bool CMS50F37Loader::openDevice()
+{
+    if (port.isEmpty()) {
+        if (!scanDevice("",m_vendorID, m_productID))
+            return false;
+    }
+    serial.setPortName(port);
+    if (!serial.open(QSerialPort::ReadWrite))
+        return false;
+
+    // forward this stuff
+
+    // Set up serial port attributes
+    serial.setBaudRate(QSerialPort::Baud115200);
+    serial.setParity(QSerialPort::OddParity);
+    serial.setStopBits(QSerialPort::OneStop);
+    serial.setDataBits(QSerialPort::Data8);
+    serial.setFlowControl(QSerialPort::NoFlowControl);
+
+    m_streaming = true;
+    m_abort = false;
+    m_importing = false;
+
+    // connect relevant signals
+    connect(&serial,SIGNAL(readyRead()), this, SLOT(dataAvailable()));
+
+    return true;
+}
+
 bool CMS50F37Loader::Detect(const QString &path)
 {
     if (p_profile->oxi->oximeterType() == QString("Contec CMS50F v3.7+")) {

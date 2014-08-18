@@ -29,6 +29,8 @@ Q_OBJECT
 
     virtual bool Detect(const QString &path);
     virtual int Open(QString path);
+    virtual bool openDevice();
+
 
     static void Register();
 
