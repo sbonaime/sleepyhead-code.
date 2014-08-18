@@ -21,12 +21,12 @@ struct OxiRecord
 {
     quint8 pulse;
     quint8 spo2;
-    quint16 pl_inf;
+    quint16 perf;
 
-    OxiRecord():pulse(0), spo2(0),pl_inf(0) {}
+    OxiRecord():pulse(0), spo2(0),perf(0) {}
     OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}
-    OxiRecord(quint8 p, quint8 s, quint16 pi): pulse(p), spo2(s), pl_inf(pi) {}
-    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2 = copy.spo2; pl_inf = copy.pl_inf; }
+    OxiRecord(quint8 p, quint8 s, quint16 pi): pulse(p), spo2(s), perf(pi) {} // with perfusion index
+    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2 = copy.spo2; perf = copy.perf; }
 };
 
 class SerialOximeter : public MachineLoader
@@ -36,6 +36,7 @@ public:
     SerialOximeter() : MachineLoader() {
         m_importing = m_streaming = false;
         m_productID = m_vendorID = 0;
+        have_perfindex = false;
     }
     virtual ~SerialOximeter() {}
 
@@ -58,6 +59,7 @@ public:
     inline bool isStreaming() { return m_streaming; }
     inline bool isImporting() { return m_importing; }
 
+    bool havePerfIndex() { return have_perfindex; }
 
     virtual void process() {}
 
@@ -113,6 +115,7 @@ protected:
 
     bool m_streaming;
     bool m_importing;
+    bool have_perfindex;
 
 };
 

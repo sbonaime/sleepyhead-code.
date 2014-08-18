@@ -157,7 +157,7 @@ extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, 
 
 extern ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 
-extern ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
+extern ChannelID OXI_Pulse, OXI_SPO2, OXI_Perf, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
 
 extern ChannelID Journal_Notes, Journal_Weight, Journal_BMI, Journal_ZombieMeter, Bookmark_Start,
        Bookmark_End, Bookmark_Notes, LastUpdated;

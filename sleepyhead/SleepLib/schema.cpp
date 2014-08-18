@@ -258,6 +258,7 @@ void init()
                         QObject::tr("Pulse Rate"),                    QObject::tr("Heart rate in beats per minute"),
                         QObject::tr("Pulse Rate"), STR_UNIT_BPM,     DEFAULT,    QColor("red")));
 
+
     schema::channel.add(GRP_OXI, new Channel(OXI_SPO2            = 0x1801, WAVEFORM,    SESSION, "SPO2",
                         QObject::tr("SpO2 %"),                        QObject::tr("Blood-oxygen saturation percentage"),
                         QObject::tr("SpO2"),       STR_UNIT_Percentage,          DEFAULT,    QColor("blue")));
@@ -266,6 +267,10 @@ void init()
                         QObject::tr("Plethysomogram"),
                         QObject::tr("An optical Photo-plethysomogram showing heart rhythm"),
                         QObject::tr("Plethy"),     STR_UNIT_Hz,           DEFAULT,    QColor("#404040")));
+
+    schema::channel.add(GRP_OXI, new Channel(OXI_Perf             = 0x1805, WAVEFORM,    SESSION, "Perf. Index",
+                        QObject::tr("Perfusion Index"),                    QObject::tr(""),
+                        QObject::tr("Perfusion Index"), STR_UNIT_Unknown,     DEFAULT,    QColor("aqua")));
 
     schema::channel.add(GRP_OXI, new Channel(OXI_PulseChange     = 0x1803, FLAG,    SESSION,
                         "PulseChange",      QObject::tr("Pulse Change"),

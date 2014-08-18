@@ -34,7 +34,7 @@ ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F
           PRS1_SysOneResistStat,
           PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
 
-ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
+ChannelID OXI_Pulse, OXI_SPO2, OXI_Perf, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
 
 ChannelID Journal_Notes, Journal_Weight, Journal_BMI, Journal_ZombieMeter, LastUpdated,
         Bookmark_Start, Bookmark_End, Bookmark_Notes;

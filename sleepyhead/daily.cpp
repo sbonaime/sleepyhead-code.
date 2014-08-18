@@ -172,7 +172,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     int cpapsize = sizeof(cpapcodes) / sizeof(ChannelID);
 
     ChannelID oxicodes[] = {
-        OXI_Pulse, OXI_SPO2, OXI_Plethy
+        OXI_Pulse, OXI_SPO2, OXI_Perf, OXI_Plethy
     };
     int oxisize = sizeof(oxicodes) / sizeof(ChannelID);
 
@@ -406,6 +406,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(new gLineChart(OXI_Pulse, square)));
     graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(new gLineChart(OXI_SPO2, true)));
+    graphlist[schema::channel[OXI_Perf].code()]->AddLayer(AddOXI(new gLineChart(OXI_Perf, false)));
     graphlist[schema::channel[OXI_Plethy].code()]->AddLayer(AddOXI(new gLineChart(OXI_Plethy, false)));
 
 

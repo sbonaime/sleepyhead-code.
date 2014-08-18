@@ -724,11 +724,16 @@ void OximeterImport::on_saveButton_clicked()
     }
     EventList * ELpulse = nullptr;
     EventList * ELspo2 = nullptr;
+    EventList * ELperf = nullptr;
 
     quint16 lastpulse = 0;
     quint16 lastspo2 = 0;
+    quint16 lastperf = 0;
     quint16 lastgoodpulse = 0;
     quint16 lastgoodspo2 = 0;
+    quint16 lastgoodperf = 0;
+
+    bool haveperf = oximodule->havePerfIndex();
 
     quint64 ti = start;
 
@@ -782,6 +787,28 @@ void OximeterImport::on_saveButton_clicked()
         }
         lastspo2 = rec->spo2;
 
+        // Perfusion Index
+        if (rec->perf > 0) {
+            if (lastperf == 0) {
+                ELperf = session->AddEventList(OXI_Perf, EVL_Event);
+            }
+            if (lastperf != rec->perf) {
+                if (lastperf > 0) {
+                    ELperf->AddEvent(ti, lastperf);
+                }
+                ELperf->AddEvent(ti, rec->perf);
+            }
+            lastgoodperf = rec->perf;
+        } else {
+            // end section properly
+            if (lastgoodperf > 0) {
+                ELperf->AddEvent(ti, lastperf);
+                session->setLast(OXI_Perf, ti);
+                lastgoodperf = 0;
+            }
+        }
+        lastperf = rec->perf;
+
         ti += step;
     }
     ti -= step;
@@ -795,14 +822,21 @@ void OximeterImport::on_saveButton_clicked()
         session->setLast(OXI_SPO2, ti);
     }
 
+    if (lastperf > 0) {
+        ELperf->AddEvent(ti, lastperf);
+        session->setLast(OXI_Perf, ti);
+    }
+
 
     calcSPO2Drop(session);
     calcPulseChange(session);
 
     session->first(OXI_Pulse);
     session->first(OXI_SPO2);
+    session->first(OXI_Perf);
     session->last(OXI_Pulse);
     session->last(OXI_SPO2);
+    session->last(OXI_Perf);
 
     session->first(OXI_PulseChange);
     session->first(OXI_SPO2Drop);
@@ -817,12 +851,15 @@ void OximeterImport::on_saveButton_clicked()
 
     session->count(OXI_Pulse);
     session->count(OXI_SPO2);
+    session->count(OXI_Perf);
     session->count(OXI_PulseChange);
     session->count(OXI_SPO2Drop);
     session->Min(OXI_Pulse);
-    session->Max(OXI_Pulse);
     session->Min(OXI_SPO2);
+    session->Min(OXI_Perf);
+    session->Max(OXI_Pulse);
     session->Max(OXI_SPO2);
+    session->Max(OXI_Perf);
 
     session->really_set_last(ti);
     session->SetChanged(true);
