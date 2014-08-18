@@ -72,7 +72,7 @@ bool CMS50F37Loader::openDevice()
 
     // Set up serial port attributes
     serial.setBaudRate(QSerialPort::Baud115200);
-    serial.setParity(QSerialPort::OddParity);
+    serial.setParity(QSerialPort::NoParity);
     serial.setStopBits(QSerialPort::OneStop);
     serial.setDataBits(QSerialPort::Data8);
     serial.setFlowControl(QSerialPort::NoFlowControl);
