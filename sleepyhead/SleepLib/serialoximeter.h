@@ -21,11 +21,13 @@ struct OxiRecord
 {
     quint8 pulse;
     quint8 spo2;
-    OxiRecord():pulse(0), spo2(0) {}
-    OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}
-    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2= copy.spo2; }
-};
+    quint16 pl_inf;
 
+    OxiRecord():pulse(0), spo2(0),pl_inf(0) {}
+    OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}
+    OxiRecord(quint8 p, quint8 s, quint16 pi): pulse(p), spo2(s), pl_inf(pi) {}
+    OxiRecord(const OxiRecord & copy) { pulse = copy.pulse; spo2 = copy.spo2; pl_inf = copy.pl_inf; }
+};
 
 class SerialOximeter : public MachineLoader
 {

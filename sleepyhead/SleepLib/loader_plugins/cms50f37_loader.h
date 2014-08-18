@@ -62,14 +62,11 @@ protected:
     bool readSpoRFile(QString path);
     virtual void processBytes(QByteArray bytes);
 
-    int doImportMode();
-    int doLiveMode();
+//    int doLiveMode();
 
     virtual void killTimers();
 
     void sendCommand(unsigned char c);
-    QList<unsigned char> cmdQue;
-
 
     // Switch device to live streaming mode
     virtual void resetDevice();
@@ -100,6 +97,8 @@ protected:
     int m_itemCnt;
     int m_itemTotal;
 
+    QDate imp_date;
+    QTime imp_time;
 
 };
 

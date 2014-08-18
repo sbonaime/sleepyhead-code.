@@ -123,9 +123,11 @@ int CMS50F37Loader::Open(QString path)
     // Cheating using path for two serial oximetry modes
 
     if (path.compare("import") == 0) {
-        //serial.clear();
+        serial.clear();
 
         sequence = 0;
+        buffer.clear();
+
         nextCommand();
         setStatus(IMPORTING);
 
@@ -142,79 +144,169 @@ int CMS50F37Loader::Open(QString path)
     return 0;
 }
 
-static unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa3, 0xab, 0xa4, 0xa5, 0xaf, 0xa7, 0xa2, 0xa6 };
+unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa3, 0xab, 0xa4, 0xa5, 0xaf, 0xa7, 0xa2, 0xa6 };
+
+
 int cms50_seqlength = sizeof(cms50_sequence);
 
 
 void CMS50F37Loader::processBytes(QByteArray bytes)
 {
-    if (sequence < cms50_seqlength) {
-        unsigned char cmd = cms50_sequence[sequence];
+    int data;
 
-        if (cmd == 0xa5) { // DateTime
-//            > 7d 81 a5 80 80 80 80 80 80
-//            < 07 80 80 80 94 8e 88 92
-//            < 12 80 80 80 80 a3 bb 80
+    QString tmpstr;
 
-        }
-    }
+    int lengths[32] = { 0, 0, 0, 0, 0, 9, 4, 8, 8, 6, 4, 0, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    QStringList data;
+    buffer.append(bytes);
+    int size = buffer.size();
 
-    int len = bytes.size();
-    for (int i=0; i < len; ++i) {
-        data.append(QString::number((unsigned char)bytes.at(i),16));
-    }
-
-    if (++sequence < cms50_seqlength) {
-        qDebug() << "Read:" << data.join(",");
-        nextCommand();
-    } else {
-        qDebug() << "Read:" << data.join(",");
-    }
-
-    m_status = IMPORTING;
-}
-
-int CMS50F37Loader::doImportMode()
-{
-    int available = buffer.size();
-  //  Q_ASSERT(!finished_import);
-    int hour,minute;
     int idx = 0;
-    while (idx < available) {
-        unsigned char c=(unsigned char)buffer.at(idx);
-    }
-    return idx;
-}
+    int len;
 
-int CMS50F37Loader::doLiveMode()
-{
-    Q_ASSERT(oxirec != nullptr);
+    do {
+        unsigned char res = bytes.at(idx);
 
-    int available = buffer.size();
-    int idx = 0;
+        len = lengths[res & 0x1f];
 
-    QByteArray plethy;
-    while (idx < available-5) {
-        if (((unsigned char)buffer.at(idx) & 0x80) != 0x80) {
+        if (len < size)
+            break;
+
+        if (len == 0) {
+            // lost sync
             idx++;
             continue;
         }
-        int pwave=(unsigned char)buffer.at(idx + 1);
-        int pbeat=(unsigned char)buffer.at(idx + 2);
-        int pulse=((unsigned char)buffer.at(idx + 3) & 0x7f) | ((pbeat & 0x40) << 1);
-        int spo2=(unsigned char)buffer.at(idx + 4) & 0x7f;
+        for (int i = 1; i < len; i++) {
+            buffer[idx+i] = buffer[idx+i] ^ 0x80;
+        }
 
-        oxirec->append(OxiRecord(pulse, spo2));
-        plethy.append(pwave);
+        switch(res) {
+        case 0x05: // 5,80,80,f5,f3,e5,f2,80,80
+            break;
+        case 0x6: // 6,80,80,87
+            data = buffer.at(idx+3) ^ 0x80;
+            break;
+        case 0x07: // 7,80,80,80,94,8e,88,92
+            tmpstr = QString().sprintf("%02i%02i%02i%02i",buffer.at(idx+5), buffer.at(idx+4), buffer.at(idx+6), buffer.at(idx+7));
+            imp_date = QDate::fromString(tmpstr, "yyyyMMdd");
+            break;
+        case 0x08: // 8,80,80,80,a4,81,80,80
+            break;
+        case 0x0a: // a,80,80,81
+            data = buffer.at(idx+3);
+            break;
+        case 0xc: // a7 & a2  // responds with: c,80
+            data = buffer.at(idx+1);
+            break;
+        case 0x0e: // e,80,81
+            break;
+        case 0x10: // 10,80,81
+            data = buffer.at(idx+2);
+            break;
+        case 0x11: // 11,80,81,81,80,80,80,80,80
+            break;
+        case 0x12: // 12,80,80,80,82,a6,92,80
+            tmpstr = QString().sprintf("%02i:%02i:%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6));
+            imp_time = QTime::fromString(tmpstr, "HHmmss");
+            break;
+        case 0x13: // 13,80,a0,a0,a0,a0,a0,a0,a0
+            break;
+        case 0x14: //14,80,80,80,80,80,80,80,80
+            break;
 
-        idx += 5;
+        case 0x09: // cms50i data sequence
+        case 0x0f: // f,80,de,c2,de,c2,de,c2  cms50F data...
+            if (!started_import) {
+                started_import = true;
+                started_reading = true;
+                finished_import = false;
+
+                m_importing = true;
+
+                m_itemCnt=0;
+                m_itemTotal=5000;
+
+                m_startTime = QDateTime(imp_date, imp_time);
+                oxirec = new QVector<OxiRecord>;
+                oxirec->reserve(30000);
+                cb_reset = 1;
+
+                resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
+            }
+
+            break;
+        default:
+            qDebug() << "unknown cms50 result?" << hex << (int)res;
+            break;
+        }
+
+        if (res == 0x09) {
+            int pi = buffer.at(idx + 4) | buffer.at(idx + 5) << 7;
+            oxirec->append(OxiRecord(buffer.at(idx+3), buffer.at(idx+2), pi));
+            // 9,80,e1,c4,ce,82  // cms50i data
+        } else if (res == 0x0f) {
+            oxirec->append(OxiRecord(buffer.at(idx+3), buffer.at(idx+2)));
+            oxirec->append(OxiRecord(buffer.at(idx+5), buffer.at(idx+4)));
+            oxirec->append(OxiRecord(buffer.at(idx+7), buffer.at(idx+6)));
+            // f,80,de,c2,de,c2,de,c2  cms50F data...
+        }
+
+        QStringList str;
+        for (int i=0; i < len; ++i) {
+            str.append(QString::number((unsigned char)bytes.at(idx + i),16));
+        }
+
+        if (!started_import) {
+            if (++sequence < cms50_seqlength) {
+                qDebug() << "Read:" << str.join(",");
+                // Send the next command packet in sequence
+                nextCommand();
+            }
+        } else {
+            qDebug() << "Import:" << str.join(",");
+        }
+
+        idx += len;
+    } while (idx < size);
+
+    if (!started_import) {
+        imp_callbacks = 0;
+    } else {
+        imp_callbacks++;
     }
-    emit updatePlethy(plethy);
 
-    return idx;
+    buffer = buffer.mid(idx);
 }
+
+
+//int CMS50F37Loader::doLiveMode()
+//{
+//    Q_ASSERT(oxirec != nullptr);
+
+//    int available = buffer.size();
+//    int idx = 0;
+
+//    QByteArray plethy;
+//    while (idx < available-5) {
+//        if (((unsigned char)buffer.at(idx) & 0x80) != 0x80) {
+//            idx++;
+//            continue;
+//        }
+//        int pwave=(unsigned char)buffer.at(idx + 1);
+//        int pbeat=(unsigned char)buffer.at(idx + 2);
+//        int pulse=((unsigned char)buffer.at(idx + 3) & 0x7f) | ((pbeat & 0x40) << 1);
+//        int spo2=(unsigned char)buffer.at(idx + 4) & 0x7f;
+
+//        oxirec->append(OxiRecord(pulse, spo2));
+//        plethy.append(pwave);
+
+//        idx += 5;
+//    }
+//    emit updatePlethy(plethy);
+
+//    return idx;
+//}
 
 
 void CMS50F37Loader::sendCommand(unsigned char c)
@@ -248,6 +340,7 @@ void CMS50F37Loader::requestData() // Switch CMS50D+ device to record transmissi
 
 void CMS50F37Loader::killTimers()
 {
+    if (resetTimer.isActive()) resetTimer.stop();
 }
 
 void CMS50F37Loader::startImportTimeout()
@@ -273,21 +366,14 @@ void CMS50F37Loader::resetImportTimeout()
         if (!finished_import && (started_import && started_reading)) {
             qDebug() << "Switching CMS50 back to live mode and finalizing import";
             // Turn back on live streaming so the end of capture can be dealt with
+
             resetTimer.stop();
 
-            resetDevice(); // Send Reset to CMS50D+
-            serial.flush();
-            QThread::msleep(200);
-            resetDevice(); // Send Reset to CMS50D+
-            serial.flush();
-            serial.clear();
-            //started_import = false;
-           // finished_import = true;
-            //m_streaming=false;
+            finished_import = true;
+            m_streaming = false;
 
-            //closeDevice();
-            //emit transferComplete();
-            //doImportComplete();
+            emit importComplete(this);
+
             return;
         }
         qDebug() << "Should CMS50 resetImportTimeout reach here?";
