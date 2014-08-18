@@ -208,7 +208,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             break;
         case 0x12: // 12,80,80,80,82,a6,92,80
             tmpstr = QString().sprintf("%02i:%02i:%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6));
-            imp_time = QTime::fromString(tmpstr, "HHmmss");
+            imp_time = QTime::fromString(tmpstr, "HH:mm:ss");
             break;
         case 0x13: // 13,80,a0,a0,a0,a0,a0,a0,a0
             break;
