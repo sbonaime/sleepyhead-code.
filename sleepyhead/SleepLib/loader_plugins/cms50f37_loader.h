@@ -54,6 +54,7 @@ protected slots:
     virtual void startImportTimeout();
     virtual void shutdownPorts();
 
+
     void nextCommand();
 
 
@@ -68,6 +69,7 @@ protected:
 
     void sendCommand(unsigned char c);
 
+
     // Switch device to live streaming mode
     virtual void resetDevice();
 
@@ -76,6 +78,7 @@ protected:
 
 
   private:
+
     int sequence;
 
     EventList *PULSE;

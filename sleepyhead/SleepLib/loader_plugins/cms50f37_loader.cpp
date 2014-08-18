@@ -258,11 +258,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         if (!started_import) {
-            if (++sequence < cms50_seqlength) {
-                qDebug() << "Read:" << str.join(",");
-                // Send the next command packet in sequence
-                nextCommand();
-            }
+            startTimer.singleShot(300, this, SLOT(nextCommand()));
+            qDebug() << "Read:" << str.join(",");
         } else {
             qDebug() << "Import:" << str.join(",");
         }
@@ -325,8 +322,12 @@ void CMS50F37Loader::sendCommand(unsigned char c)
 
 void CMS50F37Loader::nextCommand()
 {
-    if (sequence < cms50_seqlength)
+    if (++sequence < cms50_seqlength) {
+        // Send the next command packet in sequence
         sendCommand(cms50_sequence[sequence]);
+    } else {
+        qDebug() << "Run out of startup tasks to do and import failed!";
+    }
 }
 
 
