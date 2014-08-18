@@ -169,7 +169,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         len = lengths[res & 0x1f];
 
-        if (len < size)
+        if (size < len)
             break;
 
         if (len == 0) {
