@@ -188,7 +188,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             data = buffer.at(idx+3) ^ 0x80;
             break;
         case 0x07: // 7,80,80,80,94,8e,88,92
-            tmpstr = QString().sprintf("%02i%02i%02i%02i",buffer.at(idx+5), buffer.at(idx+4), buffer.at(idx+6), buffer.at(idx+7));
+            tmpstr = QString().sprintf("%02i%02i%02i%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6), buffer.at(idx+7));
             imp_date = QDate::fromString(tmpstr, "yyyyMMdd");
             break;
         case 0x08: // 8,80,80,80,a4,81,80,80
