@@ -164,6 +164,10 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
     int idx = 0;
     int len;
 
+    int year, month, day;
+    QString user;
+    QString user_number;
+
     do {
         unsigned char res = bytes.at(idx);
 
@@ -183,13 +187,22 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         switch(res) {
         case 0x05: // 5,80,80,f5,f3,e5,f2,80,80
+            // User
+            user = QString(buffer.mid(idx+3,4));
+            qDebug() << "0x05:" << user;
+
             break;
         case 0x6: // 6,80,80,87
             data = buffer.at(idx+3) ^ 0x80;
             break;
         case 0x07: // 7,80,80,80,94,8e,88,92
-            tmpstr = QString().sprintf("%02i%02i%02i%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6), buffer.at(idx+7));
-            imp_date = QDate::fromString(tmpstr, "yyyyMMdd");
+
+            year = QString().sprintf("%02i%02i",buffer.at(idx+4), buffer.at(idx+5)).toInt();
+            month = QString().sprintf("%02i", buffer.at(idx+6)).toInt();
+            day = QString().sprintf("%02i", buffer.at(idx+7)).toInt();
+
+            imp_date = QDate(year,month,day);
+            qDebug() << imp_date;
             break;
         case 0x08: // 8,80,80,80,a4,81,80,80
             break;
@@ -209,6 +222,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         case 0x12: // 12,80,80,80,82,a6,92,80
             tmpstr = QString().sprintf("%02i:%02i:%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6));
             imp_time = QTime::fromString(tmpstr, "HH:mm:ss");
+            qDebug() << imp_time;
+
             break;
         case 0x13: // 13,80,a0,a0,a0,a0,a0,a0,a0
             break;
@@ -368,12 +383,18 @@ void CMS50F37Loader::resetImportTimeout()
             qDebug() << "Switching CMS50 back to live mode and finalizing import";
             // Turn back on live streaming so the end of capture can be dealt with
 
-            resetTimer.stop();
+
+            killTimers();
 
             finished_import = true;
             m_streaming = false;
+            m_importing = false;
+            started_reading = false;
+            started_import = false;
 
             emit importComplete(this);
+
+            shutdownPorts();
 
             return;
         }
