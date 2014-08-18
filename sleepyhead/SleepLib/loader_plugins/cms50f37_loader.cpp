@@ -123,11 +123,11 @@ int CMS50F37Loader::Open(QString path)
     // Cheating using path for two serial oximetry modes
 
     if (path.compare("import") == 0) {
-        serial.clear();
+        //serial.clear();
 
         sequence = 0;
         nextCommand();
-        setStatus(DETECTING);
+        setStatus(IMPORTING);
 
         return 1;
     } else if (path.compare("live") == 0) {
@@ -173,7 +173,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         qDebug() << "Read:" << data.join(",");
     }
 
-    m_status = NEUTRAL;
+    m_status = IMPORTING;
 }
 
 int CMS50F37Loader::doImportMode()
@@ -223,10 +223,10 @@ void CMS50F37Loader::sendCommand(unsigned char c)
     cmd[2] = c;
 
     QString out;
-    for (int i=0;i < 8;i++) out += QString().sprintf("%02X ",cmd[i]);
+    for (int i=0;i < 9;i++) out += QString().sprintf("%02X ",cmd[i]);
     qDebug() << "Write:" << out;
 
-    if (serial.write((char *)cmd,8) == -1) {
+    if (serial.write((char *)cmd, 9) == -1) {
         qDebug() << "Couldn't write data reset bytes to CMS50";
     }
 }
