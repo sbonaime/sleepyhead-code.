@@ -245,6 +245,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 m_startTime = QDateTime(imp_date, imp_time);
                 oxirec = new QVector<OxiRecord>;
                 oxirec->reserve(30000);
+
+                oxisessions[m_startTime] = oxirec;
+
                 cb_reset = 1;
 
                 resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
@@ -393,6 +396,8 @@ void CMS50F37Loader::resetImportTimeout()
             started_import = false;
 
             emit importComplete(this);
+
+            m_status = NEUTRAL;
 
             shutdownPorts();
 
