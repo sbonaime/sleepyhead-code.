@@ -222,6 +222,8 @@ void OximeterImport::on_directImportButton_clicked()
     if (!oximodule)
         return;
 
+    QString model = oximodule->getModel();
+
     oximodule->resetDevice();
     int session_count = oximodule->getSessionCount();
 
@@ -235,6 +237,8 @@ void OximeterImport::on_directImportButton_clicked()
 
         ui->tableOxiSessions->setRowCount(session_count);
         ui->tableOxiSessions->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+        ui->tableOxiSessions->setColumnWidth(0,150);
 
 
         int h, m, s;
@@ -254,7 +258,7 @@ void OximeterImport::on_directImportButton_clicked()
             ui->tableOxiSessions->setItem(i, 1, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-            item = new QTableWidgetItem(tr("%1 Session #%2").arg(oximodule->getModel()).arg(i+1, 0));
+            item = new QTableWidgetItem(tr("%1 Session %2 (%3s)").arg(model).arg(i+1, 0).arg(duration));
             ui->tableOxiSessions->setItem(i, 2, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         }

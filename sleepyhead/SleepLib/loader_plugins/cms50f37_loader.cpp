@@ -53,6 +53,9 @@ CMS50F37Loader::CMS50F37Loader()
 
     duration_divisor = 2;
 
+    model = QString();
+    vendor = QString();
+
 }
 
 CMS50F37Loader::~CMS50F37Loader()
