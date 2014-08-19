@@ -452,7 +452,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         if (res == 0x09) {
             quint8 * buf = (unsigned char *)&buffer.data()[idx];
             // 9,80,e1,c4,ce,82  // cms50i data
-            for (int i = 2, msb = buf[1]; i < len; i++, msb>>= 1) {
+            for (int i = 3, msb = buf[1]; i < len; i++, msb>>= 1) {
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
