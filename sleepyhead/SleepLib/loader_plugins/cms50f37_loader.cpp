@@ -343,18 +343,14 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         case 0x02:
             data = buffer.at(idx+1);
             if (data == 0) {
-                for (data=2; data< len; data++) {
-                    if (buffer.at(idx+data) < 32)
-                        break;
-                }
-                model = buffer.mid(idx+2, data-1);
+                model = QString(buffer.mid(idx+2, 6));
                 qDebug() << "Model:" << model;
             }
             break;
         case 0x03:
             data = buffer.at(idx+1);
             if (data == 0) {
-                vendor = buffer.mid(idx+2, 6);
+                vendor = QString(buffer.mid(idx+2, 6));
                 qDebug() << "Vendor:" << vendor;
             }
             break;
