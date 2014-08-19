@@ -319,7 +319,6 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
     int year, month, day;
 
-    quint8 msb;
     quint8 pulse;
 
     do {
@@ -327,7 +326,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         len = lengths[res & 0x1f];
 
-        if (len > size)
+        if (len >= size)
             break;
 
         if (len == 0) {
@@ -440,8 +439,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
                 cb_reset = 1;
 
-                resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
             }
+            killTimers();
+            resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
 
             break;
         default:
@@ -598,6 +598,7 @@ void CMS50F37Loader::requestData()
 void CMS50F37Loader::killTimers()
 {
     if (resetTimer.isActive()) resetTimer.stop();
+    if (startTimer.isActive()) startTimer.stop();
 }
 
 void CMS50F37Loader::startImportTimeout()
