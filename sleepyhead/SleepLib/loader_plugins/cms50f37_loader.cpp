@@ -343,7 +343,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         case 0x02:
             data = buffer.at(idx+1);
             if (data == 0) {
-                model = QString(buffer.mid(idx+2, 6));
+                model = QString(buffer.mid(idx+3, 6));
                 qDebug() << "Model:" << model;
             }
             break;
