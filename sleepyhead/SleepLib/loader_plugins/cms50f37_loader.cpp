@@ -456,7 +456,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            quint16 pi = (((quint8)buffer.at(idx+1) & 4) << 5) | (quint8)buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
+            quint16 pi = (quint8)buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
 
             pulse = buffer.at(idx+3);
             quint8 spo2 = buffer.at(idx+2);
