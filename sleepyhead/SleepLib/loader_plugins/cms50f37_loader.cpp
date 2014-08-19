@@ -347,13 +347,15 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                     if (buffer.at(idx+data) < 32)
                         break;
                 }
-                model = buffer.mid(idx+2, data-2);
+                model = buffer.mid(idx+2, data-1);
+                qDebug() << "Model:" << model;
             }
             break;
         case 0x03:
             data = buffer.at(idx+1);
             if (data == 0) {
-                vendor = buffer.mid(idx+2, 5);
+                vendor = buffer.mid(idx+2, 6);
+                qDebug() << "Vendor:" << vendor;
             }
             break;
 
