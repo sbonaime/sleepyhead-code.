@@ -267,11 +267,12 @@ void OximeterImport::on_directImportButton_clicked()
         selecting_session = true;
         ui->tableOxiSessions->selectRow(0);
         return;
-    } else {
+    } else if (session_count > 0) {
         chosen_sessions.push_back(0);
         oximodule->getDuration(0);
         oximodule->setStartTime(oximodule->getDateTime(0));
     }
+    doImport();
 }
 
 void OximeterImport::doImport()

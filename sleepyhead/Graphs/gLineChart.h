@@ -110,7 +110,7 @@ class gLineChart: public Layer
     virtual bool isEmpty();
 
     //! \brief Add Subplot 'code'. Note the first one is added in the constructor.
-    void addPlot(ChannelID code, bool square) { m_codes.push_back(code); m_enabled[code] = true; m_square.push_back(square); }
+    void addPlot(ChannelID code, bool square=false) { m_codes.push_back(code); m_enabled[code] = true; m_square.push_back(square); }
 
     //! \brief Returns true of the subplot 'code' is enabled.
     bool plotEnabled(ChannelID code) { if ((m_enabled.contains(code)) && m_enabled[code]) { return true; } else { return false; } }

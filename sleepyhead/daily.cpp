@@ -362,8 +362,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     leakchart->addPlot(CPAP_LeakTotal, square);
     leakchart->addPlot(CPAP_MaxLeak, square);
-    schema::channel[CPAP_Leak].setUpperThresholdColor(Qt::red);
-    schema::channel[CPAP_Leak].setLowerThresholdColor(Qt::green);
+//    schema::channel[CPAP_Leak].setUpperThresholdColor(Qt::red);
+//    schema::channel[CPAP_Leak].setLowerThresholdColor(Qt::green);
 
     graphlist[schema::channel[CPAP_Leak].code()]->AddLayer(AddCPAP(leakchart));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));

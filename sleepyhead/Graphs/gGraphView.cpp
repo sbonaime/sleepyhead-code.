@@ -1208,8 +1208,11 @@ void gGraphView::paintGL()
     if (width() <= 0) { return; }
     if (height() <= 0) { return; }
 
+
     // Create QPainter object, note this is only valid from paintGL events!
     QPainter painter(this);
+
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
 
     QRect bgrect(0, 0, width(), height());
     painter.fillRect(bgrect,QBrush(QColor(255,255,255)));
