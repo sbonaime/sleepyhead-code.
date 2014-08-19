@@ -319,7 +319,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
     int year, month, day;
 
-    unsigned char mask;
+    quint8 msb;
     quint8 pulse;
 
     do {
@@ -462,16 +462,19 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
-            mask = buffer.at(idx+1);
 
-            pulse = buffer.at(idx+3) | ((mask & 2) << 6);
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+2)));
+            for (int i = 2, msb = buffer.at(idx+1); i < 9; i++, msb>>= 1) {
+                buffer[idx+i] &= 0x7f; buffer[idx+i] |= msb & 0x01 ? 0x80 : 0;
+            }
 
-            pulse = buffer.at(idx+5) | ((mask & 8) << 4);
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+4)));
+//            pulse = buffer.at(idx+3) | ((mask & 2) << 6);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+3), buffer.at(idx+2)));
 
-            pulse = buffer.at(idx+7) | ((mask & 0x20) << 2);
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+6)));
+//            pulse = buffer.at(idx+5) | ((mask & 8) << 4);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+5), buffer.at(idx+4)));
+
+//            pulse = buffer.at(idx+7) | ((mask & 0x20) << 2);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(id+7), buffer.at(idx+6)));
         }
 
         QStringList str;
