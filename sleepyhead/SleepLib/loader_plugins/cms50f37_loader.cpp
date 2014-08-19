@@ -453,9 +453,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             mask = buffer.at(idx+1);
             // 9,80,e1,c4,ce,82  // cms50i data
 
-            quint16 pi = buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
+            quint16 pi = (((quint8)buffer.at(idx+1) & 4) << 5) | (quint8)buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
 
-            pulse = buffer.at(idx+3) | ((mask & 4) << 5);
+            pulse = buffer.at(idx+3) | ((mask & 8) << 4);
             quint8 spo2 = buffer.at(idx+2);
 
             oxirec->append((spo2 == 0) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
@@ -476,7 +476,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         QStringList str;
         for (int i=0; i < len; ++i) {
-            str.append(QString::number((unsigned char)bytes.at(idx + i),16));
+            str.append(QString::number((unsigned char)buffer.at(idx + i)^0x80,16));
         }
 
         if (!started_import) {
