@@ -233,7 +233,7 @@ void OximeterImport::on_directImportButton_clicked()
         ui->tableOxiSessions->clearContents();
         QTableWidgetItem * item;
 
-        ui->tableOxiSessions->setRowCount(oximodule->oxisessions.size());
+        ui->tableOxiSessions->setRowCount(session_count);
         ui->tableOxiSessions->setSelectionBehavior(QAbstractItemView::SelectRows);
 
 
