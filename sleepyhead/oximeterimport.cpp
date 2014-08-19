@@ -203,10 +203,15 @@ SerialOximeter * OximeterImport::detectOximeter()
         return nullptr;
     }
 
-    updateStatus(tr("Connecting to %1 Oximeter").arg(oximodule->loaderName()));
+    QString devicename = oximodule->getDeviceString();
+    if (devicename.isEmpty()) oximodule->loaderName();
+
+    updateStatus(tr("Connecting to %1 Oximeter").arg(devicename));
 
     return oximodule;
 }
+
+
 
 void OximeterImport::on_directImportButton_clicked()
 {
@@ -217,12 +222,69 @@ void OximeterImport::on_directImportButton_clicked()
     if (!oximodule)
         return;
 
-    ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->loaderName())+"</h2>");
-    updateStatus(tr("Waiting for you to start the upload process..."));
+    int session_count = oximodule->getSessionCount();
+
+    if (session_count > 1) {
+        ui->stackedWidget->setCurrentWidget(ui->chooseSessionPage);
+        ui->syncButton->setVisible(false);
+        ui->chooseSessionButton->setVisible(true);
+
+        ui->tableOxiSessions->clearContents();
+        QTableWidgetItem * item;
+
+        ui->tableOxiSessions->setRowCount(oximodule->oxisessions.size());
+        ui->tableOxiSessions->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+
+        int h, m, s;
+        for (int i=0; i< session_count; ++i) {
+            int duration = oximodule->getDuration(i);
+            QDateTime datetime = oximodule->getDateTime(i);
+            h = duration / 3600;
+            m = (duration / 60) % 60;
+            s = duration % 60;
+
+            item = new QTableWidgetItem(datetime.date().toString(Qt::SystemLocaleShortDate)+" "+datetime.time().toString("HH:mm:ss"));
+            ui->tableOxiSessions->setItem(i, 0, item);
+            item->setData(Qt::UserRole, i);
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+
+            item = new QTableWidgetItem(QString(). sprintf("%ih, %im, %is", h,m,s));
+            ui->tableOxiSessions->setItem(i, 1, item);
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+
+            item = new QTableWidgetItem(tr("%1 Session #%2").arg(oximodule->loaderName()).arg(i+1, 0));
+            ui->tableOxiSessions->setItem(i, 2, item);
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        }
+
+        selecting_session = true;
+        ui->tableOxiSessions->selectRow(chosen_session = 0);
+        return;
+    } else {
+        chosen_session = 0;
+        oximodule->getDuration(0);
+        oximodule->setStartTime(oximodule->getDateTime(0));
+    }
+}
+
+void OximeterImport::doImport()
+{
+    if (oximodule->commandDriven()) {
+        ui->connectLabel->setText("<h2>"+tr("Waiting for %1 to start").arg(oximodule->loaderName())+"</h2>");
+        updateStatus(tr("Waiting for the device to start the upload process..."));
+    } else {
+        ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->loaderName())+"</h2>");
+        updateStatus(tr("Waiting for you to start the upload process..."));
+    }
 
     connect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
 
     oximodule->Open("import");
+
+    if (oximodule->commandDriven()) {
+        oximodule->getSessionData(chosen_session);
+    }
 
     // Wait to start import streaming..
     while (!oximodule->isImporting() && !oximodule->isAborted()) {
@@ -879,6 +941,8 @@ void OximeterImport::on_saveButton_clicked()
 
 void OximeterImport::chooseSession()
 {
+    selecting_session = false;
+
     ui->stackedWidget->setCurrentWidget(ui->chooseSessionPage);
     ui->syncButton->setVisible(false);
     ui->chooseSessionButton->setVisible(true);
@@ -919,8 +983,17 @@ void OximeterImport::on_chooseSessionButton_clicked()
 
     QTableWidgetItem * item = ui->tableOxiSessions->item(ui->tableOxiSessions->currentRow(),0);
 
+    if (!item) return;
     QDateTime datetime = QDateTime::fromString(item->text(), Qt::ISODate);
     oximodule->setStartTime(datetime);
 
-    on_syncButton_clicked();
+    if (selecting_session) {
+        ui->stackedWidget->setCurrentWidget(ui->directImportPage);
+        chosen_session = item->data(Qt::UserRole).toInt();
+
+        // go back and start import
+        doImport();
+    } else {
+        on_syncButton_clicked();
+    }
 }

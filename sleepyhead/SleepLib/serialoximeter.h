@@ -47,6 +47,18 @@ public:
 
     virtual int Version()=0;
     virtual const QString &loaderName()=0;
+
+    virtual QDateTime getDateTime(int session) { Q_UNUSED(session); return QDateTime(); }
+    virtual int getDuration(int session) { Q_UNUSED(session); return 0; }
+    virtual int getSessionCount() { return 0; }
+    virtual QString getModel() { return QString(); }
+    virtual QString getVendor()  { return QString(); }
+    virtual QString getDeviceString()  { return QString(); }
+    virtual void getSessionData(int session) { Q_UNUSED(session); }
+
+
+    virtual bool commandDriven() { return false; }
+
     virtual MachineInfo newInfo() {
         return MachineInfo(MT_OXIMETER, 0, "", QString(), QString(), QString(), QString(), "Generic", QDateTime::currentDateTime(), 0);
     }

@@ -37,6 +37,7 @@ private slots:
     void on_nextButton_clicked();
 
     void on_directImportButton_clicked();
+
     void doUpdateProgress(int, int);
     void on_fileImportButton_clicked();
 
@@ -85,7 +86,7 @@ protected slots:
 protected:
     SerialOximeter * detectOximeter();
     void updateStatus(QString msg);
-
+    void doImport();
 private:
     Ui::OximeterImport *ui;
     SerialOximeter * oximodule;
@@ -103,6 +104,9 @@ private:
 
     int pulse;
     int spo2;
+
+    bool selecting_session;
+    int chosen_session;
 
 };
 

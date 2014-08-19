@@ -52,6 +52,8 @@ CMS50F37Loader::CMS50F37Loader()
     startTimer.setParent(this);
     resetTimer.setParent(this);
 
+    duration_divisor = 2;
+
 }
 
 CMS50F37Loader::~CMS50F37Loader()
@@ -84,6 +86,7 @@ bool CMS50F37Loader::openDevice()
     // connect relevant signals
     connect(&serial,SIGNAL(readyRead()), this, SLOT(dataAvailable()));
 
+    resetDevice();
     return true;
 }
 
@@ -128,7 +131,7 @@ int CMS50F37Loader::Open(QString path)
         sequence = 0;
         buffer.clear();
 
-        nextCommand();
+//        nextCommand();
         setStatus(IMPORTING);
 
         return 1;
@@ -146,8 +149,150 @@ int CMS50F37Loader::Open(QString path)
 
 unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa3, 0xab, 0xa4, 0xa5, 0xaf, 0xa7, 0xa2, 0xa6 };
 
+const int TIMEOUT = 2000;
+
+
+const quint8 COMMAND_CMS50_HELLO1 = 0x27;          // 0xa7
+const quint8 COMMAND_CMS50_HELLO2 = 0x22;          // 0xa2
+const quint8 COMMAND_GET_SESSION_COUNT = 0x23;     // 0xA3
+const quint8 COMMAND_GET_SESSION_TIME = 0x25;      // 0xA5
+const quint8 COMMAND_GET_SESSION_DURATION = 0x24;  // 0xA4
+const quint8 COMMAND_GET_USER_INFO = 0x2B;         // 0xAB
+const quint8 COMMAND_GET_SESSION_DATA = 0x26;      // 0xA6
+const quint8 COMMAND_GET_OXIMETER_INFO = 0x30;     // 0xb0
+const quint8 COMMAND_GET_OXIMETER_MODEL = 0x28;    // 0xA8
+const quint8 COMMAND_GET_OXIMETER_VENDOR = 0x29;    // 0xA9
+
 
 int cms50_seqlength = sizeof(cms50_sequence);
+
+
+QString CMS50F37Loader::getUser()
+{
+    user = QString();
+    sendCommand(COMMAND_GET_USER_INFO);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while (user.isEmpty() && (time.elapsed() < TIMEOUT));
+
+    return user;
+}
+
+QString CMS50F37Loader::getVendor()
+{
+    vendor = QString();
+    sendCommand(COMMAND_GET_OXIMETER_VENDOR);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while (vendor.isEmpty() && (time.elapsed() < TIMEOUT));
+    return vendor;
+}
+
+QString CMS50F37Loader::getModel()
+{
+    model = QString();
+    sendCommand(COMMAND_GET_OXIMETER_MODEL);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while (model.isEmpty() && (time.elapsed() < TIMEOUT));
+
+    if (model.startsWith("CMS50I")) {
+        duration_divisor = 4;
+    } else {
+        duration_divisor = 2;
+    }
+    return model;
+}
+
+QString CMS50F37Loader::getDeviceString()
+{
+    return QString("%1 %2").arg(getVendor()).arg(getModel());
+}
+
+int CMS50F37Loader::getUserIndex()
+{
+    user_index = -1;
+    sendCommand(COMMAND_GET_USER_INFO);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((user_index < 0) && (time.elapsed() < TIMEOUT));
+
+    return user_index;
+}
+
+int CMS50F37Loader::getSessionCount()
+{
+    session_count = -1;
+    sendCommand(COMMAND_GET_SESSION_COUNT);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((session_count < 0) && (time.elapsed() < TIMEOUT));
+
+    return session_count;
+}
+
+int CMS50F37Loader::getOximeterInfo()
+{
+    device_info = -1;
+    sendCommand(COMMAND_GET_OXIMETER_INFO);
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((device_info < 0) && (time.elapsed() < TIMEOUT));
+
+    return device_info;
+}
+
+int CMS50F37Loader::getDuration(int session)
+{
+    getOximeterInfo();
+
+    duration = -1;
+    sendCommand(COMMAND_GET_SESSION_DURATION, session);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((duration < 0) && (time.elapsed() < TIMEOUT));
+
+    return duration;
+}
+
+
+QDateTime CMS50F37Loader::getDateTime(int session)
+{
+    imp_date = QDate();
+    imp_time = QTime();
+    sendCommand(COMMAND_GET_SESSION_TIME, session);
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((imp_date.isNull() || imp_time.isNull()) && (time.elapsed() < TIMEOUT));
+
+    if (imp_date.isNull() || imp_time.isNull())
+        return QDateTime();
+
+    return QDateTime(imp_date, imp_time);
+}
+
 
 
 void CMS50F37Loader::processBytes(QByteArray bytes)
@@ -156,7 +301,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
     QString tmpstr;
 
-    int lengths[32] = { 0, 0, 0, 0, 0, 9, 4, 8, 8, 6, 4, 0, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int lengths[32] = { 0, 0, 9, 9, 0, 9, 4, 8, 8, 6, 4, 0, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     buffer.append(bytes);
     int size = buffer.size();
@@ -165,13 +310,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
     int len;
 
     int year, month, day;
-    QString user;
 
     unsigned char mask;
-    quint8 pulse, spo2;
-
-
-
+    quint8 pulse;
 
     do {
         unsigned char res = bytes.at(idx);
@@ -191,15 +332,36 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         switch(res) {
+        case 0x02:
+            data = buffer.at(idx+1);
+            if (data == 0) {
+                for (data=2; data< len; data++) {
+                    if (buffer.at(idx+data) < 32)
+                        break;
+                }
+                model = buffer.mid(idx+2, data-2);
+            }
+            break;
+        case 0x03:
+            data = buffer.at(idx+1);
+            if (data == 0) {
+                vendor = buffer.mid(idx+2, 5);
+            }
+            break;
+
+            // COMMAND_GET_USER_INFO
         case 0x05: // 5,80,80,f5,f3,e5,f2,80,80
             // User
             user = QString(buffer.mid(idx+3,4));
+            user_index = buffer.at(idx+8);
             qDebug() << "0x05:" << user;
 
             break;
         case 0x6: // 6,80,80,87
             data = buffer.at(idx+3) ^ 0x80;
             break;
+
+            // COMMAND_GET_SESSION_TIME
         case 0x07: // 7,80,80,80,94,8e,88,92
 
             year = QString().sprintf("%02i%02i",buffer.at(idx+4), buffer.at(idx+5)).toInt();
@@ -209,11 +371,21 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             imp_date = QDate(year,month,day);
             qDebug() << imp_date;
             break;
-        case 0x08: // 8,80,80,80,a4,81,80,80
+
+            // COMMAND_GET_SESSION_DURATION
+        case 0x08: // 8,80,80,80,a4,81,80,80  // 00, 00, 24, 01, 00, 00
+            // duration
+            duration = ((buffer.at(idx+1) & 0x4) << 5);
+            duration |= buffer.at(idx+5);
+            duration |= buffer.at(idx+6) << 8;
             break;
+
+            // COMMAND_GET_SESSION_COUNT
         case 0x0a: // a,80,80,81
-            data = buffer.at(idx+3);
+            session_count = buffer.at(idx+3);
             break;
+
+            // COMMAND_CMS50_HELLO1 && COMMAND_CMS50_HELLO2
         case 0xc: // a7 & a2  // responds with: c,80
             data = buffer.at(idx+1);
             break;
@@ -222,8 +394,13 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         case 0x10: // 10,80,81
             data = buffer.at(idx+2);
             break;
+
+            // COMMAND_GET_OXIMETER_INFO
         case 0x11: // 11,80,81,81,80,80,80,80,80
+            device_info = buffer.at(idx+3);
             break;
+
+            // COMMAND_GET_SESSION_TIME
         case 0x12: // 12,80,80,80,82,a6,92,80
             tmpstr = QString().sprintf("%02i:%02i:%02i",buffer.at(idx+4), buffer.at(idx+5), buffer.at(idx+6));
             imp_time = QTime::fromString(tmpstr, "HH:mm:ss");
@@ -249,7 +426,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
 
                 have_perfindex = (res == 0x9);
-                m_startTime = QDateTime(imp_date, imp_time);
+//                m_startTime = QDateTime(imp_date, imp_time);
                 oxirec = new QVector<OxiRecord>;
                 oxirec->reserve(30000);
 
@@ -294,7 +471,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         if (!started_import) {
-            startTimer.singleShot(300, this, SLOT(nextCommand()));
+            startTimer.singleShot(2000, this, SLOT(requestData()));
             qDebug() << "Read:" << str.join(",");
         } else {
             qDebug() << "Import:" << str.join(",");
@@ -344,11 +521,26 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
 void CMS50F37Loader::sendCommand(unsigned char c)
 {
-    static unsigned char cmd[] = { 0x7d, 0x81, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
-    cmd[2] = c;
+    static unsigned char cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+    cmd[2] |= (c & 0x7f);
 
     QString out;
     for (int i=0;i < 9;i++) out += QString().sprintf("%02X ",cmd[i]);
+    qDebug() << "Write:" << out;
+
+    if (serial.write((char *)cmd, 9) == -1) {
+        qDebug() << "Couldn't write data reset bytes to CMS50";
+    }
+}
+
+void CMS50F37Loader::sendCommand(unsigned char c, unsigned char c2)
+{
+    static unsigned char cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+    cmd[2] |= (c & 0x7f);
+    cmd[4] |= (c2 & 0x7f);
+
+    QString out;
+    for (int i=0; i < 9; ++i) out += QString().sprintf("%02X ",cmd[i]);
     qDebug() << "Write:" << out;
 
     if (serial.write((char *)cmd, 9) == -1) {
@@ -366,13 +558,26 @@ void CMS50F37Loader::nextCommand()
     }
 }
 
-
-void CMS50F37Loader::resetDevice() // Switch CMS50D+ device to live streaming mode
+void CMS50F37Loader::getSessionData(int session)
 {
+    resetDevice();
+    for (int i=0;i<5;i++) {
+        QApplication::processEvents();
+        QThread::msleep(50);
+    }
+    selected_session = session;
+    requestData();
 }
 
-void CMS50F37Loader::requestData() // Switch CMS50D+ device to record transmission mode
+void CMS50F37Loader::resetDevice()
 {
+    sendCommand(COMMAND_CMS50_HELLO1);
+    sendCommand(COMMAND_CMS50_HELLO2);
+}
+
+void CMS50F37Loader::requestData()
+{
+    sendCommand(COMMAND_GET_SESSION_DATA, selected_session);
 }
 
 void CMS50F37Loader::killTimers()

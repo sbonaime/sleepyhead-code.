@@ -48,11 +48,32 @@ Q_OBJECT
 
     virtual bool isStartTimeValid() { return !cms50dplus; }
 
+    virtual QString getUser();
+    virtual QString getModel();
+    virtual QString getVendor();
+    virtual QString getDeviceString();
+
+    virtual int getUserIndex();
+    virtual QDateTime getDateTime(int session);
+    virtual int getDuration(int session);
+    virtual int getSessionCount();
+    virtual int getOximeterInfo();
+
+    virtual bool commandDriven() { return true; }
+
+
+    virtual void getSessionData(int session);
+
+    // Switch device to record transmission mode
+    void requestData();
+
+
 protected slots:
 //    virtual void dataAvailable();
     virtual void resetImportTimeout();
     virtual void startImportTimeout();
     virtual void shutdownPorts();
+
 
 
     void nextCommand();
@@ -68,13 +89,12 @@ protected:
     virtual void killTimers();
 
     void sendCommand(unsigned char c);
+    void sendCommand(unsigned char c, unsigned char c2);
 
 
     // Switch device to live streaming mode
     virtual void resetDevice();
 
-    // Switch device to record transmission mode
-    void requestData();
 
 
   private:
@@ -102,6 +122,20 @@ protected:
 
     QDate imp_date;
     QTime imp_time;
+
+    QString user;
+    int user_index;
+
+    unsigned char current_command;
+
+    volatile int session_count;
+    volatile int duration;
+    int device_info;
+    QString model;
+    QString vendor;
+
+    int duration_divisor;
+    int selected_session;
 
 };
 
