@@ -453,7 +453,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             mask = buffer.at(idx+1);
             // 9,80,e1,c4,ce,82  // cms50i data
 
-            int pi = buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
+            quint16 pi = buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
 
             pulse = buffer.at(idx+3) | ((mask & 4) << 5);
             quint8 spo2 = buffer.at(idx+2);
