@@ -66,9 +66,12 @@ protected:
     QList<ChannelID> chans;
     QHash<ChannelID, QMap<EventStoreType, EventDataType> > events;
     int maxtime;
+    int maxevents;
     ChannelID m_presChannel;
     EventStoreType m_minpressure;
     EventStoreType m_maxpressure;
+
+    EventDataType max_mins;
 
     QMap<EventStoreType, EventDataType> ahis;
 };

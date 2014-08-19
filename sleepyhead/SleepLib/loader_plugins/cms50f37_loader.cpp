@@ -327,7 +327,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         len = lengths[res & 0x1f];
 
-        if (size < len)
+        if (len > size)
             break;
 
         if (len == 0) {
@@ -432,7 +432,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
 
                 have_perfindex = (res == 0x9);
-//                m_startTime = QDateTime(imp_date, imp_time);
+
                 oxirec = new QVector<OxiRecord>;
                 oxirec->reserve(30000);
 
@@ -476,14 +476,14 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         QStringList str;
         for (int i=0; i < len; ++i) {
-            str.append(QString::number((unsigned char)buffer.at(idx + i)^0x80,16));
+            str.append(QString::number((unsigned char)buffer.at(idx + i),16));
         }
 
         if (!started_import) {
           //  startTimer.singleShot(2000, this, SLOT(requestData()));
-            qDebug() << "Read:" << str.join(",");
+            qDebug() << "Read:" << len << size << str.join(",");
         } else {
-            qDebug() << "Import:" << str.join(",");
+            qDebug() << "Import:" << len << size << str.join(",");
         }
 
         idx += len;

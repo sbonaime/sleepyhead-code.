@@ -155,10 +155,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     const QString STR_GRAPH_DailySummary = "DailySummary";
     const QString STR_GRAPH_TAP = "TimeAtPressure";
 
-    gGraph * SG;
-    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
-    SG->AddLayer(new gLabelArea(nullptr),LayerLeft,gYAxis::Margin);
-    SG->AddLayer(AddCPAP(new gDailySummary()));
+//    gGraph * SG;
+//    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
+//    SG->AddLayer(new gLabelArea(nullptr),LayerLeft,gYAxis::Margin);
+//    SG->AddLayer(AddCPAP(new gDailySummary()));
 
     graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);

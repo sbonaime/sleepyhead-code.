@@ -1322,7 +1322,7 @@ void MainWindow::on_action_About_triggered()
                 QString("<br/>%1<br/>").arg(gitrev) +
                 tr("Graphics Engine: %1").arg(getGraphicsEngine())+
                 "<br/>" +
-                tr("Data Folder Location: %1").arg(QDir::toNativeSeparators(GetAppRoot()) +
+                (tr("Data Folder Location: <a href=\"file://%1\">%2</a>").arg(GetAppRoot()).arg(QDir::toNativeSeparators(GetAppRoot())) +
                 "<hr/>"+tr("Copyright") + " &copy;2011-2014 Mark Watkins (jedimark) <br/> \n" +
                 tr("This software is released under the GNU Public License v3.0<br/>") +
                 "<hr>"
@@ -1346,10 +1346,10 @@ void MainWindow::on_action_About_triggered()
                 // Credits section
                 "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
                 tr("Bugfixes, Patches and Platform Help:") + "</b> " +
-                tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl and Roy Stone.")
+                tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.")
                 + "</p>"
 
-                "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz (German), and others I've still to add here.") +
+                "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I've still to add here.") +
                 "</p>"
 
                 "<p><b>" + tr("3rd Party Libaries:") + "</b> " +
@@ -1357,7 +1357,7 @@ void MainWindow::on_action_About_triggered()
                 + " " +
                 tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")
                 + "<br/>"
-                "<p>" + tr("Special thanks to Pugsy from <a href='http://cpaptalk.com'>CPAPTalk</a> for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")
+                "<p>" + tr("Special thanks to Pugsy and Robysue from <a href='http://cpaptalk.com'>CPAPTalk</a> for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")
                 + "</p>"
 
                 // Donations

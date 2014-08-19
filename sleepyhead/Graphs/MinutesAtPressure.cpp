@@ -267,6 +267,94 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         row++;
     }
 
+
+
+    float maxmins = float(maxtime) / 60.0;
+    float ymult = height / maxmins;
+
+
+    row = 0;
+
+    xpos = left ;//+ pix / 2;
+
+    float y1, y2;
+    it = times.begin();
+    float bottom = top+height;
+    if (it != times_end) {
+        float minutes = float(it.value()) / 60.0;
+        y1 = minutes * ymult;
+
+        painter.setPen(QPen(QColor(Qt::gray), 2));
+        it++;
+        for (;  it != times_end; ++it) {
+            float minutes = float(it.value()) / 60.0;
+            y2 = minutes * ymult;
+
+            painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
+            y1 = y2;
+            xpos += pix;
+        }
+
+
+        float maxev = 0;
+        for (int i=0; i< numchans; ++i) {
+            ChannelID code = chans.at(i);
+            if (code == CPAP_AHI) continue;
+
+
+            schema::Channel & chan = schema::channel[code];
+            if (!chan.enabled())
+                continue;
+            schema::ChanType type = chan.type();
+            if (type == schema::SPAN)
+                continue;
+            eit = events.find(code);
+            QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
+            for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
+                //float minutes = float(it.value()) / 60.0;
+                float value = vit.value();
+                maxev = qMax(value, maxev);
+            }
+        }
+        float emult = height / float(maxev);
+        if (maxev < 0.00001) emult = 0;
+
+
+        for (int i=0; i< numchans; ++i) {
+            ChannelID code = chans.at(i);
+            if (code == CPAP_AHI) continue;
+
+
+            schema::Channel & chan = schema::channel[code];
+            if (!chan.enabled())
+                continue;
+            schema::ChanType type = chan.type();
+            if (type == schema::SPAN)
+                continue;
+            painter.setPen(QPen(QColor(chan.defaultColor()), 2));
+            eit = events.find(code);
+            xpos = left;//+pix/2;
+
+            y1 = 0;
+            QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
+            for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
+                //float minutes = float(it.value()) / 60.0;
+                float value = vit.value();
+
+                y2 = value * emult;
+                //painter.drawPoint(xpos, bottom-y1);
+
+                painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
+
+                xpos += pix;
+                y1 = y2;
+
+            }
+        }
+    }
+    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
+    graph.renderText(txt, rect.left(), rect.top()-10);
+
     timelock.unlock();
 
     if (m_recalculating) {
@@ -374,7 +462,7 @@ void RecalcMAP::run()
                     first = false;
                 }
 
-                if ((lastdata != data) || (time > maxx)) {
+                if (lastdata != data) {
                     qint64 d1 = qMax(minx, lasttime);
                     qint64 d2 = qMin(maxx, time);
 
@@ -396,13 +484,37 @@ void RecalcMAP::run()
                     lasttime = time;
                     lastdata = data;
                 }
-                if (time > maxx) break;
+                if (time > maxx) {
+
+                    break;
+                }
 skip:
                 if (m_quit) {
                     m_done = true;
                     return;
                 }
             }
+            if (lasttime < maxx) {
+                qint64 d1 = qMax(lasttime, minx);
+                qint64 d2 = qMin(maxx, EL->last());
+
+                int duration = (d2 - d1) / 1000L;
+                EventStoreType key = floor(lastdata * gain);
+                if (key <= 30) {
+                    times[key] += duration;
+                    for (int c = 0; c < chans.size(); ++c) {
+                        ChannelID code = chans.at(c);
+                        schema::Channel & chan = schema::channel[code];
+                        if (chan.type() == schema::SPAN) {
+                            events[code][key] += sess->rangeSum(code, d1, d2);
+                        } else {
+                            events[code][key] += sess->rangeCount(code, d1, d2);
+                        }
+                    }
+                }
+
+            }
+
 
         }
     }
@@ -424,10 +536,22 @@ skip:
     }
     chans.push_front(CPAP_AHI);
 
+    int maxevents = 0, val;
+
     for (int i = map->m_minpressure; i <= map->m_maxpressure; i++) {
-        events[CPAP_AHI].insert(i,events[CPAP_Obstructive][i] + events[CPAP_Hypopnea][i] + events[CPAP_Apnea][i] + events[CPAP_ClearAirway][i]);
+        val = events[CPAP_Obstructive][i] + events[CPAP_Hypopnea][i] + events[CPAP_Apnea][i] + events[CPAP_ClearAirway][i];
+        events[CPAP_AHI].insert(i, val);
+     //   maxevents = qMax(val, maxevents);
     }
 
+    for (int i = map->m_minpressure; i <= map->m_maxpressure; i++) {
+        for (int j=0 ; j < chans.size(); ++j) {
+            code = chans.at(j);
+            if ((code == CPAP_AHI) || (schema::channel[code].type() == schema::SPAN)) continue;
+            val = events[code][i];
+            maxevents = qMax(val, maxevents);
+        }
+    }
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
 
 //    for (int i=0; i< trash.size(); ++i) {
@@ -444,6 +568,7 @@ skip:
     map->times = times;
     map->events = events;
     map->maxtime = maxtime;
+    map->maxevents = maxevents;
     map->chans = chans;
     map->m_presChannel = prescode;
     timelock.unlock();
