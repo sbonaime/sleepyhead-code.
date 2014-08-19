@@ -384,8 +384,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         case 0x08: // 8,80,80,80,a4,81,80,80  // 00, 00, 24, 01, 00, 00
             // duration
             duration = ((buffer.at(idx+1) & 0x4) << 5);
-            duration |= buffer.at(idx+5);
-            duration |= buffer.at(idx+6) << 8;
+            duration |= buffer.at(idx+4);
+            duration |= buffer.at(idx+5) << 8;
             break;
 
             // COMMAND_GET_SESSION_COUNT
