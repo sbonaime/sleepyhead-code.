@@ -456,12 +456,12 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            quint16 pi = (quint8)buffer.at(idx + 4) | (buffer.at(idx + 5) << 8);
+            quint16 pi = quint8(buffer.at(idx + 4)) | (quint16(buffer.at(idx + 5)) << 8);
 
             pulse = buffer.at(idx+3);
             quint8 spo2 = buffer.at(idx+2);
 
-            oxirec->append((spo2 == 0) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
+            oxirec->append(((spo2 == 0) || (pulse == 0) || (pi == 0xfff6)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
 
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
