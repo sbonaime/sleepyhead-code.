@@ -452,7 +452,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         if (res == 0x09) {
             msb = buffer.at(idx+1);
             // 9,80,e1,c4,ce,82  // cms50i data
-            for (int i = 2, msb = buffer.at(idx+1); i < 9; i++, msb>>= 1) {
+            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
@@ -466,7 +466,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
 
-            for (int i = 2, msb = buffer.at(idx+1); i < 9; i++, msb>>= 1) {
+            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
