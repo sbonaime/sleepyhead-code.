@@ -471,7 +471,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         if (!started_import) {
-            startTimer.singleShot(2000, this, SLOT(requestData()));
+          //  startTimer.singleShot(2000, this, SLOT(requestData()));
             qDebug() << "Read:" << str.join(",");
         } else {
             qDebug() << "Import:" << str.join(",");
