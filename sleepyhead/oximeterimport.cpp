@@ -253,6 +253,7 @@ void OximeterImport::on_directImportButton_clicked()
             ui->tableOxiSessions->setItem(i, 0, item);
             item->setData(Qt::UserRole+1, datetime);
             item->setData(Qt::UserRole, i);
+            item->setData(Qt::UserRole+2, duration);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
             item = new QTableWidgetItem(QString(). sprintf("%ih, %im, %is", h,m,s));
@@ -999,6 +1000,7 @@ void OximeterImport::on_chooseSessionButton_clicked()
     if (!item) return;
     QDateTime datetime = item->data(Qt::UserRole+1).toDateTime();
     oximodule->setStartTime(datetime);
+    oximodule->setDuration(item->data(Qt::UserRole+2).toInt());
 
     if (selecting_session) {
         ui->stackedWidget->setCurrentWidget(ui->directImportPage);

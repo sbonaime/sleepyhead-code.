@@ -326,7 +326,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         len = lengths[res & 0x1f];
 
-        if (len >= size)
+        if (len > size)
             break;
 
         if (len == 0) {
@@ -427,8 +427,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 m_importing = true;
 
                 m_itemCnt=0;
-                m_itemTotal=5000;
-
+                m_itemTotal=duration;
 
                 have_perfindex = (res == 0x9);
 
@@ -439,9 +438,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
                 cb_reset = 1;
 
+                resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
             }
-            killTimers();
-            resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
 
             break;
         default:

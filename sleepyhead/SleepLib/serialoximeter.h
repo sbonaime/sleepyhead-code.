@@ -86,6 +86,7 @@ public:
     QDateTime startTime() { return m_startTime; }
     void setStartTime(QDateTime datetime) { m_startTime = datetime; }
     virtual bool isStartTimeValid() { return true; }
+    virtual void setDuration(int) { }
 
     virtual qint64 importResolution() { return 1000; }
     virtual qint64 liveResolution() { return 20; }

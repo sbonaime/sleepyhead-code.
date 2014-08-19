@@ -59,6 +59,8 @@ Q_OBJECT
     virtual int getSessionCount();
     virtual int getOximeterInfo();
 
+    virtual void setDuration(int d) { duration=d; }
+
     virtual bool commandDriven() { return true; }
 
 
