@@ -222,6 +222,7 @@ void OximeterImport::on_directImportButton_clicked()
     if (!oximodule)
         return;
 
+    oximodule->resetDevice();
     int session_count = oximodule->getSessionCount();
 
     if (session_count > 1) {

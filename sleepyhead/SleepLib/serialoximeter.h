@@ -91,6 +91,8 @@ public:
     virtual qint64 liveResolution() { return 20; }
 
     void trashRecords();
+    virtual void resetDevice() {}
+
 
 signals:
     void noDeviceFound();
@@ -111,7 +113,6 @@ protected:
     virtual void processBytes(QByteArray buffer) { Q_UNUSED(buffer) }
 
     virtual void killTimers() {}
-    virtual void resetDevice() {}
     virtual void requestData() {}
 
     QString port;

@@ -46,7 +46,7 @@ Q_OBJECT
 
     virtual void process();
 
-    virtual bool isStartTimeValid() { return !cms50dplus; }
+    virtual bool isStartTimeValid() { return true; }
 
     virtual QString getUser();
     virtual QString getModel();
@@ -88,8 +88,8 @@ protected:
 
     virtual void killTimers();
 
-    void sendCommand(unsigned char c);
-    void sendCommand(unsigned char c, unsigned char c2);
+    void sendCommand(quint8 c);
+    void sendCommand(quint8 c, quint8 c2);
 
 
     // Switch device to live streaming mode
@@ -111,7 +111,6 @@ protected:
     bool started_import;
     bool finished_import;
     bool started_reading;
-    bool cms50dplus;
 
     int cb_reset,imp_callbacks;
 

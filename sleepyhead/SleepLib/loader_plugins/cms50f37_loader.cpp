@@ -45,7 +45,6 @@ CMS50F37Loader::CMS50F37Loader()
 
     m_vendorID = 0x10c4;
     m_productID = 0xea60;
-    cms50dplus = false;
 
     oxirec = nullptr;
 
@@ -85,6 +84,10 @@ bool CMS50F37Loader::openDevice()
 
     // connect relevant signals
     connect(&serial,SIGNAL(readyRead()), this, SLOT(dataAvailable()));
+
+    started_import = false;
+    started_reading = false;
+    finished_import = false;
 
     resetDevice();
     return true;
@@ -519,9 +522,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 //}
 
 
-void CMS50F37Loader::sendCommand(unsigned char c)
+void CMS50F37Loader::sendCommand(quint8 c)
 {
-    static unsigned char cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+    quint8 cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
     cmd[2] |= (c & 0x7f);
 
     QString out;
@@ -533,9 +536,9 @@ void CMS50F37Loader::sendCommand(unsigned char c)
     }
 }
 
-void CMS50F37Loader::sendCommand(unsigned char c, unsigned char c2)
+void CMS50F37Loader::sendCommand(quint8 c, quint8 c2)
 {
-    static unsigned char cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+    quint8 cmd[] = { 0x7d, 0x81, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
     cmd[2] |= (c & 0x7f);
     cmd[4] |= (c2 & 0x7f);
 
