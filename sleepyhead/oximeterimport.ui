@@ -647,7 +647,7 @@ border-radius: 0px;</string>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>4</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="welcomePage">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -1403,11 +1403,14 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
               <string>Day recording (normally would of) started</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="spacing">
+               <number>-1</number>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
               <property name="topMargin">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="rightMargin">
                <number>0</number>
