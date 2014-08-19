@@ -383,7 +383,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             // duration
             duration = ((buffer.at(idx+1) & 0x4) << 5);
             duration |= buffer.at(idx+4);
-            duration |= buffer.at(idx+5) << 8;
+            duration |= (buffer.at(idx+5) | ((buffer.at(idx+1) & 0x8) << 4)) << 8;
             break;
 
             // COMMAND_GET_SESSION_COUNT
@@ -450,15 +450,15 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         if (res == 0x09) {
-            msb = buffer.at(idx+1);
+            msb = quint8(buffer.at(idx+1));
             // 9,80,e1,c4,ce,82  // cms50i data
-            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
-                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
-            }
+//            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
+//                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
+//            }
 
-            quint16 pi = quint8(buffer.at(idx + 4)) | (quint16(buffer.at(idx + 5)) << 8);
+            quint16 pi = quint8(buffer.at(idx + 4)) | ((msb & 4) << 5) | (quint16(buffer.at(idx + 5)) << 8);
 
-            pulse = buffer.at(idx+3);
+            pulse = quint8(buffer.at(idx+3)) | ((msb & 2 ) << 6);
             quint8 spo2 = buffer.at(idx+2);
 
             oxirec->append(((spo2 == 0) || (pulse == 0) || (pi == 0xfff6)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
