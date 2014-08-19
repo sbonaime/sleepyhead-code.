@@ -254,16 +254,16 @@ void OximeterImport::on_directImportButton_clicked()
             ui->tableOxiSessions->setItem(i, 1, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-            item = new QTableWidgetItem(tr("%1 Session #%2").arg(oximodule->loaderName()).arg(i+1, 0));
+            item = new QTableWidgetItem(tr("%1 Session #%2").arg(oximodule->getModel()).arg(i+1, 0));
             ui->tableOxiSessions->setItem(i, 2, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         }
 
         selecting_session = true;
-        ui->tableOxiSessions->selectRow(chosen_session = 0);
+        ui->tableOxiSessions->selectRow(0);
         return;
     } else {
-        chosen_session = 0;
+        chosen_sessions.push_back(0);
         oximodule->getDuration(0);
         oximodule->setStartTime(oximodule->getDateTime(0));
     }
@@ -284,7 +284,8 @@ void OximeterImport::doImport()
     oximodule->Open("import");
 
     if (oximodule->commandDriven()) {
-        oximodule->getSessionData(chosen_session);
+        int chosen=chosen_sessions.takeFirst();
+        oximodule->getSessionData(chosen);
     }
 
     // Wait to start import streaming..
@@ -990,7 +991,7 @@ void OximeterImport::on_chooseSessionButton_clicked()
 
     if (selecting_session) {
         ui->stackedWidget->setCurrentWidget(ui->directImportPage);
-        chosen_session = item->data(Qt::UserRole).toInt();
+        chosen_sessions.push_back(item->data(Qt::UserRole).toInt());
 
         // go back and start import
         doImport();

@@ -106,8 +106,7 @@ private:
     int spo2;
 
     bool selecting_session;
-    int chosen_session;
-
+    QList<int> chosen_sessions;
 };
 
 #endif // OXIMETERIMPORT_H

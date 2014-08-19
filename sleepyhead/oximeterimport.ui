@@ -1349,7 +1349,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
            </attribute>
            <column>
             <property name="text">
-             <string>Import Time</string>
+             <string>Start Time</string>
             </property>
            </column>
            <column>

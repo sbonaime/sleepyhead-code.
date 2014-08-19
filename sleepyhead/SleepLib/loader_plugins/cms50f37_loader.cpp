@@ -186,7 +186,8 @@ QString CMS50F37Loader::getUser()
 
 QString CMS50F37Loader::getVendor()
 {
-    vendor = QString();
+    if (!vendor.isEmpty()) return vendor;
+
     sendCommand(COMMAND_GET_OXIMETER_VENDOR);
 
     QTime time;
@@ -199,7 +200,8 @@ QString CMS50F37Loader::getVendor()
 
 QString CMS50F37Loader::getModel()
 {
-    model = QString();
+    if (!model.isEmpty()) return model;
+
     sendCommand(COMMAND_GET_OXIMETER_MODEL);
 
     QTime time;
