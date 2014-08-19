@@ -251,6 +251,7 @@ void OximeterImport::on_directImportButton_clicked()
 
             item = new QTableWidgetItem(datetime.date().toString(Qt::SystemLocaleShortDate)+" "+datetime.time().toString("HH:mm:ss"));
             ui->tableOxiSessions->setItem(i, 0, item);
+            item->setData(Qt::UserRole+1, datetime);
             item->setData(Qt::UserRole, i);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
@@ -990,7 +991,7 @@ void OximeterImport::on_chooseSessionButton_clicked()
     QTableWidgetItem * item = ui->tableOxiSessions->item(ui->tableOxiSessions->currentRow(),0);
 
     if (!item) return;
-    QDateTime datetime = QDateTime::fromString(item->text(), Qt::ISODate);
+    QDateTime datetime = item->data(Qt::UserRole+1).toDateTime();
     oximodule->setStartTime(datetime);
 
     if (selecting_session) {
