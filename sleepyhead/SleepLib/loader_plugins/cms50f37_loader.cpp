@@ -275,7 +275,7 @@ int CMS50F37Loader::getDuration(int session)
         QApplication::processEvents();
     } while ((duration < 0) && (time.elapsed() < TIMEOUT));
 
-    return duration;
+    return duration / duration_divisor;
 }
 
 
