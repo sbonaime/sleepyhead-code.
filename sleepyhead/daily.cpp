@@ -397,12 +397,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     graphlist[schema::channel[ZEO_SleepStage].code()]->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, true)));
 
-    gLineOverlaySummary *los1=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
-    gLineOverlaySummary *los2=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
-    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
-    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(los1));
-    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
-    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2));
+//    gLineOverlaySummary *los1=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
+//    gLineOverlaySummary *los2=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
+//    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
+//    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(los1));
+//    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
+//    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2));
 
     graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(new gLineChart(OXI_Pulse, square)));
     graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(new gLineChart(OXI_SPO2, true)));
@@ -411,13 +411,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 
     // Fix me
-    gLineOverlaySummary *los3=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
-    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
-    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3));
+//    gLineOverlaySummary *los3=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
+//    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
+//    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3));
     graphlist["INTPULSE"]->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, square)));
-    gLineOverlaySummary *los4=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
-    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
-    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4));
+//    gLineOverlaySummary *los4=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
+//    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
+//    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4));
     graphlist["INTSPO2"]->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, true)));
 
     graphlist[schema::channel[CPAP_PTB].code()]->setForceMaxY(100);

@@ -1227,6 +1227,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
         }
     }
+    if (m_codes[0] == OXI_SPO2Drop) {
+    }
     if (m_codes[0] == CPAP_FlowRate) {
         float hours = time / 3600.0;
         int h = time / 3600;
