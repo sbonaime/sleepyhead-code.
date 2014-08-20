@@ -41,6 +41,8 @@ CMS50F37Loader::CMS50F37Loader()
     m_abort = false;
     m_streaming = false;
     m_importing = false;
+    started_reading = false;
+
     imp_callbacks = 0;
 
     m_vendorID = 0x10c4;
@@ -460,7 +462,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            quint16 pi = buf[4] | buf[5] << 8;
+            quint16 pi = *(quint16*)(&buf[4]);
 
             pulse = buf[3];
             quint8 spo2 = buf[2];
