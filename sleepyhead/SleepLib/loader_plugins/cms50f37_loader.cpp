@@ -175,7 +175,8 @@ int cms50_seqlength = sizeof(cms50_sequence);
 
 QString CMS50F37Loader::getUser()
 {
-    user = QString();
+    if (!user.isEmpty()) return user;
+
     sendCommand(COMMAND_GET_USER_INFO);
 
     QTime time;
@@ -224,20 +225,6 @@ QString CMS50F37Loader::getModel()
 QString CMS50F37Loader::getDeviceString()
 {
     return QString("%1 %2").arg(getVendor()).arg(getModel());
-}
-
-int CMS50F37Loader::getUserIndex()
-{
-    user_index = -1;
-    sendCommand(COMMAND_GET_USER_INFO);
-
-    QTime time;
-    time.start();
-    do {
-        QApplication::processEvents();
-    } while ((user_index < 0) && (time.elapsed() < TIMEOUT));
-
-    return user_index;
 }
 
 int CMS50F37Loader::getSessionCount()
@@ -322,7 +309,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
     quint8 pulse;
 
     do {
-        unsigned char res = bytes.at(idx);
+        unsigned char res = buffer.at(idx);
 
         len = lengths[res & 0x1f];
 
@@ -357,8 +344,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             // COMMAND_GET_USER_INFO
         case 0x05: // 5,80,80,f5,f3,e5,f2,80,80
             // User
-            user = QString(buffer.mid(idx+3,4));
-            user_index = buffer.at(idx+8);
+            user = QString(buffer.mid(idx+3).trimmed());
             qDebug() << "0x05:" << user;
 
             break;
@@ -368,6 +354,10 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             // COMMAND_GET_SESSION_TIME
         case 0x07: // 7,80,80,80,94,8e,88,92
+
+            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
+                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
+            }
 
             year = QString().sprintf("%02i%02i",buffer.at(idx+4), buffer.at(idx+5)).toInt();
             month = QString().sprintf("%02i", buffer.at(idx+6)).toInt();
@@ -379,10 +369,15 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             // COMMAND_GET_SESSION_DURATION
         case 0x08: // 8,80,80,80,a4,81,80,80  // 00, 00, 24, 01, 00, 00
+            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
+                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
+            }
+
             // duration
-            duration = ((buffer.at(idx+1) & 0x4) << 5);
-            duration |= buffer.at(idx+4);
-            duration |= (buffer.at(idx+5) | ((buffer.at(idx+1) & 0x8) << 4)) << 8;
+            duration = buffer.at(idx+4);
+            duration = buffer.at(idx+5) << 8;
+            duration = buffer.at(idx+6) << 8;
+            duration = buffer.at(idx+7) << 8;
             break;
 
             // COMMAND_GET_SESSION_COUNT

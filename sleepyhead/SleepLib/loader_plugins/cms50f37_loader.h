@@ -53,7 +53,6 @@ Q_OBJECT
     virtual QString getVendor();
     virtual QString getDeviceString();
 
-    virtual int getUserIndex();
     virtual QDateTime getDateTime(int session);
     virtual int getDuration(int session);
     virtual int getSessionCount();
@@ -125,7 +124,6 @@ protected:
     QTime imp_time;
 
     QString user;
-    int user_index;
 
     unsigned char current_command;
 

@@ -1010,17 +1010,19 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
 
 
 struct EDFduration {
-    EDFduration() { start = end = 0; }
+    EDFduration() { start = end = 0; iseve = false; }
     EDFduration(const EDFduration & copy) {
         path = copy.path;
         start = copy.start;
         end = copy.end;
+        iseve = copy.iseve;
     }
     EDFduration(quint32 start, quint32 end, QString path) :
         start(start), end(end), path(path) {}
     quint32 start;
     quint32 end;
     QString path;
+    bool iseve;
 };
 
 
@@ -1119,25 +1121,29 @@ EDFduration getEDFDuration(QString filename)
     QDateTime dt2 = QDateTime::fromString(filedate, "yyyyMMdd_hhmmss");
     quint32 st2 = dt2.toTime_t();
 
-    if (end < start) end = start;
-
-    if (ext == "EVE") {
-        // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
-        // It could partially be avoided by parsing the EDF annotations completely, but on days with no events, this would be pointless.
-
-        // Add some seconds to make sure some overlap happens with related sessions.
-
-        // ************** Be cautious with this value **************
-
-        // A Firmware bug causes (perhaps with failing SD card) sessions to sometimes take a long time to write, and it can screw this up
-        // I've really got no way of detecting the other condition.. I can either have one or the other.
-
-        end += 20;
-    }
-
     start = qMin(st2, start);
 
+    if (end < start) end = qMax(st2, start)+1; // This alone should really cover the EVE.EDF condition
+
+//    if (ext == "EVE") {
+//        // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
+//        // It could partially be avoided by parsing the EDF annotations completely, but on days with no events, this would be pointless.
+
+//        // Add some seconds to make sure some overlap happens with related sessions.
+
+//        // ************** Be cautious with this value **************
+
+//        // A Firmware bug causes (perhaps with failing SD card) sessions to sometimes take a long time to write, and it can screw this up
+//        // I've really got no way of detecting the other condition.. I can either have one or the other.
+
+//        // Wait... EVE and BRP start at the same time.. that should be enough to counter overlaps!
+//        end += 1;
+//    }
+
+
     EDFduration dur(start, end, filename);
+    dur.iseve = (ext.toUpper() == "EVE");
+
     return dur;
 }
 
@@ -1275,7 +1281,13 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         EDFGroup group;
 
         if (type == "BRP") group.BRP = newpath;
-        else if (type == "EVE") group.EVE = newpath;
+        else if (type == "EVE") {
+            if (group.BRP.isEmpty()) {
+                qDebug() << "Jedimark's Order theory was wrong.. EVE's need to be parsed seperately!";
+            }
+            group.EVE = newpath;
+        }
+
         else if (type == "PLD") group.PLD = newpath;
         else if (type == "SAD") group.SAD = newpath;
         else continue;
