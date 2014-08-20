@@ -374,10 +374,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             }
 
             // duration
-            duration = buffer.at(idx+4);
-            duration = buffer.at(idx+5) << 8;
-            duration = buffer.at(idx+6) << 8;
-            duration = buffer.at(idx+7) << 8;
+            duration = buffer.at(idx+4) | (buffer.at(idx+5) << 8)
+                    | (buffer.at(idx+6) << 16) | (buffer.at(idx+7) << 24);
             break;
 
             // COMMAND_GET_SESSION_COUNT
@@ -569,10 +567,6 @@ void CMS50F37Loader::nextCommand()
 void CMS50F37Loader::getSessionData(int session)
 {
     resetDevice();
-    for (int i=0;i<5;i++) {
-        QApplication::processEvents();
-        QThread::msleep(50);
-    }
     selected_session = session;
     requestData();
 }
@@ -580,7 +574,11 @@ void CMS50F37Loader::getSessionData(int session)
 void CMS50F37Loader::resetDevice()
 {
     sendCommand(COMMAND_CMS50_HELLO1);
+    QThread::msleep(100);
+    QApplication::processEvents();
     sendCommand(COMMAND_CMS50_HELLO2);
+    QThread::msleep(100);
+    QApplication::processEvents();
 }
 
 void CMS50F37Loader::requestData()
