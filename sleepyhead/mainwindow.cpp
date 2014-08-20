@@ -889,29 +889,31 @@ void MainWindow::on_action_Import_Data_triggered()
         } else {
             infostr = tr("A %1 file structure was located at:").arg(datacards[0].loader->loaderName());
         }
-        QMessageBox mbox(QMessageBox::NoIcon,
-                         tr("CPAP Data Located"),
-                         infostr+"\n\n"+QDir::toNativeSeparators(datacards[0].path)+"\n\n"+
-                         tr("Would you like to import from this location?"),
-                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
-                         this);
-        mbox.setDefaultButton(QMessageBox::Yes);
-        mbox.setButtonText(QMessageBox::No, tr("Specify"));
 
-        QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
-        mbox.setIconPixmap(pixmap);
-        int res = mbox.exec();
+        if (!p_profile->cpap->autoImport()) {
+            QMessageBox mbox(QMessageBox::NoIcon,
+                             tr("CPAP Data Located"),
+                             infostr+"\n\n"+QDir::toNativeSeparators(datacards[0].path)+"\n\n"+
+                             tr("Would you like to import from this location?"),
+                             QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                             this);
+            mbox.setDefaultButton(QMessageBox::Yes);
+            mbox.setButtonText(QMessageBox::No, tr("Specify"));
 
-        if (res == QMessageBox::Cancel) {
-            // Give the communal progress bar back
-            ui->statusbar->insertWidget(2,qprogress,1);
-            return;
-        } else if (res == QMessageBox::No) {
-            waitmsg->setText(tr("Please wait, launching file dialog..."));
-            datacards.clear();
-            asknew = true;
+            QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
+            mbox.setIconPixmap(pixmap);
+            int res = mbox.exec();
+
+            if (res == QMessageBox::Cancel) {
+                // Give the communal progress bar back
+                ui->statusbar->insertWidget(2,qprogress,1);
+                return;
+            } else if (res == QMessageBox::No) {
+                waitmsg->setText(tr("Please wait, launching file dialog..."));
+                datacards.clear();
+                asknew = true;
+            }
         }
-
     } else {
         waitmsg->setText(tr("No CPAP data card detected, launching file dialog..."));
         asknew = true;
@@ -2332,6 +2334,10 @@ void MainWindow::doReprocessEvents()
                 // AHI flags
                 sess->destroyEvent(CPAP_AHI);
                 sess->destroyEvent(CPAP_RDI);
+
+                if (sess->machine()->loaderName() != STR_MACH_PRS1) {
+                    sess->destroyEvent(CPAP_LargeLeak);
+                }
 
                 sess->SetChanged(true);
 

@@ -1361,16 +1361,112 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
           <property name="spacing">
            <number>5</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_20">
+          <item row="3" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Flag rapid changes in oximetry stats</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_24">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>SPO2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QDoubleSpinBox" name="spo2DropTime">
+               <property name="toolTip">
+                <string>Minimum duration of drop in oxygen saturation</string>
+               </property>
+               <property name="suffix">
+                <string>s</string>
+               </property>
+               <property name="decimals">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QDoubleSpinBox" name="pulseChange">
+               <property name="toolTip">
+                <string>Sudden change in Pulse Rate of at least this amount</string>
+               </property>
+               <property name="suffix">
+                <string> bpm</string>
+               </property>
+               <property name="decimals">
+                <number>0</number>
+               </property>
+               <property name="minimum">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QDoubleSpinBox" name="pulseChangeTime">
+               <property name="toolTip">
+                <string>Minimum duration of pulse change event.</string>
+               </property>
+               <property name="suffix">
+                <string>s</string>
+               </property>
+               <property name="decimals">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_25">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Pulse</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="spo2Drop">
+               <property name="toolTip">
+                <string>Percentage drop in oxygen saturation</string>
+               </property>
+               <property name="suffix">
+                <string>%</string>
+               </property>
+               <property name="decimals">
+                <number>0</number>
+               </property>
+               <property name="minimum">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="oximetrySync">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Tries to forces the oximetry data to link with CPAP when possible.</string>
+            </property>
             <property name="text">
-             <string>Type</string>
+             <string>Link Oximetry and CPAP graphs</string>
             </property>
            </widget>
           </item>
@@ -1392,25 +1488,19 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
               <string>Contec CMS50F v3.7+</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>ChoiceMMed MD300W1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ResMed S9 Oximeter Module</string>
+             </property>
+            </item>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QCheckBox" name="oximetrySync">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Tries to forces the oximetry data to link with CPAP when possible.</string>
-            </property>
-            <property name="text">
-             <string>Link Oximetry and CPAP graphs</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
+          <item row="5" column="0" colspan="2">
            <spacer name="verticalSpacer_6">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1423,107 +1513,53 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
             </property>
            </spacer>
           </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Flag changes in oximetry stats</string>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <layout class="QGridLayout" name="gridLayout_4">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Other oximetry options</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_13">
              <item row="0" column="0">
-              <widget class="QLabel" name="label_24">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
+              <widget class="QLabel" name="label_52">
                <property name="text">
-                <string>SPO2</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="spo2Drop">
-               <property name="toolTip">
-                <string>Percentage drop in oxygen saturation</string>
-               </property>
-               <property name="suffix">
-                <string>%</string>
-               </property>
-               <property name="decimals">
-                <number>0</number>
-               </property>
-               <property name="minimum">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_25">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Pulse</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="pulseChange">
-               <property name="toolTip">
-                <string>Sudden change in Pulse Rate of at least this amount</string>
-               </property>
-               <property name="suffix">
-                <string> bpm</string>
-               </property>
-               <property name="decimals">
-                <number>0</number>
-               </property>
-               <property name="minimum">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QDoubleSpinBox" name="spo2DropTime">
-               <property name="toolTip">
-                <string>Minimum duration of drop in oxygen saturation</string>
-               </property>
-               <property name="suffix">
-                <string>s</string>
-               </property>
-               <property name="decimals">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QDoubleSpinBox" name="pulseChangeTime">
-               <property name="toolTip">
-                <string>Minimum duration of pulse change event.</string>
-               </property>
-               <property name="suffix">
-                <string>s</string>
-               </property>
-               <property name="decimals">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0" colspan="2">
-              <widget class="QLabel" name="label_33">
-               <property name="text">
-                <string>Discard chunks under</string>
+                <string>Flag SPO2 Desaturations Below</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
-             <item row="3" column="2">
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_33">
+               <property name="text">
+                <string>Discard segments under</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
               <widget class="QSpinBox" name="oxiDiscardThreshold">
                <property name="toolTip">
                 <string>Small chunks of oximetry data under this amount will be discarded.</string>
@@ -1536,14 +1572,48 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
                </property>
               </widget>
              </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="oxiDesaturationThreshold">
+               <property name="suffix">
+                <string>%</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_53">
+               <property name="text">
+                <string>Flag Pulse Rate Above</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_54">
+               <property name="text">
+                <string>Flag Pulse Rate Below</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="spinBox">
+               <property name="suffix">
+                <string> bpm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="spinBox_2">
+               <property name="suffix">
+                <string> bpm</string>
+               </property>
+              </widget>
+             </item>
             </layout>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="Line" name="line_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
            </widget>
           </item>
          </layout>
@@ -1745,6 +1815,16 @@ as this is the only value available on summary-only days.</string>
             <property name="spacing">
              <number>4</number>
             </property>
+            <item row="5" column="1">
+             <widget class="QCheckBox" name="showUnknownFlags">
+              <property name="toolTip">
+               <string>Show flags for machine detected events that haven't been identified yet.</string>
+              </property>
+              <property name="text">
+               <string>Show Unknown Flags</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QCheckBox" name="skipLoginScreen">
               <property name="toolTip">
@@ -1752,16 +1832,6 @@ as this is the only value available on summary-only days.</string>
               </property>
               <property name="text">
                <string>Skip Login Screen</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QCheckBox" name="skipEmptyDays">
-              <property name="toolTip">
-               <string>Daily view navigation buttons will skip over days without data records</string>
-              </property>
-              <property name="text">
-               <string>Skip over Empty Days</string>
               </property>
              </widget>
             </item>
@@ -1776,13 +1846,20 @@ Mainly affects the importer.</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="QCheckBox" name="showUnknownFlags">
+            <item row="5" column="0">
+             <widget class="QCheckBox" name="skipEmptyDays">
               <property name="toolTip">
-               <string>Show flags for machine detected events that haven't been identified yet.</string>
+               <string>Daily view navigation buttons will skip over days without data records</string>
               </property>
               <property name="text">
-               <string>Show Unknown Flags</string>
+               <string>Skip over Empty Days</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QCheckBox" name="automaticImport">
+              <property name="text">
+               <string>Import without nagging</string>
               </property>
              </widget>
             </item>

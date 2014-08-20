@@ -118,6 +118,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->pulseChangeTime->setValue(profile->oxi->pulseChangeDuration());
     ui->oxiDiscardThreshold->setValue(profile->oxi->oxiDiscardThreshold());
     ui->AddRERAtoAHI->setChecked(profile->general->calculateRDI());
+    ui->automaticImport->setChecked(profile->cpap->autoImport());
 
     ui->timeEdit->setTime(profile->session->daySplitTime());
     int val = profile->session->combineCloseSessions();
@@ -415,6 +416,11 @@ bool PreferencesDialog::Save()
         needs_restart = true;
     }
 
+    if (profile->cpap->leakRedline() != ui->leakRedlineSpinbox->value()) {
+        recalc_events = true;
+    }
+
+
     if (profile->cpap->userEventFlagging() &&
             (profile->cpap->userEventDuration() != ui->apneaDuration->value() ||
              profile->cpap->userEventDuration2() != ui->apneaDuration2->value() ||
@@ -541,6 +547,7 @@ bool PreferencesDialog::Save()
     profile->cpap->setAHIWindow(ui->ahiGraphWindowSize->value());
     profile->cpap->setAHIReset(ui->ahiGraphZeroReset->isChecked());
 
+    profile->cpap->setAutoImport(ui->automaticImport->isChecked());
 
     profile->cpap->setUserEventFlagging(ui->customEventGroupbox->isChecked());
 

@@ -95,11 +95,13 @@ void gLineChart::SetDay(Day *d)
 
         for (int i = 0; i < d->size(); i++) {
             Session *sess = d->sessions[i];
+            if (!sess->enabled()) continue;
 
             if (code == CPAP_MaskPressure) {
                 if (sess->channelExists(CPAP_MaskPressureHi)) {
                     code = m_codes[j] = CPAP_MaskPressureHi;
                     m_enabled[code] = schema::channel[CPAP_MaskPressureHi].enabled();
+
                     goto skipcheck; // why not :P
                 }
             }
@@ -457,6 +459,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;
+
 
     w.roundY(miny, maxy);
 
