@@ -51,6 +51,7 @@ public:
     virtual QDateTime getDateTime(int session) { Q_UNUSED(session); return QDateTime(); }
     virtual int getDuration(int session) { Q_UNUSED(session); return 0; }
     virtual int getSessionCount() { return 0; }
+    virtual QString getUser() { return QString(); }
     virtual QString getModel() { return QString(); }
     virtual QString getVendor()  { return QString(); }
     virtual QString getDeviceString()  { return QString(); }

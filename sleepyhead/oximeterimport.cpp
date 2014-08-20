@@ -223,6 +223,8 @@ void OximeterImport::on_directImportButton_clicked()
         return;
 
     QString model = oximodule->getModel();
+    QString user = oximodule->getUser();
+
 
     oximodule->resetDevice();
     int session_count = oximodule->getSessionCount();
@@ -240,7 +242,6 @@ void OximeterImport::on_directImportButton_clicked()
 
         ui->tableOxiSessions->setColumnWidth(0,150);
 
-
         int h, m, s;
         for (int i=0; i< session_count; ++i) {
             int duration = oximodule->getDuration(i);
@@ -256,11 +257,11 @@ void OximeterImport::on_directImportButton_clicked()
             item->setData(Qt::UserRole+2, duration);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-            item = new QTableWidgetItem(QString(). sprintf("%ih, %im, %is", h,m,s));
+            item = new QTableWidgetItem(QString(). sprintf("%02i:%02i:%02i", h,m,s));
             ui->tableOxiSessions->setItem(i, 1, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-            item = new QTableWidgetItem(tr("%1 Session %2 (%3s)").arg(model).arg(i+1, 0).arg(duration));
+            item = new QTableWidgetItem(tr("\"%1\", session %2").arg(user).arg(i+1, 0));
             ui->tableOxiSessions->setItem(i, 2, item);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         }
