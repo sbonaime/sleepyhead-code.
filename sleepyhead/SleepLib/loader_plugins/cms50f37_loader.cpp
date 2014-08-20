@@ -326,7 +326,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             if (started_reading) {
                 do {
                     res = buffer.at(idx++);
-                } while (res != resimport || idx > size);
+                } while (res != resimport || idx < size);
                 // add a dummy to make up for it.
                 qDebug() << "lost sync, padding...";
                 oxirec->append(OxiRecord(0,0,0));
