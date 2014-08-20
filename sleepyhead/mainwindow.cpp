@@ -1180,7 +1180,7 @@ void MainWindow::updateFavourites()
 
         if (journal) {
             if (journal->size() > 0) {
-                Session *sess = (*journal)[0];
+                Session *sess = journal->firstSession(MT_JOURNAL);
                 QString tmp;
                 bool filtered = !bookmarkFilter.isEmpty();
                 bool found = !filtered;
@@ -1939,11 +1939,10 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     QDate date = getDaily()->getDate();
     getDaily()->Unload(date);
     Day *day = p_profile->GetDay(date, MT_CPAP);
-    Machine *m;
+    Machine *cpap = nullptr;
+    if (day) cpap = day->machine(MT_CPAP);
 
-    if (day) {
-        m = day->machine;
-
+    if (cpap) {
         QList<Session *>::iterator s;
 
         QList<Session *> list;
@@ -1956,13 +1955,13 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         QHash<QString, SessionID> skipfiles;
         // Read the already imported file list
 
-        QFile impfile(m->getDataPath()+"/imported_files.csv");
+        QFile impfile(cpap->getDataPath()+"/imported_files.csv");
         if (impfile.exists()) {
             if (impfile.open(QFile::ReadOnly)) {
                 QTextStream impstream(&impfile);
                 QString serial;
                 impstream >> serial;
-                if (m->serial() == serial) {
+                if (cpap->serial() == serial) {
                     QString line, file, str;
                     SessionID sid;
                     bool ok;
@@ -1984,7 +1983,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             // Rewrite the file without the sessions being removed.
             if (impfile.open(QFile::WriteOnly)) {
                 QTextStream out(&impfile);
-                out << m->serial();
+                out << cpap->serial();
                 QHash<QString, SessionID>::iterator skit;
                 QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
                 for (skit = skipfiles.begin(); skit != skit_end; ++skit) {

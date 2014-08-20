@@ -158,19 +158,21 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         if (bounds.height() > maxy) { maxy = bounds.height(); }
     }
 
-    Day *cpap = nullptr, *oxi = nullptr;
+    Machine *cpap = nullptr, *oxi = nullptr;
 
     int graph_slots = 0;
+    Day * day = p_profile->GetGoodDay(mainwin->getDaily()->getDate(), MT_CPAP);
+    if (day) cpap = day->machine(MT_CPAP);
 
     if (name == STR_TR_Daily) {
-        cpap = p_profile->GetGoodDay(date, MT_CPAP);
-        oxi = p_profile->GetGoodDay(date, MT_OXIMETER);
+
         QString cpapinfo = date.toString(Qt::SystemLocaleLongDate) + "\n\n";
 
+
         if (cpap) {
-            time_t f = cpap->first() / 1000L;
-            time_t l = cpap->last() / 1000L;
-            int tt = qint64(cpap->total_time()) / 1000L;
+            time_t f = day->first(MT_CPAP) / 1000L;
+            time_t l = day->last(MT_CPAP) / 1000L;
+            int tt = qint64(day->total_time(MT_CPAP)) / 1000L;
             int h = tt / 3600;
             int m = (tt / 60) % 60;
             int s = tt % 60;
@@ -186,29 +188,29 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 //                submodel = "\n" + cpap->machine->info.modeproperties[STR_PROP_SubModel];
 //            }
 
-            cpapinfo += cpap->machine->brand() + " " +
-                        cpap->machine->model() + submodel;
-            CPAPMode mode = (CPAPMode)(int)cpap->settings_max(CPAP_Mode);
+            cpapinfo += cpap->brand() + " " +
+                        cpap->model() + submodel;
+            CPAPMode mode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
             cpapinfo += "\n" + STR_TR_Mode + ": ";
 
             if (mode == MODE_CPAP) {
-                EventDataType min = round(cpap->settings_wavg(CPAP_Pressure) * 2) / 2.0;
+                EventDataType min = round(day->settings_wavg(CPAP_Pressure) * 2) / 2.0;
                 cpapinfo += STR_TR_CPAP + " " + QString::number(min) + STR_UNIT_CMH2O;
             } else if (mode == MODE_APAP) {
-                EventDataType min = cpap->settings_min(CPAP_PressureMin);
-                EventDataType max = cpap->settings_max(CPAP_PressureMax);
+                EventDataType min = day->settings_min(CPAP_PressureMin);
+                EventDataType max = day->settings_max(CPAP_PressureMax);
                 cpapinfo += STR_TR_APAP + " " + QString::number(min) + "-" + QString::number(max) + STR_UNIT_CMH2O;
             } else if (mode == MODE_BILEVEL_FIXED) {
-                EventDataType epap = cpap->settings_min(CPAP_EPAP);
-                EventDataType ipap = cpap->settings_max(CPAP_IPAP);
-                EventDataType ps = cpap->settings_max(CPAP_PS);
+                EventDataType epap = day->settings_min(CPAP_EPAP);
+                EventDataType ipap = day->settings_max(CPAP_IPAP);
+                EventDataType ps = day->settings_max(CPAP_PS);
                 cpapinfo += STR_TR_BiLevel +
                         QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 %3\n" + STR_TR_PS + ": %4")
                             .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
             } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-                EventDataType epap = cpap->settings_min(CPAP_EPAP);
-                EventDataType ipap = cpap->settings_max(CPAP_IPAP);
-                EventDataType ps = cpap->settings_max(CPAP_PS);
+                EventDataType epap = day->settings_min(CPAP_EPAP);
+                EventDataType ipap = day->settings_max(CPAP_IPAP);
+                EventDataType ps = day->settings_max(CPAP_PS);
                 cpapinfo += STR_TR_BiLevel +
                         QString("\n" + QObject::tr("Range")+ ": %1-%2 %3 " + QObject::tr("Fixed %1").arg(STR_TR_PS) + ": %4")
                             .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
@@ -221,11 +223,11 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                         QString("\n" + QObject::tr("Fixed %1").arg(STR_TR_EPAP) + ": %1 %3" + QObject::tr("Max %1").arg(STR_TR_IPAP) + ": %2 %3\n" + QObject::tr("Variable %1").arg(STR_TR_PS) + ": %4-%5")
                             .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(psl,0,'f',1).arg(psh,0,'f',1);
             } */else if (mode == MODE_ASV) {
-                EventDataType epap = cpap->settings_min(CPAP_EPAP);
-                EventDataType low = cpap->settings_min(CPAP_IPAPLo);
-                EventDataType high = cpap->settings_max(CPAP_IPAPHi);
-                EventDataType psl = cpap->settings_min(CPAP_PSMin);
-                EventDataType psh = cpap->settings_max(CPAP_PSMax);
+                EventDataType epap = day->settings_min(CPAP_EPAP);
+                EventDataType low = day->settings_min(CPAP_IPAPLo);
+                EventDataType high = day->settings_max(CPAP_IPAPHi);
+                EventDataType psl = day->settings_min(CPAP_PSMin);
+                EventDataType psh = day->settings_max(CPAP_PSMax);
                 cpapinfo += STR_TR_ASV + QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 - %3 %4\n" +
                                                  STR_TR_PS + ": %5 / %6")
                             .arg(epap, 0, 'f', 1)
@@ -236,24 +238,25 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                             .arg(psh, 0, 'f', 1);
             } else { cpapinfo += STR_TR_Unknown; }
 
-            float ahi = (cpap->count(CPAP_Obstructive) + cpap->count(CPAP_Hypopnea) + cpap->count(
-                             CPAP_ClearAirway) + cpap->count(CPAP_Apnea));
+            float ahi = (day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) +
+                         day->count(CPAP_ClearAirway) + day->count(CPAP_Apnea));
 
-            if (p_profile->general->calculateRDI()) { ahi += cpap->count(CPAP_RERA); }
+            if (p_profile->general->calculateRDI()) { ahi += day->count(CPAP_RERA); }
 
-            ahi /= cpap->hours();
-            float csr = (100.0 / cpap->hours()) * (cpap->sum(CPAP_CSR) / 3600.0);
-            float uai = cpap->count(CPAP_Apnea) / cpap->hours();
-            float oai = cpap->count(CPAP_Obstructive) / cpap->hours();
-            float hi = (cpap->count(CPAP_ExP) + cpap->count(CPAP_Hypopnea)) / cpap->hours();
-            float cai = cpap->count(CPAP_ClearAirway) / cpap->hours();
-            float rei = cpap->count(CPAP_RERA) / cpap->hours();
-            float vsi = cpap->count(CPAP_VSnore) / cpap->hours();
-            float fli = cpap->count(CPAP_FlowLimit) / cpap->hours();
-//            float sai = cpap->count(CPAP_SensAwake) / cpap->hours();
-            float nri = cpap->count(CPAP_NRI) / cpap->hours();
-            float lki = cpap->count(CPAP_LeakFlag) / cpap->hours();
-            float exp = cpap->count(CPAP_ExP) / cpap->hours();
+            float hours = day->hours(MT_CPAP);
+            ahi /= hours;
+            float csr = (100.0 / hours) * (day->sum(CPAP_CSR) / 3600.0);
+            float uai = day->count(CPAP_Apnea) / hours;
+            float oai = day->count(CPAP_Obstructive) / hours;
+            float hi = (day->count(CPAP_ExP) + day->count(CPAP_Hypopnea)) / hours;
+            float cai = day->count(CPAP_ClearAirway) / hours;
+            float rei = day->count(CPAP_RERA) / hours;
+            float vsi = day->count(CPAP_VSnore) / hours;
+            float fli = day->count(CPAP_FlowLimit) / hours;
+//            float sai = day->count(CPAP_SensAwake) / hours;
+            float nri = day->count(CPAP_NRI) / hours;
+            float lki = day->count(CPAP_LeakFlag) / hours;
+            float exp = day->count(CPAP_ExP) / hours;
 
             int piesize = (2048.0 / 8.0) * 1.3; // 1.5" in size
             //float fscale=font_scale;
@@ -303,13 +306,13 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             stats = QObject::tr("AI=%1 HI=%2 CAI=%3 ").arg(oai, 0, 'f', 2).arg(hi, 0, 'f', 2).arg(cai, 0, 'f',
                     2);
 
-            if (cpap->machine->loaderName() == STR_MACH_PRS1) {
+            if (cpap->loaderName() == STR_MACH_PRS1) {
                 stats += QObject::tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%")
                          .arg(rei, 0, 'f', 2).arg(vsi, 0, 'f', 2)
                          .arg(fli, 0, 'f', 2).arg(csr, 0, 'f', 2);
-            } else if (cpap->machine->loaderName() == STR_MACH_ResMed) {
+            } else if (cpap->loaderName() == STR_MACH_ResMed) {
                 stats += QObject::tr("UAI=%1 ").arg(uai, 0, 'f', 2);
-            } else if (cpap->machine->loaderName() == STR_MACH_Intellipap) {
+            } else if (cpap->loaderName() == STR_MACH_Intellipap) {
                 stats += QObject::tr("NRI=%1 LKI=%2 EPI=%3").arg(nri, 0, 'f', 2).arg(lki, 0, 'f', 2).arg(exp, 0,
                          'f', 2);
             }
@@ -418,11 +421,11 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                 if (!g->visible()) { continue; }
 
                 if (cpap) {
-                    st = cpap->first();
-                    et = cpap->last();
+                    st = day->first(MT_CPAP);
+                    et = day->last(MT_CPAP);
                 } else if (oxi) {
-                    st = oxi->first();
-                    et = oxi->last();
+                    st = day->first(MT_OXIMETER);
+                    et = day->last(MT_OXIMETER);
                 }
 
                 if (g->name() == schema::channel[CPAP_FlowRate].code()) {
@@ -459,22 +462,22 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
                     if (cpap && flow && !flow->isEmpty() && flow->visible()) {
                         labels.push_back(EntireDay);
-                        start.push_back(cpap->first());
-                        end.push_back(cpap->last());
+                        start.push_back(day->first(MT_CPAP));
+                        end.push_back(day->last(MT_CPAP));
                         graphs.push_back(flow);
                     }
 
                     if (oxi && spo2 && !spo2->isEmpty() && spo2->visible()) {
                         labels.push_back(EntireDay);
-                        start.push_back(oxi->first());
-                        end.push_back(oxi->last());
+                        start.push_back(day->first(MT_OXIMETER));
+                        end.push_back(day->last(MT_OXIMETER));
                         graphs.push_back(spo2);
                     }
 
                     if (oxi && pulse && !pulse->isEmpty() && pulse->visible()) {
                         labels.push_back(EntireDay);
-                        start.push_back(oxi->first());
-                        end.push_back(oxi->last());
+                        start.push_back(day->first(MT_OXIMETER));
+                        end.push_back(day->last(MT_OXIMETER));
                         graphs.push_back(pulse);
                     }
 

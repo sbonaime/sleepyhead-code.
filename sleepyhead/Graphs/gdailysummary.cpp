@@ -34,7 +34,11 @@ void gDailySummary::SetDay(Day *day)
     pie_total = 0;
 
     m_day = day;
-    if (day) {
+    Machine * cpap = nullptr;
+    if (day) cpap = day->machine(MT_CPAP);
+
+    if (cpap) {
+
         m_minx = m_day->first();
         m_maxx = m_day->last();;
 
@@ -103,8 +107,9 @@ void gDailySummary::SetDay(Day *day)
         info.append(QObject::tr("%1: %2").arg(STR_TR_AHI).arg(day->calcAHI(),0,'f',2));
         info_background.append(QColor("orange"));
 
-        settings.append(day->machine->brand()+ " " + day->machine->series());
-        settings.append(day->machine->model()+ " " + day->machine->modelnumber());
+
+        settings.append(cpap->brand()+ " " + cpap->series());
+        settings.append(cpap->model()+ " " + cpap->modelnumber());
         settings.append(schema::channel[CPAP_Mode].option(mode));
 
         if (mode == MODE_CPAP) {

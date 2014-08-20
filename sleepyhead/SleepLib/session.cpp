@@ -168,7 +168,9 @@ bool Session::Store(QString path)
 
 bool Session::StoreSummary(QString filename)
 {
-
+    if (filename.isEmpty()) {
+        filename = machine()->getDataPath() + QString().sprintf("%08lx.000", s_session);
+    }
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
@@ -476,6 +478,10 @@ const quint16 compress_method = 1;
 
 bool Session::StoreEvents(QString filename)
 {
+    if (filename.isEmpty()) {
+        filename = machine()->getDataPath() + QString().sprintf("%08lx.001", s_session);
+    }
+
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 

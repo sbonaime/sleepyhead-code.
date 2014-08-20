@@ -48,17 +48,18 @@ void MinutesAtPressure::SetDay(Day *day)
     Layer::SetDay(day);
 
     // look at session summaryValues.
-    if (day) {
+    Machine * cpap = nullptr;
+    if (day) cpap = day->machine(MT_CPAP);
+    if (cpap) {
         QList<Session *>::iterator sit;
         EventDataType minpressure = 40;
         EventDataType maxpressure = 0;
 
-        Machine * mach = day->machine;
         QMap<QDate, Day *>::iterator it;
-        QMap<QDate, Day *>::iterator day_end = mach->day.end();
+        QMap<QDate, Day *>::iterator day_end = cpap->day.end();
         // look at overall pressure ranges and find the max
 
-        for (it = mach->day.begin(); it != day_end; ++it) {
+        for (it = cpap->day.begin(); it != day_end; ++it) {
             Day * d = it.value();
             QList<Session *>::iterator sess_end = d->end();
             for (sit = d->begin(); sit != sess_end; ++sit) {

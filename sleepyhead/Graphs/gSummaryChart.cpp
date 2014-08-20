@@ -124,7 +124,7 @@ void SummaryChart::SetDay(Day * nullday)
     bool first = true;
 
     // For each day in the main profile daylist
-    QMap<QDate, QList<Day *> >::iterator d;
+    QMap<QDate, Day *>::iterator d;
 
     for (d = p_profile->daylist.begin(); d != p_profile->daylist.end(); d++) {
 
@@ -154,64 +154,61 @@ void SummaryChart::SetDay(Day * nullday)
             }
 
             // for each day object on record for this date
-            int dlistsize = d.value().size();
-            for (int i = 0; i < dlistsize; ++i) {
-                day = d.value().at(i);
+            day = d.value();
 
-                // skip any empty or irrelevant day records
-                if (!day || (day->machine_type() != m_machinetype)) { continue; }
+            // skip any empty or irrelevant day records
+            if (!day || (day->machine(m_machinetype) == nullptr)) { continue; }
 
-                int ft = qint64(day->first()) / 1000L;
-                ft += tz_offset; // convert to local time
+            int ft = qint64(day->first()) / 1000L;
+            ft += tz_offset; // convert to local time
 
-                int dz2 = ft / 86400;
-                dz2 *= 86400;
-                // ft = first sessions time, rounded back to midnight..
+            int dz2 = ft / 86400;
+            dz2 *= 86400;
+            // ft = first sessions time, rounded back to midnight..
 
-                // For each session in this day record
-                for (int s = 0; s < day->size(); s++) {
-                    Session *sess = (*day)[s];
+            // For each session in this day record
+            for (int s = 0; s < day->size(); s++) {
+                Session *sess = (*day)[s];
 
-                    if (!sess->enabled()) { continue; }
+                if (!sess->enabled()) { continue; }
 
-                    // Get session duration
-                    tmp = sess->hours();
-                    m_values[dn][s] = tmp;
+                // Get session duration
+                tmp = sess->hours();
+                m_values[dn][s] = tmp;
 
-                    total += tmp;
+                total += tmp;
 
-                    // Get session start timestamp
-                    zt = qint64(sess->first()) / 1000L;
-                    zt += tz_offset;
+                // Get session start timestamp
+                zt = qint64(sess->first()) / 1000L;
+                zt += tz_offset;
 
-                    // Calculate the starting hour
-                    tmp2 = zt - dn * 86400;
-                    tmp2 /= 3600.0;
+                // Calculate the starting hour
+                tmp2 = zt - dn * 86400;
+                tmp2 /= 3600.0;
 
-                    m_times[dn][s] = tmp2;
+                m_times[dn][s] = tmp2;
 
-                    // Update min & max Y values
-                    if (first) {
+                // Update min & max Y values
+                if (first) {
+                    m_miny = tmp2;
+                    m_maxy = tmp2 + tmp;
+                    first = false;
+                } else {
+                    if (tmp2 < m_miny) {
                         m_miny = tmp2;
-                        m_maxy = tmp2 + tmp;
-                        first = false;
-                    } else {
-                        if (tmp2 < m_miny) {
-                            m_miny = tmp2;
-                        }
-
-                        if (tmp2 + tmp > m_maxy) {
-                            m_maxy = tmp2 + tmp;
-                        }
                     }
-                } // for each session
 
-                // if total hours for all sessions more than 0, register the day as valid
-                if (total > 0) {
-                    m_days[dn] = day;
-                    m_hours[dn] = total;
-                    m_empty = false;
+                    if (tmp2 + tmp > m_maxy) {
+                        m_maxy = tmp2 + tmp;
+                    }
                 }
+            } // for each session
+
+            // if total hours for all sessions more than 0, register the day as valid
+            if (total > 0) {
+                m_days[dn] = day;
+                m_hours[dn] = total;
+                m_empty = false;
             }
         } else {
             //////////////////////////////////////////////////////////////////////////////
@@ -225,139 +222,136 @@ void SummaryChart::SetDay(Day * nullday)
                 type = m_type[j];
                 EventDataType typeval = m_typeval[j];
 
-                // for each machine object for this day
-                for (int i = 0; i < d.value().size(); i++) {
-                    day = d.value()[i];
+                day = d.value();
 
-                    CPAPMode mode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
+                CPAPMode mode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
 
-                    // ignore irrelevent day objects
-                    if (day->machine_type() != m_machinetype) { continue; }
+                // ignore irrelevent day objects
+                if (day->machine(m_machinetype) == nullptr) { continue; }
 
-                    bool hascode = //day->channelHasData(code) ||
-                        type == ST_HOURS ||
-                        type == ST_SESSIONS ||
-                        day->settingExists(code) ||
-                        day->hasData(code, type);
+                bool hascode = //day->channelHasData(code) ||
+                    type == ST_HOURS ||
+                    type == ST_SESSIONS ||
+                    day->settingExists(code) ||
+                    day->hasData(code, type);
 
-                    if (code == CPAP_Pressure) {
-                        if ((cpapmode > MODE_CPAP) && (mode == MODE_CPAP)) {
-                            hascode = false;
+                if (code == CPAP_Pressure) {
+                    if ((cpapmode > MODE_CPAP) && (mode == MODE_CPAP)) {
+                        hascode = false;
 
-                            if ((type == ST_WAVG) || (type == ST_AVG) || ((type == ST_PERC) && (typeval == 0.5))) {
-                                type = ST_SETWAVG;
-                                hascode = true;
-                            }
-                        } else {
-                            type = m_type[j];
+                        if ((type == ST_WAVG) || (type == ST_AVG) || ((type == ST_PERC) && (typeval == 0.5))) {
+                            type = ST_SETWAVG;
+                            hascode = true;
                         }
-                    }
-
-                    //if (code==CPAP_Hypopnea) { // Make sure at least one of the CPAP data gets through with 0
-                    //    hascode=true;
-                    //}
-                    if (hascode) {
-                        m_days[dn] = day;
-
-                        switch (type) {
-                        case ST_AVG:
-                            tmp = day->avg(code);
-                            break;
-
-                        case ST_SUM:
-                            tmp = day->sum(code);
-                            break;
-
-                        case ST_WAVG:
-                            tmp = day->wavg(code);
-                            break;
-
-                        case ST_90P:
-                            tmp = day->p90(code);
-                            break;
-
-                        case ST_PERC:
-                            tmp = day->percentile(code, typeval);
-                            break;
-
-                        case ST_MIN:
-                            tmp = day->Min(code);
-                            break;
-
-                        case ST_MAX:
-                            tmp = day->Max(code);
-                            break;
-
-                        case ST_CNT:
-                            tmp = day->count(code);
-                            break;
-
-                        case ST_CPH:
-                            tmp = day->count(code) / day->hours();
-                            break;
-
-                        case ST_SPH:
-                            tmp = day->sph(code);
-                            break;
-
-                        case ST_HOURS:
-                            tmp = day->hours();
-                            break;
-
-                        case ST_SESSIONS:
-                            tmp = day->size();
-                            break;
-
-                        case ST_SETMIN:
-                            tmp = day->settings_min(code);
-                            break;
-
-                        case ST_SETMAX:
-                            tmp = day->settings_max(code);
-                            break;
-
-                        case ST_SETAVG:
-                            tmp = day->settings_avg(code);
-                            break;
-
-                        case ST_SETWAVG:
-                            tmp = day->settings_wavg(code);
-                            break;
-
-                        case ST_SETSUM:
-                            tmp = day->settings_sum(code);
-                            break;
-
-                        default:
-                            tmp = 0;
-                            break;
-                        }
-
-                        if (suboffset > 0) {
-                            tmp -= suboffset;
-
-                            if (tmp < 0) { tmp = 0; }
-                        }
-
-                        total += tmp;
-                        m_values[dn][j + 1] = tmp;
-
-                        if (tmp < m_miny) { m_miny = tmp; }
-
-                        if (tmp > m_maxy) { m_maxy = tmp; }
-
-                        m_goodcodes[j] = true;
-                        fnd = true;
-                        break;
+                    } else {
+                        type = m_type[j];
                     }
                 }
+
+                //if (code==CPAP_Hypopnea) { // Make sure at least one of the CPAP data gets through with 0
+                //    hascode=true;
+                //}
+                if (hascode) {
+                    m_days[dn] = day;
+
+                    switch (type) {
+                    case ST_AVG:
+                        tmp = day->avg(code);
+                        break;
+
+                    case ST_SUM:
+                        tmp = day->sum(code);
+                        break;
+
+                    case ST_WAVG:
+                        tmp = day->wavg(code);
+                        break;
+
+                    case ST_90P:
+                        tmp = day->p90(code);
+                        break;
+
+                    case ST_PERC:
+                        tmp = day->percentile(code, typeval);
+                        break;
+
+                    case ST_MIN:
+                        tmp = day->Min(code);
+                        break;
+
+                    case ST_MAX:
+                        tmp = day->Max(code);
+                        break;
+
+                    case ST_CNT:
+                        tmp = day->count(code);
+                        break;
+
+                    case ST_CPH:
+                        tmp = day->count(code) / day->hours(m_machinetype);
+                        break;
+
+                    case ST_SPH:
+                        tmp = day->sph(code);
+                        break;
+
+                    case ST_HOURS:
+                        tmp = day->hours(m_machinetype);
+                        break;
+
+                    case ST_SESSIONS:
+                        tmp = day->size();
+                        break;
+
+                    case ST_SETMIN:
+                        tmp = day->settings_min(code);
+                        break;
+
+                    case ST_SETMAX:
+                        tmp = day->settings_max(code);
+                        break;
+
+                    case ST_SETAVG:
+                        tmp = day->settings_avg(code);
+                        break;
+
+                    case ST_SETWAVG:
+                        tmp = day->settings_wavg(code);
+                        break;
+
+                    case ST_SETSUM:
+                        tmp = day->settings_sum(code);
+                        break;
+
+                    default:
+                        tmp = 0;
+                        break;
+                    }
+
+                    if (suboffset > 0) {
+                        tmp -= suboffset;
+
+                        if (tmp < 0) { tmp = 0; }
+                    }
+
+                    total += tmp;
+                    m_values[dn][j + 1] = tmp;
+
+                    if (tmp < m_miny) { m_miny = tmp; }
+
+                    if (tmp > m_maxy) { m_maxy = tmp; }
+
+                    m_goodcodes[j] = true;
+                    fnd = true;
+                }
+
             }
 
             if (fnd) {
                 if (!m_fday) { m_fday = dn; }
 
                 m_values[dn][0] = total;
-                m_hours[dn] = day->hours();
+                m_hours[dn] = day->hours(m_machinetype);
 
                 if (m_graphtype == GT_BAR) {
                     if (total < m_miny) { m_miny = total; }

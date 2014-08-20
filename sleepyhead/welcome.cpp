@@ -122,20 +122,23 @@ QString GenerateWelcomeHTML()
         html += "<p>" + QObject::tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")+"</p>"
         "<p>" + QObject::tr("First import can take a few minutes.") + "</p>";
     } else {
-        if (havecpapdata) {
+        QDate date = p_profile->LastDay(MT_CPAP);
+        Day *day = p_profile->GetDay(date, MT_CPAP);
+
+        if (havecpapdata && day) {
             QString cpapimage = "";
-            QDate date = p_profile->LastDay(MT_CPAP);
-            Day *day = p_profile->GetDay(date, MT_CPAP);
-            if (day) {
-                if (day->machine->loaderName() == STR_MACH_ResMed) cpapimage = "qrc:/icons/rms9.png";
-                else if (day->machine->loaderName() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
-                else if (day->machine->loaderName() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
+
+            Machine * cpap = day->machine(MT_CPAP);
+            if (cpap) {
+                if (cpap->loaderName() == STR_MACH_ResMed) cpapimage = "qrc:/icons/rms9.png";
+                else if (cpap->loaderName() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
+                else if (cpap->loaderName() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
             }
             html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
             html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+
                     QString("<td align=center  onmouseover='ChangeColor(this, \"#efefa0\");' onmouseout='ChangeColor(this, \"#ffffc0\");' onclick='alert(\"daily=%1\");'>").arg(date.toString(Qt::ISODate))+"<b>"+
-                    QObject::tr("The last time you used your %1...").arg(day->machine->brand()+" "+day->machine->model())+"</b><br/>";
+                    QObject::tr("The last time you used your %1...").arg(cpap->brand()+" "+cpap->model())+"</b><br/>";
 
             int daysto = date.daysTo(QDate::currentDate());
             QString daystring;

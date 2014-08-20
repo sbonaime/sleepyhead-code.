@@ -433,7 +433,7 @@ void OximeterImport::on_liveImportButton_clicked()
     oximodule->Open("live");
     ui->stopButton->setVisible(true);
 
-    dummyday = new Day(mach);
+    dummyday = new Day();
 
     quint32 starttime = oximodule->startTime().toTime_t();
     ti = qint64(starttime) * 1000L;
@@ -445,7 +445,7 @@ void OximeterImport::on_liveImportButton_clicked()
 
     ELplethy->setFirst(start_ti);
     session->really_set_first(start_ti);
-    dummyday->AddSession(session);
+    dummyday->addSession(session);
 
     plethyChart->setMinX(start_ti);
     plethyGraph->SetMinX(start_ti);

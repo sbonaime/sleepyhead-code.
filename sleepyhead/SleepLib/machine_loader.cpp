@@ -103,6 +103,7 @@ Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
         break;
     case MT_JOURNAL:
         m = new Machine(id);
+        m->setType(MT_JOURNAL);
         break;
     default:
         m = new Machine(id);
@@ -246,7 +247,7 @@ void MachineLoader::runTasks(bool threaded)
 
 QList<ChannelID> CPAPLoader::eventFlags(Day * day)
 {
-    Machine * mach = day->machine;
+    Machine * mach = day->machine(MT_CPAP);
 
     QList<ChannelID> list;
 

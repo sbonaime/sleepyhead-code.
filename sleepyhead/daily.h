@@ -314,13 +314,13 @@ private:
     void updateGraphCombo();
 
 
-    QString getSessionInformation(Day *cpap, Day *oxi, Day *stage, Day *posit);
-    QString getMachineSettings(Day *cpap);
-    QString getStatisticsInfo(Day *cpap, Day *oxi, Day *pos);
-    QString getCPAPInformation(Day *cpap);
-    QString getOximeterInformation(Day *oxi);
-    QString getEventBreakdown(Day *cpap);
-    QString getSleepTime(Day *cpap, Day *oxi);
+    QString getSessionInformation(Day *);
+    QString getMachineSettings(Day *);
+    QString getStatisticsInfo(Day *);
+    QString getCPAPInformation(Day *);
+    QString getOximeterInformation(Day *);
+    QString getEventBreakdown(Day *);
+    QString getSleepTime(Day *);
 
     QHash<QString, gGraph *> graphlist;
 

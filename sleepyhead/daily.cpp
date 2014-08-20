@@ -126,7 +126,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     GraphView=new gGraphView(ui->graphFrame,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    snapGV=new gGraphView(GraphView); //ui->graphMainArea);
+    snapGV=new gGraphView(GraphView);
     snapGV->setMinimumSize(172,172);
     snapGV->hideSplitter();
     snapGV->hide();
@@ -520,15 +520,10 @@ void Daily::closeEvent(QCloseEvent *event)
 
 void Daily::doToggleSession(Session * sess)
 {
-    Q_UNUSED(sess)
     sess->setEnabled(!sess->enabled());
+    sess->StoreSummary();
 
-   // sess->StoreSummary();
-    Day *day=p_profile->GetDay(previous_date,MT_CPAP);
-    if (day) {
-        day->machine->Save();
-        this->LoadDate(previous_date);
-    }
+    LoadDate(previous_date);
 }
 
 void Daily::Link_clicked(const QUrl &url)
@@ -537,21 +532,20 @@ void Daily::Link_clicked(const QUrl &url)
     QString data=url.toString().section("=",1);
     int sid=data.toInt();
     Day *day=nullptr;
+
     if (code=="togglecpapsession") { // Enable/Disable CPAP session
         day=p_profile->GetDay(previous_date,MT_CPAP);
+        if (!day) return;
         Session *sess=day->find(sid);
         if (!sess)
             return;
         int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
-
-        // Messy, this rewrites both summary & events.. TODO: Write just the session summary file
-        day->machine->Save();
+        sess->StoreSummary();
 
         // Reload day
-        this->LoadDate(previous_date);
+        LoadDate(previous_date);
         webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
-        return;
     } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
         day=p_profile->GetDay(previous_date,MT_OXIMETER);
         Session *sess=day->find(sid);
@@ -559,19 +553,29 @@ void Daily::Link_clicked(const QUrl &url)
             return;
         int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
-        // Messy, this rewrites both summary & events.. TODO: Write just the session summary file
-        day->machine->Save();
+
+        sess->StoreSummary();
 
         // Reload day
-        this->LoadDate(previous_date);
+        LoadDate(previous_date);
         webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
-        return;
     } else if (code=="cpap")  {
         day=p_profile->GetDay(previous_date,MT_CPAP);
+        if (day) {
+            Session *sess=day->machine(MT_CPAP)->sessionlist[sid];
+            if (sess && sess->enabled()) {
+                GraphView->SetXBounds(sess->first(),sess->last());
+            }
+        }
     } else if (code=="oxi") {
-        //day=p_profile->GetDay(previous_date,MT_OXIMETER);
-        //Session *sess=day->machine->sessionlist[sid];
-        return;
+        day=p_profile->GetDay(previous_date,MT_OXIMETER);
+        if (day) {
+            Session *sess=day->machine(MT_OXIMETER)->sessionlist[sid];
+            if (sess && sess->enabled()) {
+                GraphView->SetXBounds(sess->first(),sess->last());
+            }
+        }
+
     } else if (code=="event")  {
         QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[sid].fullname(),Qt::MatchContains);
         if (list.size()>0) {
@@ -587,13 +591,6 @@ void Daily::Link_clicked(const QUrl &url)
         qDebug() << "Select graph " << data;
     } else {
         qDebug() << "Clicked on" << code << data;
-    }
-    if (day) {
-
-        Session *sess=day->machine->sessionlist[sid];
-        if (sess && sess->enabled()) {
-            GraphView->SetXBounds(sess->first(),sess->last());
-        }
     }
 }
 
@@ -916,24 +913,19 @@ MyWebView::MyWebView(QWidget *parent):
 }
 
 
-QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * posit)
+QString Daily::getSessionInformation(Day * day)
 {
     QString html;
-    QList<Day *> list;
-    if (cpap) list.push_back(cpap);
-    if (oxi) list.push_back(oxi);
-    if (stage) list.push_back(stage);
-    if (posit) list.push_back(posit);
-
-
-    if (list.isEmpty())
-        return html;
+    if (!day) return html;
 
     html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
     html+=QString("<tr><td colspan=5 align=center><b>"+tr("Session Information")+"</b></td></tr>");
     html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
     QFontMetrics FM(*defaultfont);
     QRect r=FM.boundingRect('@');
+
+    Machine * cpap = day->machine(MT_CPAP);
+
     if (cpap) {
         html+=QString("<tr><td colspan=5 align=center>"
         "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=%1 width=100%></object>"
@@ -949,30 +941,32 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
     bool corrupted_waveform=false;
     QString tooltip;
 
-    QList<Day *>::iterator di;
     QString type;
 
-    for (di=list.begin();di!=list.end();di++) {
-        Day * day=*di;
-        html+="<tr><td colspan=5 align=center><i>";
-        switch (day->machine_type()) {
-        case MT_CPAP: type="cpap";
-            html+=tr("CPAP Sessions");
-            break;
-        case MT_OXIMETER: type="oxi";
-            html+=tr("Oximetery Sessions");
-            break;
-        case MT_SLEEPSTAGE: type="stage";
-            html+=tr("Sleep Stage Sessions");
-            break;
-        case MT_POSITION: type="stage";
-            html+=tr("Position Sensor Sessions");
-            break;
+    QHash<MachineType, Machine *>::iterator mach_end = day->machines.end();
+    QHash<MachineType, Machine *>::iterator mi;
 
-        default:
-            type="unknown";
-            html+=tr("Unknown Session");
-            break;
+    for (mi = day->machines.begin(); mi != mach_end; ++mi) {
+        if (mi.key() == MT_JOURNAL) continue;
+        html += "<tr><td colspan=5 align=center><i>";
+        switch (mi.key()) {
+            case MT_CPAP: type="cpap";
+                html+=tr("CPAP Sessions");
+                break;
+            case MT_OXIMETER: type="oxi";
+                html+=tr("Oximetery Sessions");
+                break;
+            case MT_SLEEPSTAGE: type="stage";
+                html+=tr("Sleep Stage Sessions");
+                break;
+            case MT_POSITION: type="stage";
+                html+=tr("Position Sensor Sessions");
+                break;
+
+            default:
+                type="unknown";
+                html+=tr("Unknown Session");
+                break;
         }
         html+="</i></td></tr>\n";
         html+=QString("<tr>"
@@ -981,10 +975,12 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
                       "<th>"+STR_TR_Start+"</th>"
                       "<th>"+STR_TR_End+"</th>"
                       "<th>"+tr("Duration")+"</th></tr>");
-        for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
 
-            if ((day->machine_type()==MT_CPAP) &&
-                ((*s)->settings.find(CPAP_BrokenWaveform)!=(*s)->settings.end()))
+        QList<Session *> sesslist = day->getSessions(mi.key());
+
+        for (QList<Session *>::iterator s=sesslist.begin(); s != sesslist.end(); ++s) {
+            if (((*s)->machine()->type() == MT_CPAP) &&
+                ((*s)->settings.find(CPAP_BrokenWaveform) != (*s)->settings.end()))
                     corrupted_waveform=true;
 
             fd=QDateTime::fromTime_t((*s)->first()/1000L);
@@ -993,13 +989,6 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
             int h=len/3600;
             int m=(len/60) % 60;
             int s1=len % 60;
-            //tooltip=day->machine->loaderName()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
-
-//#define DEBUG_SESSIONS
-//#ifdef DEBUG_SESSIONS
-//            tooltip += " "+QString::number(len)+"s";
-//#endif
-            // tooltip needs to lookup language.. :-/
 
             Session *sess=*s;
             if (!sess->settings.contains(SESSION_ENABLED)) {
@@ -1034,23 +1023,32 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * p
     return html;
 }
 
-QString Daily::getMachineSettings(Day * cpap) {
+QString Daily::getMachineSettings(Day * day) {
     QString html;
-    if (cpap && cpap->hasEnabledSessions()) {
+
+    Machine * cpap = day->machine(MT_CPAP);
+    if (cpap && day->hasEnabledSessions(MT_CPAP)) {
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
 
-        if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
+        if ((day->settingExists(CPAP_BrokenSummary))) {
             html+="<tr><td colspan=5 align=center><i>"+tr("Machine Settings Unavailable")+"</i></td></tr></table><hr/>\n";
             return html;
         }
 
         QMap<QString, QString> other;
-        QHash<ChannelID, QVariant>::iterator it = cpap->sessions.at(0)->settings.begin();
-        QHash<ChannelID, QVariant>::iterator it_end = cpap->sessions.at(0)->settings.end();
+        Session * sess = day->firstSession(MT_CPAP);
+
+        QHash<ChannelID, QVariant>::iterator it;
+        QHash<ChannelID, QVariant>::iterator it_end;
+        if (sess) {
+            it_end = sess->settings.end();
+            it = sess->settings.begin();
+        }
         QMap<int, QString> first;
-        for (; it != it_end; ++it) {
+
+        if (sess) for (; it != it_end; ++it) {
             ChannelID code = it.key();
 
             if ((code <= 1) || (code == RMS9_MaskOnTime)) continue;
@@ -1137,31 +1135,36 @@ QString Daily::getMachineSettings(Day * cpap) {
     return html;
 }
 
-QString Daily::getOximeterInformation(Day * oxi)
+QString Daily::getOximeterInformation(Day * day)
 {
     QString html;
-    if (oxi && oxi->hasEnabledSessions()) {
+    Machine * oxi = day->machine(MT_OXIMETER);
+    if (oxi && day->hasEnabledSessions(MT_OXIMETER)) {
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+="<tr><td colspan=5 align=center>"+oxi->machine->brand()+" "+oxi->machine->series()+"</td></tr>\n";
+        html+="<tr><td colspan=5 align=center>"+oxi->brand()+" "+oxi->series()+"</td></tr>\n";
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
-        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
-        html+=QString("<tr><td colspan=5 align=center>%1: %2%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2); // CHECKME: Should this value be wavg OXI_SPO2 isntead?
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("SpO2 Desaturations")).arg(day->count(OXI_SPO2Drop)).arg((100.0/day->hours(MT_OXIMETER)) * (day->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3%)</td></tr>").arg(tr("Pulse Change events")).arg(day->count(OXI_PulseChange)).arg((100.0/day->hours(MT_OXIMETER)) * (day->sum(OXI_PulseChange)/3600.0),0,'f',2);
+        html+=QString("<tr><td colspan=5 align=center>%1: %2%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(day->settings_wavg(OXI_SPO2Drop),0,'f',2); // CHECKME: Should this value be wavg OXI_SPO2 isntead?
         html+="</table>\n";
         html+="<hr/>\n";
     }
     return html;
 }
 
-QString Daily::getCPAPInformation(Day * cpap)
+QString Daily::getCPAPInformation(Day * day)
 {
     QString html;
-    if (!cpap)
+    if (!day)
         return html;
 
-    MachineInfo info = cpap->machine->getInfo();
+    Machine * cpap = day->machine(MT_CPAP);
+    if (!cpap) return html;
+
+
+    MachineInfo info = cpap->getInfo();
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
@@ -1174,10 +1177,10 @@ QString Daily::getCPAPInformation(Day * cpap)
     //CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
     html+="<tr><td align=center>";
 
-    html+=tr("PAP Mode: %1<br/>").arg(cpap->getCPAPMode());
-    html+= cpap->getPressureSettings();
+    html+=tr("PAP Mode: %1<br/>").arg(day->getCPAPMode());
+    html+= day->getPressureSettings();
     html+="</td></tr>\n";
-    if ((cpap && cpap->settingExists(CPAP_BrokenSummary))) {
+    if ((day->settingExists(CPAP_BrokenSummary))) {
         html+="<tr><td>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=2><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+":</b> "+ tr("This day has missing pressure, mode and settings data."));
     }
@@ -1188,14 +1191,13 @@ QString Daily::getCPAPInformation(Day * cpap)
 }
 
 
-QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
+QString Daily::getStatisticsInfo(Day * day)
 {
+    if (!day) return QString();
 
-    QList<Day *> list;
-
-    list.push_back(cpap);
-    list.push_back(oxi);
-    list.push_back(pos);
+    Machine *cpap = day->machine(MT_CPAP),
+            *oxi = day->machine(MT_OXIMETER),
+            *pos = day->machine(MT_POSITION);
 
 
     int mididx=p_profile->general->prefCalcMiddle();
@@ -1235,73 +1237,65 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
     int ccnt=0;
     EventDataType tmp,med,perc,mx,mn;
 
-    QList<Day *>::iterator di;
+    for (int i=0;i<numchans;i++) {
 
-    for (di=list.begin();di!=list.end();di++) {
-        Day * day=*di;
+        ChannelID code=chans[i];
 
-        if (!day)
+        if (!day->channelHasData(code))
             continue;
 
-        for (int i=0;i<numchans;i++) {
+        QString tooltip=schema::channel[code].description();
 
-            ChannelID code=chans[i];
+        if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
 
-            if (!day->channelHasData(code))
-                continue;
-
-            QString tooltip=schema::channel[code].description();
-
-            if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-
-            if (ST_max == ST_MAX) {
-                mx=day->Max(code);
-            } else {
-                mx=day->percentile(code,maxperc);
-            }
-
-            mn=day->Min(code);
-            perc=day->percentile(code,percentile);
-
-            if (ST_mid == ST_PERC) {
-                med=day->percentile(code,0.5);
-                tmp=day->wavg(code);
-                if (tmp>0 || mx==0) {
-                    tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
-                }
-            } else if (ST_mid == ST_WAVG) {
-                med=day->wavg(code);
-                tmp=day->percentile(code,0.5);
-                if (tmp>0 || mx==0) {
-                    tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                }
-            } else if (ST_mid == ST_AVG) {
-                med=day->avg(code);
-                tmp=day->percentile(code,0.5);
-                if (tmp>0 || mx==0) {
-                    tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                }
-            }
-
-            html+=QString("<tr class='datarow'><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                .arg(schema::channel[code].label())
-                .arg(mn,0,'f',2)
-                .arg(med,0,'f',2)
-                .arg(perc,0,'f',2)
-                .arg(mx,0,'f',2)
-                .arg(tooltip);
-            ccnt++;
+        if (ST_max == ST_MAX) {
+            mx=day->Max(code);
+        } else {
+            mx=day->percentile(code,maxperc);
         }
+
+        mn=day->Min(code);
+        perc=day->percentile(code,percentile);
+
+        if (ST_mid == ST_PERC) {
+            med=day->percentile(code,0.5);
+            tmp=day->wavg(code);
+            if (tmp>0 || mx==0) {
+                tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
+            }
+        } else if (ST_mid == ST_WAVG) {
+            med=day->wavg(code);
+            tmp=day->percentile(code,0.5);
+            if (tmp>0 || mx==0) {
+                tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
+            }
+        } else if (ST_mid == ST_AVG) {
+            med=day->avg(code);
+            tmp=day->percentile(code,0.5);
+            if (tmp>0 || mx==0) {
+                tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
+            }
+        }
+
+        html+=QString("<tr class='datarow'><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+            .arg(schema::channel[code].label())
+            .arg(mn,0,'f',2)
+            .arg(med,0,'f',2)
+            .arg(perc,0,'f',2)
+            .arg(mx,0,'f',2)
+            .arg(tooltip);
+        ccnt++;
+
     }
 
-    if (GraphView->isEmpty() && ((ccnt>0) || (cpap && cpap->summaryOnly()))) {
+    if (GraphView->isEmpty() && ((ccnt>0) || (cpap && day->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
         html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
     } else if (cpap) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
 
-        if ((cpap->machine->loaderName() == STR_MACH_ResMed) || ((cpap->machine->loaderName() == STR_MACH_PRS1) && (p_profile->cpap->resyncFromUserFlagging()))) {
-            int ttia = cpap->sum(CPAP_Obstructive) + cpap->sum(CPAP_ClearAirway) + cpap->sum(CPAP_Apnea) + cpap->sum(CPAP_Hypopnea);
+        if ((cpap->loaderName() == STR_MACH_ResMed) || ((cpap->loaderName() == STR_MACH_PRS1) && (p_profile->cpap->resyncFromUserFlagging()))) {
+            int ttia = day->sum(CPAP_Obstructive) + day->sum(CPAP_ClearAirway) + day->sum(CPAP_Apnea) + day->sum(CPAP_Hypopnea);
             int h = ttia / 3600;
             int m = ttia / 60 % 60;
             int s = ttia % 60;
@@ -1311,28 +1305,31 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
             }
 
         }
+        float hours = day->hours(MT_CPAP);
 
         if (p_profile->cpap->showLeakRedline()) {
-            float rlt = cpap->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
-            float pc = 100.0 / cpap->hours() * rlt;
+            float rlt = day->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline()) / 60.0;
+            float pc = 100.0 / hours * rlt;
             html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Time over leak redline")+
                     QString("</b></td><td colspan=2 bgcolor='white'>%1%</td></tr>").arg(pc, 0, 'f', 3);
         }
-        int l = cpap->sum(CPAP_Ramp);
+        int l = day->sum(CPAP_Ramp);
 
         if (l > 0) {
             html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("Total ramp time")+
                     QString("</td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(l / 3600, 2, 10, QChar('0')).arg((l / 60) % 60, 2, 10, QChar('0')).arg(l % 60, 2, 10, QChar('0'));
-            float v = (cpap->hours() - (float(l) / 3600.0));
+            float v = (hours - (float(l) / 3600.0));
             int q = v * 3600.0;
             html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("Time outside of ramp")+
                     QString("</td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(q / 3600, 2, 10, QChar('0')).arg((q / 60) % 60, 2, 10, QChar('0')).arg(q % 60, 2, 10, QChar('0'));
 
-            EventDataType hc = cpap->count(CPAP_Hypopnea) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
-            EventDataType oc = cpap->count(CPAP_Obstructive) - cpap->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
+            EventDataType hc = day->count(CPAP_Hypopnea) - day->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
+            EventDataType oc = day->count(CPAP_Obstructive) - day->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
 
-            EventDataType tc = cpap->count(CPAP_Hypopnea) + cpap->count(CPAP_Obstructive);
+            EventDataType tc = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive);
             EventDataType ahi = (hc+oc) / v;
+            // Not sure if i was trying to be funny, and left on my replication of Devilbiss's bug here...  :P
+
             html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("AHI excluding ramp")+
                     QString("</td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
         }
@@ -1355,17 +1352,14 @@ QString Daily::getEventBreakdown(Day * cpap)
     return html;
 }
 
-QString Daily::getSleepTime(Day * cpap, Day * oxi)
+QString Daily::getSleepTime(Day * day)
 {
+    //cpap, Day * oxi
     QString html;
 
-    Day * day=nullptr;
-    if (cpap && cpap->hours()>0)
-        day=cpap;
-    else if (oxi && oxi->hours()>0)
-        day=oxi;
-    else
+    if (!day || (day->hours() < 0.0000001))
         return html;
+
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
     html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
     int tt=qint64(day->total_time())/1000L;
@@ -1392,38 +1386,46 @@ void Daily::Load(QDate date)
 {
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     previous_date=date;
-    Day *cpap=p_profile->GetDay(date,MT_CPAP);
-    Day *oxi=p_profile->GetDay(date,MT_OXIMETER);
-    Day *stage=p_profile->GetDay(date,MT_SLEEPSTAGE);
-    Day *posit=p_profile->GetDay(date,MT_POSITION);
+
+    Day * day = p_profile->GetDay(date);
+    Machine *cpap = nullptr,
+            *oxi = nullptr,
+            *stage = nullptr,
+            *posit = nullptr;
+
+    if (day) {
+        cpap = day->machine(MT_CPAP);
+        oxi = day->machine(MT_OXIMETER);
+        stage = day->machine(MT_SLEEPSTAGE);
+        posit = day->machine(MT_POSITION);
+    }
 
     if (!p_profile->session->cacheSessions()) {
         // Getting trashed on purge last day...
 
         // lastcpapday can get purged and be invalid
-
-
-        if (lastcpapday && (lastcpapday!=cpap)) {
+        if (lastcpapday && (lastcpapday!=day)) {
             for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
                 (*s)->TrashEvents();
             }
         }
     }
 
-    if ((cpap && oxi) && oxi->hasEnabledSessions()) {
-        int gr;
+    // Don't really see a point in unlinked oximetery sessions anymore... All I can say is BLEH...
+//    if ((cpap && oxi) && day->hasEnabledSessions(MT_OXIMETER)) {
+//        int gr;
 
-        if (qAbs(cpap->first() - oxi->first())>30000) {
-            mainwin->Notify(tr("Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked."),"",3000);
-            gr=1;
-        } else
-            gr=0;
+//        if (qAbs(day->first(MT_CPAP) - day->first(MT_OXIMETER)) > 30000) {
+//            mainwin->Notify(tr("Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked."),"",3000);
+//            gr=1;
+//        } else
+//            gr=0;
 
-        (*GraphView)[schema::channel[OXI_Pulse].code()]->setGroup(gr);
-        (*GraphView)[schema::channel[OXI_SPO2].code()]->setGroup(gr);
-        (*GraphView)[schema::channel[OXI_Plethy].code()]->setGroup(gr);
-    }
-    lastcpapday=cpap;
+//        (*GraphView)[schema::channel[OXI_Pulse].code()]->setGroup(gr);
+//        (*GraphView)[schema::channel[OXI_SPO2].code()]->setGroup(gr);
+//        (*GraphView)[schema::channel[OXI_Plethy].code()]->setGroup(gr);
+//    }
+    lastcpapday=day;
 
     QString html="<html><head><style type='text/css'>"
     "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
@@ -1443,20 +1445,27 @@ void Daily::Load(QDate date)
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
     QString tmp;
 
-    UpdateOXIGraphs(oxi);
-    UpdateCPAPGraphs(cpap);
-    UpdateSTAGEGraphs(stage);
-    UpdatePOSGraphs(posit);
-    UpdateEventsTree(ui->treeWidget,cpap);
+    if (day) {
+        day->OpenEvents();
+    }
+    GraphView->setDay(day);
+
+
+//    UpdateOXIGraphs(oxi);
+//    UpdateCPAPGraphs(cpap);
+//    UpdateSTAGEGraphs(stage);
+//    UpdatePOSGraphs(posit);
+    UpdateEventsTree(ui->treeWidget, day);
 
     // FIXME:
     // Generating entire statistics because bookmarks may have changed.. (This updates the side panel too)
     mainwin->GenerateStatistics();
 
-    snapGV->setDay(cpap);
+    snapGV->setDay(day);
 
-    GraphView->ResetBounds(false);
+   // GraphView->ResetBounds(false);
 
+    // wtf is hiding the scrollbars for???
     if (!cpap && !oxi) {
         scrollbar->hide();
     } else {
@@ -1471,26 +1480,24 @@ void Daily::Load(QDate date)
     updateGraphCombo();
     ui->eventsCombo->clear();
 
-    if (cpap) {
-        quint32 chans = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
-        if (p_profile->general->showUnknownFlags()) chans |= schema::UNKNOWN;
+    quint32 chans = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
+    if (p_profile->general->showUnknownFlags()) chans |= schema::UNKNOWN;
 
-        QList<ChannelID> available = cpap->getSortedMachineChannels(chans);
+    QList<ChannelID> available = day->getSortedMachineChannels(chans);
 
-        for (int i=0; i < available.size(); ++i) {
-            ChannelID code = available.at(i);
-            schema::Channel & chan = schema::channel[code];
-            ui->eventsCombo->addItem(chan.enabled() ? *icon_on : * icon_off, chan.label(), code);
-            ui->eventsCombo->setItemData(i, chan.fullname(), Qt::ToolTipRole);
+    for (int i=0; i < available.size(); ++i) {
+        ChannelID code = available.at(i);
+        schema::Channel & chan = schema::channel[code];
+        ui->eventsCombo->addItem(chan.enabled() ? *icon_on : * icon_off, chan.label(), code);
+        ui->eventsCombo->setItemData(i, chan.fullname(), Qt::ToolTipRole);
 
-        }
     }
 
     if (cpap) {
         //QHash<schema::ChanType, QList<schema::Channel *> > list;
 
 
-        float hours=cpap->hours();
+        float hours=day->hours(MT_CPAP);
         if (GraphView->isEmpty() && (hours>0)) {
             if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
                 GraphView->setEmptyText(tr("No Graphs :("));
@@ -1499,12 +1506,12 @@ void Daily::Load(QDate date)
             }
         }
 
-        mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
+        mode=(CPAPMode)(int)day->settings_max(CPAP_Mode);
 
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
-        EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
-        if (p_profile->general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
+        EventDataType ahi=(day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_ClearAirway)+day->count(CPAP_Apnea));
+        if (p_profile->general->calculateRDI()) ahi+=day->count(CPAP_RERA);
         ahi/=hours;
 
         if (!isBrick && hours>0) {
@@ -1520,8 +1527,8 @@ void Daily::Load(QDate date)
                         .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].fullname()).arg(ahi,0,'f',2);
             html+="</tr>\n";
             html+="</table>\n";
-            html+=getCPAPInformation(cpap);
-            html+=getSleepTime(cpap,oxi);
+            html+=getCPAPInformation(day);
+            html+=getSleepTime(day);
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
@@ -1531,7 +1538,7 @@ void Daily::Load(QDate date)
             if (p_profile->general->showUnknownFlags()) zchans |= schema::UNKNOWN;
 
             if (show_minors) zchans |= schema::MINOR_FLAG;
-            QList<ChannelID> available = cpap->getSortedMachineChannels(zchans);
+            QList<ChannelID> available = day->getSortedMachineChannels(zchans);
 
             EventDataType val;
             QHash<ChannelID, EventDataType> values;
@@ -1541,10 +1548,10 @@ void Daily::Load(QDate date)
                 if (!chan.enabled()) continue;
                 QString data;
                 if (chan.type() == schema::SPAN) {
-                    val = (100.0 / hours)*(cpap->sum(code)/3600.0);
+                    val = (100.0 / hours)*(day->sum(code)/3600.0);
                     data = QString("%1%").arg(val,0,'f',2);
                 } else {
-                    val = cpap->count(code) / hours;
+                    val = day->count(code) / hours;
                     data = QString("%1").arg(val,0,'f',2);
                 }
                 values[code] = val;
@@ -1588,13 +1595,13 @@ void Daily::Load(QDate date)
                     } else {
                         html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }
-                } else if (cpap->channelHasData(CPAP_Obstructive)
-                           || cpap->channelHasData(CPAP_Hypopnea)
-                           || cpap->channelHasData(CPAP_ClearAirway)
-                           || cpap->channelHasData(CPAP_RERA)
-                           || cpap->channelHasData(CPAP_Apnea)
-                           || cpap->channelHasData(CPAP_FlowLimit)
-                           || cpap->channelHasData(CPAP_SensAwake)
+                } else if (day->channelHasData(CPAP_Obstructive)
+                           || day->channelHasData(CPAP_Hypopnea)
+                           || day->channelHasData(CPAP_ClearAirway)
+                           || day->channelHasData(CPAP_RERA)
+                           || day->channelHasData(CPAP_Apnea)
+                           || day->channelHasData(CPAP_FlowLimit)
+                           || day->channelHasData(CPAP_SensAwake)
                            ) {
                         html += "<tr><td align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
                 }
@@ -1606,7 +1613,7 @@ void Daily::Load(QDate date)
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             if (!isBrick) {
                 html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
-                if (cpap->size()>0) {
+                if (day->size()>0) {
                     html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Sessions all off!")+"</h2></b></td></tr>";
                     html+="<tr><td colspan='5' align='center'><i>"+tr("Sessions exist for this day but are switched off.")+"</i></td></tr>\n";
                 } else {
@@ -1624,14 +1631,14 @@ void Daily::Load(QDate date)
         html+="<hr/>\n";
 
     } // if (!CPAP)
-    else html+=getSleepTime(cpap,oxi);
+    else html+=getSleepTime(day);
 
-    if ((cpap && !isBrick && (cpap->hours()>0)) || oxi || posit) {
+    if ((cpap && !isBrick && (day->hours()>0)) || oxi || posit) {
 
-        html+=getStatisticsInfo(cpap,oxi,posit);
+        html+=getStatisticsInfo(day);
 
     } else {
-        if (cpap && cpap->hours()==0) {
+        if (cpap && day->hours(MT_CPAP)<0.0000001) {
         } else {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>\n";
@@ -1641,10 +1648,11 @@ void Daily::Load(QDate date)
         }
 
     }
-
-    html+=getOximeterInformation(oxi);
-    html+=getMachineSettings(cpap);
-    html+=getSessionInformation(cpap,oxi,stage,posit);
+    if (day) {
+        html+=getOximeterInformation(day);
+        html+=getMachineSettings(day);
+        html+=getSessionInformation(day);
+    }
 
     html+="</body></html>";
 
@@ -1662,9 +1670,10 @@ void Daily::Load(QDate date)
         connect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
         int c=0;
 
-        for (i=cpap->begin();i!=cpap->end();++i) {
+        for (i=day->begin();i!=day->end();++i) {
             Session * s=*i;
-            sessbar->add(s, cols[c % maxcolors]);
+            if ((*s).machine()->type() == MT_CPAP)
+                sessbar->add(s, cols[c % maxcolors]);
             c++;
         }
     } else sessbar=nullptr;
@@ -1932,7 +1941,7 @@ void Daily::on_JournalNotesColour_clicked()
 }
 Session * Daily::CreateJournalSession(QDate date)
 {
-    Machine *m=p_profile->GetMachine(MT_JOURNAL);
+    Machine *m = p_profile->GetMachine(MT_JOURNAL);
     if (!m) {
         m=new Machine(0);
         MachineInfo info;
@@ -1941,10 +1950,13 @@ Session * Daily::CreateJournalSession(QDate date)
         info.brand = "Journal";
         info.type = MT_JOURNAL;
         m->setInfo(info);
+        m->setType(MT_JOURNAL);
         p_profile->AddMachine(m);
     }
+
     Session *sess=new Session(m,0);
     qint64 st,et;
+
     Day *cday=p_profile->GetDay(date,MT_CPAP);
     if (cday) {
         st=cday->first();
@@ -1962,14 +1974,13 @@ Session * Daily::CreateJournalSession(QDate date)
 }
 Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 {
-    Day *journal=p_profile->GetDay(date,MT_JOURNAL);
-    if (!journal)
-        return nullptr; //CreateJournalSession(date);
-    QList<Session *>::iterator s;
-    s=journal->begin();
-    if (s!=journal->end())
-        return *s;
-    return nullptr;
+    Day *day=p_profile->addDay(date);
+
+    Session * session = day->firstSession(MT_JOURNAL);
+    if (!session) {
+        session = CreateJournalSession(date);
+    }
+    return session;
 }
 
 void Daily::UpdateCPAPGraphs(Day *day)

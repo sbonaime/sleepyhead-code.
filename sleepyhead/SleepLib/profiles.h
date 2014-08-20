@@ -82,7 +82,7 @@ class Profile : public Preferences
 //    bool trashMachine(Machine * mach);
 
     //! \brief Add Day record to Profile Day list
-    void AddDay(QDate date, Day *day, MachineType mt);
+    Day *addDay(QDate date);
 
     //! \brief Get Day record if data available for date and machine type, else return nullptr
     Day *GetDay(QDate date, MachineType type = MT_UNKNOWN);
@@ -186,8 +186,8 @@ class Profile : public Preferences
     //! \brief Return if this profile has been opened or not
     bool isOpen() { return m_opened; }
 
-    //! \brief Red-Black tree of Days (iterates in order).
-    QMap<QDate, QList<Day *> > daylist;
+    //! \brief QMap of day records (iterates in order).
+    QMap<QDate, Day *> daylist;
 
     //! \brief List of machines, indexed by MachineID.
     QHash<MachineID, Machine *> machlist;

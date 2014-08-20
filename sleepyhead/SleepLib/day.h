@@ -31,14 +31,20 @@ class Session;
 class Day
 {
   public:
-    Day(Machine *m);
+    Day();
     ~Day();
 
-    //! \brief Add Session to this Day object (called during Load)
-    void AddSession(Session *s);
+    //! \brief Add a new machine to this day record
+    bool addMachine(Machine *m);
 
-    //! \brief Returns this machines type
-    MachineType machine_type() const;
+    //! \brief Returns a machine record if present of specified machine type
+    Machine *machine(MachineType type);
+
+    //! \brief Returns a list of sessions for the specified machine type
+    QList<Session *> getSessions(MachineType type);
+
+    //! \brief Add Session to this Day object (called during Load)
+    void addSession(Session *s);
 
     //! \brief Returns the count of all this days sessions' events for this day
     EventDataType count(ChannelID code);
@@ -113,6 +119,13 @@ class Day
     //! \brief Returns the last session time of this day
     qint64 last();
 
+    //! \brief Returns the first session time of this machine type for this day
+    qint64 first(MachineType type);
+
+    //! \brief Returns the last session time of this machine type for this day
+    qint64 last(MachineType type);
+
+
     // //! \brief Sets the first session time of this day
     // void setFirst(qint64 val) { d_first=val; }
 
@@ -128,11 +141,18 @@ class Day
     //! \brief Returns the total time in milliseconds for this day
     qint64 total_time();
 
+    //! \brief Returns the total time in milliseconds for this day for given machine type
+    qint64 total_time(MachineType type);
+
+    //! \brief Returns true if this day has enabled sessions for supplied machine type
+    bool hasEnabledSessions(MachineType);
+
     //! \brief Returns true if this day has enabled sessions
     bool hasEnabledSessions();
 
     //! \brief Return the total time in decimal hours for this day
     EventDataType hours() { return double(total_time()) / 3600000.0; }
+    EventDataType hours(MachineType type) { return double(total_time(type)) / 3600000.0; }
 
     //! \brief Return the session indexed by i
     Session *operator [](int i) { return sessions[i]; }
@@ -152,8 +172,6 @@ class Day
 
     //! \brief Returns the number of Sessions in this day record
     int size() { return sessions.size(); }
-
-    Machine *machine;
 
     //! \brief Loads all Events files for this Days Sessions
     void OpenEvents();
@@ -239,7 +257,12 @@ class Day
 
     EventDataType calc(ChannelID code, ChannelCalcType type);
 
+    Session * firstSession(MachineType type);
+
+    //! \brief A QList containing all Sessions objects for this day
     QList<Session *> sessions;
+
+    QHash<MachineType, Machine *> machines;
 
   protected:
     //! \brief A Vector containing all sessions for this day

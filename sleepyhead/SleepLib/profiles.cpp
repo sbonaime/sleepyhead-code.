@@ -84,6 +84,11 @@ Profile::~Profile()
         }
         m_opened=false;
     }
+
+    for (QMap<QDate, Day *>::iterator d = daylist.begin(); d != daylist.end(); d++) {
+        delete d.value();
+    }
+
 }
 
 bool Profile::Save(QString filename)
@@ -572,16 +577,16 @@ QDomElement Profile::ExtraSave(QDomDocument &doc)
     }
 
     return mach;
-
 }
 
-void Profile::AddDay(QDate date, Day *day, MachineType mt)
+
+Day *Profile::addDay(QDate date)
 {
-    //date+=wxTimeSpan::Day();
-    if (!day)  {
-        qDebug() << "Profile::AddDay called with null day object";
-        return;
+    QMap<QDate, Day *>::iterator dit = daylist.find(date);
+    if (dit == daylist.end()) {
+        dit = daylist.insert(date, new Day());
     }
+    Day * day = dit.value();
 
     if (is_first_day) {
         m_first = m_last = date;
@@ -595,23 +600,7 @@ void Profile::AddDay(QDate date, Day *day, MachineType mt)
     if (m_last < date) {
         m_last = date;
     }
-
-    // Check for any other machines of same type.. Throw an exception if one already exists.
-    QList<Day *> &dl = daylist[date];
-
-    for (QList<Day *>::iterator a = dl.begin(); a != dl.end(); a++) {
-        if ((*a)->machine->type() == mt) {
-
-            // disabled this because two machines isn't all that bad
-            //            if (QMessageBox::question(nullptr,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-            //                throw OneTypePerDay();
-            //            }
-            daylist[date].erase(a);
-            break;
-        }
-    }
-
-    daylist[date].push_back(day);
+    return day;
 }
 
 // Get Day record if data available for date and machine type,
@@ -622,14 +611,10 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
     if (!day)
         return nullptr;
 
-    // Just return the day if not matching for a machine.
-    if (type == MT_UNKNOWN)
-        return day;
-
     // For a machine match, find at least one enabled Session.
-    Q_ASSERT(day->machine_type() == type);
     for (int i = 0; i < day->size(); ++i) {
-        if ((*day)[i]->enabled())
+        Session * sess = (*day)[i];
+        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled())
             return day;
     }
 
@@ -639,24 +624,14 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
 
 Day *Profile::GetDay(QDate date, MachineType type)
 {
-    if (!daylist.contains(date))
-        return nullptr;
+    QMap<QDate, Day *>::iterator di = daylist.find(date);
+    if (di == daylist.end()) return nullptr;
 
-    QList<Day *> list(daylist.value(date));
+    Day * day = di.value();
 
-    QList<Day *>::iterator it = list.begin();
-    QList<Day *>::iterator list_end = list.end();
+    if (type == MT_UNKNOWN) return day; // just want the day record
 
-    for (; it != list_end; ++it) {
-        Day * day = (*it);
-
-        Q_ASSERT(day != nullptr);
-
-        // Just return the day if not matching for a machine.
-        if (day->machine_type() == type || type == MT_UNKNOWN) {
-            return day;
-        }
-    }
+    if (day->machines.contains(type)) return day;
 
     return nullptr;
 }
@@ -765,33 +740,17 @@ Machine *Profile::GetMachine(MachineType t)
 
 bool Profile::unlinkDay(Day * day)
 {
-    bool b=false;
+    QMap<QDate, Day *>::iterator it;
+    QMap<QDate, Day *>::iterator it_end = daylist.end();
 
-    QList<QDate> dates;
-
-    QMap<QDate, QList<Day *> >::iterator it;
-    QMap<QDate, QList<Day *> >::iterator it_end = daylist.end();
-
+    // Find the key...
     for (it = daylist.begin(); it != it_end; ++it) {
-        if (it.value().contains(day)) {
-            dates.push_back(it.key());
+        if (it.value() == day) {
+            daylist.erase(it);
+            return true;
         }
     }
-
-    for (int i=0; i < dates.size(); ++i) {
-        it = daylist.find(dates.at(i));
-
-        if (it != daylist.end()) {
-            it.value().removeAll(day);
-            // TODO: Check it doesn't change from the above...
-
-            if (it.value().size() == 0) {
-                daylist.erase(it);
-            }
-        }
-    }
-
-     return b;
+    return false;
 }
 
 
@@ -847,6 +806,7 @@ Profile *Create(QString name)
     p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) + QString("}"));
 
     Machine *m = new Machine(0);
+    m->setType(MT_JOURNAL);
     MachineInfo info(MT_JOURNAL, 0, STR_MACH_Journal, "SleepyHead", STR_MACH_Journal, QString(), m->hexid(), QString(), QDateTime::currentDateTime(), 0);
 
     m->setInfo(info);
@@ -906,35 +866,42 @@ void Scan()
 // Returns a list of all days records matching machine type between start and end date
 QList<Day *> Profile::getDays(MachineType mt, QDate start, QDate end)
 {
-    QList<Day *> daylist;
+    QList<Day *> list;
 
     if (!start.isValid()) {
-        return daylist;
+        return list;
     }
 
     if (!end.isValid()) {
-        return daylist;
+        return list;
     }
 
     QDate date = start;
 
     if (date.isNull()) {
-        return daylist;
+        return list;
     }
 
-    do {
-        Day *day = GetGoodDay(date, mt);
+    QMap<QDate, Day *>::iterator it;
 
-        if (day) {
-            if ((mt == MT_UNKNOWN) || (day->machine->type() == mt)) {
-                daylist.push_back(day);
+    do {
+        it = daylist.find(date);
+        if (it != daylist.end()) {
+            Day *day = it.value();
+            if (mt != MT_UNKNOWN) {
+                if (day->hasEnabledSessions(mt)) {
+                    list.push_back(day);
+                }
+            } else {
+                if (day->hasEnabledSessions()) {
+                    list.push_back(day);
+                }
             }
         }
-
         date = date.addDays(1);
     } while (date <= end);
 
-    return daylist;
+    return list;
 }
 
 int Profile::countDays(MachineType mt, QDate start, QDate end)
@@ -959,7 +926,7 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            if ((mt == MT_UNKNOWN) || (day->machine->type() == mt)) { days++; }
+            days++;
         }
 
         date = date.addDays(1);
@@ -993,7 +960,7 @@ int Profile::countCompliantDays(MachineType mt, QDate start, QDate end)
         Day *day = GetGoodDay(date, mt);
 
         if (day) {
-            if ((day->machine->type() == mt) && (day->hours() > compliance)) { days++; }
+            if (day->hours(mt) > compliance) { days++; }
         }
 
         date = date.addDays(1);
@@ -1671,9 +1638,7 @@ bool Profile::hasChannel(ChannelID code)
         return false;
     }
 
-    QMap<QDate, QList<Day *> >::iterator dit;
-    QList<Day *>::iterator di;
-    QList<Day *>::iterator di_end;
+    QMap<QDate, Day *>::iterator dit;
 
     bool found = false;
 
@@ -1681,21 +1646,12 @@ bool Profile::hasChannel(ChannelID code)
         dit = daylist.find(d);
 
         if (dit != daylist.end()) {
+            Day *day = dit.value();
 
-            di = dit.value().begin();
-            di_end = dit.value().end();
-            for (; di != di_end; ++di) {
-                Day *day = (*di);
-
-                if (day->channelHasData(code)) {
-                    found = true;
-                    break;
-                }
+            if (day->channelHasData(code)) {
+                found = true;
+                break;
             }
-        }
-
-        if (found) {
-            break;
         }
 
         d = d.addDays(-1);

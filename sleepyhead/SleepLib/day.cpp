@@ -15,8 +15,7 @@
 #include "day.h"
 #include "profiles.h"
 
-Day::Day(Machine *m)
-    : machine(m)
+Day::Day()
 {
     d_firstsession = true;
 }
@@ -26,10 +25,53 @@ Day::~Day()
         delete(*s);
     }
 }
-MachineType Day::machine_type() const
+
+Session * Day::firstSession(MachineType type)
 {
-    return machine->type();
+    for (int i=0; i<sessions.size(); i++) {
+        Session * sess = sessions.at(i);
+        if (!sess->enabled()) continue;
+        if (sess->machine()->type() == type) {
+            return sess;
+        }
+    }
+    return nullptr;
 }
+
+bool Day::addMachine(Machine *mach)
+{
+    if (!machines.contains(mach->type())) {
+        machines[mach->type()] = mach;
+        return true;
+    }
+    return false;
+}
+Machine *Day::machine(MachineType type)
+{
+    QHash<MachineType,Machine *>::iterator it = machines.find(type);
+    if (it != machines.end())
+        return it.value();
+    return nullptr;
+}
+
+QList<Session *> Day::getSessions(MachineType type)
+{
+    QList<Session *>::iterator it;
+    QList<Session *>::iterator sess_end = sessions.end();
+
+    QList<Session *> newlist;
+
+    for (it = sessions.begin(); it != sess_end; ++it) {
+        if (!(*it)->enabled())
+            continue;
+
+        if ((*it)->machine()->type() == type)
+            newlist.append((*it));
+    }
+
+    return newlist;
+}
+
 Session *Day::find(SessionID sessid)
 {
     QList<Session *>::iterator end=sessions.end();
@@ -42,11 +84,18 @@ Session *Day::find(SessionID sessid)
     return nullptr;
 }
 
-void Day::AddSession(Session *s)
+void Day::addSession(Session *s)
 {
-    if (!s) {
-        qWarning("Day::AddSession called with nullptr session object");
-        return;
+    Q_ASSERT(s!=nullptr);
+    QHash<MachineType, Machine *>::iterator mi = machines.find(s->machine()->type());
+
+    if (mi != machines.end()) {
+        if (mi.value() != s->machine()) {
+            qDebug() << "SleepyHead can't add session" << s->session() << "to this day record, as it already contains a different machine of the same MachineType";
+            return;
+        }
+    } else {
+        machines[s->machine()->type()] = s->machine();
     }
 
     sessions.push_back(s);
@@ -489,7 +538,7 @@ qint64 Day::total_time()
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
-        if (sess.enabled()) {
+        if (sess.enabled() && (sess.machine()->type() != MT_JOURNAL)) {
             first = sess.first();
             last = sess.last();
 
@@ -536,12 +585,87 @@ qint64 Day::total_time()
     return total; //d_totaltime;
 }
 
+// Total session time in milliseconds, only considering machinetype
+qint64 Day::total_time(MachineType type)
+{
+    qint64 d_totaltime = 0;
+    QMultiMap<qint64, bool> range;
+    //range.reserve(size()*2);
+
+    // Remember sessions may overlap..
+
+    qint64 first, last;
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if ((sess.machine()->type() == type) && sess.enabled()) {
+            first = sess.first();
+            last = sess.last();
+
+            // This algorithm relies on non zero length, and correctly ordered sessions
+            if (last > first) {
+                range.insert(first, 0);
+                range.insert(last, 1);
+                d_totaltime += sess.length();
+            }
+        }
+    }
+
+    bool b;
+    int nest = 0;
+    qint64 ti = 0;
+    qint64 total = 0;
+
+    // This is my implementation of a typical "brace counting" algorithm mentioned here:
+    // http://stackoverflow.com/questions/7468948/problem-calculating-overlapping-date-ranges
+
+    QMultiMap<qint64, bool>::iterator rend = range.end();
+    for (QMultiMap<qint64, bool>::iterator rit = range.begin(); rit != rend; ++rit) {
+        b = rit.value();
+
+        if (!b) {
+            if (!ti) {
+                ti = rit.key();
+            }
+
+            nest++;
+        } else {
+            if (--nest <= 0) {
+                total += rit.key() - ti;
+                ti = 0;
+            }
+        }
+    }
+
+    if (total != d_totaltime) {
+        // They can overlap.. tough.
+//        qDebug() << "Sessions Times overlaps!" << total << d_totaltime;
+    }
+
+    return total; //d_totaltime;
+}
+
+
 bool Day::hasEnabledSessions()
 {
     QList<Session *>::iterator end = sessions.end();
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         if ((*it)->enabled()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Day::hasEnabledSessions(MachineType type)
+{
+    QList<Session *>::iterator end = sessions.end();
+
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        if (((*it)->machine()->type() == type) && (*it)->enabled()) {
             return true;
         }
     }
@@ -946,7 +1070,12 @@ void Day::CloseEvents()
 
 QList<ChannelID> Day::getSortedMachineChannels(quint32 chantype)
 {
-    QList<ChannelID> available = machine->availableChannels(chantype);
+    QList<ChannelID> available;
+    QHash<MachineType, Machine *>::iterator mi_end = machines.end();
+    for (QHash<MachineType, Machine *>::iterator mi = machines.begin(); mi != mi_end; mi++) {
+        if (mi.key() == MT_JOURNAL) continue;
+        available.append(mi.value()->availableChannels(chantype));
+    }
 
     QMultiMap<int, ChannelID> order;
 
@@ -963,6 +1092,31 @@ QList<ChannelID> Day::getSortedMachineChannels(quint32 chantype)
         channels.append(code);
     }
     return channels;
+}
+
+qint64 Day::first(MachineType type)
+{
+    qint64 date = 0;
+    qint64 tmp;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session & sess = *(*it);
+
+        if ((sess.machine()->type() == type) && sess.enabled()) {
+            tmp = sess.first();
+
+            if (!tmp) { continue; }
+
+            if (!date) {
+                date = tmp;
+            } else {
+                if (tmp < date) { date = tmp; }
+            }
+        }
+    }
+
+    return date;
 }
 
 qint64 Day::first()
@@ -1017,6 +1171,33 @@ qint64 Day::last()
     return date;
 }
 
+qint64 Day::last(MachineType type)
+{
+    qint64 date = 0;
+    qint64 tmp;
+
+    QList<Session *>::iterator end = sessions.end();
+
+
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session & sess = *(*it);
+
+        if ((sess.machine()->type() == type) && sess.enabled()) {
+            tmp = sess.last();
+
+            if (!tmp) { continue; }
+
+            if (!date) {
+                date = tmp;
+            } else {
+                if (tmp > date) { date = tmp; }
+            }
+        }
+    }
+
+    return date;
+}
+
 bool Day::removeSession(Session *sess)
 {
     return sessions.removeAll(sess) > 0;
@@ -1024,7 +1205,7 @@ bool Day::removeSession(Session *sess)
 
 QString Day::getCPAPMode()
 {
-    Q_ASSERT(machine_type() == MT_CPAP);
+    Q_ASSERT(machine(MT_CPAP) != nullptr);
 
     CPAPMode mode = (CPAPMode)(int)qRound(settings_wavg(CPAP_Mode));
     if (mode == MODE_CPAP) {
@@ -1047,7 +1228,10 @@ QString Day::getCPAPMode()
 
 QString Day::getPressureRelief()
 {
-    CPAPLoader * loader = qobject_cast<CPAPLoader *>(machine->loader());
+    Machine * mach = machine(MT_CPAP);
+    if (!mach) return STR_MessageBox_Error;
+
+    CPAPLoader * loader = qobject_cast<CPAPLoader *>(mach->loader());
 
     if (!loader) return STR_MessageBox_Error;
 
@@ -1072,7 +1256,7 @@ QString Day::getPressureRelief()
 
 QString Day::getPressureSettings()
 {
-    Q_ASSERT(machine_type() == MT_CPAP);
+    Q_ASSERT(machine(MT_CPAP) != nullptr);
 
     CPAPMode mode = (CPAPMode)(int)settings_max(CPAP_Mode);
     QString units = schema::channel[CPAP_Pressure].units();

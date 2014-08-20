@@ -59,10 +59,6 @@ Machine::Machine(MachineID id)
 Machine::~Machine()
 {
     qDebug() << "Destroy Machine" << info.loadername << hex << m_id;
-
-    for (QMap<QDate, Day *>::iterator d = day.begin(); d != day.end(); d++) {
-        delete d.value();
-    }
 }
 Session *Machine::SessionExists(SessionID session)
 {
@@ -208,17 +204,11 @@ bool Machine::AddSession(Session *s)
     dit = day.find(date);
 
     if (dit == day.end()) {
-        //QString dstr=date.toString("yyyyMMdd");
-        //qDebug("Adding Profile Day %s",dstr.toLatin1().data());
-        dd = new Day(this);
-        day[date] = dd;
-        // Add this Day record to profile
-        p_profile->AddDay(date, dd, m_type);
-    } else {
-        dd = *dit;
+        dit = day.insert(date, p_profile->addDay(date));
     }
+    dd = dit.value();
 
-    dd->AddSession(s);
+    dd->addSession(s);
 
     if (combine_next_day) {
         for (QList<Session *>::iterator i = nextday.value()->begin(); i != nextday.value()->end(); i++) {
@@ -229,7 +219,7 @@ bool Machine::AddSession(Session *s)
 
             sessionlist[(*i)->session()] = *i;
 
-            dd->AddSession(*i);
+            dd->addSession(*i);
         }
 
 //        QMap<QDate, QList<Day *> >::iterator nd = p_profile->daylist.find(date.addDays(1));
@@ -692,7 +682,6 @@ QList<ChannelID> Machine::availableChannels(quint32 chantype)
 {
     QHash<ChannelID, int> chanhash;
 
-
     // look through the daylist and return a list of available channels for this machine
     QMap<QDate, Day *>::iterator dit;
     QMap<QDate, Day *>::iterator day_end = day.end();
@@ -701,6 +690,8 @@ QList<ChannelID> Machine::availableChannels(quint32 chantype)
 
         for (QList<Session *>::iterator sit = dit.value()->begin(); sit != sess_end; ++sit) {
             Session * sess = (*sit);
+            if (sess->machine() != this) continue;
+
             int size = sess->availableChannels().size();
             for (int i=0; i < size; ++i) {
                 ChannelID code = sess->availableChannels().at(i);

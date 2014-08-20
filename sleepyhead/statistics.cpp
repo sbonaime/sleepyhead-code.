@@ -756,12 +756,12 @@ QString Statistics::GenerateHTML()
 
             CPAPLoader * loader = nullptr;
 
-            if (day) loader = dynamic_cast<CPAPLoader *>(day->machine->loader());
+            if (day) loader = dynamic_cast<CPAPLoader *>(day->machine(MT_CPAP)->loader());
 
             if (day && loader) {
                 lastchanged = false;
 
-                hours = day->hours();
+                hours = day->hours(MT_CPAP);
 
                 if (hours > p_profile->cpap->complianceHours()) {
                     compliant++;
@@ -781,7 +781,7 @@ QString Statistics::GenerateHTML()
                 if (mode ==0) {
                     mode = (CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
                 }
-                mach = day->machine;
+                mach = day->machine(MT_CPAP);
 
                 min = max = ps = pshi = maxipap = 0;
 

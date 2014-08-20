@@ -64,7 +64,7 @@ JournalEntry::JournalEntry(QDate date)
     session = nullptr;
     day = p_profile->GetDay(date, MT_JOURNAL);
     if (!day) {
-        session = day->sessions[0];
+        session = day->firstSession(MT_JOURNAL);
     } else {
         // Doesn't exist.. create a new one..
         session = new Session(jmach,0);
@@ -227,7 +227,7 @@ void BackupJournal(QString filename)
 
         Day * journal = p_profile->GetDay(date, MT_JOURNAL);
         if (!journal) continue;
-        Session * sess = journal->sessions[0];
+        Session * sess = journal->firstSession(MT_JOURNAL);
         if (!sess) continue;
         QDomElement day = doc.createElement("day");
         day.setAttribute("date", date.toString());

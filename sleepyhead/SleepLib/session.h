@@ -40,10 +40,10 @@ class Session
     bool Store(QString path);
 
     //! \brief Writes the Sessions Summary Indexes to filename, in SleepLibs custom data format.
-    bool StoreSummary(QString filename);
+    bool StoreSummary(QString filename = QString());
 
     //! \brief Writes the Sessions EventLists to filename, in SleepLibs custom data format.
-    bool StoreEvents(QString filename);
+    bool StoreEvents(QString filename = QString());
 
     //bool Load(QString path);
 
