@@ -1945,7 +1945,7 @@ Session * Daily::CreateJournalSession(QDate date)
     Session *sess=new Session(m,0);
     qint64 st,et;
 
-    Day *cday=p_profile->GetDay(date,MT_CPAP);
+    Day *cday=p_profile->GetDay(date);
     if (cday) {
         st=cday->first();
         et=cday->last();
@@ -1954,21 +1954,23 @@ Session * Daily::CreateJournalSession(QDate date)
         st=qint64(dt.toTime_t())*1000L;
         et=st+3600000L;
     }
+    sess->SetSessionID(st / 1000L);
     sess->set_first(st);
     sess->set_last(et);
-    sess->SetChanged(true);
     m->AddSession(sess);
     return sess;
 }
 Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 {
-    Day *day=p_profile->addDay(date);
-
-    Session * session = day->firstSession(MT_JOURNAL);
-    if (!session) {
-        session = CreateJournalSession(date);
+    Day *day=p_profile->GetDay(date, MT_JOURNAL);
+    if (day) {
+        Session * session = day->firstSession(MT_JOURNAL);
+        if (!session) {
+            session = CreateJournalSession(date);
+        }
+        return session;
     }
-    return session;
+    return nullptr;
 }
 
 void Daily::UpdateCPAPGraphs(Day *day)
