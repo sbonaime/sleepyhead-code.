@@ -358,6 +358,10 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     context_menu->addSeparator();
     plots_menu = context_menu->addMenu(tr("Plots"));
     connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
+
+    overlay_menu = context_menu->addMenu(tr("Overlays"));
+    connect(overlay_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
+
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
 }
@@ -1647,7 +1651,7 @@ void gGraphView::populateMenu(gGraph * graph)
         }
         lines_menu->menuAction()->setVisible(true);
         plots_menu->clear();
-        for (int i=0; i <lc->m_codes.size(); i++) {
+        for (int i=0; i <lc->m_codes.size(); ++i) {
             ChannelID code = lc->m_codes[i];
             if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
             QAction * action = plots_menu->addAction(schema::channel[code].label());
@@ -1658,11 +1662,35 @@ void gGraphView::populateMenu(gGraph * graph)
         if (plots_menu->actions().size() > 0) {
             plots_menu->menuAction()->setVisible(true);
         }
+
+
+        overlay_menu->clear();
+
+        using namespace schema;
+        ChanType flags = ChanType (SPAN | MINOR_FLAG | FLAG);
+        QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(flags);
+
+        for (int i=0; i < chans.size() ; ++i) {
+            ChannelID code = chans.at(i);
+            QAction * action = overlay_menu->addAction(schema::channel[code].fullname());
+            action->setToolTip(schema::channel[code].description());
+            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
+            action->setCheckable(true);
+            action->setChecked(schema::channel[code].enabled());
+        }
+
+        if (overlay_menu->actions().size() > 0) {
+            overlay_menu->menuAction()->setVisible(true);
+        }
+
+
     } else {
         lines_menu->clear();
         lines_menu->menuAction()->setVisible(false);
         plots_menu->clear();
         plots_menu->menuAction()->setVisible(false);
+        overlay_menu->clear();
+        overlay_menu->menuAction()->setVisible(false);
     }
 }
 
@@ -1686,6 +1714,32 @@ void gGraphView::onPlotsClicked(QAction *action)
 //    lc->Miny();
 //    lc->Maxy();
 }
+
+void gGraphView::onOverlaysClicked(QAction *action)
+{
+    QString name = action->data().toString().section("|",0,0);
+    ChannelID code = action->data().toString().section("|",-1).toInt();
+
+    action->setChecked(!action->isChecked());
+    schema::channel[code].setEnabled(!schema::channel[code].enabled());
+
+
+//    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+//    if (it == m_graphsbyname.end()) return;
+
+//    gGraph * graph = it.value();
+
+//    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
+
+//    if (!lc) return;
+
+//    lc->m_enabled[code] = !lc->m_enabled[code];
+//    graph->min_y = graph->MinY();
+//    graph->max_y = graph->MaxY();
+//    lc->Miny();
+//    lc->Maxy();
+}
+
 
 void gGraphView::onLinesClicked(QAction *action)
 {

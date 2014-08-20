@@ -434,6 +434,7 @@ class gGraphView
     void populateMenu(gGraph *);
     QMenu * lines_menu;
     QMenu * plots_menu;
+    QMenu * overlay_menu;
 
 
     inline void setCurrentTime(double time) {
@@ -602,6 +603,7 @@ class gGraphView
 protected slots:
     void onLinesClicked(QAction *);
     void onPlotsClicked(QAction *);
+    void onOverlaysClicked(QAction *);
 };
 
 #endif // GGRAPHVIEW_H
