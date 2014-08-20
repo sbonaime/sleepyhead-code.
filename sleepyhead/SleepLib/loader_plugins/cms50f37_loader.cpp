@@ -292,6 +292,7 @@ QDateTime CMS50F37Loader::getDateTime(int session)
 
 void CMS50F37Loader::processBytes(QByteArray bytes)
 {
+    static quint8 resimport = 0;
     int data;
 
     QString tmpstr;
@@ -309,16 +310,27 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
     quint8 pulse;
 
     do {
-        unsigned char res = buffer.at(idx);
+        quint8 res = buffer.at(idx);
 
         len = lengths[res & 0x1f];
 
-        if (len > size)
+        if ((idx+len) > size)
             break;
+
+        if (started_reading && (res != resimport)) {
+            len = 0;
+        }
 
         if (len == 0) {
             // lost sync
-            idx++;
+            if (started_reading) {
+                do {
+                    res = buffer.at(idx++);
+                } while (res != lastres || idx > size);
+                // add a dummy to make up for it.
+                qDebug() << "lost sync, padding...";
+                oxirec->append(OxiRecord(0,0,0));
+            }
             continue;
         }
         for (int i = 1; i < len; i++) {
@@ -432,6 +444,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 cb_reset = 1;
 
                 resetTimer.singleShot(2000,this,SLOT(resetImportTimeout()));
+                resimport = res;
             }
 
             break;
@@ -453,7 +466,6 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             quint8 spo2 = buf[2];
 
             oxirec->append(((spo2 == 0) || (pulse == 0) || (pi == 0xfff6)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
-
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
 
@@ -461,13 +473,10 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-//            pulse = buffer.at(idx+3) | ((mask & 2) << 6);
             oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+3), buffer.at(idx+2)));
 
-//            pulse = buffer.at(idx+5) | ((mask & 8) << 4);
             oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+5), buffer.at(idx+4)));
 
-//            pulse = buffer.at(idx+7) | ((mask & 0x20) << 2);
             oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+7), buffer.at(idx+6)));
         }
 
