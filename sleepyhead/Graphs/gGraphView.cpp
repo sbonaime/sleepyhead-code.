@@ -359,8 +359,13 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     plots_menu = context_menu->addMenu(tr("Plots"));
     connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
 
-    overlay_menu = context_menu->addMenu(tr("Overlays"));
-    connect(overlay_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
+    overlay_menu = context_menu->addMenu("Overlays");
+
+    cpap_menu = overlay_menu->addMenu(tr("CPAP"));
+    connect(cpap_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
+
+    oximeter_menu = overlay_menu->addMenu(tr("Oximeter"));
+    connect(oximeter_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
 
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
@@ -1663,33 +1668,53 @@ void gGraphView::populateMenu(gGraph * graph)
             plots_menu->menuAction()->setVisible(true);
         }
 
-
-        overlay_menu->clear();
+        oximeter_menu->clear();
 
         using namespace schema;
         ChanType flags = ChanType (SPAN | MINOR_FLAG | FLAG);
-        QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(flags);
+        QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(MT_OXIMETER, flags);
 
         for (int i=0; i < chans.size() ; ++i) {
             ChannelID code = chans.at(i);
-            QAction * action = overlay_menu->addAction(schema::channel[code].fullname());
+            QAction * action = oximeter_menu->addAction(schema::channel[code].fullname());
             action->setToolTip(schema::channel[code].description());
             action->setData(QString("%1|%2").arg(graph->name()).arg(code));
             action->setCheckable(true);
             action->setChecked(schema::channel[code].enabled());
         }
 
-        if (overlay_menu->actions().size() > 0) {
+        if (oximeter_menu->actions().size() > 0) {
+            oximeter_menu->menuAction()->setVisible(true);
             overlay_menu->menuAction()->setVisible(true);
         }
 
+        cpap_menu->clear();
+
+        chans = lc->m_day->getSortedMachineChannels(MT_CPAP, flags);
+
+        for (int i=0; i < chans.size() ; ++i) {
+            ChannelID code = chans.at(i);
+            QAction * action = cpap_menu->addAction(schema::channel[code].fullname());
+            action->setToolTip(schema::channel[code].description());
+            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
+            action->setCheckable(true);
+            action->setChecked(schema::channel[code].enabled());
+        }
+
+        if (cpap_menu->actions().size() > 0) {
+            cpap_menu->menuAction()->setVisible(true);
+            overlay_menu->menuAction()->setVisible(true);
+        }
 
     } else {
         lines_menu->clear();
         lines_menu->menuAction()->setVisible(false);
         plots_menu->clear();
         plots_menu->menuAction()->setVisible(false);
-        overlay_menu->clear();
+        oximeter_menu->clear();
+        oximeter_menu->menuAction()->setVisible(false);
+        cpap_menu->clear();
+        cpap_menu->menuAction()->setVisible(false);
         overlay_menu->menuAction()->setVisible(false);
     }
 }

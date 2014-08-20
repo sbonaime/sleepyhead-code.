@@ -2306,6 +2306,109 @@ void PRS1Loader::Register()
     initialized = true;
 }
 
-
-
+/* Thanks SleepyCPAP :)
+CODE ERROR DESCRIPTION ERROR TYPE ERROR CATEGORY
+1 SOFTWARE STOP STOP General Errors
+2 Not Used General Errors
+3 INT RAM REBOOT General Errors
+4 NULL PTR REBOOT General Errors
+5 DATA REBOOT General Errors
+6 STATE MACHINE REBOOT General Errors
+7 SOFTWARE REBOOT General Errors
+8-9 Not Used General Errors
+10 WDOG TEST RAM REBOOT Watchdog & Timer Errors
+11 WDOG TEST REBOOT Watchdog & Timer Errors
+12 BACKGROUND WDOG NO CARD REBOOT Watchdog & Timer Errors
+13 BACKGROUND WDOG SD CARD REBOOT Watchdog & Timer Errors
+14 WDOG LOWRES TIMER REBOOT Watchdog & Timer Errors
+15 CYCLE HANDLER OVERRUN REBOOT Watchdog & Timer Errors
+16 RASP RESTORE TIMEOUT CONTINUE Watchdog & Timer Errors
+17 ONEMS HANDLER OVERRUN REBOOT Watchdog & Timer Errors
+18 Not Used Watchdog & Timer Errors
+19 WDOG TIMEOUT REBOOT Watchdog & Timer Errors
+20 MOTOR SPINUP FLUX LOW REBOOT Motor/Blower Errors
+21 MOTOR VBUS HIGH STOP Motor/Blower Errors
+22 MOTOR FLUX MAGNITUDE REBOOT Motor/Blower Errors
+23 MOTOR OVERSPEED REBOOT Motor/Blower Errors
+24 MOTOR SPEED REVERSE REBOOT Motor/Blower Errors
+25 MOTOR THERMISTOR OPEN CONTINUE Motor/Blower Errors
+26 MOTOR THERMISTOR SHORTED CONTINUE Motor/Blower Errors
+27 MOTOR RL NOCONVERGE STOP Motor/Blower Errors
+28 NEGATIVE QUADRATURE VOLTAGE VECTOR REBOOT Motor/Blower Errors
+29 VBUS GAIN ZERO: REBOOT Motor/Blower Errors
+30 MOTOR SPINUP FLUX HIGH REBOOT Motor/Blower Errors
+31 (incorrect power supply - 60series) Motor/Blower Errors
+32-39 Not Used Motor/Blower Errors
+40 NVRAM REBOOT NVRAM Low Level Errors
+41 STORAGE UNIT RAM REBOOT NVRAM Low Level Errors
+42 UNABLE TO OBTAIN BUS REBOOT NVRAM Low Level Errors
+43 NVRAM NO CALLBACK OCCURRED REBOOT NVRAM Low Level Errors
+44 NV BUFFER NULL REBOOT NVRAM Low Level Errors
+45 NV CALLBACK NULL REBOOT NVRAM Low Level Errors
+46 NV ZERO LENGTH REBOOT NVRAM Low Level Errors
+47 NVRAM INVALID BYTES XFRRED REBOOT NVRAM Low Level Errors
+48-49 Not Used NVRAM Low Level Errors
+50 DAILY VALUES CORRUPT LOG ONLY NVRAM Unit Related Errors
+51 CORRUPT COMPLIANCE LOG CONTINUE NVRAM Unit Related Errors
+52 CORRUPT COMPLIANCE CB CONTINUE NVRAM Unit Related Errors
+53 COMP LOG SEM TIMEOUT CONTINUE NVRAM Unit Related Errors
+54 COMPLOG REQS OVERFLOW REBOOT NVRAM Unit Related Errors
+55 THERAPY QUEUE FULL CONTINUE NVRAM Unit Related Errors
+56 COMPLOG PACKET STATUS REBOOT NVRAM Unit Related Errors
+57 SESS OBS QUEUE OVF REBOOT NVRAM Unit Related Errors
+58 SESS OBS NO CALLBACK REBOOT NVRAM Unit Related Errors
+59 Not Used NVRAM Unit Related Errors
+60 UNSUPPORTED HARDWARE REBOOT General Hardware Errors
+61 PLL UNLOCKED REBOOT General Hardware Errors
+62 STUCK RAMP KEY CONTINUE General Hardware Errors
+63 STUCK KNOB KEY CONTINUE General Hardware Errors
+64 DSP OVERTIME PWM REBOOT General Hardware Errors
+65 STUCK ENCODER A CONTINUE General Hardware Errors
+66 STUCK ENCODER B CONTINUE General Hardware Errors
+67-69 Not Used General Hardware Errors
+70 PRESSURE SENSOR ABSENT STOP Pressure Sensor Errors
+71 Not Used Pressure Sensor Errors
+72 PSENS UNABLE TO OBTAIN BUS REBOOT Pressure Sensor Errors
+73 SENSOR PRESS OFFSET STOP STOP Pressure Sensor Errors
+74-79 Not Used Pressure Sensor Errors
+80 UNABLE TO INIT FLOW SENSOR REBOOT Flow Sensor Errors
+81 FLOW SENSOR TABLE CONTINUE Flow Sensor Errors
+82 FLOW SENSOR OFFSET CONTINUE Flow Sensor Errors
+83 FSENS UNABLE TO OBTAIN BUS REBOOT / 2nd failure=STOP Flow Sensor Errors
+84 FLOW SENSOR STOP STOP Flow Sensor Errors
+85 FLOW SENSOR OCCLUDED CONTINUE Flow Sensor Errors
+86 FLOW SENSOR ABSENT CONTINUE Flow Sensor Errors
+87 FLOW SENSOR BUS CONTINUE Flow Sensor Errors
+88-89 Not Used Flow Sensor Errors
+90 OTP NOT CONFIGURED STOP OTP & RTC Errors
+91 OTP INCORRECTLY CONFIGURED STOP OTP & RTC Errors
+92 Not Used OTP & RTC Errors
+93 RTC VALUE CONTINUE OTP & RTC Errors
+94 RTC STOPPED CONTINUE OTP & RTC Errors
+95-99 Not Used OTP & RTC Errors
+100 HUMID NO HEAT CONTINUE Humidifier Errors
+101 HUMID TEMP MAX STOP Humidifier Errors
+102 THERMISTOR HIGH CONTINUE Humidifier Errors
+103 THERMISTOR LOW CONTINUE Humidifier Errors
+104 HUMID AMBIENT OFF CONTINUE Humidifier Errors
+105 HUMID AMBIENT COMM CONTINUE Humidifier Errors
+106-109 Not Used Humidifier Errors
+110 STACK REBOOT Stack & Exception Handler Errors
+111 EXCEPTION STACK OVERFLOW REBOOT Stack & Exception Handler Errors
+112 EXCEPTION STACK RESERVE LOG ONLY Stack & Exception Handler Errors
+113 EXCEPTION STACK UNDERFLOW REBOOT Stack & Exception Handler Errors
+114 FIQ STACK OVERFLOW REBOOT Stack & Exception Handler Errors
+115 FIQ STACK RESERVE LOG ONLY Stack & Exception Handler Errors
+116 FIQ STACK UNDERFLOW REBOOT Stack & Exception Handler Errors
+117 IRQ STACK OVERFLOW REBOOT Stack & Exception Handler Errors
+118 IRQ STACK RESERVE LOG ONLY Stack & Exception Handler Errors
+119 IRQ STACK UNDERFLOW REBOOT Stack & Exception Handler Errors
+120 SVC STACK OVERFLOW REBOOT Stack & Exception Handler Errors
+121 SVC STACK RESERVE LOG ONLY Stack & Exception Handler Errors
+122 SVC STACK UNDERFLOW REBOOT Stack & Exception Handler Errors
+123 DATA ABORT EXCEPTION REBOOT Stack & Exception Handler Errors
+124 PREFETCH EXCEPTION REBOOT Stack & Exception Handler Errors
+125 ILLEGAL INSTRUCTION EXCEPTION REBOOT Stack & Exception Handler Errors
+126 SWI ABORT EXCEPTION REBOOT Stack & Exception Handler Errors
+*/
 

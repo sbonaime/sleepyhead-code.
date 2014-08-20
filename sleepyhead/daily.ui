@@ -842,7 +842,7 @@ QToolButton:pressed {
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -875,8 +875,11 @@ QToolButton:pressed {
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
-           <property name="animated">
+           <property name="sortingEnabled">
             <bool>true</bool>
+           </property>
+           <property name="animated">
+            <bool>false</bool>
            </property>
            <attribute name="headerVisible">
             <bool>false</bool>

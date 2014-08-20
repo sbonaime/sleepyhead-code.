@@ -657,35 +657,22 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     bool userflags=p_profile->cpap->userEventFlagging();
 
     qint64 drift=0, clockdrift=p_profile->cpap->clockDrift()*1000L;
+
+    quint32 chantype = schema::FLAG | schema::SPAN | schema::MINOR_FLAG;
+    if (p_profile->general->showUnknownFlags()) chantype |= schema::UNKNOWN;
+    QList<ChannelID> chans = day->getSortedMachineChannels(chantype);
+
     for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
-        if (!(*s)->enabled()) continue;
+        Session * sess = *s;
+        if (!sess->enabled()) continue;
 
         QHash<ChannelID,QVector<EventList *> >::iterator m;
+        for (int c=0; c < chans.size(); ++c) {
+            ChannelID code = chans.at(c);
+            m = sess->eventlist.find(code);
+            if (m == sess->eventlist.end()) continue;
 
-        for (m=(*s)->eventlist.begin();m!=(*s)->eventlist.end();m++) {
-            ChannelID code=m.key();
-            if ((code!=CPAP_Obstructive)
-                && (code!=CPAP_Hypopnea)
-                && (code!=CPAP_Apnea)
-                && (code!=PRS1_0B)
-                && (code!=CPAP_ClearAirway)
-                && (code!=CPAP_CSR)
-                && (code!=CPAP_RERA)
-                && (code!=CPAP_UserFlag1)
-                && (code!=CPAP_UserFlag2)
-                && (code!=CPAP_UserFlag3)
-                && (code!=CPAP_NRI)
-                && (code!=CPAP_LeakFlag)
-                && (code!=CPAP_LargeLeak)
-                && (code!=CPAP_ExP)
-                && (code!=CPAP_FlowLimit)
-                && (code!=CPAP_SensAwake)
-                && (code!=CPAP_PressurePulse)
-                && (code!=CPAP_VSnore2)
-                && (code!=CPAP_VSnore)) continue;
-
-            if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2) || (code==CPAP_UserFlag3))) continue;
-            drift=((*s)->machine()->type() == MT_CPAP) ? clockdrift : 0;
+            drift=(sess->machine()->type() == MT_CPAP) ? clockdrift : 0;
 
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {

@@ -197,6 +197,9 @@ class Day
     //! \brief Returns a list of channels of supplied types, according to channel orders
     QList<ChannelID> getSortedMachineChannels(quint32 chantype);
 
+    //! \brief Returns a list of machine specific channels of supplied types, according to channel orders
+    QList<ChannelID> getSortedMachineChannels(MachineType type, quint32 chantype);
+
     // Some ugly CPAP specific stuff
     QString getCPAPMode();
     QString getPressureRelief();

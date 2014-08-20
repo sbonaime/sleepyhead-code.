@@ -434,7 +434,10 @@ class gGraphView
     void populateMenu(gGraph *);
     QMenu * lines_menu;
     QMenu * plots_menu;
+
     QMenu * overlay_menu;
+    QMenu * oximeter_menu;
+    QMenu * cpap_menu;
 
 
     inline void setCurrentTime(double time) {
