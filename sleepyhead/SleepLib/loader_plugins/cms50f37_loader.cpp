@@ -383,13 +383,11 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             // COMMAND_GET_SESSION_DURATION
         case 0x08: // 8,80,80,80,a4,81,80,80  // 00, 00, 24, 01, 00, 00
-            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
-                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
-            }
 
-            // duration
-            duration = buffer.at(idx+4) | (buffer.at(idx+5) << 8)
-                    | (buffer.at(idx+6) << 16);
+            duration = ((buffer.at(idx+1) & 0x4) << 5);
+            duration |= buffer.at(idx+4);
+            duration |= (buffer.at(idx+5) | ((buffer.at(idx+1) & 0x8) << 4)) << 8;
+            duration |= (buffer.at(idx+6) | ((buffer.at(idx+1) & 0x16) << 4)) << 16;
             break;
 
             // COMMAND_GET_SESSION_COUNT
