@@ -1470,7 +1470,8 @@ void Daily::Load(QDate date)
     quint32 chans = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
     if (p_profile->general->showUnknownFlags()) chans |= schema::UNKNOWN;
 
-    QList<ChannelID> available = day->getSortedMachineChannels(chans);
+    QList<ChannelID> available;
+    if (day) available.append(day->getSortedMachineChannels(chans));
 
     for (int i=0; i < available.size(); ++i) {
         ChannelID code = available.at(i);
