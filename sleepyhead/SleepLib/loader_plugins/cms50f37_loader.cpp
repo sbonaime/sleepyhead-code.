@@ -325,7 +325,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             buffer[idx+i] = buffer[idx+i] ^ 0x80;
         }
 
-        switch(res) {
+        if (!started_reading) switch(res) {
         case 0x02:
             data = buffer.at(idx+1);
             if (data == 0) {
@@ -375,7 +375,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             // duration
             duration = buffer.at(idx+4) | (buffer.at(idx+5) << 8)
-                    | (buffer.at(idx+6) << 16) | (buffer.at(idx+7) << 24);
+                    | (buffer.at(idx+6) << 16);
             break;
 
             // COMMAND_GET_SESSION_COUNT
