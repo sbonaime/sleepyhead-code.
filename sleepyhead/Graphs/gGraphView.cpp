@@ -1236,7 +1236,7 @@ void gGraphView::paintGL()
     graphs_drawn = renderGraphs(painter);
 
     if (!graphs_drawn) { // No graphs drawn? show something useful :)
-        QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.").arg(VersionString);
+        QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.");
 
 //        int x2, y2;
 //        GetTextExtent(m_emptytext, x2, y2, bigfont);

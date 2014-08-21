@@ -789,12 +789,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         data = (*ptr + el.offset()) * gain;
                         lastpx = xst + ((time - minx) * xmult);
                         lastpy = yst - ((data - miny) * ymult);
-                        EventStoreType *eptr = ptr + el.count()-1;
+                        EventStoreType *eptr = el.rawData() + el.count()-1;
 
                         siz--;
                         for (int i = idx; i < siz; i += sam) {
                             ptr += sam;
-                            if (ptr > eptr) break;
+                            if (ptr >= eptr) break;
                             time += rate;
 
                             data = (*ptr + el.offset()) * gain;
