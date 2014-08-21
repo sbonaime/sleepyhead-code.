@@ -37,7 +37,6 @@ extern MainWindow *mainwin;
 
 #include <QApplication>
 
-
 MyLabel::MyLabel(QWidget * parent):
 QWidget(parent)
 {
@@ -301,7 +300,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     vertScrollTime.start();
 
     this->setMouseTracking(true);
-    m_emptytext = QObject::tr("No Data");
+    m_emptytext = STR_Empty_NoData;
     InitGraphGlobals(); // FIXME: sstangl: handle error return.
 #ifdef ENABLE_THREADED_DRAWING
     m_idealthreads = QThread::idealThreadCount();
@@ -1192,6 +1191,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     return numgraphs > 0;
 }
 
+#include "version.h"
 #ifdef BROKEN_OPENGL_BUILD
 void gGraphView::paintEvent(QPaintEvent *)
 #else
@@ -1235,22 +1235,34 @@ void gGraphView::paintGL()
 
     graphs_drawn = renderGraphs(painter);
 
-    if (!graphs_drawn) { // No graphs drawn?
-        int x, y;
-        GetTextExtent(m_emptytext, x, y, bigfont);
-        int tp;
+    if (!graphs_drawn) { // No graphs drawn? show something useful :)
+        QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.").arg(VersionString);
 
-        if (render_cube && this->isVisible()) {
-//            renderCube(painter);
+        int x2, y2;
+        GetTextExtent(m_emptytext, x2, y2, bigfont);
+        int tp2, tp1;
 
-            tp = height() - (y / 2);
+        if (!m_emptyimage.isNull()) {
+            painter.drawPixmap(width() /2 - m_emptyimage.width() /2, height() /2 - m_emptyimage.height() /2 , m_emptyimage);
+            tp2 = height() /2 + m_emptyimage.height()/2  + y2;
+
         } else {
-            tp = height() / 2 + y / 2;
-        }
 
-        // Then display the empty text message
+            tp2 = height() / 2 + y2;
+        }
         QColor col = Qt::black;
-        AddTextQue(m_emptytext, (width() / 2) - x / 2, tp, 0.0, col, bigfont);
+        painter.setPen(col);
+
+        painter.setFont(*bigfont);
+        painter.drawText((width() / 2) - x2 / 2, tp2, m_emptytext);
+
+        QRectF rec(0,0,width(),0);
+        painter.setFont(*defaultfont);
+        rec = painter.boundingRect(rec, Qt::AlignHCenter | Qt::AlignBottom, txt);
+        rec.moveBottom(height()-5);
+
+        painter.drawText(rec, Qt::AlignHCenter | Qt::AlignBottom, txt);
+
     }
     DrawTextQue(painter);
 

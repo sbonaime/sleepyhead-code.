@@ -30,6 +30,9 @@
 
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
+
+void setEmptyImage(QString text, QPixmap pixmap);
+
 class MyLabel:public QWidget
 {
 public:
@@ -383,6 +386,9 @@ class gGraphView
     //! \brief Sets the message displayed when there are no graphs to draw
     void setEmptyText(QString s) { m_emptytext = s; }
 
+    //! \brief Sets the message displayed when there are no graphs to draw
+    void setEmptyImage(QPixmap pm) { m_emptyimage = pm; }
+
     inline const float &devicePixelRatio() { return m_dpr; }
     void setDevicePixelRatio(float dpr) { m_dpr = dpr; }
 
@@ -550,6 +556,8 @@ class gGraphView
     int m_lastxpos, m_lastypos;
 
     QString m_emptytext;
+    QPixmap m_emptyimage;
+
     bool m_showsplitter;
 
     qint64 m_minx, m_maxx;

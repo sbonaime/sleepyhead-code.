@@ -147,6 +147,13 @@ extern QString STR_MessageBox_Cancel;
 extern QString STR_MessageBox_Destroy;
 extern QString STR_MessageBox_Save;
 
+extern QString STR_Empty_NoData;
+extern QString STR_Empty_NoSessions;
+extern QString STR_Empty_Brick;
+extern QString STR_Empty_NoGraphs;
+extern QString STR_Empty_SummaryOnly;
+
+
 
 extern QString STR_TR_BMI;         // Short form of Body Mass Index
 extern QString STR_TR_Weight;
@@ -249,7 +256,6 @@ extern QString STR_TR_Sessions;
 extern QString STR_TR_PrRelief; // Pressure Relief
 extern QString STR_TR_SensAwake;
 
-extern QString STR_TR_NoData;
 extern QString STR_TR_Bookmarks;
 extern QString STR_TR_SleepyHead;
 

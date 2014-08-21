@@ -473,7 +473,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
-    GraphView->setEmptyText(STR_TR_NoData);
+    GraphView->setEmptyText(STR_Empty_NoData);
     previous_date=QDate();
 
     ui->calButton->setChecked(p_profile->appearance->calendarVisible() ? Qt::Checked : Qt::Unchecked);
@@ -484,6 +484,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     connect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
     connect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
+
+    GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
 }
 
 
@@ -1500,7 +1502,7 @@ void Daily::Load(QDate date)
         float hours=day->hours(MT_CPAP);
         if (GraphView->isEmpty() && (hours>0)) {
             if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
-                GraphView->setEmptyText(tr("No Graphs :("));
+                GraphView->setEmptyText(STR_Empty_NoGraphs);
 
                 isBrick=true;
             }
@@ -1618,6 +1620,7 @@ void Daily::Load(QDate date)
                     html+="<tr><td colspan=5 align='center'><font size='+3'>"+tr("Sessions all off!")+"</font></td></tr>";
                     html+="<tr><td align=center><img src='qrc:/docs/sheep.png' width=120px></td></tr>";
                     html+="<tr bgcolor='#89abcd'><td colspan=5 align='center'><i><font color=white size=+1>"+tr("Sessions exist for this day but are switched off.")+"</font></i></td></tr>\n";
+                    GraphView->setEmptyText(STR_Empty_NoSessions);
                 } else {
                     html+="<tr><td colspan=5 align='center'><b><h2>"+tr("Impossibly short session")+"</h2></b></td></tr>";
                     html+="<tr><td colspan=5 align='center'><i>"+tr("Zero hours??")+"</i></td></tr>\n";
@@ -2465,15 +2468,15 @@ void Daily::updateCube()
 
 
         if (ui->graphCombo->count() > 0) {
-            GraphView->setEmptyText(tr("No Graphs On!"));
+            GraphView->setEmptyText(STR_Empty_NoGraphs);
         } else {
             if (!p_profile->GetGoodDay(getDate(), MT_CPAP)
               && !p_profile->GetGoodDay(getDate(), MT_OXIMETER)
               && !p_profile->GetGoodDay(getDate(), MT_SLEEPSTAGE)
               && !p_profile->GetGoodDay(getDate(), MT_POSITION)) {
-                GraphView->setEmptyText(STR_TR_NoData);
+                GraphView->setEmptyText(STR_Empty_NoData);
             } else {
-                GraphView->setEmptyText(tr("Summary Only :("));
+                GraphView->setEmptyText(STR_Empty_SummaryOnly);
             }
         }
     } else {

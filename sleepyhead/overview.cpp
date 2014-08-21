@@ -87,7 +87,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     GraphView = new gGraphView(ui->graphArea, m_shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    GraphView->setEmptyText(STR_TR_NoData);
+    GraphView->setEmptyText(STR_Empty_NoData);
 
     // Create the custom scrollbar and attach to GraphView
     scrollbar = new MyScrollBar(ui->graphArea);
@@ -313,6 +313,9 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     GraphView->resetLayout();
     GraphView->LoadSettings("Overview"); //no trans
+
+    GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
+
 }
 Overview::~Overview()
 {
@@ -636,10 +639,10 @@ void Overview::updateCube()
         ui->toggleVisibility->blockSignals(false);
 
         if (ui->graphCombo->count() > 0) {
-            GraphView->setEmptyText(tr("No Graphs On!"));
+            GraphView->setEmptyText(STR_Empty_NoGraphs);
 
         } else {
-            GraphView->setEmptyText(STR_TR_NoData);
+            GraphView->setEmptyText(STR_Empty_NoData);
         }
     } else {
         ui->toggleVisibility->setArrowType(Qt::DownArrow);

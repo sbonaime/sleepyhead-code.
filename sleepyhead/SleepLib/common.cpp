@@ -161,6 +161,12 @@ QString STR_MessageBox_Cancel;
 QString STR_MessageBox_Destroy;
 QString STR_MessageBox_Save;
 
+QString STR_Empty_NoData;
+QString STR_Empty_Brick;
+QString STR_Empty_NoGraphs;
+QString STR_Empty_SummaryOnly;
+QString STR_Empty_NoSessions;
+
 
 QString STR_TR_BMI;         // Short form of Body Mass Index
 QString STR_TR_Weight;
@@ -265,7 +271,6 @@ QString STR_TR_Usage;
 QString STR_TR_Sessions;
 QString STR_TR_PrRelief; // Pressure Relief
 
-QString STR_TR_NoData;
 QString STR_TR_Bookmarks;
 QString STR_TR_SleepyHead;
 
@@ -342,6 +347,13 @@ void initializeStrings()
     STR_MessageBox_Information = QObject::tr("Information");
     STR_MessageBox_Busy = QObject::tr("Busy");
     STR_MessageBox_PleaseNote = QObject::tr("Please Note");
+
+    STR_Empty_NoData = QObject::tr("");
+    STR_Empty_Brick = QObject::tr("Compliance Only :(");
+    STR_Empty_NoGraphs = QObject::tr("Graphs Switched Off!");
+    STR_Empty_SummaryOnly = QObject::tr("Summary Only :(");
+    STR_Empty_NoSessions = QObject::tr("Sessions Switched Off!");
+
 
     // Dialog box options
     STR_MessageBox_Yes = QObject::tr("&Yes");
@@ -447,7 +459,6 @@ void initializeStrings()
     STR_TR_Sessions = QObject::tr("Sessions");
     STR_TR_PrRelief = QObject::tr("Pr. Relief"); // Pressure Relief
 
-    STR_TR_NoData = QObject::tr("No Data Available");
     STR_TR_Bookmarks = QObject::tr("Bookmarks");
     STR_TR_SleepyHead = QObject::tr("SleepyHead");
 
