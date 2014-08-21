@@ -463,7 +463,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01) ? 0x80 : 0;
             }
 
-            quint16 pi = buf[idx + 4] | buf[idx + 5] << 8;
+            quint16 pi = buf[4] | buf[5] << 8;
             pulse = buf[3];
             quint8 spo2 = buf[2] & 0x7f;
             qDebug() << "Pulse=" << pulse << "SPO2=" << spo2 << "Pi=" << pi;
