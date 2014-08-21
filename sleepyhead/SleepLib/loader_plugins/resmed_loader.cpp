@@ -2286,7 +2286,7 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label == "") {
+        } else if (es.label == "") { // What the hell resmed??
             if (emptycnt == 0) {
                 code = RMS9_E01;
                 ToTimeDelta(sess, edf, es, code, recs, duration);

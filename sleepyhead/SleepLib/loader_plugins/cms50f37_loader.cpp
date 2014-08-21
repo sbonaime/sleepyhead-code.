@@ -460,12 +460,20 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            quint16 pi = buf[idx + 4] | buf[idx + 5] << 8;
+            quint16 pi1 = buf[idx + 4] | buf[idx + 5] << 8;
+            quint16 pi2 = buf[idx + 4] | ((char *)buf)[idx + 5] << 8;
+            quint16 pi3 = buf[idx + 4] | buf[idx + 5] << 7;
+            quint16 pi4 = buf[idx + 4] | ((char *)buf)[idx + 5] << 7;
+
+            qDebug() << "Pi1 =" << pi1
+                     << "Pi2 =" << pi2
+                     << "Pi3 =" << pi3
+                     << "Pi4 =" << pi4;
 
             pulse = buf[3];
             quint8 spo2 = buf[2];
 
-            oxirec->append(((spo2 == 0) || (pulse == 0)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
+            oxirec->append(((spo2 == 0) || (pulse == 0)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi3));
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
 

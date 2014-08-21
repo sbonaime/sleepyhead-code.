@@ -570,6 +570,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 num_points += (*ni)->count();
             }
 
+            if (code == CPAP_FlowRate) {
+                int i=5; Q_UNUSED(i);
+            }
+
+
             total_points += num_points;
             codepoints += num_points;
 
@@ -787,9 +792,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         //////////////////////////////////////////////////////////////////
                         // Normal Waveform Plot
                         //////////////////////////////////////////////////////////////////
-                        if (code == CPAP_Ti) {
-                            int i=5; Q_UNUSED(i);
-                        }
                         // Prime first point
                         data = (*ptr + el.offset()) * gain;
                         lastpx = xst + ((time - minx) * xmult);
