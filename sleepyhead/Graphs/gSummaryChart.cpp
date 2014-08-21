@@ -381,7 +381,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_physminy = m_miny;
 }
 
-QColor brighten(QColor color)
+QColor brighten(QColor color, float mult = 2.0)
 {
     int cr, cg, cb;
 
@@ -395,9 +395,9 @@ QColor brighten(QColor color)
 
     if (cb < 64) { cb = 64; }
 
-    cr *= 2;
-    cg *= 2;
-    cb *= 2;
+    cr *= mult;
+    cg *= mult;
+    cb *= mult;
 
     if (cr > 255) { cr = 255; }
 
@@ -649,7 +649,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 }
 
                 QColor col1 = col;
-                QColor col2 = Qt::white;
+                QColor col2 = brighten(col,2.37);
                 //outlines->setColor(Qt::black);
 
                 int np = d.value().size();
@@ -767,7 +767,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     if (graphtype == GT_BAR) {
                         QColor col1 = col;
-                        QColor col2 = Qt::white;
+                        QColor col2 = brighten(col,2.5);
 
                         QLinearGradient gradient(x1, py-h, x1+barw, py-h);
                         gradient.setColorAt(0,col1);

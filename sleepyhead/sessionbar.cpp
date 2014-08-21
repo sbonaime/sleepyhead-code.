@@ -117,7 +117,7 @@ SegType SessionBar::max()
     return max;
 }
 
-QColor brighten(QColor color);
+QColor brighten(QColor, float f=2.0);
 
 void SessionBar::mousePressEvent(QMouseEvent *ev)
 {

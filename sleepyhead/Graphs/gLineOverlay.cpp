@@ -20,7 +20,7 @@ gLineOverlayBar::~gLineOverlayBar()
 {
 }
 
-QColor brighten(QColor color);
+QColor brighten(QColor, float);
 
 void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
