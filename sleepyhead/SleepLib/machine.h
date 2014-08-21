@@ -185,6 +185,7 @@ class Machine
     inline QDateTime lastImported() const { return info.lastimported; }
 
     inline void setModel(QString value) { info.model = value; }
+    inline void setBrand(QString value) { info.brand = value; }
     inline void setSerial(QString value) { info.serial = value; }
     inline void setType(MachineType type) { info.type = type; }
     inline void setCap(quint32 value) { info.cap = value; }

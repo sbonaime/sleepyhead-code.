@@ -913,6 +913,9 @@ void OximeterImport::on_saveButton_clicked()
     calcSPO2Drop(session);
     calcPulseChange(session);
 
+    mach->setModel(oximodule->getModel());
+    mach->setBrand(oximodule->getVendor());
+
     session->first(OXI_Pulse);
     session->first(OXI_SPO2);
     session->last(OXI_Pulse);

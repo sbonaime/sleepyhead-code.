@@ -269,8 +269,9 @@ void init()
                         QObject::tr("Plethy"),     STR_UNIT_Hz,           DEFAULT,    QColor("#404040")));
 
     schema::channel.add(GRP_OXI, new Channel(OXI_Perf             = 0x1805, WAVEFORM,    SESSION, "Perf. Index",
-                        QObject::tr("Perfusion Index"),                    QObject::tr(""),
-                        QObject::tr("Perfusion Index"), STR_UNIT_Unknown,     DEFAULT,    QColor("aqua")));
+                        QObject::tr("Perfusion Index"),
+                        QObject::tr("A relative assessment of the pulse strength at the monitoring site"),
+                        QObject::tr("Perf. Index %"), STR_UNIT_Percentage,     DEFAULT,    QColor("magenta")));
 
     schema::channel.add(GRP_OXI, new Channel(OXI_PulseChange     = 0x1803, FLAG,    SESSION,
                         "PulseChange",      QObject::tr("Pulse Change"),
