@@ -54,7 +54,7 @@ Machine *Day::machine(MachineType type)
     return nullptr;
 }
 
-QList<Session *> Day::getSessions(MachineType type)
+QList<Session *> Day::getSessions(MachineType type, bool ignore_enabled)
 {
     QList<Session *>::iterator it;
     QList<Session *>::iterator sess_end = sessions.end();
@@ -62,7 +62,7 @@ QList<Session *> Day::getSessions(MachineType type)
     QList<Session *> newlist;
 
     for (it = sessions.begin(); it != sess_end; ++it) {
-        if (!(*it)->enabled())
+        if (!ignore_enabled && !(*it)->enabled())
             continue;
 
         if ((*it)->machine()->type() == type)

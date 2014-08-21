@@ -41,7 +41,7 @@ class Day
     Machine *machine(MachineType type);
 
     //! \brief Returns a list of sessions for the specified machine type
-    QList<Session *> getSessions(MachineType type);
+    QList<Session *> getSessions(MachineType type, bool ignore_enabled = false);
 
     //! \brief Add Session to this Day object (called during Load)
     void addSession(Session *s);

@@ -588,6 +588,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipRect(left, top, width, height);
     painter.setClipping(true);
 
+    QColor summaryColor = QColor("dark gray");
+
     for (qint64 Q = minx; Q <= maxx + ms_per_day; Q += ms_per_day) {
         zd = Q / ms_per_day;
         d = m_values.find(zd);
@@ -598,6 +600,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if (d != m_values.end()) {
             day = m_days[zd];
+            bool summary_only = day->summaryOnly();
+
 
             if (!m_hours.contains(zd)) {
                 goto jumpnext;
@@ -637,6 +641,9 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 QColor col = m_colors[0];
                 //if (hours<compliance_hours) col=QColor("#f03030");
 
+                if (summary_only) {
+                    col = summaryColor;
+                }
                 if (zd == hl_day) {
                     col = QColor("gold");
                 }
@@ -730,6 +737,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         if (tmp < compliance_hours) {
                             col = QColor("#f04040");
                             incompliant++;
+                        } else if (summary_only) {
+                            col = summaryColor;
                         }
                     }
 
@@ -1113,6 +1122,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         day = m_days[zd];
 
         if ((d != m_values.end()) && (day != nullptr)) {
+            bool summary_only = day->summaryOnly();
 
             QString z = dt.toString(Qt::SystemLocaleShortDate);
 
@@ -1256,11 +1266,14 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
                 }
 
             }
+            if (summary_only) {
+                z += "\r\n"+QObject::tr("(Summary Only)");
+            }
 
             graph->ToolTip(z, x, y - 15);
             return false;
         } else {
-            QString z = dt.toString(Qt::SystemLocaleShortDate) + "\r\nNo Data";
+            QString z = dt.toString(Qt::SystemLocaleShortDate) + "\r\n"+QObject::tr("No Data");
             graph->ToolTip(z, x, y - 15);
             return false;
         }

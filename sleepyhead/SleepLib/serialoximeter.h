@@ -21,7 +21,7 @@ struct OxiRecord
 {
     quint8 pulse;
     quint8 spo2;
-    quint16 perf;
+    qint16 perf;
 
     OxiRecord():pulse(0), spo2(0),perf(0) {}
     OxiRecord(quint8 p, quint8 s): pulse(p), spo2(s) {}

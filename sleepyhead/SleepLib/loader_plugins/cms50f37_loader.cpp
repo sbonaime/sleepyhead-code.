@@ -460,12 +460,12 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            quint16 pi = buffer.data()[idx+4] | buffer.data()[idx+5] << 8;
+            qint16 pi = buffer.data()[idx+4] | buffer.data()[idx+5] << 8;
 
             pulse = buf[3];
             quint8 spo2 = buf[2];
 
-            oxirec->append(((spo2 == 0) || (pulse == 0) || (pi == 0xfff6)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
+            oxirec->append(((spo2 == 0) || (pulse == 0) || (pi>=0)) ? OxiRecord(0,0,0) : OxiRecord(pulse, spo2, pi));
         } else if (res == 0x0f) {
             // f,80,de,c2,de,c2,de,c2  cms50F data...
 
@@ -473,11 +473,14 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+3), buffer.at(idx+2)));
+            pulse = buffer.at(idx+3);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+2)));
 
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+5), buffer.at(idx+4)));
+            pulse = buffer.at(idx+5);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+4)));
 
-            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(buffer.at(idx+7), buffer.at(idx+6)));
+            pulse = buffer.at(idx+7);
+            oxirec->append((pulse == 0xff) ? OxiRecord(0,0) : OxiRecord(pulse, buffer.at(idx+6)));
         }
 
         QStringList str;

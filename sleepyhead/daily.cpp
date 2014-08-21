@@ -957,13 +957,13 @@ QString Daily::getSessionInformation(Day * day)
         }
         html+="</i></td></tr>\n";
         html+=QString("<tr>"
-                      "<th>"+STR_TR_On+"</th>"
-                      "<th>"+STR_TR_Date+"</th>"
-                      "<th>"+STR_TR_Start+"</th>"
-                      "<th>"+STR_TR_End+"</th>"
-                      "<th>"+tr("Duration")+"</th></tr>");
+                      "<td>"+STR_TR_On+"</td>"
+                      "<td>"+STR_TR_Date+"</td>"
+                      "<td>"+STR_TR_Start+"</td>"
+                      "<td>"+STR_TR_End+"</td>"
+                      "<td>"+tr("Duration")+"</td></tr>");
 
-        QList<Session *> sesslist = day->getSessions(mi.key());
+        QList<Session *> sesslist = day->getSessions(mi.key(), true);
 
         for (QList<Session *>::iterator s=sesslist.begin(); s != sesslist.end(); ++s) {
             if (((*s)->machine()->type() == MT_CPAP) &&
@@ -982,16 +982,14 @@ QString Daily::getSessionInformation(Day * day)
                 sess->settings[SESSION_ENABLED]=true;
             }
             bool b=sess->settings[SESSION_ENABLED].toBool();
-            html+=QString("<tr class='datarow'><td colspan=5><table>"
-                          "<tr><td colspan=5 align=center>%2</td></tr>"
-                          "<tr>"
+            html+=QString("<tr class='datarow2'><td colspan=5 align=center>%2</td></tr>"
+                          "<tr class='datarow2'>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
                           "<img src='qrc:/icons/session-%4.png' width=24px></a></td>"
-                          "<td align=center>%5</td>"
-                          "<td align=center>%6</td>"
-                          "<td align=center>%7</td>"
+                          "<td align=left>%5</td>"
+                          "<td align=left>%6</td>"
+                          "<td align=left>%7</td>"
                           "<td align=left>%3</td></tr>"
-                          "</table></td></tr>"
                           )
                     .arg((*s)->session())
                     .arg(QObject::tr("%1 Session #%2").arg((*s)->machine()->loaderName()).arg((*s)->session(),8,10,QChar('0')))
@@ -1420,6 +1418,20 @@ void Daily::Load(QDate date)
     "tr.datarow:nth-child(even) {"
     "background-color: #f8f8f8;"
     "}"
+    "tr.datarow2:nth-child(4n-1) {"
+    "background-color: #f8f8f8;"
+    "}"
+    "tr.datarow2:nth-child(4n+0) {"
+    "background-color: #f8f8f8;"
+    "}"
+    "table.curved {"
+    "border: 1px solid gray;"
+    "border-radius:10px;"
+    "-moz-border-radius:10px;"
+    "-webkit-border-radius:10px;"
+    "page-break-after:auto;"
+    "-fs-table-paginate: paginate;"
+    "}"
 
     "</style>"
     "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
@@ -1596,27 +1608,28 @@ void Daily::Load(QDate date)
             }
 
             html+="</table>\n";
+            html+="<hr/>\n";
 
         } else {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             if (!isBrick) {
                 html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
                 if (day->size()>0) {
-                    html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Sessions all off!")+"</h2></b></td></tr>";
-                    html+="<tr><td colspan='5' align='center'><i>"+tr("Sessions exist for this day but are switched off.")+"</i></td></tr>\n";
+                    html+="<tr><td colspan=5 align='center'><font size='+3'>"+tr("Sessions all off!")+"</font></td></tr>";
+                    html+="<tr><td align=center><img src='qrc:/docs/sheep.png' width=120px></td></tr>";
+                    html+="<tr bgcolor='#89abcd'><td colspan=5 align='center'><i><font color=white size=+1>"+tr("Sessions exist for this day but are switched off.")+"</font></i></td></tr>\n";
                 } else {
-                    html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Impossibly short session")+"</h2></b></td></tr>";
-                    html+="<tr><td colspan='5' align='center'><i>"+tr("Zero hours??")+"</i></td></tr>\n";
+                    html+="<tr><td colspan=5 align='center'><b><h2>"+tr("Impossibly short session")+"</h2></b></td></tr>";
+                    html+="<tr><td colspan=5 align='center'><i>"+tr("Zero hours??")+"</i></td></tr>\n";
                 }
             } else { // machine is a brick
-                html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-                html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine only provides compliance data.")+"</i></td></tr>\n";
-                html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
+                html+="<tr><td colspan=5 align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
+                html+="<tr><td colspan=5 align='center'><i>"+tr("Sorry, your machine only provides compliance data.")+"</i></td></tr>\n";
+                html+="<tr><td colspan=5 align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
             }
             html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
             html+="</table>\n";
         }
-        html+="<hr/>\n";
 
     } // if (!CPAP)
     else html+=getSleepTime(day);
@@ -1628,11 +1641,14 @@ void Daily::Load(QDate date)
     } else {
         if (cpap && day->hours(MT_CPAP)<0.0000001) {
         } else {
-            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-            html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>\n";
-            html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+            html+="<table cellspacing=0 cellpadding=0 border=0 height=100% width=100%>";
+            html+="<tr height=25%><td align=center></td></tr>";
+            html+="<tr><td align=center><font size='+3'>"+tr("\"Nothing's here!\"")+"</font></td></tr>";
+            html+="<tr><td align=center><img src='qrc:/docs/sheep.png' width=120px></td></tr>";
+            html+="<tr height=5px><td align=center></td></tr>";
+            html+="<tr bgcolor='#89abcd'><td align=center><i><font size=+1 color=white>"+tr("Bob is bored with this days lack of data.")+"</font></i></td></tr>";
+            html+="<tr height=25%><td align=center></td></tr>";
             html+="</table>\n";
-            html+="<hr/>\n";
         }
 
     }
