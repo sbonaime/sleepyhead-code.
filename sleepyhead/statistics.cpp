@@ -805,7 +805,7 @@ QString Statistics::GenerateHTML()
                     pshi = day->settings_max(CPAP_PSMax);
                     maxipap = max = day->settings_max(CPAP_IPAPHi);
                 } else if (mode ==  MODE_ASV) {
-                    min = day->settings_min(CPAP_EPAPLo);
+                    min = day->settings_min(CPAP_EPAP);
                     ps = day->settings_min(CPAP_PSMin);
                     pshi = day->settings_max(CPAP_PSMax);
                     maxipap = min+pshi;
