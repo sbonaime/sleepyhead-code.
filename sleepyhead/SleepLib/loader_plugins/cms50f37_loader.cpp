@@ -500,7 +500,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         idx += len;
     } while (idx < size);
 
-    emit updateProgress(oxirec->size(), duration);
+   // emit updateProgress(oxirec->size(), duration);
 
     if (!started_import) {
         imp_callbacks = 0;
