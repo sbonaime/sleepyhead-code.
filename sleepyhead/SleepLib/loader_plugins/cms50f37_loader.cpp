@@ -460,7 +460,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             quint8 msb = buf[1];
             for (int i = 2; i < len-1; i++, msb >>= 1) {
-                buf[i] = (buf[i] & 0x7f) | (msb & 0x01) ? 0x80 : 0;
+                buf[i] = (buf[i] & 0x7f) | ((msb & 0x01) ? 0x80 : 0);
             }
 
             quint16 pi = buf[4] | buf[5] << 8;

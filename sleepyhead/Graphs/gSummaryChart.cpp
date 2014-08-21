@@ -600,7 +600,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if (d != m_values.end()) {
             day = m_days[zd];
-            bool summary_only = day->summaryOnly();
+            bool summary_only = day && day->summaryOnly();
 
 
             if (!m_hours.contains(zd)) {
