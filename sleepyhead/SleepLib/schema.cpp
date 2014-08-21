@@ -278,7 +278,7 @@ void init()
                         QObject::tr("A sudden (user definable) change in heart rate"),
                         QObject::tr("PC"),         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light grey")));
 
-    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2Drop        = 0x1804, SPAN,    SESSION,
+    schema::channel.add(GRP_OXI, new Channel(OXI_SPO2Drop        = 0x1804, FLAG,    SESSION,
                         "SPO2Drop",         QObject::tr("SpO2 Drop"),
                         QObject::tr("A sudden (user definable) drop in blood oxygen saturation"),
                         QObject::tr("SD"),         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("light blue")));
