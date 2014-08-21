@@ -562,10 +562,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             QVector<EventList *> &evec = ci.value();
             num_points = 0;
-            int evecsize=evec.size();
 
-            for (int i = 0; i < evecsize; i++) {
-                num_points += evec[i]->count();
+            QVector<EventList *>::iterator evec_end = evec.end();
+            QVector<EventList *>::iterator ni;
+
+            for (ni = evec.begin(); ni != evec_end; ++ni) {
+                num_points += (*ni)->count();
             }
 
             total_points += num_points;
@@ -574,8 +576,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             // Max number of samples taken from samples per pixel for better min/max values
             const int num_averages = 20;
 
-            for (int n = 0; n < evecsize; ++n) { // for each segment
-                EventList &el = *evec[n];
+            int n=0;
+            for (ni = evec.begin(); ni != evec_end; ++ni, ++n) {
+                EventList & el = *(EventList*) (*ni);
 
                 accel = (el.type() == EVL_Waveform); // Turn on acceleration if this is a waveform.
 
@@ -597,7 +600,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     square_plot = false;
                 }
 
-                int siz = evec[n]->count();
+                int siz = el.count();
 
                 if (siz <= 1) { continue; } // Don't bother drawing 1 point or less.
 
@@ -702,7 +705,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     time = el.time(idx) + drift;
                     double rate = double(sr) * double(sam);
                     EventStoreType *ptr = el.rawData() + idx;
-                    if (siz > el.count())
+                    if ((unsigned) siz > el.count())
                         siz = el.count();
 
                     if (accel) {
@@ -784,13 +787,15 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         //////////////////////////////////////////////////////////////////
                         // Normal Waveform Plot
                         //////////////////////////////////////////////////////////////////
-
+                        if (code == CPAP_Ti) {
+                            int i=5; Q_UNUSED(i);
+                        }
                         // Prime first point
                         data = (*ptr + el.offset()) * gain;
                         lastpx = xst + ((time - minx) * xmult);
                         lastpy = yst - ((data - miny) * ymult);
                         EventStoreType *eptr = el.rawData() + el.count()-1;
-
+                        lines.clear();
                         siz--;
                         for (int i = idx; i < siz; i += sam) {
                             ptr += sam;

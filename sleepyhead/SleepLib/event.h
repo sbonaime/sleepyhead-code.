@@ -105,28 +105,28 @@ class EventList
     //void setCode(ChannelID id) { m_code=id; }
 
     //! \brief Return the Minimum data value
-    inline const EventDataType &Min() { return m_min; }
+    inline EventDataType Min() { return m_min; }
 
     //! \brief Return the Maximum data value
-    inline const EventDataType &Max() { return m_max; }
+     inline EventDataType Max() { return m_max; }
 
     //! \brief Return the Minimum data2 value
-    inline const EventDataType &min2() { return m_min2; }
+    inline EventDataType min2() { return m_min2; }
 
     //! \brief Return the Maximum data value
-    inline const EventDataType &max2() { return m_max2; }
+    inline EventDataType max2() { return m_max2; }
 
     //! \brief Return the gain value
-    inline const EventDataType &gain() { return m_gain; }
+    inline EventDataType gain() { return m_gain; }
 
     //! \brief Return the gain offset
-    inline const EventDataType &offset() { return m_offset; }
+    inline EventDataType offset() { return m_offset; }
 
     //! \brief Return the sample rate
-    inline const EventDataType &rate() { return m_rate; }
+    inline EventDataType rate() { return m_rate; }
 
     //! \brief Return the EventList type, either EVL_Waveform or EVL_Event
-    inline const EventListType &type() { return m_type; }
+    inline EventListType type() { return m_type; }
     //inline const ChannelID & code() { return m_code; }
 
     //! \brief Returns whether or not min/max values are updated while adding events
