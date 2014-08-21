@@ -386,6 +386,9 @@ class gGraphView
     //! \brief Sets the message displayed when there are no graphs to draw
     void setEmptyText(QString s) { m_emptytext = s; }
 
+    //! \brief Returns the message displayed when there are no graphs to draw
+    QString emptyText() { return m_emptytext; }
+
     //! \brief Sets the message displayed when there are no graphs to draw
     void setEmptyImage(QPixmap pm) { m_emptyimage = pm; }
 

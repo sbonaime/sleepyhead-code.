@@ -1238,23 +1238,23 @@ void gGraphView::paintGL()
     if (!graphs_drawn) { // No graphs drawn? show something useful :)
         QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.").arg(VersionString);
 
-        int x2, y2;
-        GetTextExtent(m_emptytext, x2, y2, bigfont);
-        int tp2, tp1;
+//        int x2, y2;
+//        GetTextExtent(m_emptytext, x2, y2, bigfont);
+//        int tp2, tp1;
 
         if (!m_emptyimage.isNull()) {
             painter.drawPixmap(width() /2 - m_emptyimage.width() /2, height() /2 - m_emptyimage.height() /2 , m_emptyimage);
-            tp2 = height() /2 + m_emptyimage.height()/2  + y2;
+//            tp2 = height() /2 + m_emptyimage.height()/2  + y2;
 
-        } else {
+        } /*else {
 
             tp2 = height() / 2 + y2;
-        }
+        }*/
         QColor col = Qt::black;
         painter.setPen(col);
 
-        painter.setFont(*bigfont);
-        painter.drawText((width() / 2) - x2 / 2, tp2, m_emptytext);
+//        painter.setFont(*bigfont);
+//        painter.drawText((width() / 2) - x2 / 2, tp2, m_emptytext);
 
         QRectF rec(0,0,width(),0);
         painter.setFont(*defaultfont);
@@ -1262,7 +1262,11 @@ void gGraphView::paintGL()
         rec.moveBottom(height()-5);
 
         painter.drawText(rec, Qt::AlignHCenter | Qt::AlignBottom, txt);
-
+    }
+    if (p_profile->appearance->lineCursorMode()) {
+        emit updateCurrentTime(graphs_drawn ? m_currenttime : 0.0F);
+    } else {
+        emit updateRange(graphs_drawn ? m_minx : 0.0F, m_maxx);
     }
     DrawTextQue(painter);
 
@@ -1326,11 +1330,6 @@ void gGraphView::paintGL()
         redrawtimer->start();
     }
 
-    if (p_profile->appearance->lineCursorMode()) {
-        emit updateCurrentTime(m_currenttime);
-    } else {
-        emit updateRange(m_minx, m_maxx);
-    }
 }
 
 QString gGraphView::getRangeString()

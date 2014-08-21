@@ -460,7 +460,9 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
                 buf[i] = (buf[i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
             }
 
-            qint16 pi = buffer.data()[idx+4] | buffer.data()[idx+5] << 8;
+            //qint16 pi = buffer.data()[idx+4] | buffer.data()[idx+5] << 8;
+            qint16 pi = ((char *)buf)[idx+5] << 8 | buf[idx+4];
+
 
             pulse = buf[3];
             quint8 spo2 = buf[2];
@@ -497,6 +499,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
         idx += len;
     } while (idx < size);
+
+    emit updateProgress(oxirec->size(), duration);
 
     if (!started_import) {
         imp_callbacks = 0;

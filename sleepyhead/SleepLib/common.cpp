@@ -348,11 +348,11 @@ void initializeStrings()
     STR_MessageBox_Busy = QObject::tr("Busy");
     STR_MessageBox_PleaseNote = QObject::tr("Please Note");
 
-    STR_Empty_NoData = QObject::tr("");
+    STR_Empty_NoData = QObject::tr("No Data Available");
     STR_Empty_Brick = QObject::tr("Compliance Only :(");
-    STR_Empty_NoGraphs = QObject::tr("Graphs Switched Off!");
+    STR_Empty_NoGraphs = QObject::tr("Graphs Switched Off");
     STR_Empty_SummaryOnly = QObject::tr("Summary Only :(");
-    STR_Empty_NoSessions = QObject::tr("Sessions Switched Off!");
+    STR_Empty_NoSessions = QObject::tr("Sessions Switched Off");
 
 
     // Dialog box options

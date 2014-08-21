@@ -886,18 +886,18 @@ void OximeterImport::on_saveButton_clicked()
         ti += step;
     }
     ti -= step;
-    if (lastpulse > 0) {
+    if (ELpulse && (lastpulse > 0)) {
         ELpulse->AddEvent(ti, lastpulse);
         session->setLast(OXI_Pulse, ti);
     }
 
-    if (lastspo2 > 0) {
+    if (ELspo2 && (lastspo2 > 0)) {
         ELspo2->AddEvent(ti, lastspo2);
         session->setLast(OXI_SPO2, ti);
     }
 
 
-    if (haveperf && lastperf > 0) {
+    if (haveperf && ELperf && lastperf > 0) {
         ELperf->AddEvent(ti, lastperf);
         session->setLast(OXI_Perf, ti);
     }

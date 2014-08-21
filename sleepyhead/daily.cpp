@@ -196,8 +196,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     graphlist["AHI"] = AHI;
 
-    graphlist["INTPULSE"] = new gGraph("INTPULSE", GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
-    graphlist["INTSPO2"] = new gGraph("INTSPO2", GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
+//    graphlist["INTPULSE"] = new gGraph("INTPULSE", GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
+//    graphlist["INTSPO2"] = new gGraph("INTSPO2", GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -376,23 +376,23 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineChart *lc = nullptr;
     graphlist[schema::channel[CPAP_MaskPressure].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, false)));
-    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, square)));
+    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, false)));
 
     graphlist[schema::channel[POS_Inclination].code()]->AddLayer(AddPOS(new gLineChart(POS_Inclination)));
     graphlist[schema::channel[POS_Orientation].code()]->AddLayer(AddPOS(new gLineChart(POS_Orientation)));
 
-    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, square)));
+    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, false)));
     lc->addPlot(CPAP_TgMV, square);
 
-    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume, square)));
+    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume, false)));
     //lc->addPlot(CPAP_Test2,COLOR_DarkYellow,square);
 
     //graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(new gLineChart("TidalVolume2", square)));
     graphlist[schema::channel[CPAP_FLG].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_FLG, true)));
     //graphlist[schema::channel[CPAP_RespiratoryEvent].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent, true)));
-    graphlist[schema::channel[CPAP_IE].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, square)));
-    graphlist[schema::channel[CPAP_Te].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, square)));
-    graphlist[schema::channel[CPAP_Ti].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, square)));
+    graphlist[schema::channel[CPAP_IE].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, false)));
+    graphlist[schema::channel[CPAP_Te].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, false)));
+    graphlist[schema::channel[CPAP_Ti].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, false)));
     //lc->addPlot(CPAP_Test2,COLOR:DarkYellow,square);
 
     graphlist[schema::channel[ZEO_SleepStage].code()]->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, true)));
@@ -414,11 +414,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    gLineOverlaySummary *los3=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
 //    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
 //    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3));
-    graphlist["INTPULSE"]->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, square)));
+//    graphlist["INTPULSE"]->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, square)));
 //    gLineOverlaySummary *los4=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
 //    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
 //    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4));
-    graphlist["INTSPO2"]->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, true)));
+//    graphlist["INTSPO2"]->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, true)));
 
     graphlist[schema::channel[CPAP_PTB].code()]->setForceMaxY(100);
     graphlist[schema::channel[OXI_SPO2].code()]->setForceMaxY(100);
@@ -1467,11 +1467,11 @@ void Daily::Load(QDate date)
    // GraphView->ResetBounds(false);
 
     // wtf is hiding the scrollbars for???
-    if (!cpap && !oxi) {
-        scrollbar->hide();
-    } else {
-        scrollbar->show();
-    }
+//    if (!cpap && !oxi) {
+//        scrollbar->hide();
+//    } else {
+//        scrollbar->show();
+//    }
 
     QString modestr;
     CPAPMode mode=MODE_UNKNOWN;
@@ -2050,9 +2050,11 @@ void Daily::RedrawGraphs()
 
 void Daily::on_LineCursorUpdate(double time)
 {
-    QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
-    QString txt = dt.toString("MMM dd HH:mm:ss:zzz");
-    dateDisplay->setText(txt);
+    if (time > 1) {
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
+        QString txt = dt.toString("MMM dd HH:mm:ss:zzz");
+        dateDisplay->setText(txt);
+    } else dateDisplay->setText(QString(GraphView->emptyText()));
 }
 
 void Daily::on_RangeUpdate(double minx, double maxx)
@@ -2061,7 +2063,11 @@ void Daily::on_RangeUpdate(double minx, double maxx)
 //    static qint64 last_maxx = 0;
 
     //if ((last_minx != minx) || (last_maxx != maxx)) {
+    if (minx > 1) {
         dateDisplay->setText(GraphView->getRangeString());
+    } else {
+        dateDisplay->setText(QString(GraphView->emptyText()));
+    }
     //}
 //    last_minx=minx;
 //    last_maxx=maxx;

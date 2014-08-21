@@ -1442,7 +1442,7 @@ color: yellow;</string>
        </property>
        <property name="styleSheet">
         <string notr="true">QToolBox { 
-icon-size: 24px; 
+icon-size: 32px; 
 border-radius: 15px;
 background: rgb(163, 190, 255)
 }
@@ -1498,7 +1498,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>724</height>
+          <height>700</height>
          </rect>
         </property>
         <property name="palette">
@@ -1911,8 +1911,8 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>180</width>
-          <height>724</height>
+          <width>100</width>
+          <height>30</height>
          </rect>
         </property>
         <property name="palette">
@@ -3059,8 +3059,8 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>180</width>
-          <height>724</height>
+          <width>100</width>
+          <height>30</height>
          </rect>
         </property>
         <property name="mouseTracking">

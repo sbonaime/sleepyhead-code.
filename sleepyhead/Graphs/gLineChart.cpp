@@ -222,92 +222,6 @@ skipcheck:
         }
     }
 
-//    for (int i=0; i< m_day->size(); ++i) {
-//        Session * sess = m_day->sessions.at(i);
-//        QHash<ChannelID, QVector<EventList *> >::iterator it;
-//        for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
-//            ChannelID code = it.key();
-
-//            if (flags.contains(code)) continue;
-
-//            schema::Channel * chan = &schema::channel[code];
-//            gLineOverlayBar * lob = nullptr;
-
-//            if (chan->type() == schema::FLAG) {
-//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Bar);
-//            } else if (chan->type() == schema::MINOR_FLAG) {
-//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Dot);
-//            } else if (chan->type() == schema::SPAN) {
-//                lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
-//            }
-//            if (lob != nullptr) {
-//                lob->setOverlayDisplayType((m_codes[0] == CPAP_FlowRate) ? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
-//                lob->SetDay(m_day);
-//                flags[code] = lob;
-//            }
-//        }
-//    }
-
-/*    QList<ChannelID> middles;
-
-    middles.push_back(CPAP_RespRate);
-    middles.push_back(CPAP_TidalVolume);
-    middles.push_back(CPAP_MinuteVent);
-    middles.push_back(CPAP_Ti);
-    middles.push_back(CPAP_Te);
-
-
-
-    CPAPMode mode = (CPAPMode)m_day->settings_wavg(CPAP_Mode);
-    float perc = p_profile->general->prefCalcPercentile();
-    for (int i=0; i<m_codes.size(); ++i) {
-        ChannelID code = m_codes.at(i);
-        schema::Channel & chan = schema::channel[code];
-        if (code == CPAP_Pressure) {
-            if (mode == MODE_APAP) {
-                float f = m_day->percentile(code, perc / 100.0);
-                chan.setUpperThreshold(f);
-                chan.setUpperThresholdColor(darken(schema::channel[CPAP_Pressure].defaultColor()));
-                m_threshold.push_back(QString("%1% %2 %3").arg(perc, 0, 'f', 0).arg(chan.label()).arg(f,0,'f',2));
-            } else {
-                chan.setUpperThreshold(0);
-                m_threshold.push_back(QString());
-            }
-        } else if (code == CPAP_IPAP) {
-            if (mode >= MODE_BILEVEL_AUTO_FIXED_PS) {
-                float f = m_day->percentile(code,perc / 100.0);
-                chan.setUpperThreshold(f);
-                QColor color = darken(schema::channel[CPAP_IPAP].defaultColor());
-                chan.setUpperThresholdColor(color);
-                m_threshold.push_back(QString("%1% %2").arg(perc, 0, 'f', 0).arg(chan.label()));//.arg(f,0,'f',2));
-            } else {
-                chan.setUpperThreshold(0);
-                m_threshold.push_back(QString());
-            }
-        } else if (code == CPAP_EPAP) {
-            if ((mode >= MODE_BILEVEL_AUTO_FIXED_PS) && (mode != MODE_ASV)) {
-                float f = m_day->percentile(code,perc / 100.0);
-                chan.setUpperThreshold(f);
-                QColor color = darken(schema::channel[CPAP_EPAP].defaultColor());
-                chan.setUpperThresholdColor(color);
-                m_threshold.push_back(QString("%1% %2").arg(perc, 0, 'f', 0).arg(chan.label()));//.arg(f,0,'f',2));
-            } else {
-                chan.setUpperThreshold(0);
-                m_threshold.push_back(QString());
-            }
-        } else if (code == CPAP_Leak) {
-            m_threshold.push_back(QObject::tr("%1 threshold").arg(chan.label()));
-        } else if (middles.contains(code)) {
-            float f = m_day->calcMiddle(code);
-
-            chan.setUpperThreshold(f);
-            chan.setUpperThresholdColor(darken(schema::channel[code].defaultColor()));
-            m_threshold.push_back(m_day->calcMiddleLabel(code));
-        } else {
-            chan.setUpperThreshold(0);
-            m_threshold.push_back(QString());
-        }
-    }*/
 }
 EventDataType gLineChart::Miny()
 {
@@ -602,30 +516,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 painter.drawLine(left + 1, y, left + 1 + width, y);
 
             }
-//            if (chan.upperThreshold() > 0) {
-//                QColor color = chan.upperThresholdColor();
-//                color.setAlpha(200);
-//                painter.setPen(QPen(QBrush(color),1.5,Qt::DotLine));
-
-//                EventDataType y=top + height + 1 - ((chan.upperThreshold() - miny) * ymult);
-//                painter.drawLine(left + 1, y, left + 1 + width, y);
-//            }
-//            if (chan.lowerThreshold() > 0) {
-//                QColor color = chan.lowerThresholdColor();
-//                color.setAlpha(200);
-//                painter.setPen(QPen(QBrush(color),1.5 ,Qt::DotLine));
-
-//                EventDataType y=top + height + 1 - ((chan.lowerThreshold() - miny) * ymult);
-//                painter.drawLine(left+1, y, left + 1 + width, y);
-//            }
-//            if (chan.id() == CPAP_FlowRate) {
-//                QColor color(Qt::red);
-//                color.setAlpha(200);
-//                painter.setPen(QPen(QBrush(color),1.5 ,Qt::DotLine));
-
-//                EventDataType y=top + height + 1 - ((0 - miny) * ymult);
-//                painter.drawLine(left+1, y, left + 1 + width, y);
-//            }
         }
         if (!m_enabled[code]) continue;
 
@@ -634,6 +524,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         codepoints = 0;
 
+        // For each session...
         int daysize = m_day->size();
         for (int svi = 0; svi < daysize; svi++) {
             Session *sess = (*m_day)[svi];
@@ -811,13 +702,15 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     time = el.time(idx) + drift;
                     double rate = double(sr) * double(sam);
                     EventStoreType *ptr = el.rawData() + idx;
+                    if (siz > el.count())
+                        siz = el.count();
 
                     if (accel) {
                         //////////////////////////////////////////////////////////////////
                         // Accelerated Waveform Plot
                         //////////////////////////////////////////////////////////////////
 
-                        for (int i = idx; i < siz; i += sam, ptr += sam) {
+                        for (int i = idx; i <= siz; i += sam, ptr += sam) {
                             time += rate;
                             // This is much faster than QVector access.
                             data = *ptr + el.offset();
@@ -896,10 +789,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         data = (*ptr + el.offset()) * gain;
                         lastpx = xst + ((time - minx) * xmult);
                         lastpy = yst - ((data - miny) * ymult);
+                        EventStoreType *eptr = ptr + el.count()-1;
 
                         siz--;
                         for (int i = idx; i < siz; i += sam) {
                             ptr += sam;
+                            if (ptr > eptr) break;
                             time += rate;
 
                             data = (*ptr + el.offset()) * gain;
@@ -913,7 +808,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             lastpx = px;
                             lastpy = py;
 
-                            if (time > maxx) {
+                            if (time >= maxx) {
                                 done = true;
                                 break;
                             }
@@ -938,7 +833,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     int idx = 0;
 
                     if (siz > 15) {
-
+                        // Prime a bit...
                         for (; idx < siz; ++idx) {
                             time = start + *tptr++;
 
