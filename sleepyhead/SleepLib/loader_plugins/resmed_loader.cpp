@@ -645,11 +645,6 @@ void ResmedImport::run()
     }
     loader->saveMutex.unlock();
 
-    if (sessionid == 1408571701) {
-        int i=5; Q_UNUSED(i);
-    }
-
-
     if (!group.EVE.isEmpty()) {
         loader->LoadEVE(sess, group.EVE);
     }

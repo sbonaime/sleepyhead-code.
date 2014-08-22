@@ -164,7 +164,9 @@ EventDataType Day::lookupValue(ChannelID code, qint64 time, bool square)
 
         if (sess.enabled()) {
             if ((time > sess.first()) && (time < sess.last())) {
-                return sess.SearchValue(code,time,square);
+                if (sess.channelExists(code)) {
+                    return sess.SearchValue(code,time,square);
+                }
             }
         }
     }
