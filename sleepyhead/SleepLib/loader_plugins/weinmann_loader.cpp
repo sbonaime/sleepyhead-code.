@@ -45,11 +45,6 @@ bool WeinmannLoader::Detect(const QString & givenpath)
         return false;
     }
 
-    // Weinman has a...
-    if (!dir.cd("SOMNOsoft2")) {
-        return false;
-    }
-
     // Check for the settings file inside the .. folder
     if (!dir.exists("WM_DATA.TDF")) {
         return false;
@@ -121,19 +116,10 @@ void HighPass(char * data, int samples, float cutoff, float dt)
 
 int WeinmannLoader::Open(QString path)
 {
-    QString newpath;
 
     path = path.replace("\\", "/");
 
-    QString dirtag = "SOMNOsoft2";
-
-    if (path.endsWith("/" + dirtag)) {
-        return -1;
-    } else {
-        newpath = path + "/" + dirtag;
-    }
-
-    QFile wmdata(newpath + "/WM_DATA.TDF");
+    QFile wmdata(path + "/WM_DATA.TDF");
     if (!wmdata.open(QFile::ReadOnly)) {
         return -1;
     }
