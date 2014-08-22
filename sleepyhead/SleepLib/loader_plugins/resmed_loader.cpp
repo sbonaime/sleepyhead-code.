@@ -645,6 +645,11 @@ void ResmedImport::run()
     }
     loader->saveMutex.unlock();
 
+    if (sessionid == 1408571701) {
+        int i=5; Q_UNUSED(i);
+    }
+
+
     if (!group.EVE.isEmpty()) {
         loader->LoadEVE(sess, group.EVE);
     }
@@ -2273,11 +2278,20 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (matchSignal(CPAP_Ti, es.label)) {
             code = CPAP_Ti;
+            // There are TWO of these with the same label on my VPAP Adapt 36037
+
+            if (sess->eventlist.contains(code)) {
+                continue;
+            }
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (matchSignal(CPAP_Te, es.label)) {
             code = CPAP_Te;
+            // There are TWO of these with the same label on my VPAP Adapt 36037
+            if (sess->eventlist.contains(code)) {
+                continue;
+            }
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);

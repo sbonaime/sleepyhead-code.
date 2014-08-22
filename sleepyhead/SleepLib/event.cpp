@@ -44,7 +44,7 @@ void EventList::clear()
 
 }
 
-qint64 EventList::time(quint32 i)
+qint64 EventList::time(quint32 i) const
 {
     if (m_type == EVL_Event) {
         return m_first + qint64(m_time[i]);

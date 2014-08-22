@@ -434,7 +434,7 @@ void RecalcMAP::run()
         const QVector<EventList *> & evec = ei.value();
         int esize = evec.size();
         for (int ei = 0; ei < esize; ++ei) {
-            EventList *EL = evec[ei];
+            const EventList *EL = evec.at(ei);
             EventDataType gain = EL->gain();
             quint32 ELsize = EL->count();
             if (ELsize < 1)  return;

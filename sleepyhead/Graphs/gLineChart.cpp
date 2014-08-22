@@ -570,11 +570,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 num_points += (*ni)->count();
             }
 
-            if (code == CPAP_FlowRate) {
-                int i=5; Q_UNUSED(i);
-            }
-
-
             total_points += num_points;
             codepoints += num_points;
 
@@ -796,12 +791,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         data = (*ptr + el.offset()) * gain;
                         lastpx = xst + ((time - minx) * xmult);
                         lastpy = yst - ((data - miny) * ymult);
-                        EventStoreType *eptr = el.rawData() + el.count()-1;
-                        lines.clear();
                         siz--;
                         for (int i = idx; i < siz; i += sam) {
                             ptr += sam;
-                            if (ptr >= eptr) break;
                             time += rate;
 
                             data = (*ptr + el.offset()) * gain;

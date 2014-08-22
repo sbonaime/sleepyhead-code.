@@ -41,16 +41,16 @@ class EventList
     void AddWaveform(qint64 start, char *data, int recs, qint64 duration);
 
     //! \brief Returns a count of records contained in this EventList
-    inline const quint32 &count() { return m_count; }
+    inline quint32 count() const { return m_count; }
 
     //! \brief Manually sets a count of records contained in this EventList
     void setCount(quint32 count) { m_count = count; }
 
     //! \brief Returns a raw ("ungained") data value from index position i
-    inline EventStoreType raw(int i) { return m_data[i]; }
+    inline EventStoreType raw(int i)  const { return m_data[i]; }
 
     //! \brief Returns a raw ("ungained") data2 value from index position i
-    inline EventStoreType raw2(int i) { return m_data2[i]; }
+    inline EventStoreType raw2(int i) const { return m_data2[i]; }
 
     //! \brief Returns a data value multiplied by gain from index position i
     EventDataType data(quint32 i);
@@ -59,16 +59,16 @@ class EventList
     EventDataType data2(quint32 i);
 
     //! \brief Returns either the timestamp for the i'th event, or calculates the waveform time position i
-    qint64 time(quint32 i);
+    qint64 time(quint32 i) const;
 
     //! \brief Returns true if this EventList uses the second data field
     bool hasSecondField() { return m_second_field; }
 
     //! \brief Returns the first events/waveforms starting time in milliseconds since epoch
-    inline const qint64 &first() { return m_first; }
+    inline qint64 first() const { return m_first; }
 
     //! \brief Returns the last events/waveforms ending time in milliseconds since epoch
-    inline const qint64 &last() { return m_last; }
+    inline qint64 last() const { return m_last; }
 
     //! \brief Returns the timespan covered by this EventList, in milliseconds since epoch
     inline qint64 duration() { return m_last - m_first; }
@@ -117,7 +117,7 @@ class EventList
     inline EventDataType max2() { return m_max2; }
 
     //! \brief Return the gain value
-    inline EventDataType gain() { return m_gain; }
+    inline EventDataType gain() const { return m_gain; }
 
     //! \brief Return the gain offset
     inline EventDataType offset() { return m_offset; }

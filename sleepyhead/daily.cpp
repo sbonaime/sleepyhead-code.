@@ -656,7 +656,6 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     QHash<ChannelID,QTreeWidgetItem *> mcroot;
     QHash<ChannelID,int> mccnt;
     int total_events=0;
-    bool userflags=p_profile->cpap->userEventFlagging();
 
     qint64 drift=0, clockdrift=p_profile->cpap->clockDrift()*1000L;
 
