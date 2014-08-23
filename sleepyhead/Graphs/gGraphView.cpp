@@ -1665,6 +1665,13 @@ protected:
 
 void gGraphView::populateMenu(gGraph * graph)
 {
+    QAction * action;
+
+    // Menu title fonts
+    QFont font = QApplication::font();
+    font.setBold(true);
+    font.setPointSize(font.pointSize() + 3);
+
     // First check for any linechart for this graph..
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
     if (lc) {
@@ -1677,29 +1684,98 @@ void gGraphView::populateMenu(gGraph * graph)
             schema::Channel &chan = schema::channel[dot.code];
 
             if (dot.available) {
-                QAction *action = lines_menu->addAction(chan.calc[dot.type].label());
-                action->setData(graph->name());
-                action->setCheckable(true);
-                action->setChecked(chan.calc[dot.type].enabled);
+
+                QWidgetAction * widget = new QWidgetAction(context_menu);
+
+                QCheckBox *chbox = new QCheckBox(chan.calc[dot.type].label(), context_menu);
+                chbox->setMouseTracking(true);
+
+                widget->setDefaultWidget(chbox);
+
+                widget->setCheckable(true);
+                widget->setData(QString("%1|%2").arg(graph->name()).arg(i));
+
+                connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
+                connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
+
+                bool b = chan.calc[dot.type].enabled;
+                chbox->setChecked(b);
+                lines_menu->addAction(widget);
+
+
+
+//                QAction *action = lines_menu->addAction(chan.calc[dot.type].label());
+//                action->setData(graph->name());
+//                action->setCheckable(true);
+//                action->setChecked(chan.calc[dot.type].enabled);
             }
 
         }
-        lines_menu->menuAction()->setVisible(true);
+
+        if (lines_menu->actions().size() > 0) {
+            lines_menu->insertSeparator(lines_menu->actions()[0]);
+            action = new QAction(QObject::tr("%1").arg(graph->title()), lines_menu);
+            lines_menu->insertAction(lines_menu->actions()[0], action);
+            action->setFont(font);
+            action->setData(QString(""));
+            action->setEnabled(false);
+
+        }
+
+        lines_menu->menuAction()->setVisible(lines_menu->actions().size() > 0);
+
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // Populate Plots Menus
+        //////////////////////////////////////////////////////////////////////////////////////
 
         plots_menu->clear();
 
-        if (lc->m_codes.size() > 1) {
+        if (lc->m_codes.size() > 0) {
             for (int i=0; i <lc->m_codes.size(); ++i) {
                 ChannelID code = lc->m_codes[i];
                 if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
-                QAction * action = plots_menu->addAction(schema::channel[code].label());
-                action->setData(QString("%1|%2").arg(graph->name()).arg(code));
-                action->setCheckable(true);
-                action->setChecked(lc->m_enabled[code]);
+
+                QWidgetAction * widget = new QWidgetAction(context_menu);
+
+                QCheckBox *chbox = new QCheckBox(schema::channel[code].label(), context_menu);
+                chbox->setMouseTracking(true);
+                chbox->setToolTip(schema::channel[code].description());
+
+                widget->setDefaultWidget(chbox);
+
+                widget->setCheckable(true);
+                widget->setData(QString("%1|%2").arg(graph->name()).arg(code));
+
+                connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
+                connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
+
+                bool b = lc->m_enabled[code];
+                chbox->setChecked(b);
+
+                plots_menu->addAction(widget);
+
+//                QAction * action = plots_menu->addAction(schema::channel[code].label());
+//                action->setData(QString("%1|%2").arg(graph->name()).arg(code));
+//                action->setCheckable(true);
+//                action->setChecked(lc->m_enabled[code]);
             }
+        }
+
+        if (plots_menu->actions().size() > 0) {
+            plots_menu->insertSeparator(plots_menu->actions()[0]);
+            action = new QAction(QObject::tr("%1").arg(graph->title()), plots_menu);
+            plots_menu->insertAction(plots_menu->actions()[0], action);
+
+            action->setFont(font);
+            action->setData(QString(""));
+            action->setEnabled(false);
         }
         plots_menu->menuAction()->setVisible((plots_menu->actions().size() > 0));
 
+        //////////////////////////////////////////////////////////////////////////////////////
+        // Populate Event Menus
+        //////////////////////////////////////////////////////////////////////////////////////
         oximeter_menu->clear();
         cpap_menu->clear();
 
@@ -1708,7 +1784,6 @@ void gGraphView::populateMenu(gGraph * graph)
         if (p_profile->general->showUnknownFlags()) showflags |= schema::UNKNOWN;
         QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(showflags);
 
-        QAction * action;
 
         QHash<MachineType, int> Vis;
         if (chans.size() > 0) {
@@ -1746,6 +1821,8 @@ void gGraphView::populateMenu(gGraph * graph)
 
         QString HideAllEvents = QObject::tr("Hide All Events");
         QString ShowAllEvents = QObject::tr("Show All Events");
+
+
         if (cpap_menu->actions().size() > 0) {
             cpap_menu->addSeparator();
             if (Vis[MT_CPAP] > 0) {
@@ -1756,12 +1833,11 @@ void gGraphView::populateMenu(gGraph * graph)
                 action->setData(QString("%1|ShowAll:CPAP").arg(graph->name()));
             }
 
+
+            // Show CPAP Events menu Header...
             cpap_menu->insertSeparator(cpap_menu->actions()[0]);
-            action = new QAction(QObject::tr("%1 Events").arg(graph->title()), cpap_menu);
+            action = new QAction(QObject::tr("%1").arg(graph->title()), cpap_menu);
             cpap_menu->insertAction(cpap_menu->actions()[0], action);
-            QFont font = QApplication::font();
-            font.setBold(true);
-            font.setPointSize(font.pointSize() + 3);
             action->setFont(font);
             action->setData(QString(""));
             action->setEnabled(false);
@@ -1777,11 +1853,8 @@ void gGraphView::populateMenu(gGraph * graph)
             }
 
             oximeter_menu->insertSeparator(oximeter_menu->actions()[0]);
-            action = new QAction(QObject::tr("%1 Events").arg(graph->title()), oximeter_menu);
+            action = new QAction(QObject::tr("%1").arg(graph->title()), oximeter_menu);
             oximeter_menu->insertAction(oximeter_menu->actions()[0], action);
-            QFont font = QApplication::font();
-            font.setBold(true);
-            font.setPointSize(font.pointSize() + 3);
             action->setFont(font);
             action->setData(QString(""));
             action->setEnabled(false);
@@ -1820,6 +1893,7 @@ void gGraphView::onPlotsClicked(QAction *action)
     lc->m_enabled[code] = !lc->m_enabled[code];
     graph->min_y = graph->MinY();
     graph->max_y = graph->MaxY();
+    graph->timedRedraw(0);
 //    lc->Miny();
 //    lc->Maxy();
 }
@@ -1892,7 +1966,10 @@ void gGraphView::onOverlaysClicked(QAction *action)
 
 void gGraphView::onLinesClicked(QAction *action)
 {
-    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(action->data().toString());
+    QString name = action->data().toString().section("|",0,0);
+    QString data = action->data().toString().section("|",-1);
+
+    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
     if (it == m_graphsbyname.end()) return;
 
     gGraph * graph = it.value();
@@ -1900,15 +1977,19 @@ void gGraphView::onLinesClicked(QAction *action)
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
 
     if (!lc) return;
-    for (int i=0; i<lc->m_dotlines.size(); i++) {
+
+    bool ok;
+    int i = data.toInt(&ok);
+    if (ok) {
         DottedLine & dot = lc->m_dotlines[i];
         schema::Channel &chan = schema::channel[dot.code];
 
-        if (chan.calc[dot.type].label() == action->text()) {
+//        if (chan.calc[dot.type].label() == action->text()) {
             chan.calc[dot.type].enabled = !chan.calc[dot.type].enabled;
             dot.enabled = !dot.enabled;
-        }
+//        }
     }
+    timedRedraw(0);
 }
 
 
