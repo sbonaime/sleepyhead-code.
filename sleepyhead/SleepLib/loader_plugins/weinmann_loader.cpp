@@ -165,6 +165,10 @@ int WeinmannLoader::Open(QString path)
             qDebug() << date;
         }
 
+        // stores used length of data at 0x46, in 16bit integers, for IPAP, EPAP, snore, leak,
+        // stores total length of data block at 0x66, in 16 bit integers for IPAP, EPAP, snore, leak
+
+
         p+=0x84;
     }
 

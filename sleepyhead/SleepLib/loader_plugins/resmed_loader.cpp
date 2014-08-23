@@ -2450,7 +2450,7 @@ void ResmedLoader::initChannels()
 {
     using namespace schema;
     Channel * chan = nullptr;
-    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING, MT_CPAP,   SESSION,
         "EPR", QObject::tr("EPR"),
         QObject::tr("ResMed Exhale Pressure Relief"),
         QObject::tr("EPR"),
@@ -2462,7 +2462,7 @@ void ResmedLoader::initChannels()
     chan->addOption(2, QObject::tr("Full Time"));
     chan->addOption(3, QObject::tr("Patient???"));
 
-    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPRLevel = 0xe202, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_EPRLevel = 0xe202, SETTING,  MT_CPAP,  SESSION,
         "EPRLevel", QObject::tr("EPR Level"),
         QObject::tr("Exhale Pressure Relief Level"),
         QObject::tr("EPR Level"),

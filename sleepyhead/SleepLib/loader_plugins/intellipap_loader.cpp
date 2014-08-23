@@ -583,7 +583,7 @@ void IntellipapLoader::initChannels()
 {
     using namespace schema;
     Channel * chan = nullptr;
-    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexMode = 0x1165, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexMode = 0x1165, SETTING,  MT_CPAP,  SESSION,
         "INTPSmartFlexMode", QObject::tr("SmartFlex Mode"),
         QObject::tr("Intellipap pressure relief mode."),
         QObject::tr("SmartFlex Mode"),
@@ -594,7 +594,7 @@ void IntellipapLoader::initChannels()
     chan->addOption(1, QObject::tr("Ramp Only"));
     chan->addOption(2, QObject::tr("Full Time"));
 
-    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexLevel = 0x1169, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlexLevel = 0x1169, SETTING,  MT_CPAP,  SESSION,
         "INTPSmartFlexLevel", QObject::tr("SmartFlex Level"),
         QObject::tr("Intellipap pressure relief level."),
         QObject::tr("SmartFlex Level"),

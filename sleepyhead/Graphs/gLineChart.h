@@ -122,6 +122,7 @@ class gLineChart: public Layer
 
     void addDotLine(DottedLine dot) { m_dotlines.append(dot); }
     QList<DottedLine> m_dotlines;
+    QHash<ChannelID, bool> m_flags_enabled;
 
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
@@ -143,7 +144,7 @@ class gLineChart: public Layer
     QVector<ChannelID> m_codes;
     QStringList m_threshold;
     QVector<bool> m_square;
-    QHash<ChannelID, bool> m_enabled;
+    QHash<ChannelID, bool> m_enabled; // plot enabled
     QHash<ChannelID, gLineOverlayBar *> flags;
 
     QVector<QLine> lines;

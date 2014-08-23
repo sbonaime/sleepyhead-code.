@@ -176,6 +176,13 @@ skipcheck:
 
     for (int i=0; i < available.size(); ++i) {
         ChannelID code = available.at(i);
+        if (!m_flags_enabled.contains(code)) {
+            bool b = false;
+
+            if (((m_codes[0] == CPAP_FlowRate) || ((m_codes[0] == CPAP_MaskPressureHi))) && (schema::channel[code].machtype() == MT_CPAP)) b = true;
+            if ((m_codes[0] == CPAP_Leak) && (code == CPAP_LargeLeak)) b = true;
+            m_flags_enabled[code] = b;
+        }
         if (!m_day->channelExists(code)) continue;
 
 
@@ -1010,56 +1017,14 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
     }
-//    for (int gi = 0; gi < m_codes.size(); gi++) {
-//        ChannelID code = m_codes[gi];
-//        schema::Channel &chan = schema::channel[code];
 
-//        int linewidth = (10 * ratioX);
-//        QRectF rec(0, rect.top()-3, 0,0);
-//        if (chan.upperThreshold() > 0) {
-//            QString text = m_threshold.at(gi);
-//            rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
-//            rec.moveRight(legendx);
-//            legendx -= rec.width();
-//            painter.setPen(Qt::black);
-//            painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
-
-//            QColor color = chan.upperThresholdColor();
-//            color.setAlpha(200);
-//            painter.setPen(QPen(QBrush(color),1 * ratioY,Qt::DotLine));
-
-//            int yp = rec.top()+(rec.height()/2);
-//            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
-//            legendx -= linewidth + (2*ratioX);
-//        }
-//        if (chan.lowerThreshold() > 0) {
-//            QString text = m_threshold.at(gi);
-//            rec = painter.boundingRect(rec, Qt::AlignBottom | Qt::AlignLeft, text);
-//            rec.moveRight(legendx);
-//            legendx -= rec.width();
-//            painter.setPen(Qt::black);
-//            painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
-
-//            QColor color = chan.lowerThresholdColor();
-//            color.setAlpha(200);
-//            painter.setPen(QPen(QBrush(color),1,Qt::DotLine));
-
-//            int yp = rec.top()+(rec.height()/2);
-//            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
-//            legendx -= linewidth + (2*ratioX);
-//        }
-
-//    }
     painter.setClipping(true);
 
     if (!total_points) { // No Data?
-   //     if (m_report_empty) {
             QString msg = QObject::tr("Plots Disabled");
             int x, y;
             GetTextExtent(msg, x, y, bigfont);
             w.renderText(msg, rect, Qt::AlignCenter, 0, Qt::gray, bigfont);
-//            DrawText(w,msg,left+(width/2.0)-(x/2.0),rect.top()-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
-//        }
     }
 
     painter.setClipping(false);
@@ -1113,7 +1078,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
             ChannelID code = fit.key();
-            if (!m_day->channelExists(code)) continue;
+            if (code == 4098) {
+                int i=5; Q_UNUSED(i);
+            }
+            if ((!m_flags_enabled[code]) || (!m_day->channelExists(code))) continue;
             gLineOverlayBar * lob = fit.value();
             lob->setBlockHover(blockhover);
             lob->paint(painter, w, region);

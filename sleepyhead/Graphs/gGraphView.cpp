@@ -14,6 +14,8 @@
 #include <QPixmapCache>
 #include <QTimer>
 #include <QFontMetrics>
+#include <QWidgetAction>
+#include <QCheckBox>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
@@ -358,12 +360,12 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     plots_menu = context_menu->addMenu(tr("Plots"));
     connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
 
-    overlay_menu = context_menu->addMenu("Overlays");
+//    overlay_menu = context_menu->addMenu("Overlays");
 
-    cpap_menu = overlay_menu->addMenu(tr("CPAP"));
+    cpap_menu = context_menu->addMenu(tr("CPAP Overlays"));
     connect(cpap_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
 
-    oximeter_menu = overlay_menu->addMenu(tr("Oximeter"));
+    oximeter_menu = context_menu->addMenu(tr("Oximeter Overlays"));
     connect(oximeter_menu, SIGNAL(triggered(QAction*)), this, SLOT(onOverlaysClicked(QAction*)));
 
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
@@ -1644,6 +1646,23 @@ Layer * gGraphView::findLayer(gGraph * graph, LayerType type)
     return nullptr;
 }
 
+class MyWidgetAction : public QWidgetAction
+{
+public:
+    MyWidgetAction(ChannelID code, QObject * parent = nullptr) :QWidgetAction(parent), code(code) { chbox = nullptr; }
+protected:
+    virtual QWidget * createWidget(QWidget * parent) {
+        connect(chbox, SIGNAL(toggled(bool)), this, SLOT(setChecked(bool)));
+        connect(chbox, SIGNAL(clicked()), this, SLOT(trigger()));
+
+        return chbox;
+    }
+    QCheckBox * chbox;
+    ChannelID code;
+};
+
+
+
 void gGraphView::populateMenu(gGraph * graph)
 {
     // First check for any linechart for this graph..
@@ -1680,42 +1699,85 @@ void gGraphView::populateMenu(gGraph * graph)
         }
 
         oximeter_menu->clear();
-
-        using namespace schema;
-        ChanType flags = ChanType (SPAN | MINOR_FLAG | FLAG);
-        QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(MT_OXIMETER, flags);
-
-        for (int i=0; i < chans.size() ; ++i) {
-            ChannelID code = chans.at(i);
-            QAction * action = oximeter_menu->addAction(schema::channel[code].fullname());
-            action->setToolTip(schema::channel[code].description());
-            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
-            action->setCheckable(true);
-            action->setChecked(schema::channel[code].enabled());
-        }
-
-        if (oximeter_menu->actions().size() > 0) {
-            oximeter_menu->menuAction()->setVisible(true);
-            overlay_menu->menuAction()->setVisible(true);
-        }
-
         cpap_menu->clear();
 
-        chans = lc->m_day->getSortedMachineChannels(MT_CPAP, flags);
+        using namespace schema;
+        quint32 showflags = schema::FLAG | schema::MINOR_FLAG | schema::SPAN;
+        if (p_profile->general->showUnknownFlags()) showflags |= schema::UNKNOWN;
+        QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(showflags);
 
+        QAction * action;
+
+        QHash<MachineType, int> Vis;
+        if (chans.size() > 0) {
+            action = cpap_menu->addAction(QObject::tr("%1 Events").arg(graph->title()));
+            QFont font = QApplication::font();
+            font.setBold(true);
+            font.setPointSize(font.pointSize() + 3);
+            action->setFont(font);
+            action->setData(QString(""));
+            action->setEnabled(false);
+            cpap_menu->addSeparator();
+
+
+        }
         for (int i=0; i < chans.size() ; ++i) {
             ChannelID code = chans.at(i);
-            QAction * action = cpap_menu->addAction(schema::channel[code].fullname());
-            action->setToolTip(schema::channel[code].description());
-            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
-            action->setCheckable(true);
-            action->setChecked(schema::channel[code].enabled());
+            schema::Channel & chan = schema::channel[code];
+
+            QWidgetAction * widget = new QWidgetAction(context_menu);
+
+            QCheckBox *chbox = new QCheckBox(schema::channel[code].fullname(), context_menu);
+            chbox->setMouseTracking(true);
+            chbox->setToolTip(schema::channel[code].description());
+
+            widget->setDefaultWidget(chbox);
+
+            widget->setCheckable(true);
+            widget->setData(QString("%1|%2").arg(graph->name()).arg(code));
+
+            connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
+            connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
+
+            bool b = lc->m_flags_enabled[code];
+            chbox->setChecked(b);
+            Vis[chan.machtype()] += b ? 1 : 0;
+
+
+            action = nullptr;
+            if (chan.machtype() == MT_OXIMETER) {
+                oximeter_menu->insertAction(nullptr, widget);
+            } else if ( chan.machtype() == MT_CPAP) {
+                cpap_menu->insertAction(nullptr,widget);
+            }
         }
 
+        QString HideAllEvents = QObject::tr("Hide All Events");
+        QString ShowAllEvents = QObject::tr("Show All Events");
         if (cpap_menu->actions().size() > 0) {
-            cpap_menu->menuAction()->setVisible(true);
-            overlay_menu->menuAction()->setVisible(true);
+            cpap_menu->addSeparator();
+            if (Vis[MT_CPAP] > 0) {
+                action = cpap_menu->addAction(HideAllEvents);
+                action->setData(QString("%1|HideAll:CPAP").arg(graph->name()));
+            } else {
+                action = cpap_menu->addAction(ShowAllEvents);
+                action->setData(QString("%1|ShowAll:CPAP").arg(graph->name()));
+            }
         }
+        if (oximeter_menu->actions().size() > 0) {
+            oximeter_menu->addSeparator();
+            if (Vis[MT_OXIMETER] > 0) {
+                action = oximeter_menu->addAction(HideAllEvents);
+                action->setData(QString("%1|HideAll:OXI").arg(graph->name()));
+            } else {
+                action = oximeter_menu->addAction(ShowAllEvents);
+                action->setData(QString("%1|ShowAll:OXI").arg(graph->name()));
+            }
+        }
+
+        oximeter_menu->menuAction()->setVisible(oximeter_menu->actions().size() > 0);
+        cpap_menu->menuAction()->setVisible(cpap_menu->actions().size() > 0);
+
 
     } else {
         lines_menu->clear();
@@ -1726,7 +1788,6 @@ void gGraphView::populateMenu(gGraph * graph)
         oximeter_menu->menuAction()->setVisible(false);
         cpap_menu->clear();
         cpap_menu->menuAction()->setVisible(false);
-        overlay_menu->menuAction()->setVisible(false);
     }
 }
 
@@ -1754,26 +1815,66 @@ void gGraphView::onPlotsClicked(QAction *action)
 void gGraphView::onOverlaysClicked(QAction *action)
 {
     QString name = action->data().toString().section("|",0,0);
-    ChannelID code = action->data().toString().section("|",-1).toInt();
+    QString data = action->data().toString().section("|",-1);
+    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    if (it == m_graphsbyname.end()) return;
+    gGraph * graph = it.value();
 
-    action->setChecked(!action->isChecked());
-    schema::channel[code].setEnabled(!schema::channel[code].enabled());
+    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
 
+    if (!lc) return;
 
-//    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
-//    if (it == m_graphsbyname.end()) return;
+    bool ok;
+    ChannelID code = data.toInt(&ok);
+    if (ok) {
+        // Just toggling a flag on/off
+        bool b = ! lc->m_flags_enabled[code];
+        lc->m_flags_enabled[code] = b;
+        QWidgetAction * widget = qobject_cast<QWidgetAction *>(action);
+        if (widget) {
+            widget->setChecked(b);
+        }
+        timedRedraw(0);
+        return;
+    }
 
-//    gGraph * graph = it.value();
+    QString hideall = data.section(":",0,0);
 
-//    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
+    if ((hideall == "HideAll") || (hideall == "ShowAll")) {
 
-//    if (!lc) return;
+        bool value = (hideall == "HideAll") ? false : true;
+        QString group = data.section(":",-1).toUpper();
+        MachineType mtype;
+        if (group == "CPAP") mtype = MT_CPAP;
+        else if (group == "OXI") mtype = MT_OXIMETER;
+        else mtype = MT_UNKNOWN;
 
-//    lc->m_enabled[code] = !lc->m_enabled[code];
-//    graph->min_y = graph->MinY();
-//    graph->max_y = graph->MaxY();
-//    lc->Miny();
-//    lc->Maxy();
+        QHash<ChannelID, bool>::iterator it;
+        QHash<ChannelID, bool>::iterator mfe = lc->m_flags_enabled.end();
+
+        // First toggle the actual flag bits
+        for (it = lc->m_flags_enabled.begin(); it != mfe; ++it) {
+            if (schema::channel[it.key()].machtype() == mtype) {
+                lc->m_flags_enabled[it.key()] = value;
+            }
+        }
+
+        // Now toggle the menu actions.. bleh
+        if (mtype == MT_CPAP) {
+            for (int i=0; i< cpap_menu->actions().size(); i++) {
+                if (cpap_menu->actions().at(i)->isCheckable())  {
+                    cpap_menu->actions().at(i)->setChecked(value);
+                }
+            }
+        } else if (mtype == MT_OXIMETER) {
+            for (int i=0; i< oximeter_menu->actions().size(); i++) {
+                if (oximeter_menu->actions().at(i)->isCheckable())  {
+                    oximeter_menu->actions().at(i)->setChecked(value);
+                }
+            }
+        }
+    }
+
 }
 
 

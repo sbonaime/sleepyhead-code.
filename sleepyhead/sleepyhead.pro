@@ -91,32 +91,9 @@ win32 {
         # MingW needs this
         LIBS += -lz
     }
-     CONFIG(release, debug|release) {
-        # Update build number
-        build_nr.commands = $$PWD/scripts/inc_build.bat
-        build_nr.depends = FORCE
-        QMAKE_EXTRA_TARGETS += build_nr
-        PRE_TARGETDEPS += build_nr
-
-        HEADERS  += build_number.h
-    }
 
     QT += serialport
 
-}
-
-unix {
-    # Update build number
-    CONFIG(debug, debug|release) {
-        build_nr.commands = $$PWD/scripts/inc_build.sh debug
-    } else {
-        build_nr.commands = $$PWD/scripts/inc_build.sh release
-    }
-    build_nr.depends = FORCE
-    QMAKE_EXTRA_TARGETS += build_nr
-    PRE_TARGETDEPS += build_nr
-
-    HEADERS  += build_number.h
 }
 
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -244,7 +221,9 @@ HEADERS  += \
     Graphs/MinutesAtPressure.h \
     SleepLib/journal.h \
     SleepLib/progressdialog.h \
-    SleepLib/loader_plugins/cms50f37_loader.h
+    SleepLib/loader_plugins/cms50f37_loader.h \
+    build_number.h
+
 
 FORMS += \
     daily.ui \

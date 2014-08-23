@@ -164,8 +164,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF->setPinned(true);
 
     ChannelID cpapcodes[] = {
-        CPAP_FlowRate, CPAP_MaskPressure, CPAP_Pressure, CPAP_Leak, CPAP_Snore, CPAP_RespRate,
-        CPAP_TidalVolume, CPAP_MinuteVent, CPAP_FLG, CPAP_PTB, CPAP_RespEvent, CPAP_Ti, CPAP_Te,
+        CPAP_FlowRate, CPAP_MaskPressure, CPAP_Pressure, CPAP_Leak, CPAP_Snore,  CPAP_FLG, CPAP_RespRate,
+        CPAP_TidalVolume, CPAP_MinuteVent,CPAP_PTB, CPAP_RespEvent, CPAP_Ti, CPAP_Te,
         CPAP_IE, ZEO_SleepStage, POS_Inclination, POS_Orientation, CPAP_Test1
     };
 
@@ -196,17 +196,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     graphlist["AHI"] = AHI;
 
-//    graphlist["INTPULSE"] = new gGraph("INTPULSE", GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
-//    graphlist["INTSPO2"] = new gGraph("INTSPO2", GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
-
-    // Event Pie Chart (for snapshot purposes)
-    // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
-//    TAP=new gGraph(GraphView,"Time@Pressure",STR_UNIT_CMH2O,100);
-//    TAP->showTitle(false);
-//    gTAPGraph * tap=new gTAPGraph(CPAP_Pressure,GST_Line);
-//    TAP->AddLayer(AddCPAP(tap));
-    //TAP->setMargins(0,0,0,0);
-
     graphlist[STR_GRAPH_EventBreakdown] = GAHI = new gGraph(STR_GRAPH_EventBreakdown, snapGV,tr("Breakdown"),tr("events"),172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
     evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
@@ -227,44 +216,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     GAHI->AddLayer(AddCPAP(evseg));
     GAHI->setMargins(0,0,0,0);
 
-
-//    gSegmentChart * evseg2=new gSegmentChart(GST_Pie);
-//    evseg2->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
-//    evseg2->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),STR_TR_UA);
-//    evseg2->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),STR_TR_OA);
-//    evseg2->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),STR_TR_CA);
-
-//    SG->AddLayer(AddCPAP(evseg2), LayerRight, default_height, default_height, 0, false, default_height);
-
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    // Spans
-//    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
-//    fg->AddLayer((new gFlagsLine(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
-//    fg->AddLayer((new gFlagsLine(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), false, FT_Span)));
-//    // Flags
-//    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
-//    fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
-//    fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
-//    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea, COLOR_Hypopnea, STR_TR_H,true)));
-//    fg->AddLayer((new gFlagsLine(CPAP_ExP, COLOR_ExP, STR_TR_EP,false)));
-//    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag, COLOR_LeakFlag, STR_TR_LE,false)));
-//    fg->AddLayer((new gFlagsLine(CPAP_NRI, COLOR_NRI, STR_TR_NRI,false)));
-//    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
-//    fg->AddLayer((new gFlagsLine(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
-//    fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
-//    fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
-//    fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
-//    if (p_profile->cpap->userEventFlagging()) {
-//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1, COLOR_Yellow, STR_TR_UF1)));
-//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2, COLOR_DarkGreen, STR_TR_UF2)));
-//        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3, COLOR_Brown, STR_TR_UF3)));
-//    }
-    //fg->AddLayer((new gFlagsLine(PRS1_0B,COLOR_DarkGreen,tr("U0B"))));
+
+
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
 
     SF->AddLayer(new gLabelArea(fg),LayerLeft,gYAxis::Margin);
+
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
     SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
 
@@ -286,55 +246,21 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,false,false);
-    //gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
 
     gGraph *FRW = graphlist[schema::channel[CPAP_FlowRate].code()];
 
-    // Draw layer is important... spans first..
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
-    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
-
     // Then the graph itself
     FRW->AddLayer(l);
 
-    // Then the LineOverlaySummaries
-//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,COLOR_Hypopnea,STR_TR_H))));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
-//    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
 
-//    gLineOverlayBar * rera = new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE);
-//    if (p_profile->general->calculateRDI()) {
-//        FRW->AddLayer(AddCPAP(los->add(rera)));
-//    } else {
-//        FRW->AddLayer(AddCPAP(rera));
-//    }
-//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_SensAwake, COLOR_SensAwake, STR_TR_SA)));
-//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
-//    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
-//    if (p_profile->cpap->userEventFlagging()) {
-//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1, COLOR_Yellow, tr("U1"),FT_Bar)));
-//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
-//        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
-//    }
-//    FRW->AddLayer(AddCPAP(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
-
-    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
-    //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Dot)));
-
-//    FRW->AddLayer(AddCPAP(los));
+//    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
 
     bool square=p_profile->appearance->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, square);
     graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(AddCPAP(pc));
 
-    graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
+  //  graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
 
     pc->addPlot(CPAP_EPAP, square);
     pc->addPlot(CPAP_IPAPLo, square);
@@ -358,7 +284,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // this is class wide because the leak redline can be reset in preferences..
     // Better way would be having a search for linechart layers in graphlist[...]
     gLineChart *leakchart=new gLineChart(CPAP_Leak, square);
-    graphlist[schema::channel[CPAP_Leak].code()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+  //  graphlist[schema::channel[CPAP_Leak].code()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_LargeLeak, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
 
     leakchart->addPlot(CPAP_LeakTotal, square);
     leakchart->addPlot(CPAP_MaxLeak, square);

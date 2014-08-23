@@ -2073,14 +2073,14 @@ void PRS1Loader::initChannels()
 {
     Channel * chan = nullptr;
 
-    channel.add(GRP_CPAP, new Channel(CPAP_PressurePulse = 0x1009, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(CPAP_PressurePulse = 0x1009, MINOR_FLAG,  MT_CPAP,   SESSION,
         "PressurePulse",
         QObject::tr("Pressure Pulse"),
         QObject::tr("A pulse of pressure 'pinged' to detect a closed airway."),
         QObject::tr("PP"),
         STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark red")));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexMode = 0xe105, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexMode = 0xe105, SETTING,  MT_CPAP,  SESSION,
         "PRS1FlexMode", QObject::tr("Flex Mode"),
         QObject::tr("PRS1 pressure relief mode."),
         QObject::tr("Flex Mode"),
@@ -2094,7 +2094,7 @@ void PRS1Loader::initChannels()
     chan->addOption(FLEX_RiseTime, QObject::tr("Rise Time"));
     chan->addOption(FLEX_BiFlex, QObject::tr("Bi-Flex"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexLevel = 0xe106, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_FlexLevel = 0xe106, SETTING, MT_CPAP,   SESSION,
         "PRS1FlexSet",
         QObject::tr("Flex Level"),
         QObject::tr("PRS1 pressure relief setting."),
@@ -2108,7 +2108,7 @@ void PRS1Loader::initChannels()
     chan->addOption(4, QObject::tr("x4"));
     chan->addOption(5, QObject::tr("x5"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidStatus = 0xe101, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidStatus = 0xe101, SETTING, MT_CPAP, SESSION,
         "PRS1HumidStat",
         QObject::tr("Humidifier Status"),
         QObject::tr("PRS1 humidifier connected?"),
@@ -2117,7 +2117,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, QObject::tr("Disconnected"));
     chan->addOption(1, QObject::tr("Connected"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HeatedTubing = 0xe10d, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HeatedTubing = 0xe10d, SETTING, MT_CPAP,  SESSION,
         "PRS1HeatedTubing",
         QObject::tr("Heated Tubing"),
         QObject::tr("Heated Tubing Connected"),
@@ -2126,7 +2126,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, QObject::tr("Yes"));
     chan->addOption(1, QObject::tr("No"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HumidLevel = 0xe102, SETTING,  MT_CPAP,  SESSION,
         "PRS1HumidLevel",
         QObject::tr("Humidification Level"),
         QObject::tr("PRS1 Humidification level"),
@@ -2139,7 +2139,7 @@ void PRS1Loader::initChannels()
     chan->addOption(4, QObject::tr("x4"));
     chan->addOption(5, QObject::tr("x5"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe103, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe103, SETTING, MT_CPAP,   SESSION,
         "SysOneResistStat",
         QObject::tr("System One Resistance Status"),
         QObject::tr("System One Resistance Status"),
@@ -2148,7 +2148,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistSet = 0xe104, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistSet = 0xe104, SETTING, MT_CPAP,   SESSION,
         "SysOneResistSet",
         QObject::tr("System One Resistance Setting"),
         QObject::tr("System One Mask Resistance Setting"),
@@ -2161,7 +2161,7 @@ void PRS1Loader::initChannels()
     chan->addOption(4, QObject::tr("x4"));
     chan->addOption(5, QObject::tr("x5"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_HoseDiam = 0xe107, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_HoseDiam = 0xe107, SETTING,  MT_CPAP,  SESSION,
         "PRS1HoseDiam",
         QObject::tr("Hose Diameter"),
         QObject::tr("Diameter of primary CPAP hose"),
@@ -2170,7 +2170,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, QObject::tr("22mm"));
     chan->addOption(1, QObject::tr("15mm"));
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe108, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_SysOneResistStat = 0xe108, SETTING,  MT_CPAP,  SESSION,
         "SysOneLock",
         QObject::tr("System One Resistance Lock"),
         QObject::tr("Whether System One resistance settings are available to you."),
@@ -2179,7 +2179,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOn = 0xe109, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOn = 0xe109, SETTING, MT_CPAP,   SESSION,
         "PRS1AutoOn",
         QObject::tr("Auto On"),
         QObject::tr("A few breaths automatically starts machine"),
@@ -2188,7 +2188,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOff = 0xe10a, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_AutoOff = 0xe10a, SETTING, MT_CPAP,   SESSION,
         "PRS1AutoOff",
         QObject::tr("Auto Off"),
         QObject::tr("Machine automatically switches off"),
@@ -2197,7 +2197,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10b, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10b, SETTING,  MT_CPAP,  SESSION,
         "PRS1MaskAlert",
         QObject::tr("Mask Alert"),
         QObject::tr("Whether or not machine allows Mask checking."),
@@ -2206,7 +2206,7 @@ void PRS1Loader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10c, SETTING,   SESSION,
+    channel.add(GRP_CPAP, chan = new Channel(PRS1_MaskAlert = 0xe10c, SETTING, MT_CPAP,   SESSION,
         "PRS1ShowAHI",
         QObject::tr("Show AHI"),
         QObject::tr("Whether or not machine shows AHI via LCD panel."),
@@ -2226,7 +2226,7 @@ void PRS1Loader::initChannels()
     QString unknownname=QObject::tr("PRS1_%1");
     QString unknownshort=QObject::tr("PRS1_%1");
 
-    channel.add(GRP_CPAP, new Channel(PRS1_00 = 0x1150, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_00 = 0x1150, UNKNOWN, MT_CPAP,    SESSION,
         "PRS1_00",
         QString(unknownname).arg(0,2,16,QChar('0')),
         QString(unknowndesc).arg(0,2,16,QChar('0')),
@@ -2234,7 +2234,7 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_01 = 0x1151, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_01 = 0x1151, UNKNOWN,  MT_CPAP,   SESSION,
         "PRS1_01",
         QString(unknownname).arg(1,2,16,QChar('0')),
         QString(unknowndesc).arg(1,2,16,QChar('0')),
@@ -2242,7 +2242,7 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_08 = 0x1152, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_08 = 0x1152, UNKNOWN, MT_CPAP,    SESSION,
         "PRS1_08",
         QString(unknownname).arg(8,2,16,QChar('0')),
         QString(unknowndesc).arg(8,2,16,QChar('0')),
@@ -2250,35 +2250,35 @@ void PRS1Loader::initChannels()
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
 
-    channel.add(GRP_CPAP, new Channel(PRS1_0A = 0x1154, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0A = 0x1154, UNKNOWN, MT_CPAP,    SESSION,
         "PRS1_0A",
         QString(unknownname).arg(0xa,2,16,QChar('0')),
         QString(unknowndesc).arg(0xa,2,16,QChar('0')),
         QString(unknownshort).arg(0xa,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, UNKNOWN,  MT_CPAP,   SESSION,
         "PRS1_0B",
         QString(unknownname).arg(0xb,2,16,QChar('0')),
         QString(unknowndesc).arg(0xb,2,16,QChar('0')),
         QString(unknownshort).arg(0xb,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0C = 0x1156, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0C = 0x1156, UNKNOWN,  MT_CPAP,   SESSION,
         "PRS1_0C",
         QString(unknownname).arg(0xc,2,16,QChar('0')),
         QString(unknowndesc).arg(0xc,2,16,QChar('0')),
         QString(unknownshort).arg(0xc,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0E = 0x1157, UNKNOWN,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0E = 0x1157, UNKNOWN, MT_CPAP,    SESSION,
         "PRS1_0E",
         QString(unknownname).arg(0xe,2,16,QChar('0')),
         QString(unknowndesc).arg(0xe,2,16,QChar('0')),
         QString(unknownshort).arg(0xe,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-//    channel.add(GRP_CPAP, new Channel(PRS1_12 = 0x1159, UNKNOWN,    SESSION,
+//    channel.add(GRP_CPAP, new Channel(PRS1_12 = 0x1159, UNKNOWN,  MT_CPAP,   SESSION,
 //        "PRS1_12",
 //        QString(unknownname).arg(0x12,2,16,QChar('0')),
 //        QString(unknowndesc).arg(0x12,2,16,QChar('0')),
@@ -2287,7 +2287,7 @@ void PRS1Loader::initChannels()
 //        DEFAULT,    QColor("black")));
 
 
-    channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG,    SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG, MT_CPAP,    SESSION,
         "PRS1TimedBreath",
         QObject::tr("Timed Breath"),
         QObject::tr("Machine Initiated Breath"),

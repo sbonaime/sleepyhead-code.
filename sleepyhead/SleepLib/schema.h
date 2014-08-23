@@ -87,8 +87,8 @@ extern Channel EmptyChannel;
 class Channel
 {
   public:
-    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; m_order = 255; }
-    Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
+    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; m_order = 255; m_machtype = MT_UNKNOWN; }
+    Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType scope, QString code, QString fullname,
             QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
             int link = 0);
     void addColor(Function f, QColor color) { m_colors[f] = color; }
@@ -97,6 +97,7 @@ class Channel
     inline ChannelID id() const { return m_id; }
     inline ChanType type() const { return m_type; }
     inline DataType datatype() const { return m_datatype; }
+    inline MachineType machtype() const { return m_machtype; }
     const QString &code() { return m_code; }
     const QString &fullname() { return m_fullname; }
     const QString &description() { return m_description; }
@@ -143,16 +144,20 @@ class Channel
 
   protected:
     int m_id;
+
     ChanType m_type;
+    MachineType m_machtype;
     ScopeType m_scope;
+    DataType m_datatype;
+
     QString m_code; // Untranslatable
 
     QString m_fullname; // Translatable Name
     QString m_description;
     QString m_label;
     QString m_unit;
-    DataType m_datatype;
     QColor m_defaultcolor;
+
 
     int m_link;
 
