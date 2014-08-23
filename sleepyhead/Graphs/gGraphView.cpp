@@ -1685,18 +1685,20 @@ void gGraphView::populateMenu(gGraph * graph)
 
         }
         lines_menu->menuAction()->setVisible(true);
+
         plots_menu->clear();
-        for (int i=0; i <lc->m_codes.size(); ++i) {
-            ChannelID code = lc->m_codes[i];
-            if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
-            QAction * action = plots_menu->addAction(schema::channel[code].label());
-            action->setData(QString("%1|%2").arg(graph->name()).arg(code));
-            action->setCheckable(true);
-            action->setChecked(lc->m_enabled[code]);
+
+        if (lc->m_codes.size() > 1) {
+            for (int i=0; i <lc->m_codes.size(); ++i) {
+                ChannelID code = lc->m_codes[i];
+                if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
+                QAction * action = plots_menu->addAction(schema::channel[code].label());
+                action->setData(QString("%1|%2").arg(graph->name()).arg(code));
+                action->setCheckable(true);
+                action->setChecked(lc->m_enabled[code]);
+            }
         }
-        if (plots_menu->actions().size() > 0) {
-            plots_menu->menuAction()->setVisible(true);
-        }
+        plots_menu->menuAction()->setVisible((plots_menu->actions().size() > 0));
 
         oximeter_menu->clear();
         cpap_menu->clear();
@@ -1710,16 +1712,6 @@ void gGraphView::populateMenu(gGraph * graph)
 
         QHash<MachineType, int> Vis;
         if (chans.size() > 0) {
-            action = cpap_menu->addAction(QObject::tr("%1 Events").arg(graph->title()));
-            QFont font = QApplication::font();
-            font.setBold(true);
-            font.setPointSize(font.pointSize() + 3);
-            action->setFont(font);
-            action->setData(QString(""));
-            action->setEnabled(false);
-            cpap_menu->addSeparator();
-
-
         }
         for (int i=0; i < chans.size() ; ++i) {
             ChannelID code = chans.at(i);
@@ -1763,6 +1755,16 @@ void gGraphView::populateMenu(gGraph * graph)
                 action = cpap_menu->addAction(ShowAllEvents);
                 action->setData(QString("%1|ShowAll:CPAP").arg(graph->name()));
             }
+
+            cpap_menu->insertSeparator(cpap_menu->actions()[0]);
+            action = new QAction(QObject::tr("%1 Events").arg(graph->title()), cpap_menu);
+            cpap_menu->insertAction(cpap_menu->actions()[0], action);
+            QFont font = QApplication::font();
+            font.setBold(true);
+            font.setPointSize(font.pointSize() + 3);
+            action->setFont(font);
+            action->setData(QString(""));
+            action->setEnabled(false);
         }
         if (oximeter_menu->actions().size() > 0) {
             oximeter_menu->addSeparator();
@@ -1773,6 +1775,16 @@ void gGraphView::populateMenu(gGraph * graph)
                 action = oximeter_menu->addAction(ShowAllEvents);
                 action->setData(QString("%1|ShowAll:OXI").arg(graph->name()));
             }
+
+            oximeter_menu->insertSeparator(oximeter_menu->actions()[0]);
+            action = new QAction(QObject::tr("%1 Events").arg(graph->title()), oximeter_menu);
+            oximeter_menu->insertAction(oximeter_menu->actions()[0], action);
+            QFont font = QApplication::font();
+            font.setBold(true);
+            font.setPointSize(font.pointSize() + 3);
+            action->setFont(font);
+            action->setData(QString(""));
+            action->setEnabled(false);
         }
 
         oximeter_menu->menuAction()->setVisible(oximeter_menu->actions().size() > 0);
