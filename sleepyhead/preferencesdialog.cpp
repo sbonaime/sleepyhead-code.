@@ -112,6 +112,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->showLeakRedline->setChecked(profile->cpap->showLeakRedline());
     ui->leakRedlineSpinbox->setValue(profile->cpap->leakRedline());
 
+    ui->oxiDesaturationThreshold->setValue(schema::channel[OXI_SPO2].lowerThreshold());
+    ui->flagPulseAbove->setValue(schema::channel[OXI_Pulse].upperThreshold());
+    ui->flagPulseBelow->setValue(schema::channel[OXI_Pulse].lowerThreshold());
+
     ui->spo2Drop->setValue(profile->oxi->spO2DropPercentage());
     ui->spo2DropTime->setValue(profile->oxi->spO2DropDuration());
     ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
@@ -231,6 +235,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
     ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
+    ui->oximetrySync->setVisible(false);
     int ot = ui->oximetryType->findText(profile->oxi->oximeterType(), Qt::MatchExactly);
 
     if (ot < 0) { ot = 0; }
@@ -458,6 +463,11 @@ bool PreferencesDialog::Save()
             return false;
         }
     }
+
+    schema::channel[OXI_SPO2].setLowerThreshold(ui->oxiDesaturationThreshold->value());
+    schema::channel[OXI_Pulse].setLowerThreshold(ui->flagPulseBelow->value());
+    schema::channel[OXI_Pulse].setUpperThreshold(ui->flagPulseAbove->value());
+
 
     profile->cpap->setUserEventPieChart(ui->showUserFlagsInPie->isChecked());
     profile->session->setLockSummarySessions(ui->LockSummarySessionSplitting->isChecked());

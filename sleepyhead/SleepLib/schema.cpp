@@ -258,10 +258,14 @@ void init()
                         QObject::tr("Pulse Rate"),                    QObject::tr("Heart rate in beats per minute"),
                         QObject::tr("Pulse Rate"), STR_UNIT_BPM,     DEFAULT,    QColor("red")));
 
+    schema::channel[OXI_Pulse].setLowerThreshold(40);
+    schema::channel[OXI_Pulse].setUpperThreshold(130);
 
     schema::channel.add(GRP_OXI, new Channel(OXI_SPO2            = 0x1801, WAVEFORM,    MT_OXIMETER, SESSION, "SPO2",
                         QObject::tr("SpO2 %"),                        QObject::tr("Blood-oxygen saturation percentage"),
                         QObject::tr("SpO2"),       STR_UNIT_Percentage,          DEFAULT,    QColor("blue")));
+
+    schema::channel[OXI_SPO2].setLowerThreshold(88);
 
     schema::channel.add(GRP_OXI, new Channel(OXI_Plethy          = 0x1802, WAVEFORM,    MT_OXIMETER, SESSION, "Plethy",
                         QObject::tr("Plethysomogram"),
@@ -350,6 +354,8 @@ void init()
                         "Leak",              QObject::tr("Leak Rate"),
                         QObject::tr("Rate of detected mask leakage"),                QObject::tr("Leak Rate"),
                         STR_UNIT_LPM,    DEFAULT,    QColor("dark green")));
+
+    schema::channel[CPAP_Leak].setLowerThreshold(24.0);
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_IE                = 0x1109, WAVEFORM,   MT_CPAP,  SESSION, "IE",
                         QObject::tr("I:E Ratio"),
@@ -916,10 +922,10 @@ QString ChannelCalc::label()
         m_label = QObject::tr("Zero");
         break;
     case Calc_UpperThresh:
-        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Threshold"));
+        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Upper Threshold"));
         break;
     case Calc_LowerThresh:
-        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Threshold"));
+        m_label = QString("%1 %2").arg(lab).arg(QObject::tr("Lower Threshold"));
         break;
     }
     return m_label;

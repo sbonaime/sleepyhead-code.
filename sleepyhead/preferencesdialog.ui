@@ -1600,14 +1600,14 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QSpinBox" name="spinBox">
+              <widget class="QSpinBox" name="flagPulseAbove">
                <property name="suffix">
                 <string> bpm</string>
                </property>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QSpinBox" name="spinBox_2">
+              <widget class="QSpinBox" name="flagPulseBelow">
                <property name="suffix">
                 <string> bpm</string>
                </property>

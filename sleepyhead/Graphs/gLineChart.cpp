@@ -243,6 +243,11 @@ skipcheck:
         addDotLine(DottedLine(CPAP_Leak, Calc_UpperThresh, schema::channel[CPAP_Leak].calc[Calc_UpperThresh].enabled));
     } else if (m_codes[0] == CPAP_FlowRate) {
         addDotLine(DottedLine(CPAP_FlowRate, Calc_Zero, schema::channel[CPAP_FlowRate].calc[Calc_Zero].enabled));
+    } else if (m_codes[0] == OXI_Pulse) {
+        addDotLine(DottedLine(OXI_Pulse, Calc_UpperThresh, schema::channel[OXI_Pulse].calc[Calc_UpperThresh].enabled));
+        addDotLine(DottedLine(OXI_Pulse, Calc_LowerThresh, schema::channel[OXI_Pulse].calc[Calc_LowerThresh].enabled));
+    } else if (m_codes[0] == OXI_SPO2) {
+        addDotLine(DottedLine(OXI_SPO2, Calc_LowerThresh, schema::channel[OXI_SPO2].calc[Calc_LowerThresh].enabled));
     }
 
 

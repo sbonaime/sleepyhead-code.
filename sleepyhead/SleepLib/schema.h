@@ -148,7 +148,6 @@ class Channel
     ChanType m_type;
     MachineType m_machtype;
     ScopeType m_scope;
-    DataType m_datatype;
 
     QString m_code; // Untranslatable
 
@@ -156,6 +155,7 @@ class Channel
     QString m_description;
     QString m_label;
     QString m_unit;
+    DataType m_datatype;
     QColor m_defaultcolor;
 
 
