@@ -234,6 +234,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
+    ui->syncOximeterClock->setChecked(profile->oxi->syncOximeterClock());
     ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
     ui->oximetrySync->setVisible(false);
     int ot = ui->oximetryType->findText(profile->oxi->oximeterType(), Qt::MatchExactly);
@@ -547,6 +548,7 @@ bool PreferencesDialog::Save()
     }
 
     profile->oxi->setOximeterType(ui->oximetryType->currentText());
+    profile->oxi->setSyncOximeterClock(ui->syncOximeterClock->isChecked());
 
     profile->oxi->setSpO2DropPercentage(ui->spo2Drop->value());
     profile->oxi->setSpO2DropDuration(ui->spo2DropTime->value());

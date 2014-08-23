@@ -1361,7 +1361,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
           <property name="spacing">
            <number>5</number>
           </property>
-          <item row="3" column="0" colspan="2">
+          <item row="4" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
              <string>Flag rapid changes in oximetry stats</string>
@@ -1454,86 +1454,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QCheckBox" name="oximetrySync">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Tries to forces the oximetry data to link with CPAP when possible.</string>
-            </property>
-            <property name="text">
-             <string>Link Oximetry and CPAP graphs</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="oximetryType">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <item>
-             <property name="text">
-              <string>Contec CMS50D+/E/F</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Contec CMS50F v3.7+</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ChoiceMMed MD300W1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ResMed S9 Oximeter Module</string>
-             </property>
-            </item>
-           </widget>
-          </item>
           <item row="5" column="0" colspan="2">
-           <spacer name="verticalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_20">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Type</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="Line" name="line_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_3">
             <property name="title">
              <string>Other oximetry options</string>
@@ -1614,6 +1535,95 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="oximetrySync">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Tries to forces the oximetry data to link with CPAP when possible.</string>
+            </property>
+            <property name="text">
+             <string>Link Oximetry and CPAP graphs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="oximetryType">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>Contec CMS50D+/E/F</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Contec CMS50F v3.7+</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ChoiceMMed MD300W1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ResMed S9 Oximeter Module</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCheckBox" name="syncOximeterClock">
+            <property name="toolTip">
+             <string>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</string>
+            </property>
+            <property name="text">
+             <string>Update Oximeter Clock during import</string>
+            </property>
            </widget>
           </item>
          </layout>

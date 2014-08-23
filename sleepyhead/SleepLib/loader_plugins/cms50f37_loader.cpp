@@ -291,7 +291,6 @@ QDateTime CMS50F37Loader::getDateTime(int session)
 }
 
 
-
 void CMS50F37Loader::processBytes(QByteArray bytes)
 {
     static quint8 resimport = 0;
@@ -299,7 +298,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
     QString tmpstr;
 
-    int lengths[32] = { 0, 0, 9, 9, 0, 9, 4, 8, 8, 6, 4, 0, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int lengths[32] = { 0, 0, 9, 9, 0, 9, 4, 8, 8, 6, 4, 4, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     buffer.append(bytes);
     int size = buffer.size();
@@ -393,6 +392,10 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             // COMMAND_GET_SESSION_COUNT
         case 0x0a: // a,80,80,81
             session_count = buffer.at(idx+3);
+            break;
+
+        case 0x0b:
+            timectr++;
             break;
 
             // COMMAND_CMS50_HELLO1 && COMMAND_CMS50_HELLO2
@@ -571,6 +574,49 @@ void CMS50F37Loader::sendCommand(quint8 c, quint8 c2)
         qDebug() << "Couldn't write data reset bytes to CMS50";
     }
 }
+
+void CMS50F37Loader::syncClock()
+{
+    QDate date = QDate::currentDate();
+    int year = date.year();
+    quint8 yh = year / 100;
+    quint8 yl = year % 100;
+    quint8 mon = date.month();
+    quint8 day = date.day();
+    quint8 wd = date.dayOfWeek() % 7;
+
+    quint8 datecmd[] = { 0x7d, 0xb2, yh | 0x80, yl |0x80, mon|0x80, day|0x80, wd|0x80, 0x80, 0x80 };
+
+    timectr = 0;
+    if (serial.write((char *)datecmd, 9) == -1) {
+        qDebug() << "Couldn't write data reset bytes to CMS50";
+    }
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((timectr == 0) && (time.elapsed() < TIMEOUT));
+
+
+    QTime ctime = QTime::currentTime();
+    quint8 h = ctime.hour();
+    quint8 m = ctime.minute();
+    quint8 s = ctime.second();
+
+    quint8 timecmd[] = { 0x7d, 0xb2, h | 0x80, m |0x80, s|0x80, 0x80, 0x80, 0x80, 0x80 };
+
+    timectr = 0;
+    if (serial.write((char *)timecmd, 9) == -1) {
+        qDebug() << "Couldn't write data reset bytes to CMS50";
+    }
+
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((timectr == 0) && (time.elapsed() < TIMEOUT));
+}
+
 
 void CMS50F37Loader::nextCommand()
 {

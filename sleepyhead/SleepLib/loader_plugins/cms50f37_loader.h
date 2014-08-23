@@ -58,12 +58,15 @@ Q_OBJECT
     virtual int getSessionCount();
     virtual int getOximeterInfo();
 
+    virtual void syncClock();
+
     virtual void setDuration(int d) { duration=d; }
 
     virtual bool commandDriven() { return true; }
 
 
     virtual void getSessionData(int session);
+
 
     // Switch device to record transmission mode
     void requestData();
@@ -135,6 +138,8 @@ protected:
 
     int duration_divisor;
     int selected_session;
+
+    int timectr;
 
 };
 

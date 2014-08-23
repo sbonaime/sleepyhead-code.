@@ -246,6 +246,7 @@ const QString STR_UI_DST = "DST";
 // OxiSettings Strings
 const QString STR_OS_EnableOximetry = "EnableOximetry";
 const QString STR_OS_SyncOximetry = "SyncOximetry";
+const QString STR_OS_SyncOximeterClock = "SyncOximeterClock";
 const QString STR_OS_OximeterType = "OximeterType";
 const QString STR_OS_OxiDiscardThreshold = "OxiDiscardThreshold";
 const QString STR_OS_SPO2DropDuration = "SPO2DropDuration";
@@ -312,6 +313,7 @@ const QString STR_AS_GraphTooltips = "GraphTooltips";
 const QString STR_AS_LineThickness = "LineThickness";
 const QString STR_AS_LineCursorMode = "LineCursorMode";
 const QString STR_AS_CalendarVisible = "CalendarVisible";
+const QString STR_AS_RightSidebarVisible = "RightSidebarVisible";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem = "UnitSystem";
@@ -465,6 +467,7 @@ class OxiSettings : public ProfileSettings
     {
         initPref(STR_OS_EnableOximetry, false);
         initPref(STR_OS_SyncOximetry, true);
+        initPref(STR_OS_SyncOximeterClock, true);
         initPref(STR_OS_OximeterType, "CMS50");
         initPref(STR_OS_OxiDiscardThreshold, 0.0);
         initPref(STR_OS_SPO2DropDuration, 8.0);
@@ -476,6 +479,7 @@ class OxiSettings : public ProfileSettings
 
     bool oximetryEnabled() const { return getPref(STR_OS_EnableOximetry).toBool(); }
     bool syncOximetry() const { return getPref(STR_OS_SyncOximetry).toBool(); }
+    bool syncOximeterClock() const { return getPref(STR_OS_SyncOximeterClock).toBool(); }
     QString oximeterType() const { return getPref(STR_OS_OximeterType).toString(); }
     double oxiDiscardThreshold() const { return getPref(STR_OS_OxiDiscardThreshold).toDouble(); }
     double spO2DropDuration() const { return getPref(STR_OS_SPO2DropDuration).toDouble(); }
@@ -487,6 +491,7 @@ class OxiSettings : public ProfileSettings
 
     void setOximetryEnabled(bool enabled) { setPref(STR_OS_EnableOximetry, enabled); }
     void setSyncOximetry(bool synced) { setPref(STR_OS_SyncOximetry, synced); }
+    void setSyncOximeterClock(bool synced) { setPref(STR_OS_SyncOximeterClock, synced); }
     void setOximeterType(QString oxitype) { setPref(STR_OS_OximeterType, oxitype); }
     void setOxiDiscardThreshold(double thresh) { setPref(STR_OS_OxiDiscardThreshold, thresh); }
     void setSpO2DropDuration(double duration) { setPref(STR_OS_SPO2DropDuration, duration); }
@@ -677,6 +682,7 @@ class AppearanceSettings : public ProfileSettings
         initPref(STR_AS_LineThickness, 1.0);
         initPref(STR_AS_LineCursorMode, false);
         initPref(STR_AS_CalendarVisible, true);
+        initPref(STR_AS_RightSidebarVisible, true);
     }
 
     //! \brief Returns the normal (unscaled) height of a graph
@@ -701,6 +707,8 @@ class AppearanceSettings : public ProfileSettings
     bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
     //! \brief Whether to show the calendar
     bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
+    //! \brief Whether to show the right sidebar
+    bool rightSidebarVisible() const { return getPref(STR_AS_RightSidebarVisible).toBool(); }
 
 
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
@@ -740,6 +748,8 @@ class AppearanceSettings : public ProfileSettings
     void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
     //! \brief Sets whether to display the (Daily View) Calendar
     void setCalendarVisible(bool b) { setPref(STR_AS_CalendarVisible, b); }
+    //! \brief Sets whether to display the right sidebar
+    void setRightSidebarVisible(bool b) { setPref(STR_AS_RightSidebarVisible, b); }
 };
 
 /*! \class UserSettings

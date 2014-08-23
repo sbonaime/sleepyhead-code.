@@ -280,6 +280,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->toolBox->setCurrentIndex(0);
+    bool b = p_profile->appearance->rightSidebarVisible();
+    ui->action_Sidebar_Toggle->setChecked(b);
+    ui->toolBox->setVisible(b);
+
     daily->graphView()->redraw();
 
     if (p_profile->cpap->AHIWindow() < 30.0) {
@@ -2156,6 +2160,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 {
     ui->toolBox->setVisible(visible);
+    p_profile->appearance->setRightSidebarVisible(visible);
 }
 
 void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)

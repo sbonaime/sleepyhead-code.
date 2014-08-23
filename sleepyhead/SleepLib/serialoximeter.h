@@ -56,6 +56,7 @@ public:
     virtual QString getVendor()  { return QString(); }
     virtual QString getDeviceString()  { return QString(); }
     virtual void getSessionData(int session) { Q_UNUSED(session); }
+    virtual void syncClock() {}
 
 
     virtual bool commandDriven() { return false; }

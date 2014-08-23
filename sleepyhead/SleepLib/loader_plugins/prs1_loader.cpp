@@ -1759,8 +1759,6 @@ bool PRS1Import::ParseEvents()
 //            session->m_gain.erase(session->m_gain.find(CPAP_Pressure));
 
         } else {
-            session->setSummaryOnly(true);
-
             if (!session->settings.contains(CPAP_Pressure) && !session->settings.contains(CPAP_PressureMin)) {
                 session->settings[CPAP_BrokenSummary] = true;
 
