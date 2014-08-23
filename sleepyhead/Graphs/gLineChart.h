@@ -29,7 +29,6 @@ public:
         code = NoChannel;
         type = Calc_Zero;
         value = 0;
-        enabled = true;
         visible = false;
         available = false;
     }
@@ -38,11 +37,10 @@ public:
         type = copy.type;
         value = copy.value;
         available = copy.available;
-        enabled = copy.enabled;
         visible = copy.visible;
     }
-    DottedLine(ChannelID code, ChannelCalcType type, bool enabled = true, bool available = false):
-        code(code), type(type), enabled(enabled), available(available) {}
+    DottedLine(ChannelID code, ChannelCalcType type, bool available = false):
+        code(code), type(type), available(available) {}
 
     EventDataType calc(Day * day) {
         Q_ASSERT(day != nullptr);
@@ -55,10 +53,12 @@ public:
     ChannelID code;
     ChannelCalcType type;
     EventDataType value;
-    bool enabled;
     bool visible;
     bool available;
 };
+QDataStream & operator<<(QDataStream &, const DottedLine &);
+QDataStream & operator>>(QDataStream &, DottedLine &);
+
 
 /*! \class gLineChart
     \brief Draws a 2D linechart from all Session data in a day. EVL_Waveforms typed EventLists are accelerated.
@@ -123,6 +123,7 @@ class gLineChart: public Layer
     void addDotLine(DottedLine dot) { m_dotlines.append(dot); }
     QList<DottedLine> m_dotlines;
     QHash<ChannelID, bool> m_flags_enabled;
+    QHash<ChannelID, QHash<quint32, bool> > m_dot_enabled;
 
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)

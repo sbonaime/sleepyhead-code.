@@ -21,6 +21,28 @@
 
 #define EXTRA_ASSERTS 1
 
+QDataStream & operator<<(QDataStream & stream, const DottedLine & dot)
+{
+    stream << dot.code;
+    stream << dot.type;
+    stream << dot.value;
+    stream << dot.visible;
+    stream << dot.available;
+    return stream;
+}
+QDataStream & operator>>(QDataStream & stream, DottedLine & dot)
+{
+    quint32 tmp;
+    stream >> dot.code;
+    stream >> tmp;
+    stream >> dot.value;
+    stream >> dot.visible;
+    stream >> dot.available;
+    dot.type = (ChannelCalcType)tmp;
+    return stream;
+}
+
+
 QColor darken(QColor color, float p)
 {
     int r = qMin(int(color.red() * p), 255);
@@ -202,6 +224,7 @@ skipcheck:
             flags[code] = lob;
         }
     }
+
     m_dotlines.clear();
 
     for (int i=0; i< m_codes.size(); i++) {
@@ -226,6 +249,22 @@ skipcheck:
     if (m_day) {
         for (int i=0; i < m_dotlines.size(); i++) {
             m_dotlines[i].calc(m_day);
+
+            ChannelID code = m_dotlines[i].code;
+            ChannelCalcType type = m_dotlines[i].type;
+
+            bool b = false; // default value
+
+            QHash<ChannelID, QHash<quint32, bool> >::iterator cit = m_dot_enabled.find(code);
+
+            if (cit == m_dot_enabled.end()) {
+                m_dot_enabled[code].insert(type, b);
+            } else {
+                QHash<quint32, bool>::iterator it = cit.value().find(type);
+                if (it == cit.value().end()) {
+                    cit.value().insert(type, b);
+                }
+            }
         }
     }
 
@@ -511,7 +550,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         if (showDottedLines) {
             for (int i=0; i < dotlinesize; i++) {
                 DottedLine & dot = m_dotlines[i];
-                if ((dot.code != code) || (!dot.enabled) || (!dot.available) || (!m_enabled[dot.code])) {
+                if ((dot.code != code) || (!m_dot_enabled[dot.code][dot.type]) || (!dot.available) || (!m_enabled[dot.code])) {
                     continue;
                 }
                 schema::Channel & chan = schema::channel[code];

@@ -1698,7 +1698,7 @@ void gGraphView::populateMenu(gGraph * graph)
                 connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
                 connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
 
-                bool b = chan.calc[dot.type].enabled;
+                bool b = lc->m_dot_enabled[dot.code][dot.type]; //chan.calc[dot.type].enabled;
                 chbox->setChecked(b);
                 lines_menu->addAction(widget);
 
@@ -1712,6 +1712,8 @@ void gGraphView::populateMenu(gGraph * graph)
 
         }
 
+        lines_menu->menuAction()->setVisible(lines_menu->actions().size() > 0);
+
         if (lines_menu->actions().size() > 0) {
             lines_menu->insertSeparator(lines_menu->actions()[0]);
             action = new QAction(QObject::tr("%1").arg(graph->title()), lines_menu);
@@ -1722,7 +1724,6 @@ void gGraphView::populateMenu(gGraph * graph)
 
         }
 
-        lines_menu->menuAction()->setVisible(lines_menu->actions().size() > 0);
 
 
         //////////////////////////////////////////////////////////////////////////////////////
@@ -1731,7 +1732,7 @@ void gGraphView::populateMenu(gGraph * graph)
 
         plots_menu->clear();
 
-        if (lc->m_codes.size() > 0) {
+        if (lc->m_codes.size() > 1) {
             for (int i=0; i <lc->m_codes.size(); ++i) {
                 ChannelID code = lc->m_codes[i];
                 if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
@@ -1762,6 +1763,8 @@ void gGraphView::populateMenu(gGraph * graph)
             }
         }
 
+        plots_menu->menuAction()->setVisible((plots_menu->actions().size() > 1));
+
         if (plots_menu->actions().size() > 0) {
             plots_menu->insertSeparator(plots_menu->actions()[0]);
             action = new QAction(QObject::tr("%1").arg(graph->title()), plots_menu);
@@ -1771,7 +1774,6 @@ void gGraphView::populateMenu(gGraph * graph)
             action->setData(QString(""));
             action->setEnabled(false);
         }
-        plots_menu->menuAction()->setVisible((plots_menu->actions().size() > 0));
 
         //////////////////////////////////////////////////////////////////////////////////////
         // Populate Event Menus
@@ -1822,6 +1824,9 @@ void gGraphView::populateMenu(gGraph * graph)
         QString HideAllEvents = QObject::tr("Hide All Events");
         QString ShowAllEvents = QObject::tr("Show All Events");
 
+        oximeter_menu->menuAction()->setVisible(oximeter_menu->actions().size() > 0);
+        cpap_menu->menuAction()->setVisible(cpap_menu->actions().size() > 0);
+
 
         if (cpap_menu->actions().size() > 0) {
             cpap_menu->addSeparator();
@@ -1859,10 +1864,6 @@ void gGraphView::populateMenu(gGraph * graph)
             action->setData(QString(""));
             action->setEnabled(false);
         }
-
-        oximeter_menu->menuAction()->setVisible(oximeter_menu->actions().size() > 0);
-        cpap_menu->menuAction()->setVisible(cpap_menu->actions().size() > 0);
-
 
     } else {
         lines_menu->clear();
@@ -1984,10 +1985,9 @@ void gGraphView::onLinesClicked(QAction *action)
         DottedLine & dot = lc->m_dotlines[i];
         schema::Channel &chan = schema::channel[dot.code];
 
-//        if (chan.calc[dot.type].label() == action->text()) {
-            chan.calc[dot.type].enabled = !chan.calc[dot.type].enabled;
-            dot.enabled = !dot.enabled;
-//        }
+        chan.calc[dot.type].enabled = !chan.calc[dot.type].enabled;
+        lc->m_dot_enabled[dot.code][dot.type] = !lc->m_dot_enabled[dot.code][dot.type];
+
     }
     timedRedraw(0);
 }
@@ -2736,7 +2736,7 @@ void gGraphView::deselect()
 }
 
 const quint32 gvmagic = 0x41756728;
-const quint16 gvversion = 3;
+const quint16 gvversion = 4;
 
 void gGraphView::SaveSettings(QString title)
 {
@@ -2753,15 +2753,28 @@ void gGraphView::SaveSettings(QString title)
     out << (qint16)size();
 
     for (qint16 i = 0; i < size(); i++) {
-        if (!m_graphs[i]) continue;
+        gGraph * graph = m_graphs[i];
+        if (!graph) continue;
 
-        out << m_graphs[i]->name();
-        out << m_graphs[i]->height();
-        out << m_graphs[i]->visible();
-        out << m_graphs[i]->RecMinY();
-        out << m_graphs[i]->RecMaxY();
-        out << m_graphs[i]->zoomY();
-        out << (bool)m_graphs[i]->isPinned();
+        out << graph->name();
+        out << graph->height();
+        out << graph->visible();
+        out << graph->RecMinY();
+        out << graph->RecMaxY();
+        out << graph->zoomY();
+        out << (bool)graph->isPinned();
+
+        gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph, LT_LineChart));
+        if (lc) {
+            out << (quint32)LT_LineChart;
+            out << lc->m_flags_enabled;
+            out << lc->m_enabled;
+            out << lc->m_dot_enabled;
+        } else {
+            out << (quint32)LT_Other;
+        }
+
+
     }
 
     f.close();
@@ -2825,6 +2838,21 @@ bool gGraphView::LoadSettings(QString title)
             in >> pinned;
         }
 
+        QHash<ChannelID, bool> flags_enabled;
+        QHash<ChannelID, bool> plots_enabled;
+        QHash<ChannelID, QHash<quint32, bool> > dot_enabled;
+
+        // Warning: Do not break the follow section up!!!
+        quint32 layertype;
+        if (gvversion >= 4) {
+            in >> layertype;
+            if (layertype == LT_LineChart) {
+                in >> flags_enabled;
+                in >> plots_enabled;
+                in >> dot_enabled;
+            }
+        }
+
         gGraph *g = nullptr;
 
         if (t2 <= 2) {
@@ -2852,6 +2880,19 @@ bool gGraphView::LoadSettings(QString title)
             g->setRecMaxY(recmaxy);
             g->setZoomY(zoomy);
             g->setPinned(pinned);
+
+            if (gvversion >= 4) {
+                if (layertype == LT_LineChart) {
+                    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(g, LT_LineChart));
+                    if (lc) {
+                        lc->m_flags_enabled = flags_enabled;
+                        lc->m_enabled = plots_enabled;
+
+                        lc->m_dot_enabled = dot_enabled;
+                    }
+                }
+            }
+
         }
     }
 
