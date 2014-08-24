@@ -599,6 +599,9 @@ void CMS50F37Loader::syncClock()
     } while ((timectr == 0) && (time.elapsed() < TIMEOUT));
 
 
+    QThread::msleep(100);
+    QApplication::processEvents();
+
     QTime ctime = QTime::currentTime();
     quint8 h = ctime.hour();
     quint8 m = ctime.minute();
