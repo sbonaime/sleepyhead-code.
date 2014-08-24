@@ -2441,6 +2441,27 @@ void ResInitModelMap()
     resmed_codes[CPAP_PressureMin].push_back("\xE6\x9C\x80\xE5\xB0\x8F\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
     resmed_codes[CPAP_PressureMin].push_back("Pression min.");
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
+
+    // BRP file
+    resmed_codes[CPAP_FlowRate].push_back("Flow.40ms");
+    resmed_codes[CPAP_MaskPressureHi].push_back("Pres.40ms");
+
+    // SAD file
+    resmed_codes[OXI_Pulse].push_back("Pulse.1s");
+    resmed_codes[OXI_SPO2].push_back("SpO2.1s");
+
+    // PLD file
+    resmed_codes[CPAP_MaskPressure].push_back("MaskPress.2s");
+    resmed_codes[CPAP_Pressure].push_back("Press.2s");
+    //resmed_codes[RMS9_EPRPressure].push_back("EPRPress.2s");
+    resmed_codes[CPAP_Leak].push_back("Leak.2s");
+    resmed_codes[CPAP_RespRate].push_back("RespRate.2s");
+    resmed_codes[CPAP_TidalVolume].push_back("TidVol.2s");
+    resmed_codes[CPAP_MinuteVent].push_back("MinVent.2s");
+    resmed_codes[CPAP_Snore].push_back("Snore.2s");
+    resmed_codes[CPAP_FLG].push_back("FlowLim.2s");
+
+
 }
 
 ChannelID ResmedLoader::PresReliefMode() { return RMS9_EPR; }

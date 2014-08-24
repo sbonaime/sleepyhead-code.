@@ -1689,6 +1689,7 @@ void gGraphView::populateMenu(gGraph * graph)
 
                 QCheckBox *chbox = new QCheckBox(chan.calc[dot.type].label(), context_menu);
                 chbox->setMouseTracking(true);
+                chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
 
                 widget->setDefaultWidget(chbox);
 
@@ -1742,6 +1743,8 @@ void gGraphView::populateMenu(gGraph * graph)
                 QCheckBox *chbox = new QCheckBox(schema::channel[code].label(), context_menu);
                 chbox->setMouseTracking(true);
                 chbox->setToolTip(schema::channel[code].description());
+                chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
+
 
                 widget->setDefaultWidget(chbox);
 
@@ -1788,8 +1791,6 @@ void gGraphView::populateMenu(gGraph * graph)
 
 
         QHash<MachineType, int> Vis;
-        if (chans.size() > 0) {
-        }
         for (int i=0; i < chans.size() ; ++i) {
             ChannelID code = chans.at(i);
             schema::Channel & chan = schema::channel[code];
@@ -1797,8 +1798,11 @@ void gGraphView::populateMenu(gGraph * graph)
             QWidgetAction * widget = new QWidgetAction(context_menu);
 
             QCheckBox *chbox = new QCheckBox(schema::channel[code].fullname(), context_menu);
+            chbox->setPalette(context_menu->palette());
             chbox->setMouseTracking(true);
             chbox->setToolTip(schema::channel[code].description());
+            chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
+
 
             widget->setDefaultWidget(chbox);
 

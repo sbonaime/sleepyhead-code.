@@ -225,6 +225,10 @@ void OximeterImport::on_directImportButton_clicked()
     QString model = oximodule->getModel();
     QString user = oximodule->getUser();
 
+    if (p_profile->oxi->syncOximeterClock()) {
+        oximodule->syncClock();
+    }
+
 
     oximodule->resetDevice();
     int session_count = oximodule->getSessionCount();
