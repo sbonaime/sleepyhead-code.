@@ -142,7 +142,13 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
         qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
 
         EDFSignal *maskon = str.lookupLabel("Mask On");
+        if (!maskon) {
+            maskon = str.lookupLabel("MaskOn");
+        }
         EDFSignal *maskoff = str.lookupLabel("Mask Off");
+        if (!maskoff) {
+             maskoff = str.lookupLabel("MaskOff");
+        }
         EDFSignal *sig = nullptr;
         quint32 laston = 0;
 
@@ -1123,7 +1129,7 @@ EDFduration getEDFDuration(QString filename)
 
     start = qMin(st2, start);
 
-    if (end < start) end = qMax(st2, start)+1; // This alone should really cover the EVE.EDF condition
+    if (end < start) end = qMax(st2, start)+10; // This alone should really cover the EVE.EDF condition
 
 //    if (ext == "EVE") {
 //        // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
@@ -1201,6 +1207,13 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         filename = fi.fileName();
 
         if (filename.length() == 4) {
+            filename.toInt(&ok);
+
+            if (ok) {
+                dirs.push_back(fi.canonicalFilePath());
+            }
+        } else if (filename.length() == 8) {
+            // S10 stores sessions per day folders
             filename.toInt(&ok);
 
             if (ok) {
@@ -1805,7 +1818,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
     double tt;
 
     // Notes: Event records have useless duration record.
-    sess->updateFirst(edf.startdate);
+   // sess->updateFirst(edf.startdate);
 
     EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr;
 
@@ -2460,6 +2473,18 @@ void ResInitModelMap()
     resmed_codes[CPAP_MinuteVent].push_back("MinVent.2s");
     resmed_codes[CPAP_Snore].push_back("Snore.2s");
     resmed_codes[CPAP_FLG].push_back("FlowLim.2s");
+
+    //S.AS.StartPress
+    resmed_codes[CPAP_PressureMin].push_back("S.AS.MinPress");
+    resmed_codes[CPAP_PressureMax].push_back("S.AS.MaxPress");
+
+    resmed_codes[RMS9_SetPressure].push_back("S.C.Press");
+
+    resmed_codes[RMS9_EPRLevel].push_back("S.EPR.Level");
+
+
+
+
 
 
 }

@@ -374,7 +374,7 @@ class ResmedLoader : public CPAPLoader
     bool LoadPLD(Session *sess, const QString & path);
 
     virtual MachineInfo newInfo() {
-        return MachineInfo(MT_CPAP, 0, resmed_class_name, QObject::tr("ResMed"), QString(), QString(), QString(), QObject::tr("S9"), QDateTime::currentDateTime(), resmed_data_version);
+        return MachineInfo(MT_CPAP, 0, resmed_class_name, QObject::tr("ResMed"), QString(), QString(), QString(), QObject::tr("ResMed"), QDateTime::currentDateTime(), resmed_data_version);
     }
 
     virtual void initChannels();

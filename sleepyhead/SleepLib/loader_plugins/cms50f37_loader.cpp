@@ -216,6 +216,9 @@ QString CMS50F37Loader::getModel()
         QApplication::processEvents();
     } while (model.isEmpty() && (time.elapsed() < TIMEOUT));
 
+    QThread::msleep(100);
+    QApplication::processEvents();
+
     if (model.startsWith("CMS50I")) {
         duration_divisor = 4;
     } else {
