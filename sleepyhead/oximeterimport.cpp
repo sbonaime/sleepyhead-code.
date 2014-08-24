@@ -222,12 +222,13 @@ void OximeterImport::on_directImportButton_clicked()
     if (!oximodule)
         return;
 
-    QString model = oximodule->getModel();
-    QString user = oximodule->getUser();
-
     if (p_profile->oxi->syncOximeterClock()) {
         oximodule->syncClock();
     }
+
+    QString model = oximodule->getModel();
+    QString user = oximodule->getUser();
+
 
 
     oximodule->resetDevice();
