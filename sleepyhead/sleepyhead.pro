@@ -15,9 +15,9 @@ greaterThan(QT_MAJOR_VERSION,4) {
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
 #provided the BrokenGL file resides in the SleepyHead source root directory
-exists($$PWD/../BrokenGL) {
-    DEFINES += BROKEN_OPENGL_BUILD
+contains(DEFINES, BrokenGL) {
     message("Building with QWidget gGraphView")
+    DEFINES += BROKEN_OPENGL_BUILD
 } else {
     message("Building with QGLWidget gGraphView")
     QT += opengl
