@@ -100,12 +100,16 @@ class PreferencesDialog : public QDialog
 
     void on_chanView_doubleClicked(const QModelIndex &index);
 
+    void on_waveSearch_textChanged(const QString &arg1);
+
 private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();
     void InitChanInfo();
+    void InitWaveInfo();
 
-    QHash<schema::ChanType, QStandardItem *> toplevel;
+    QHash<MachineType, QStandardItem *> toplevel;
+    QHash<MachineType, QStandardItem *> machlevel;
 
     Ui::PreferencesDialog *ui;
     Profile *profile;
@@ -113,11 +117,16 @@ private:
 
     QStringList importLocations;
     QStringListModel *importModel;
+
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
 
     MySortFilterProxyModel * chanFilterModel;
     QStandardItemModel *chanModel;
+
+    MySortFilterProxyModel * waveFilterModel;
+    QStandardItemModel *waveModel;
+
 };
 
 

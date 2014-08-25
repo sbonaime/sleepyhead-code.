@@ -48,7 +48,7 @@ enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_PERC, ST_90P, ST_MIN, ST_
 /*! \enum MachineType
     \brief Generalized type of a machine
   */
-enum MachineType { MT_UNKNOWN = 0, MT_CPAP, MT_OXIMETER, MT_SLEEPSTAGE, MT_JOURNAL, MT_POSITION };
+enum MachineType { MT_UNKNOWN = 0, MT_CPAP, MT_OXIMETER, MT_SLEEPSTAGE, MT_JOURNAL, MT_POSITION, MT_UNCATEGORIZED = 99};
 //void InitMapsWithoutAwesomeInitializerLists();
 
 // PAP Device Capabilities

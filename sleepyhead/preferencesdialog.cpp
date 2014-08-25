@@ -33,6 +33,9 @@ extern MainWindow *mainwin;
 typedef QMessageBox::StandardButton StandardButton;
 typedef QMessageBox::StandardButtons StandardButtons;
 
+QHash<schema::ChanType, QString> channeltype;
+
+
 MaskProfile masks[] = {
     {Mask_Unknown, QObject::tr("Unspecified"), {{4, 25}, {8, 25}, {12, 25}, {16, 25}, {20, 25}}},
     {Mask_NasalPillows, QObject::tr("Nasal Pillows"), {{4, 20}, {8, 29}, {12, 37}, {16, 43}, {20, 49}}},
@@ -53,6 +56,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->leakProfile->horizontalHeader()->setStretchLastSection(true);
     ui->leakProfile->setColumnWidth(0, 100);
     ui->maskTypeCombo->clear();
+
+    channeltype.clear();
+    channeltype[schema::FLAG] = tr("Flag");
+    channeltype[schema::MINOR_FLAG] = tr("Minor Flag");
+    channeltype[schema::SPAN] = tr("Span");
+    channeltype[schema::UNKNOWN] = tr("Always Minor");
 
     //ui->customEventGroupbox->setEnabled(false);
 
@@ -281,68 +290,183 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     InitChanInfo();
 
+    waveFilterModel = new MySortFilterProxyModel(this);
+    waveModel = new QStandardItemModel(this);
+    waveFilterModel->setSourceModel(waveModel);
+    waveFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    waveFilterModel->setFilterKeyColumn(0);
+    ui->waveView->setModel(waveFilterModel);
+    InitWaveInfo();
+
+    ui->waveView->setSortingEnabled(true);
+    ui->chanView->setSortingEnabled(true);
+
+    ui->waveView->sortByColumn(0, Qt::AscendingOrder);
+    ui->chanView->sortByColumn(0, Qt::AscendingOrder);
+
 }
+
+#include <QItemDelegate>
+class SpinBoxDelegate : public QItemDelegate
+{
+
+public:
+    SpinBoxDelegate(QObject *parent = 0):QItemDelegate(parent) {}
+
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
+QWidget *SpinBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex &/* index */) const
+{
+    QDoubleSpinBox *editor = new QDoubleSpinBox(parent);
+    //editor->setMinimum(0);
+    //editor->setMaximum(100.0);
+
+    return editor;
+}
+
+void SpinBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    double value = index.model()->data(index, Qt::EditRole).toDouble();
+
+    QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
+    spinBox->setMinimum(-9999999.0);
+    spinBox->setMaximum(9999999.0);
+
+    spinBox->setValue(value);
+}
+
+void SpinBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
+    spinBox->interpretText();
+    double value = spinBox->value();
+
+    model->setData(index, value, Qt::EditRole);
+}
+void SpinBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
+{
+    editor->setGeometry(option.rect);
+}
+
+
+#include <QItemDelegate>
+class ComboBoxDelegate : public QItemDelegate
+{
+
+public:
+    ComboBoxDelegate(QObject *parent = 0):QItemDelegate(parent) {}
+
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
+QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex &/* index */) const
+{
+    QComboBox *combo = new QComboBox(parent);
+
+    QHash<schema::ChanType, QString>::iterator it;
+    for (it = channeltype.begin(); it != channeltype.end(); ++it) {
+        if (it.key() == schema::UNKNOWN) continue;
+        combo->addItem(it.value());
+    }
+    //editor->setMinimum(0);
+    //editor->setMaximum(100.0);
+
+    return combo;
+}
+
+void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    QString value = index.model()->data(index, Qt::EditRole).toString();
+
+    QComboBox *combo = static_cast<QComboBox*>(editor);
+
+    combo->setCurrentText(value);
+}
+
+void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    QComboBox *combo = static_cast<QComboBox*>(editor);
+
+    model->setData(index, combo->currentText(), Qt::EditRole);
+}
+void ComboBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
+{
+    editor->setGeometry(option.rect);
+}
+
 
 void PreferencesDialog::InitChanInfo()
 {
-    QHash<schema::ChanType, int> toprows;
+    QHash<MachineType, int> toprows;
 
     chanModel->clear();
     toplevel.clear();
     toprows.clear();
-
-    QStandardItem *hdr = nullptr;
-
-    toplevel[schema::SPAN] = hdr = new QStandardItem(tr("Span Events"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::FLAG] = hdr = new QStandardItem(tr("Flags"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::MINOR_FLAG] = hdr = new QStandardItem(tr("Minor Flags"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::WAVEFORM] = hdr = new QStandardItem(tr("Waveforms"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::DATA] = hdr = new QStandardItem(tr("Data Channels"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::SETTING] = hdr = new QStandardItem(tr("Settings Channels"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    toplevel[schema::UNKNOWN] = hdr = new QStandardItem(tr("Unknown Channels"));
-    hdr->setEditable(false);
-    chanModel->appendRow(hdr);
-
-    ui->chanView->setAlternatingRowColors(true);
-
-    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
-    chanModel->setColumnCount(4);
     QStringList headers;
     headers.append(tr("Name"));
     headers.append(tr("Color"));
+    headers.append(tr("Flag Type"));
     headers.append(tr("Label"));
     headers.append(tr("Details"));
-//    headers.append(tr("ID"));
     chanModel->setHorizontalHeaderLabels(headers);
     ui->chanView->setColumnWidth(0, 200);
     ui->chanView->setColumnWidth(1, 50);
     ui->chanView->setColumnWidth(2, 100);
+    ui->chanView->setColumnWidth(3, 100);
     ui->chanView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->chanView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
+    chanModel->setColumnCount(5);
+
+    QStandardItem *hdr = nullptr;
+
+    QMap<MachineType, QString> Section;
+
+    Section[MT_CPAP] = tr("CPAP Events");
+    Section[MT_OXIMETER] = tr("Oximeter Events");
+    Section[MT_POSITION] = tr("Positional Events");
+    Section[MT_SLEEPSTAGE] = tr("Sleep Stage Events");
+    Section[MT_UNCATEGORIZED] = tr("Unknown Events");
+
+    QMap<MachineType, QString>::iterator it;
+
     QHash<QString, schema::Channel *>::iterator ci;
+
+    for (it = Section.begin(); it != Section.end(); ++it) {
+        toplevel[it.key()] = hdr = new QStandardItem(it.value());
+        hdr->setEditable(false);
+        QList<QStandardItem *> list;
+        list.append(hdr);
+        for (int i=0; i<4; i++) {
+            QStandardItem *it = new QStandardItem();
+            it->setEnabled(false);
+            list.append(it);
+        }
+        chanModel->appendRow(list);
+    }
+
+    ui->chanView->setAlternatingRowColors(true);
+
+    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
+
+
+    ComboBoxDelegate * combobox = new ComboBoxDelegate(ui->waveView);
+
+    ui->chanView->setItemDelegateForColumn(2,combobox);
 
     int row = 0;
     for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
         schema::Channel * chan = ci.value();
+        if ((chan->type() == schema::DATA) || (chan->type() == schema::SETTING) || chan->type() == schema::WAVEFORM) continue;
 
         QList<QStandardItem *> items;
         QStandardItem *it = new QStandardItem(chan->fullname());
@@ -350,6 +474,7 @@ void PreferencesDialog::InitChanInfo()
         it->setCheckState(chan->enabled() ? Qt::Checked : Qt::Unchecked);
         it->setEditable(true);
         it->setData(chan->id(), Qt::UserRole);
+        it->setToolTip(tr("Double click to change the descriptive name this channel."));
         items.push_back(it);
 
 
@@ -357,26 +482,167 @@ void PreferencesDialog::InitChanInfo()
         it->setBackground(QBrush(chan->defaultColor()));
         it->setEditable(false);
         it->setData(chan->defaultColor().rgba(), Qt::UserRole);
+        it->setToolTip(tr("Double click to change the default color for this channel plot/flag/data."));
+
         it->setSelectable(false);
         items.push_back(it);
 
+        schema::ChanType type = chan->type();
+
+        it = new QStandardItem(channeltype[type]);
+        it->setToolTip(tr("Here you can change the type of flag shown for this event"));
+        it->setEditable(type != schema::UNKNOWN);
+        items.push_back(it);
+
         it = new QStandardItem(chan->label());
+        it->setToolTip(tr("This is the short-form label to indicate this channel on screen."));
+
         it->setEditable(true);
         items.push_back(it);
 
         it = new QStandardItem(chan->description());
+        it->setToolTip(tr("This is a description of what this channel does."));
+
         it->setEditable(true);
         items.push_back(it);
 
-//        it = new QStandardItem(QString().number(chan->id(),16));
-//        it->setEditable(false);
-//        items.push_back(it);
-
-        row = toprows[chan->type()]++;
-        toplevel[chan->type()]->insertRow(row, items);
+        MachineType mt = chan->machtype();
+        if (chan->type() == schema::UNKNOWN) mt = MT_UNCATEGORIZED;
+        row = toprows[mt]++;
+        toplevel[mt]->insertRow(row, items);
     }
+
+
+    for(QHash<MachineType, QStandardItem *>::iterator i = toplevel.begin(); i != toplevel.end(); ++i) {
+        if (i.value()->rowCount() == 0) {
+            chanModel->removeRow(i.value()->row());
+        }
+    }
+
     ui->chanView->expandAll();
+    ui->chanView->setSortingEnabled(true);
 }
+
+void PreferencesDialog::InitWaveInfo()
+{
+    QHash<MachineType, int> toprows;
+
+    waveModel->clear();
+    machlevel.clear();
+    toprows.clear();
+    QStringList headers;
+    headers.append(tr("Name"));
+    headers.append(tr("Color"));
+    headers.append(tr("Lower"));
+    headers.append(tr("Upper"));
+    headers.append(tr("Label"));
+    headers.append(tr("Details"));
+    waveModel->setHorizontalHeaderLabels(headers);
+    ui->waveView->setColumnWidth(0, 200);
+    ui->waveView->setColumnWidth(1, 50);
+    ui->waveView->setColumnWidth(2, 50);
+    ui->waveView->setColumnWidth(3, 50);
+    ui->waveView->setColumnWidth(4, 100);
+    ui->waveView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->waveView->setSelectionBehavior(QAbstractItemView::SelectItems);
+
+    waveModel->setColumnCount(6);
+
+    QStandardItem *hdr = nullptr;
+
+    QMap<MachineType, QString> Section;
+
+    Section[MT_CPAP] = tr("CPAP Waveforms");
+    Section[MT_OXIMETER] = tr("Oximeter Waveforms");
+    Section[MT_POSITION] = tr("Positional Waveforms");
+    Section[MT_SLEEPSTAGE] = tr("Sleep Stage Waveforms");
+
+    QMap<MachineType, QString>::iterator it;
+
+    for (it = Section.begin(); it != Section.end(); ++it) {
+        machlevel[it.key()] = hdr = new QStandardItem(it.value());
+        hdr->setEditable(false);
+        QList<QStandardItem *> list;
+        list.append(hdr);
+        for (int i=0; i<5; i++) {
+            QStandardItem *it = new QStandardItem();
+            it->setEnabled(false);
+            list.append(it);
+        }
+        waveModel->appendRow(list);
+    }
+
+    ui->waveView->setAlternatingRowColors(true);
+
+    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
+
+    QHash<QString, schema::Channel *>::iterator ci;
+
+    SpinBoxDelegate * spinbox = new SpinBoxDelegate(ui->waveView);
+
+    ui->waveView->setItemDelegateForColumn(2,spinbox);
+    ui->waveView->setItemDelegateForColumn(3,spinbox);
+
+    int row = 0;
+    for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
+        schema::Channel * chan = ci.value();
+        if (chan->type() != schema::WAVEFORM) continue;
+
+        QList<QStandardItem *> items;
+        QStandardItem *it = new QStandardItem(chan->fullname());
+
+        it->setCheckable(true);
+        it->setCheckState(chan->enabled() ? Qt::Checked : Qt::Unchecked);
+        it->setEditable(true);
+        it->setData(chan->id(), Qt::UserRole);
+        it->setToolTip(tr("Double click to change the descriptive name this channel."));
+        items.push_back(it);
+
+        it = new QStandardItem();
+        it->setBackground(QBrush(chan->defaultColor()));
+        it->setEditable(false);
+        it->setData(chan->defaultColor().rgba(), Qt::UserRole);
+        it->setToolTip(tr("Double click to change the default color for this channel plot/flag/data."));
+
+        it->setSelectable(false);
+        items.push_back(it);
+
+        it = new QStandardItem(QString::number(chan->lowerThreshold(),'f',1));
+        it->setToolTip(tr("Here you can set the <b>lower</b> threshold used for certain calculations on the %1 waveform").arg(chan->fullname()));
+        it->setEditable(true);
+        items.push_back(it);
+
+        it = new QStandardItem(QString::number(chan->upperThreshold(),'f',1));
+        it->setToolTip(tr("Here you can set the <b>upper</b> threshold used for certain calculations on the %1 waveform").arg(chan->fullname()));
+        it->setEditable(true);
+        items.push_back(it);
+
+        it = new QStandardItem(chan->label());
+        it->setToolTip(tr("This is the short-form label to indicate this channel on screen."));
+
+        it->setEditable(true);
+        items.push_back(it);
+
+        it = new QStandardItem(chan->description());
+        it->setToolTip(tr("This is a description of what this channel does."));
+
+        it->setEditable(true);
+        items.push_back(it);
+
+        row = toprows[chan->machtype()]++;
+        machlevel[chan->machtype()]->insertRow(row, items);
+    }
+
+    for(QHash<MachineType, QStandardItem *>::iterator i = machlevel.begin(); i != machlevel.end(); ++i) {
+        if (i.value()->rowCount() == 0) {
+            waveModel->removeRow(i.value()->row());
+        }
+    }
+
+    ui->waveView->expandAll();
+    ui->waveView->setSortingEnabled(true);
+}
+
 
 PreferencesDialog::~PreferencesDialog()
 {
@@ -621,9 +887,33 @@ bool PreferencesDialog::Save()
     bigfont->setItalic(ui->bigFontItalic->isChecked());
 
 
-    int toprows = chanModel->rowCount();
+    int toprows = waveModel->rowCount();
 
     bool ok;
+    for (int i=0; i < toprows; i++) {
+        QStandardItem * topitem = waveModel->item(i,0);
+
+        if (!topitem) continue;
+        int rows = topitem->rowCount();
+        for (int j=0; j< rows; ++j) {
+            QStandardItem * item = topitem->child(j, 0);
+            if (!item) continue;
+
+            ChannelID id = item->data(Qt::UserRole).toUInt(&ok);
+            schema::Channel & chan = schema::channel[id];
+            if (chan.isNull()) continue;
+            chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
+            chan.setFullname(item->text());
+            chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
+            chan.setLowerThreshold(topitem->child(j,2)->text().toDouble());
+            chan.setUpperThreshold(topitem->child(j,3)->text().toDouble());
+            chan.setLabel(topitem->child(j,4)->text());
+            chan.setDescription(topitem->child(j,5)->text());
+        }
+    }
+
+    toprows = chanModel->rowCount();
+
     for (int i=0; i < toprows; i++) {
         QStandardItem * topitem = chanModel->item(i,0);
 
@@ -639,8 +929,17 @@ bool PreferencesDialog::Save()
             chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
             chan.setFullname(item->text());
             chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
-            chan.setLabel(topitem->child(j,2)->text());
-            chan.setDescription(topitem->child(j,3)->text());
+            QString ts = topitem->child(j,2)->text();
+            schema::ChanType type = schema::MINOR_FLAG;
+            for (QHash<schema::ChanType, QString>::iterator it = channeltype.begin(); it!= channeltype.end(); ++it) {
+                if (it.value() == ts) {
+                    type = it.key();
+                    break;
+                }
+            }
+            chan.setType(type);
+            chan.setLabel(topitem->child(j,3)->text());
+            chan.setDescription(topitem->child(j,4)->text());
         }
     }
 
@@ -1038,6 +1337,7 @@ void PreferencesDialog::on_chanView_doubleClicked(const QModelIndex &index)
     if (index.column() == 1) {
         QColorDialog a;
 
+        if (!(index.flags() & Qt::ItemIsEnabled)) return;
         quint32 color = index.data(Qt::UserRole).toUInt();
 
         a.setCurrentColor(QColor((QRgb)color));
@@ -1051,4 +1351,9 @@ void PreferencesDialog::on_chanView_doubleClicked(const QModelIndex &index)
         }
 
     }
+}
+
+void PreferencesDialog::on_waveSearch_textChanged(const QString &arg1)
+{
+    waveFilterModel->setFilterFixedString(arg1);
 }

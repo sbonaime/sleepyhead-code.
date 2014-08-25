@@ -114,6 +114,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     webView=new MyWebView(this);
 
+
+
     QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, true);
 
     ui->tabWidget->insertTab(0,webView,QIcon(),"Details");

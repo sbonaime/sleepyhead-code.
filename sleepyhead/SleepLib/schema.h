@@ -115,6 +115,7 @@ class Channel
 
     void setFullname(QString fullname) { m_fullname = fullname; }
     void setLabel(QString label) { m_label = label; }
+    void setType(ChanType type) { m_type = type; }
     void setUnit(QString unit) { m_unit = unit; }
     void setDescription(QString desc) { m_description = desc; }
     void setUpperThreshold(EventDataType value) { m_upperThreshold = value; }

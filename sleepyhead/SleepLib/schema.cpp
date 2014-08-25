@@ -411,12 +411,12 @@ void init()
                         STR_UNIT_EventsPerHour, DEFAULT,  QColor("dark red")));
 
     // Positional sensors
-    schema::channel.add(GRP_POS, new Channel(POS_Orientation         = 0x2990, DATA,   MT_POSITION,  SESSION,
+    schema::channel.add(GRP_POS, new Channel(POS_Orientation         = 0x2990, WAVEFORM,   MT_POSITION,  SESSION,
                         "Orientation",      QObject::tr("Orientation"),
                         QObject::tr("Sleep position in degrees"),  QObject::tr("Orientation"),  STR_UNIT_Degrees,
                         DEFAULT,  QColor("dark blue")));
 
-    schema::channel.add(GRP_POS, new Channel(POS_Inclination         = 0x2991, DATA,   MT_POSITION, SESSION,
+    schema::channel.add(GRP_POS, new Channel(POS_Inclination         = 0x2991, WAVEFORM,   MT_POSITION, SESSION,
                         "Inclination",      QObject::tr("Inclination"),
                         QObject::tr("Upright angle in degrees"),  QObject::tr("Inclination"),  STR_UNIT_Degrees,
                         DEFAULT,  QColor("dark magenta")));

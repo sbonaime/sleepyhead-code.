@@ -91,9 +91,6 @@ win32 {
         # MingW needs this
         LIBS += -lz
     }
-
-    QT += serialport
-
 }
 
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -286,30 +283,42 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-bundlelibs = $$cat($$PWD/../Bundle3rdParty)
-
-contains(bundlelibs, true) {
-    include(../3rdparty/quazip/quazip/quazip.pri)
-    INCLUDEPATH += $$PWD/../3rdparty/quazip
-    DEPENDPATH += $$PWD/../3rdparty/quazip
-
- !win32 {
+!win32 {
     include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
     INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
     DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
- #   DEPENDPATH += $$PWD/../3rdparty/qtserialport/src/serialport/include/QtSerialPort/5.3.1
-    }
 } else {
-    unix {
-        message("Attempting to build with system quazip.");
-        QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
-        INCLUDEPATH += /usr/local/include
-        INCLUDEPATH += /usr/include
-        DEPENDPATH += /usr/local/include/quazip
-        DEPENDPATH += /usr/include/quazip
-    } else {
-        #Configure it if you need it...
-        warning("Building with externally linked quazip is unsupported on this platform");
-    }
-    LIBS += -lquazip
+    QT += serialport
 }
+
+include(../3rdparty/quazip/quazip/quazip.pri)
+INCLUDEPATH += $$PWD/../3rdparty/quazip
+DEPENDPATH += $$PWD/../3rdparty/quazip
+
+#bundlelibs = $$cat($$PWD/../Bundle3rdParty)
+
+#contains(bundlelibs, true) {
+#    include(../3rdparty/quazip/quazip/quazip.pri)
+#    INCLUDEPATH += $$PWD/../3rdparty/quazip
+#    DEPENDPATH += $$PWD/../3rdparty/quazip
+
+# !win32 {
+#    include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
+#    INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
+#    DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
+# #   DEPENDPATH += $$PWD/../3rdparty/qtserialport/src/serialport/include/QtSerialPort/5.3.1
+#    }
+#} else {
+#    unix {
+#        message("Attempting to build with system quazip.");
+#        QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
+#        INCLUDEPATH += /usr/local/include
+#        INCLUDEPATH += /usr/include
+#        DEPENDPATH += /usr/local/include/quazip
+#        DEPENDPATH += /usr/include/quazip
+#    } else {
+#        #Configure it if you need it...
+#        warning("Building with externally linked quazip is unsupported on this platform");
+#    }
+#    LIBS += -lquazip
+#}
