@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de_DE">
+<TS version="2.1" language="de_DE">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -16,89 +16,89 @@
     <name>CMS50Serial</name>
     <message>
         <source>No valid start time was provided for this oximeter session. You will likely have to adjust your oximeter sessions start time before saving.</source>
-        <translation>Es wurde keine gültige Startzeit für diese Oximeter-Sitzung zur Verfügung gestellt. Stellen Sie sicher, dass Sie Ihre Oximetrie-Daten vor der Startzeit gespeichert haben.</translation>
+        <translation type="vanished">Es wurde keine gültige Startzeit für diese Oximeter-Sitzung zur Verfügung gestellt. Stellen Sie sicher, dass Sie Ihre Oximetrie-Daten vor der Startzeit gespeichert haben.</translation>
     </message>
     <message>
         <source>Did you remember to start your oximeter recording at exactly the same time you started your CPAP machine?</source>
-        <translation>Haben Sie daran gedacht, das Ihre Oximeter Aufnahme genau zur gleichen Zeit, wie Ihre CPAP-Geräte begonnen haben, zu starten?</translation>
+        <translation type="vanished">Haben Sie daran gedacht, das Ihre Oximeter Aufnahme genau zur gleichen Zeit, wie Ihre CPAP-Geräte begonnen haben, zu starten?</translation>
     </message>
     <message>
         <source>Import Failed</source>
-        <translation>Import fehlgeschlagen</translation>
+        <translation type="vanished">Import fehlgeschlagen</translation>
     </message>
     <message>
         <source>Import Failed. Wait for oximeter and try again.</source>
-        <translation>Import fehlgeschlagen. Warten Sie auf die Oximeter-Daten und versuchen Sie es erneut.</translation>
+        <translation type="vanished">Import fehlgeschlagen. Warten Sie auf die Oximeter-Daten und versuchen Sie es erneut.</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation>Information</translation>
+        <translation type="vanished">Information</translation>
     </message>
     <message>
         <source>The most recent CPAP Session time has been selected as the start of your oximetry session.
 If you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter.</source>
-        <translation>Die letzte CPAP Sitzungszeit wurde als Beginn Ihrer Oxymetrie Sitzung ausgewählt.
+        <translation type="vanished">Die letzte CPAP Sitzungszeit wurde als Beginn Ihrer Oxymetrie Sitzung ausgewählt.
 Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Dies jetzt tun und dann wieder von Ihrem Oximeter importieren.</translation>
     </message>
     <message>
         <source>Set Oximeter to Upload</source>
-        <translation>Oximeter zum hochladen verbunden</translation>
+        <translation type="vanished">Oximeter zum hochladen verbunden</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation>Frage</translation>
+        <translation type="vanished">Frage</translation>
     </message>
     <message>
         <source>Please Wait, Importing...</source>
-        <translation>Bitte warten Sie bis der Import abgeschlossen ist...</translation>
+        <translation type="vanished">Bitte warten Sie bis der Import abgeschlossen ist...</translation>
     </message>
     <message>
         <source>Processing...</source>
-        <translation>Verarbeitung...</translation>
+        <translation type="vanished">Verarbeitung...</translation>
     </message>
     <message>
         <source>That&apos;s ok, I will use the time provided by your oximeter, however it will sync better next time if you start your oximeter recording at the same time your CPAP machine starts up.</source>
-        <translation>Um eine ordnungsgemäße Syncronisation zu gewährleisten starten Sie bitte Ihr CPAP-Gerät gleichzeitig mit Ihrem Oximeter-Gerät.</translation>
+        <translation type="vanished">Um eine ordnungsgemäße Syncronisation zu gewährleisten starten Sie bitte Ihr CPAP-Gerät gleichzeitig mit Ihrem Oximeter-Gerät.</translation>
     </message>
     <message>
         <source>If you haven&apos;t set your oximeter clock you will have to manually edit this time before saving this oximetry session.</source>
-        <translation>Wenn Sie Ihre Oximeter Uhr nicht eingestellt haben, müssen Sie Diese vor dem Speichern der Oxymetrie-Sitzung, manuell festlegen.</translation>
+        <translation type="vanished">Wenn Sie Ihre Oximeter Uhr nicht eingestellt haben, müssen Sie Diese vor dem Speichern der Oxymetrie-Sitzung, manuell festlegen.</translation>
     </message>
     <message>
         <source>It looks like your oximeter doesn&apos;t provide a valid start time, I&apos;m going to set this oximetry session starting time to the CPAP starting time anyway.</source>
-        <translation>Es sieht aus als ob Sie Ihrem Oximeter keine gültige Startzeit gegeben haben. Das Programm wird die Oximeter Startzeit auf die Startzeit Ihres CPAP-Gerätes festlegen.</translation>
+        <translation type="vanished">Es sieht aus als ob Sie Ihrem Oximeter keine gültige Startzeit gegeben haben. Das Programm wird die Oximeter Startzeit auf die Startzeit Ihres CPAP-Gerätes festlegen.</translation>
     </message>
     <message>
         <source>You may have to adjust it manually if you remember the real start time before saving this session.</source>
-        <translation>Eventuell müssen Sie die richtige Startzeit vor dem speichern der Sitzung manuell anpassen.</translation>
+        <translation type="vanished">Eventuell müssen Sie die richtige Startzeit vor dem speichern der Sitzung manuell anpassen.</translation>
     </message>
     <message>
         <source>(Also, did you remember to import todays CPAP data first?)</source>
-        <translation>(Haben Sie daran gedacht, zuerst die heutigen CPAP-Daten zu importieren?)</translation>
+        <translation type="vanished">(Haben Sie daran gedacht, zuerst die heutigen CPAP-Daten zu importieren?)</translation>
     </message>
     <message>
         <source>The most recent CPAP Session time has been selected as the start of your oximetry session.</source>
-        <translation>Die letzte CPAP Sitzungszeit wurde als Beginn Ihrer Oxymetrie Sitzung ausgewählt.</translation>
+        <translation type="vanished">Die letzte CPAP Sitzungszeit wurde als Beginn Ihrer Oxymetrie Sitzung ausgewählt.</translation>
     </message>
     <message>
         <source>If you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter.</source>
-        <translation>Wenn Sie vergessen haben, die letzten CPAP-Daten zu importieren, tun Sie das jetzt und importieren Sie dann die Oximeterdaten erneut.</translation>
+        <translation type="vanished">Wenn Sie vergessen haben, die letzten CPAP-Daten zu importieren, tun Sie das jetzt und importieren Sie dann die Oximeterdaten erneut.</translation>
     </message>
     <message>
         <source>No valid start time was provided for this oximeter session.</source>
-        <translation>Es wurde keine gültige Startzeit, für diese Oximeter-Sitzung, zur Verfügung gestellt.</translation>
+        <translation type="vanished">Es wurde keine gültige Startzeit, für diese Oximeter-Sitzung, zur Verfügung gestellt.</translation>
     </message>
     <message>
         <source>You will likely have to adjust your oximeter sessions start time before saving.</source>
-        <translation>Sie werden wahrscheinlich die Oximeter Sitzungs Startzeit vor dem Speichern einstellen müssen.</translation>
+        <translation type="vanished">Sie werden wahrscheinlich die Oximeter Sitzungs Startzeit vor dem Speichern einstellen müssen.</translation>
     </message>
     <message>
         <source>Something went wrong with reading from the Oximeter.</source>
-        <translation>Das lesen aus dem Oximeter-Gerät hat nicht funktioniert.</translation>
+        <translation type="vanished">Das lesen aus dem Oximeter-Gerät hat nicht funktioniert.</translation>
     </message>
     <message>
         <source>Please wait for oximeter to finish tranmitting than try restarting import again.</source>
-        <translation>Bitte warten Sie bis das Oximeter fertig übertragen hat und starten Sie dann erneut den Import.</translation>
+        <translation type="vanished">Bitte warten Sie bis das Oximeter fertig übertragen hat und starten Sie dann erneut den Import.</translation>
     </message>
 </context>
 <context>
@@ -113,15 +113,15 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>U1</source>
-        <translation>U1</translation>
+        <translation type="vanished">U1</translation>
     </message>
     <message>
         <source>U2</source>
-        <translation>U2</translation>
+        <translation type="vanished">U2</translation>
     </message>
     <message>
         <source>U3</source>
-        <translation>U3</translation>
+        <translation type="vanished">U3</translation>
     </message>
     <message>
         <source> i </source>
@@ -129,7 +129,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>%1%</source>
-        <translation>%1%</translation>
+        <translation type="vanished">%1%</translation>
     </message>
     <message>
         <source>...</source>
@@ -137,7 +137,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Avg</source>
-        <translation>Durchschnitt</translation>
+        <translation type="vanished">Durchschnitt</translation>
     </message>
     <message>
         <source>Big</source>
@@ -145,11 +145,11 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Med</source>
-        <translation>Med</translation>
+        <translation type="vanished">Med</translation>
     </message>
     <message>
         <source>100%</source>
-        <translation>100%</translation>
+        <translation type="vanished">100%</translation>
     </message>
     <message>
         <source>Form</source>
@@ -173,7 +173,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Int. Pulse</source>
-        <translation>Int. Puls</translation>
+        <translation type="vanished">Int. Puls</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -181,7 +181,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Reset</source>
-        <translation>Rücksetzen</translation>
+        <translation type="vanished">Rücksetzen</translation>
     </message>
     <message>
         <source>Sleep</source>
@@ -201,7 +201,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Reset the graph heights to uniform sizes</source>
-        <translation>Stellen Sie die Diagramme auf eine einheitliche Höhe ein</translation>
+        <translation type="vanished">Stellen Sie die Diagramme auf eine einheitliche Höhe ein</translation>
     </message>
     <message>
         <source>Position Sensor Sessions</source>
@@ -249,11 +249,11 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>No Graphs On!</source>
-        <translation>Keine Diagramme an!</translation>
+        <translation type="vanished">Keine Diagramme an!</translation>
     </message>
     <message>
         <source>&lt;b&gt;Please Note:&lt;/b&gt; This day just contains summary data, only limited information is available .</source>
-        <translation>&lt;b&gt; Bitte beachten Sie: &lt;/ b&gt; Dieser Tag enthält nur zusammengefasste Daten und es stehen nur begrenzte Informationen zur Verfügung.</translation>
+        <translation type="vanished">&lt;b&gt; Bitte beachten Sie: &lt;/ b&gt; Dieser Tag enthält nur zusammengefasste Daten und es stehen nur begrenzte Informationen zur Verfügung.</translation>
     </message>
     <message>
         <source>B.M.I.</source>
@@ -269,7 +269,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked.</source>
-        <translation>Oximetriedaten existieren für diesen Tag, aber die Zeitstempel sindl unterschiedlich, so dass die Grafiken nicht verknüpft werden.</translation>
+        <translation type="vanished">Oximetriedaten existieren für diesen Tag, aber die Zeitstempel sindl unterschiedlich, so dass die Grafiken nicht verknüpft werden.</translation>
     </message>
     <message>
         <source>Ctrl+B</source>
@@ -293,7 +293,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Zoom fully out</source>
-        <translation>Vergrößern voll aus</translation>
+        <translation type="vanished">Vergrößern voll aus</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -333,7 +333,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Int. SpO2</source>
-        <translation>Int. SpO2</translation>
+        <translation type="vanished">Int. SpO2</translation>
     </message>
     <message>
         <source>Event Breakdown</source>
@@ -341,7 +341,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Selection AHI</source>
-        <translation>Auswahl AHI</translation>
+        <translation type="vanished">Auswahl AHI</translation>
     </message>
     <message>
         <source>SpO2 Desaturations</source>
@@ -381,7 +381,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Events/hour</source>
-        <translation>Ereignisse/Stunde</translation>
+        <translation type="vanished">Ereignisse/Stunde</translation>
     </message>
     <message>
         <source>Breakdown</source>
@@ -417,7 +417,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>No Graphs :(</source>
-        <translation>Keine Diagramme :(</translation>
+        <translation type="vanished">Keine Diagramme :(</translation>
     </message>
     <message>
         <source>No %1 events are recorded this day</source>
@@ -437,7 +437,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>No data available</source>
-        <translation>Keine Daten vorhanden</translation>
+        <translation type="vanished">Keine Daten vorhanden</translation>
     </message>
     <message>
         <source>Go to the next day</source>
@@ -469,7 +469,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>EPR:%1 EPR_LEVEL:%2</source>
-        <translation>EPR:%1 EPR_LEVEL:%2</translation>
+        <translation type="vanished">EPR:%1 EPR_LEVEL:%2</translation>
     </message>
     <message>
         <source>This day has missing pressure, mode and settings data.</source>
@@ -477,7 +477,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Summary Only :(</source>
-        <translation>Nur die Zusammenfassung: (</translation>
+        <translation type="vanished">Nur die Zusammenfassung: (</translation>
     </message>
     <message>
         <source>UF1</source>
@@ -489,7 +489,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Flags:</source>
-        <translation>Flaggen:</translation>
+        <translation type="vanished">Flaggen:</translation>
     </message>
     <message>
         <source>Total time in apnea</source>
@@ -514,6 +514,22 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     <message>
         <source>Show all events</source>
         <translation>Alle Ereignisse anzeigen</translation>
+    </message>
+    <message>
+        <source>Flags</source>
+        <translation type="unfinished">Flaggen</translation>
+    </message>
+    <message>
+        <source>Graphs</source>
+        <translation type="unfinished">Diagramme</translation>
+    </message>
+    <message>
+        <source>&quot;Nothing&apos;s here!&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bob is bored with this days lack of data.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -734,7 +750,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation type="vanished">Ja</translation>
     </message>
     <message>
         <source>CPAP</source>
@@ -750,7 +766,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>CPAP data was recently purged and needs to be re-imported.</source>
-        <translation>CPAP-Daten wurden kürzlich gereinigt und mussen neu importiert werden.</translation>
+        <translation type="vanished">CPAP-Daten wurden kürzlich gereinigt und mussen neu importiert werden.</translation>
     </message>
     <message>
         <source>DISCLAIMER:</source>
@@ -806,7 +822,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.</source>
-        <translation>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99 und Sean Stangl.</translation>
+        <translation type="vanished">James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99 und Sean Stangl.</translation>
     </message>
     <message>
         <source>MSeries Import complete</source>
@@ -830,7 +846,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Select another folder</source>
-        <translation>Wählen Sie einen anderen</translation>
+        <translation type="vanished">Wählen Sie einen anderen</translation>
     </message>
     <message>
         <source>Online Users &amp;Guide</source>
@@ -846,7 +862,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>View O&amp;ximetry</source>
-        <translation>&amp;Oximetrieansicht</translation>
+        <translation type="vanished">&amp;Oximetrieansicht</translation>
     </message>
     <message>
         <source>Online Help Resources</source>
@@ -902,7 +918,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Build Date</source>
-        <translation>Herstellungsdatum</translation>
+        <translation type="vanished">Herstellungsdatum</translation>
     </message>
     <message>
         <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
@@ -910,7 +926,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>Philips Respironics System One (CPAP, Auto, BiPAP &amp; ASV models)</source>
-        <translation>Philips Respironics System One (CPAP, AutoPAP, BiPAP &amp; ASV Modelle)</translation>
+        <translation type="vanished">Philips Respironics System One (CPAP, AutoPAP, BiPAP &amp; ASV Modelle)</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -940,7 +956,7 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
         <source>Import Problem
 
 Couldn&apos;t find any new Machine Data at the locations given</source>
-        <translation>Import Problem
+        <translation type="vanished">Import Problem
 
 Konnte keine neuen Gerätedaten an diesem Standorten finden</translation>
     </message>
@@ -962,17 +978,17 @@ Konnte keine neuen Gerätedaten an diesem Standorten finden</translation>
     </message>
     <message>
         <source>Got a neat idea on how to improve SleepyHead? Check out SleepyHeads &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt;Idea Torrent&lt;/a&gt;</source>
-        <translation>Haben Sie eine gute Idee, wie man SleepyHead verbessern kann? Schauen Sie unter SleepyHead &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt; Idea Torrent &lt;/ a&gt;</translation>
+        <translation type="vanished">Haben Sie eine gute Idee, wie man SleepyHead verbessern kann? Schauen Sie unter SleepyHead &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt; Idea Torrent &lt;/ a&gt;</translation>
     </message>
     <message>
         <source>Do you have a CMS50[x] Oximeter?
 One is required to use this section.</source>
-        <translation>Haben Sie eine CMS50 [x] Oximeter?
+        <translation type="vanished">Haben Sie eine CMS50 [x] Oximeter?
 Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Current Selected Day</source>
-        <translation>&amp;Daten des ausgewählten Tages</translation>
+        <translation type="vanished">&amp;Daten des ausgewählten Tages</translation>
     </message>
     <message>
         <source>Change &amp;User</source>
@@ -1008,7 +1024,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Schließen</translation>
+        <translation type="vanished">Schließen</translation>
     </message>
     <message>
         <source>Change &amp;Language</source>
@@ -1024,7 +1040,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
-        <translation>SleepyHead`s Online &lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</translation>
+        <translation type="vanished">SleepyHead`s Online &lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>No guarantees are made regarding the accuracy of any data this program displays.</source>
@@ -1032,7 +1048,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>It uses the cross platform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; library for serial port access in the Oximetry module.</source>
-        <translation>Es nutzt die Cross-Plattform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt; QExtSerialPort &lt;/ a&gt;-Bibliothek für Zugriff auf serielle Ports in dem Pulsoximetrie-Modul.</translation>
+        <translation type="vanished">Es nutzt die Cross-Plattform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt; QExtSerialPort &lt;/ a&gt;-Bibliothek für Zugriff auf serielle Ports in dem Pulsoximetrie-Modul.</translation>
     </message>
     <message>
         <source>Import</source>
@@ -1042,7 +1058,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
         <source>Are you sure you want to purge all CPAP data for the following machine:
 
 </source>
-        <translation>Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
+        <translation type="vanished">Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
     </message>
     <message>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
@@ -1054,11 +1070,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Special thanks to Pugsy from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
-        <translation>Besonderen Dank an Pugsy von &lt;a href=&apos;http://cpaptalk.com&apos;&gt; CPAPTalk &lt;/ a&gt; für ihre Hilfe mit Dokumentation und Tutorials, sowie alle, die sich durch die Prüfung geholfen und teilen ihre CPAP-Daten.</translation>
+        <translation type="vanished">Besonderen Dank an Pugsy von &lt;a href=&apos;http://cpaptalk.com&apos;&gt; CPAPTalk &lt;/ a&gt; für ihre Hilfe mit Dokumentation und Tutorials, sowie alle, die sich durch die Prüfung geholfen und teilen ihre CPAP-Daten.</translation>
     </message>
     <message>
         <source>Would you like this done automatically from the Backup Folder?</source>
-        <translation>Möchten Sie diesen Import Standort für das nächste Mal merken?</translation>
+        <translation type="vanished">Möchten Sie diesen Import Standort für das nächste Mal merken?</translation>
     </message>
     <message>
         <source>Please wait, importing from backup folder(s)...</source>
@@ -1082,7 +1098,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Bookmarks</source>
-        <translation>&amp;Lesezeichen</translation>
+        <translation type="vanished">&amp;Lesezeichen</translation>
     </message>
     <message>
         <source>Right &amp;Sidebar</source>
@@ -1094,11 +1110,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Click here to choose a folder</source>
-        <translation>Klicken Sie hier, um einen Ordner zu wählen,</translation>
+        <translation type="vanished">Klicken Sie hier, um einen Ordner zu wählen,</translation>
     </message>
     <message>
         <source>&amp;Rebuild Oximetry Indices</source>
-        <translation>&amp;Wiederaufbau Oximeter-Indizes</translation>
+        <translation type="vanished">&amp;Wiederaufbau Oximeter-Indizes</translation>
     </message>
     <message>
         <source>branch</source>
@@ -1150,7 +1166,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Records</source>
-        <translation>&amp;Datensätze</translation>
+        <translation type="vanished">&amp;Datensätze</translation>
     </message>
     <message>
         <source>Use &amp;AntiAliasing</source>
@@ -1182,7 +1198,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
-        <translation>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary&quot;&gt; Glossar der Schlafstörung Bedingungen &lt;/ a&gt; &lt;br/&gt;</translation>
+        <translation type="vanished">&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary&quot;&gt; Glossar der Schlafstörung Bedingungen &lt;/ a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
         <source>&amp;Profiles</source>
@@ -1218,7 +1234,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>CPAP Datacard structures were detected at the following locations:</source>
-        <translation>CPAP Datacard Strukturen wurden an folgenden Orten festgestellt:</translation>
+        <translation type="vanished">CPAP Datacard Strukturen wurden an folgenden Orten festgestellt:</translation>
     </message>
     <message>
         <source>Statistics</source>
@@ -1234,7 +1250,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Arie Klerk (Dutch), Steffen Reitz (German), and others I&apos;ve still to add here.</source>
-        <translation>Arie Klerk (Dutch), Steffen Reitz (Deutsch), und Andere, die ich noch hier hinzufügen werde.</translation>
+        <translation type="vanished">Arie Klerk (Dutch), Steffen Reitz (Deutsch), und Andere, die ich noch hier hinzufügen werde.</translation>
     </message>
     <message>
         <source>Ctrl+Tab</source>
@@ -1270,7 +1286,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation>Frage</translation>
+        <translation type="vanished">Frage</translation>
     </message>
     <message>
         <source>&amp;Import Data</source>
@@ -1322,7 +1338,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Exp&amp;ort</source>
-        <translation>&amp;Exportieren</translation>
+        <translation type="vanished">&amp;Exportieren</translation>
     </message>
     <message>
         <source>Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.</source>
@@ -1362,7 +1378,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl and Roy Stone.</source>
-        <translation>James Marshall, Reich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Schlaufen, manders99, Sean Stangl und Roy Stone.</translation>
+        <translation type="vanished">James Marshall, Reich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Schlaufen, manders99, Sean Stangl und Roy Stone.</translation>
     </message>
     <message>
         <source>SleepyHead&apos;s &lt;a href=&apos;http://www.sourceforge.net/projects/sleepyhead&apos;&gt;Project Website&lt;/a&gt; on SourceForge&lt;br/&gt;</source>
@@ -1402,7 +1418,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Purge CPAP Data</source>
-        <translation>&amp;Säuberung der CPAP Daten</translation>
+        <translation type="vanished">&amp;Säuberung der CPAP Daten</translation>
     </message>
     <message>
         <source>qrc:/docs/index.html</source>
@@ -1418,17 +1434,17 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Please wait, SleepyHead is importing data...</source>
-        <translation>Bitte warten, SleepyHead ist beim Importieren von Daten ...</translation>
+        <translation type="vanished">Bitte warten, SleepyHead ist beim Importieren von Daten ...</translation>
     </message>
     <message>
         <source>Arie Klerk (Dutch), Steffen Reitz (German).</source>
-        <translation>Arie Klerk (Dutch), Steffen Reitz (Deutsch).</translation>
+        <translation type="vanished">Arie Klerk (Dutch), Steffen Reitz (Deutsch).</translation>
     </message>
     <message>
         <source>Data successfully imported from the following locations
 
 </source>
-        <translation>Die Daten wurden erfolgreich von folgenden Orten importiert
+        <translation type="vanished">Die Daten wurden erfolgreich von folgenden Orten importiert
 
 </translation>
     </message>
@@ -1438,7 +1454,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&lt;a href=&apos;http://s7.zetaboards.com/Apnea_Board/index&apos;&gt;Apnea Board&lt;/a&gt;</source>
-        <translation>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</translation>
+        <translation type="vanished">&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</translation>
     </message>
     <message>
         <source>(It doesn&apos;t support SSL encryption, so it&apos;s not a good idea to type your passwords or personal details anywhere.)</source>
@@ -1446,7 +1462,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Data Folder Location</source>
-        <translation>Datenordner Standort</translation>
+        <translation type="vanished">Datenordner Standort</translation>
     </message>
     <message>
         <source>Change &amp;Data Folder</source>
@@ -1458,11 +1474,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&amp;Navigation</source>
-        <translation>&amp;Navigation</translation>
+        <translation type="vanished">&amp;Navigation</translation>
     </message>
     <message>
         <source>Are you sure?</source>
-        <translation>Sind Sie sicher?</translation>
+        <translation type="vanished">Sind Sie sicher?</translation>
     </message>
     <message>
         <source>Date Range</source>
@@ -1482,11 +1498,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Data successfully imported from the following locations:</source>
-        <translation>Die Daten wurden erfolgreich von folgenden Orten importiert:</translation>
+        <translation type="vanished">Die Daten wurden erfolgreich von folgenden Orten importiert:</translation>
     </message>
     <message>
         <source>Couldn&apos;t find any new Machine Data at the locations given.</source>
-        <translation>Es konnten keine neuen Gerätedaten an den Standorten gefunden werden.</translation>
+        <translation type="vanished">Es konnten keine neuen Gerätedaten an den Standorten gefunden werden.</translation>
     </message>
     <message>
         <source>Import Problem</source>
@@ -1502,27 +1518,27 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Data Folder Location: %1</source>
-        <translation>Datenordner Stanort: %1</translation>
+        <translation type="vanished">Datenordner Stanort: %1</translation>
     </message>
     <message>
         <source>Are you sure you want to purge all CPAP data for the following machine:</source>
-        <translation>Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
+        <translation type="vanished">Sind Sie sicher, dass Sie alle CPAP-Daten für das folgenden Gerät reinigen wollen:</translation>
     </message>
     <message>
         <source>Not all session data could be removed, you have to delete the following folder manually.</source>
-        <translation>Da nicht alle Sitzungs-Daten entfernt werden konnten, müssen Sie den folgenden Ordner manuell löschen.</translation>
+        <translation type="vanished">Da nicht alle Sitzungs-Daten entfernt werden konnten, müssen Sie den folgenden Ordner manuell löschen.</translation>
     </message>
     <message>
         <source>Machine data has been successfully purged.</source>
-        <translation>Gerätedaten wurden erfolgreich gelöscht.</translation>
+        <translation type="vanished">Gerätedaten wurden erfolgreich gelöscht.</translation>
     </message>
     <message>
         <source>Would you like to reimport from the backup folder?</source>
-        <translation>Möchten Sie aus dem Backup-Ordner importieren?</translation>
+        <translation type="vanished">Möchten Sie aus dem Backup-Ordner importieren?</translation>
     </message>
     <message>
         <source>Please wait, importing...</source>
-        <translation>Bitte warten Sie, bis der Import abgeschlossen ist...</translation>
+        <translation type="vanished">Bitte warten Sie, bis der Import abgeschlossen ist...</translation>
     </message>
     <message>
         <source>Are you sure you want to delete oximetry data for %1</source>
@@ -1546,11 +1562,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This pre-release build is meant for beta testers only. Please do &lt;b&gt;NOT&lt;/b&gt; share outside the SleepyHead Testing Forum.</source>
-        <translation>&lt;b&gt; Achtung: &lt;/ b&gt; Diese Pre-Release-Build ist nur für Beta-Tester gedacht. Bitte &lt;b&gt; NICHT &lt;/ b&gt; Aktien außerhalb des SleepyHead Testing Forums.</translation>
+        <translation type="vanished">&lt;b&gt; Achtung: &lt;/ b&gt; Diese Pre-Release-Build ist nur für Beta-Tester gedacht. Bitte &lt;b&gt; NICHT &lt;/ b&gt; Aktien außerhalb des SleepyHead Testing Forums.</translation>
     </message>
     <message>
         <source>Please report bugs for this build to the SleepyHead Testing Forum, but first, check the release thread to ensure you are running the latest version.</source>
-        <translation>Bitte melden Sie Fehler für diesen Build auf dem SleepyHead Testing Forum, überprüfen Sie aber zuerst die Release Thread, um sicherzustellen, dass Sie die aktuellste Version verwenden.</translation>
+        <translation type="vanished">Bitte melden Sie Fehler für diesen Build auf dem SleepyHead Testing Forum, überprüfen Sie aber zuerst die Release Thread, um sicherzustellen, dass Sie die aktuellste Version verwenden.</translation>
     </message>
     <message>
         <source>When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model.</source>
@@ -1558,11 +1574,11 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This reports this software generates are not fit for compliance or medical diagnostic purposes.</source>
-        <translation>&lt;b&gt; Achtung: &lt;/ b&gt; Die Berichte die die Software erzeugt sind nicht für die Einhaltung oder medizinische Diagnosezwecke geeignet.</translation>
+        <translation type="vanished">&lt;b&gt; Achtung: &lt;/ b&gt; Die Berichte die die Software erzeugt sind nicht für die Einhaltung oder medizinische Diagnosezwecke geeignet.</translation>
     </message>
     <message>
         <source>These messages are only a temporary feature. Some people thought they were an error.</source>
-        <translation>Diese Meldungen sind nur einer temporären Funktion zugeordnet. Einige Nutzer dachten, dass die Meldungen Fehler waren.</translation>
+        <translation type="vanished">Diese Meldungen sind nur einer temporären Funktion zugeordnet. Einige Nutzer dachten, dass die Meldungen Fehler waren.</translation>
     </message>
     <message>
         <source>Choose a folder</source>
@@ -1594,7 +1610,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Rebuild CPAP Data</source>
@@ -1740,6 +1756,70 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
         <source>Are you &lt;b&gt;absolutely sure&lt;/b&gt; you want to proceed?</source>
         <translation>Sind Sie &lt;b&gt;absolut sicher&lt;/b&gt; das Sie fortfahren möchten?</translation>
     </message>
+    <message>
+        <source>Exp&amp;ort Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup &amp;Journal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Warning:&lt;/b&gt; This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make sure your keep your SleepyHead data folder backed up when trying testing versions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please ensure you are running the latest version before reporting any bugs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make sure your willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This red message line is intentional, and will not be a feature in the final version...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Special thanks to Pugsy and Robysue from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1&apos;s Journal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose where to save journal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XML Files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewProfile</name>
@@ -1801,7 +1881,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>qrc:/docs/update_notes.html</source>
-        <translation>qrc:/docs/intro.html</translation>
+        <translation type="vanished">qrc:/docs/intro.html</translation>
     </message>
     <message>
         <source>CPAP Treatment Information</source>
@@ -1957,7 +2037,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Empty Username</source>
-        <translation>Kein Benutzername</translation>
+        <translation type="vanished">Kein Benutzername</translation>
     </message>
     <message>
         <source>...twice...</source>
@@ -2092,13 +2172,13 @@ Zeigt AHI-Cluster
         <source>Respiratory
 Rate
 (breaths/min)</source>
-        <translation>Atem-
+        <translation type="vanished">Atem-
 Rate
 (Atemzüge / min)</translation>
     </message>
     <message>
         <source>No Graphs On!</source>
-        <translation>Keine Diagramme an!</translation>
+        <translation type="vanished">Keine Diagramme an!</translation>
     </message>
     <message>
         <source>Custom</source>
@@ -2142,7 +2222,7 @@ Index</translation>
     </message>
     <message>
         <source>% in PB</source>
-        <translation>% in PB</translation>
+        <translation type="vanished">% in PB</translation>
     </message>
     <message>
         <source>Last 6 Months</source>
@@ -2208,7 +2288,7 @@ Volumen
     </message>
     <message>
         <source>Events/Hr</source>
-        <translation>Ereignisse/h</translation>
+        <translation type="vanished">Ereignisse/h</translation>
     </message>
     <message>
         <source>Hide all graphs</source>
@@ -2218,7 +2298,7 @@ Volumen
         <source>Periodic
 Breathing
 (% of night)</source>
-        <translation>periodischer
+        <translation type="vanished">periodischer
 Atem
 (% der Nacht)</translation>
     </message>
@@ -2391,7 +2471,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Import Time</source>
-        <translation>Importzeit</translation>
+        <translation type="vanished">Importzeit</translation>
     </message>
     <message>
         <source>Details</source>
@@ -2585,6 +2665,22 @@ p, li { white-space: pre-wrap; }
         <source>Oximetry Files (*.spo *.spor *.spo2 *.dat)</source>
         <translation>Oximetriedateiendungen (*.spo *.spor *.dat)</translation>
     </message>
+    <message>
+        <source>Start Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot;, session %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for %1 to start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for the device to start the upload process...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Oximetry</name>
@@ -2602,7 +2698,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Save</source>
-        <translation>speichern</translation>
+        <translation type="vanished">speichern</translation>
     </message>
     <message>
         <source>SpO2</source>
@@ -2610,11 +2706,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
-        <translation>Bitte stellen Sie sicher, dass Ihr Oximeter eingeschaltet ist, und in dem richtigen Modus, um Daten zu übertragen.</translation>
+        <translation type="vanished">Bitte stellen Sie sicher, dass Ihr Oximeter eingeschaltet ist, und in dem richtigen Modus, um Daten zu übertragen.</translation>
     </message>
     <message>
         <source>&amp;Stop</source>
-        <translation>&amp;Stop</translation>
+        <translation type="vanished">&amp;Stop</translation>
     </message>
     <message>
         <source>Pulse</source>
@@ -2622,21 +2718,21 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Please connect oximeter device</source>
-        <translation>Bitte verbinden Sie das Oximeter-Gerät</translation>
+        <translation type="vanished">Bitte verbinden Sie das Oximeter-Gerät</translation>
     </message>
     <message>
         <source>&amp;Start</source>
-        <translation>&amp;Start</translation>
+        <translation type="vanished">&amp;Start</translation>
     </message>
     <message>
         <source>Creating a new oximetry session will destroy the old one.
 Would you like to save it first?</source>
-        <translation>Erstellen einer neuen Sitzung wird die Pulsoximetriedaten löschen.
+        <translation type="vanished">Erstellen einer neuen Sitzung wird die Pulsoximetriedaten löschen.
 Möchten Sie diese zuerst speichern?</translation>
     </message>
     <message>
         <source>Would you like to save this oximetery session?</source>
-        <translation>Möchten Sie die Oximetriesitzung speichern?</translation>
+        <translation type="vanished">Möchten Sie die Oximetriesitzung speichern?</translation>
     </message>
     <message>
         <source>&amp;Open .spo/R File</source>
@@ -2644,23 +2740,23 @@ Möchten Sie diese zuerst speichern?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Stornieren</translation>
+        <translation type="vanished">Stornieren</translation>
     </message>
     <message>
         <source>Check Oximeter is Ready</source>
-        <translation>Überprüfen Sie ob das  Oximeter bereit ist</translation>
+        <translation type="vanished">Überprüfen Sie ob das  Oximeter bereit ist</translation>
     </message>
     <message>
         <source>Oximeter Error!</source>
-        <translation>Oximeter Fehler!</translation>
+        <translation type="vanished">Oximeter Fehler!</translation>
     </message>
     <message>
         <source>Couldn&apos;t open oximetry file &quot;</source>
-        <translation>Konnte Oximetriedatei nicht öffnen &quot;</translation>
+        <translation type="vanished">Konnte Oximetriedatei nicht öffnen &quot;</translation>
     </message>
     <message>
         <source>Save Session?</source>
-        <translation>Sitzung speichern?</translation>
+        <translation type="vanished">Sitzung speichern?</translation>
     </message>
     <message>
         <source>R&amp;eset</source>
@@ -2668,13 +2764,13 @@ Möchten Sie diese zuerst speichern?</translation>
     </message>
     <message>
         <source>Select an oximetry file</source>
-        <translation>Wählen Sie eine Oxymetrie-Datei</translation>
+        <translation type="vanished">Wählen Sie eine Oxymetrie-Datei</translation>
     </message>
     <message>
         <source>Oximetry Error!
 
 Something is wrong with the device connection.</source>
-        <translation>Oxymetrie Fehler!
+        <translation type="vanished">Oxymetrie Fehler!
 
 Etwas ist falsch mit dem Geräteanschluss.</translation>
     </message>
@@ -2684,7 +2780,7 @@ Etwas ist falsch mit dem Geräteanschluss.</translation>
     </message>
     <message>
         <source>Oximetry Files (*.spo *.spoR)</source>
-        <translation>Oxymetrie-Dateien (*. Spo *. Spor)</translation>
+        <translation type="vanished">Oxymetrie-Dateien (*. Spo *. Spor)</translation>
     </message>
     <message>
         <source>Serial Port</source>
@@ -2696,7 +2792,7 @@ Etwas ist falsch mit dem Geräteanschluss.</translation>
     </message>
     <message>
         <source>Please Wait</source>
-        <translation>Bitte warten</translation>
+        <translation type="vanished">Bitte warten</translation>
     </message>
     <message>
         <source>&amp;Start Live</source>
@@ -2704,23 +2800,23 @@ Etwas ist falsch mit dem Geräteanschluss.</translation>
     </message>
     <message>
         <source>Connect Oximeter</source>
-        <translation>Oximeter schließen</translation>
+        <translation type="vanished">Oximeter schließen</translation>
     </message>
     <message>
         <source>Please make sure Oximeter device is in upload mode.</source>
-        <translation>Bitte stellen Sie sicher ob das Oximeter Gerät im Upload-Modus ist.</translation>
+        <translation type="vanished">Bitte stellen Sie sicher ob das Oximeter Gerät im Upload-Modus ist.</translation>
     </message>
     <message>
         <source>Control</source>
-        <translation>Kontrolle</translation>
+        <translation type="vanished">Kontrolle</translation>
     </message>
     <message>
         <source>Oximetry live recording has been terminated due to timeout.</source>
-        <translation>Oxymetrie Live-Aufnahme wurde wegen Zeitüberschreitung beendet.</translation>
+        <translation type="vanished">Oxymetrie Live-Aufnahme wurde wegen Zeitüberschreitung beendet.</translation>
     </message>
     <message>
         <source>Destroy It</source>
-        <translation>Zerstören Sie</translation>
+        <translation type="vanished">Zerstören Sie</translation>
     </message>
     <message>
         <source>&amp;Rescan Ports</source>
@@ -2729,22 +2825,22 @@ Etwas ist falsch mit dem Geräteanschluss.</translation>
     <message>
         <source>Opening this oximetry file will destroy the current session.
 Would you like to keep it?</source>
-        <translation>Öffnen dieser Datei wird die aktuelle Sitzung löschen.
+        <translation type="vanished">Öffnen dieser Datei wird die aktuelle Sitzung löschen.
 Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>Device Connected</source>
-        <translation>Gerät angeschlossen</translation>
+        <translation type="vanished">Gerät angeschlossen</translation>
     </message>
     <message>
         <source>Keep This Recording?</source>
-        <translation>Möchten Sie diese Aufnahme behalten?</translation>
+        <translation type="vanished">Möchten Sie diese Aufnahme behalten?</translation>
     </message>
     <message>
         <source>Oximeter Error
 
 The device has not responded.. Make sure it&apos;s switched on.</source>
-        <translation>Oximeter Fehler
+        <translation type="vanished">Oximeter Fehler
 
 Das Gerät hat nicht geantwortet .. Stellen Sie sicher, das es eingeschaltet ist.</translation>
     </message>
@@ -2752,27 +2848,27 @@ Das Gerät hat nicht geantwortet .. Stellen Sie sicher, das es eingeschaltet ist
         <source>Oximeter Error
 
 The device did not respond.. Make sure it&apos;s switched on.</source>
-        <translation>Oximeter Fehler
+        <translation type="vanished">Oximeter Fehler
 
 Das Gerät hat nicht reagiert .. Stellen Sie sicher, das es eingeschaltet ist.</translation>
     </message>
     <message>
         <source>Opening this oximetry session will destroy the unsavedsession in the oximetry tab.
 Would you like to store it first?</source>
-        <translation>Öffnen dieser Sitzung wird die Pulsoximetrie unsavedsession in der Registerkarte Oxymetrie löschen.
+        <translation type="vanished">Öffnen dieser Sitzung wird die Pulsoximetrie unsavedsession in der Registerkarte Oxymetrie löschen.
 Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>No Oximetry Data</source>
-        <translation>Keine Oximetriedaten</translation>
+        <translation type="vanished">Keine Oximetriedaten</translation>
     </message>
     <message>
         <source>Current oximetry session still has unsaved data in it.</source>
-        <translation>Die aktuelle Oxymetrie-Sitzung entspricht immer noch nicht den gespeicherten Daten.</translation>
+        <translation type="vanished">Die aktuelle Oxymetrie-Sitzung entspricht immer noch nicht den gespeicherten Daten.</translation>
     </message>
     <message>
         <source>Would you like to save it first?</source>
-        <translation>Möchten Sie die daten zuerst speichern?</translation>
+        <translation type="vanished">Möchten Sie die daten zuerst speichern?</translation>
     </message>
 </context>
 <context>
@@ -2787,7 +2883,7 @@ Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>ID</source>
-        <translation>ID</translation>
+        <translation type="vanished">ID</translation>
     </message>
     <message>
         <source>&amp;Ok</source>
@@ -2819,7 +2915,7 @@ Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation>Zeigen</translation>
+        <translation type="vanished">Zeigen</translation>
     </message>
     <message>
         <source>Size</source>
@@ -2869,7 +2965,7 @@ Wenn Sie ResScan verwenden werden die. Gz-Dateien benötigen, müssen aber zuers
     </message>
     <message>
         <source>Event</source>
-        <translation>Veranstaltung</translation>
+        <translation type="vanished">Veranstaltung</translation>
     </message>
     <message>
         <source>Event Duration</source>
@@ -2989,7 +3085,7 @@ Diese Option muss vor dem Import aktiviert werden, da sonst eine Reinigung erfor
     </message>
     <message>
         <source>Contec CMS50</source>
-        <translation>Contec CMS50</translation>
+        <translation type="vanished">Contec CMS50</translation>
     </message>
     <message>
         <source>Pixmap caching is an graphics acceleration technique. May cause problems with font drawing in graph display area on your platform.</source>
@@ -3087,11 +3183,11 @@ Möchten Sie das jetzt tun?</translation>
     </message>
     <message>
         <source>Not entirely sure if this will get to live or not..</source>
-        <translation>Nicht völlig sicher, wenn das kommen wird, um zu leben, oder nicht..</translation>
+        <translation type="vanished">Nicht völlig sicher, wenn das kommen wird, um zu leben, oder nicht..</translation>
     </message>
     <message>
         <source>Discard chunks under</source>
-        <translation>Verwerfen Sie die Teile nach</translation>
+        <translation type="vanished">Verwerfen Sie die Teile nach</translation>
     </message>
     <message>
         <source> minutes</source>
@@ -3121,7 +3217,7 @@ Hinweis: Statistisches Modell ist experimentell.</translation>
     </message>
     <message>
         <source>Colour</source>
-        <translation>Farbe</translation>
+        <translation type="vanished">Farbe</translation>
     </message>
     <message>
         <source>Minimum duration of pulse change event.</source>
@@ -3141,7 +3237,7 @@ Probieren Sie es aus und sehen, ob es Ihnen gefällt.</translation>
     </message>
     <message>
         <source>Oximetry Graphs</source>
-        <translation>Oximetriediagramm</translation>
+        <translation type="vanished">Oximetriediagramm</translation>
     </message>
     <message>
         <source>Median is recommended for ResMed users.</source>
@@ -3311,7 +3407,7 @@ Vor allem wirkt sich das auf den Import von Daten aus.</translation>
     </message>
     <message>
         <source>Create SD Card Backups during Import (only for ResMed so far, highly recommended)</source>
-        <translation>SD-Karte Backups erstellen während des Imports (nur für ResMed, sehr zu empfehlen)</translation>
+        <translation type="vanished">SD-Karte Backups erstellen während des Imports (nur für ResMed, sehr zu empfehlen)</translation>
     </message>
     <message>
         <source>Other Visual Settings</source>
@@ -3393,7 +3489,7 @@ Standardwerte auf 60 Minuten .. Sehr zu empfehlen.</translation>
     </message>
     <message>
         <source>&amp;Events</source>
-        <translation>&amp;Veranstaltungen</translation>
+        <translation type="vanished">&amp;Veranstaltungen</translation>
     </message>
     <message>
         <source>Use Anti-Aliasing</source>
@@ -3413,7 +3509,7 @@ Standardwerte auf 60 Minuten .. Sehr zu empfehlen.</translation>
     </message>
     <message>
         <source>Use Oximetry</source>
-        <translation>Oxymetrie verwenden</translation>
+        <translation type="vanished">Oxymetrie verwenden</translation>
     </message>
     <message>
         <source>Changes to the following settings needs a restart, but not a recalc.</source>
@@ -3433,7 +3529,7 @@ Standardwerte auf 60 Minuten .. Sehr zu empfehlen.</translation>
     </message>
     <message>
         <source>&amp;Defaults</source>
-        <translation>&amp; Standard</translation>
+        <translation type="vanished">&amp; Standard</translation>
     </message>
     <message>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
@@ -3545,7 +3641,7 @@ p, li { white-space : pre -wrap ; }
     </message>
     <message>
         <source>Flag changes in oximetry stats</source>
-        <translation>Bezeichnungsveränderungen in Oxymetrie Statistik</translation>
+        <translation type="vanished">Bezeichnungsveränderungen in Oxymetrie Statistik</translation>
     </message>
     <message>
         <source>Percentage drop in oxygen saturation</source>
@@ -3663,7 +3759,7 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Create SD Card Backups during Import (This is fairly important for ResMed and FP ICON)</source>
-        <translation>Während des Imports SD-Karten Backup erstellen (Dies ist für ResMed und FP ICON ziemlich wichtig)</translation>
+        <translation type="vanished">Während des Imports SD-Karten Backup erstellen (Dies ist für ResMed und FP ICON ziemlich wichtig)</translation>
     </message>
     <message>
         <source>User definable threshold considered large leak</source>
@@ -3687,15 +3783,15 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Contec CMS50D+</source>
-        <translation>Contec CMS50D+</translation>
+        <translation type="vanished">Contec CMS50D+</translation>
     </message>
     <message>
         <source>Contec CMS50E/F</source>
-        <translation>Contec CMS50E/F</translation>
+        <translation type="vanished">Contec CMS50E/F</translation>
     </message>
     <message>
         <source>Contec CMS50F v3.7</source>
-        <translation>Contec CMS50F v3.7</translation>
+        <translation type="vanished">Contec CMS50F v3.7</translation>
     </message>
     <message>
         <source>Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.</source>
@@ -3739,7 +3835,7 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>C&amp;hannels</source>
-        <translation>K&amp;anäle</translation>
+        <translation type="vanished">K&amp;anäle</translation>
     </message>
     <message>
         <source>Reset &amp;Defaults</source>
@@ -3759,15 +3855,15 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Span Events</source>
-        <translation>Spanne des Ereignisses</translation>
+        <translation type="vanished">Spanne des Ereignisses</translation>
     </message>
     <message>
         <source>Flags</source>
-        <translation>Flaggen</translation>
+        <translation type="vanished">Flaggen</translation>
     </message>
     <message>
         <source>Minor Flags</source>
-        <translation>Kleine Flaggen</translation>
+        <translation type="vanished">Kleine Flaggen</translation>
     </message>
     <message>
         <source>Waveforms</source>
@@ -3775,15 +3871,15 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Data Channels</source>
-        <translation>Datenkanäle</translation>
+        <translation type="vanished">Datenkanäle</translation>
     </message>
     <message>
         <source>Settings Channels</source>
-        <translation>Einstellungskanäle</translation>
+        <translation type="vanished">Einstellungskanäle</translation>
     </message>
     <message>
         <source>Unknown Channels</source>
-        <translation>unbekannte Kanäle</translation>
+        <translation type="vanished">unbekannte Kanäle</translation>
     </message>
     <message>
         <source>Name</source>
@@ -3797,6 +3893,154 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
         <source>Label</source>
         <translation>Aufschrift</translation>
     </message>
+    <message>
+        <source>Events</source>
+        <translation type="unfinished">Ereignisse</translation>
+    </message>
+    <message>
+        <source>Flag rapid changes in oximetry stats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other oximetry options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag SPO2 Desaturations Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Discard segments under</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag Pulse Rate Above</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag Pulse Rate Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contec CMS50D+/E/F</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contec CMS50F v3.7+</source>
+        <translation type="unfinished">Contec CMS50F v3.7+ {50F?}</translation>
+    </message>
+    <message>
+        <source>ChoiceMMed MD300W1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ResMed S9 Oximeter Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update Oximeter Clock during import</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import without nagging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minor Flag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Span</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Minor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CPAP Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximeter Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positional Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sleep Stage Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double click to change the descriptive name this channel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double click to change the default color for this channel plot/flag/data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Here you can change the type of flag shown for this event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the short-form label to indicate this channel on screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is a description of what this channel does.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CPAP Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximeter Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positional Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sleep Stage Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProfileSelect</name>
@@ -3804,7 +4048,7 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
         <source>Double Checking:
 
 Do you really want &quot;%1&quot; profile to be obliterated?</source>
-        <translation>Doppelprüfung :
+        <translation type="vanished">Doppelprüfung :
 
 Wollen Sie wirklich das &quot;%1&quot;-Profil, löschen?</translation>
     </message>
@@ -3820,7 +4064,7 @@ Wollen Sie wirklich das &quot;%1&quot;-Profil, löschen?</translation>
         <source>Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.
 
 Signed: Nasty Programmer</source>
-        <translation>Moment ... Wenn Sie versuchen zu löschen, weil Sie das Passwort vergessen haben, ist das nicht richtig. Lesen Sie die Dokumentation.
+        <translation type="vanished">Moment ... Wenn Sie versuchen zu löschen, weil Sie das Passwort vergessen haben, ist das nicht richtig. Lesen Sie die Dokumentation.
 
 Unterzeichnet: Nasty Programmer</translation>
     </message>
@@ -3830,7 +4074,7 @@ Unterzeichnet: Nasty Programmer</translation>
     </message>
     <message>
         <source>Are you sure you want to trash the profile &quot;%1&quot;?</source>
-        <translation>Sind Sie sicher, dass Sie das Profil löschen wollen &quot;%1&quot;?</translation>
+        <translation type="vanished">Sind Sie sicher, dass Sie das Profil löschen wollen &quot;%1&quot;?</translation>
     </message>
     <message>
         <source>Open Profile</source>
@@ -3854,7 +4098,7 @@ Unterzeichnet: Nasty Programmer</translation>
     </message>
     <message>
         <source>WTH???</source>
-        <translation>WTH???</translation>
+        <translation type="vanished">WTH???</translation>
     </message>
     <message>
         <source>Enter Password for %1</source>
@@ -3870,7 +4114,7 @@ Unterzeichnet: Nasty Programmer</translation>
     </message>
     <message>
         <source>There was an error deleting the profile directory.. You need to manually remove %1</source>
-        <translation>Es gab einen Fehler beim Löschen des Profil- Verzeichnises .. Sie müssen es manuell entfernen %1</translation>
+        <translation type="vanished">Es gab einen Fehler beim Löschen des Profil- Verzeichnises .. Sie müssen es manuell entfernen %1</translation>
     </message>
     <message>
         <source>&amp;Select User</source>
@@ -3880,7 +4124,7 @@ Unterzeichnet: Nasty Programmer</translation>
         <source>Okay, I am about to totally OBLITERATE the profile &quot;%1&quot; and all it&apos;s contained data..
 
 Don&apos;t say you weren&apos;t warned. :-p</source>
-        <translation>Okay, ich bin einverstanden das Profil &quot;%1&quot; und alle enthaltenen Daten völlig zu löschen ..
+        <translation type="vanished">Okay, ich bin einverstanden das Profil &quot;%1&quot; und alle enthaltenen Daten völlig zu löschen ..
 
 Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
@@ -3890,7 +4134,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>If you can read this you need to delete this profile directory manually (It&apos;s under %1)</source>
-        <translation>Wenn Sie Dies lesen müssen Sie das Profil-Verzeichnis manuell löschen (es ist unter %1)</translation>
+        <translation type="vanished">Wenn Sie Dies lesen müssen Sie das Profil-Verzeichnis manuell löschen (es ist unter %1)</translation>
     </message>
     <message>
         <source>Click here if you didn&apos;t want to start SleepyHead.</source>
@@ -3906,7 +4150,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation>Frage</translation>
+        <translation type="vanished">Frage</translation>
     </message>
     <message>
         <source>SleepyHead</source>
@@ -3930,7 +4174,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Whoops.</source>
-        <translation>Hoppla.</translation>
+        <translation type="vanished">Hoppla.</translation>
     </message>
     <message>
         <source>You entered an Incorrect Password too many times. Exiting!</source>
@@ -4009,7 +4253,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>??</source>
-        <translation>??</translation>
+        <translation type="vanished">??</translation>
     </message>
     <message>
         <source>AI</source>
@@ -4109,7 +4353,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>hz</source>
-        <translation>hz</translation>
+        <translation type="vanished">hz</translation>
     </message>
     <message>
         <source>lb</source>
@@ -4121,7 +4365,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>0-1</source>
-        <translation>0=offen, 1=zu</translation>
+        <translation type="vanished">0=offen, 1=zu</translation>
     </message>
     <message>
         <source>90%</source>
@@ -4161,7 +4405,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Bpm</source>
-        <translation>Bpm</translation>
+        <translation type="vanished">Bpm</translation>
     </message>
     <message>
         <source>EPI</source>
@@ -4185,7 +4429,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>L/m</source>
-        <translation>L/m</translation>
+        <translation type="vanished">L/m</translation>
     </message>
     <message>
         <source>Jan</source>
@@ -4465,7 +4709,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Purge Failed</source>
-        <translation>Bereinigen fehlgeschlagen</translation>
+        <translation type="vanished">Bereinigen fehlgeschlagen</translation>
     </message>
     <message>
         <source>Pulse Change</source>
@@ -4477,7 +4721,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
     </message>
     <message>
         <source>Would you like me to purge this data this for you so you can run the new version?</source>
-        <translation>Soll das Programm diese Daten für Sie reinigen, so dass Sie die neue Version benutzen können?</translation>
+        <translation type="vanished">Soll das Programm diese Daten für Sie reinigen, so dass Sie die neue Version benutzen können?</translation>
     </message>
     <message>
         <source>Minute Vent.</source>
@@ -4537,7 +4781,7 @@ Sagen Sie nicht, dass Sie nicht gewarnt wurden. :-p</translation>
 SleepyHead will now start with your old one.
 
 </source>
-        <translation>Sie haben kein Verzeichnis ausgewählt.
+        <translation type="vanished">Sie haben kein Verzeichnis ausgewählt.
 
 SleepyHead wird nun mit Ihren alten Daten starten.</translation>
     </message>
@@ -4569,7 +4813,7 @@ SleepyHead wird nun mit Ihren alten Daten starten.</translation>
         <source>As you did not select a data folder, SleepyHead will exit.
 
 Next time you run, you will be asked again.</source>
-        <translation>Wenn Sie keinen Datenordner auswählen, wird Sleepyhead geschlossen.
+        <translation type="vanished">Wenn Sie keinen Datenordner auswählen, wird Sleepyhead geschlossen.
 
 Wenn sie das nächste Mal starten, werden Sie wieder gefragt.</translation>
     </message>
@@ -4595,7 +4839,7 @@ Wenn sie das nächste Mal starten, werden Sie wieder gefragt.</translation>
     </message>
     <message>
         <source>minutes</source>
-        <translation>minuten</translation>
+        <translation type="vanished">minuten</translation>
     </message>
     <message>
         <source>This report was generated by a pre-release version of SleepyHead (%1), &lt;b&gt;and has not been approved in any way for compliance or medical diagnostic purposes&lt;/b&gt;.</source>
@@ -4633,7 +4877,7 @@ Bitte warten Sie, bis er abgeschlossen ist.</translation>
     </message>
     <message>
         <source>No Waveform Available</source>
-        <translation>Kein Wellenform verfügbar</translation>
+        <translation type="vanished">Kein Wellenform verfügbar</translation>
     </message>
     <message>
         <source>Events</source>
@@ -4719,7 +4963,7 @@ Bitte warten Sie, bis er abgeschlossen ist.</translation>
         <source>I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.
 
 </source>
-        <translation>Das Programm kann diese Daten für Sieautomatisch reinigen, oder Sie können jetzt abbrechen und weiter in einer früheren Version bleiben.
+        <translation type="vanished">Das Programm kann diese Daten für Sieautomatisch reinigen, oder Sie können jetzt abbrechen und weiter in einer früheren Version bleiben.
 
 </translation>
     </message>
@@ -4767,7 +5011,7 @@ Bitte warten Sie, bis er abgeschlossen ist.</translation>
     </message>
     <message>
         <source>Low Usage Days=%1</source>
-        <translation>Wenige Nutzungstage =%1</translation>
+        <translation type="vanished">Wenige Nutzungstage =%1</translation>
     </message>
     <message>
         <source>&amp;Ok, get on with it..</source>
@@ -4797,7 +5041,7 @@ Bitte warten Sie, bis er abgeschlossen ist.</translation>
     </message>
     <message>
         <source>events</source>
-        <translation>Ereignisse</translation>
+        <translation type="vanished">Ereignisse</translation>
     </message>
     <message>
         <source>An optical Photo-plethysomogram showing heart rhythm</source>
@@ -4808,17 +5052,17 @@ Bitte warten Sie, bis er abgeschlossen ist.</translation>
 
 This folder currently resides at the following location:
 </source>
-        <translation>Entschuldigung, konnte diese Daten nicht löschen, was bedeutet, diese Version von SleepyHead kann nicht starten .. Daten-Ordner von SleepyHead muss manuell entfernt werden
+        <translation type="vanished">Entschuldigung, konnte diese Daten nicht löschen, was bedeutet, diese Version von SleepyHead kann nicht starten .. Daten-Ordner von SleepyHead muss manuell entfernt werden
 
 Dieser Ordner befindet sich derzeit an der folgenden Position:</translation>
     </message>
     <message>
         <source>Pr. Min</source>
-        <translation>min. Druck</translation>
+        <translation type="vanished">min. Druck</translation>
     </message>
     <message>
         <source>Pr. Max</source>
-        <translation>max. Druck</translation>
+        <translation type="vanished">max. Druck</translation>
     </message>
     <message>
         <source>I:E Ratio</source>
@@ -4866,7 +5110,7 @@ Dieser Ordner befindet sich derzeit an der folgenden Position:</translation>
     </message>
     <message>
         <source>Ramp Pr.</source>
-        <translation>Anlauf Dr.</translation>
+        <translation type="vanished">Anlauf Dr.</translation>
     </message>
     <message>
         <source>Median Leak Rate</source>
@@ -4894,7 +5138,7 @@ Dieser Ordner befindet sich derzeit an der folgenden Position:</translation>
     </message>
     <message>
         <source>(%%1 compliant, defined as &gt; %2 hours)</source>
-        <translation>(%%1 konform, definiert als &gt;%2 Stunden)</translation>
+        <translation type="vanished">(%%1 konform, definiert als &gt;%2 Stunden)</translation>
     </message>
     <message>
         <source>Bedtime</source>
@@ -4906,7 +5150,7 @@ Dieser Ordner befindet sich derzeit an der folgenden Position:</translation>
 Would you like SleepyHead to use the default location for storing its data?
 
 </source>
-        <translation>Es wurde kein SleepyHead Datenordner gefunden.
+        <translation type="vanished">Es wurde kein SleepyHead Datenordner gefunden.
 
 Möchten Sie den Sleepyhead Standardordner zum Speichern ihrer Daten verwenden?</translation>
     </message>
@@ -4982,7 +5226,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>seconds</source>
-        <translation>Sekunden</translation>
+        <translation type="vanished">Sekunden</translation>
     </message>
     <message>
         <source>Mask Time</source>
@@ -5010,7 +5254,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>Days=%1</source>
-        <translation>Tage=%1</translation>
+        <translation type="vanished">Tage=%1</translation>
     </message>
     <message>
         <source>&amp;Donate</source>
@@ -5022,11 +5266,11 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>Waketime=%1</source>
-        <translation>Aufwachzeit=%1</translation>
+        <translation type="vanished">Aufwachzeit=%1</translation>
     </message>
     <message>
         <source>degrees</source>
-        <translation>Grad</translation>
+        <translation type="vanished">Grad</translation>
     </message>
     <message>
         <source>User Flag #1</source>
@@ -5046,7 +5290,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>Bedtime=%1</source>
-        <translation>Schlafengehen=%1</translation>
+        <translation type="vanished">Schlafengehen=%1</translation>
     </message>
     <message>
         <source>REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%</source>
@@ -5066,7 +5310,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>events/hour</source>
-        <translation>Ereignisse/Stunde</translation>
+        <translation type="vanished">Ereignisse/Stunde</translation>
     </message>
     <message>
         <source>Reporting data goes here</source>
@@ -5114,7 +5358,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>events/hr</source>
-        <translation>Ereignisse/h</translation>
+        <translation type="vanished">Ereignisse/h</translation>
     </message>
     <message>
         <source>SleepyHead</source>
@@ -5126,7 +5370,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>(Sess=%1)</source>
-        <translation>(Sess=%1)</translation>
+        <translation type="vanished">(Sess=%1)</translation>
     </message>
     <message>
         <source>Sessions</source>
@@ -5174,7 +5418,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
         <source>Software changes have been made that require the reimporting of the following machines data:
 
 </source>
-        <translation>Es sind Software Änderungen vorgenommen wurden, die das Wiederherstellen der folgenden Geräte-Daten benötigen:</translation>
+        <translation type="vanished">Es sind Software Änderungen vorgenommen wurden, die das Wiederherstellen der folgenden Geräte-Daten benötigen:</translation>
     </message>
     <message>
         <source>A partially obstructed airway</source>
@@ -5206,7 +5450,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>No Directory</source>
-        <translation>Kein Verzeichnis</translation>
+        <translation type="vanished">Kein Verzeichnis</translation>
     </message>
     <message>
         <source>Max Pressure</source>
@@ -5322,7 +5566,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
 Are you sure you want to use this folder?
 
 </source>
-        <translation>Der Ordner, den Sie gewählt haben, beinhaltet noch gültige SleepHead Daten.
+        <translation type="vanished">Der Ordner, den Sie gewählt haben, beinhaltet noch gültige SleepHead Daten.
 
 Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
@@ -5400,7 +5644,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>Severety (0-1)</source>
-        <translation>Außergewöhnliche Schwere (0-1)</translation>
+        <translation type="vanished">Außergewöhnliche Schwere (0-1)</translation>
     </message>
     <message>
         <source>Degrees</source>
@@ -5472,7 +5716,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>CPAP Session contains summary data onlyf</source>
-        <translation>CPAP-Sitzung enthält nur zusammengefasste Daten</translation>
+        <translation type="vanished">CPAP-Sitzung enthält nur zusammengefasste Daten</translation>
     </message>
     <message>
         <source>Look for this build in &lt;a href=&apos;%1&apos;&gt;SleepyHead&apos;s files hosted on Sourceforge&lt;/a&gt;.</source>
@@ -5804,7 +6048,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>You slept for %1.</source>
-        <translation>Sie schliefen %1.</translation>
+        <translation type="vanished">Sie schliefen %1.</translation>
     </message>
     <message>
         <source>&lt;font color = red&gt;You only had the mask on for %1.&lt;/font&gt;</source>
@@ -5884,7 +6128,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
-        <translation>&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; Index-Dateien, um die Karte zu schreiben, ohne zu fragen, was Ihre Karte unlesbar machen können von Ihrem CPAP-Gerät.</translation>
+        <translation type="vanished">&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; Index-Dateien, um die Karte zu schreiben, ohne zu fragen, was Ihre Karte unlesbar machen können von Ihrem CPAP-Gerät.</translation>
     </message>
     <message>
         <source>Contec</source>
@@ -5978,15 +6222,15 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>%1 threshold</source>
-        <translation>%1 Schwelle</translation>
+        <translation type="vanished">%1 Schwelle</translation>
     </message>
     <message>
         <source>Sleep</source>
-        <translation>Zu Bett</translation>
+        <translation type="vanished">Zu Bett</translation>
     </message>
     <message>
         <source>Wake</source>
-        <translation>Aufgewacht</translation>
+        <translation type="vanished">Aufgewacht</translation>
     </message>
     <message>
         <source>Series</source>
@@ -6354,7 +6598,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Maximum</source>
-        <translation>Maximum</translation>
+        <translation type="vanished">Maximum</translation>
     </message>
     <message>
         <source>%1% %2</source>
@@ -6380,84 +6624,240 @@ Bitte Rebuild CPAP Daten laden</translation>
         <source>Statistics at Pressure</source>
         <translation>Statistiken des Drucks</translation>
     </message>
+    <message>
+        <source>SleepyHead is proudly brought to you by JediMark.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>d MMM [ %1 - %2 ]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1</source>
+        <translation type="unfinished">%1</translation>
+    </message>
+    <message>
+        <source>Hide All Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show All Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unpin %1 Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pin %1 Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plots Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(Summary Only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished">%1% %2 {1:?}</translation>
+    </message>
+    <message>
+        <source>Relief: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hours: %1h, %2m, %3s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machine Information</source>
+        <translation type="unfinished">Geräte-Informationen</translation>
+    </message>
+    <message>
+        <source>Compliance Only :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphs Switched Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary Only :(</source>
+        <translation type="unfinished">Nur die Zusammenfassung: (</translation>
+    </message>
+    <message>
+        <source>Sessions Switched Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Journal Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead found an old Journal folder, but it looks like it&apos;s been renamed:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead will not touch this folder, and will create a new one instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please be careful when playing in SleepyHead&apos;s profile folders :-P</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For some reason, sleepyHead couldn&apos;t find a journal object record in your profile, but did find multiple Journal data folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead picked only the first one of these, and will use it in future:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If your old data is missing, copy the contents of all the other Journal_XXXXXXX folders to this one manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CMS50F3.7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CMS50F</source>
+        <translation type="unfinished">CMS50F</translation>
+    </message>
+    <message>
+        <source>Loading %1 data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PLease Wait...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perfusion Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A relative assessment of the pulse strength at the monitoring site</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perf. Index %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>APAP (Variable)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Session #%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You machine was on for %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QextSerialPort</name>
     <message>
         <source>General write operation failure</source>
-        <translation>Allgemeiner Schreibvorgangsausfall</translation>
+        <translation type="vanished">Allgemeiner Schreibvorgangsausfall</translation>
     </message>
     <message>
         <source>Caught a non-blocked signal (POSIX)</source>
-        <translation>Ein nicht blockiertes Signal empangen (POSIX)</translation>
+        <translation type="vanished">Ein nicht blockiertes Signal empangen (POSIX)</translation>
     </message>
     <message>
         <source>Receive buffer overflow</source>
-        <translation>Empfangspufferüberlauf</translation>
+        <translation type="vanished">Empfangspufferüberlauf</translation>
     </message>
     <message>
         <source>There was an I/O error while communicating with the port</source>
-        <translation>Es gab einen I /O-Fehler während der Kommunikation mit dem Port</translation>
+        <translation type="vanished">Es gab einen I /O-Fehler während der Kommunikation mit dem Port</translation>
     </message>
     <message>
         <source>The %1 file doesn&apos;t exists</source>
-        <translation>Die Datei %1 existiert nicht</translation>
+        <translation type="vanished">Die Datei %1 existiert nicht</translation>
     </message>
     <message>
         <source>General read operation failure</source>
-        <translation>Allgemeiner Betriebsausfall</translation>
+        <translation type="vanished">Allgemeiner Betriebsausfall</translation>
     </message>
     <message>
         <source>The port detected a break condition</source>
-        <translation>Der Port ist unterbrochen</translation>
+        <translation type="vanished">Der Port ist unterbrochen</translation>
     </message>
     <message>
         <source>Character buffer overrun</source>
-        <translation>Zeichenpufferüberlauf</translation>
+        <translation type="vanished">Zeichenpufferüberlauf</translation>
     </message>
     <message>
         <source>Permission denied</source>
-        <translation>Zugriff verweigert</translation>
+        <translation type="vanished">Zugriff verweigert</translation>
     </message>
     <message>
         <source>Invalid file descriptor (port was not opened correctly)</source>
-        <translation>Ungültige Dateibeschreibung (Port wurde nicht richtig geöffnet)</translation>
+        <translation type="vanished">Ungültige Dateibeschreibung (Port wurde nicht richtig geöffnet)</translation>
     </message>
     <message>
         <source>Device is already locked</source>
-        <translation>Gerät bereits gesperrt</translation>
+        <translation type="vanished">Gerät bereits gesperrt</translation>
     </message>
     <message>
         <source>Transmit buffer overflow</source>
-        <translation>Sendepufferüberlauf</translation>
+        <translation type="vanished">Sendepufferüberlauf</translation>
     </message>
     <message>
         <source>Operation timed out (POSIX)</source>
-        <translation>Betriebszeitüberschreitung (POSIX)</translation>
+        <translation type="vanished">Betriebszeitüberschreitung (POSIX)</translation>
     </message>
     <message>
         <source>No Error has occurred</source>
-        <translation>Kein Fehler aufgetreten</translation>
+        <translation type="vanished">Kein Fehler aufgetreten</translation>
     </message>
     <message>
         <source>The port detected a parity error in the received data</source>
-        <translation>Der Port hat einen Paritätsfehler in den empfangenen Daten</translation>
+        <translation type="vanished">Der Port hat einen Paritätsfehler in den empfangenen Daten</translation>
     </message>
     <message>
         <source>The port detected a framing error (usually caused by incorrect baud rate settings)</source>
-        <translation>Der Anschluss erkennt einen Rahmenfehler (in der Regel durch falsche Baudrate verursacht)</translation>
+        <translation type="vanished">Der Anschluss erkennt einen Rahmenfehler (in der Regel durch falsche Baudrate verursacht)</translation>
     </message>
     <message>
         <source>The file opened by the port is not a valid device</source>
-        <translation>Die Datei von der der Port geöffnet ist, ist kein gültiges Gerät</translation>
+        <translation type="vanished">Die Datei von der der Port geöffnet ist, ist kein gültiges Gerät</translation>
     </message>
     <message>
         <source>Unable to allocate memory tables (POSIX)</source>
-        <translation>Kann Speicher nicht den Tabellen zuweisen (POSIX)</translation>
+        <translation type="vanished">Kann Speicher nicht den Tabellen zuweisen (POSIX)</translation>
     </message>
     <message>
         <source>Unknown error: %1</source>
-        <translation>Unbekannter Fehler: %1</translation>
+        <translation type="vanished">Unbekannter Fehler: %1</translation>
     </message>
 </context>
 <context>
@@ -6489,7 +6889,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     <name>Statistics</name>
     <message>
         <source>FL</source>
-        <translation>FL</translation>
+        <translation type="vanished">FL</translation>
     </message>
     <message>
         <source>Days</source>
@@ -6505,11 +6905,11 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>PS %1</source>
-        <translation>PS %1</translation>
+        <translation type="vanished">PS %1</translation>
     </message>
     <message>
         <source>SleepyHead is pretty much useless without it.</source>
-        <translation>SleepyHead benötigt den durchschnittlichen Druck.</translation>
+        <translation type="vanished">SleepyHead benötigt den durchschnittlichen Druck.</translation>
     </message>
     <message>
         <source>Oximeter Statistics</source>
@@ -6569,7 +6969,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Pr. Rel.</source>
-        <translation>Druck Mind.</translation>
+        <translation type="vanished">Druck Mind.</translation>
     </message>
     <message>
         <source>Max %1</source>
@@ -6597,7 +6997,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Compliancy</source>
-        <translation>Kompatibilität</translation>
+        <translation type="vanished">Kompatibilität</translation>
     </message>
     <message>
         <source>Last 6 Months</source>
@@ -6609,7 +7009,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>CPAP %1</source>
-        <translation>CPAP %1</translation>
+        <translation type="vanished">CPAP %1</translation>
     </message>
     <message>
         <source>Average %1</source>
@@ -6625,7 +7025,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>First import can take a few minutes.</source>
-        <translation>Der erste Import kann ein paar Minuten dauern.</translation>
+        <translation type="vanished">Der erste Import kann ein paar Minuten dauern.</translation>
     </message>
     <message>
         <source>Pulse Rate</source>
@@ -6641,7 +7041,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>EPAP %1</source>
-        <translation>EPAP %1</translation>
+        <translation type="vanished">EPAP %1</translation>
     </message>
     <message>
         <source>Last Week</source>
@@ -6665,11 +7065,11 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>APAP %1 - %2</source>
-        <translation>APAP %1 - %2</translation>
+        <translation type="vanished">APAP %1 - %2</translation>
     </message>
     <message>
         <source>Please Import Some Data</source>
-        <translation>Bitte Importieren Sie einige Daten</translation>
+        <translation type="vanished">Bitte Importieren Sie einige Daten</translation>
     </message>
     <message>
         <source>Last Session</source>
@@ -6685,7 +7085,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>IPAP %1</source>
-        <translation>IPAP %1</translation>
+        <translation type="vanished">IPAP %1</translation>
     </message>
     <message>
         <source>Leak Statistics</source>
@@ -6693,7 +7093,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
-        <translation>Es könnte eine gute Idee sein, Vorlieben zuerst zu überprüfen, &lt;/ br&gt; da gibt es einige Optionen, die Sie verändern können.</translation>
+        <translation type="vanished">Es könnte eine gute Idee sein, Vorlieben zuerst zu überprüfen, &lt;/ br&gt; da gibt es einige Optionen, die Sie verändern können.</translation>
     </message>
     <message>
         <source>Average Hours per Night</source>
@@ -6713,7 +7113,7 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Fixed %1</source>
-        <translation>Fest %1</translation>
+        <translation type="vanished">Fest %1</translation>
     </message>
     <message>
         <source>I can haz data?!?</source>
@@ -6933,6 +7333,33 @@ Bitte Rebuild CPAP Daten laden</translation>
     <message>
         <source>Release Notes</source>
         <translation>Versionshinweise</translation>
+    </message>
+</context>
+<context>
+    <name>gGraphView</name>
+    <message>
+        <source>100% zoom level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Graph Layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plots</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CPAP Overlays</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximeter Overlays</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dotted Lines</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
