@@ -372,6 +372,20 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
 
+    context_menu->setStyleSheet("QMenu {\
+                              background-color: #EBEBEB; /* sets background of the menu */\
+                              border: 1px solid black;\
+                          }\
+                          QMenu::item {\
+                              /* sets background of menu item. set this to something non-transparent\
+                                  if you want menu color and menu item color to be different */\
+                              background-color: transparent;\
+                          }\
+                          QMenu::item:selected { /* when user selects item using mouse or keyboard */\
+                              background-color: #ABCDEF;\
+                          }");
+
+
 }
 
 void gGraphView::togglePin()
@@ -1701,9 +1715,20 @@ void MinMaxWidget::onComboChanged(int idx)
     }
 }
 
+#include <QFrame>
 void MinMaxWidget::createLayout()
 {
+
+//    QHBoxLayout * lay1 = new QHBoxLayout;
+//    setLayout(lay1);
+//    QFrame *frame = new QFrame(this);
+//    frame->setFrameShape(QFrame::Box);
+//    lay1->addWidget(frame);
+//    lay1->setMargin(2);
+//    lay1->setSpacing(0);
+
     QGridLayout * layout = new QGridLayout;
+//    frame->setLayout(layout);
 //    layout->set
 //    QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(4);
