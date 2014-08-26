@@ -24,6 +24,9 @@ const int resmed_data_version = 9;
 //
 //********************************************************************************************
 
+enum EDFType { EDF_UNKNOWN, EDF_BRP, EDF_PLD, EDF_SAD, EDF_EVE, EDF_CSL };
+
+EDFType lookupEDFType(QString text);
 
 const QString resmed_class_name = STR_MACH_ResMed;
 
@@ -228,11 +231,14 @@ class EDFParser
     //! \brief An by-name indexed into the EDFSignal data
     QStringList signal_labels;
 
+    //! \brief ResMed likes to use the SAME signal name
+    QHash<QString, QList<EDFSignal *> > signalList;
+
     QList<EDFSignal *> signal;
 
     //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
     EDFSignal *lookupSignal(ChannelID);
-    EDFSignal *lookupLabel(QString name);
+    EDFSignal *lookupLabel(QString name, int index=0);
 
     //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }
@@ -276,20 +282,23 @@ class ResmedLoader;
 
 struct EDFGroup {
     EDFGroup() { }
-    EDFGroup(QString brp, QString eve, QString pld, QString sad) {
+    EDFGroup(QString brp, QString eve, QString pld, QString sad, QString csl) {
         BRP = brp;
         EVE = eve;
+        CSL = csl;
         PLD = pld;
         SAD = sad;
     }
     EDFGroup(const EDFGroup & copy) {
         BRP = copy.BRP;
         EVE = copy.EVE;
+        CSL = copy.CSL;
         PLD = copy.PLD;
         SAD = copy.SAD;
     }
     QString BRP;
     QString EVE;
+    QString CSL;
     QString PLD;
     QString SAD;
 };

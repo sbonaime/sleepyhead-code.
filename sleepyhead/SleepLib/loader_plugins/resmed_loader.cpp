@@ -102,12 +102,15 @@ bool matchSignal(ChannelID ch, const QString & name)
     return false;
 }
 
-EDFSignal *EDFParser::lookupLabel(QString name)
+EDFSignal *EDFParser::lookupLabel(QString name, int index)
 {
-    int idx = signal_labels.indexOf(name);
-    if (idx < 0) return nullptr;
+    QHash<QString, QList<EDFSignal *> >::iterator it = signalList.find(name);
 
-    return signal[idx];
+    if (it == signalList.end()) return nullptr;
+
+    if (index >= it.value().size()) return nullptr;
+
+    return it.value()[index];
 }
 
 EDFParser::EDFParser(QString name)
@@ -219,10 +222,37 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if (offtime > 0) {
                     R.maskoff = offtime;
                 }
+                CPAPMode mode = MODE_UNKNOWN;
+
+                if ((sig = str.lookupSignal(CPAP_Mode))) {
+                    int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+
+                    if (mod >= 8) {       // mod 8 == vpap adapt variable epap
+                        mode = MODE_ASV_VARIABLE_EPAP;
+                    } else if (mod >= 7) {       // mod 7 == vpap adapt
+                        mode = MODE_ASV;
+                    } else if (mod >= 6) { // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
+                        mode = MODE_BILEVEL_AUTO_FIXED_PS;
+                    } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
+                        mode = MODE_BILEVEL_FIXED;
+                        // 4,5 are S/T types...
+
+                    } else if (mod >= 1) {
+                        mode = MODE_APAP; // mod 1 == apap
+                        // not sure what mode 2 is ?? split ?
+                    } else {
+                        mode = MODE_CPAP; // mod 0 == cpap
+                    }
+                    R.mode = mode;
+
+                }
+
 
                 if ((sig = str.lookupLabel("Mask Dur"))) {
                     R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+
+
                 if ((sig = str.lookupLabel("Leak Med"))) {
                     float gain = sig->gain * 60.0;
                     R.leakgain = gain;
@@ -274,12 +304,30 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(CPAP_PS))) {
                     R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
-                if ((sig = str.lookupSignal(CPAP_PSMax))) {
+
+
+                // Okay, problem here: THere are TWO PSMin & MAX values on the 36037 with the same string
+                // One is for ASV mode, and one is for ASVAuto
+                int psvar = (mode == MODE_ASV_VARIABLE_EPAP) ? 1 : 0;
+                if ((sig = str.lookupLabel("Max PS", psvar))) {
                     R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
-                if ((sig = str.lookupSignal(CPAP_PSMin))) {
+                if ((sig = str.lookupLabel("Min PS", psvar))) {
                     R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+
+
+                if (!haveipap) {
+                    R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
+                }
+
+//                if (mode == MODE_ASV_VARIABLE_EPAP) {
+//                    // ResMed reuses this code on 36037.. the dummies :(
+//                } else if (mode == MODE_ASV) {
+//                    if (!haveipap) {
+//                        R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
+//                    }
+//                }
 
                 EventDataType epr = -1, epr_level = -1;
                 if ((sig = str.lookupSignal(RMS9_EPR))) {
@@ -308,32 +356,6 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     }
                 }
 
-                if ((sig = str.lookupSignal(CPAP_Mode))) {
-                    int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    CPAPMode mode;
-
-                    if (mod >= 8) {       // mod 8 == vpap adapt variable epap
-                        mode = MODE_ASV_VARIABLE_EPAP;
-                        if (!haveipap) {
-                            R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
-                        }
-                    } else if (mod >= 7) {       // mod 7 == vpap adapt
-                        mode = MODE_ASV;
-                        if (!haveipap) {
-                            R.ipap = R.min_ipap = R.max_ipap = R.max_epap + R.max_ps;
-                        }
-                    } else if (mod >= 6) { // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
-                        mode = MODE_BILEVEL_AUTO_FIXED_PS;
-                    } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
-                        mode = MODE_BILEVEL_FIXED;
-                    } else if (mod >= 1) {
-                        mode = MODE_APAP; // mod 1 == apap
-                    } else {
-                        mode = MODE_CPAP; // mod 0 == cpap
-                    }
-                    R.mode = mode;
-
-                }
                 if ((sig = str.lookupLabel("AHI"))) {
                     R.ahi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
@@ -487,7 +509,9 @@ bool EDFParser::Parse()
         EDFSignal &sig = edfsignals[i];
         sig.data = nullptr;
         sig.label = Read(16);
+
         signal_labels.push_back(sig.label);
+        signalList[sig.label].push_back(&sig);
         signal.push_back(&sig);
     }
 
@@ -1016,21 +1040,37 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
 
 
 struct EDFduration {
-    EDFduration() { start = end = 0; iseve = false; }
+    EDFduration() { start = end = 0; type = EDF_UNKNOWN; }
     EDFduration(const EDFduration & copy) {
         path = copy.path;
         start = copy.start;
         end = copy.end;
-        iseve = copy.iseve;
+        type = copy.type;
+        filename = copy.filename;
     }
     EDFduration(quint32 start, quint32 end, QString path) :
         start(start), end(end), path(path) {}
     quint32 start;
     quint32 end;
     QString path;
-    bool iseve;
+    QString filename;
+    EDFType type;
 };
 
+EDFType lookupEDFType(QString text)
+{
+    if (text == "EVE") {
+        return EDF_EVE;
+    } else if (text =="BRP") {
+        return EDF_BRP;
+    } else if (text == "PLD") {
+        return EDF_PLD;
+    } else if (text == "SAD") {
+        return EDF_SAD;
+    } else if (text == "CSL") {
+        return EDF_CSL;
+    } else return EDF_UNKNOWN;
+}
 
 // Looks inside an EDF or EDF.gz and grabs the start and duration
 EDFduration getEDFDuration(QString filename)
@@ -1129,7 +1169,7 @@ EDFduration getEDFDuration(QString filename)
 
     start = qMin(st2, start);
 
-    if (end < start) end = qMax(st2, start)+10; // This alone should really cover the EVE.EDF condition
+    if (end < start) end = qMax(st2, start); // This alone should really cover the EVE.EDF condition
 
 //    if (ext == "EVE") {
 //        // This is an unavoidable kludge, because there genuinely is no duration given for EVE files.
@@ -1146,9 +1186,11 @@ EDFduration getEDFDuration(QString filename)
 //        end += 1;
 //    }
 
+    if ((end - start) < 10) end = start + 10;
 
     EDFduration dur(start, end, filename);
-    dur.iseve = (ext.toUpper() == "EVE");
+
+    dur.type = lookupEDFType(ext.toUpper());
 
     return dur;
 }
@@ -1157,7 +1199,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 {
     QHash<QString, SessionID> skipfiles;
 
-    bool create_backups = p_profile->session->backupCardData();
+    bool create_backups = true; //p_profile->session->backupCardData();
 
     QString backup_path = mach->getBackupPath();
 
@@ -1168,7 +1210,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         create_backups = false;
     }
 
-    // Read the already imported file list
+    // Read the "already imported" file list
     QFile impfile(mach->getDataPath()+"/imported_files.csv");
     if (impfile.open(QFile::ReadOnly)) {
         QTextStream impstream(&impfile);
@@ -1201,12 +1243,13 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     bool ok, gz;
 
 
-    // Scan for any year folders if this is a backup
+    // Scan for any sub folders
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
         filename = fi.fileName();
 
         if (filename.length() == 4) {
+            // year folder (used in backups)
             filename.toInt(&ok);
 
             if (ok) {
@@ -1223,15 +1266,19 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     }
 
     QStringList newSkipFiles;
-    QMap<QString, EDFduration> newfiles; // used for duplicate checking
+
+    QMap<QString, EDFduration> newfiles; // used for duplicate checking, and session overlap testing to group sessions
+    QHash<EDFType, QList<EDFduration *> > filesbytype;
 
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
     for (int d=0; d < dirs.size(); ++d) {
         dir.setPath(dirs.at(d));
         dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
         dir.setSorting(QDir::Name);
+
         flist = dir.entryInfoList();
 
+        // get number of files in current directory being processed
         int size = flist.size();
 
         // For each file in flist...
@@ -1266,12 +1313,83 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
                 continue;
             }
 
+
             QString fullname = fi.canonicalFilePath();
-            newfiles[filename] = getEDFDuration(fullname);
+
+            // Peek inside the EDF file and get the EDFDuration record for the session matching that follows
+
+            QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, getEDFDuration(fullname));
+            EDFduration *dur = &it.value();
+            dur->filename = filename;
+
+            filesbytype[dur->type].append(dur);
         }
     }
 
-    QMap<QString, EDFduration>::iterator it;
+    QList<EDFType> EDForder;
+    EDForder.push_back(EDF_PLD);
+    EDForder.push_back(EDF_BRP);
+    EDForder.push_back(EDF_SAD);
+    EDForder.push_back(EDF_EVE);
+    EDForder.push_back(EDF_CSL);
+
+    for (int i=0; i<3; i++) {
+        EDFType basetype = EDForder.takeFirst();
+
+        // Process PLD files
+        QList<EDFduration *> & LIST = filesbytype[basetype];
+        int pld_size = LIST.size();
+        for (int f=0; f < pld_size; ++f) {
+            const EDFduration * dur = LIST.at(f);
+
+            quint32 start = dur->start;
+            if (start == 0) continue;
+
+            quint32 end = dur->end;
+            QHash<EDFType, QString> grp;
+            grp[EDF_PLD] = create_backups ? backup(dur->path, backup_path) : dur->path;;
+
+
+            QStringList files;
+            files.append(dur->filename);
+
+
+            for (int o=0; o<EDForder.size(); ++o) {
+                EDFType type = EDForder.at(o);
+
+                QList<EDFduration *> & EDF_list = filesbytype[type];
+                QList<EDFduration *>::iterator item;
+                QList<EDFduration *>::iterator list_end = EDF_list.end();
+                for (item = EDF_list.begin(); item != list_end; ++item) {
+                    const EDFduration * dur2 = *item;
+
+                    // Do the sessions Overlap?
+                    if ((start < dur2->end) && ( dur2->start < end)) {
+                        start = qMin(start, dur2->start);
+                        end = qMax(end, dur2->end);
+
+                        files.append(dur2->filename);
+
+                        grp[type] = create_backups ? backup(dur2->path, backup_path) : dur2->path;
+
+                        filesbytype[type].erase(item);
+                        break;
+                    }
+                }
+
+            }
+            if (mach->SessionExists(start) == nullptr) {
+                EDFGroup group(grp[EDF_BRP], grp[EDF_EVE], grp[EDF_PLD], grp[EDF_SAD], grp[EDF_CSL]);
+                queTask(new ResmedImport(this, start, group, mach));
+                for (int i=0; i<files.size(); i++) skipfiles[files.at(i)] = start;
+            }
+        }
+    }
+
+
+    // No PLD files
+
+/*    QMap<QString, EDFduration>::iterator it;
     QMap<QString, EDFduration>::iterator itn;
     QMap<QString, EDFduration>::iterator it_end = newfiles.end();
 
@@ -1287,7 +1405,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         quint32 end = it.value().end;
 
 
-        QString type = file.section("_",-1).section(".",0,0).toUpper();
+        QString type = file.section("_", -1).section(".", 0, 0).toUpper();
 
         QString newpath = create_backups ? backup(it.value().path, backup_path) : it.value().path;
 
@@ -1362,7 +1480,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
                 skipfiles[sessfiles.at(i)] = start;
             }
         }
-    }
+    } */
 
     // Run the tasks...
     int c = countTasks();
