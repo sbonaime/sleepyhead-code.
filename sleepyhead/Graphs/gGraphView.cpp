@@ -15,7 +15,6 @@
 #include <QTimer>
 #include <QFontMetrics>
 #include <QWidgetAction>
-#include <QCheckBox>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
@@ -357,6 +356,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
 
     context_menu->addSeparator();
+    limits_menu = context_menu->addMenu(tr("Graph Limits"));
     plots_menu = context_menu->addMenu(tr("Plots"));
     connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
 
@@ -370,6 +370,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
+
 }
 
 void gGraphView::togglePin()
@@ -1662,6 +1663,46 @@ protected:
 };
 
 
+MinMaxWidget::MinMaxWidget(gGraph * graph, QWidget *parent): QWidget(parent), graph(graph)
+{
+
+   // setWindowFlags(windowFlags() | Qt::Popup);
+    createLayout();
+}
+
+void MinMaxWidget::onMinChanged(double d)
+{
+    graph->rec_miny = d;
+    graph->timedRedraw(0);
+}
+void MinMaxWidget::onMaxChanged(double d)
+{
+    graph->rec_maxy = d;
+    graph->timedRedraw(0);
+}
+
+void MinMaxWidget::createLayout()
+{
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin(4);
+    layout->setSpacing(4);
+    checkbox = new QCheckBox("  ",this);
+    checkbox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    minbox = new QDoubleSpinBox(this);
+    maxbox = new QDoubleSpinBox(this);
+    minbox->setMinimum(-99999.9);
+    maxbox->setMinimum(-99999.9);
+    minbox->setMaximum(99999.9);
+    maxbox->setMaximum(99999.9);
+    graph->graphView()->connect(minbox, SIGNAL(valueChanged(double)), this, SLOT(onMinChanged(double)));
+    graph->graphView()->connect(maxbox, SIGNAL(valueChanged(double)), this, SLOT(onMaxChanged(double)));
+    layout->addWidget(checkbox);
+    layout->addWidget(new QLabel(STR_TR_Min));
+    layout->addWidget(minbox);
+    layout->addWidget(new QLabel(STR_TR_Max));
+    layout->addWidget(maxbox);
+    this->setLayout(layout);
+}
 
 void gGraphView::populateMenu(gGraph * graph)
 {
@@ -1671,6 +1712,19 @@ void gGraphView::populateMenu(gGraph * graph)
     QFont font = QApplication::font();
     font.setBold(true);
     font.setPointSize(font.pointSize() + 3);
+
+    limits_menu->clear();
+    QWidgetAction * widget = new QWidgetAction(this);
+    MinMaxWidget * minmax = new MinMaxWidget(graph, this);
+
+    widget->setDefaultWidget(minmax);
+
+    minmax->setMax(graph->rec_maxy);
+    minmax->setMin(graph->rec_miny);
+    minmax->setChecked(true);
+
+    limits_menu->addAction(widget);
+
 
     // First check for any linechart for this graph..
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));

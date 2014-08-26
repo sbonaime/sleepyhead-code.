@@ -1911,8 +1911,8 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>100</width>
-          <height>30</height>
+          <width>180</width>
+          <height>700</height>
          </rect>
         </property>
         <property name="palette">
@@ -3059,8 +3059,8 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>100</width>
-          <height>30</height>
+          <width>180</width>
+          <height>700</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3489,11 +3489,6 @@ border-radius: 10px;
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
-   </property>
-  </action>
-  <action name="actionFoo">
-   <property name="text">
-    <string>Foo</string>
    </property>
   </action>
   <action name="action">

@@ -19,6 +19,8 @@
 #include <QRect>
 #include <QPixmapCache>
 #include <QMenu>
+#include <QCheckBox>
+#include <QDoubleSpinBox>
 
 #ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
@@ -27,6 +29,39 @@
 #include <Graphs/gGraph.h>
 #include <Graphs/glcommon.h>
 #include <SleepLib/day.h>
+
+
+class MinMaxWidget:public QWidget
+{
+     Q_OBJECT
+public:
+    explicit MinMaxWidget(gGraph * graph, QWidget *parent);
+     ~MinMaxWidget() {}
+
+    void createLayout();
+
+    void setMin(double d) {
+        minbox->setValue(d);
+    }
+    void setMax(double d) {
+        maxbox->setValue(d);
+    }
+    double min() { return minbox->value(); }
+    double max() { return maxbox->value(); }
+
+    void setChecked(bool b) { checkbox->setChecked(b); }
+    bool checked() { return checkbox->isChecked(); }
+
+public slots:
+    void onMinChanged(double d);
+    void onMaxChanged(double d);
+
+protected:
+    gGraph * graph;
+    QCheckBox *checkbox;
+    QDoubleSpinBox *minbox;
+    QDoubleSpinBox *maxbox;
+};
 
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
@@ -441,6 +476,7 @@ class gGraphView
     Layer * findLayer(gGraph * graph, LayerType type);
 
     void populateMenu(gGraph *);
+    QMenu * limits_menu;
     QMenu * lines_menu;
     QMenu * plots_menu;
 
