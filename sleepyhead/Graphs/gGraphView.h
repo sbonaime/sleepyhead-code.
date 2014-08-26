@@ -20,6 +20,7 @@
 #include <QPixmapCache>
 #include <QMenu>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDoubleSpinBox>
 
 #ifndef BROKEN_OPENGL_BUILD
@@ -48,17 +49,21 @@ public:
     }
     double min() { return minbox->value(); }
     double max() { return maxbox->value(); }
+    void setComboIndex(int i) { combobox->setCurrentIndex(i); }
+    int comboIndex() { return combobox->currentIndex(); }
 
-    void setChecked(bool b) { checkbox->setChecked(b); }
-    bool checked() { return checkbox->isChecked(); }
+//    void setChecked(bool b) { checkbox->setChecked(b); }
+//    bool checked() { return checkbox->isChecked(); }
 
 public slots:
     void onMinChanged(double d);
     void onMaxChanged(double d);
-
+    void onComboChanged(int idx);
+    //void onCheckToggled(bool b);
 protected:
     gGraph * graph;
-    QCheckBox *checkbox;
+    QComboBox *combobox;
+//    QCheckBox *checkbox;
     QDoubleSpinBox *minbox;
     QDoubleSpinBox *maxbox;
 };

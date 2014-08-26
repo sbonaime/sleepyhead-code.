@@ -110,7 +110,7 @@ QString GenerateWelcomeHTML()
        "</table>"
       "</td>";
       if (havecpapdata || haveoximeterdata) {
-          html += "<td align=center><font size=+2>or</font></td>"
+          html += "<td align=center><font size=+2>"+QObject::tr("or")+"</font></td>"
           "<td align=center>"
           "<table class=curved cellpadding=4>"
           "<tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"statistics=1\");'><font size=+1><img src='qrc:/icons/statistics.png' width=128px><br/>" + QObject::tr("View<br/>Statistics")+"</font></td></tr>"

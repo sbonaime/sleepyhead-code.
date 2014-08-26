@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <QFontMetrics>
 #include <QWidgetAction>
+#include <QGridLayout>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
@@ -356,7 +357,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
 
     context_menu->addSeparator();
-    limits_menu = context_menu->addMenu(tr("Graph Limits"));
+    limits_menu = context_menu->addMenu(tr("Y-Axis"));
     plots_menu = context_menu->addMenu(tr("Plots"));
     connect(plots_menu, SIGNAL(triggered(QAction*)), this, SLOT(onPlotsClicked(QAction*)));
 
@@ -1663,10 +1664,9 @@ protected:
 };
 
 
-MinMaxWidget::MinMaxWidget(gGraph * graph, QWidget *parent): QWidget(parent), graph(graph)
+MinMaxWidget::MinMaxWidget(gGraph * graph, QWidget *parent)
+:QWidget(parent), graph(graph)
 {
-
-   // setWindowFlags(windowFlags() | Qt::Popup);
     createLayout();
 }
 
@@ -1680,27 +1680,84 @@ void MinMaxWidget::onMaxChanged(double d)
     graph->rec_maxy = d;
     graph->timedRedraw(0);
 }
+//void MinMaxWidget::onCheckToggled(bool b)
+//{
+//    graph->setZoomY(b ? 1 : 0);
+//}
+
+void MinMaxWidget::onComboChanged(int idx)
+{
+    minbox->setEnabled(idx == 2);
+    maxbox->setEnabled(idx == 2);
+
+    graph->setZoomY(idx);
+
+    if (idx == 2) {
+        if (qAbs(graph->rec_maxy - graph->rec_miny) < 0.000001) {
+            setMax(graph->rec_maxy = floor(graph->MaxY()));
+            setMin(graph->rec_miny = ceil(graph->MinY()));
+
+        }
+    }
+}
 
 void MinMaxWidget::createLayout()
 {
-    QHBoxLayout *layout = new QHBoxLayout;
+    QGridLayout * layout = new QGridLayout;
+//    layout->set
+//    QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(4);
     layout->setSpacing(4);
-    checkbox = new QCheckBox("  ",this);
-    checkbox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+//    checkbox = new QCheckBox(tr("Auto Scale")+" ",this);
+//    checkbox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+//    connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(onCheckToggled(bool)));
+
+    combobox = new QComboBox(this);
+    combobox->addItem(tr("Auto-Fit"), 0);
+    combobox->addItem(tr("Defaults"), 1);
+    combobox->addItem(tr("Override"), 2);
+    connect(combobox, SIGNAL(activated(int)), this, SLOT(onComboChanged(int)));
+
     minbox = new QDoubleSpinBox(this);
     maxbox = new QDoubleSpinBox(this);
-    minbox->setMinimum(-99999.9);
-    maxbox->setMinimum(-99999.9);
-    minbox->setMaximum(99999.9);
-    maxbox->setMaximum(99999.9);
-    graph->graphView()->connect(minbox, SIGNAL(valueChanged(double)), this, SLOT(onMinChanged(double)));
-    graph->graphView()->connect(maxbox, SIGNAL(valueChanged(double)), this, SLOT(onMaxChanged(double)));
-    layout->addWidget(checkbox);
-    layout->addWidget(new QLabel(STR_TR_Min));
-    layout->addWidget(minbox);
-    layout->addWidget(new QLabel(STR_TR_Max));
-    layout->addWidget(maxbox);
+
+    int idx = graph->zoomY();
+    combobox->setCurrentIndex(idx);
+
+    minbox->setEnabled(idx == 2);
+    maxbox->setEnabled(idx == 2);
+
+    setMin(graph->rec_miny);
+    setMax(graph->rec_maxy);
+    minbox->setAlignment(Qt::AlignRight);
+    maxbox->setAlignment(Qt::AlignRight);
+
+    minbox->setMinimum(graph->physMinY());
+    maxbox->setMinimum(graph->physMinY());
+    minbox->setMaximum(9999.99);
+    maxbox->setMaximum(9999.99);
+    connect(minbox, SIGNAL(valueChanged(double)), this, SLOT(onMinChanged(double)));
+    connect(maxbox, SIGNAL(valueChanged(double)), this, SLOT(onMaxChanged(double)));
+
+    QLabel * label = new QLabel(tr("Scaling Mode"));
+    QFont font = label->font();
+    font.setBold(true);
+    label->setFont(font);
+    label->setAlignment(Qt::AlignCenter);
+    layout->addWidget(label,0,0);
+    layout->addWidget(combobox,1,0);
+
+    label = new QLabel(STR_TR_Min);
+    label->setFont(font);
+    label->setAlignment(Qt::AlignCenter);
+    layout->addWidget(label,0,1);
+    layout->addWidget(minbox,1,1);
+
+    label = new QLabel(STR_TR_Max);
+    label->setFont(font);
+    label->setAlignment(Qt::AlignCenter);
+    layout->addWidget(label,0,2);
+    layout->addWidget(maxbox,1,2);
     this->setLayout(layout);
 }
 
@@ -1719,9 +1776,9 @@ void gGraphView::populateMenu(gGraph * graph)
 
     widget->setDefaultWidget(minmax);
 
-    minmax->setMax(graph->rec_maxy);
-    minmax->setMin(graph->rec_miny);
-    minmax->setChecked(true);
+//    minmax->setMax(graph->rec_maxy);
+//    minmax->setMin(graph->rec_miny);
+//    minmax->setComboIndex(graph->zoomY());
 
     limits_menu->addAction(widget);
 

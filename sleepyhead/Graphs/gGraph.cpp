@@ -255,7 +255,7 @@ void gGraph::setDay(Day *day)
 void gGraph::setZoomY(short zoom)
 {
     m_zoomY = zoom;
-    redraw();
+    timedRedraw(0);
 }
 
 void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font, bool antialias)
