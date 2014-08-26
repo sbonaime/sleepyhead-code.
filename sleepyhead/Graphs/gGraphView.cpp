@@ -373,13 +373,13 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
 
     context_menu->setStyleSheet("QMenu {\
-                              background-color: #EBEBEB; /* sets background of the menu */\
+                              background-color: #f0f0f0; /* sets background of the menu */\
                               border: 1px solid black;\
                           }\
                           QMenu::item {\
                               /* sets background of menu item. set this to something non-transparent\
                                   if you want menu color and menu item color to be different */\
-                              background-color: transparent;\
+                              background-color: #f0f0f0;\
                           }\
                           QMenu::item:selected { /* when user selects item using mouse or keyboard */\
                               background-color: #ABCDEF;\
