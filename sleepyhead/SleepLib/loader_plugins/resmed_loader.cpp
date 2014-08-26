@@ -1018,8 +1018,15 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
                 info.serial = value;
 
             } else if (key == "PNA") {  // Product Name
-                value.replace("S9", "");
                 value.replace("_"," ");
+
+                if (value.contains("S9")) {
+                    value.replace("S9", "");
+                    info.series = value;
+                } else if (value.contains("AirSense 10")) {
+                    value.replace("AirSense 10", "");
+                    info.series = "AirSense 10";
+                }
                 value.replace("(","");
                 value.replace(")","");
                 if (value.contains("Adapt", Qt::CaseInsensitive)) {
@@ -1563,10 +1570,17 @@ int ResmedLoader::Open(QString path)
                 continue;
 
             } else if (key == "PNA") {  // Product Name
-                value.replace("S9", "");
                 value.replace("_"," ");
+                if (value.contains("S9")) {
+                    value.replace("S9", "");
+                    info.series = "S9";
+                } else if (value.contains("AirSense 10")) {
+                    value.replace("AirSense 10", "");
+                    info.series = "AirSense 10";
+                }
                 value.replace("(","");
                 value.replace(")","");
+
                 if (value.contains("Adapt", Qt::CaseInsensitive)) {
                     if (!value.contains("VPAP")) {
                         value.replace("Adapt", QObject::tr("VPAP Adapt"));
