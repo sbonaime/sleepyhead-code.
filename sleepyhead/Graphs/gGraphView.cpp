@@ -2093,7 +2093,10 @@ void gGraphView::onSnapshotGraphToggle()
             return;
         }
 
+        bool pinned = graph->isPinned();
+        graph->setPinned(false);
         QPixmap pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
+        graph->setPinned(true);
         gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
         newgraph->setSnapshot(pm);
         newgraph->setBlockSelect(true);
