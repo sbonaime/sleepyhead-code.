@@ -2096,6 +2096,7 @@ void gGraphView::onSnapshotGraphToggle()
         QPixmap pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
         gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
         newgraph->setSnapshot(pm);
+        newgraph->setBlockSelect(true);
         newgraph->setHeight(pm.height());
 
         m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
