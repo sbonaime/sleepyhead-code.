@@ -283,13 +283,13 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-!win32 {
-    include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
-    INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-    DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-} else {
+#!win32 {
+#    include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
+#    INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
+#    DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
+#} else {
     QT += serialport
-}
+#}
 
 include(../3rdparty/quazip/quazip/quazip.pri)
 INCLUDEPATH += $$PWD/../3rdparty/quazip
