@@ -2994,6 +2994,7 @@ void gGraphView::SaveSettings(QString title)
     for (qint16 i = 0; i < size(); i++) {
         gGraph * graph = m_graphs[i];
         if (!graph) continue;
+        if (graph->isSnapshot()) continue;
 
         out << graph->name();
         out << graph->height();
