@@ -297,7 +297,7 @@ class gGraph : public QObject
     gGraphView *graphView() { return m_graphview; }
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
 
-    short zoomY() { return m_zoomY; }
+    inline short zoomY() { return m_zoomY; }
     void setZoomY(short zoom);
 
     static const short maxZoomY = 2;

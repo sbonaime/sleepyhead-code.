@@ -22,6 +22,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QToolButton>
 
 #ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
@@ -59,13 +60,14 @@ public slots:
     void onMinChanged(double d);
     void onMaxChanged(double d);
     void onComboChanged(int idx);
-    //void onCheckToggled(bool b);
+    void onResetClicked();
 protected:
     gGraph * graph;
     QComboBox *combobox;
 //    QCheckBox *checkbox;
     QDoubleSpinBox *minbox;
     QDoubleSpinBox *maxbox;
+    QToolButton * reset;
 };
 
 enum FlagType { FT_Bar, FT_Dot, FT_Span };

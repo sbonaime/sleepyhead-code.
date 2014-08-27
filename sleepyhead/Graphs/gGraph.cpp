@@ -508,43 +508,24 @@ void gGraph::ToolTip(QString text, int x, int y, ToolTipAlignment align, int tim
 // YAxis Autoscaling code
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
-    if ((zoomY() == 0) && p_profile->appearance->allowYAxisScaling()) {
-        if (rec_maxy > rec_miny) {
-            // Use graph preference settings only for this graph
-            miny = rec_miny;
-            maxy = rec_maxy;
-            return;
-        } // else use loader defined min/max settings
 
+    if (zoomY() == 0) {
+        // AutoScale mode
+        miny = rmin_y; // MinY();
+        maxy = rmax_y; //MaxY();
+        // fall through.
+    } else if (zoomY() == 1) {
+        miny = rphysmin_y; //physMinY()
+        maxy = rphysmax_y; //physMaxY();
+        return;
     } else {
-        // Autoscale this graph
-        miny = min_y, maxy = max_y;
+        miny = rec_miny;
+        maxy = rec_maxy;
+        return;
     }
 
     int m, t;
     bool ymin_good = false, ymax_good = false;
-
-    // rec_miny/maxy are the graph settings defined in preferences
-    if (rec_miny != rec_maxy) {
-        // Clip min
-        if (miny > rec_miny) {
-            miny = rec_miny;
-        }
-
-        // Clip max
-        if (maxy < rec_maxy) {
-            maxy = rec_maxy;
-        }
-
-        //
-        if (miny == rec_miny) {
-            ymin_good = true;
-        }
-
-        if (maxy == rec_maxy) {
-            ymax_good = true;
-        }
-    }
 
     // Have no minx/miny reference, have to create one
     if (maxy == miny) {
@@ -1220,7 +1201,7 @@ EventDataType gGraph::MinY()
     }
 
     for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        if ((*l)->isEmpty()) {
+        if ((*l)->isEmpty() || ((*l)->layerType() == LT_Other)) {
             continue;
         }
 
@@ -1254,7 +1235,7 @@ EventDataType gGraph::MaxY()
     QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
     for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
         Layer *layer = *iter;
-        if (layer->isEmpty()) {
+        if (layer->isEmpty() || (layer->layerType() == LT_Other)) {
             continue;
         }
 

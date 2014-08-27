@@ -372,6 +372,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     lines_menu = context_menu->addMenu(tr("Dotted Lines"));
     connect(lines_menu, SIGNAL(triggered(QAction*)), this, SLOT(onLinesClicked(QAction*)));
 
+
+#if !defined(Q_OS_MAC)
     context_menu->setStyleSheet("QMenu {\
                               background-color: #f0f0f0; /* sets background of the menu */\
                               border: 1px solid black;\
@@ -385,7 +387,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
                               background-color: #ABCDEF;\
                           }");
 
-
+#else
+    context_menu->setStyleSheet("QMenu::item:selected { /* when user selects item using mouse or keyboard */\
+                                    background-color: #ABCDEF;\
+                                }");
+#endif
 }
 
 void gGraphView::togglePin()
@@ -1694,48 +1700,38 @@ void MinMaxWidget::onMaxChanged(double d)
     graph->rec_maxy = d;
     graph->timedRedraw(0);
 }
-//void MinMaxWidget::onCheckToggled(bool b)
-//{
-//    graph->setZoomY(b ? 1 : 0);
-//}
+void MinMaxWidget::onResetClicked()
+{
+    EventDataType miny = graph->MinY(),
+                  maxy = graph->MaxY();
+
+    graph->roundY(miny, maxy);
+    setMin(graph->rec_miny = miny);
+    setMax(graph->rec_maxy = maxy);
+}
 
 void MinMaxWidget::onComboChanged(int idx)
 {
     minbox->setEnabled(idx == 2);
     maxbox->setEnabled(idx == 2);
+    reset->setEnabled(idx == 2);
 
     graph->setZoomY(idx);
 
     if (idx == 2) {
-        if (qAbs(graph->rec_maxy - graph->rec_miny) < 0.000001) {
-            setMax(graph->rec_maxy = floor(graph->MaxY()));
-            setMin(graph->rec_miny = ceil(graph->MinY()));
-
+        if (qAbs(graph->rec_maxy - graph->rec_miny) < 0.0001) {
+            onResetClicked();
         }
     }
 }
 
-#include <QFrame>
 void MinMaxWidget::createLayout()
 {
 
-//    QHBoxLayout * lay1 = new QHBoxLayout;
-//    setLayout(lay1);
-//    QFrame *frame = new QFrame(this);
-//    frame->setFrameShape(QFrame::Box);
-//    lay1->addWidget(frame);
-//    lay1->setMargin(2);
-//    lay1->setSpacing(0);
 
     QGridLayout * layout = new QGridLayout;
-//    frame->setLayout(layout);
-//    layout->set
-//    QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(4);
     layout->setSpacing(4);
-//    checkbox = new QCheckBox(tr("Auto Scale")+" ",this);
-//    checkbox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-//    connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(onCheckToggled(bool)));
 
     combobox = new QComboBox(this);
     combobox->addItem(tr("Auto-Fit"), 0);
@@ -1752,15 +1748,15 @@ void MinMaxWidget::createLayout()
     minbox->setEnabled(idx == 2);
     maxbox->setEnabled(idx == 2);
 
-    setMin(graph->rec_miny);
-    setMax(graph->rec_maxy);
     minbox->setAlignment(Qt::AlignRight);
     maxbox->setAlignment(Qt::AlignRight);
 
-    minbox->setMinimum(graph->physMinY());
-    maxbox->setMinimum(graph->physMinY());
+    minbox->setMinimum(-9999.0);
+    maxbox->setMinimum(-9999.0);
     minbox->setMaximum(9999.99);
     maxbox->setMaximum(9999.99);
+    setMin(graph->rec_miny);
+    setMax(graph->rec_maxy);
     connect(minbox, SIGNAL(valueChanged(double)), this, SLOT(onMinChanged(double)));
     connect(maxbox, SIGNAL(valueChanged(double)), this, SLOT(onMaxChanged(double)));
 
@@ -1783,6 +1779,13 @@ void MinMaxWidget::createLayout()
     label->setAlignment(Qt::AlignCenter);
     layout->addWidget(label,0,2);
     layout->addWidget(maxbox,1,2);
+
+    reset = new QToolButton(this);
+    reset->setIcon(QIcon(":/icons/refresh.png"));
+    reset->setEnabled(idx == 2);
+
+    layout->addWidget(reset,1,3);
+    connect(reset, SIGNAL(clicked()), this, SLOT(onResetClicked()));
     this->setLayout(layout);
 }
 
