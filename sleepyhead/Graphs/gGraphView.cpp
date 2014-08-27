@@ -31,6 +31,7 @@
 #include "mainwindow.h"
 #include "Graphs/glcommon.h"
 #include "Graphs/gLineChart.h"
+#include "Graphs/gSummaryChart.h"
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFlagsLine.h"
 #include "SleepLib/profiles.h"
@@ -1799,21 +1800,24 @@ void gGraphView::populateMenu(gGraph * graph)
     font.setBold(true);
     font.setPointSize(font.pointSize() + 3);
 
+    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
+    SummaryChart * sc = dynamic_cast<SummaryChart *>(findLayer(graph,LT_SummaryChart));
+
     limits_menu->clear();
-    QWidgetAction * widget = new QWidgetAction(this);
-    MinMaxWidget * minmax = new MinMaxWidget(graph, this);
+    if (lc || sc) {
+        QWidgetAction * widget = new QWidgetAction(this);
+        MinMaxWidget * minmax = new MinMaxWidget(graph, this);
 
-    widget->setDefaultWidget(minmax);
+        widget->setDefaultWidget(minmax);
 
-//    minmax->setMax(graph->rec_maxy);
-//    minmax->setMin(graph->rec_miny);
-//    minmax->setComboIndex(graph->zoomY());
-
-    limits_menu->addAction(widget);
+        limits_menu->addAction(widget);
+        limits_menu->menuAction()->setVisible(true);
+    } else {
+        limits_menu->menuAction()->setVisible(false);
+    }
 
 
     // First check for any linechart for this graph..
-    gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
     if (lc) {
         lines_menu->clear();
         for (int i=0; i < lc->m_dotlines.size(); i++) {
