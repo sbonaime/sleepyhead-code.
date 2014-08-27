@@ -52,7 +52,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
     static QString fd = "0";
     GetTextExtent(fd, x, y);
 
-    double max_yticks = round(height / (y + 14.0)); // plus spacing between lines
+    double max_yticks = round(height / (y + 14.0*w.printScaleY())); // plus spacing between lines
     //double yt=1/max_yticks;
 
     double mxy = maxy; //MAX(fabs(maxy), fabs(miny));
@@ -155,131 +155,11 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     //Todo: clean this up as there is a lot of duplicate code between the sections
 
-    if (0) {//w.graphView()->usePixmapCache()) {
-        /*        if (w.invalidate_yAxisImage) {
-
-                    if (!m_image.isNull()) {
-                        w.graphView()->deleteTexture(m_textureID);
-                        m_image=QImage();
-                    }
-
-
-                    if (height<0) return;
-                    if (height>2000) return;
-
-                    int labelW=0;
-
-                    EventDataType miny=w.min_y;
-                    EventDataType maxy=w.max_y;
-
-                    if (miny<0) { // even it up if it's starts negative
-                        miny=-MAX(fabs(miny),fabs(maxy));
-                    }
-
-                    w.roundY(miny,maxy);
-
-                    EventDataType dy=maxy-miny;
-                    static QString fd="0";
-                    GetTextExtent(fd,x,y);
-                    yh=y;
-
-                    m_image=QImage(width,height+y+4,QImage::Format_ARGB32_Premultiplied);
-
-                    m_image.fill(Qt::transparent);
-                    QPainter paint(&m_image);
-
-
-                    double max_yticks=round(height / (y+14.0)); // plus spacing between lines
-
-                    double mxy=MAX(fabs(maxy),fabs(miny));
-                    double mny=miny;
-                    if (miny<0) {
-                        mny=-mxy;
-                    }
-
-                    double rxy=mxy-mny;
-
-                    int myt;
-                    bool fnd=false;
-                    for (myt=max_yticks;myt>2;myt--) {
-                        float v=rxy/float(myt);
-                        if (v==int(v)) {
-                            fnd=true;
-                            break;
-                        }
-                    }
-                    if (fnd) max_yticks=myt;
-                    double yt=1/max_yticks;
-
-                    double ymult=height/rxy;
-
-                    double min_ytick=rxy*yt;
-
-                    float ty,h;
-
-                    if (min_ytick<=0) {
-                        qDebug() << "min_ytick error in gYAxis::paint() in" << w.title();
-                        return;
-                    }
-                    if (min_ytick>=1000000) {
-                        min_ytick=100;
-                    }
-
-                    //lines=w.backlines();
-
-                    for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
-                        ty=(i - miny) * ymult;
-                        if (dy<5) {
-                            fd=Format(i*m_yaxis_scale,2);
-                        } else {
-                            fd=Format(i*m_yaxis_scale,1);
-                        }
-
-                        GetTextExtent(fd,x,y);
-
-                        if (x>labelW) labelW=x;
-                        h=(height-2)-ty;
-                        h+=yh;
-            #ifndef Q_OS_MAC
-                        // stupid pixel alignment rubbish, I really should be using floats..
-                        h+=1;
-            #endif
-                        if (h<0)
-                            continue;
-
-                        paint.setBrush(Qt::black);
-                        paint.drawText(width-8-x,h+y/2,fd);
-
-                        paint.setPen(m_line_color);
-                        paint.drawLine(width-4,h,width,h);
-
-                        double z=(min_ytick/4)*ymult;
-                        double g=h;
-                        for (int i=0;i<3;i++) {
-                            g+=z;
-                            if (g>height+yh) break;
-                            paint.drawLine(width-3,g,width,g);
-                        }
-                    }
-                    paint.end();
-                    m_image=QGLWidget::convertToGLFormat(m_image);
-                    m_textureID=w.graphView()->bindTexture(m_image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
-                    w.invalidate_yAxisImage=false;
-                }
-
-                if (!m_image.isNull()) {
-                    glEnable(GL_BLEND);
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glEnable(GL_TEXTURE_2D);
-                    w.graphView()->drawTexture(QPoint(left,(top+height)-m_image.height()+5),m_textureID);
-                    glDisable(GL_TEXTURE_2D);
-                    glDisable(GL_BLEND);
-                }
-        */
+    if (0) {
     } else {
         if (height < 0) { return; }
 
-        if (height > 2000) { return; }
+        if (height > 4000) { return; }
 
         int labelW = 0;
 
@@ -294,7 +174,12 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         static QString fd = "0";
         GetTextExtent(fd, x, y);
 
-        double max_yticks = round(height / (y + 14.0)); // plus spacing between lines
+#ifdef DEBUG_LAYOUT
+        painter.setPen(Qt::green);
+        painter.drawLine(0,top,100,top);
+#endif
+
+        double max_yticks = height / (y + 14.0); // plus spacing between lines
 
         double mxy = maxy; // MAX(fabs(maxy), fabs(miny));
         double mny = miny;
@@ -311,7 +196,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         for (myt = max_yticks; myt > 2; myt--) {
             float v = rxy / float(myt);
 
-            if (v == int(v)) {
+            if (qAbs(v - int(v)) < 0.000001) {
                 fnd = true;
                 break;
             }
@@ -345,6 +230,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         QVector<QLine> ticks;
 
+        float shorttick = 4.0 * w.printScaleX();
         for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
             ty = (i - miny) * ymult;
 
@@ -362,9 +248,9 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             if (h < top) { continue; }
 
-            w.renderText(fd, left + width - 8 - x, (h + (y / 2.0)), 0, m_text_color, defaultfont);
+            w.renderText(fd, left + width - shorttick*2 - x, (h + (y / 2.0)), 0, m_text_color, defaultfont);
 
-            ticks.append(QLine(left + width - 4, h, left + width, h));
+            ticks.append(QLine(left + width - shorttick, h, left + width, h));
 
             double z = (min_ytick / 4) * ymult;
             double g = h;
@@ -374,7 +260,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                 if (g > top + height) { break; }
 
-                ticks.append(QLine(left + width - 3, g, left + width, g));
+                ticks.append(QLine(left + width - shorttick/2, g, left + width, g));
             }
         }
         painter.setPen(m_line_color);

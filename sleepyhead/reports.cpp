@@ -415,6 +415,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         if (!print_bookmarks) {
             for (int i = 0; i < gv->size(); i++) {
                 g = (*gv)[i];
+                if (g->isSnapshot()) continue;
 
                 if (g->isEmpty()) { continue; }
 
@@ -508,6 +509,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
             for (int i = 0; i < gv->size(); i++) {
                 gGraph *g = (*gv)[i];
+                if (g->isSnapshot()) continue;
 
                 if (g->isEmpty()) { continue; }
 
@@ -529,6 +531,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             if (g->isEmpty()) { continue; }
 
             if (!g->visible()) { continue; }
+            if (g->isSnapshot()) continue;
 
             start.push_back(st);
             end.push_back(et);

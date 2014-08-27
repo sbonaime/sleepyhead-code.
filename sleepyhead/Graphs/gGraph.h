@@ -9,6 +9,8 @@
 #ifndef graphs_ggraph_h
 #define graphs_ggraph_h
 
+//#define DEBUG_LAYOUT
+
 #include <QFont>
 #include <QObject>
 #include <QPixmap>

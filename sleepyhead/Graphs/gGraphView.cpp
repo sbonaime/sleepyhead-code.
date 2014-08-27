@@ -2099,12 +2099,73 @@ void gGraphView::onSnapshotGraphToggle()
 
         bool pinned = graph->isPinned();
         graph->setPinned(false);
-        QPixmap pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
+
+        bool highres = p_profile->appearance->antiAliasing();
+        QPixmap pm;
+        ////////////////////////////////////////////////////////////////////////////
+        if (highres) {
+            QFont *_defaultfont = defaultfont;
+            QFont *_mediumfont = mediumfont;
+            QFont *_bigfont = bigfont;
+
+            QFont fa = *defaultfont;
+            QFont fb = *mediumfont;
+            QFont fc = *bigfont;
+
+
+            fa.setPointSize(fa.pointSize()*2.0);
+            fb.setPointSize(fb.pointSize()*2.0);
+            fc.setPointSize(fc.pointSize()*2.0);
+
+            defaultfont = &fa;
+            mediumfont = &fb;
+            bigfont = &fc;
+
+
+            graph->m_printing = true;
+
+            bool pmc = p_profile->appearance->usePixmapCaching();
+            p_profile->appearance->setUsePixmapCaching(false);
+            setUsePixmapCache(false);
+
+            int w = graph->m_rect.width() * 2.0;
+            int h = graph->m_rect.height() * 2.0;
+            setPrintScaleX(2);
+            setPrintScaleY(2);
+
+            pm = QPixmap(w,h);
+
+            QPainter painter(&pm);
+
+            QRect rec(0,0,w,h);
+            painter.fillRect(rec,QBrush(QColor(Qt::white)));
+
+            float f = scaleY();
+            QRegion region(rec);
+            graph->paint(painter, region);
+            DrawTextQue(painter);
+            painter.end();
+
+            setUsePixmapCache(pmc);
+            p_profile->appearance->setUsePixmapCaching(pmc);
+
+            setPrintScaleX(1);
+            setPrintScaleY(1);
+            graph->m_printing = false;
+            defaultfont = _defaultfont;
+            mediumfont = _mediumfont;
+            bigfont = _bigfont;
+            ////////////////////////////////////////////////////////////////////////////
+        } else {
+            pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
+        }
         graph->setPinned(pinned);
+
+
         gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
         newgraph->setSnapshot(pm);
         newgraph->setBlockSelect(true);
-        newgraph->setHeight(pm.height());
+        newgraph->setHeight(pm.height()/(highres?2:1));
         //newgraph->setMinHeight(pm.height());
 
         m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
