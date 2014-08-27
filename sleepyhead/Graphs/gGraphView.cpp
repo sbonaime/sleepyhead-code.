@@ -39,38 +39,39 @@ extern MainWindow *mainwin;
 
 #include <QApplication>
 
-MyLabel::MyLabel(QWidget * parent):
-QWidget(parent)
-{
+MyLabel::MyLabel(QWidget * parent)
+    : QWidget(parent) {
     m_font = QApplication::font();
+    time.start();
 }
 MyLabel::~MyLabel()
 {
 }
 void MyLabel::setText(QString text) {
     m_text = text;
-    repaint();
+    update();
 }
 void MyLabel::setFont(QFont & font)
 {
     m_font=font;
 }
+void MyLabel::doRedraw()
+{
+    update();
+}
 
 void MyLabel::setAlignment(Qt::Alignment alignment) {
     m_alignment = alignment;
-    repaint();
+    doRedraw();
 }
 
 
-void MyLabel::paintEvent(QPaintEvent * event)
+void MyLabel::paintEvent(QPaintEvent * /*event*/)
 {
-    QRectF rect(event->rect());
     QPainter painter(this);
     painter.setFont(m_font);
-    painter.drawText(rect, m_alignment, m_text);
+    painter.drawText(rect(), m_alignment, m_text);
 }
-
-
 
 gToolTip::gToolTip(gGraphView *graphview)
     : m_graphview(graphview)
@@ -1288,9 +1289,9 @@ void gGraphView::paintGL()
         painter.drawText(rec, Qt::AlignHCenter | Qt::AlignBottom, txt);
     }
     if (p_profile->appearance->lineCursorMode()) {
-        emit updateCurrentTime(graphs_drawn ? m_currenttime : 0.0F);
+       emit updateCurrentTime(graphs_drawn ? m_currenttime : 0.0F);
     } else {
-        emit updateRange(graphs_drawn ? m_minx : 0.0F, m_maxx);
+       emit updateRange(graphs_drawn ? m_minx : 0.0F, m_maxx);
     }
     DrawTextQue(painter);
 

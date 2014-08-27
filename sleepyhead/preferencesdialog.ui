@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -2408,7 +2408,7 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <property name="text">
-                <string>Top &amp; Bottom Markers</string>
+                <string>Top Markers</string>
                </property>
               </item>
              </widget>

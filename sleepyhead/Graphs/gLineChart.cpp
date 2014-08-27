@@ -219,7 +219,7 @@ skipcheck:
             lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
         }
         if (lob != nullptr) {
-            lob->setOverlayDisplayType(((m_codes[0] == CPAP_FlowRate) || (m_codes[0] == CPAP_MaskPressureHi))? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+            lob->setOverlayDisplayType(((m_codes[0] == CPAP_FlowRate))? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
             lob->SetDay(m_day);
             flags[code] = lob;
         }
@@ -272,7 +272,6 @@ skipcheck:
             }
         }
     }
-
 }
 EventDataType gLineChart::Miny()
 {
@@ -285,7 +284,7 @@ EventDataType gLineChart::Miny()
 
     for (int i=0; i< size; ++i) {
         ChannelID code = m_codes[i];
-        if (!m_enabled[code]) continue;
+        if (!m_enabled[code] || !m_day->channelExists(code)) continue;
 
         tmp = m_day->Min(code);
 
@@ -322,7 +321,7 @@ EventDataType gLineChart::Maxy()
 
     for (int i=0; i< size; ++i) {
         ChannelID code = m_codes[i];
-        if (!m_enabled[code]) continue;
+        if (!m_enabled[code] || !m_day->channelExists(code)) continue;
 
         tmp = m_day->Max(code);
         if (!first) {
@@ -426,6 +425,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;
 
+    if (m_codes[0] == CPAP_Pressure) {
+        int i=5; Q_UNUSED(i);
+    }
 
     w.roundY(miny, maxy);
 

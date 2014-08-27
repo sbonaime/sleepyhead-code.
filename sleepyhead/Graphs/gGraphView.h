@@ -23,6 +23,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QToolButton>
+#include <QTimer>
 
 #ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
@@ -77,6 +78,7 @@ void setEmptyImage(QString text, QPixmap pixmap);
 
 class MyLabel:public QWidget
 {
+    Q_OBJECT
 public:
     MyLabel(QWidget * parent);
     virtual ~MyLabel();
@@ -86,11 +88,16 @@ public:
 
     void setFont(QFont & font);
     QFont & font() { return m_font; }
-    virtual void paintEvent(QPaintEvent * event);
+
+    virtual void paintEvent(QPaintEvent *);
 
     QFont m_font;
     QString m_text;
     Qt::Alignment m_alignment;
+    QTime time;
+protected slots:
+    void doRedraw();
+
 };
 
 class gGraphView;
@@ -620,7 +627,7 @@ class gGraphView
     bool m_blockUpdates;
 
     QPoint m_mouse;
-    qint64 m_currenttime;
+    double m_currenttime;
 
     QTime m_animationStarted;
 

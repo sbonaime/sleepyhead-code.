@@ -249,6 +249,7 @@ void gGraph::setDay(Day *day)
         m_layers[i]->SetDay(day);
     }
 
+    rmin_y = rmax_y = 0;
     ResetBounds();
 }
 
@@ -509,20 +510,17 @@ void gGraph::ToolTip(QString text, int x, int y, ToolTipAlignment align, int tim
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
 
-    if (zoomY() == 0) {
-        // AutoScale mode
-        miny = rmin_y; // MinY();
-        maxy = rmax_y; //MaxY();
-        // fall through.
-    } else if (zoomY() == 1) {
-        miny = rphysmin_y; //physMinY()
-        maxy = rphysmax_y; //physMaxY();
-        return;
-    } else {
+    if (zoomY() == 2) {
         miny = rec_miny;
         maxy = rec_maxy;
-        return;
+        if (maxy > miny) return;
+    } else if (zoomY() ==1) {
+        miny = physMinY();
+        maxy = physMaxY();
+        if (maxy > miny) return;
     }
+    miny = MinY();
+    maxy = MaxY();
 
     int m, t;
     bool ymin_good = false, ymax_good = false;
@@ -578,7 +576,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         if (!ymin_good) {
             miny = m * 50;
         }
-    } else if (maxy >= 5) {
+    } else if (maxy >= 30) {
         m = ceil(maxy / 5.0);
         t = m * 5;
 
@@ -1207,9 +1205,9 @@ EventDataType gGraph::MinY()
 
         tmp = (*l)->Miny();
 
-        if (tmp == 0 && tmp == (*l)->Maxy()) {
-            continue;
-        }
+//        if (tmp == 0 && tmp == (*l)->Maxy()) {
+//            continue;
+//        }
 
         if (first) {
             val = tmp;
@@ -1240,9 +1238,9 @@ EventDataType gGraph::MaxY()
         }
 
         tmp = layer->Maxy();
-        if (tmp == 0 && layer->Miny() == 0) {
-            continue;
-        }
+//        if (tmp == 0 && layer->Miny() == 0) {
+//            continue;
+//        }
 
         if (first) {
             val = tmp;

@@ -306,18 +306,13 @@ quint32 convertDate(quint32 timestamp)
     month = (timestamp  >> 5) & 0x0f;
     year = 2000 + ((timestamp  >> 9) & 0x3f);
     timestamp >>= 15;
-
-//    second = timestamp & 0x3f;
-//    hour = (timestamp >> 6) & 0x1f;
-//    minute = (timestamp >> 12) & 0x3f;
-
     second = timestamp & 0x3f;
     minute = (timestamp >> 6) & 0x3f;
-    hour = (timestamp >> 12)+1;
+    hour = (timestamp >> 12);
 
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second),Qt::UTC);
 
-    Q_ASSERT(dt.isValid());
+//    Q_ASSERT(dt.isValid());
 //    if ((year == 2013) && (month == 9) && (day == 18)) {
 //        // this is for testing.. set a breakpoint on here and
 //        int i=5;
@@ -330,10 +325,10 @@ quint32 convertDate(quint32 timestamp)
     // 91596 = 00:23:12 WET
     // 19790 = 23:23:50 WET
 
-    return dt.toTime_t();
+    return dt.addSecs(-54).toTime_t();
 }
 
-quint32 convertFLWDate(quint32 timestamp)
+quint32 convertFLWDate(quint32 timestamp) // Bit format: hhhhhmmmmmmssssssYYYYYYMMMMDDDDD
 {
     quint16 day, month, hour, minute, second;
     quint16 year;
@@ -342,24 +337,21 @@ quint32 convertFLWDate(quint32 timestamp)
     month = (timestamp  >> 5) & 0x0f;
     year = 2000 + ((timestamp  >> 9) & 0x3f);
     timestamp >>= 15;
-
-    // Okay, why did I swap the first and last bits of the time field?
-    // What am I forgetting?? This seems to work properly like this
-    // Was I looking at older data that worked like this?
-
     second = timestamp & 0x3f;
     minute = (timestamp >> 6) & 0x3f;
-    hour = (timestamp >> 12)+1;
-//    second = timestamp  & 0x3f;
-//    minute = (timestamp >> 6) & 0x3f;
-//    hour = (timestamp >> 12) & 0x1f;
+    hour = (timestamp >> 12);
+
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
-    Q_ASSERT(dt.isValid());
+
+    if(!dt.isValid()){
+        dt = QDateTime(QDate(2015,1,1), QTime(0,0,1));
+    }
+//    Q_ASSERT(dt.isValid());
 //    if ((year == 2013) && (month == 9) && (day == 18)) {
 //        int i=5;
 //    }
     // 87922 23:23:50 WET
-    return dt.addSecs(-360).toTime_t();
+    return dt.addSecs(-54).toTime_t();
 }
 
 //QDateTime FPIconLoader::readFPDateTime(quint8 *data)
@@ -481,7 +473,6 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
     ts = convertFLWDate(t2);
 
     if (ts > QDateTime(QDate(2015,1,1), QTime(0,0,0)).toTime_t()) {
-        ts = convertFLWDate(t2);
         return false;
     }
 
@@ -864,7 +855,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
         sess = Sessions[sessid];
         ti = qint64(sessid) * 1000L;
         sess->really_set_first(ti);
-        ti -= 360000;
+
         EventList *LK = sess->AddEventList(CPAP_LeakTotal, EVL_Event, 1);
         EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
         EventList *OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
@@ -881,10 +872,10 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
         for (int i = 0; i < rec; ++i) {
             for (int j = 0; j < 3; ++j) {
                 pressure = data[idx];
-                PR->AddEvent(ti+360000/2, pressure);
+                PR->AddEvent(ti+120000, pressure);
 
                 leak = data[idx + 1];
-                LK->AddEvent(ti+360000/2, leak);
+                LK->AddEvent(ti+120000, leak);
 
                 a1 = data[idx + 2];   // [0..5] Obstructive flag, [6..7] Unknown
                 a2 = data[idx + 3];   // [0..5] Hypopnea,         [6..7] Unknown

@@ -925,8 +925,8 @@ QString Daily::getSessionInformation(Day * day)
                     .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
                     .arg((b ? "on" : "off"))
                     .arg(fd.date().toString(Qt::SystemLocaleShortDate))
-                    .arg(fd.toString("HH:mm"))
-                    .arg(ld.toString("HH:mm"));
+                    .arg(fd.toString("HH:mm:ss"))
+                    .arg(ld.toString("HH:mm:ss"));
         }
     }
 
@@ -1285,8 +1285,8 @@ QString Daily::getSleepTime(Day * day)
     int s=tt % 60;
     html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n")
             .arg(date.date().toString(Qt::SystemLocaleShortDate))
-            .arg(date.toString("HH:mm"))
-            .arg(date2.toString("HH:mm"))
+            .arg(date.toString("HH:mm:ss"))
+            .arg(date2.toString("HH:mm:ss"))
             .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
     html+="</table>\n";
 //    html+="<hr/>";
