@@ -2101,7 +2101,7 @@ void gGraphView::onSnapshotGraphToggle()
         newgraph->setSnapshot(pm);
         newgraph->setBlockSelect(true);
         newgraph->setHeight(pm.height());
-        newgraph->setMinHeight(pm.height());
+        //newgraph->setMinHeight(pm.height());
 
         m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
         m_graphsbyname[newname] = newgraph;

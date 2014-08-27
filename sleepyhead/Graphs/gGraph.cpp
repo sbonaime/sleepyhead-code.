@@ -322,7 +322,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
 
     if (m_issnapshot) {
-        painter.drawPixmap(0, originY, m_snapshot);
+        painter.drawPixmap(QRect(0, originY,width,height), m_snapshot, m_snapshot.rect());
         QLinearGradient linearGrad(QPointF(100, 100), QPointF(width / 2, 100));
         linearGrad.setColorAt(0, QColor(255, 150, 150,30));
         linearGrad.setColorAt(1, QColor(255,255,255,20));
