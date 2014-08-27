@@ -2104,10 +2104,13 @@ void gGraphView::onSnapshotGraphToggle()
 
 //        addGraph(newgraph);
         updateScale();
+        timedRedraw(0);
     } else if (cmd == "remove") {
         m_graphsbyname.remove(graph->name());
         m_graphs.removeAll(it.value());
         delete graph;
+        updateScale();
+        timedRedraw(0);
     }
     qDebug() << cmd << name;
 }
