@@ -357,10 +357,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     snap_action = context_menu->addAction(QString(), this, SLOT(onSnapshotGraphToggle()));
     context_menu->addSeparator();
 
-    QAction * action = context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
-    action->setToolTip(tr("Restore X-axis zoom too 100% to view entire days data."));
 
-    action = context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
+    zoom100_action = context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
+    zoom100_action->setToolTip(tr("Restore X-axis zoom too 100% to view entire days data."));
+
+    QAction * action = context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
     action->setToolTip(tr("Resets all graphs to a uniform height and default order."));
 
     context_menu->addSeparator();
@@ -1836,12 +1837,15 @@ void gGraphView::populateMenu(gGraph * graph)
 {
     QAction * action;
 
+
     if (graph->isSnapshot()) {
         snap_action->setText(tr("Remove Snapshot"));
         snap_action->setData(graph->name()+"|remove");
+       // zoom100_action->setVisible(false);
     } else {
         snap_action->setText(tr("Snapshot Graph"));
         snap_action->setData(graph->name()+"|snapshot");
+      //  zoom100_action->setVisible(true);
     }
 
 

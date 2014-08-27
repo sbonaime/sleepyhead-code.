@@ -644,6 +644,8 @@ class gGraphView
 
     QAction * snap_action;
 
+    QAction * zoom100_action;
+
   signals:
     void updateCurrentTime(double);
     void updateRange(double,double);

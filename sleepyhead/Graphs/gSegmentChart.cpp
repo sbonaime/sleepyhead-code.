@@ -124,7 +124,7 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             const QColor col = schema::channel[m_codes[m]].defaultColor();
 
             // length of this segment in degrees
-            float len = 360.0 / float(m_total) * float(data);
+            float len = 360.0 / m_total * data;
 
             // Setup the shiny radial gradient
 
@@ -136,16 +136,26 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             gradient.setColorAt(0, Qt::white);
             gradient.setColorAt(1, col);
 
+
             // draw filled pie
             painter.setBrush(gradient);
             painter.setBackgroundMode(Qt::OpaqueMode);
-            painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+            if (m_total == data) {
+                painter.drawEllipse(pierect);
+            } else {
+                painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+            }
 
             // draw outline
             painter.setBackgroundMode(Qt::TransparentMode);
             painter.setBrush(QBrush(col,Qt::NoBrush));
             painter.setPen(QPen(QColor(Qt::black),1.5));
-            painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+
+            if (m_total == data) {
+                painter.drawEllipse(pierect);
+            } else {
+                painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
+            }
 
 
             // Draw text labels if they fit
