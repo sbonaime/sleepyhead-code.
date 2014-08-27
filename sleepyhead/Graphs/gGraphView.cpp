@@ -355,8 +355,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     pin_icon = QPixmap(":/icons/pushpin.png");
     context_menu->addSeparator();
 
-    context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
-    context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
+    QAction * action = context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
+    action->setToolTip(tr("Restore X-axis zoom too 100% to view entire days data."));
+
+    action = context_menu->addAction(tr("Reset Graph Layout"), this, SLOT(resetLayout()));
+    action->setToolTip(tr("Resets all graphs to a uniform height and default order."));
 
     context_menu->addSeparator();
     limits_menu = context_menu->addMenu(tr("Y-Axis"));
@@ -1689,6 +1692,7 @@ protected:
 MinMaxWidget::MinMaxWidget(gGraph * graph, QWidget *parent)
 :QWidget(parent), graph(graph)
 {
+    step = 1;
     createLayout();
 }
 
@@ -1704,12 +1708,27 @@ void MinMaxWidget::onMaxChanged(double d)
 }
 void MinMaxWidget::onResetClicked()
 {
+    int tmp = graph->zoomY();
+    graph->setZoomY(0);
     EventDataType miny = graph->MinY(),
                   maxy = graph->MaxY();
 
     graph->roundY(miny, maxy);
     setMin(graph->rec_miny = miny);
     setMax(graph->rec_maxy = maxy);
+
+    float r = maxy-miny;
+    if (r > 400) {
+        step = 50;
+    } else if (r > 100) {
+        step = 10;
+    } else if (r > 50) {
+        step = 5;
+    } else {
+        step = 1;
+    }
+
+    graph->setZoomY(tmp);
 }
 
 void MinMaxWidget::onComboChanged(int idx)
@@ -1739,10 +1758,14 @@ void MinMaxWidget::createLayout()
     combobox->addItem(tr("Auto-Fit"), 0);
     combobox->addItem(tr("Defaults"), 1);
     combobox->addItem(tr("Override"), 2);
+    combobox->setToolTip(tr("The Y-Axis scaling mode, 'Auto-Fit' for automatic scaling, 'Defaults' for settings according to manufacturer, and 'Override' to choose your own."));
     connect(combobox, SIGNAL(activated(int)), this, SLOT(onComboChanged(int)));
 
     minbox = new QDoubleSpinBox(this);
     maxbox = new QDoubleSpinBox(this);
+
+    minbox->setToolTip(tr("The Minimum Y-Axis value.. Note this can be a negative number if you wish."));
+    maxbox->setToolTip(tr("The Maximum Y-Axis value.. Must be greater than Minimum to work."));
 
     int idx = graph->zoomY();
     combobox->setCurrentIndex(idx);
@@ -1759,6 +1782,21 @@ void MinMaxWidget::createLayout()
     maxbox->setMaximum(9999.99);
     setMin(graph->rec_miny);
     setMax(graph->rec_maxy);
+
+    float r = graph->rec_maxy - graph->rec_miny;
+    if (r > 400) {
+        step = 50;
+    } else if (r > 100) {
+        step = 10;
+    } else if (r > 50) {
+        step = 5;
+    } else {
+        step = 1;
+    }
+
+    minbox->setSingleStep(step);
+    maxbox->setSingleStep(step);
+
     connect(minbox, SIGNAL(valueChanged(double)), this, SLOT(onMinChanged(double)));
     connect(maxbox, SIGNAL(valueChanged(double)), this, SLOT(onMaxChanged(double)));
 
@@ -1784,6 +1822,7 @@ void MinMaxWidget::createLayout()
 
     reset = new QToolButton(this);
     reset->setIcon(QIcon(":/icons/refresh.png"));
+    reset->setToolTip(tr("This button resets the Min and Max to match the Auto-Fit"));
     reset->setEnabled(idx == 2);
 
     layout->addWidget(reset,1,3);

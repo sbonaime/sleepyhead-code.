@@ -1079,12 +1079,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     double first, last;
     double time = 0;
 
-    // Calculate the session time.
+    // Calculate the CPAP session time.
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
-        if (!(*s)->enabled()) { continue; }
+        Session * sess = *s;
+        if (!sess->enabled() || (sess->machine()->type() != MT_CPAP)) continue;
 
-        first = (*s)->first();
-        last = (*s)->last();
+        first = sess->first();
+        last = sess->last();
 
         if (last < w.min_x) { continue; }
         if (first > w.max_x) { continue; }

@@ -68,6 +68,7 @@ protected:
 //    QCheckBox *checkbox;
     QDoubleSpinBox *minbox;
     QDoubleSpinBox *maxbox;
+    double step;
     QToolButton * reset;
 };
 

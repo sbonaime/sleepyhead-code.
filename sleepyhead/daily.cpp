@@ -1979,7 +1979,7 @@ void Daily::on_LineCursorUpdate(double time)
 {
     if (time > 1) {
         QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
-        QString txt = dt.toString("MMM dd HH:mm:ss:zzz");
+        QString txt = dt.toString("MMM dd HH:mm:ss.zzz");
         dateDisplay->setText(txt);
     } else dateDisplay->setText(QString(GraphView->emptyText()));
 }
