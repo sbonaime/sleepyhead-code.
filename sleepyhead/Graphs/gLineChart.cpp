@@ -425,10 +425,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;
 
-    if (m_codes[0] == CPAP_Pressure) {
-        int i=5; Q_UNUSED(i);
-    }
-
     w.roundY(miny, maxy);
 
 

@@ -353,6 +353,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     context_menu = new QMenu(this);
     pin_action = context_menu->addAction(QString(), this, SLOT(togglePin()));
     pin_icon = QPixmap(":/icons/pushpin.png");
+
+    snap_action = context_menu->addAction(QString(), this, SLOT(onSnapshotGraphToggle()));
     context_menu->addSeparator();
 
     QAction * action = context_menu->addAction(tr("100% zoom level"), this, SLOT(resetZoom()));
@@ -443,9 +445,9 @@ gGraphView::~gGraphView()
 #endif
 
     // Note: This will cause a crash if two graphs accidentally have the same name
-    for (int i = 0; i < m_graphs.size(); i++) {
-        delete m_graphs[i];
-        m_graphs[i]=NULL;
+    for (QList<gGraph *>::iterator g = m_graphs.begin(); g!= m_graphs.end(); ++g) {
+        gGraph * graph = *g;
+        delete graph;
     }
 
     delete m_tooltip;
@@ -1103,7 +1105,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
         if ((py + h + graphSpacer) >= 0) {
             w = width();
-            int tw = (g->showTitle() ? titleWidth : 0);
+            int tw = 0; // (g->showTitle() ? titleWidth : 0);
 
             queGraph(g, px + tw, py, width() - tw, h);
 
@@ -1164,7 +1166,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
         if ((py + h + graphSpacer) >= 0) {
             w = width();
-            int tw = (g->showTitle() ? titleWidth : 0);
+            int tw = 0; //(g->showTitle() ? titleWidth : 0);
 
             queGraph(g, px + tw, py, width() - tw, h);
 
@@ -1834,6 +1836,15 @@ void gGraphView::populateMenu(gGraph * graph)
 {
     QAction * action;
 
+    if (graph->isSnapshot()) {
+        snap_action->setText(tr("Remove Snapshot"));
+        snap_action->setData(graph->name()+"|remove");
+    } else {
+        snap_action->setText(tr("Snapshot Graph"));
+        snap_action->setData(graph->name()+"|snapshot");
+    }
+
+
     // Menu title fonts
     QFont font = QApplication::font();
     font.setBold(true);
@@ -2062,6 +2073,43 @@ void gGraphView::populateMenu(gGraph * graph)
         cpap_menu->clear();
         cpap_menu->menuAction()->setVisible(false);
     }
+}
+
+void gGraphView::onSnapshotGraphToggle()
+{
+    QString name = snap_action->data().toString().section("|",0,0);
+    QString cmd = snap_action->data().toString().section("|",-1).toLower();
+    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    if (it == m_graphsbyname.end()) return;
+
+    gGraph * graph = it.value();
+
+    if (cmd == "snapshot") {
+        QString newname = name+";"+QDateTime::fromMSecsSinceEpoch(graph->min_x).toString(Qt::ISODate)+" "+QDateTime::fromMSecsSinceEpoch(graph->max_x).toString(Qt::ISODate);
+
+        it = m_graphsbyname.find(newname);
+        if (it != m_graphsbyname.end()) {
+            // already a snapshot.. :-/
+            return;
+        }
+
+        QPixmap pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
+        gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
+        newgraph->setSnapshot(pm);
+        newgraph->setHeight(pm.height());
+
+        m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
+        m_graphsbyname[newname] = newgraph;
+        newgraph->m_graphview = this;
+
+//        addGraph(newgraph);
+        updateScale();
+    } else if (cmd == "remove") {
+        m_graphsbyname.remove(graph->name());
+        m_graphs.removeAll(it.value());
+        delete graph;
+    }
+    qDebug() << cmd << name;
 }
 
 void gGraphView::onPlotsClicked(QAction *action)
@@ -3007,7 +3055,7 @@ bool gGraphView::LoadSettings(QString title)
 
     short zoomy = 0;
 
-    QVector<gGraph *> neworder;
+    QList<gGraph *> neworder;
     QHash<QString, gGraph *>::iterator gi;
 
     for (int i = 0; i < siz; i++) {

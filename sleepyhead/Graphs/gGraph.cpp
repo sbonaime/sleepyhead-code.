@@ -120,7 +120,7 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
     if (height == 0) {
         height = p_profile->appearance->graphHeight();
     }
-    if (graphview->contains(name)) {
+    if (graphview && graphview->contains(name)) {
         qDebug() << "Trying to duplicate " << name << " when a graph with the same name already exists";
         name+="-1";
     }
@@ -144,7 +144,9 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
         timer = new QTimer(graphview);
         connect(timer, SIGNAL(timeout()), SLOT(Timeout()));
     } else {
-        qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
+        timer = nullptr;
+        // know what I'm doing now.. ;)
+     //   qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
 
     m_margintop = 14;
@@ -174,9 +176,11 @@ gGraph::~gGraph()
 
     m_layers.clear();
 
-    timer->stop();
-    disconnect(timer, 0, 0, 0);
-    delete timer;
+    if (timer) {
+        timer->stop();
+        disconnect(timer, 0, 0, 0);
+        delete timer;
+    }
 }
 void gGraph::Trigger(int ms)
 {
@@ -212,6 +216,8 @@ bool gGraph::isSelected()
 
 bool gGraph::isEmpty()
 {
+    if (m_issnapshot) return false;
+
     bool empty = true;
 
     for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
@@ -285,9 +291,10 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
     //m_marginbottom=5;
 
-    //glColor4f(0,0,0,1);
     left = marginLeft(), right = marginRight(), top = marginTop(), bottom = marginBottom();
     int x = 0, y = 0;
+
+
 
     if (m_showTitle) {
         int title_x, yh;
@@ -302,12 +309,33 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         title_x = float(yh) * 1.5;
 
         QString & txt = title();
-        graphView()->AddTextQue(txt, marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
+        if (!m_issnapshot) {
+             graphView()->AddTextQue(txt, marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
+        }
 
         left += title_x;
     } else { left = 0; }
 
-    //#define DEBUG_LAYOUT
+
+    if (m_issnapshot) {
+        painter.drawPixmap(0, originY, m_snapshot);
+        QLinearGradient linearGrad(QPointF(100, 100), QPointF(width / 2, 100));
+        linearGrad.setColorAt(0, QColor(255, 150, 150,30));
+        linearGrad.setColorAt(1, QColor(255,255,255,20));
+
+        painter.fillRect(m_rect, QBrush(linearGrad));
+        painter.setFont(*defaultfont);
+        painter.setPen(QColor(0,0,0,255));
+
+        QString t = name().section(";", -1);
+
+        painter.drawText(m_rect, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
+
+        return;
+    }
+
+
+  //  #define DEBUG_LAYOUT
 #ifdef DEBUG_LAYOUT
     QColor col = Qt::red;
     painter.setPen(col);
@@ -316,7 +344,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 #endif
     int tmp;
 
-    left = 0;
+   // left = 0;
 
     for (int i = 0; i < m_layers.size(); i++) {
         Layer *ll = m_layers[i];
@@ -336,7 +364,9 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         if (!ll->visible()) { continue; }
 
-        tmp = ll->Width() * m_graphview->printScaleX();
+        tmp = ll->Width();
+        tmp *= m_graphview->printScaleX();
+        tmp *= m_graphview->devicePixelRatio();
 
         if (ll->position() == LayerLeft) {
             QRect rect(originX + left, originY + top, tmp, height - top - bottom);
@@ -1409,3 +1439,12 @@ void gGraph::dumpInfo() {
         }
     }
 }
+
+void gGraph::setSnapshot(QPixmap &pixmap)
+{
+    m_snapshot = pixmap;
+//    m_snapshot = renderPixmap(m_rect.width(), m_rect.height(), false);
+    m_issnapshot = true;
+}
+
+

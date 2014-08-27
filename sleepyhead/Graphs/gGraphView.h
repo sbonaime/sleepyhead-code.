@@ -570,7 +570,7 @@ class gGraphView
     gGraphView *m_shared;
 
     //! \brief List of all graphs contained in this area
-    QVector<gGraph *> m_graphs;
+    QList<gGraph *> m_graphs;
 
     //! \brief List of all graphs contained, indexed by title
     QHash<QString, gGraph *> m_graphsbyname;
@@ -642,6 +642,8 @@ class gGraphView
     QPixmap pin_icon;
     gGraph *pin_graph;
 
+    QAction * snap_action;
+
   signals:
     void updateCurrentTime(double);
     void updateRange(double,double);
@@ -668,6 +670,7 @@ protected slots:
     void onLinesClicked(QAction *);
     void onPlotsClicked(QAction *);
     void onOverlaysClicked(QAction *);
+    void onSnapshotGraphToggle();
 };
 
 #endif // GGRAPHVIEW_H
