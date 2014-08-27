@@ -2929,7 +2929,8 @@ bool gGraphView::isEmpty()
     bool res = true;
 
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (!m_graphs.at(i)->isEmpty()) {
+        gGraph * graph = m_graphs.at(i);
+        if (!graph->isSnapshot() && !graph->isEmpty()) {
             res = false;
             break;
         }

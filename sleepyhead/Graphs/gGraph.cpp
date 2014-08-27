@@ -129,6 +129,7 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
 
     m_layers.clear();
 
+    m_issnapshot = false;
     f_miny = f_maxy = 0;
     rmin_x = rmin_y = 0;
     rmax_x = rmax_y = 0;
@@ -216,7 +217,9 @@ bool gGraph::isSelected()
 
 bool gGraph::isEmpty()
 {
-    if (m_issnapshot) return false;
+    if (m_issnapshot) {
+        return graphView()->isEmpty();
+    }
 
     bool empty = true;
 
@@ -226,6 +229,7 @@ bool gGraph::isEmpty()
             break;
         }
     }
+
 
     return empty;
 }
