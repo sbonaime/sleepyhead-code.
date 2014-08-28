@@ -2726,33 +2726,65 @@ void gGraphView::wheelEvent(QWheelEvent *event)
             vertScrollTime.start();
             return;
         }
+
         // (This is a total pain in the butt on MacBook touchpads..)
 
         if (vertScrollTime.elapsed() < scrollDampening) {
             return;
         }
         horizScrollTime.start();
+    }
 
-        gGraph *graph = nullptr;
-        int group = 0;
-        int x = event->x();
-        int y = event->y();
+    gGraph *graph = nullptr;
+    int group = 0;
+    int x = event->x();
+    int y = event->y();
 
-        float h, py = 0, pinned_height = 0;
+    float h, py = 0, pinned_height = 0;
 
 
-        // Find graph hovered over
+    // Find graph hovered over
+    for (int i = 0; i < m_graphs.size(); i++) {
+        gGraph *g = m_graphs[i];
+        if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
+            continue;
+        }
+
+        h = g->height() * m_scaleY;
+        pinned_height += h + graphSpacer;
+
+        if (py > height()) {
+            break;    // we are done.. can't draw anymore
+        }
+
+        if ((py + h + graphSpacer) >= 0) {
+            if ((y >= py) && (y <= py + h)) {
+                graph = g;
+                break;
+            } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                // What to do when double clicked on the resize handle?
+                graph = g;
+                break;
+            }
+        }
+
+        py += h;
+        py += graphSpacer; // do we want the extra spacer down the bottom?
+    }
+    if (!graph) {
+        py = -m_offsetY;
+        py += pinned_height;
+
         for (int i = 0; i < m_graphs.size(); i++) {
             gGraph *g = m_graphs[i];
-            if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
+            if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
             }
 
             h = g->height() * m_scaleY;
-            pinned_height += h + graphSpacer;
 
             if (py > height()) {
-                break;    // we are done.. can't draw anymore
+                break;
             }
 
             if ((py + h + graphSpacer) >= 0) {
@@ -2764,55 +2796,16 @@ void gGraphView::wheelEvent(QWheelEvent *event)
                     graph = g;
                     break;
                 }
+
             }
 
             py += h;
             py += graphSpacer; // do we want the extra spacer down the bottom?
         }
-        if (!graph) {
-            py = -m_offsetY;
-            py += pinned_height;
+    }
 
-            for (int i = 0; i < m_graphs.size(); i++) {
-                gGraph *g = m_graphs[i];
-                if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
-                    continue;
-                }
 
-                h = g->height() * m_scaleY;
-
-                if (py > height()) {
-                    break;
-                }
-
-                if ((py + h + graphSpacer) >= 0) {
-                    if ((y >= py) && (y <= py + h)) {
-                        graph = g;
-                        break;
-                    } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
-                        // What to do when double clicked on the resize handle?
-                        graph = g;
-                        break;
-                    }
-
-                }
-
-                py += h;
-                py += graphSpacer; // do we want the extra spacer down the bottom?
-            }
-        }
-
-//        // Pick the first valid graph in the primary group
-//        for (int i = 0; i < m_graphs.size(); i++) {
-//            if (!m_graphs[i]) continue;
-//            if (m_graphs[i]->group() == group) {
-//                if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
-//                    g = m_graphs[i];
-//                    break;
-//                }
-//            }
-//        }
-
+    if (event->modifiers() == Qt::NoModifier) {
         if (!graph) {
             // just pick any graph then
             for (int i = 0; i < m_graphs.size(); i++) {
@@ -2853,40 +2846,44 @@ void gGraphView::wheelEvent(QWheelEvent *event)
         saveHistory();
         SetXBounds(graph->min_x, graph->max_x, group);
 
-    } else  if ((event->modifiers() & Qt::ControlModifier)) {
-        int x = event->x();
-        int y = event->y();
+    } else if ((event->modifiers() & Qt::ControlModifier)) {
 
-        float py = -m_offsetY;
-        float h;
+        if (graph) graph->wheelEvent(event);
+//        int x = event->x();
+//        int y = event->y();
 
-        for (int i = 0; i < m_graphs.size(); i++) {
-            gGraph *g = m_graphs[i];
-            if (!g || g->isEmpty() || !g->visible()) { continue; }
+//        float py = -m_offsetY;
+//        float h;
 
-            h = g->height() * m_scaleY;
 
-            if (py > height()) {
-                break;
-            }
 
-            if ((py + h + graphSpacer) >= 0) {
-                if ((y >= py) && (y <= py + h)) {
-                    if (x < titleWidth) {
-                        // What to do when ctrl+wheel is used on the graph title ??
-                    } else {
-                        // send event to graph..
-                        g->wheelEvent(event);
-                    }
-                } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
-                    // What to do when the wheel is used on the resize handle?
-                }
+//        for (int i = 0; i < m_graphs.size(); i++) {
+//            gGraph *g = m_graphs[i];
+//            if (!g || g->isEmpty() || !g->visible()) { continue; }
 
-            }
+//            h = g->height() * m_scaleY;
 
-            py += h;
-            py += graphSpacer; // do we want the extra spacer down the bottom?
-        }
+//            if (py > height()) {
+//                break;
+//            }
+
+//            if ((py + h + graphSpacer) >= 0) {
+//                if ((y >= py) && (y <= py + h)) {
+//                    if (x < titleWidth) {
+//                        // What to do when ctrl+wheel is used on the graph title ??
+//                    } else {
+//                        // send event to graph..
+//                        g->wheelEvent(event);
+//                    }
+//                } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+//                    // What to do when the wheel is used on the resize handle?
+//                }
+
+//            }
+
+//            py += h;
+//            py += graphSpacer; // do we want the extra spacer down the bottom?
+//        }
     }
 }
 

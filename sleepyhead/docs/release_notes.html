@@ -1,33 +1,37 @@
 <html>
 <head><meta charset="UTF-8"></head>
 <body>
-<h1><image src="qrc:/docs/sheep.png" width=64 height=64>SleepyHead v0.9.7-10 <b>Testing</b></h1>
+<h1><image src="qrc:/docs/sheep.png" width=64 height=64>SleepyHead v0.9.7-11 <b>Testing</b></h1>
 
 <p><h2><b>Release Notes</b></h2></p>
 <p>Greetings!</p>
 <p>Here is a definitely new and improved SleepyHead build :)</p>
 
-<p>I'm pleased to report that CMS50i and CMS50f oximeters finally work with SleepyHead, a huge thanks to François Revol and Michael Masterson for there assistance with this.</p>
-<p>German users will be pleased to learn that the (Pulox) PO-200, PO-300, and PO-400 oximeters are secretely Contecs CMS50's in disguise, (D+, E and F respectively)..</p>
+<p>Right clicky menu has tons of new stuff for you to play with... some of this you're hopefully going to love! :)</p>
+<p>New Graph Clone ability allows you to make a temporary copy of a graph, and operate it completely independently...
+You can even take these graph clones with you to another day! They aren't saved though. they are gone when you close SleepyHead.</li>
+<p>Y-Axis menu allows for better control of Y-Axis scaling, all of this has been improved greatly... no more having to go into preferences
+to set minimum/maximum values (that SleepyHead wasn't honouring properly anyway). Now you can adjust these settings live for each graph!</p>
+<p>Fisher & Paykel support got a tweak and timestamps should be correct, and even the new AirSense machines import mostly.
+I still need to to see more AirSense data to get everything right though!</p>
 
-<p>This build features recent code that modified the internal "Day" objects, so they can hold sessions from multiple machines.. which is a pretty significant change in how data is stored in memory.
-This was done so Oximeter, CPAP, sleep stage, positional, etc.. Session's don't have to be handled individually.. Now for instance, I can compare oximetery and CPAP data in the same object,
-leading to much more powerful calculation and graphing possibilities. Nerdy stuff end users won't know about, but you will. ;)</p>
-<p>You will likely need to REBUILD YOUR CPAP MACHINE DATABASE from the Data menu to get the benefit of the latest goodies. This rebuild will be automatic in the final 0.9.7 public builds (well, they will face a forced reimport unless they are ResMed users, but anyway :/)</p>
-
-<p>Check out the new right click menu over the titlebar/yAxis area, you will find it useful.. Remember to click outside of the popup menu to make it go away.. Design feature. :P</p>
-<p>I'd very much love to hear your comments on the latest changes, some of this is stuff I've been planning for ages.</p>
 <p><b>Sleep Well, and good luck!</b></p>
 <p><b><i>JediMark</i></b></p>
 
 <br/>
 <b>New features & bug fixes in v0.9.7</b><br/>
 <list>
+<li>Experimental ResMed AirSense S10 import support</li>
+<li>F&P Icon timestamp fix, thanks to Roy Stone for the patch!</li>
+<li>New Feature: Create independant temporary Graph Clones, which you can explore seperately, even carry over to another day</li>
+<li>Split events and waveforms up in preferences, and sorted by machine type</li>
+<li>Removed the old graph tab in preferences, as it's no longer needed</li>
+<li>Graph YAxis scaling can now be adjusted easily in the right click menu</li>
 <li>New Feature: Added toggle-able linechart Event-flag overlays</li>
 <li>New Feature: Added toggle-able Graph Plots when multiple plots present</li>
 <li>New Feature: Added toggle-able Dotted lines for each graph for various purposes</li>
 <li>New Feature: Added right-click popup menu in Y-Axis and title graph area</li>
-<li>Support for importing from CMS50F and CMS50I via cable</i>
+<li>Support for importing from CMS50F and CMS50I via cable. Thanks François Revol and Michael Masterson for their amazing help!</i>
 <li>Fix duplicate Ti/Te graphs on VPAP Adapt</li>
 <li>New Graph: Time at Pressure</li>
 <li>Less ugly code hardwiring and more automatic smarts, plus better channel color and name consistencies underneath.</li>
