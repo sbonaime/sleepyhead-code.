@@ -333,6 +333,9 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         QString t = name().section(";", -1);
 
         painter.drawText(m_rect, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
+        if (isPinned()) {
+            painter.drawPixmap(-5, originY-10, m_graphview->pin_icon);
+        }
 
         return;
     }
@@ -690,6 +693,14 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     int x = event->x();
 
     bool doredraw = false;
+
+    if (isSnapshot() && (x> m_graphview->titleWidth)) {
+        // this nag might be a little too much..
+        ToolTip(tr("Snapshot"),x+15,y, TT_AlignLeft);
+        timedRedraw(0);
+        return;
+    }
+
 
     for (int i = 0; i < m_layers.size(); i++) {
         if (m_layers[i]->m_rect.contains(x, y))

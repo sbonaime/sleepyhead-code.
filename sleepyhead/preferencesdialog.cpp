@@ -272,15 +272,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
             shortformat.replace("yy","yyyy");
         }*/
 
-    graphFilterModel = new MySortFilterProxyModel(this);
-    graphModel = new QStandardItemModel(this);
-    graphFilterModel->setSourceModel(graphModel);
-    graphFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    graphFilterModel->setFilterKeyColumn(0);
-    ui->graphView->setModel(graphFilterModel);
-
-    resetGraphModel();
-
     chanFilterModel = new MySortFilterProxyModel(this);
     chanModel = new QStandardItemModel(this);
     chanFilterModel->setSourceModel(chanModel);
@@ -646,8 +637,6 @@ void PreferencesDialog::InitWaveInfo()
 
 PreferencesDialog::~PreferencesDialog()
 {
-    disconnect(graphModel, SIGNAL(itemChanged(QStandardItem *)), this,
-               SLOT(graphModel_changed(QStandardItem *)));
     delete ui;
 }
 
@@ -997,12 +986,6 @@ void PreferencesDialog::on_graphView_activated(const QModelIndex &index)
     qDebug() << "Could do something here with" << a;
 }
 
-void PreferencesDialog::on_graphFilter_textChanged(const QString &arg1)
-{
-    graphFilterModel->setFilterFixedString(arg1);
-}
-
-
 MySortFilterProxyModel::MySortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
 {
@@ -1021,211 +1004,47 @@ bool MySortFilterProxyModel::filterAcceptsRow(int source_row,
     return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
 
-void PreferencesDialog::graphModel_changed(QStandardItem *item)
-{
-    QModelIndex index = item->index();
 
-    gGraphView *gv = nullptr;
-    bool ok;
+//void PreferencesDialog::on_resetGraphButton_clicked()
+//{
+//    QString title = tr("Confirmation");
+//    QString text  = tr("Are you sure you want to reset your graph preferences to the defaults?");
+//    StandardButtons buttons = QMessageBox::Yes | QMessageBox::No;
+//    StandardButton  defaultButton = QMessageBox::No;
 
-    const QModelIndex &row = index.sibling(index.row(), 0);
-    bool checked = row.data(Qt::CheckStateRole) != 0;
-    //QString name=row.data().toString();
+//    // Display confirmation dialog.
+//    StandardButton choice = QMessageBox::question(this, title, text, buttons, defaultButton);
 
-    int group = row.data(Qt::UserRole + 1).toInt();
-    int id = row.data(Qt::UserRole + 2).toInt();
+//    if (choice == QMessageBox::No) {
+//        return;
+//    }
 
-    switch (group) {
-    case 0:
-        gv = mainwin->getDaily()->graphView();
-        break;
+//    gGraphView *views[3] = {0};
+//    views[0] = mainwin->getDaily()->graphView();
+//    views[1] = mainwin->getOverview()->graphView();
 
-    case 1:
-        gv = mainwin->getOverview()->graphView();
-        break;
+//    // Iterate over all graph containers.
+//    for (unsigned j = 0; j < 3; j++) {
+//        gGraphView *view = views[j];
 
-    default:
-        ;
-    }
+//        if (!view) {
+//            continue;
+//        }
 
-    if (!gv) {
-        return;
-    }
+//        // Iterate over all contained graphs.
+//        for (int i = 0; i < view->size(); i++) {
+//            gGraph *g = (*view)[i];
+//            g->setRecMaxY(0); // FIXME: should be g->reset(), but need other patches to land.
+//            g->setRecMinY(0);
+//            g->setVisible(true);
+//        }
 
-    gGraph *graph = (*gv)[id];
+//        view->updateScale();
+//    }
 
-    if (!graph) {
-        return;
-    }
-
-    if (graph->visible() != checked) {
-        graph->setVisible(checked);
-    }
-
-    EventDataType val;
-
-    if (index.column() == 1) {
-        val = index.data().toDouble(&ok);
-
-        if (!ok) {
-            graphModel->setData(index, QString::number(graph->rec_miny, 'f', 1));
-            ui->graphView->update();
-        }  else {
-            //if ((val < graph->rec_maxy) || (val==0)) {
-            graph->setRecMinY(val);
-            /*} else {
-                graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
-                ui->graphView->update();
-             } */
-        }
-    } else if (index.column() == 2) {
-        val = index.data().toDouble(&ok);
-
-        if (!ok) {
-            graphModel->setData(index, QString::number(graph->rec_maxy, 'f', 1));
-            ui->graphView->update();
-        }  else {
-            //if ((val > graph->rec_miny) || (val==0)) {
-            graph->setRecMaxY(val);
-            /*} else {
-                graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
-                ui->graphView->update();
-            }*/
-        }
-
-    }
-
-    gv->updateScale();
-    //    qDebug() << name << checked;
-}
-
-void PreferencesDialog::resetGraphModel()
-{
-
-    graphModel->clear();
-    QStandardItem *daily = new QStandardItem(tr("Daily Graphs"));
-    QStandardItem *overview = new QStandardItem(tr("Overview Graphs"));
-    daily->setEditable(false);
-    overview->setEditable(false);
-
-    graphModel->appendRow(daily);
-    graphModel->appendRow(overview);
-
-    ui->graphView->setAlternatingRowColors(true);
-
-    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
-    graphModel->setColumnCount(3);
-    QStringList headers;
-    headers.append(tr("Graph"));
-    headers.append(STR_TR_Min);
-    headers.append(STR_TR_Max);
-    graphModel->setHorizontalHeaderLabels(headers);
-    ui->graphView->setColumnWidth(0, 250);
-    ui->graphView->setColumnWidth(1, 50);
-    ui->graphView->setColumnWidth(2, 50);
-
-    gGraphView *gv = mainwin->getDaily()->graphView();
-
-    for (int i = 0; i < gv->size(); i++) {
-        QList<QStandardItem *> items;
-        QString title = (*gv)[i]->title();
-        QStandardItem *it = new QStandardItem(title);
-        it->setCheckable(true);
-        it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
-        it->setEditable(false);
-        it->setData(0, Qt::UserRole + 1);
-        it->setData(i, Qt::UserRole + 2);
-        items.push_back(it);
-
-        if (title != STR_TR_EventFlags) {
-
-            it = new QStandardItem(QString::number((*gv)[i]->rec_miny, 'f', 1));
-            it->setEditable(true);
-            items.push_back(it);
-
-            it = new QStandardItem(QString::number((*gv)[i]->rec_maxy, 'f', 1));
-            it->setEditable(true);
-            items.push_back(it);
-        } else {
-            it = new QStandardItem(tr("N/A")); // not applicable.
-            it->setEditable(false);
-            items.push_back(it);
-            items.push_back(it->clone());
-        }
-
-        daily->insertRow(i, items);
-    }
-
-    gv = mainwin->getOverview()->graphView();
-
-    for (int i = 0; i < gv->size(); i++) {
-        QList<QStandardItem *> items;
-        QStandardItem *it = new QStandardItem((*gv)[i]->title());
-        it->setCheckable(true);
-        it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
-        it->setEditable(false);
-        items.push_back(it);
-        it->setData(1, Qt::UserRole + 1);
-        it->setData(i, Qt::UserRole + 2);
-
-        it = new QStandardItem(QString::number((*gv)[i]->rec_miny, 'f', 1));
-        it->setEditable(true);
-        items.push_back(it);
-
-        it = new QStandardItem(QString::number((*gv)[i]->rec_maxy, 'f', 1));
-        it->setEditable(true);
-        items.push_back(it);
-
-        overview->insertRow(i, items);
-    }
-
-    connect(graphModel, SIGNAL(itemChanged(QStandardItem *)), this,
-            SLOT(graphModel_changed(QStandardItem *)));
-
-    ui->graphView->expandAll();
-
-}
-
-void PreferencesDialog::on_resetGraphButton_clicked()
-{
-    QString title = tr("Confirmation");
-    QString text  = tr("Are you sure you want to reset your graph preferences to the defaults?");
-    StandardButtons buttons = QMessageBox::Yes | QMessageBox::No;
-    StandardButton  defaultButton = QMessageBox::No;
-
-    // Display confirmation dialog.
-    StandardButton choice = QMessageBox::question(this, title, text, buttons, defaultButton);
-
-    if (choice == QMessageBox::No) {
-        return;
-    }
-
-    gGraphView *views[3] = {0};
-    views[0] = mainwin->getDaily()->graphView();
-    views[1] = mainwin->getOverview()->graphView();
-
-    // Iterate over all graph containers.
-    for (unsigned j = 0; j < 3; j++) {
-        gGraphView *view = views[j];
-
-        if (!view) {
-            continue;
-        }
-
-        // Iterate over all contained graphs.
-        for (int i = 0; i < view->size(); i++) {
-            gGraph *g = (*view)[i];
-            g->setRecMaxY(0); // FIXME: should be g->reset(), but need other patches to land.
-            g->setRecMinY(0);
-            g->setVisible(true);
-        }
-
-        view->updateScale();
-    }
-
-    resetGraphModel();
-    ui->graphView->update();
-}
+//    resetGraphModel();
+//    ui->graphView->update();
+//}
 
 /*void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
 {

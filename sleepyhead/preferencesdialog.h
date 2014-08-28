@@ -74,12 +74,6 @@ class PreferencesDialog : public QDialog
 
     void on_graphView_activated(const QModelIndex &index);
 
-    void on_graphFilter_textChanged(const QString &arg1);
-
-    void graphModel_changed(QStandardItem *item);
-
-    void on_resetGraphButton_clicked();
-
     //void on_genOpWidget_itemActivated(QListWidgetItem *item);
 
     void on_maskTypeCombo_activated(int index);
@@ -103,8 +97,6 @@ class PreferencesDialog : public QDialog
     void on_waveSearch_textChanged(const QString &arg1);
 
 private:
-    //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
-    void resetGraphModel();
     void InitChanInfo();
     void InitWaveInfo();
 
@@ -117,9 +109,6 @@ private:
 
     QStringList importLocations;
     QStringListModel *importModel;
-
-    MySortFilterProxyModel *graphFilterModel;
-    QStandardItemModel *graphModel;
 
     MySortFilterProxyModel * chanFilterModel;
     QStandardItemModel *chanModel;
