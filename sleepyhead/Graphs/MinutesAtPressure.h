@@ -50,7 +50,35 @@ public:
     bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph);
 
     virtual void recalcFinished();
+    virtual Layer * Clone() {
+        MinutesAtPressure * map = new MinutesAtPressure();
+        Layer::CloneInto(map);
+        CloneInto(map);
+        return map;
+    }
 
+    void CloneInto(MinutesAtPressure * layer) {
+        mutex.lock();
+        timelock.lock();
+        layer->m_empty = m_empty;
+        layer->m_minimum_height = m_minimum_height;
+        layer->m_lastminx = m_lastminx;
+        layer->m_lastmaxx = m_lastmaxx;
+        layer->times = times;
+        layer->chans = chans;
+        layer->events = events;
+        layer->maxtime = maxtime;
+        layer->maxevents = maxevents;
+        layer->m_presChannel = m_presChannel;
+        layer->m_minpressure = m_minpressure;
+        layer->m_maxpressure = m_maxpressure;
+        layer->max_mins = max_mins;
+
+        layer->ahis = ahis;
+
+        mutex.unlock();
+        timelock.unlock();
+    }
 protected:
     QMutex timelock;
     QMutex mutex;

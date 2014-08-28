@@ -58,6 +58,31 @@ Layer::~Layer()
 //    }
 //}
 
+void Layer::CloneInto(Layer * layer)
+{
+    layer->m_refcount = m_refcount;
+    layer->m_day = m_day;
+    layer->m_visible = m_visible;
+    layer->m_movable = m_movable;
+    layer->m_minx = m_minx;
+    layer->m_maxx = m_maxx;
+    layer->m_miny = m_miny;
+    layer->m_maxy = m_maxy;
+    layer->m_physmaxy = m_physmaxy;
+    layer->m_physminy = m_physminy;
+    layer->m_code = m_code;
+    layer->m_width = m_width;
+    layer->m_height = m_height;
+    layer->m_X = m_X;
+    layer->m_Y = m_Y;
+    layer->m_order = m_order;
+    layer->m_position = m_position;
+    layer->m_rect = m_rect;
+    layer->m_mouseover = m_mouseover;
+    layer->m_recalculating = m_recalculating;
+    layer->m_layertype = m_layertype;
+}
+
 void Layer::SetDay(Day *d)
 {
     m_day = d;

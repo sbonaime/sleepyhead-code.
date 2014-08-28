@@ -956,12 +956,12 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         if (!m2 || m_graphs[i]->max_x > m2) { m2 = m_graphs[i]->max_x; }
     }
 
-    if (p_profile->general->linkGroups()) {
-        for (int i = 0; i < m_graphs.size(); i++) {
-            m_graphs[i]->SetMinX(m1);
-            m_graphs[i]->SetMaxX(m2);
-        }
-    }
+//    if (p_profile->general->linkGroups()) {
+//        for (int i = 0; i < m_graphs.size(); i++) {
+//            m_graphs[i]->SetMinX(m1);
+//            m_graphs[i]->SetMaxX(m2);
+//        }
+//    }
 
     if (!g) { g = m_graphs[0]; }
 
@@ -980,7 +980,7 @@ void gGraphView::GetXBounds(qint64 &st, qint64 &et)
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
 {
     for (int i = 0; i < m_graphs.size(); i++) {
-        if (p_profile->general->linkGroups() || (m_graphs[i]->group() == group)) {
+        if ((m_graphs[i]->group() == group)) {
             m_graphs[i]->SetXBounds(minx, maxx);
         }
     }
@@ -1839,11 +1839,11 @@ void gGraphView::populateMenu(gGraph * graph)
 
 
     if (graph->isSnapshot()) {
-        snap_action->setText(tr("Remove Snapshot"));
+        snap_action->setText(tr("Remove Clone"));
         snap_action->setData(graph->name()+"|remove");
        // zoom100_action->setVisible(false);
     } else {
-        snap_action->setText(tr("Snapshot Graph"));
+        snap_action->setText(tr("Clone %1 Graph").arg(graph->title()));
         snap_action->setData(graph->name()+"|snapshot");
       //  zoom100_action->setVisible(true);
     }
@@ -2089,101 +2089,98 @@ void gGraphView::onSnapshotGraphToggle()
     gGraph * graph = it.value();
 
     if (cmd == "snapshot") {
-        QString newname = name+";"+QDateTime::fromMSecsSinceEpoch(graph->min_x).toString(Qt::ISODate)+" "+QDateTime::fromMSecsSinceEpoch(graph->max_x).toString(Qt::ISODate);
 
-        it = m_graphsbyname.find(newname);
-        if (it != m_graphsbyname.end()) {
-            // already a snapshot.. :-/
-            return;
+        QString basename = name+";";
+        if (graph->m_day) {
+            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x);
+            basename += date.date().toString(Qt::SystemLocaleLongDate);
         }
+        QString newname;
 
-        bool pinned = graph->isPinned();
-        graph->setPinned(false);
+        // Find a new name.. How many snapshots for each graph counts as stupid?
+        for (int i=1;i < 100;i++) {
+            newname = basename+" ("+QString::number(i)+")";
 
-        bool highres = p_profile->appearance->antiAliasing();
-        QPixmap pm;
-        ////////////////////////////////////////////////////////////////////////////
-        if (highres) {
-            QFont *_defaultfont = defaultfont;
-            QFont *_mediumfont = mediumfont;
-            QFont *_bigfont = bigfont;
-
-            QFont fa = *defaultfont;
-            QFont fb = *mediumfont;
-            QFont fc = *bigfont;
-
-
-            fa.setPointSize(fa.pointSize()*2.0);
-            fb.setPointSize(fb.pointSize()*2.0);
-            fc.setPointSize(fc.pointSize()*2.0);
-
-            defaultfont = &fa;
-            mediumfont = &fb;
-            bigfont = &fc;
-
-
-            graph->m_printing = true;
-
-            bool pmc = p_profile->appearance->usePixmapCaching();
-            p_profile->appearance->setUsePixmapCaching(false);
-            setUsePixmapCache(false);
-
-            int w = graph->m_rect.width() * 2.0;
-            int h = graph->m_rect.height() * 2.0;
-            setPrintScaleX(2);
-            setPrintScaleY(2);
-
-            pm = QPixmap(w,h);
-
-            QPainter painter(&pm);
-
-            QRect rec(0,0,w,h);
-            painter.fillRect(rec,QBrush(QColor(Qt::white)));
-
-            float f = scaleY();
-            QRegion region(rec);
-            graph->paint(painter, region);
-            DrawTextQue(painter);
-            painter.end();
-
-            setUsePixmapCache(pmc);
-            p_profile->appearance->setUsePixmapCaching(pmc);
-
-            setPrintScaleX(1);
-            setPrintScaleY(1);
-            graph->m_printing = false;
-            defaultfont = _defaultfont;
-            mediumfont = _mediumfont;
-            bigfont = _bigfont;
-            ////////////////////////////////////////////////////////////////////////////
-        } else {
-            pm = graph->renderPixmap(width(), graph->m_rect.height(), false);
+            it = m_graphsbyname.find(newname);
+            if (it == m_graphsbyname.end()) {
+                break;
+            }
         }
-        graph->setPinned(pinned);
-
 
         gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
-        newgraph->setSnapshot(pm);
-        newgraph->setBlockSelect(true);
-        newgraph->setHeight(pm.height()/(highres?2:1));
-        //newgraph->setMinHeight(pm.height());
+       // newgraph->setBlockSelect(true);
+        newgraph->setHeight(graph->height());
 
+        short group = 0;
         m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
         m_graphsbyname[newname] = newgraph;
         newgraph->m_graphview = this;
+
+        for (int i=0; i < graph->m_layers.size(); ++i) {
+            Layer * layer = graph->m_layers.at(i)->Clone();
+            if (layer) {
+                newgraph->m_layers.append(layer);
+            }
+        }
+
+        for (int i=0;i<m_graphs.size();i++) {
+            gGraph *g = m_graphs.at(i);
+            group = qMax(g->group(), group);
+        }
+        newgraph->setGroup(group+1);
+        //newgraph->setMinHeight(pm.height());
+
+        newgraph->setDay(graph->m_day);
+        if (graph->m_day) {
+            graph->m_day->incUseCounter();
+        }
+        newgraph->min_x = graph->min_x;
+        newgraph->max_x = graph->max_x;
+        if (graph->blockZoom()) {
+            newgraph->setBlockZoom(graph->blockZoom());
+            newgraph->setBlockSelect(true);
+        }
+        if (graph->blockSelect()) {
+            newgraph->setBlockSelect(true);
+        }
+
+        newgraph->setSnapshot(true);
+
 
 //        addGraph(newgraph);
         updateScale();
         timedRedraw(0);
     } else if (cmd == "remove") {
+        if (graph->m_day) {
+            graph->m_day->decUseCounter();
+            if (graph->m_day->useCounter() == 0) {
+            }
+        }
         m_graphsbyname.remove(graph->name());
         m_graphs.removeAll(it.value());
         delete graph;
+
+
         updateScale();
         timedRedraw(0);
     }
     qDebug() << cmd << name;
 }
+
+bool gGraphView::hasSnapshots()
+{
+    int size = m_graphs.size();
+    bool snap = false;
+    for (int i=0; i< size; ++i) {
+        gGraph * graph = m_graphs.at(i);
+        if (graph->isSnapshot()) {
+            snap = true;
+            break;
+        }
+    }
+    return snap;
+}
+
 
 void gGraphView::onPlotsClicked(QAction *action)
 {

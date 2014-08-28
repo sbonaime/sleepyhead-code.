@@ -26,7 +26,7 @@ enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, 
 
 enum ToolTipAlignment { TT_AlignCenter, TT_AlignLeft, TT_AlignRight };
 
-enum LayerType { LT_Other = 0, LT_LineChart, LT_SummaryChart, LT_EventFlags };
+enum LayerType { LT_Other = 0, LT_LineChart, LT_SummaryChart, LT_EventFlags, LT_Spacer };
 
 /*! \class Layer
     \brief The base component for all individual Graph layers
@@ -56,6 +56,9 @@ class Layer
 
     virtual void recalculate(gGraph * graph) { Q_UNUSED(graph)}
     virtual ~Layer();
+
+    virtual Layer * Clone() { return nullptr; }
+    void CloneInto(Layer *);
 
     //! \brief This gets called on day selection, allowing this layer to precalculate any drawing data
     virtual void SetDay(Day *d);

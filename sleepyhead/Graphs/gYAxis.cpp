@@ -179,7 +179,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         painter.drawLine(0,top,100,top);
 #endif
 
-        double max_yticks = height / (y + 14.0); // plus spacing between lines
+        double max_yticks = round(height / (y + 14.0)); // plus spacing between lines
 
         double mxy = maxy; // MAX(fabs(maxy), fabs(miny));
         double mny = miny;

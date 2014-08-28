@@ -129,7 +129,7 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
 
     m_layers.clear();
 
-    m_issnapshot = false;
+    m_snapshot = false;
     f_miny = f_maxy = 0;
     rmin_x = rmin_y = 0;
     rmax_x = rmax_y = 0;
@@ -145,7 +145,8 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
         timer = new QTimer(graphview);
         connect(timer, SIGNAL(timeout()), SLOT(Timeout()));
     } else {
-        timer = nullptr;
+        timer = new QTimer();
+        connect(timer, SIGNAL(timeout()), SLOT(Timeout()));
         // know what I'm doing now.. ;)
      //   qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
@@ -217,10 +218,6 @@ bool gGraph::isSelected()
 
 bool gGraph::isEmpty()
 {
-    if (m_issnapshot) {
-        return graphView()->isEmpty();
-    }
-
     bool empty = true;
 
     for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
@@ -253,6 +250,9 @@ float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 //}
 void gGraph::setDay(Day *day)
 {
+    // Don't update for snapshots..
+    if (m_snapshot) return;
+
     m_day = day;
 
     for (int i = 0; i < m_layers.size(); i++) {
@@ -312,18 +312,15 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         title_x = float(yh) ;
 
         QString & txt = title();
-        if (!m_issnapshot) {
-             graphView()->AddTextQue(txt, marginLeft() + title_x + 8*printScaleX(), originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
-        }
+        graphView()->AddTextQue(txt, marginLeft() + title_x + 8*printScaleX(), originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
 
         left += graphView()->titleWidth*printScaleX();
     } else { left = 0; }
 
 
-    if (m_issnapshot) {
-        painter.drawPixmap(QRect(0, originY,width,height), m_snapshot, m_snapshot.rect());
+    if (m_snapshot) {
         QLinearGradient linearGrad(QPointF(100, 100), QPointF(width / 2, 100));
-        linearGrad.setColorAt(0, QColor(255, 150, 150,30));
+        linearGrad.setColorAt(0, QColor(255, 150, 150,50));
         linearGrad.setColorAt(1, QColor(255,255,255,20));
 
         painter.fillRect(m_rect, QBrush(linearGrad));
@@ -333,11 +330,6 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         QString t = name().section(";", -1);
 
         painter.drawText(m_rect, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
-        if (isPinned()) {
-            painter.drawPixmap(-5, originY-10, m_graphview->pin_icon);
-        }
-
-        return;
     }
 
 
@@ -524,6 +516,7 @@ int gGraph::flipY(int y)
 
 void gGraph::ResetBounds()
 {
+    if (m_snapshot) return;
     invalidate_xAxisImage = true;
     min_x = MinX();
     max_x = MaxX();
@@ -698,7 +691,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
         // this nag might be a little too much..
         ToolTip(tr("Snapshot"),x+15,y, TT_AlignLeft);
         timedRedraw(0);
-        return;
     }
 
 
@@ -1450,13 +1442,6 @@ void gGraph::dumpInfo() {
             }
         }
     }
-}
-
-void gGraph::setSnapshot(QPixmap &pixmap)
-{
-    m_snapshot = pixmap;
-//    m_snapshot = renderPixmap(m_rect.width(), m_rect.height(), false);
-    m_issnapshot = true;
 }
 
 

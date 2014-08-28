@@ -3160,7 +3160,6 @@ border-radius: 10px;
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Screenshot"/>
     <addaction name="separator"/>
-    <addaction name="action_Link_Graph_Groups"/>
     <addaction name="action_Reset_Graph_Layout"/>
     <addaction name="separator"/>
     <addaction name="actionToggle_Line_Cursor"/>

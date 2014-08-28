@@ -36,7 +36,22 @@ class gXGrid: public Layer
 
     //! \brief Returns the visibility status of Major lines
     bool showMajorLines() { return m_show_major_lines; }
-  protected:
+
+    virtual Layer * Clone() {
+        gXGrid * grid = new gXGrid();
+        Layer::CloneInto(grid);
+        CloneInto(grid);
+        return grid;
+    }
+
+    void CloneInto(gXGrid * layer) {
+        layer->m_show_major_lines = m_show_major_lines;
+        layer->m_show_minor_lines = m_show_minor_lines;
+        layer->m_major_color = m_major_color;
+        layer->m_minor_color = m_minor_color;
+    }
+
+protected:
     bool m_show_major_lines;
     bool m_show_minor_lines;
     QColor m_major_color;
@@ -93,6 +108,22 @@ class gYAxis: public Layer
     virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph);
 
     QImage m_image;
+
+    virtual Layer * Clone() {
+        gYAxis * yaxis = new gYAxis();
+        Layer::CloneInto(yaxis);
+        CloneInto(yaxis);
+        return yaxis;
+    }
+
+    void CloneInto(gYAxis * layer) {
+        layer->m_show_major_ticks = m_show_major_ticks;
+        layer->m_show_minor_ticks = m_show_minor_ticks;
+        layer->m_line_color = m_line_color;
+        layer->m_text_color = m_text_color;
+        layer->m_image = m_image;
+    }
+
 };
 
 /*! \class gYAxisTime
@@ -110,6 +141,19 @@ class gYAxisTime: public gYAxis
 
     //! \brief Whether to format as 12 or 24 hour times
     bool show_12hr;
+
+    virtual Layer * Clone() {
+        gYAxisTime * yaxis = new gYAxisTime();
+        Layer::CloneInto(yaxis);
+        CloneInto(yaxis);
+        return yaxis;
+    }
+
+    void CloneInto(gYAxisTime * layer) {
+        gYAxis::CloneInto(layer);
+        layer->show_12hr = show_12hr;
+    }
+
 };
 
 
@@ -132,6 +176,18 @@ class gYAxisWeight: public gYAxis
     //! \brief Overrides gYAxis Format to display Time format
     virtual const QString Format(EventDataType v, int dp);
     UnitSystem m_unitsystem;
+
+    virtual Layer * Clone() {
+        gYAxisWeight * yaxis = new gYAxisWeight();
+        Layer::CloneInto(yaxis);
+        CloneInto(yaxis);
+        return yaxis;
+    }
+
+    void CloneInto(gYAxisWeight * layer) {
+        gYAxis::CloneInto(layer);
+        layer->m_unitsystem = m_unitsystem;
+    }
 };
 
 

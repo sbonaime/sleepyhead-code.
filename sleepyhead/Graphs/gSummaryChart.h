@@ -62,6 +62,48 @@ class SummaryChart: public Layer
 
     //! \brief Returns the MachineType this SummaryChart is interested in
     MachineType machineType() { return m_machinetype; }
+
+    virtual Layer * Clone() {
+        SummaryChart * sc = new SummaryChart(m_label);
+        Layer::CloneInto(sc);
+        CloneInto(sc);
+        return sc;
+    }
+
+    void CloneInto(SummaryChart * layer) {
+        layer->m_orientation = m_orientation;
+        layer->m_colors = m_colors;
+        layer->m_codes = m_codes;
+        layer->m_goodcodes = m_goodcodes;
+        layer->m_type = m_type;
+        layer->m_typeval = m_typeval;
+        layer->m_values = m_values;
+        layer->m_times = m_times;
+        layer->m_hours = m_hours;
+        layer->m_days = m_days;
+
+        layer->m_empty = m_empty;
+        layer->m_fday = m_fday;
+        layer->m_label = m_label;
+        layer->barw = barw;
+        layer->l_offset = l_offset;
+        layer->offset = offset;
+        layer->l_left = l_left;
+        layer->l_top = l_top;
+        layer->l_width= l_width;
+        layer->l_height = l_height;
+        layer->rtop = rtop;
+        layer->l_minx = l_minx;
+        layer->l_maxx = l_maxx;
+        layer->hl_day = hl_day;
+        layer->m_graphtype = m_graphtype;
+        layer->m_machinetype = m_machinetype;
+        layer->tz_offset = tz_offset;
+        layer->tz_hours = tz_hours;
+
+    }
+
+
   protected:
     Qt::Orientation m_orientation;
 
@@ -87,7 +129,7 @@ class SummaryChart: public Layer
     int rtop;
     qint64 l_minx, l_maxx;
     int hl_day;
-    gGraph *graph;
+    //gGraph *graph;
     GraphType m_graphtype;
     MachineType m_machinetype;
     int tz_offset;

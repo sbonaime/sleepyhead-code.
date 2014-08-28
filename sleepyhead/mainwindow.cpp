@@ -243,7 +243,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef Q_OS_MAC
     p_profile->appearance->setAntiAliasing(false);
 #endif
-    ui->action_Link_Graph_Groups->setChecked(p_profile->general->linkGroups());
+    //ui->action_Link_Graph_Groups->setChecked(p_profile->general->linkGroups());
 
     first_load = true;
 
@@ -1627,13 +1627,6 @@ void MainWindow::on_action_Edit_Profile_triggered()
     newprof->exec();
     qDebug()  << newprof;
     delete newprof;
-}
-
-void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
-{
-    p_profile->general->setLinkGroups(arg1);
-
-    if (daily) { daily->RedrawGraphs(); }
 }
 
 void MainWindow::on_action_CycleTabs_triggered()

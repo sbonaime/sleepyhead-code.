@@ -471,7 +471,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     barw = (float(width) / float(days));
 
-    graph = &w;
+   // graph = &w;
     float px = left;
     l_left = w.marginLeft() + gYAxis::Margin;
     l_top = w.marginTop();

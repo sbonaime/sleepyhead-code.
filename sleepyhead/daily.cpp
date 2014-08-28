@@ -215,11 +215,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 
 
-    GAHI->AddLayer(AddCPAP(evseg));
+    GAHI->AddLayer(evseg);
     GAHI->setMargins(0,0,0,0);
 
     gFlagsGroup *fg=new gFlagsGroup();
-    SF->AddLayer(AddCPAP(fg));
+    SF->AddLayer(fg);
 
 
     SF->setBlockZoom(true);
@@ -248,7 +248,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,false,false);
-    AddCPAP(l);
 
     gGraph *FRW = graphlist[schema::channel[CPAP_FlowRate].code()];
 
@@ -260,7 +259,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     bool square=p_profile->appearance->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, square);
-    graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(AddCPAP(pc));
+    graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(pc);
 
   //  graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Ramp, COLOR_Ramp, schema::channel[CPAP_Ramp].label(), FT_Span)));
 
@@ -272,15 +271,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gGraph * TAP2;
     graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("By Pressure"), QObject::tr("Statistics at Pressure"), default_height);
     MinutesAtPressure * map;
-    TAP2->AddLayer(AddCPAP(map = new MinutesAtPressure()));
+    TAP2->AddLayer(map = new MinutesAtPressure());
     TAP2->AddLayer(new gLabelArea(map),LayerLeft,gYAxis::Margin);
     TAP2->setBlockSelect(true);
 
     if (p_profile->general->calculateRDI()) {
-        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI, square)));
+        AHI->AddLayer(new gLineChart(CPAP_RDI, square));
 //        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     } else {
-        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI, square)));
+        AHI->AddLayer(new gLineChart(CPAP_AHI, square));
     }
 
     // this is class wide because the leak redline can be reset in preferences..
@@ -293,37 +292,37 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    schema::channel[CPAP_Leak].setUpperThresholdColor(Qt::red);
 //    schema::channel[CPAP_Leak].setLowerThresholdColor(Qt::green);
 
-    graphlist[schema::channel[CPAP_Leak].code()]->AddLayer(AddCPAP(leakchart));
+    graphlist[schema::channel[CPAP_Leak].code()]->AddLayer(leakchart);
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak, COLOR_MaxLeak,square)));
-    graphlist[schema::channel[CPAP_Snore].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, true)));
+    graphlist[schema::channel[CPAP_Snore].code()]->AddLayer(new gLineChart(CPAP_Snore, true));
 
-    graphlist[schema::channel[CPAP_PTB].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, square)));
-    graphlist[schema::channel[CPAP_Test1].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_Test1, false)));
+    graphlist[schema::channel[CPAP_PTB].code()]->AddLayer(new gLineChart(CPAP_PTB, square));
+    graphlist[schema::channel[CPAP_Test1].code()]->AddLayer(new gLineChart(CPAP_Test1, false));
 
 
     gLineChart *lc = nullptr;
-    graphlist[schema::channel[CPAP_MaskPressure].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, false)));
-    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, false)));
+    graphlist[schema::channel[CPAP_MaskPressure].code()]->AddLayer(new gLineChart(CPAP_MaskPressure, false));
+    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(lc=new gLineChart(CPAP_RespRate, false));
 
-    graphlist[schema::channel[POS_Inclination].code()]->AddLayer(AddPOS(new gLineChart(POS_Inclination)));
-    graphlist[schema::channel[POS_Orientation].code()]->AddLayer(AddPOS(new gLineChart(POS_Orientation)));
+    graphlist[schema::channel[POS_Inclination].code()]->AddLayer(new gLineChart(POS_Inclination));
+    graphlist[schema::channel[POS_Orientation].code()]->AddLayer(new gLineChart(POS_Orientation));
 
-    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, false)));
+    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(lc=new gLineChart(CPAP_MinuteVent, false));
     lc->addPlot(CPAP_TgMV, square);
 
-    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume, false)));
+    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(lc=new gLineChart(CPAP_TidalVolume, false));
     //lc->addPlot(CPAP_Test2,COLOR_DarkYellow,square);
 
     //graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(new gLineChart("TidalVolume2", square)));
-    graphlist[schema::channel[CPAP_FLG].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_FLG, true)));
+    graphlist[schema::channel[CPAP_FLG].code()]->AddLayer(new gLineChart(CPAP_FLG, true));
     //graphlist[schema::channel[CPAP_RespiratoryEvent].code()]->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent, true)));
-    graphlist[schema::channel[CPAP_IE].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, false)));
-    graphlist[schema::channel[CPAP_Te].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, false)));
-    graphlist[schema::channel[CPAP_Ti].code()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, false)));
+    graphlist[schema::channel[CPAP_IE].code()]->AddLayer(lc=new gLineChart(CPAP_IE, false));
+    graphlist[schema::channel[CPAP_Te].code()]->AddLayer(lc=new gLineChart(CPAP_Te, false));
+    graphlist[schema::channel[CPAP_Ti].code()]->AddLayer(lc=new gLineChart(CPAP_Ti, false));
     //lc->addPlot(CPAP_Test2,COLOR:DarkYellow,square);
 
-    graphlist[schema::channel[ZEO_SleepStage].code()]->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, true)));
+    graphlist[schema::channel[ZEO_SleepStage].code()]->AddLayer(new gLineChart(ZEO_SleepStage, true));
 
 //    gLineOverlaySummary *los1=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
 //    gLineOverlaySummary *los2=new gLineOverlaySummary(STR_UNIT_EventsPerHour,5,-4);
@@ -332,10 +331,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
 //    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(los2));
 
-    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(AddOXI(new gLineChart(OXI_Pulse, square)));
-    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(AddOXI(new gLineChart(OXI_SPO2, true)));
-    graphlist[schema::channel[OXI_Perf].code()]->AddLayer(AddOXI(new gLineChart(OXI_Perf, false)));
-    graphlist[schema::channel[OXI_Plethy].code()]->AddLayer(AddOXI(new gLineChart(OXI_Plethy, false)));
+    graphlist[schema::channel[OXI_Pulse].code()]->AddLayer(new gLineChart(OXI_Pulse, square));
+    graphlist[schema::channel[OXI_SPO2].code()]->AddLayer(new gLineChart(OXI_SPO2, true));
+    graphlist[schema::channel[OXI_Perf].code()]->AddLayer(new gLineChart(OXI_Perf, false));
+    graphlist[schema::channel[OXI_Plethy].code()]->AddLayer(new gLineChart(OXI_Plethy, false));
 
 
     // Fix me
@@ -1319,9 +1318,21 @@ void Daily::Load(QDate date)
 
         // lastcpapday can get purged and be invalid
         if (lastcpapday && (lastcpapday!=day)) {
-            for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
-                (*s)->TrashEvents();
+            for (QMap<QDate, Day *>::iterator di = p_profile->daylist.begin(); di!= p_profile->daylist.end(); ++di) {
+                Day * d = di.value();
+                if (d->eventsLoaded()) {
+                    if (d->useCounter() == 0) {
+                        for (QList<Session *>::iterator s=d->begin();s!=d->end();++s) {
+                            (*s)->TrashEvents();
+                        }
+                    }
+                }
             }
+//            if (lastcpapday->useCounter() == 0) {
+//                for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
+//                    (*s)->TrashEvents();
+//                }
+//            }
         }
     }
 
@@ -1919,49 +1930,6 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
     return nullptr;
 }
 
-void Daily::UpdateCPAPGraphs(Day *day)
-{
-    //if (!day) return;
-    if (day) {
-        day->OpenEvents();
-    }
-    for (QList<Layer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
-        (*g)->SetDay(day);
-    }
-}
-void Daily::UpdateSTAGEGraphs(Day *day)
-{
-    //if (!day) return;
-    if (day) {
-        day->OpenEvents();
-    }
-    for (QList<Layer *>::iterator g=STAGEData.begin();g!=STAGEData.end();g++) {
-        (*g)->SetDay(day);
-    }
-}
-
-void Daily::UpdatePOSGraphs(Day *day)
-{
-    //if (!day) return;
-    if (day) {
-        day->OpenEvents();
-    }
-    for (QList<Layer *>::iterator g=POSData.begin();g!=POSData.end();g++) {
-        (*g)->SetDay(day);
-    }
-}
-
-void Daily::UpdateOXIGraphs(Day *day)
-{
-    //if (!day) return;
-
-    if (day) {
-        day->OpenEvents();
-    }
-    for (QList<Layer *>::iterator g=OXIData.begin();g!=OXIData.end();g++) {
-        (*g)->SetDay(day);
-    }
-}
 
 void Daily::RedrawGraphs()
 {

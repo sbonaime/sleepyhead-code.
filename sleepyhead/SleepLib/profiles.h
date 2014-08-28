@@ -766,7 +766,7 @@ class UserSettings : public ProfileSettings
         initPref(STR_US_SkipEmptyDays, true);
         initPref(STR_US_RebuildCache, false); // FIXME: jedimark: can't remember...
         initPref(STR_US_ShowDebug, false);
-        initPref(STR_US_LinkGroups, true); // FIXME: jedimark: can't remember...
+//        initPref(STR_US_LinkGroups, true); // FIXME: jedimark: can't remember...
         initPref(STR_US_CalculateRDI, false);
         initPref(STR_US_ShowSerialNumbers, false);
         initPref(STR_US_PrefCalcMiddle, (int)0);
@@ -783,7 +783,7 @@ class UserSettings : public ProfileSettings
     bool skipEmptyDays() const { return getPref(STR_US_SkipEmptyDays).toBool(); }
     bool rebuildCache() const { return getPref(STR_US_RebuildCache).toBool(); }
     bool showDebug() const { return getPref(STR_US_ShowDebug).toBool(); }
-    bool linkGroups() const { return getPref(STR_US_LinkGroups).toBool(); }
+//    bool linkGroups() const { return getPref(STR_US_LinkGroups).toBool(); }
     bool calculateRDI() const { return getPref(STR_US_CalculateRDI).toBool(); }
     bool showSerialNumbers() const { return getPref(STR_US_ShowSerialNumbers).toBool(); }
     int prefCalcMiddle() const { return getPref(STR_US_PrefCalcMiddle).toInt(); }
@@ -799,7 +799,7 @@ class UserSettings : public ProfileSettings
     void setSkipEmptyDays(bool skip) { setPref(STR_US_SkipEmptyDays, skip); }
     void setRebuildCache(bool rebuild) { setPref(STR_US_RebuildCache, rebuild); }
     void setShowDebug(bool b) { setPref(STR_US_ShowDebug, b); }
-    void setLinkGroups(bool link) { setPref(STR_US_LinkGroups, link); }
+ //   void setLinkGroups(bool link) { setPref(STR_US_LinkGroups, link); }
     void setCalculateRDI(bool rdi) { setPref(STR_US_CalculateRDI, rdi); }
     void setShowSerialNumbers(bool enabled) { setPref(STR_US_ShowSerialNumbers, enabled); }
     void setPrefCalcMiddle(int i) { setPref(STR_US_PrefCalcMiddle, i); }

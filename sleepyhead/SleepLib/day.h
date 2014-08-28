@@ -267,12 +267,17 @@ class Day
 
     QHash<MachineType, Machine *> machines;
 
+    void incUseCounter() { d_useCounter++; }
+    void decUseCounter() { d_useCounter--; if (d_useCounter<0) d_useCounter = 0; }
+    int useCounter() { return d_useCounter; }
+
   protected:
     //! \brief A Vector containing all sessions for this day
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     //qint64 d_first,d_last;
   private:
     bool d_firstsession;
+    int d_useCounter;
 };
 
 

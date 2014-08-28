@@ -15,6 +15,7 @@
 gLabelArea::gLabelArea(Layer * layer)
     : gSpacer(20)
 {
+    m_layertype = LT_Spacer;
     m_mainlayer = layer;
 }
 bool gLabelArea::mouseMoveEvent(QMouseEvent *event, gGraph *graph)

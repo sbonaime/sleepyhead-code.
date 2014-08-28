@@ -37,6 +37,34 @@ class gXAxis: public Layer
 
     void setRoundDays(bool b) { m_roundDays = b; }
 
+    virtual Layer * Clone() {
+        gXAxis * xaxis = new gXAxis();
+        Layer::CloneInto(xaxis);
+        CloneInto(xaxis);
+        return xaxis;
+    }
+
+    void CloneInto(gXAxis * layer) {
+        layer->m_show_major_ticks = m_show_major_ticks;
+        layer->m_show_minor_ticks = m_show_minor_ticks;
+        layer->m_show_major_lines = m_show_major_lines;
+        layer->m_show_minor_lines = m_show_minor_lines;
+        layer->m_major_color = m_major_color;
+        layer->m_minor_color = m_minor_color;
+        layer->m_line_color = m_line_color;
+        layer->m_text_color = m_text_color;
+
+        layer->m_utcfix = m_utcfix;
+        layer->m_fadeout = m_fadeout;
+
+        layer->tz_offset = tz_offset;
+        layer->tz_hours = tz_hours;
+
+        layer->m_image = m_image;
+        layer->m_roundDays = m_roundDays;
+    }
+
+
   protected:
     bool m_show_major_lines;
     bool m_show_minor_lines;

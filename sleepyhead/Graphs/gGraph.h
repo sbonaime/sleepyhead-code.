@@ -284,8 +284,8 @@ class gGraph : public QObject
     bool isPinned() { return m_pinned; }
     void setPinned(bool b) { m_pinned = b; }
 
-    bool isSnapshot() { return m_issnapshot; }
-    void setSnapshot(QPixmap &pixmap);
+    bool isSnapshot() { return m_snapshot; }
+    void setSnapshot(bool b) { m_snapshot = b; }
 
     short left, right, top, bottom; // dirty magin hacks..
 
@@ -384,8 +384,7 @@ class gGraph : public QObject
 
     QString m_selDurString;
 
-    QPixmap m_snapshot;
-    bool m_issnapshot;
+    bool m_snapshot;
 
   protected slots:
     //! \brief Deselects any highlights, and schedules a main gGraphView redraw

@@ -228,9 +228,6 @@ class MainWindow : public QMainWindow
     //! \brief Opens the Profile Editor
     void on_action_Edit_Profile_triggered();
 
-    //! \brief Toggled the LinkGraphGroups preference, which forces the link between Oximetry & CPAP days
-    void on_action_Link_Graph_Groups_toggled(bool arg1);
-
     //! \brief Selects the next view tab
     void on_action_CycleTabs_triggered();
 

@@ -324,24 +324,24 @@ private:
 
     QHash<QString, gGraph *> graphlist;
 
-    QList<Layer *> OXIData;
-    QList<Layer *> CPAPData;
-    QList<Layer *> STAGEData;
-    QList<Layer *> POSData;
+//    QList<Layer *> OXIData;
+//    QList<Layer *> CPAPData;
+//    QList<Layer *> STAGEData;
+//    QList<Layer *> POSData;
     QHash<QString,QPushButton *> GraphToggles;
     QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 
     QList<int> splitter_sizes;
-    Layer * AddCPAP(Layer *d) { CPAPData.push_back(d); return d; }
-    Layer * AddSTAGE(Layer *d) { STAGEData.push_back(d); return d; }
-    Layer * AddPOS(Layer *d) { POSData.push_back(d); return d; }
-    Layer * AddOXI(Layer *d) { OXIData.push_back(d); return d; }
+//    Layer * AddCPAP(Layer *d) { CPAPData.push_back(d); return d; }
+//    Layer * AddSTAGE(Layer *d) { STAGEData.push_back(d); return d; }
+//    Layer * AddPOS(Layer *d) { POSData.push_back(d); return d; }
+//    Layer * AddOXI(Layer *d) { OXIData.push_back(d); return d; }
 
-    void UpdateCPAPGraphs(Day *day);
-    void UpdateOXIGraphs(Day *day);
-    void UpdateSTAGEGraphs(Day *day);
-    void UpdatePOSGraphs(Day *day);
+//    void UpdateCPAPGraphs(Day *day);
+//    void UpdateOXIGraphs(Day *day);
+//    void UpdateSTAGEGraphs(Day *day);
+//    void UpdatePOSGraphs(Day *day);
 
     Ui::Daily *ui;
     QDate previous_date;

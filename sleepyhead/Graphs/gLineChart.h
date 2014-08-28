@@ -125,6 +125,31 @@ class gLineChart: public Layer
     QHash<ChannelID, bool> m_flags_enabled;
     QHash<ChannelID, QHash<quint32, bool> > m_dot_enabled;
 
+    virtual Layer * Clone() {
+        gLineChart * lc = new gLineChart(m_code);
+        Layer::CloneInto(lc);
+        CloneInto(lc);
+        return lc;
+    }
+
+    void CloneInto(gLineChart * layer) {
+        layer->m_dotlines = m_dotlines;
+        layer->m_flags_enabled = m_flags_enabled;
+        layer->m_dot_enabled = m_dot_enabled;
+        layer->m_report_empty = m_report_empty;
+        layer->m_square_plot = m_square_plot;
+        layer->m_disable_accel = m_disable_accel;
+        layer->subtract_offset = layer->subtract_offset;
+        layer->m_codes = layer->m_codes;
+        layer->m_threshold = m_threshold;
+        layer->m_square = m_square;
+        layer->m_enabled = m_enabled;
+        layer->lines = lines;
+        layer->lasttext = lasttext;
+        layer->lasttime = lasttime;
+    }
+
+
   protected:
     //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);

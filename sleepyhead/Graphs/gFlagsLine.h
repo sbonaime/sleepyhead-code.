@@ -29,6 +29,17 @@ class gLabelArea: public gSpacer
   protected:
     Layer *m_mainlayer;
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
+
+    virtual Layer * Clone() {
+        gLabelArea * layer = new gLabelArea(nullptr);  //ouchie..
+        Layer::CloneInto(layer);
+        CloneInto(layer);
+        return layer;
+    }
+
+    void CloneInto(gLabelArea * ) {
+    }
+
 };
 
 
@@ -54,6 +65,22 @@ class gFlagsLine: public Layer
 
     void setTotalLines(int i) { total_lines = i; }
     void setLineNum(int i) { line_num = i; }
+
+    virtual Layer * Clone() {
+        gFlagsLine * layer = new gFlagsLine(nullptr);  //ouchie..
+        Layer::CloneInto(layer);
+        CloneInto(layer);
+        return layer;
+    }
+
+    void CloneInto(gFlagsLine * layer ) {
+        layer->m_always_visible = m_always_visible;
+        layer->total_lines = total_lines;
+        layer->line_num = line_num;
+        layer->m_lx = m_lx;
+        layer->m_ly = m_ly;
+    }
+
   protected:
 
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
@@ -99,6 +126,26 @@ class gFlagsGroup: public LayerGroup
     QVector<gFlagsLine *> &visibleLayers() { return lvisible; }
 
     void alwaysVisible(ChannelID code) { m_alwaysvisible.push_back(code); }
+
+    virtual Layer * Clone() {
+        gFlagsGroup * layer = new gFlagsGroup();  //ouchie..
+        Layer::CloneInto(layer);
+        CloneInto(layer);
+        return layer;
+    }
+
+    void CloneInto(gFlagsGroup * layer) {
+        layer->m_alwaysvisible = m_alwaysvisible;
+        layer->availableChans = availableChans;
+
+        for (int i=0; i<lvisible.size(); i++) {
+            layer->lvisible.append(dynamic_cast<gFlagsLine *>(lvisible.at(i)->Clone()));
+        }
+        layer->m_barh = m_barh;
+        layer->m_empty = m_empty;
+        layer->m_rebuild_cpap = m_rebuild_cpap;
+    }
+
 
   protected:
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);

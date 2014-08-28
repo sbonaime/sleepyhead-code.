@@ -667,6 +667,8 @@ class gGraphView
         ResetBounds(true);
     }
 
+    bool hasSnapshots();
+
     void togglePin();
 protected slots:
     void onLinesClicked(QAction *);
