@@ -388,14 +388,14 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         painter.drawText(bounds, ovinfo, QTextOption(Qt::AlignHCenter));
 
         if (bounds.height() > maxy) { maxy = bounds.height(); }
-    } else if (name == STR_TR_Oximetry) {
+    } /*else if (name == STR_TR_Oximetry) {
         QString ovinfo = QObject::tr("Reporting data goes here");
         QRectF bounds = painter.boundingRect(QRectF(0, top, virt_width, 0), ovinfo,
                                              QTextOption(Qt::AlignHCenter));
         painter.drawText(bounds, ovinfo, QTextOption(Qt::AlignHCenter));
 
         if (bounds.height() > maxy) { maxy = bounds.height(); }
-    }
+    }*/
 
     top += maxy;
 
@@ -406,6 +406,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     QVector<gGraph *> graphs;
     QVector<qint64> start, end;
     qint64 savest, saveet;
+
     gv->GetXBounds(savest, saveet);
     qint64 st = savest, et = saveet;
 
@@ -568,8 +569,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         }
 
         if (first) {
-            QString footer = QObject::tr("SleepyHead v%1 - http://sleepyhead.sourceforge.net").arg(
-                                 VersionString);
+            QString footer = QObject::tr("SleepyHead v%1 - http://sleepyhead.sourceforge.net").arg(VersionString);
 
             QRectF bounds = painter.boundingRect(QRectF(0, virt_height, virt_width, normal_height), footer,
                                                  QTextOption(Qt::AlignHCenter));
@@ -584,7 +584,9 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         }
 
         gGraph *g = graphs[i];
-        g->SetXBounds(start[i], end[i]);
+        if (!g->isSnapshot()) {
+            g->SetXBounds(start[i], end[i]);
+        }
         g->deselect();
 
         QString label = labels[i];

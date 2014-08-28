@@ -490,7 +490,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             int wid, h;
             GetTextExtent(text, wid, h);
-            w.renderText(text, left , top-h+5);  //+ width/2 - wid/2
+            w.renderText(text, left , top-h+7*w.printScaleY());  //+ width/2 - wid/2
         }
     }
 

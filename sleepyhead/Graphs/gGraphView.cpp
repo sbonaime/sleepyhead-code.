@@ -2143,6 +2143,7 @@ void gGraphView::onSnapshotGraphToggle()
         if (graph->blockSelect()) {
             newgraph->setBlockSelect(true);
         }
+        newgraph->setZoomY(graph->zoomY());
 
         newgraph->setSnapshot(true);
 
@@ -2711,7 +2712,148 @@ void gGraphView::wheelEvent(QWheelEvent *event)
     if (m_button_down)
         return;
 
-    if ((event->modifiers() & Qt::ControlModifier)) {
+    if (event->modifiers() == Qt::NoModifier) {
+        int scrollDampening = p_profile->general->scrollDampening();
+
+        if (event->orientation() == Qt::Vertical) { // Vertical Scrolling
+            if (horizScrollTime.elapsed() < scrollDampening) {
+                return;
+            }
+
+            if (m_scrollbar)
+                m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+            m_tooltip->cancel();
+            vertScrollTime.start();
+            return;
+        }
+        // (This is a total pain in the butt on MacBook touchpads..)
+
+        if (vertScrollTime.elapsed() < scrollDampening) {
+            return;
+        }
+        horizScrollTime.start();
+
+        gGraph *graph = nullptr;
+        int group = 0;
+        int x = event->x();
+        int y = event->y();
+
+        float h, py = 0, pinned_height = 0;
+
+
+        // Find graph hovered over
+        for (int i = 0; i < m_graphs.size(); i++) {
+            gGraph *g = m_graphs[i];
+            if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
+                continue;
+            }
+
+            h = g->height() * m_scaleY;
+            pinned_height += h + graphSpacer;
+
+            if (py > height()) {
+                break;    // we are done.. can't draw anymore
+            }
+
+            if ((py + h + graphSpacer) >= 0) {
+                if ((y >= py) && (y <= py + h)) {
+                    graph = g;
+                    break;
+                } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                    // What to do when double clicked on the resize handle?
+                    graph = g;
+                    break;
+                }
+            }
+
+            py += h;
+            py += graphSpacer; // do we want the extra spacer down the bottom?
+        }
+        if (!graph) {
+            py = -m_offsetY;
+            py += pinned_height;
+
+            for (int i = 0; i < m_graphs.size(); i++) {
+                gGraph *g = m_graphs[i];
+                if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
+                    continue;
+                }
+
+                h = g->height() * m_scaleY;
+
+                if (py > height()) {
+                    break;
+                }
+
+                if ((py + h + graphSpacer) >= 0) {
+                    if ((y >= py) && (y <= py + h)) {
+                        graph = g;
+                        break;
+                    } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                        // What to do when double clicked on the resize handle?
+                        graph = g;
+                        break;
+                    }
+
+                }
+
+                py += h;
+                py += graphSpacer; // do we want the extra spacer down the bottom?
+            }
+        }
+
+//        // Pick the first valid graph in the primary group
+//        for (int i = 0; i < m_graphs.size(); i++) {
+//            if (!m_graphs[i]) continue;
+//            if (m_graphs[i]->group() == group) {
+//                if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
+//                    g = m_graphs[i];
+//                    break;
+//                }
+//            }
+//        }
+
+        if (!graph) {
+            // just pick any graph then
+            for (int i = 0; i < m_graphs.size(); i++) {
+                if (!m_graphs[i]) continue;
+                if (!m_graphs[i]->isEmpty()) {
+                    graph = m_graphs[i];
+                    group = graph->group();
+                    break;
+                }
+            }
+        } else group=graph->group();
+
+        if (!graph) { return; }
+
+        double xx = (graph->max_x - graph->min_x);
+        double zoom = 240.0;
+
+        int delta = event->delta();
+
+        if (delta > 0) {
+            graph->min_x -= (xx / zoom) * (float)abs(delta);
+        } else {
+            graph->min_x += (xx / zoom) * (float)abs(delta);
+        }
+
+        graph->max_x = graph->min_x + xx;
+
+        if (graph->min_x < graph->rmin_x) {
+            graph->min_x = graph->rmin_x;
+            graph->max_x = graph->rmin_x + xx;
+        }
+
+        if (graph->max_x > graph->rmax_x) {
+            graph->max_x = graph->rmax_x;
+            graph->min_x = graph->max_x - xx;
+        }
+
+        saveHistory();
+        SetXBounds(graph->min_x, graph->max_x, group);
+
+    } else  if ((event->modifiers() & Qt::ControlModifier)) {
         int x = event->x();
         int y = event->y();
 
@@ -2744,80 +2886,6 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
             py += h;
             py += graphSpacer; // do we want the extra spacer down the bottom?
-        }
-    } else {
-        int scrollDampening = p_profile->general->scrollDampening();
-
-        if (event->orientation() == Qt::Vertical) { // Vertical Scrolling
-            if (horizScrollTime.elapsed() < scrollDampening) {
-                return;
-            }
-
-            if (m_scrollbar)
-                m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
-            m_tooltip->cancel();
-            vertScrollTime.start();
-        } else { //Horizontal Panning
-            // (This is a total pain in the butt on MacBook touchpads..)
-
-            if (vertScrollTime.elapsed() < scrollDampening) {
-                return;
-            }
-
-            horizScrollTime.start();
-            gGraph *g = nullptr;
-            int group = 0;
-
-            // Pick the first valid graph in the primary group
-            for (int i = 0; i < m_graphs.size(); i++) {
-                if (!m_graphs[i]) continue;
-                if (m_graphs[i]->group() == group) {
-                    if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
-                        g = m_graphs[i];
-                        break;
-                    }
-                }
-            }
-
-            if (!g) {
-                // just pick any graph then
-                for (int i = 0; i < m_graphs.size(); i++) {
-                    if (!m_graphs[i]) continue;
-                    if (!m_graphs[i]->isEmpty()) {
-                        g = m_graphs[i];
-                        group = g->group();
-                        break;
-                    }
-                }
-            }
-
-            if (!g) { return; }
-
-            double xx = (g->max_x - g->min_x);
-            double zoom = 240.0;
-
-            int delta = event->delta();
-
-            if (delta > 0) {
-                g->min_x -= (xx / zoom) * (float)abs(delta);
-            } else {
-                g->min_x += (xx / zoom) * (float)abs(delta);
-            }
-
-            g->max_x = g->min_x + xx;
-
-            if (g->min_x < g->rmin_x) {
-                g->min_x = g->rmin_x;
-                g->max_x = g->rmin_x + xx;
-            }
-
-            if (g->max_x > g->rmax_x) {
-                g->max_x = g->rmax_x;
-                g->min_x = g->max_x - xx;
-            }
-
-            saveHistory();
-            SetXBounds(g->min_x, g->max_x, group);
         }
     }
 }
