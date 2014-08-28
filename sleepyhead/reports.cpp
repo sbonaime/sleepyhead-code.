@@ -407,10 +407,22 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     QVector<qint64> start, end;
     qint64 savest, saveet;
 
+    gGraph *g;
+
     gv->GetXBounds(savest, saveet);
+
+    for (int i=0;i < gv->size(); i++) {
+        g = (*gv)[i];
+
+        if (g->isEmpty() || !g->visible()) continue;
+        if (g->group() == 0) {
+            savest = g->min_x;
+            saveet = g->max_x;
+            break;
+        }
+    }
     qint64 st = savest, et = saveet;
 
-    gGraph *g;
 
     if (name == STR_TR_Daily) {
         if (!print_bookmarks) {
@@ -429,21 +441,21 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                     et = day->last(MT_OXIMETER);
                 }
 
-                if (g->name() == schema::channel[CPAP_FlowRate].code()) {
-                    if (!((qAbs(savest - st) < 2000) && (qAbs(saveet - et) < 2000))) {
+                if (!g->isSnapshot() && (g->name() == schema::channel[CPAP_FlowRate].code())) {
+                    if (!((qAbs(g->min_x - st) < 2000) && (qAbs(g->max_x - et) < 2000))) {
                         start.push_back(st);
                         end.push_back(et);
                         graphs.push_back(g);
                         labels.push_back(QObject::tr("Entire Day's Flow Waveform"));
                     }
 
-                    start.push_back(savest);
-                    end.push_back(saveet);
+                    start.push_back(g->min_x);
+                    end.push_back(g->max_x);
                     graphs.push_back(g);
                     labels.push_back(QObject::tr("Current Selection"));
                 } else {
-                    start.push_back(savest);
-                    end.push_back(saveet);
+                    start.push_back(g->min_x);
+                    end.push_back(g->max_x);
                     graphs.push_back(g);
                     labels.push_back("");
                 }

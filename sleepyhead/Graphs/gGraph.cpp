@@ -320,7 +320,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
     if (m_snapshot) {
         QLinearGradient linearGrad(QPointF(100, 100), QPointF(width / 2, 100));
-        linearGrad.setColorAt(0, QColor(255, 150, 150,50));
+        linearGrad.setColorAt(0, QColor(255, 150, 150,40));
         linearGrad.setColorAt(1, QColor(255,255,255,20));
 
         painter.fillRect(m_rect, QBrush(linearGrad));
