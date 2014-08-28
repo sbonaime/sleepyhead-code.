@@ -423,6 +423,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     }
     qint64 st = savest, et = saveet;
 
+    bool lineCursorMode = p_profile->appearance->lineCursorMode();
+    p_profile->appearance->setLineCursorMode(false);
 
     if (name == STR_TR_Daily) {
         if (!print_bookmarks) {
@@ -655,5 +657,6 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     painter.end();
     delete printer;
     mainwin->Notify(QObject::tr("SleepyHead has finished sending the job to the printer."));
+    p_profile->appearance->setLineCursorMode(lineCursorMode);
 }
 

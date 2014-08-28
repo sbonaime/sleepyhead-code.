@@ -329,7 +329,9 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         QString t = name().section(";", -1);
 
-        painter.drawText(m_rect, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
+        QRect rec = m_rect;
+        rec.moveTop(rec.top() + 4);
+        painter.drawText(rec, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
     }
 
 

@@ -527,13 +527,13 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
 
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time,Qt::UTC);
+//        QDateTime dt=QDateTime::fromMSecsSinceEpoch(time,Qt::UTC);
 
-        QString text = dt.date().toString(Qt::SystemLocaleLongDate);
+//        QString text = dt.date().toString(Qt::SystemLocaleLongDate);
 
-        int wid, h;
-        GetTextExtent(text, wid, h);
-        w.renderText(text, left + width/2 - wid/2, top-h+5);
+//        int wid, h;
+       // GetTextExtent(text, wid, h);
+       // w.renderText(text, left + width/2 - wid/2, top-h+5);
 
     }
 

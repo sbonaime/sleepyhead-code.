@@ -109,6 +109,9 @@ class Overview : public QWidget
 
     void on_toggleVisibility_clicked(bool checked);
 
+    void on_LineCursorUpdate(double time);
+    void on_RangeUpdate(double minx, double maxx);
+
   private:
     Ui::Overview *ui;
     gGraphView *GraphView;
@@ -117,6 +120,7 @@ class Overview : public QWidget
     gGraphView *m_shared;
     QIcon *icon_on;
     QIcon *icon_off;
+    MyLabel *dateLabel;
 
     //! \brief Updates the calendar highlighting for the calendar object for this date.
     void UpdateCalendarDay(QDateEdit *calendar, QDate date);

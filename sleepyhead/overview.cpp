@@ -102,6 +102,18 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     layout->addWidget(scrollbar, 0);
     layout->layout();
 
+    dateLabel = new MyLabel(this);
+    dateLabel->setAlignment(Qt::AlignVCenter);
+    dateLabel->setText("[Date Widget]");
+    QFont font = dateLabel->font();
+    font.setPointSizeF(font.pointSizeF()*1.3F);
+    dateLabel->setFont(font);
+    QPalette palette = dateLabel->palette();
+    palette.setColor(QPalette::Base, Qt::blue);
+    dateLabel->setPalette(palette);
+
+    ui->dateLayout->addWidget(dateLabel,1);
+
     // TODO: Automate graph creation process
     ChannelID ahicode = p_profile->general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
 
@@ -316,6 +328,10 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
 
+    connect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
+    connect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
+
+
 }
 Overview::~Overview()
 {
@@ -360,6 +376,24 @@ gGraph *Overview::createGraph(QString code, QString name, QString units, YTicker
     g->AddLayer(x, LayerBottom, 0, gXAxis::Margin);
     g->AddLayer(new gXGrid());
     return g;
+}
+
+void Overview::on_LineCursorUpdate(double time)
+{
+    if (time > 1) {
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
+        QString txt = dt.toString("dd MMM yyyy");
+        dateLabel->setText(txt);
+    } else dateLabel->setText(QString(GraphView->emptyText()));
+}
+
+void Overview::on_RangeUpdate(double minx, double maxx)
+{
+    if (minx > 1) {
+        dateLabel->setText(GraphView->getRangeString());
+    } else {
+        dateLabel->setText(QString(GraphView->emptyText()));
+    }
 }
 
 void Overview::ReloadGraphs()

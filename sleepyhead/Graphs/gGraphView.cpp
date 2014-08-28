@@ -1371,6 +1371,18 @@ QString gGraphView::getRangeString()
     qint64 diff = m_maxx - m_minx;
 
     if (diff > 86400000) {
+        int days = ceil(double(m_maxx-m_minx) / 86400000.0);
+
+        qint64 minx = floor(double(m_minx)/86400000.0);
+        minx *= 86400000L;
+
+        qint64 maxx = minx + 86400000L * qint64(days)-1;
+
+        QDateTime st = QDateTime::fromMSecsSinceEpoch(minx);
+        QDateTime et = QDateTime::fromMSecsSinceEpoch(maxx);
+
+        QString txt = st.toString("d MMM") + " - " +  et.addDays(-1).toString("d MMM yyyy");
+        return txt;
     } else if (diff > 60000) {
         fmt = "HH:mm:ss";
     } else {
