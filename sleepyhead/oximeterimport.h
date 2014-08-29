@@ -87,6 +87,8 @@ protected:
     SerialOximeter * detectOximeter();
     void updateStatus(QString msg);
     void doImport();
+    void setInformation();
+
 private:
     Ui::OximeterImport *ui;
     SerialOximeter * oximodule;

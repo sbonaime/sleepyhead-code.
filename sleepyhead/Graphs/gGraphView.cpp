@@ -2119,7 +2119,27 @@ void gGraphView::onSnapshotGraphToggle()
             }
         }
 
-        gGraph * newgraph = new gGraph(newname, nullptr, graph->title(), graph->units(), graph->height(), graph->group());
+        QString newtitle;
+        bool fnd = false;
+        // someday, some clown will keep adding new graphs to break this..
+        for (int i=1; i < 100; i++) {
+            newtitle = graph->title()+"-"+QString::number(i);
+            fnd = false;
+            for (int j=0; j<m_graphs.size(); ++j) {
+                if (m_graphs[j]->title() == newtitle) {
+                    fnd = true;
+                    break;
+                }
+            }
+            if (!fnd) break;
+        }
+        if (fnd) {
+            // holy crap.. what patience. but not what I meant by as many as you like ;)
+            return;
+        }
+
+
+        gGraph * newgraph = new gGraph(newname, nullptr, newtitle, graph->units(), graph->height(), graph->group());
        // newgraph->setBlockSelect(true);
         newgraph->setHeight(graph->height());
 
