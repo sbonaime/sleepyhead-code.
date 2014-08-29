@@ -316,7 +316,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     // <--- The code to the previous marker is crap
 
     AHI->setPinned(false);
-    ui->rangeCombo->setCurrentIndex(6);
+    ui->rangeCombo->setCurrentIndex(p_profile->general->lastOverviewRange());
     icon_on = new QIcon(":/icons/session-on.png");
     icon_off = new QIcon(":/icons/session-off.png");
     SES->setRecMinY(1);
@@ -579,6 +579,7 @@ void Overview::ResetGraphLayout()
 
 void Overview::on_rangeCombo_activated(int index)
 {
+    p_profile->general->setLastOverviewRange(index);
     ui->dateStart->setMinimumDate(p_profile->FirstDay());
     ui->dateEnd->setMaximumDate(p_profile->LastDay());
 

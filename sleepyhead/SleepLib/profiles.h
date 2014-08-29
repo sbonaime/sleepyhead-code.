@@ -331,6 +331,7 @@ const QString STR_US_TooltipTimeout = "TooltipTimeout";
 const QString STR_US_ScrollDampening = "ScrollDampening";
 const QString STR_US_ShowUnknownFlags = "ShowUnknownFlags";
 const QString STR_US_StatReportMode = "StatReportMode";
+const QString STR_US_LastOverviewRange = "LastOverviewRange";
 
 // Parent class for subclasses that manipulate the profile.
 class ProfileSettings
@@ -776,6 +777,7 @@ class UserSettings : public ProfileSettings
         initPref(STR_US_ScrollDampening, (int)50);
         initPref(STR_US_StatReportMode, 0);
         initPref(STR_US_ShowUnknownFlags, false);
+        initPref(STR_US_LastOverviewRange, 4);
     }
 
     UnitSystem unitSystem() const { return (UnitSystem)getPref(STR_US_UnitSystem).toInt(); }
@@ -793,6 +795,7 @@ class UserSettings : public ProfileSettings
     int scrollDampening() const { return getPref(STR_US_ScrollDampening).toInt(); }
     int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
     bool showUnknownFlags() const { return getPref(STR_US_ShowUnknownFlags).toBool(); }
+    int lastOverviewRange() const { return getPref(STR_US_LastOverviewRange).toInt(); }
 
     void setUnitSystem(UnitSystem us) { setPref(STR_US_UnitSystem, (int)us); }
     void setEventWindowSize(double size) { setPref(STR_US_EventWindowSize, size); }
@@ -809,6 +812,7 @@ class UserSettings : public ProfileSettings
     void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, i); }
     void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
     void setShowUnknownFlags(bool b) { setPref(STR_US_ShowUnknownFlags, b); }
+    void setLastOverviewRange(int i) { setPref(STR_US_LastOverviewRange, i); }
 };
 
 //! \brief Returns a count of all files & directories in a supplied folder
