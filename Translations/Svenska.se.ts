@@ -282,17 +282,17 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Händelser/timme</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="518"/>
+        <location filename="../sleepyhead/daily.cpp" line="517"/>
         <source>No %1 events are recorded this day</source>
         <translation>Inga %1 händelser är registrerade denna dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="616"/>
+        <location filename="../sleepyhead/daily.cpp" line="615"/>
         <source>%1 event</source>
         <translation>%1 händelse</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="617"/>
+        <location filename="../sleepyhead/daily.cpp" line="616"/>
         <source>%1 events</source>
         <translation>%1 händelser</translation>
     </message>
@@ -309,12 +309,12 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">ASV</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1278"/>
+        <location filename="../sleepyhead/daily.cpp" line="1277"/>
         <source>Sleep</source>
         <translation>Sömn</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1278"/>
+        <location filename="../sleepyhead/daily.cpp" line="1277"/>
         <source>Wake</source>
         <translation>Vakna</translation>
     </message>
@@ -359,32 +359,32 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Exh&amp;nbsp;Puff</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1512"/>
+        <location filename="../sleepyhead/daily.cpp" line="1523"/>
         <source>Event Breakdown</source>
         <translation>Händelser i detalj</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1547"/>
+        <location filename="../sleepyhead/daily.cpp" line="1558"/>
         <source>Sessions all off!</source>
         <translation>Alla sessioner av!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1549"/>
+        <location filename="../sleepyhead/daily.cpp" line="1560"/>
         <source>Sessions exist for this day but are switched off.</source>
         <translation>Sessioner finns för denna dag men är avstängda.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1552"/>
+        <location filename="../sleepyhead/daily.cpp" line="1563"/>
         <source>Impossibly short session</source>
         <translation>Onaturligt kort session</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1553"/>
+        <location filename="../sleepyhead/daily.cpp" line="1564"/>
         <source>Zero hours??</source>
         <translation>0 timmar??</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1556"/>
+        <location filename="../sleepyhead/daily.cpp" line="1567"/>
         <source>BRICK :(</source>
         <translation>Tegelsten :-(</translation>
     </message>
@@ -393,7 +393,7 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Jag är ledsen, men din maskin registerar ingen data.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1558"/>
+        <location filename="../sleepyhead/daily.cpp" line="1569"/>
         <source>Complain to your Equipment Provider!</source>
         <translation>Klaga till återförsäljaren!</translation>
     </message>
@@ -406,7 +406,7 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Medium</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1136"/>
+        <location filename="../sleepyhead/daily.cpp" line="1135"/>
         <source>Statistics</source>
         <translation>Statistisk</translation>
     </message>
@@ -423,7 +423,7 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Inga data tillgängliga</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1058"/>
+        <location filename="../sleepyhead/daily.cpp" line="1057"/>
         <source>Oximeter Information</source>
         <translation>Oximeter information</translation>
     </message>
@@ -436,22 +436,22 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Int. SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="652"/>
+        <location filename="../sleepyhead/daily.cpp" line="651"/>
         <source>Session Start Times</source>
         <translation>Periodens Start Tid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="653"/>
+        <location filename="../sleepyhead/daily.cpp" line="652"/>
         <source>Session End Times</source>
         <translation>Periodens Slut Tid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="893"/>
+        <location filename="../sleepyhead/daily.cpp" line="892"/>
         <source>Duration</source>
         <translation>Varaktighet</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="873"/>
+        <location filename="../sleepyhead/daily.cpp" line="872"/>
         <source>Oximetery Sessions</source>
         <translation></translation>
     </message>
@@ -466,17 +466,17 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="unfinished">UF2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="879"/>
+        <location filename="../sleepyhead/daily.cpp" line="878"/>
         <source>Position Sensor Sessions</source>
         <translation>Lägesgivaren Period</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="884"/>
+        <location filename="../sleepyhead/daily.cpp" line="883"/>
         <source>Unknown Session</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="950"/>
+        <location filename="../sleepyhead/daily.cpp" line="949"/>
         <source>Machine Settings Unavailable</source>
         <translation>Maskin Inställningar Ej Tillgängliga</translation>
     </message>
@@ -485,27 +485,27 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">EPR:%1 EPR_LEVEL:%2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1062"/>
+        <location filename="../sleepyhead/daily.cpp" line="1061"/>
         <source>SpO2 Desaturations</source>
         <translation>Minskning av syrgasmättnad</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1063"/>
+        <location filename="../sleepyhead/daily.cpp" line="1062"/>
         <source>Pulse Change events</source>
         <translation>Pulsförändringar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1064"/>
+        <location filename="../sleepyhead/daily.cpp" line="1063"/>
         <source>SpO2 Baseline Used</source>
         <translation>Baslinje för syrgasmättnad används</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
+        <location filename="../sleepyhead/daily.cpp" line="945"/>
         <source>Machine Settings</source>
         <translation>Maskininställningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="838"/>
+        <location filename="../sleepyhead/daily.cpp" line="837"/>
         <source>Session Information</source>
         <translation>Sessions information</translation>
     </message>
@@ -514,7 +514,7 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Session ID</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="870"/>
+        <location filename="../sleepyhead/daily.cpp" line="869"/>
         <source>CPAP Sessions</source>
         <translation>CPAP Sessions</translation>
     </message>
@@ -523,7 +523,7 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Oximeter Sessions</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="876"/>
+        <location filename="../sleepyhead/daily.cpp" line="875"/>
         <source>Sleep Stage Sessions</source>
         <translation>Sömnstadie Sessions</translation>
     </message>
@@ -532,98 +532,98 @@ Om du glömt att importera senaste CPAP-data först, gör det nu, och importera 
         <translation type="vanished">Sömnstadie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="934"/>
+        <location filename="../sleepyhead/daily.cpp" line="933"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
         <translation>En eller flera flödeskurvor för den här sessionen hade felaktiga källdata. Vissa flödeskurvor kanske inte visas korrekt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1094"/>
+        <location filename="../sleepyhead/daily.cpp" line="1093"/>
         <source>PAP Mode: %1&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1099"/>
+        <location filename="../sleepyhead/daily.cpp" line="1098"/>
         <source>This day has missing pressure, mode and settings data.</source>
         <translation>Den här dagen saknar tryck, läges, och inställningsdata.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1141"/>
+        <location filename="../sleepyhead/daily.cpp" line="1140"/>
         <source>%1%2</source>
         <translation>%1%2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1207"/>
+        <location filename="../sleepyhead/daily.cpp" line="1206"/>
         <source>This day just contains summary data, only limited information is available .</source>
         <translation>Den här dagen innehåller bara sammanfattningsdata, endast begränsad information är tillgänglig.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1217"/>
+        <location filename="../sleepyhead/daily.cpp" line="1216"/>
         <source>Total time in apnea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1227"/>
+        <location filename="../sleepyhead/daily.cpp" line="1226"/>
         <source>Time over leak redline</source>
         <translation>Tid över röda läckage-linjen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1233"/>
+        <location filename="../sleepyhead/daily.cpp" line="1232"/>
         <source>Total ramp time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1237"/>
+        <location filename="../sleepyhead/daily.cpp" line="1236"/>
         <source>Time outside of ramp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1247"/>
+        <location filename="../sleepyhead/daily.cpp" line="1246"/>
         <source>AHI excluding ramp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2489"/>
+        <location filename="../sleepyhead/daily.cpp" line="2457"/>
         <source>Hide all events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2489"/>
+        <location filename="../sleepyhead/daily.cpp" line="2457"/>
         <source>Show all events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1557"/>
+        <location filename="../sleepyhead/daily.cpp" line="1568"/>
         <source>Sorry, your machine only provides compliance data.</source>
         <translation>Ledsen, men din maskin sparar bara tid som maskinen använts.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1576"/>
+        <location filename="../sleepyhead/daily.cpp" line="1587"/>
         <source>&quot;Nothing&apos;s here!&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1579"/>
+        <location filename="../sleepyhead/daily.cpp" line="1590"/>
         <source>Bob is bored with this days lack of data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1858"/>
+        <location filename="../sleepyhead/daily.cpp" line="1869"/>
         <source>Pick a Colour</source>
         <translation>Välj en färg</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2163"/>
+        <location filename="../sleepyhead/daily.cpp" line="2131"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation>
 Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2206"/>
+        <location filename="../sleepyhead/daily.cpp" line="2174"/>
         <source>Bookmark at %1</source>
         <translation>Bokmärke på %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2397"/>
+        <location filename="../sleepyhead/daily.cpp" line="2365"/>
         <source>Show all graphs</source>
         <translation>Visa alla grafer</translation>
     </message>
@@ -636,7 +636,7 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">Endast Sammanfattning :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2417"/>
+        <location filename="../sleepyhead/daily.cpp" line="2385"/>
         <source>Hide all graphs</source>
         <translation>Dölj alla grafer</translation>
     </message>
@@ -995,17 +995,17 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation>&amp;Vy</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3173"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3172"/>
         <source>&amp;Help</source>
         <translation>&amp;Hjälp</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3189"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3188"/>
         <source>&amp;Data</source>
         <translation>&amp;Data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3193"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3192"/>
         <source>&amp;Advanced</source>
         <translation>&amp;Avancerad</translation>
     </message>
@@ -1014,27 +1014,27 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">&amp;Rensa CPAP Data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3197"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3196"/>
         <source>Purge Oximetery Data</source>
         <translation>Radera Oximetry-data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3251"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3250"/>
         <source>&amp;Import Data</source>
         <translation>&amp;Importera Data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3254"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3253"/>
         <source>Shift+F2</source>
         <translation>Shift+F2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3259"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3258"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Inställningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3264"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3263"/>
         <source>&amp;Profiles</source>
         <translation>&amp;Profiler</translation>
     </message>
@@ -1059,180 +1059,180 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3203"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3202"/>
         <source>Purge ALL CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3213"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3212"/>
         <source>Rebuild CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3269"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3268"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3274"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3273"/>
         <source>View &amp;Daily</source>
         <translation>Visa &amp;Dagligen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3277"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3276"/>
         <source>F5</source>
         <translation>F5</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3282"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3281"/>
         <source>View &amp;Overview</source>
         <translation>Vy &amp;Översikt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3285"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3284"/>
         <source>F6</source>
         <translation>F6</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3290"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3289"/>
         <source>View &amp;Welcome</source>
         <translation>View &amp;Välkommen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3293"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="3440"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3292"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3439"/>
         <source>F4</source>
         <translation>F4</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3298"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3297"/>
         <source>-</source>
         <translation>-</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3301"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3300"/>
         <source>Ctrl+Tab</source>
         <translation>Ctrl+Tab</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3309"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3308"/>
         <source>Use &amp;AntiAliasing</source>
         <translation>Använd &amp;Antialias</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3314"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3313"/>
         <source>&amp;About SleepyHead</source>
         <translation>&amp;Om SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3322"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3321"/>
         <source>&amp;Fullscreen Toggle</source>
         <translation>&amp;Helskärm Växla</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3325"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3324"/>
         <source>F11</source>
         <translation>F11</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3333"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3332"/>
         <source>Show Debug Pane</source>
         <translation>Visa Felsöknings Fönster</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3338"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3337"/>
         <source>&amp;Reset Graph Layout</source>
         <translation>&amp;Återställ Graferna</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3343"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3342"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="273"/>
         <source>Check for &amp;Updates</source>
         <translation>Kontrollera om det finns nya &amp;uppdateringar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3348"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3347"/>
         <source>Take &amp;Screenshot</source>
         <translation>Ta en &amp;skärmdump</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3351"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3350"/>
         <source>F12</source>
         <translation>F12</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3356"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3355"/>
         <source>O&amp;ximetry Wizard</source>
         <translation>O&amp;ximetry Guiden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3382"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3381"/>
         <source>Exp&amp;ort Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3397"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3396"/>
         <source>&amp;Automatic Oximetry Cleanup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3407"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3406"/>
         <source>Purge &amp;Current Selected Day</source>
         <translation>Radera den &amp;aktuella dagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3426"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3425"/>
         <source>F10</source>
         <translation type="unfinished">F10</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3431"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3430"/>
         <source>View S&amp;tatistics</source>
         <translation>Visa S&amp;tatistik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3434"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="3437"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3433"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3436"/>
         <source>View Statistics</source>
         <translation>Visa statistik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3455"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3454"/>
         <source>&amp;Support SleepyHead Development</source>
         <translation>&amp;Stöd SleepyHead:s utveckling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3465"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3464"/>
         <source>Change &amp;Language</source>
         <translation>Ändra &amp;Språk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3470"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3469"/>
         <source>Change &amp;Data Folder</source>
         <translation>Ändra &amp;Data-Mapp</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3475"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3474"/>
         <source>Import &amp;Somnopose Data</source>
         <translation>Importera &amp;Somnopose Data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3480"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3479"/>
         <source>Current Days</source>
         <translation>Aktuella dagar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3526"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3520"/>
         <source>Daily Calendar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3529"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3523"/>
         <source>F9</source>
         <translation type="unfinished">F9</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3534"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3528"/>
         <source>Backup &amp;Journal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1241,22 +1241,22 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">Visa O&amp;ximetri</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3359"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3358"/>
         <source>F7</source>
         <translation>F7</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3364"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3363"/>
         <source>Print &amp;Report</source>
         <translation>Skriv ut &amp;Rapport</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3369"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3368"/>
         <source>&amp;Edit Profile</source>
         <translation>&amp;Redigera Profil</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3377"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3376"/>
         <source>&amp;Link Graph Groups</source>
         <translation>&amp;Länk Graf Grupp</translation>
     </message>
@@ -1265,12 +1265,12 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">Exp&amp;ort</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3387"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3386"/>
         <source>Online Users &amp;Guide</source>
         <translation>Online användar &amp;Handbok</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3392"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3391"/>
         <source>&amp;Frequently Asked Questions</source>
         <translation>&amp;Återkommande frågor</translation>
     </message>
@@ -1279,7 +1279,7 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">&amp;Uppdatera Oximetri Indexen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3402"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3401"/>
         <source>Change &amp;User</source>
         <translation>Växla &amp;Användare</translation>
     </message>
@@ -1288,37 +1288,32 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">&amp;Aktuell vald dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3412"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3411"/>
         <source>All data for current CPAP machine</source>
         <translation>Alla data för aktuell CPAP maskin</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3423"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3422"/>
         <source>Right &amp;Sidebar</source>
         <translation>Höger &amp;meny</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3488"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3487"/>
         <source>Toggle &amp;Line Cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3491"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3490"/>
         <source>Ctrl+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3496"/>
-        <source>Foo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3512"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3506"/>
         <source>Daily Sidebar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3515"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3509"/>
         <source>F8</source>
         <translation>F8</translation>
     </message>
@@ -1327,12 +1322,12 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">Visa S&amp;ummering</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3445"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3444"/>
         <source>Import &amp;ZEO Data</source>
         <translation>Import &amp;ZEO Data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3450"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3449"/>
         <source>Import RemStar &amp;MSeries Data</source>
         <translation>Import Remstar &amp;MSeries Data</translation>
     </message>
@@ -1341,7 +1336,7 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
         <translation type="vanished">&amp;Stöd SleepyHead Utveckling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="3460"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="3459"/>
         <source>Sleep Disorder Terms &amp;Glossary</source>
         <translation>Sömnstörningar uttryck och &amp;Ordlista</translation>
     </message>
@@ -1401,7 +1396,7 @@ Detta bokmärke är i ett för tillfället inaktiverat område ..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="720"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2069"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2062"/>
         <source>Please wait, importing from backup folder(s)...</source>
         <translation>Vänta, importerar från backup-mappen(s)...</translation>
     </message>
@@ -1856,72 +1851,72 @@ Det gick inte att hitta några nya maskindata på de platser som angetts</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2044"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2037"/>
         <source>Are you sure you want to rebuild all CPAP data for the following machine:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2047"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2040"/>
         <source>Please note, that this could result in loss of graph data if SleepyHead&apos;s internal backups have been disabled or interfered with in any way.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2055"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2048"/>
         <source>For some reason, SleepyHead does not have internal backups for the following machine:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2058"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2051"/>
         <source>Provided you have made &lt;i&gt;your &lt;b&gt;own&lt;/b&gt; backups for ALL of your CPAP data&lt;/i&gt;, you can still complete this operation, but you will have to restore from your backups manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2059"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2052"/>
         <source>Are you really sure you want to do this?</source>
         <translation type="unfinished">Är du verkligen säker på att du vill göra detta?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2072"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2065"/>
         <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2073"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2066"/>
         <source>Would you like to import from your own backups now? (you will have no data visible for this machine until you do)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2104"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2097"/>
         <source>You are about to &lt;font size=+2&gt;obliterate&lt;/font&gt; SleepyHead&apos;s machine database for the following machine:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2107"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2100"/>
         <source>Note as a precaution, the backup folder will be left in place.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2108"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2101"/>
         <source>Are you &lt;b&gt;absolutely sure&lt;/b&gt; you want to proceed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2131"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2124"/>
         <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2656"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2649"/>
         <source>%1&apos;s Journal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2658"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2651"/>
         <source>Choose where to save journal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2658"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2651"/>
         <source>XML Files (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2061,27 +2056,27 @@ Det gick inte att hitta några nya maskindata på de platser som angetts</transl
         <translation type="vanished">Vänta, importerar ...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2499"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2492"/>
         <source>There was a problem opening Somnopose Data File: </source>
         <translation>Det gick inte att öppna Somnopose datafil:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2503"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2496"/>
         <source>Somnopause Data Import complete</source>
         <translation>Somnopose Data-Import komplett</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2594"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2587"/>
         <source>Are you sure you want to delete oximetry data for %1</source>
         <translation>Är du säker på att du vill ta bort oximetridata för %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2596"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2589"/>
         <source>&lt;b&gt;Please be aware you can not undo this operation!&lt;/b&gt;</source>
         <translation>&lt;b&gt;Tänk på att du INTE kan ångra den här åtgärden!&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2616"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2609"/>
         <source>Select the day with valid oximetry data in daily view first.</source>
         <translation>Markera dagen med giltiga oximetridata i daglig vy först.</translation>
     </message>
@@ -2166,14 +2161,14 @@ Den är nödvändig för att använda det här avsnittet.</translation>
 Vänligen återuppbygg Sleepyhead med Qt 4.8.5 eller högre, eftersom utskriften orsakar en krasch med denna version av Qt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1908"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1929"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1901"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1922"/>
         <source>Gah!</source>
         <translation>Gah!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1908"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1929"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1901"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1922"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation>
 Om du kan läsa detta, fungerade inte kommandot omstart . Du kommer att behöva göra det själv manuellt.</translation>
@@ -2188,65 +2183,108 @@ Om du kan läsa detta, fungerade inte kommandot omstart . Du kommer att behöva 
         <translation type="vanished">Är du säker på att du vill rensa alla CPAP uppgifter till följande maskiner:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2294"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2287"/>
         <source>Performance will be degraded during these recalculations.</source>
         <translation>Prestandan försämras under dessa omräkningar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2295"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2288"/>
         <source>Recalculating Indices</source>
         <translation>Räknar om indexen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2307"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2300"/>
         <source>Loading Event Data</source>
         <translation>Laddar händelse data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2309"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2369"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2302"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2362"/>
         <source>Recalculating Summaries</source>
         <translation>Räknar om Sammanfattning</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2381"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2374"/>
         <source>Restart Required</source>
         <translation>Omstart krävs</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2382"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2375"/>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation>Omräkningar är klar, programmet behöver nu starta om för att visa ändringarna.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2387"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2380"/>
         <source>Recalculations are now complete.</source>
         <translation>Omräkningen är nu klar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2387"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2380"/>
         <source>Task Completed</source>
         <translation>Uppgiften är klar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2411"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2404"/>
         <source>There was a problem opening ZEO File: </source>
         <translation>Det var ett problem att öppna ZEO Fil: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2415"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2408"/>
         <source>Zeo CSV Import complete</source>
         <translation>Zeo CSV import är klar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2437"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2430"/>
         <source>There was a problem opening MSeries block File: </source>
         <translation>Det var ett problem att öppna MSeries block fil: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2441"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2434"/>
         <source>MSeries Import complete</source>
         <translation>MSeries Import är klar</translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxWidget</name>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1773"/>
+        <source>Auto-Fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1774"/>
+        <source>Defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1775"/>
+        <source>Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1776"/>
+        <source>The Y-Axis scaling mode, &apos;Auto-Fit&apos; for automatic scaling, &apos;Defaults&apos; for settings according to manufacturer, and &apos;Override&apos; to choose your own.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1782"/>
+        <source>The Minimum Y-Axis value.. Note this can be a negative number if you wish.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1783"/>
+        <source>The Maximum Y-Axis value.. Must be greater than Minimum to work.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1818"/>
+        <source>Scaling Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1840"/>
+        <source>This button resets the Min and Max to match the Auto-Fit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2645,27 +2683,27 @@ Om du kan läsa detta, fungerade inte kommandot omstart . Du kommer att behöva 
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="195"/>
-        <location filename="../sleepyhead/overview.ui" line="238"/>
+        <location filename="../sleepyhead/overview.ui" line="244"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.ui" line="219"/>
+        <location filename="../sleepyhead/overview.ui" line="225"/>
         <source>Toggle Graph Visibility</source>
         <translation>Växla grafens synlighet</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.ui" line="254"/>
+        <location filename="../sleepyhead/overview.ui" line="260"/>
         <source>Drop down to see list of graphs to switch on/off.</source>
         <translation>Öppna meny för att se lista på grafer att visa/dölja.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.ui" line="258"/>
+        <location filename="../sleepyhead/overview.ui" line="264"/>
         <source>Graphs</source>
         <translation>Grafer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="109"/>
+        <location filename="../sleepyhead/overview.cpp" line="121"/>
         <source>Respiratory
 Disturbance
 Index</source>
@@ -2674,7 +2712,7 @@ Störnings (Disturbance)
 Index</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="111"/>
+        <location filename="../sleepyhead/overview.cpp" line="123"/>
         <source>Apnea
 Hypopnea
 Index</source>
@@ -2683,23 +2721,23 @@ Hypopnea
 Index</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="115"/>
+        <location filename="../sleepyhead/overview.cpp" line="127"/>
         <source>Usage</source>
         <translation>Användning</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="115"/>
+        <location filename="../sleepyhead/overview.cpp" line="127"/>
         <source>Usage
 (hours)</source>
         <translation>Användning (timmar)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="130"/>
+        <location filename="../sleepyhead/overview.cpp" line="142"/>
         <source>Session Times</source>
         <translation>Antal Perioder</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="130"/>
+        <location filename="../sleepyhead/overview.cpp" line="142"/>
         <source>Session Times
 (hours)</source>
         <translation>Periodens Timmar</translation>
@@ -2717,30 +2755,30 @@ Andning
 (% av natten)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="135"/>
-        <location filename="../sleepyhead/overview.cpp" line="136"/>
+        <location filename="../sleepyhead/overview.cpp" line="147"/>
+        <location filename="../sleepyhead/overview.cpp" line="148"/>
         <source>% in %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="135"/>
+        <location filename="../sleepyhead/overview.cpp" line="147"/>
         <source>%1
 (% of night)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="136"/>
+        <location filename="../sleepyhead/overview.cpp" line="148"/>
         <source>Large Leaks
 (% of night)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="139"/>
+        <location filename="../sleepyhead/overview.cpp" line="151"/>
         <source>Peak RDI</source>
         <translation>Högsta RDI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="139"/>
+        <location filename="../sleepyhead/overview.cpp" line="151"/>
         <source>Peak RDI
 Shows RDI Clusters
 (RDI/hr)</source>
@@ -2749,12 +2787,12 @@ Visar RDI Kluster
 (RDI/tim)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="141"/>
+        <location filename="../sleepyhead/overview.cpp" line="153"/>
         <source>Peak AHI</source>
         <translation>Högsta AHI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="141"/>
+        <location filename="../sleepyhead/overview.cpp" line="153"/>
         <source>Peak AHI
 Shows AHI Clusters
 (AHI/hr)</source>
@@ -2763,7 +2801,7 @@ Visar AHI Kluster
 (AHI/tim)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="145"/>
+        <location filename="../sleepyhead/overview.cpp" line="157"/>
         <source>Tidal
 Volume
 (ml)</source>
@@ -2772,7 +2810,7 @@ Volym
 (ml)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="146"/>
+        <location filename="../sleepyhead/overview.cpp" line="158"/>
         <source>Minute
 Ventilation
 (L/min)</source>
@@ -2781,7 +2819,7 @@ Ventilation
 (L/min)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="147"/>
+        <location filename="../sleepyhead/overview.cpp" line="159"/>
         <source>Target
 Ventilation
 (L/min)</source>
@@ -2790,7 +2828,7 @@ Ventilation
 (L/min)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="148"/>
+        <location filename="../sleepyhead/overview.cpp" line="160"/>
         <source>Patient
 Triggered
 Breaths
@@ -2801,28 +2839,28 @@ Andetag
 (%)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="149"/>
+        <location filename="../sleepyhead/overview.cpp" line="161"/>
         <source>
 (count)</source>
         <translation>
 (räkna)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="151"/>
+        <location filename="../sleepyhead/overview.cpp" line="163"/>
         <source>Oxygen Saturation
 (%)</source>
         <translation>Syremättnad
 (%)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="152"/>
+        <location filename="../sleepyhead/overview.cpp" line="164"/>
         <source>SensAwake
 (count)</source>
         <translation>SensAwake
 (räkna)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="155"/>
+        <location filename="../sleepyhead/overview.cpp" line="167"/>
         <source>Body
 Mass
 Index</source>
@@ -2831,44 +2869,44 @@ Mass
 Index</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="156"/>
+        <location filename="../sleepyhead/overview.cpp" line="168"/>
         <source>How you felt
 (0-10)</source>
         <translation>Hur du känner dig
 (0-10)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="173"/>
+        <location filename="../sleepyhead/overview.cpp" line="185"/>
         <source>Zombie Meter</source>
         <translation>Zombis Mätare</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="242"/>
+        <location filename="../sleepyhead/overview.cpp" line="254"/>
         <source>breaths/min</source>
         <translation>andetag/min</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="250"/>
+        <location filename="../sleepyhead/overview.cpp" line="262"/>
         <source>L/b</source>
         <translation>L/b</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="272"/>
+        <location filename="../sleepyhead/overview.cpp" line="284"/>
         <source>%PTB</source>
         <translation>%PTB</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="299"/>
+        <location filename="../sleepyhead/overview.cpp" line="311"/>
         <source>% PB</source>
         <translation>% PB</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="302"/>
+        <location filename="../sleepyhead/overview.cpp" line="314"/>
         <source>% %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="636"/>
+        <location filename="../sleepyhead/overview.cpp" line="670"/>
         <source>Show all graphs</source>
         <translation>Visa alla grafer</translation>
     </message>
@@ -2877,7 +2915,7 @@ Index</translation>
         <translation type="vanished">Inga grafer på!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/overview.cpp" line="649"/>
+        <location filename="../sleepyhead/overview.cpp" line="683"/>
         <source>Hide all graphs</source>
         <translation>Dölj alla grafer</translation>
     </message>
@@ -3701,8 +3739,8 @@ Ett värde på 20% fungerar bra för att upptäcka apnéer. </translation>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="760"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="847"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1516"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1571"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1432"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1487"/>
         <source>%</source>
         <translation>%</translation>
     </message>
@@ -3727,9 +3765,9 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="804"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="824"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1461"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1490"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1561"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1377"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1406"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1477"/>
         <source>s</source>
         <translation>s</translation>
     </message>
@@ -3776,12 +3814,12 @@ Standardvärdet är 60 minuter .. Rekommenderas starkt att använda detta värde
         <translation>Återställ till noll</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2550"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2466"/>
         <source>Pixmap caching is an graphics acceleration technique. May cause problems with font drawing in graph display area on your platform.</source>
         <translation>Pixmap caching är en grafikacceleration teknik. Kan orsaka problem med typsnittsvisning i grafvisningsområdet på din plattform.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2560"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2476"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These features have recently been pruned. They will come back later. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dessa funktioner har nyligen beskurits. De kommer att komma tillbaka senare. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -3847,48 +3885,44 @@ Försök att synkronisera den till din dators klocka (som bör synkroniseras til
         <translation type="vanished">ID</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1310"/>
         <source>Graphs</source>
-        <translation>Graf</translation>
+        <translation type="vanished">Graf</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1189"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1261"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1333"/>
         <source>Search</source>
         <translation>Sök</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1340"/>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
-        <translation>Filtrerar graflistan. Börja helt enkelt med att skriva namnet på diagrammet du letar efter.</translation>
+        <translation type="vanished">Filtrerar graflistan. Börja helt enkelt med att skriva namnet på diagrammet du letar efter.</translation>
     </message>
     <message>
         <source>&amp;Defaults</source>
         <translation type="vanished">&amp;Förvalt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1380"/>
         <source>Double click on the (Y-axis) min/max values to edit them</source>
-        <translation>Dubbelklicka på (Y-axeln) min/max värden för att redigera dem</translation>
+        <translation type="vanished">Dubbelklicka på (Y-axeln) min/max värden för att redigera dem</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1394"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1310"/>
         <source>&amp;Oximetry</source>
         <translation>&amp;Oximeter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1621"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1537"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1634"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1550"/>
         <source>Tries to forces the oximetry data to link with CPAP when possible.</source>
         <translation>Försöker att forcera att länka Oximeterdata med CPAP när det är möjligt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1637"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1553"/>
         <source>Link Oximetry and CPAP graphs</source>
         <translation>Länka Oximeter och CPAP grafer</translation>
     </message>
@@ -3897,39 +3931,39 @@ Försök att synkronisera den till din dators klocka (som bör synkroniseras til
         <translation type="vanished">Flagga förändringar i Oximeter-statistik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1451"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1367"/>
         <source>SPO2</source>
         <translation>SPO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1513"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1429"/>
         <source>Percentage drop in oxygen saturation</source>
         <translation>Procentuell minskning i syremättnaden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1506"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1422"/>
         <source>Pulse</source>
         <translation>Puls</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1471"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1387"/>
         <source>Sudden change in Pulse Rate of at least this amount</source>
         <translation>Plötslig förändring i puls på minst denna nivå</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1474"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1598"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1605"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1390"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1514"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1521"/>
         <source> bpm</source>
         <translation>Andetag per minut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1458"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1374"/>
         <source>Minimum duration of drop in oxygen saturation</source>
         <translation>Minsta tid för nedgång i syremättnad</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1487"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1403"/>
         <source>Minimum duration of pulse change event.</source>
         <translation>Minsta tid för pulsändringshändelse.</translation>
     </message>
@@ -3938,59 +3972,59 @@ Försök att synkronisera den till din dators klocka (som bör synkroniseras til
         <translation type="vanished">Kassera värden under</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1558"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1474"/>
         <source>Small chunks of oximetry data under this amount will be discarded.</source>
         <translation>Små bitar av oximetridata under detta värde kommer att raderas.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1733"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1649"/>
         <source>&amp;General</source>
         <translation>&amp;Allmän</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1882"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1798"/>
         <source>General Settings</source>
         <translation>Allmänna Inställningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1934"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1850"/>
         <source>Daily view navigation buttons will skip over days without data records</source>
         <translation>Dagliga vy/navigeringsknapparna hoppar över dagar utan dataposter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1937"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1853"/>
         <source>Skip over Empty Days</source>
         <translation>Hoppa över Tomma Dagar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1923"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1839"/>
         <source>Allow use of multiple CPU cores where available to improve performance. 
 Mainly affects the importer.</source>
         <translation>Tillåt användning av flera processorkärnor där sådana finns för att förbättra prestanda. 
 Drabbar främst importmodulen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1927"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1843"/>
         <source>Enable Multithreading</source>
         <translation>Aktivera Multithreading</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1913"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1829"/>
         <source>Bypass the login screen and load the most recent User Profile</source>
         <translation>Hoppa över inloggningsskärmen och ladda den senaste användarprofilen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1916"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1832"/>
         <source>Skip Login Screen</source>
         <translation>Hoppa över inloggningsskärmen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1763"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1679"/>
         <source>Changes to the following settings needs a restart, but not a recalc.</source>
         <translation>Ändras följande inställningar behövs en omstart, men inte en omräkning.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1415"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1331"/>
         <source>Oximetery Settings</source>
         <translation>Oximeter Inställningar</translation>
     </message>
@@ -4007,7 +4041,7 @@ Drabbar främst importmodulen.</translation>
         <translation type="vanished">Contec CMS50F v3.7</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1713"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1629"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -4036,104 +4070,104 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Serie importen tar starttiden från sista natten/första CPAP sessionen. (Kom ihåg att importera dina CPAP data först!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1766"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1682"/>
         <source>Preferred Calculation Methods</source>
         <translation>Prioriterade Beräkningsmetoder</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1793"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1709"/>
         <source>Middle Calculations</source>
         <translation>Medel Beräkningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1800"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1716"/>
         <source>Upper Percentile</source>
         <translation>Övre Procenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1807"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1723"/>
         <source>For consistancy, ResMed users should use 95% here,
 as this is the only value available on summary-only days.</source>
         <translation>För konsekvensens skull bör ResMed användare använda 95% här,
 eftersom det är det enda värdet som finns på bara-översikts dagar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1821"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1737"/>
         <source>Median is recommended for ResMed users.</source>
         <translation>Median rekomenderas för ResMed-användare.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1825"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1741"/>
         <source>Median</source>
         <translation>Median</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1830"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1746"/>
         <source>Weighted Average</source>
         <translation>Vägt genomsnitt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1835"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1751"/>
         <source>Normal Average</source>
         <translation>Normal Genomsnitt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1855"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1771"/>
         <source>ResMed users probably should use 99th Percentile for visual consistency.</source>
         <translation>ResMed användare bör förmodligen använda 99: e percentilen för visuell konsekvens.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1859"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1775"/>
         <source>True Maximum</source>
         <translation>Sant maximal</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1864"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1780"/>
         <source>99% Percentile</source>
         <translation>99% Percentile</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1872"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1788"/>
         <source>Maximum Calcs</source>
         <translation>Maximum Calcs</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1976"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1892"/>
         <source>Automatically Check For Updates</source>
         <translation>Kontrollera uppdateringar automatiskt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1993"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1909"/>
         <source>Check for new version every</source>
         <translation>Kolla efter ny version varje</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2000"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1916"/>
         <source>Sourceforge hosts this project for free.. Please be considerate of their resources..</source>
         <translation>Sourceforge är värd för detta projekt gratis .. Var omtänksam mot deras resurser..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2016"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1932"/>
         <source>days.</source>
         <translation>dagar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2081"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1997"/>
         <source>&amp;Check for Updates now</source>
         <translation>&amp;Sök efter uppdateringar nu</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2104"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2020"/>
         <source>Last Checked For Updates: </source>
         <translation>Senaste kontroll efter uppdateringar:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2117"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2033"/>
         <source>TextLabel</source>
         <translation>Textetikett</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2139"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2055"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -4150,83 +4184,82 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2148"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2064"/>
         <source>I want to try experimental and test builds (Advanced users only please.)</source>
         <translation>Jag vill prova experimentella och test-versioner (vänligen bara avancerade användare.)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2172"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2088"/>
         <source>&amp;Appearance</source>
         <translation>&amp;Utseende</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2204"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2120"/>
         <source>Graph Settings</source>
         <translation>Graf-inställningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2211"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2127"/>
         <source>Bar Tops</source>
         <translation>Bar Tops</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2216"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2132"/>
         <source>Line Chart</source>
         <translation>Linjediagram</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2224"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2140"/>
         <source>Overview Linecharts</source>
         <translation>Översikt Linjediagram</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2249"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2165"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This makes scrolling when zoomed in easier on sensitive bidirectional TouchPads&lt;/p&gt;&lt;p&gt;50ms is recommended value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Detta gör rullning när du har zoomat in lättare i känsliga dubbelriktade pekplattor&lt;/p&gt;&lt;p&gt;50ms rekommenderas som värde.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2277"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2193"/>
         <source>milliseconds</source>
         <translation>millisekunder</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2343"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2259"/>
         <source>Scroll Dampening</source>
         <translation>Scroll Dämpning</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2388"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2304"/>
         <source>Graph Tooltips</source>
         <translation>Graf verktygstips</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2435"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2351"/>
         <source>Overlay Flags</source>
         <translation>Overlay Flagga</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2401"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2317"/>
         <source>The visual method of displaying waveform overlay flags.
 </source>
         <translation>Den visuella metoden att visa overlay vågformsflaggor.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2406"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2322"/>
         <source>Standard Bars</source>
         <translation>Standard Bars</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2411"/>
         <source>Top &amp; Bottom Markers</source>
-        <translation>Topp &amp; Botten markörer</translation>
+        <translation type="vanished">Topp &amp; Botten markörer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2419"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2335"/>
         <source>Graph Height</source>
         <translation>Graf-höjd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2369"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2285"/>
         <source>Default display height of graphs in pixels</source>
         <translation>Standard visning graf-höjd i pixlar</translation>
     </message>
@@ -4238,7 +4271,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1212"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1284"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1373"/>
         <source>Reset &amp;Defaults</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4254,107 +4286,112 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1439"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1355"/>
         <source>Flag rapid changes in oximetry stats</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1532"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1448"/>
         <source>Other oximetry options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1538"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1454"/>
         <source>Flag SPO2 Desaturations Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1548"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1464"/>
         <source>Discard segments under</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1578"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1494"/>
         <source>Flag Pulse Rate Above</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1588"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1504"/>
         <source>Flag Pulse Rate Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1658"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1574"/>
         <source>Contec CMS50D+/E/F</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1663"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1579"/>
         <source>Contec CMS50F v3.7+</source>
         <translation type="unfinished">Contec CMS50F v3.7+ {50F?}</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1668"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1584"/>
         <source>ChoiceMMed MD300W1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1673"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1589"/>
         <source>ResMed S9 Oximeter Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1694"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1610"/>
         <source>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1697"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1613"/>
         <source>Update Oximeter Clock during import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1903"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1819"/>
         <source>Show flags for machine detected events that haven&apos;t been identified yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1906"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1822"/>
         <source>Show Unknown Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1944"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1860"/>
         <source>Import without nagging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2297"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2213"/>
         <source>How long you want the tooltips to stay visible.</source>
         <translation>Hur länge du vill att verktygstips ska vara synliga.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2353"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2269"/>
         <source>Tooltip Timeout</source>
         <translation>Tooltip Timeout</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2445"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2327"/>
+        <source>Top Markers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2361"/>
         <source>Line Thickness</source>
         <translation>Linje-tjocklek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2457"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2373"/>
         <source>The pixel thickness of line plots</source>
         <translation>Pixel tjocklek linjediagram</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2506"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2422"/>
         <source>Other Visual Settings</source>
         <translation>Andra Visuella inställningar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2512"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2428"/>
         <source>Anti-Aliasing applies smoothing to graph plots.. 
 Certain plots look more attractive with this on. 
 This also affects printed reports.
@@ -4367,22 +4404,22 @@ Detta påverkar även utskrivna rapporter.
 Prova och se om du gillar det.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2519"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2435"/>
         <source>Use Anti-Aliasing</source>
         <translation>Använd Anti-Aliasing</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2526"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2442"/>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
         <translation>Gör vissa grafer mer som &quot;fyrkantsvågor&quot;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2529"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2445"/>
         <source>Square Wave Plots</source>
         <translation>Fyrkantvågs-visning</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2536"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2452"/>
         <source>Allows graphs to be &quot;screenshotted&quot; for display purposes.
 The Event Breakdown PIE chart uses this method, as does
 the printing code.
@@ -4395,89 +4432,89 @@ Tyvärr kan en del äldre datorer/versioner av Qt orsaka
 detta program för att vara instabilt med denna funktion aktiverad.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2543"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2459"/>
         <source>Show event breakdown pie chart</source>
         <translation>Visar händelse-uppdelning som tårtdiagram</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2553"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2469"/>
         <source>Use Pixmap Caching</source>
         <translation>Använd Pixmap Caching</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2563"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2479"/>
         <source>Animations &amp;&amp; Fancy Stuff</source>
         <translation>Animationer &amp; andra roliga saker</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2570"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2486"/>
         <source>Whether to allow changing yAxis scales by double clicking on yAxis labels</source>
         <translation>Om du vill tillåta att ändra yAxelns skala genom att dubbelklicka på yAxelns etikett</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2573"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2489"/>
         <source>Allow YAxis Scaling</source>
         <translation>Tillåt YAxel Skalning</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2592"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2508"/>
         <source>Application Fonts</source>
         <translation>Applikations teckensnitt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2627"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2543"/>
         <source>Font</source>
         <translation>Teckensnitt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2646"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2562"/>
         <source>Size</source>
         <translation>Storlek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2665"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2581"/>
         <source>Bold  </source>
         <translation>Markerad..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2687"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2603"/>
         <source>Italic</source>
         <translation>Italic</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2700"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2616"/>
         <source>Application</source>
         <translation>Application</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2764"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2680"/>
         <source>Graph Text</source>
         <translation>Graf-text</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2825"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2741"/>
         <source>Graph Titles</source>
         <translation>Graf-rubrik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2886"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2802"/>
         <source>Big  Text</source>
         <translation>Stor  Text</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2947"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="419"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="539"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2863"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="410"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="530"/>
         <source>Details</source>
         <translation>Detaljer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="3004"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2920"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Avbryt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="3011"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2927"/>
         <source>&amp;Ok</source>
         <translation>&amp;Ok</translation>
     </message>
@@ -4507,129 +4544,129 @@ detta program för att vara instabilt med denna funktion aktiverad.</translation
         <translation>Näs-kuddar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="415"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="534"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="406"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="525"/>
         <source>Name</source>
         <translation type="unfinished">Namn</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="416"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="535"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="407"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="526"/>
         <source>Color</source>
         <translation type="unfinished">Färg</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="417"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="408"/>
         <source>Flag Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="418"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="538"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="409"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="529"/>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="434"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="425"/>
         <source>CPAP Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="435"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="426"/>
         <source>Oximeter Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="436"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="427"/>
         <source>Positional Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="437"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="428"/>
         <source>Sleep Stage Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="438"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="429"/>
         <source>Unknown Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="477"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="598"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="468"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="589"/>
         <source>Double click to change the descriptive name this channel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="485"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="605"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="476"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="596"/>
         <source>Double click to change the default color for this channel plot/flag/data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="493"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="484"/>
         <source>Here you can change the type of flag shown for this event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="498"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="621"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="489"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="612"/>
         <source>This is the short-form label to indicate this channel on screen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="504"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="627"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="495"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="618"/>
         <source>This is a description of what this channel does.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="536"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="527"/>
         <source>Lower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="537"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="528"/>
         <source>Upper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="555"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="546"/>
         <source>CPAP Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="556"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="547"/>
         <source>Oximeter Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="557"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="548"/>
         <source>Positional Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="558"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="549"/>
         <source>Sleep Stage Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="611"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="602"/>
         <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="616"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="607"/>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="720"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="709"/>
         <source>Data Reindex Required</source>
         <translation>Data indexering krävs</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="721"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="710"/>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
@@ -4638,12 +4675,12 @@ Are you sure you want to make these changes?</source>
 Är du säker på att du vill göra dessa förändringar?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="727"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="716"/>
         <source>Restart Required</source>
         <translation>Omstart krävs</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="728"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="717"/>
         <source>One or more of the changes you have made will require this application to be restarted,
 in order for these changes to come into effect.
 
@@ -4654,67 +4691,61 @@ för att dessa ändringar skall träda i kraft.
 Vill du göra det nu?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1106"/>
         <source>Daily Graphs</source>
-        <translation>Dagliga grafer</translation>
+        <translation type="vanished">Dagliga grafer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1107"/>
         <source>Overview Graphs</source>
-        <translation>Översikt Grafer</translation>
+        <translation type="vanished">Översikt Grafer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1119"/>
         <source>Graph</source>
-        <translation>Graf</translation>
+        <translation type="vanished">Graf</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1150"/>
         <source>N/A</source>
-        <translation>Ej Tillgänglig</translation>
+        <translation type="vanished">Ej Tillgänglig</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1191"/>
         <source>Confirmation</source>
-        <translation>Bekräftelse</translation>
+        <translation type="vanished">Bekräftelse</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1192"/>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
-        <translation>Är du säker på att du vill återställa din grafinställningar till standardvärdena?</translation>
+        <translation type="vanished">Är du säker på att du vill återställa din grafinställningar till standardvärdena?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1276"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1095"/>
         <source>This may not be a good idea</source>
         <translation>Det här kanske inte är en bra idè</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1277"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1096"/>
         <source>ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution).</source>
         <translation>ResMed S9 maskiner tar rutinmässigt bort vissa data från ditt SD-kort äldre än 7 och 30 dagar (beroende på upplösning).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1278"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1097"/>
         <source>If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won&apos;t come back.</source>
         <translation>Om du någonsin behöver importera dessa data igen (antingen i Sleepyhead eller ResScan) dessa data kommer inte komma tillbaka.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1279"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1098"/>
         <source>If you need to conserve disk space, please remember to carry out manual backups.</source>
         <translation>Om du behöver för att spara diskutrymme, kom ihåg att utföra manuell säkerhetskopiering.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1280"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1099"/>
         <source>Are you sure you want to disable these backups?</source>
         <translation>Är du säker på att du vill inaktivera dessa säkerhetskopior?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1322"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1141"/>
         <source>Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.</source>
         <translation>Avstängning av automatiska säkerhetskopior är inte en bra idé, eftersom Sleepy behöver dessa för att bygga om databasen om fel hittas.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1323"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1142"/>
         <source>Are you really sure you want to do this?</source>
         <translation>Är du verkligen säker på att du vill göra detta?</translation>
     </message>
@@ -6355,7 +6386,7 @@ Inspelningen överlappar existerande innehåll.</translation>
         <translation>Full-Face Mask</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1313"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1132"/>
         <source>Are you sure you want to reset all your channel colors and settings to defaults?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6443,37 +6474,36 @@ Rör ingenting förrän det är klart.</translation>
         <translation>Rapporterar från %1 till %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="392"/>
         <source>Reporting data goes here</source>
-        <translation>Rapportera uppgifter kan göras här</translation>
+        <translation type="vanished">Rapportera uppgifter kan göras här</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="436"/>
+        <location filename="../sleepyhead/reports.cpp" line="451"/>
         <source>Entire Day&apos;s Flow Waveform</source>
         <translation>Dagens alla flödes-data</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="442"/>
+        <location filename="../sleepyhead/reports.cpp" line="457"/>
         <source>Current Selection</source>
         <translation>Aktuell markering</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="452"/>
+        <location filename="../sleepyhead/reports.cpp" line="467"/>
         <source>Entire Day</source>
         <translation>Hela dagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="571"/>
+        <location filename="../sleepyhead/reports.cpp" line="586"/>
         <source>SleepyHead v%1 - http://sleepyhead.sourceforge.net</source>
         <translation>SleepyHead v%1 - http://sleepyhead.sourceforge.net</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="578"/>
+        <location filename="../sleepyhead/reports.cpp" line="592"/>
         <source>Page %1 of %2</source>
         <translation>Sida %1 av %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/reports.cpp" line="643"/>
+        <location filename="../sleepyhead/reports.cpp" line="659"/>
         <source>SleepyHead has finished sending the job to the printer.</source>
         <translation>SleepyHead har skickat utskriften till skrivaren.</translation>
     </message>
@@ -7311,76 +7341,66 @@ Rör ingenting förrän det är klart.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="127"/>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="128"/>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="149"/>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="150"/>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="171"/>
-        <location filename="../3rdparty/qtserialport/src/serialport/qserialportinfo_symbian.cpp" line="192"/>
-        <source>Unknown.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/Graphs/MinutesAtPressure.cpp" line="234"/>
         <source>(% of time)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gFlagsLine.cpp" line="194"/>
+        <location filename="../sleepyhead/Graphs/gFlagsLine.cpp" line="195"/>
         <source>Database Outdated
 Please Rebuild CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1241"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1271"/>
         <source>SleepyHead is proudly brought to you by JediMark.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1352"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1394"/>
         <source>d MMM [ %1 - %2 ]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1720"/>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1773"/>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1848"/>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1865"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1930"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1983"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2058"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2075"/>
         <source>%1</source>
         <translation type="unfinished">%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1828"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2038"/>
         <source>Hide All Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1829"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2039"/>
         <source>Show All Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2049"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2363"/>
         <source>Unpin %1 Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2124"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2438"/>
         <source>Pin %1 Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1068"/>
+        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1066"/>
         <source>Plots Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1149"/>
+        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1148"/>
         <source>Duration %1:%2:%3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1150"/>
+        <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1149"/>
         <source>AHI %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7577,13 +7597,13 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="594"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2507"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2639"/>
         <source>Ramp Only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="595"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2508"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2640"/>
         <source>Full Time</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7644,70 +7664,70 @@ Please Rebuild CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1003"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1454"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1034"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1586"/>
         <source>VPAP Adapt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2500"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2502"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2632"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2634"/>
         <source>EPR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2501"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2633"/>
         <source>ResMed Exhale Pressure Relief</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2509"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2641"/>
         <source>Patient???</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2512"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2514"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2644"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2646"/>
         <source>EPR Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2513"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2645"/>
         <source>Exhale Pressure Relief Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2517"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2649"/>
         <source>0cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2518"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2650"/>
         <source>1cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2519"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2651"/>
         <source>2cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2520"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2652"/>
         <source>3cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="377"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="386"/>
         <source>ResMed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="377"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="386"/>
         <source>S9</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="386"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.h" line="395"/>
         <source>EPR: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -7752,17 +7772,17 @@ Please Rebuild CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="273"/>
+        <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>By Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="273"/>
+        <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>Statistics at Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="924"/>
+        <location filename="../sleepyhead/daily.cpp" line="923"/>
         <source>%1 Session #%2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7789,6 +7809,11 @@ Please Rebuild CPAP Data</source>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="109"/>
         <source>Oximetery&lt;br/&gt;Wizard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/welcome.cpp" line="113"/>
+        <source>or</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7990,6 +8015,11 @@ Please Rebuild CPAP Data</source>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="242"/>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraph.cpp" line="334"/>
+        <source>Snapshot %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8556,35 +8586,68 @@ Please Rebuild CPAP Data</source>
     </message>
 </context>
 <context>
+    <name>gGraph</name>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraph.cpp" line="694"/>
+        <source>Snapshot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>gGraphView</name>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="356"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="361"/>
         <source>100% zoom level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="357"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="362"/>
+        <source>Restore X-axis zoom too 100% to view entire days data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="364"/>
         <source>Reset Graph Layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="360"/>
-        <source>Plots</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="365"/>
-        <source>CPAP Overlays</source>
+        <source>Resets all graphs to a uniform height and default order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="368"/>
+        <source>Y-Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="369"/>
+        <source>Plots</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="374"/>
+        <source>CPAP Overlays</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="377"/>
         <source>Oximeter Overlays</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="371"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="380"/>
         <source>Dotted Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1854"/>
+        <source>Remove Clone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1858"/>
+        <source>Clone %1 Graph</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

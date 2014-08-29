@@ -1682,7 +1682,7 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Foo</source>
-        <translation>FOO</translation>
+        <translation type="vanished">FOO</translation>
     </message>
     <message>
         <source>Please insert your CPAP data card...</source>
@@ -1878,6 +1878,41 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>XML Files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxWidget</name>
+    <message>
+        <source>Auto-Fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Y-Axis scaling mode, &apos;Auto-Fit&apos; for automatic scaling, &apos;Defaults&apos; for settings according to manufacturer, and &apos;Override&apos; to choose your own.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Minimum Y-Axis value.. Note this can be a negative number if you wish.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Maximum Y-Axis value.. Must be greater than Minimum to work.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scaling Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This button resets the Min and Max to match the Auto-Fit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3004,7 +3039,7 @@ Would you like to store it first?</source>
     </message>
     <message>
         <source>N/A</source>
-        <translation>不适用</translation>
+        <translation type="vanished">不适用</translation>
     </message>
     <message>
         <source> bpm</source>
@@ -3060,7 +3095,7 @@ Would you like to store it first?</source>
     </message>
     <message>
         <source>Daily Graphs</source>
-        <translation>日常图表</translation>
+        <translation type="vanished">日常图表</translation>
     </message>
     <message>
         <source>Compress ResMed (EDF) backups to save disk space.
@@ -3086,7 +3121,7 @@ SleepyHead可以从本地硬盘导入备份文件..
     </message>
     <message>
         <source>Graph</source>
-        <translation>图表</translation>
+        <translation type="vanished">图表</translation>
     </message>
     <message>
         <source>Pulse</source>
@@ -3182,7 +3217,7 @@ This option must be enabled before import, otherwise a purge is required.</sourc
     </message>
     <message>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
-        <translation>重置图表设置为默认值?</translation>
+        <translation type="vanished">重置图表设置为默认值?</translation>
     </message>
     <message>
         <source>Minimum duration of drop in oxygen saturation</source>
@@ -3278,7 +3313,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Top &amp; Bottom Markers</source>
-        <translation>顶端 &amp; 底部 标志带</translation>
+        <translation type="vanished">顶端 &amp; 底部 标志带</translation>
     </message>
     <message>
         <source>Reset the counter to zero at beginning of each (time) window.</source>
@@ -3358,7 +3393,7 @@ Try it and see if you like it.</source>
     </message>
     <message>
         <source>Graphs</source>
-        <translation>图表</translation>
+        <translation type="vanished">图表</translation>
     </message>
     <message>
         <source>of usage per night</source>
@@ -3548,7 +3583,7 @@ Mainly affects the importer.</source>
     </message>
     <message>
         <source>Overview Graphs</source>
-        <translation>图表总览</translation>
+        <translation type="vanished">图表总览</translation>
     </message>
     <message>
         <source>Create SD Card Backups during Import (only for ResMed so far, highly recommended)</source>
@@ -3714,7 +3749,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     </message>
     <message>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
-        <translation>图表过滤器。输入你所要查询的图标的名称。</translation>
+        <translation type="vanished">图表过滤器。输入你所要查询的图标的名称。</translation>
     </message>
     <message>
         <source>Combine Close Sessions </source>
@@ -3814,7 +3849,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Confirmation</source>
-        <translation>确定</translation>
+        <translation type="vanished">确定</translation>
     </message>
     <message>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
@@ -3880,7 +3915,7 @@ Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)<
     </message>
     <message>
         <source>Double click on the (Y-axis) min/max values to edit them</source>
-        <translation>双击Y轴来设置最小/最大值</translation>
+        <translation type="vanished">双击Y轴来设置最小/最大值</translation>
     </message>
     <message>
         <source>Graph Tooltips</source>
@@ -4224,6 +4259,10 @@ Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)<
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top Markers</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5526,7 +5565,7 @@ The Day records overlap with already existing content.</source>
     </message>
     <message>
         <source>Reporting data goes here</source>
-        <translation>报告数据位置</translation>
+        <translation type="vanished">报告数据位置</translation>
     </message>
     <message>
         <source>Respiratory Event</source>
@@ -6133,7 +6172,7 @@ Are you sure you want to use this folder?
     </message>
     <message>
         <source>Unknown.</source>
-        <translation>未知.</translation>
+        <translation type="vanished">未知.</translation>
     </message>
     <message>
         <source>?</source>
@@ -7005,6 +7044,14 @@ Please Rebuild CPAP Data</source>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>or</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snapshot %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QextSerialPort</name>
@@ -7814,6 +7861,13 @@ Please Rebuild CPAP Data</source>
     </message>
 </context>
 <context>
+    <name>gGraph</name>
+    <message>
+        <source>Snapshot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>gGraphView</name>
     <message>
         <source>100% zoom level</source>
@@ -7837,6 +7891,26 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Dotted Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore X-axis zoom too 100% to view entire days data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets all graphs to a uniform height and default order.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Y-Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Clone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clone %1 Graph</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1622,7 +1622,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Foo</source>
-        <translation>Foo</translation>
+        <translation type="vanished">Foo</translation>
     </message>
     <message>
         <source>Please insert your CPAP data card...</source>
@@ -1818,6 +1818,41 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>XML Files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxWidget</name>
+    <message>
+        <source>Auto-Fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Y-Axis scaling mode, &apos;Auto-Fit&apos; for automatic scaling, &apos;Defaults&apos; for settings according to manufacturer, and &apos;Override&apos; to choose your own.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Minimum Y-Axis value.. Note this can be a negative number if you wish.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Maximum Y-Axis value.. Must be greater than Minimum to work.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scaling Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This button resets the Min and Max to match the Auto-Fit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2891,7 +2926,7 @@ Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation>N/A</translation>
+        <translation type="vanished">N/A</translation>
     </message>
     <message>
         <source> bpm</source>
@@ -2947,7 +2982,7 @@ Möchten Sie zuerst speichern?</translation>
     </message>
     <message>
         <source>Daily Graphs</source>
-        <translation>Tagesgrafik</translation>
+        <translation type="vanished">Tagesgrafik</translation>
     </message>
     <message>
         <source>Compress ResMed (EDF) backups to save disk space.
@@ -2973,7 +3008,7 @@ Wenn Sie ResScan verwenden werden die. Gz-Dateien benötigen, müssen aber zuers
     </message>
     <message>
         <source>Graph</source>
-        <translation>Diagramm</translation>
+        <translation type="vanished">Diagramm</translation>
     </message>
     <message>
         <source>Pulse</source>
@@ -3069,7 +3104,7 @@ Diese Option muss vor dem Import aktiviert werden, da sonst eine Reinigung erfor
     </message>
     <message>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
-        <translation>Sind Sie sicher, dass Sie Ihre Grafik-Einstellungen auf die Standardwerte zurücksetzen wollen?</translation>
+        <translation type="vanished">Sind Sie sicher, dass Sie Ihre Grafik-Einstellungen auf die Standardwerte zurücksetzen wollen?</translation>
     </message>
     <message>
         <source>Minimum duration of drop in oxygen saturation</source>
@@ -3165,7 +3200,7 @@ p, li {white-space: pre-wrap; }
     </message>
     <message>
         <source>Top &amp; Bottom Markers</source>
-        <translation>Oben &amp; Unten Markierungen</translation>
+        <translation type="vanished">Oben &amp; Unten Markierungen</translation>
     </message>
     <message>
         <source>Reset the counter to zero at beginning of each (time) window.</source>
@@ -3245,7 +3280,7 @@ Probieren Sie es aus und sehen, ob es Ihnen gefällt.</translation>
     </message>
     <message>
         <source>Graphs</source>
-        <translation>Diagramme</translation>
+        <translation type="vanished">Diagramme</translation>
     </message>
     <message>
         <source>of usage per night</source>
@@ -3403,7 +3438,7 @@ Vor allem wirkt sich das auf den Import von Daten aus.</translation>
     </message>
     <message>
         <source>Overview Graphs</source>
-        <translation>Übersichtsdiagramme</translation>
+        <translation type="vanished">Übersichtsdiagramme</translation>
     </message>
     <message>
         <source>Create SD Card Backups during Import (only for ResMed so far, highly recommended)</source>
@@ -3533,7 +3568,7 @@ Standardwerte auf 60 Minuten .. Sehr zu empfehlen.</translation>
     </message>
     <message>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
-        <translation>Filtert die Grafik-Liste. Suchen Sie einfach die Grafik, die Sie starten wollen.</translation>
+        <translation type="vanished">Filtert die Grafik-Liste. Suchen Sie einfach die Grafik, die Sie starten wollen.</translation>
     </message>
     <message>
         <source>Combine Close Sessions </source>
@@ -3633,7 +3668,7 @@ p, li { white-space : pre -wrap ; }
     </message>
     <message>
         <source>Confirmation</source>
-        <translation>Bestätigung</translation>
+        <translation type="vanished">Bestätigung</translation>
     </message>
     <message>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
@@ -3699,7 +3734,7 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Double click on the (Y-axis) min/max values to edit them</source>
-        <translation>Klicken Sie doppelt auf die (Y-Achse) min / max-Werte, um sie zu bearbeiten</translation>
+        <translation type="vanished">Klicken Sie doppelt auf die (Y-Achse) min / max-Werte, um sie zu bearbeiten</translation>
     </message>
     <message>
         <source>Graph Tooltips</source>
@@ -4039,6 +4074,10 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top Markers</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5314,7 +5353,7 @@ Die Tagessätze überschneiden sich mit bereits vorhandenen Inhalten.</translati
     </message>
     <message>
         <source>Reporting data goes here</source>
-        <translation>Die Berichtsdaten befinden sich hier</translation>
+        <translation type="vanished">Die Berichtsdaten befinden sich hier</translation>
     </message>
     <message>
         <source>Respiratory Event</source>
@@ -5804,7 +5843,7 @@ Sind Sie sicher, dass Sie diesen Ordner nutzen wollen?</translation>
     </message>
     <message>
         <source>Unknown.</source>
-        <translation>Unbekannt.</translation>
+        <translation type="vanished">Unbekannt.</translation>
     </message>
     <message>
         <source>Litres</source>
@@ -6780,6 +6819,14 @@ Bitte Rebuild CPAP Daten laden</translation>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>or</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snapshot %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QextSerialPort</name>
@@ -7336,6 +7383,13 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
 </context>
 <context>
+    <name>gGraph</name>
+    <message>
+        <source>Snapshot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>gGraphView</name>
     <message>
         <source>100% zoom level</source>
@@ -7359,6 +7413,26 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Dotted Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore X-axis zoom too 100% to view entire days data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets all graphs to a uniform height and default order.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Y-Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Clone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clone %1 Graph</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
