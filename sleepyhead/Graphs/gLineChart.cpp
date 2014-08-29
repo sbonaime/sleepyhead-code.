@@ -1019,7 +1019,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             painter.setPen(Qt::black);
             painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
 
-            painter.setPen(QPen(chan.defaultColor(), 1 * ratioY));
+            float ps = 1 * ratioY;
+            ps = qMax(ps, 1.0f);
+
+            painter.setPen(QPen(chan.defaultColor(), ps));
             int linewidth = (10 * ratioX);
             int yp = rec.top()+(rec.height()/2);
             painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
@@ -1051,7 +1054,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         QColor color = chan.calc[dot.type].color;
         color.setAlpha(200);
-        painter.setPen(QPen(QBrush(color),1 * ratioY,Qt::DotLine));
+        float ps = 1 * ratioY;
+        ps = qMax(ps, 1.0f);
+        painter.setPen(QPen(QBrush(color), ps,Qt::DotLine));
 
         int yp = rec.top()+(rec.height()/2);
         painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);

@@ -53,7 +53,11 @@ int gXAxis::minimumHeight()
 {
     QFontMetrics fm(*defaultfont);
     int h = fm.height();
+#if defined(Q_OS_MAC)
     return 9+h;
+#else
+    return 11+h;
+#endif
 }
 
 void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
@@ -243,9 +247,12 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         //py+=usepixmap ? 20 : left;
 
-        int mintop = top + 4.0 * (float(y) / 10.0);
+        int mintop = top + 3.0 * (float(y) / 10.0);
         int majtop = top + 6.0 * (float(y) / 10.0);
-        int texttop = majtop + y + 2; // 18*w.printScaleY();
+        int texttop = majtop + y; // 18*w.printScaleY();
+#if defined (Q_OS_MAC)
+           texttop += 2
+#endif
 
         // Fill in the minor tick marks up to the first major alignment tick
 
