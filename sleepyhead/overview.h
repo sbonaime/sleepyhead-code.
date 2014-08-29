@@ -70,7 +70,6 @@ class Overview : public QWidget
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;
 
-    void updateGraphCombo();
     void ResetGraph(QString name);
 
   public slots:
@@ -85,6 +84,7 @@ class Overview : public QWidget
         void on_rbLastMonth_clicked();
         void on_rbEverything_clicked();
         void on_rbDateRange_clicked(); */
+    void updateGraphCombo();
 
     //! \brief Resets the graph view because the Start date has been changed
     void on_dateStart_dateChanged(const QDate &date);

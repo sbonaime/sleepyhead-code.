@@ -2179,6 +2179,7 @@ void gGraphView::onSnapshotGraphToggle()
 
         newgraph->setSnapshot(true);
 
+        emit GraphsChanged();
 
 //        addGraph(newgraph);
         updateScale();
@@ -2196,6 +2197,8 @@ void gGraphView::onSnapshotGraphToggle()
 
         updateScale();
         timedRedraw(0);
+
+        emit GraphsChanged();
     }
     qDebug() << cmd << name;
 }

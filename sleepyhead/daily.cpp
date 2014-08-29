@@ -411,6 +411,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     connect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
     connect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
+    connect(GraphView, SIGNAL(GraphsChanged()), this, SLOT(updateGraphCombo()));
 
     GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
 }

@@ -273,6 +273,7 @@ private slots:
 
     void on_toggleEvents_clicked(bool checked);
 
+    void updateGraphCombo();
 
 
 protected:
@@ -311,7 +312,6 @@ private:
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
     void updateCube();
-    void updateGraphCombo();
 
 
     QString getSessionInformation(Day *);
