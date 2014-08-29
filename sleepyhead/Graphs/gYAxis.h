@@ -90,6 +90,8 @@ class gYAxis: public Layer
     //! \brief Formats the ticker value.. Override to implement other types
     virtual const QString Format(EventDataType v, int dp);
 
+    virtual int minimumWidth();
+
     //! \brief Set the scale of the Y axis values.. Values can be multiplied by this to convert formats
     void SetScale(float f) { m_yaxis_scale = f; }
 

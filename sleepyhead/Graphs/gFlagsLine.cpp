@@ -26,6 +26,11 @@ bool gLabelArea::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
     return false;
 }
+int gLabelArea::minimumWidth()
+{
+    return gYAxis::Margin;
+}
+
 
 
 gFlagsGroup::gFlagsGroup()

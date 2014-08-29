@@ -26,6 +26,7 @@ class gLabelArea: public gSpacer
         Q_UNUSED(painter);
         Q_UNUSED(region);
     }
+    virtual int minimumWidth();
   protected:
     Layer *m_mainlayer;
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);

@@ -148,12 +148,22 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     if ((m_lastminx != m_minx) || (m_lastmaxx != m_maxx)) {
         recalculate(&graph);
     }
+
     m_lastminx = m_minx;
     m_lastmaxx = m_maxx;
 
     QMap<EventStoreType, int>::iterator it;
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
+
+    if (graph.printing()) {
+        // lock the other mutex...
+        while (recalculating()) {};
+        recalculate(&graph);
+        while (recalculating()) {};
+
+    }
+
 
     // Lock the stuff we need to draw
     timelock.lock();
@@ -353,8 +363,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
         }
     }
-    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
-    graph.renderText(txt, rect.left(), rect.top()-10);
+//    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
+//    graph.renderText(txt, rect.left(), rect.top()-10);
 
     timelock.unlock();
 
@@ -363,6 +373,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 //        painter.setPen(QColor(0,0,0,125));
 //        painter.drawText(region.boundingRect(), Qt::AlignCenter, QObject::tr("Recalculating..."));
     }
+
 
 //    painter.setPen(QPen(Qt::black,1));
 //    painter.drawRect(rect);

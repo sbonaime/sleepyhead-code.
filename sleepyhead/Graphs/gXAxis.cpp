@@ -9,6 +9,7 @@
 #include "Graphs/gXAxis.h"
 
 #include <QDebug>
+#include <QFontMetrics>
 
 #include <math.h>
 
@@ -47,6 +48,14 @@ gXAxis::gXAxis(QColor col, bool fadeout)
 gXAxis::~gXAxis()
 {
 }
+
+int gXAxis::minimumHeight()
+{
+    QFontMetrics fm(*defaultfont);
+    int h = fm.height();
+    return 9+h;
+}
+
 void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();
@@ -236,7 +245,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         int mintop = top + 4.0 * (float(y) / 10.0);
         int majtop = top + 6.0 * (float(y) / 10.0);
-        int texttop = majtop + y; // 18*w.printScaleY();
+        int texttop = majtop + y + 2; // 18*w.printScaleY();
 
         // Fill in the minor tick marks up to the first major alignment tick
 

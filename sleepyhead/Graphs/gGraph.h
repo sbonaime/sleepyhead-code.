@@ -79,6 +79,9 @@ class gGraph : public QObject
     //! \brief Return Graph visibility status
     bool visible() { return m_visible; }
 
+    //! \brief Returns true if Graph is currently being snapshotted for printing
+    bool printing() { return m_printing; }
+
     //! \brief Return height element. This is used by the scaler in gGraphView.
     inline const float & height() { return m_height; }
 

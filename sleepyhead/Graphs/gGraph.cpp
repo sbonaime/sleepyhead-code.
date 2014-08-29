@@ -356,7 +356,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         if (!ll->visible()) { continue; }
 
-        tmp = ll->Height();// * m_graphview->printScaleY();
+        tmp = ll->minimumHeight();// * m_graphview->printScaleY();
 
         if (ll->position() == LayerTop) { top += tmp; }
         if (ll->position() == LayerBottom) { bottom += tmp * printScaleY(); }
@@ -368,7 +368,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         if (!ll->visible()) { continue; }
 
-        tmp = ll->Width();
+        tmp = ll->minimumWidth();
         tmp *= m_graphview->printScaleX();
         tmp *= m_graphview->devicePixelRatio();
 
@@ -405,7 +405,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         if (!ll->visible()) { continue; }
 
-        tmp = ll->Height();
+        tmp = ll->minimumHeight();
 
         if (ll->position() == LayerTop) {
             QRect rect(originX + left, originY + top, width - left - right, tmp);
@@ -699,10 +699,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
 
     bool doredraw = false;
 
-    if (isSnapshot() && (x> m_graphview->titleWidth)) {
-        // this nag might be a little too much..
-        ToolTip(tr("Snapshot"),x+15,y, TT_AlignLeft);
-    }
     timedRedraw(0);
 
 

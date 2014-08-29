@@ -134,6 +134,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 
 
+
 gYAxis::gYAxis(QColor col)
     : Layer(NoChannel)
 {
@@ -144,6 +145,12 @@ gYAxis::gYAxis(QColor col)
 gYAxis::~gYAxis()
 {
 }
+
+int gYAxis::minimumWidth()
+{
+    return Margin;
+}
+
 void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();

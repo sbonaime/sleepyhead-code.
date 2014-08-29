@@ -37,6 +37,9 @@ class gXAxis: public Layer
 
     void setRoundDays(bool b) { m_roundDays = b; }
 
+    //! \brief Returns the minimum height needed to fit
+    virtual int minimumHeight();
+
     virtual Layer * Clone() {
         gXAxis * xaxis = new gXAxis();
         Layer::CloneInto(xaxis);
