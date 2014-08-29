@@ -16,9 +16,6 @@
 #include "calcs.h"
 #include "profiles.h"
 
-extern double round(double number);
-
-
 bool SearchEvent(Session * session, ChannelID code, qint64 time, int dur, bool update=true)
 {
     qint64 t, start;

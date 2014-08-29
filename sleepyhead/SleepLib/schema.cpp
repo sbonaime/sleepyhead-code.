@@ -583,10 +583,10 @@ Channel::Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType sc
     m_order(255)
 {
     if (type == WAVEFORM) {
-        calc[Calc_Min] = ChannelCalc(id, Calc_Min, adjustcolor(color, 0.25, 1, 1.3), false);
-        calc[Calc_Middle] = ChannelCalc(id, Calc_Middle, adjustcolor(color, 1.3, 1, 1), false);
-        calc[Calc_Perc] = ChannelCalc(id, Calc_Perc, adjustcolor(color, 1.1, 1.2, 1), false);
-        calc[Calc_Max] = ChannelCalc(id, Calc_Max,  adjustcolor(color, 0.5, 1.2, 1), false);
+        calc[Calc_Min] = ChannelCalc(id, Calc_Min, adjustcolor(color, 0.25f, 1.0f, 1.3f), false);
+        calc[Calc_Middle] = ChannelCalc(id, Calc_Middle, adjustcolor(color, 1.3f, 1.0f, 1.0f), false);
+        calc[Calc_Perc] = ChannelCalc(id, Calc_Perc, adjustcolor(color, 1.1f, 1.2f, 1.0f), false);
+        calc[Calc_Max] = ChannelCalc(id, Calc_Max,  adjustcolor(color, 0.5f, 1.2f, 1.0f), false);
 
         calc[Calc_Zero] = ChannelCalc(id, Calc_Zero, Qt::red, false);
         calc[Calc_LowerThresh] = ChannelCalc(id, Calc_LowerThresh, Qt::blue, false);

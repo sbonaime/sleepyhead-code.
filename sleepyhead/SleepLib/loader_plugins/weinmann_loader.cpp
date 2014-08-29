@@ -94,7 +94,7 @@ const QString EventsOffset = "TID_Events_Offset";
 
 void HighPass(char * data, int samples, float cutoff, float dt)
 {
-    float Y[samples];
+    float *Y = new float [samples];
     for (int i=0; i < samples; ++i) Y[i] = 0.0f;
 
     Y[0] = ((unsigned char *)data)[0] ;
@@ -111,7 +111,7 @@ void HighPass(char * data, int samples, float cutoff, float dt)
     for (int i=0; i< samples; ++i) {
         data[i] = Y[i];
     }
-
+    delete Y;
 }
 
 int WeinmannLoader::Open(QString path)
@@ -146,7 +146,7 @@ int WeinmannLoader::Open(QString path)
 
     int size = WCD_Pin_Offset - WeekComplianceOffset;
 
-    unsigned char weekco[size];
+    quint8 * weekco = new quint8 [size];
     memset(weekco, 0, size);
     wmdata.seek(WeekComplianceOffset);
     wmdata.read((char *)weekco, size);
@@ -172,6 +172,8 @@ int WeinmannLoader::Open(QString path)
         p+=0x84;
     }
 
+    delete [] weekco;
+
 
     //////////////////////////////////////////////////////////////////////
     // Read Day Compliance Information....
@@ -180,7 +182,7 @@ int WeinmannLoader::Open(QString path)
     int comp_end = index[FlowOffset];
     int comp_size = comp_end - comp_start;
 
-    unsigned char comp[comp_size];
+    quint8 * comp = new quint8 [comp_size];
     memset((char *)comp, 0, comp_size);
 
     wmdata.seek(comp_start);
@@ -248,6 +250,8 @@ int WeinmannLoader::Open(QString path)
         p += 0xd6;
     }
 
+    delete [] comp;
+
     //////////////////////////////////////////////////////////////////////
     // Read Flow Waveform....
     //////////////////////////////////////////////////////////////////////
@@ -258,14 +262,14 @@ int WeinmannLoader::Open(QString path)
     wmdata.seek(flowstart);
 
     int flowsize = flowend - flowstart;
-    char data[flowsize];
+    char * data = new char [flowsize];
     memset((char *)data, 0, flowsize);
     wmdata.read((char *)data, flowsize);
 
     float dt = 1.0 / (1000.0 / flow_sample_duration); // samples per second
 
     // Centre Waveform using High Pass Filter
-    HighPass(data, flowsize, 0.1, dt);
+    HighPass(data, flowsize, 0.1f, dt);
 
     //////////////////////////////////////////////////////////////////////
     // Read Status....
@@ -275,7 +279,7 @@ int WeinmannLoader::Open(QString path)
     int st_end = index[PresOffset];
     int st_size = st_end - st_start;
 
-    char st[st_size];
+    char * st = new char [st_size];
     memset(st, 0, st_size);
 
     wmdata.seek(st_start);
@@ -290,7 +294,7 @@ int WeinmannLoader::Open(QString path)
     int pr_end = index[AMVOffset];
     int pr_size = pr_end - pr_start;
 
-    char pres[pr_size];
+    char * pres = new char [pr_size];
     memset(pres, 0, pr_size);
 
     wmdata.seek(pr_start);
@@ -304,7 +308,7 @@ int WeinmannLoader::Open(QString path)
     int mv_end = index[EventsOffset];
     int mv_size = mv_end - mv_start;
 
-    char mv[mv_size];
+    char * mv = new char [mv_size];
     memset(mv, 0, mv_size);
 
     wmdata.seek(mv_start);
@@ -318,12 +322,11 @@ int WeinmannLoader::Open(QString path)
     int ev_end = wmdata.size();
     int ev_size = ev_end - ev_start;
 
-    unsigned char ev[ev_size];
+    quint8 * ev = new quint8 [ev_size];
     memset((char *) ev, 0, ev_size);
 
     wmdata.seek(ev_start);
     wmdata.read((char *) ev, ev_size);
-
 
     //////////////////////////////////////////////////////////////////////
     // Process sessions
@@ -464,6 +467,12 @@ int WeinmannLoader::Open(QString path)
 
 
     }
+    delete [] data;
+    delete [] st;
+    delete [] pres;
+    delete [] mv;
+    delete [] ev;
+
     mach->Save();
 
     return 1;

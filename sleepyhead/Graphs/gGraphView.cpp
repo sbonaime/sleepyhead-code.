@@ -715,12 +715,12 @@ void gGraphView::DrawTextQue(QPainter &painter)
 
                 pm=QPixmap(ww, hh);
 
-                int aaw1 = pm.width();
+                //int aaw1 = pm.width();
                 pm.fill(Qt::transparent);
 
                 QPainter imgpainter(&pm);
 
-                int aaw2 = pm.width();
+                //int aaw2 = pm.width();
                 imgpainter.setPen(q.color);
 
                 imgpainter.setFont(*q.font);
@@ -729,11 +729,11 @@ void gGraphView::DrawTextQue(QPainter &painter)
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, true);
                 QRectF rect(0,0, ww, hh);
                 imgpainter.drawText(rect, q.flags, q.text);
-                int aaw3 = pm.width();
+                //int aaw3 = pm.width();
                 imgpainter.end();
 
                 QPixmapCache::insert(hstr, pm);
-                int aaw4 = pm.width();
+                //int aaw4 = pm.width();
                 strings_drawn_this_frame++;
             } else {
                 //cached
