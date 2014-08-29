@@ -92,6 +92,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         return;
     }
 
+
     mainwin->Notify(
         QObject::tr("This make take some time to complete..\nPlease don't touch anything until it's done."),
         QObject::tr("Printing %1 Report").arg(name), 20000);

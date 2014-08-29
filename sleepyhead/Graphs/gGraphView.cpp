@@ -917,7 +917,7 @@ void gGraphView::scrollbarValueChanged(int val)
     //qDebug() << "Scrollbar Changed" << val;
     if (m_offsetY != val) {
         m_offsetY = val;
-        redraw(); // do this on a timer?
+        timedRedraw(); // do this on a timer?
     }
 }
 
@@ -1445,7 +1445,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
             m_sizer_point.setX(x);
             m_sizer_point.setY(y);
             updateScrollBar();
-            redraw();
+            timedRedraw();
         }
 
         return;
@@ -1503,7 +1503,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
 
                 if (!empty) {
                     m_sizer_point.setY(yy + graphSpacer + m_graphs[m_graph_index]->height()*m_scaleY);
-                    redraw();
+                    timedRedraw();
                 }
 
                 m_graph_index++;
@@ -3092,10 +3092,14 @@ void gGraphView::timedRedraw(int ms)
 {
 
     if (timer->isActive()) {
-        int m = timer->remainingTime();
-        if (m > ms) {
+        if (ms == 0) {
             timer->stop();
-        } else return;
+        } else {
+            int m = timer->remainingTime();
+            if (m > ms) {
+                timer->stop();
+            } else return;
+       }
     }
     timer->setSingleShot(true);
     timer->start(ms);
@@ -3109,7 +3113,7 @@ void gGraphView::resetLayout()
     }
 
     updateScale();
-    redraw();
+    timedRedraw(0);
 }
 void gGraphView::deselect()
 {

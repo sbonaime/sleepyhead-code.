@@ -389,7 +389,7 @@ class gGraphView
     void setPointClicked(QPoint p) { m_point_clicked = p; }
 
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
-    void timedRedraw(int ms);
+    void timedRedraw(int ms=0);
 
     gGraph *m_selected_graph;
     gToolTip *m_tooltip;

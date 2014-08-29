@@ -18,7 +18,7 @@
 class gXAxis: public Layer
 {
   public:
-    static const int Margin = 20; // How much room does this take up. (Bottom margin)
+    static const int Margin = 30; // How much room does this take up. (Bottom margin)
 
   public:
     gXAxis(QColor col = Qt::black, bool fadeout = true);

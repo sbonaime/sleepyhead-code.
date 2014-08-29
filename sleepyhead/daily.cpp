@@ -228,7 +228,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF->AddLayer(new gLabelArea(fg),LayerLeft,gYAxis::Margin);
 
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
-    SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
+    SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,gXAxis::Margin);
 
 
     // The following list contains graphs that don't have standard xgrid/yaxis labels
@@ -354,7 +354,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         if (skipgraph.contains(it.key())) continue;
 
         it.value()->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-        it.value()->AddLayer(new gXAxis(),LayerBottom,0,20);
+        it.value()->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
     }
 
     if (p_profile->cpap->showLeakRedline()) {

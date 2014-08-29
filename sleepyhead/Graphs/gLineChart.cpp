@@ -1152,7 +1152,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if (linecursormode) txt+=lasttext;
 
-        w.renderText(txt,left,top-4);
+        w.renderText(txt,left,top-6);
     }
 
 

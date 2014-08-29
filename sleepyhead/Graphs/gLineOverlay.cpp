@@ -258,7 +258,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         if (xx < (3600000)) {
                             QString lab = QString("%1").arg(m_label);
                             GetTextExtent(lab, x, y);
-                            w.renderText(lab, x1 - (x / 2), top - y + (3 * w.printScaleY()),0);
+                            w.renderText(lab, x1 - (x / 2), top - y + (5 * w.printScaleY()),0);
                         }
 
 

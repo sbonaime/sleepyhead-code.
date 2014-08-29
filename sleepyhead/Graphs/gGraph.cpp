@@ -291,7 +291,9 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
     int fw, font_height;
     GetTextExtent("Wg@", fw, font_height);
 
-    if (m_margintop > 0) { m_margintop = font_height + (8); }
+    if (m_margintop > 0) {
+        m_margintop = font_height + (2*printScaleY());
+    }
 
     //m_marginbottom=5;
 
@@ -329,9 +331,13 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
         QString t = name().section(";", -1);
 
-        QRect rec = m_rect;
-        rec.moveTop(rec.top() + 4);
-        painter.drawText(rec, Qt::AlignHCenter | Qt::AlignTop, QObject::tr("Snapshot %1").arg(t));
+        QString txt = QObject::tr("Snapshot %1").arg(t);
+        QRectF rec = QRect(m_rect.left(),m_rect.top()+6*printScaleY(), m_rect.width(), 0);
+        rec = painter.boundingRect(rec, Qt::AlignCenter, txt);
+
+        painter.drawText(rec, Qt::AlignCenter, txt);
+        m_margintop += rec.height();
+        top = m_margintop;
     }
 
 
@@ -479,15 +485,19 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     QPixmap pm(w,h);
 
+
+    bool pixcaching = p_profile->appearance->usePixmapCaching();
     graphView()->setUsePixmapCache(false);
+    p_profile->appearance->setUsePixmapCaching(false);
     QPainter painter(&pm);
     painter.fillRect(0,0,w,h,QBrush(QColor(Qt::white)));
     QRegion region(0,0,w,h);
     paint(painter, region);
     DrawTextQue(painter);
-    graphView()->setUsePixmapCache(p_profile->appearance->usePixmapCaching());
     painter.end();
 
+    graphView()->setUsePixmapCache(pixcaching);
+    p_profile->appearance->setUsePixmapCaching(pixcaching);
     graphView()->setPrintScaleX(1);
     graphView()->setPrintScaleY(1);
 
@@ -692,8 +702,8 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     if (isSnapshot() && (x> m_graphview->titleWidth)) {
         // this nag might be a little too much..
         ToolTip(tr("Snapshot"),x+15,y, TT_AlignLeft);
-        timedRedraw(0);
     }
+    timedRedraw(0);
 
 
     for (int i = 0; i < m_layers.size(); i++) {
@@ -826,9 +836,9 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     }
 
     //if (!nolayer) { // no mouse button
-    if (doredraw) {
-        m_graphview->timedRedraw(0);
-    }
+//    if (doredraw) {
+//        m_graphview->timedRedraw(0);
+//    }
 
     //}
     //if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
