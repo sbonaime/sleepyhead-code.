@@ -381,8 +381,8 @@ gGraph *Overview::createGraph(QString code, QString name, QString units, YTicker
 void Overview::on_LineCursorUpdate(double time)
 {
     if (time > 1) {
-        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
-        QString txt = dt.toString("dd MMM yyyy");
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time,Qt::UTC);
+        QString txt = dt.toString("dd MMM yyyy (dddd)");
         dateLabel->setText(txt);
     } else dateLabel->setText(QString(GraphView->emptyText()));
 }

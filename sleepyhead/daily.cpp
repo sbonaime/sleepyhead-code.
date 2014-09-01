@@ -59,7 +59,7 @@ void Daily::setSidebarVisible(bool visible)
 {
     QList<int> a;
 
-    int panel_width = visible ? 350 : 0;
+    int panel_width = visible ? 370 : 0;
     a.push_back(panel_width);
     a.push_back(this->width() - panel_width);
     ui->splitter_2->setStretchFactor(1,1);
@@ -160,7 +160,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    gGraph * SG;
 //    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
 //    SG->AddLayer(new gLabelArea(nullptr),LayerLeft,gYAxis::Margin);
-//    SG->AddLayer(AddCPAP(new gDailySummary()));
+//    SG->AddLayer(new gDailySummary());
 
     graphlist[STR_GRAPH_SleepFlags] = SF = new gGraph(STR_GRAPH_SleepFlags, GraphView, STR_TR_EventFlags, STR_TR_EventFlags, default_height);
     SF->setPinned(true);
@@ -911,6 +911,7 @@ QString Daily::getSessionInformation(Day * day)
                 sess->settings[SESSION_ENABLED]=true;
             }
             bool b=sess->settings[SESSION_ENABLED].toBool();
+
             html+=QString("<tr class='datarow2'><td colspan=5 align=center>%2</td></tr>"
                           "<tr class='datarow2'>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
@@ -927,6 +928,11 @@ QString Daily::getSessionInformation(Day * day)
                     .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                     .arg(fd.toString("HH:mm:ss"))
                     .arg(ld.toString("HH:mm:ss"));
+#ifdef SESSION_DEBUG
+            for (int i=0; i< sess->session_files.size(); ++i) {
+                html+=QString("<tr><td colspan=5 align=center>%1</td></tr>").arg(sess->session_files[i].section("/",-1));
+            }
+#endif
         }
     }
 
@@ -962,10 +968,20 @@ QString Daily::getMachineSettings(Day * day) {
         }
         QMap<int, QString> first;
 
+        CPAPLoader * loader = qobject_cast<CPAPLoader *>(cpap->loader());
+
+        ChannelID cpapmode = loader->CPAPModeChannel();
+        schema::Channel & chan = schema::channel[cpapmode];
+        first[cpapmode] = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                .arg(schema::channel[cpapmode].label())
+                .arg(schema::channel[cpapmode].description())
+                .arg(day->getCPAPMode());
+
+
         if (sess) for (; it != it_end; ++it) {
             ChannelID code = it.key();
 
-            if ((code <= 1) || (code == RMS9_MaskOnTime)) continue;
+            if ((code <= 1) || (code == RMS9_MaskOnTime) || (code == CPAP_Mode) || (code == cpapmode)) continue;
 
             schema::Channel & chan = schema::channel[code];
 
@@ -986,8 +1002,7 @@ QString Daily::getMachineSettings(Day * day) {
                     .arg(data);
 
 
-            if ((code == CPAP_Mode)
-            || (code == CPAP_IPAP)
+            if ((code == CPAP_IPAP)
             || (code == CPAP_EPAP)
             || (code == CPAP_IPAPHi)
             || (code == CPAP_EPAPHi)
@@ -1005,7 +1020,7 @@ QString Daily::getMachineSettings(Day * day) {
             }
         }
 
-        ChannelID order[] = { CPAP_Mode, CPAP_Pressure, CPAP_PressureMin, CPAP_PressureMax, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_PS, CPAP_PSMin, CPAP_PSMax };
+        ChannelID order[] = { cpapmode, CPAP_Pressure, CPAP_PressureMin, CPAP_PressureMax, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_PS, CPAP_PSMin, CPAP_PSMax };
         int os = sizeof(order) / sizeof(ChannelID);
         for (int i=0 ;i < os; ++i) {
             if (first.contains(order[i])) html += first[order[i]];
@@ -1955,18 +1970,35 @@ void Daily::on_LineCursorUpdate(double time)
 
 void Daily::on_RangeUpdate(double minx, double maxx)
 {
-//    static qint64 last_minx = 0;
-//    static qint64 last_maxx = 0;
-
-    //if ((last_minx != minx) || (last_maxx != maxx)) {
     if (minx > 1) {
         dateDisplay->setText(GraphView->getRangeString());
     } else {
         dateDisplay->setText(QString(GraphView->emptyText()));
     }
-    //}
-//    last_minx=minx;
-//    last_maxx=maxx;
+
+/*    // Delay render some stats...
+    Day * day = GraphView->day();
+    if (day) {
+        QTime time;
+        time.start();
+        QList<ChannelID> list = day->getSortedMachineChannels(schema::WAVEFORM);
+        for (int i=0; i< list.size();i++) {
+            schema::Channel & chan = schema::channel[list.at(i)];
+            ChannelID code = chan.id();
+            if (!day->channelExists(code)) continue;
+             float avg = day->rangeAvg(code, minx, maxx);
+            float wavg = day->rangeWavg(code, minx, maxx);
+            float median = day->rangePercentile(code, 0.5, minx, maxx);
+           float p90 = day->rangePercentile(code, 0.9, minx, maxx);
+//            qDebug() << chan.label()
+//                     << "AVG=" << avg
+//                     << "WAVG=" << wavg;
+                  //   << "MED" << median
+                   //  << "90%" << p90;
+        }
+
+        qDebug() << time.elapsed() << "ms";
+    }*/
 }
 
 

@@ -46,6 +46,12 @@ class Day
     //! \brief Add Session to this Day object (called during Load)
     void addSession(Session *s);
 
+    EventDataType rangeCount(ChannelID code, qint64 st, qint64 et);
+    EventDataType rangeSum(ChannelID code, qint64 st, qint64 et);
+    EventDataType rangeAvg(ChannelID code, qint64 st, qint64 et);
+    EventDataType rangeWavg(ChannelID code, qint64 st, qint64 et);
+    EventDataType rangePercentile(ChannelID code, float p, qint64 st, qint64 et);
+
     //! \brief Returns the count of all this days sessions' events for this day
     EventDataType count(ChannelID code);
 

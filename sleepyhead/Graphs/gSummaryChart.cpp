@@ -437,6 +437,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int days = ceil(double(maxx-minx) / 86400000.0);
 
+    bool buttuglydaysteps = !p_profile->appearance->animations();
+
     double lcursor = w.graphView()->currentTime();
     if (days >= 1) {
 
@@ -444,10 +446,13 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         double a = lcursor - w.min_x;
         double c = a / b;
 
-        minx = floor(double(minx)/86400000.0);
-        minx *= 86400000L;
+        if (buttuglydaysteps) {
+            // this kills the beautiful smooth scrolling and makes days stop on day boundaries :(
+            minx = floor(double(minx)/86400000.0);
+            minx *= 86400000L;
 
-        maxx = minx + 86400000L * qint64(days)-1;
+            maxx = minx + 86400000L * qint64(days)-1;
+        }
 
         b = maxx - minx;
         double d = c * b;

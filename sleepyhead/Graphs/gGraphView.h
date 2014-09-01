@@ -382,6 +382,8 @@ class gGraphView
     //! \brief Returns true if all Graph objects contain NO day data. ie, graph area is completely empty.
     bool isEmpty();
 
+    Day * day() { return m_day; }
+
     //! \brief Tell all graphs to deslect any highlighted areas
     void deselect();
 

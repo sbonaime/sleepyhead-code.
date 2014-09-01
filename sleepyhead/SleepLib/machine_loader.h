@@ -125,6 +125,7 @@ public:
     virtual ChannelID PresReliefLevel() { return NoChannel; }
     virtual ChannelID HumidifierConnected() { return NoChannel; }
     virtual ChannelID HumidifierLevel() { return CPAP_HumidSetting; }
+    virtual ChannelID CPAPModeChannel() { return CPAP_Mode; }
     virtual void initChannels() {}
 };
 

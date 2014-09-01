@@ -6,13 +6,13 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include "Graphs/gXAxis.h"
-
 #include <QDebug>
 #include <QFontMetrics>
 
 #include <math.h>
 
+#include "Graphs/gXAxis.h"
+#include "SleepLib/profiles.h"
 #include "Graphs/glcommon.h"
 #include "Graphs/gGraph.h"
 #include "Graphs/gGraphView.h"
@@ -121,11 +121,14 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         int days = ceil(double(maxx-minx) / 86400000.0);
 
-        if (m_roundDays && (days >= 1)) {
-            minx = floor(double(minx)/86400000.0);
-            minx *= 86400000L;
+        bool buttuglydaysteps = !p_profile->appearance->animations();
+        if (buttuglydaysteps) {
+            if (m_roundDays && (days >= 1)) {
+                minx = floor(double(minx)/86400000.0);
+                minx *= 86400000L;
 
-            maxx = minx + 86400000L * qint64(days);
+                maxx = minx + 86400000L * qint64(days);
+            }
         }
 
 

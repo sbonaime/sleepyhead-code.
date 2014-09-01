@@ -420,12 +420,14 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         maxx = w.max_x, minx = w.min_x;
     }
 
+
     // hmmm.. subtract_offset..
 
     EventDataType miny = m_physminy;
     EventDataType maxy = m_physmaxy;
 
     w.roundY(miny, maxy);
+
 
 
 //#define DEBUG_AUTOSCALER

@@ -11,6 +11,8 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#define SESSION_DEBUG
+
 #include <QDebug>
 #include <QHash>
 #include <QVector>
@@ -35,6 +37,10 @@ class Session
         */
     Session(Machine *, SessionID);
     virtual ~Session();
+
+    inline bool checkInside(qint64 time) {
+        return ((time >= s_first) && (time <= s_last));
+    }
 
     //! \brief Stores the session in the directory supplied by path
     bool Store(QString path);
@@ -338,6 +344,10 @@ class Session
 
     const QString & eventFile() { return s_eventfile; }
 
+#if defined(SESSION_DEBUG)
+    QStringList session_files;
+#endif
+
 protected:
     SessionID s_session;
 
@@ -356,8 +366,6 @@ protected:
 
     // for debugging
     bool destroyed;
-
-
 };
 
 

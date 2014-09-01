@@ -460,6 +460,157 @@ EventDataType Day::p90(ChannelID code)
     return percentile(code, 0.90F);
 }
 
+EventDataType Day::rangeCount(ChannelID code, qint64 st, qint64 et)
+{
+    int cnt = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            cnt += sess.rangeCount(code, st, et);
+        }
+    }
+
+    return cnt;
+}
+EventDataType Day::rangeSum(ChannelID code, qint64 st, qint64 et)
+{
+    double val = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            val += sess.rangeSum(code, st, et);
+        }
+    }
+
+    return val;
+}
+EventDataType Day::rangeAvg(ChannelID code, qint64 st, qint64 et)
+{
+    double val = 0;
+    int cnt = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+
+        if (sess.enabled()) {
+            val += sess.rangeSum(code, st, et);
+            cnt += sess.rangeCount(code, st,et);
+        }
+    }
+
+    if (cnt == 0) { return 0; }
+    val /= double(cnt);
+
+    return val;
+}
+EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
+{
+    double sum = 0;
+    double cnt = 0;
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+        QHash<ChannelID, QVector<EventList *> >::iterator EVEC = sess.eventlist.find(code);
+        if (EVEC == sess.eventlist.end()) continue;
+
+        QVector<EventList *>::iterator EL;
+        QVector<EventList *>::iterator EVEC_end = EVEC.value().end();
+        for (EL = EVEC.value().begin(); EL != EVEC_end; ++EL) {
+            EventList * el = *EL;
+            if (el->count() < 1) continue;
+            EventDataType lastdata = el->data(0);
+            qint64 lasttime = el->time(0);
+
+            if (lasttime < st)
+                lasttime = st;
+
+            for (unsigned i=1; i<el->count(); i++)  {
+                double data = el->data(i);
+                qint64 time = el->time(i);
+
+                if (time < st) {
+                    lasttime = st;
+                    lastdata = data;
+                    continue;
+                }
+
+                if (time > et) {
+                    time = et;
+                }
+
+                double duration = double(time - lasttime) / 1000.0;
+                sum += data * duration;
+                cnt += duration;
+
+                if (time >= et) break;
+
+                lasttime = time;
+                lastdata = data;
+            }
+        }
+    }
+    if (cnt < 0.000001)
+        return 0;
+    return sum / cnt;
+}
+
+
+// Boring non weighted percentile
+EventDataType Day::rangePercentile(ChannelID code, float p, qint64 st, qint64 et)
+{
+    int count = rangeCount(code, st,et);
+    QVector<EventDataType> list;
+    list.resize(count);
+    int idx = 0;
+
+    QList<Session *>::iterator end = sessions.end();
+    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
+        Session &sess = *(*it);
+        QHash<ChannelID, QVector<EventList *> >::iterator EVEC = sess.eventlist.find(code);
+        if (EVEC == sess.eventlist.end()) continue;
+
+        QVector<EventList *>::iterator EL;
+        QVector<EventList *>::iterator EVEC_end = EVEC.value().end();
+        for (EL = EVEC.value().begin(); EL != EVEC_end; ++EL) {
+            EventList * el = *EL;
+            for (unsigned i=0; i<el->count(); i++)  {
+                qint64 time = el->time(i);
+                if ((time < st) || (time > et)) continue;
+                list[idx++] = el->data(i);
+            }
+        }
+    }
+
+    // TODO: use nth_element instead..
+    qSort(list);
+
+    float b = float(idx) * p;
+    int a = floor(b);
+    int c = ceil(b);
+
+    if ((a == c) || (c >= idx)) {
+        return list[a];
+    }
+
+    EventDataType v1 = list[a];
+    EventDataType v2 = list[c];
+
+    EventDataType diff = v2 - v1;  // the whole               == C-A
+
+    double ba = b - float(a);     // A....B...........C      == B-A
+
+    double val = v1 + diff * ba;
+
+    return val;
+}
+
 EventDataType Day::avg(ChannelID code)
 {
     double val = 0;
@@ -470,15 +621,16 @@ EventDataType Day::avg(ChannelID code)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
-        if (sess.enabled() && sess.m_avg.contains(code)) {
-            val += sess.avg(code);
-            cnt++;  // hmm.. averaging averages doesn't feel right..
+        if (sess.enabled()) {
+            val += sess.sum(code);
+            cnt += sess.count(code);
         }
     }
 
     if (cnt == 0) { return 0; }
+    val /= double(cnt);
 
-    return EventDataType(val / float(cnt));
+    return val;
 }
 
 EventDataType Day::sum(ChannelID code)
@@ -1234,25 +1386,36 @@ bool Day::removeSession(Session *sess)
 
 QString Day::getCPAPMode()
 {
-    Q_ASSERT(machine(MT_CPAP) != nullptr);
+    Machine * mach = machine(MT_CPAP);
+    if (!mach) return STR_MessageBox_Error;
 
-    CPAPMode mode = (CPAPMode)(int)qRound(settings_wavg(CPAP_Mode));
-    if (mode == MODE_CPAP) {
-        return QObject::tr("Fixed");
-    } else if (mode == MODE_APAP) {
-        return QObject::tr("Auto");
-    } else if (mode == MODE_BILEVEL_FIXED ) {
-        return QObject::tr("Fixed Bi-Level");
-    } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-        return QObject::tr("Auto Bi-Level (Fixed PS)");
-    } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
-        return QObject::tr("Auto Bi-Level (Variable PS)");
-    }  else if (mode == MODE_ASV) {
-        return QObject::tr("ASV Fixed EPAP");
-    } else if (mode == MODE_ASV_VARIABLE_EPAP) {
-        return QObject::tr("ASV Variable EPAP");
-    }
-    return STR_TR_Unknown;
+    CPAPLoader * loader = qobject_cast<CPAPLoader *>(mach->loader());
+
+    ChannelID modechan = loader->CPAPModeChannel();
+
+    schema::Channel & chan = schema::channel[modechan];
+
+    int mode = (CPAPMode)(int)qRound(settings_wavg(modechan));
+
+    return chan.option(mode);
+
+
+//    if (mode == MODE_CPAP) {
+//        return QObject::tr("Fixed");
+//    } else if (mode == MODE_APAP) {
+//        return QObject::tr("Auto");
+//    } else if (mode == MODE_BILEVEL_FIXED ) {
+//        return QObject::tr("Fixed Bi-Level");
+//    } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+//        return QObject::tr("Auto Bi-Level (Fixed PS)");
+//    } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+//        return QObject::tr("Auto Bi-Level (Variable PS)");
+//    }  else if (mode == MODE_ASV) {
+//        return QObject::tr("ASV Fixed EPAP");
+//    } else if (mode == MODE_ASV_VARIABLE_EPAP) {
+//        return QObject::tr("ASV Variable EPAP");
+//    }
+//    return STR_TR_Unknown;
 }
 
 QString Day::getPressureRelief()
