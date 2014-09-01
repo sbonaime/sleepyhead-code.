@@ -981,7 +981,7 @@ QString Daily::getMachineSettings(Day * day) {
         if (sess) for (; it != it_end; ++it) {
             ChannelID code = it.key();
 
-            if ((code <= 1) || (code == RMS9_MaskOnTime) || (code == CPAP_Mode) || (code == cpapmode)) continue;
+            if ((code <= 1) || (code == RMS9_MaskOnTime) || (code == CPAP_Mode) || (code == cpapmode) || (code == CPAP_SummaryOnly)) continue;
 
             schema::Channel & chan = schema::channel[code];
 
@@ -1449,6 +1449,9 @@ void Daily::Load(QDate date)
 
     }
 
+    if (!cpap) {
+        GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
+    }
     if (cpap) {
         //QHash<schema::ChanType, QList<schema::Channel *> > list;
 
@@ -1456,9 +1459,12 @@ void Daily::Load(QDate date)
         float hours=day->hours(MT_CPAP);
         if (GraphView->isEmpty() && (hours>0)) {
             if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
-                GraphView->setEmptyText(STR_Empty_NoGraphs);
+                GraphView->setEmptyText(STR_Empty_Brick);
 
+                GraphView->setEmptyImage(QPixmap(":/icons/sadface.png"));
                 isBrick=true;
+            } else {
+                GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
             }
         }
 
@@ -1470,17 +1476,22 @@ void Daily::Load(QDate date)
         if (p_profile->general->calculateRDI()) ahi+=day->count(CPAP_RERA);
         ahi/=hours;
 
-        if (!isBrick && hours>0) {
+        if (hours>0) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-            ChannelID ahichan=CPAP_AHI;
-            QString ahiname=STR_TR_AHI;
-            if (p_profile->general->calculateRDI()) {
-                ahichan=CPAP_RDI;
-                ahiname=STR_TR_RDI;
-            }
             html+="<tr>";
-            html+=QString("<td colspan=4 bgcolor='%1' align=center><a class=info2 href='#'><font size=+4 color='%2'><b>%3</b></font><span>%4</span></a> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
+            if (!isBrick) {
+                ChannelID ahichan=CPAP_AHI;
+                QString ahiname=STR_TR_AHI;
+                if (p_profile->general->calculateRDI()) {
+                    ahichan=CPAP_RDI;
+                    ahiname=STR_TR_RDI;
+                }
+                html+=QString("<td colspan=4 bgcolor='%1' align=center><a class=info2 href='#'><font size=+4 color='%2'><b>%3</b></font><span>%4</span></a> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
                         .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].fullname()).arg(ahi,0,'f',2);
+            } else {
+                html+=QString("<td colspan=5 bgcolor='%1' align=center><font size=+4 color='yellow'>%2</font></td>\n")
+                        .arg("#F88017").arg(tr("BRICK! :("));
+            }
             html+="</tr>\n";
             html+="</table>\n";
             html+=getCPAPInformation(day);
@@ -1597,7 +1608,7 @@ void Daily::Load(QDate date)
 
     } else {
         if (cpap && day->hours(MT_CPAP)<0.0000001) {
-        } else {
+        } else if (!isBrick) {
             html+="<table cellspacing=0 cellpadding=0 border=0 height=100% width=100%>";
             html+="<tr height=25%><td align=center></td></tr>";
             html+="<tr><td align=center><font size='+3'>"+tr("\"Nothing's here!\"")+"</font></td></tr>";
@@ -2409,8 +2420,10 @@ void Daily::updateCube()
               && !p_profile->GetGoodDay(getDate(), MT_SLEEPSTAGE)
               && !p_profile->GetGoodDay(getDate(), MT_POSITION)) {
                 GraphView->setEmptyText(STR_Empty_NoData);
+
             } else {
-                GraphView->setEmptyText(STR_Empty_SummaryOnly);
+                if (GraphView->emptyText() != STR_Empty_Brick)
+                    GraphView->setEmptyText(STR_Empty_SummaryOnly);
             }
         }
     } else {

@@ -74,12 +74,15 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
     proxy = new QSortFilterProxyModel(this);
     proxy->setSourceModel(model);
+    proxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
     ui->listView->setModel(proxy);
     ui->listView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-
     if (sel >= 0) { ui->listView->setCurrentIndex(proxy->index(sel,0)); } //model->item(sel)->index()); }
+
+    proxy->sort(0, Qt::AscendingOrder);
 
     m_tries = 0;
 

@@ -657,7 +657,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         return 0;
     }
 
-    QDialog * popup = new QDialog(this, Qt::SplashScreen);
+    QDialog * popup = new QDialog(this);
     QLabel * waitmsg = new QLabel(message);
     QHBoxLayout *hlayout = new QHBoxLayout;
 

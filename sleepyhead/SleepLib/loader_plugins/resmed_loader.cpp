@@ -2407,10 +2407,10 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
         } else if (matchSignal(CPAP_RespEvent, es.label)) {
             code = CPAP_RespEvent;
 
-        } else {
+        } else if (es.label != "Crc16") {
             qDebug() << "Unobserved ResMed BRP Signal " << es.label;
             continue;
-        }
+        } else continue;
 
         if (code) {
             double rate = double(duration) / double(recs);
@@ -2615,7 +2615,7 @@ bool ResmedLoader::LoadSAD(Session *sess, const QString & path)
             ToTimeDelta(sess, edf, es, code, recs, duration);
             sess->setPhysMax(code, 100);
             sess->setPhysMin(code, 60);
-        } else {
+        } else if (es.label != "Crc16") {
             qDebug() << "Unobserved ResMed SAD Signal " << es.label;
         }
     }
@@ -2666,7 +2666,13 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(CPAP_MinuteVent,es.label)) {
+        } else if (matchSignal(CPAP_EPAP, es.label)) { // Expiratory Pressure
+            code = CPAP_EPAP;
+            es.physical_maximum = 25;
+            es.physical_minimum = 4;
+
+            ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
+        }  else if (matchSignal(CPAP_MinuteVent,es.label)) {
             code = CPAP_MinuteVent;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
         } else if (matchSignal(CPAP_RespRate, es.label)) {
@@ -2697,12 +2703,6 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
         } else if (matchSignal(CPAP_MaskPressure, es.label)) {
             code = CPAP_MaskPressure;
-            es.physical_maximum = 25;
-            es.physical_minimum = 4;
-
-            ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(CPAP_EPAP, es.label)) { // Expiratory Pressure
-            code = CPAP_EPAP;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
 
@@ -2739,16 +2739,16 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
         } else if (es.label == "") { // What the hell resmed??
             if (emptycnt == 0) {
                 code = RMS9_E01;
-                ToTimeDelta(sess, edf, es, code, recs, duration);
+//                ToTimeDelta(sess, edf, es, code, recs, duration);
             } else if (emptycnt == 1) {
                 code = RMS9_E02;
-                ToTimeDelta(sess, edf, es, code, recs, duration);
+//                ToTimeDelta(sess, edf, es, code, recs, duration);
             } else {
                 qDebug() << "Unobserved Empty Signal " << es.label;
             }
 
             emptycnt++;
-        } else {
+        }  else if (es.label != "Crc16") {
             qDebug() << "Unobserved ResMed PLD Signal " << es.label;
             a = nullptr;
         }
@@ -2801,9 +2801,17 @@ void ResInitModelMap()
 
     resmed_codes.clear();
 
+    // BRP file
     resmed_codes[CPAP_FlowRate].push_back("Flow");
+    resmed_codes[CPAP_FlowRate].push_back("Flow.40ms");
     resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
+    resmed_codes[CPAP_MaskPressureHi].push_back("Press.40ms");
+
+
+    // PLD File
     resmed_codes[CPAP_MaskPressure].push_back("Mask Pres");
+
+
     resmed_codes[CPAP_RespEvent].push_back("Resp Event");
     resmed_codes[CPAP_Pressure].push_back("Therapy Pres");
     resmed_codes[CPAP_IPAP].push_back("Insp Pres");
@@ -2859,6 +2867,7 @@ void ResInitModelMap()
     resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
     resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");
     resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
+
     resmed_codes[RMS9_EPR].push_back("EPR");
     resmed_codes[RMS9_EPR].push_back("S.EPR.EPRType");
 
@@ -2885,9 +2894,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_PressureMin].push_back("Pression min.");
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 
-    // BRP file
-    resmed_codes[CPAP_FlowRate].push_back("Flow.40ms");
-    resmed_codes[CPAP_MaskPressureHi].push_back("Pres.40ms");
+
 
     // SAD file
     resmed_codes[OXI_Pulse].push_back("Pulse.1s");

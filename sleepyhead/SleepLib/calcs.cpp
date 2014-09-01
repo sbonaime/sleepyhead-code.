@@ -1680,15 +1680,19 @@ void zMaskProfile::updateProfile(Session *session)
 
 void flagLargeLeaks(Session *session)
 {
+    // Already contains?
     if (session->eventlist.contains(CPAP_LargeLeak))
         return;
 
+    if (!session->eventlist.contains(CPAP_Leak))
+        return;
 
     EventDataType threshold = p_profile->cpap->leakRedline();
 
     if (threshold <= 0) {
         return;
     }
+
 
     QVector<EventList *> & EVL = session->eventlist[CPAP_Leak];
     int evlsize = EVL.size();

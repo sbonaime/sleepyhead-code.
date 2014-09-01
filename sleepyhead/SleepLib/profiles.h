@@ -272,6 +272,7 @@ const QString STR_CS_DateDiagnosed = "DateDiagnosed";
 const QString STR_CS_UserEventFlagging = "UserEventFlagging";
 const QString STR_CS_UserEventPieChart = "UserEventPieChart";
 const QString STR_CS_AutoImport = "AutoImport";
+const QString STR_CS_BrickWarning = "BrickWarning";
 
 const QString STR_CS_UserFlowRestriction = "UserFlowRestriction";
 const QString STR_CS_UserEventDuration = "UserEventDuration";
@@ -541,6 +542,7 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_UserEventPieChart, false);
         initPref(STR_CS_ResyncFromUserFlagging, false);
         initPref(STR_CS_AutoImport, false);
+        initPref(STR_CS_BrickWarning, true);
 
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
@@ -573,7 +575,7 @@ class CPAPSettings : public ProfileSettings
     bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
     bool resyncFromUserFlagging() const { return getPref(STR_CS_ResyncFromUserFlagging).toBool(); }
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
-
+    bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
@@ -606,6 +608,7 @@ class CPAPSettings : public ProfileSettings
     void setUserEventPieChart(bool b) { setPref(STR_CS_UserEventPieChart, b); }
     void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
+    void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
 
   public:
     int m_clock_drift;

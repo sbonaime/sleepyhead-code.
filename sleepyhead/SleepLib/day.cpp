@@ -954,6 +954,7 @@ bool Day::hasData(ChannelID code, SummaryType type)
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
+        if (sess.machine()->type() == MT_JOURNAL) continue;
 
         if (sess.enabled()) {
             switch (type) {
@@ -1308,7 +1309,7 @@ qint64 Day::first()
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
-
+        if (sess.machine()->type() == MT_JOURNAL) continue;
         if (sess.enabled()) {
             tmp = sess.first();
 
@@ -1335,6 +1336,7 @@ qint64 Day::last()
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
+        if (sess.machine()->type() == MT_JOURNAL) continue;
 
         if (sess.enabled()) {
             tmp = sess.last();

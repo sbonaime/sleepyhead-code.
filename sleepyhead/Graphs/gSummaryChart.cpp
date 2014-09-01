@@ -230,10 +230,11 @@ void SummaryChart::SetDay(Day * nullday)
                 if (day->machine(m_machinetype) == nullptr) { continue; }
 
                 bool hascode = //day->channelHasData(code) ||
-                    type == ST_HOURS ||
-                    type == ST_SESSIONS ||
+                    (type == ST_HOURS) ||
+                    (type == ST_SESSIONS) ||
                     day->settingExists(code) ||
                     day->hasData(code, type);
+
 
                 if (code == CPAP_Pressure) {
                     if ((cpapmode > MODE_CPAP) && (mode == MODE_CPAP)) {

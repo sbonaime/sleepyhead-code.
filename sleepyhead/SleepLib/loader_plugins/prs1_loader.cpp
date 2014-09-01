@@ -259,7 +259,8 @@ int PRS1Loader::Open(QString path)
             Q_UNUSED(e)
             p_profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(info.serial));
-            QMessageBox::warning(nullptr, QObject::tr("Import Error"),
+            QMessageBox::warning(nullptr,
+                                 QObject::tr("Import Error"),
                                  QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),
                                  QMessageBox::Ok);
             delete m;
@@ -379,19 +380,16 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     int model = modelstr.toInt(&ok);
     if (ok) {
         // Assumption is made here all PRS1 machines less than 450P are not data capable.. this could be wrong one day.
-        if ((model < 450)) {
-            QMessageBox::information(NULL,
+        if ((model < 450) && p_profile->cpap->brickWarning()) {
+            QApplication::processEvents();
+            QMessageBox::information(QApplication::activeWindow(),
                                      QObject::tr("Non Data Capable Machine"),
                                      QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
-                                             QObject::tr("I'm sorry to report that SleepyHead can only track hours of use for this machine.")).
+                                             QObject::tr("I'm sorry to report that SleepyHead can only track hours of use and very basic settings for this machine.")).
                                      arg(m->modelnumber()),QMessageBox::Ok);
+            p_profile->cpap->setBrickWarning(false);
 
         }
-
-        if ((model % 100) >= 60) {
-            // 60 series machine warning??
-        }
-
     } else {
         // model number didn't parse.. Meh...
     }
@@ -1127,8 +1125,63 @@ bool PRS1Import::ParseF0Events()
 
 bool PRS1Import::ParseCompliance()
 {
+    const unsigned char * data = (unsigned char *)compliance->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->settings[CPAP_Mode] = (int)MODE_CPAP;
+
+    EventDataType min_pressure = float(data[0x03]) / 10.0;
+    EventDataType max_pressure = float(data[0x04]) / 10.0;
+
+    session->settings[CPAP_Pressure] = min_pressure;
+
+
+    int ramp_time = data[0x06];
+    EventDataType ramp_pressure = float(data[0x07]) / 10.0;
+
+    session->settings[CPAP_RampTime] = (int)ramp_time;
+    session->settings[CPAP_RampPressure] = ramp_pressure;
+
+
+    quint8 flex = data[0x09];
+    int flexlevel = flex & 0x03;
+
+
+    FlexMode flexmode = FLEX_Unknown;
+
+    flex &= 0xf8;
+    bool split = false;
+
+    if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
+        split = true;
+    }
+    if (flex & 0x80) { // CFlex bit
+        if (flex & 8) { // Plus bit
+            flexmode = FLEX_CFlexPlus;
+        } else {
+            flexmode = FLEX_CFlex;
+        }
+    } else flexmode = FLEX_None;
+
+    session->settings[PRS1_FlexMode] = (int)flexmode;
+    session->settings[PRS1_FlexLevel] = (int)flexlevel;
+    session->settings[CPAP_SummaryOnly] = true;
+
+    session->settings[PRS1_HumidStatus] = (bool)(data[0x0A] & 0x80);        // Humidifier Connected
+    session->settings[PRS1_HumidLevel] = (int)(data[0x0A] & 7);          // Humidifier Value
+
+
+    // This is probably wrong
+    summary_duration = data[0x12] | data[0x13] << 8;
+
+    session->set_first(qint64(compliance->timestamp) * 1000L);
+    session->set_last(qint64(compliance->timestamp + (summary_duration * 2)) * 1000L);
+
+
     // Bleh!! There is probably 10 different formats for these useless piece of junk machines
-    if (!compliance) return false;
     return true;
 }
 
@@ -1833,7 +1886,7 @@ void PRS1Import::run()
 {
     session = new Session(mach, sessionid);
 
-    if (summary && ParseSummary()) {
+    if ((compliance && ParseCompliance()) || (summary && ParseSummary())) {
         if (event && !ParseEvents()) {
         }
         waveforms = loader->ParseFile(waveform);
