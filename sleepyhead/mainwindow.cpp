@@ -1867,6 +1867,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     for (int i = 0; i < machines.size(); i++) {
         Machine *m = machines[i];
         m->Save();
+        m->SaveSummary();
     }
 
     getDaily()->LoadDate(getDaily()->getDate());

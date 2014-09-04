@@ -21,9 +21,6 @@
 
 using namespace std;
 
-const quint16 filetype_summary = 0;
-const quint16 filetype_data = 1;
-
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
 const quint16 summary_version = 15;
@@ -45,7 +42,6 @@ Session::Session(Machine *m, SessionID session)
     s_enabled = -1;
 
     s_first = s_last = 0;
-    s_eventfile = "";
     s_evchecksum_checked = false;
 
     s_summaryOnly = false;
@@ -88,6 +84,11 @@ void Session::TrashEvents()
     eventlist.squeeze();
 }
 
+QString Session::eventFile() const
+{
+    return s_machine->getEventsPath()+QString().sprintf("%08lx.001", s_session);
+}
+
 //const int max_pack_size=128;
 bool Session::OpenEvents()
 {
@@ -101,15 +102,15 @@ bool Session::OpenEvents()
         return true;
     }
 
-    if (!s_eventfile.isEmpty()) {
-        bool b = LoadEvents(s_eventfile);
 
-        if (!b) {
-            qWarning() << "Error Unpacking Events" << s_eventfile;
-            return false;
-        }
+    QString filename = eventFile();
+    bool b = LoadEvents(filename);
+
+    if (!b) {
+//        qWarning() << "Error Loading Events" << filename;
+        return false;
     }
-
+    qDebug() << "opening" << filename;
 
     return s_events_loaded = true;
 }
@@ -139,18 +140,14 @@ bool Session::Store(QString path)
         dir.mkpath(path);
     }
 
-    QString base;
-    base.sprintf("%08lx", s_session);
-    base = path + "/" + base;
     //qDebug() << "Storing Session: " << base;
     bool a;
 
-    a = StoreSummary(base + ".000"); // if actually has events
+    a = StoreSummary(); // if actually has events
 
     //qDebug() << " Summary done";
     if (eventlist.size() > 0) {
-        s_eventfile = base + ".001";
-        StoreEvents(s_eventfile);
+        StoreEvents();
     } else { // who cares..
         //qDebug() << "Trying to save empty events file";
     }
@@ -165,12 +162,109 @@ bool Session::Store(QString path)
 
     return a;
 }
-
-bool Session::StoreSummary(QString filename)
+QDataStream & operator<<(QDataStream & out, const Session & session)
 {
-    if (filename.isEmpty()) {
-        filename = machine()->getDataPath() + QString().sprintf("%08lx.000", s_session);
-    }
+    session.StoreSummaryData(out);
+    return out;
+}
+
+void Session::StoreSummaryData(QDataStream & out) const
+{
+    out << summary_version;
+    out << (quint32)s_session;
+    out << s_first;  // Session Start Time
+    out << s_last;   // Duration of sesion in seconds.
+
+    out << settings;
+    out << m_cnt;
+    out << m_sum;
+    out << m_avg;
+    out << m_wavg;
+
+    out << m_min;
+    out << m_max;
+
+    out << m_physmin;
+    out << m_physmax;
+
+    out << m_cph;
+    out << m_sph;
+
+    out << m_firstchan;
+    out << m_lastchan;
+
+    out << m_valuesummary;
+    out << m_timesummary;
+
+    out << m_gain;
+
+    out << m_availableChannels;
+    out << m_timeAboveTheshold;
+    out << m_upperThreshold;
+    out << m_timeBelowTheshold;
+    out << m_lowerThreshold;
+
+    out << s_summaryOnly;
+}
+
+QDataStream & operator>>(QDataStream & in, Session & session)
+{
+    session.LoadSummaryData(in);
+    return in;
+}
+
+void Session::LoadSummaryData(QDataStream & in)
+{
+    quint16 version;
+    in >> version;
+
+    quint32 t32;
+    in >> t32;      // Sessionid;
+    s_session = t32;
+
+    in >> s_first;  // Start time
+    in >> s_last;   // Duration
+
+    in >> settings;
+    in >> m_cnt;
+    in >> m_sum;
+    in >> m_avg;
+    in >> m_wavg;
+
+    in >> m_min;
+    in >> m_max;
+
+    in >> m_physmin;
+    in >> m_physmax;
+
+    in >> m_cph;
+    in >> m_sph;
+    in >> m_firstchan;
+    in >> m_lastchan;
+
+    in >> m_valuesummary;
+    in >> m_timesummary;
+
+    in >> m_gain;
+
+    in >> m_availableChannels;
+    in >> m_timeAboveTheshold;
+    in >> m_upperThreshold;
+    in >> m_timeBelowTheshold;
+    in >> m_lowerThreshold;
+
+    in >> s_summaryOnly;
+
+    s_enabled = 1;
+}
+
+bool Session::StoreSummary()
+{
+    // don't really want to call this anymore
+
+    return true;
+    QString filename = s_machine->getDataPath() + QString().sprintf("%08lx.000", s_session);
+
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
@@ -190,9 +284,11 @@ bool Session::StoreSummary(QString filename)
 
     out << settings;
     out << m_cnt;
+
     out << m_sum;
     out << m_avg;
     out << m_wavg;
+
     out << m_min;
     out << m_max;
     out << m_physmin;
@@ -217,9 +313,7 @@ bool Session::StoreSummary(QString filename)
     out << m_upperThreshold;
     out << m_timeBelowTheshold;
     out << m_lowerThreshold;
-    // 15 ->
 
-    // <- 13
     out << s_summaryOnly;
     // 13 ->
 
@@ -227,8 +321,11 @@ bool Session::StoreSummary(QString filename)
     return true;
 }
 
+
 bool Session::LoadSummary(QString filename)
 {
+    s_changed = true;
+
     if (filename.isEmpty()) {
         qDebug() << "Empty summary filename";
         return false;
@@ -464,11 +561,13 @@ bool Session::LoadSummary(QString filename)
 
         qDebug() << "Upgrading Summary file to version" << summary_version;
         if (!s_summaryOnly) {
+            OpenEvents();
             UpdateSummaries();
+            TrashEvents();
         } else {
             // summary only upgrades go here.
         }
-        StoreSummary(filename);
+        SetChanged(true);
     }
 
     return true;
@@ -476,11 +575,12 @@ bool Session::LoadSummary(QString filename)
 
 const quint16 compress_method = 1;
 
-bool Session::StoreEvents(QString filename)
+bool Session::StoreEvents()
 {
-    if (filename.isEmpty()) {
-        filename = machine()->getDataPath() + QString().sprintf("%08lx.001", s_session);
-    }
+    QString path = s_machine->getEventsPath();
+    QDir dir;
+    dir.mkpath(path);
+    QString filename = path+QString().sprintf("%08lx.001", s_session);
 
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
@@ -627,7 +727,7 @@ bool Session::LoadEvents(QString filename)
     QFile file(filename);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Couldn't open file" << filename;
+        qDebug() << "No Event/Waveform data available for" << s_session;
         return false;
     }
 
@@ -812,7 +912,7 @@ bool Session::LoadEvents(QString filename)
     if (version < events_version) {
         qDebug() << "Upgrading Events file" << filename << "to version" << events_version;
         UpdateSummaries();
-        StoreEvents(filename);
+        StoreEvents();
     }
 
     return true;
@@ -931,7 +1031,6 @@ void Session::updateCountSummary(ChannelID code)
 
 void Session::UpdateSummaries()
 {
-
     ChannelID id;
     calcAHIGraph(this);
 
@@ -1068,30 +1167,6 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)
 
     return 0;
 }
-
-bool Session::enabled()
-{
-    if (s_enabled >= 0) {
-        return s_enabled != 0;
-    }
-
-    if (!settings.contains(SESSION_ENABLED)) {
-        bool b = true;
-        settings[SESSION_ENABLED] = b;
-        s_enabled = b ? 1 : 0;
-        return b;
-    }
-
-    s_enabled = settings[SESSION_ENABLED].toBool() ? 1 : 0;
-    return s_enabled;
-}
-
-void Session::setEnabled(bool b)
-{
-    settings[SESSION_ENABLED] = s_enabled = b;
-    SetChanged(true);
-}
-
 
 QString Session::dimension(ChannelID id)
 {
@@ -1837,9 +1912,12 @@ EventDataType Session::timeAboveThreshold(ChannelID id, EventDataType threshold)
     }
     bool loaded = s_events_loaded;
 
-    this->OpenEvents();
+    OpenEvents();
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
     if (j == eventlist.end()) {
+        if (!loaded) {
+            TrashEvents();
+        }
         return 0.0f;
     }
 

@@ -19,6 +19,10 @@
 
 #endif
 
+const quint16 filetype_summary = 0;
+const quint16 filetype_data = 1;
+const quint16 filetype_sessenabled = 5;
+
 enum UnitSystem { US_Undefined, US_Metric, US_Archiac };
 
 typedef float EventDataType;

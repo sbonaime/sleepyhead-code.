@@ -108,12 +108,9 @@ bool JournalEntry::Save()
         session->settings[Bookmark_End] = end;
         session->settings[Bookmark_Notes] = notes;
 
-        QString path = session->machine()->getDataPath();
-        QString filename = path + "/" + QString().sprintf("%08lx", session->session()) + ".000";
-
         session->settings[LastUpdated] = QDateTime::currentDateTime().toTime_t();
 
-        session->StoreSummary(filename);
+        session->StoreSummary();
         return true;
     }
     return false;

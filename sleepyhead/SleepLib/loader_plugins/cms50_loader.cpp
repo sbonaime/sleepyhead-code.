@@ -13,7 +13,6 @@
 // that change loader behaviour or modify channels.
 //********************************************************************************************
 
-#include <QProgressBar>
 #include <QApplication>
 #include <QDir>
 #include <QString>
@@ -32,8 +31,6 @@ using namespace std;
 #include "cms50_loader.h"
 #include "SleepLib/machine.h"
 #include "SleepLib/session.h"
-
-extern QProgressBar *qprogress;
 
 CMS50Loader::CMS50Loader()
 {
@@ -338,9 +335,7 @@ int CMS50Loader::doImportMode()
 
                 // TODO: Store the data to the session
 
-                m_itemCnt++;
-                m_itemCnt = m_itemCnt % m_itemTotal;
-                emit updateProgress(m_itemCnt, m_itemTotal);
+                emit updateProgress(0, 0);
 
                 idx += 3;
             } else if (!started_reading) { // have not got a valid trio yet, skip...

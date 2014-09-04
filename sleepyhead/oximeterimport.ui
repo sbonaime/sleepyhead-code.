@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>986</width>
+    <width>1312</width>
     <height>623</height>
    </rect>
   </property>
@@ -647,7 +647,7 @@ border-radius: 0px;</string>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="welcomePage">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -970,15 +970,26 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
          </item>
          <item>
           <widget class="QLabel" name="directImportStatus">
+           <property name="font">
+            <font>
+             <pointsize>15</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string/>
+            <string notr="true">placeholder</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QProgressBar" name="progressBar">
+           <property name="maximum">
+            <number>0</number>
+           </property>
            <property name="value">
-            <number>24</number>
+            <number>0</number>
            </property>
           </widget>
          </item>

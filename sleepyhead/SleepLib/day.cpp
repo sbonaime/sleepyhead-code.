@@ -182,7 +182,7 @@ EventDataType Day::timeAboveThreshold(ChannelID code, EventDataType threshold)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
-        if (sess.enabled()) {
+        if (sess.enabled() && sess.m_availableChannels.contains(code)) {
             val += sess.timeAboveThreshold(code,threshold);
         }
     }
@@ -1212,7 +1212,8 @@ bool Day::channelHasData(ChannelID id)
 void Day::OpenEvents()
 {
     Q_FOREACH(Session * session, sessions) {
-        session->OpenEvents();
+        if (session->machine()->type() != MT_JOURNAL)
+            session->OpenEvents();
     }
 }
 

@@ -69,12 +69,18 @@ class Session
     bool Store(QString path);
 
     //! \brief Writes the Sessions Summary Indexes to filename, in SleepLibs custom data format.
-    bool StoreSummary(QString filename = QString());
+    bool StoreSummary();
+
+    //! \brief Save the Sessions Summary Indexes to the stream
+    void StoreSummaryData(QDataStream & out) const;
 
     //! \brief Writes the Sessions EventLists to filename, in SleepLibs custom data format.
-    bool StoreEvents(QString filename = QString());
+    bool StoreEvents();
 
     //bool Load(QString path);
+
+    //! \brief Loads the Sessions Summary Indexes from stream
+    void LoadSummaryData(QDataStream & in);
 
     //! \brief Loads the Sessions Summary Indexes from filename, from SleepLibs custom data format.
     bool LoadSummary(QString filename);
@@ -99,12 +105,11 @@ class Session
         return s_session;
     }
 
-
     //! \brief Returns whether or not session is being used.
-    bool enabled();
+    inline bool enabled() const { return s_enabled; }
 
     //! \brief Sets whether or not session is being used.
-    void setEnabled(bool b);
+    void setEnabled(bool b) { s_enabled = b; }
 
     //! \brief Return the start of this sessions time range (in milliseconds since epoch)
     qint64 first();
@@ -321,9 +326,6 @@ class Session
 
     bool eventsLoaded() { return s_events_loaded; }
 
-    //! \brief Sets the event file linked to the summary (during load, for ondemand loading)
-    void SetEventFile(QString &filename) { s_eventfile = filename; }
-
     //! \brief Update this sessions first time if it's less than the current record
     inline void updateFirst(qint64 v) { if (!s_first) { s_first = v; } else if (s_first > v) { s_first = v; } }
 
@@ -367,7 +369,8 @@ class Session
         m_cnt.clear();
     }
 
-    const QString & eventFile() { return s_eventfile; }
+
+    QString eventFile() const;
 
 #if defined(SESSION_DEBUG)
     QStringList session_files;
@@ -386,12 +389,13 @@ protected:
     bool s_summaryOnly;
 
     bool s_events_loaded;
-    char s_enabled;
-    QString s_eventfile;
+    bool s_enabled;
 
     // for debugging
     bool destroyed;
 };
 
+QDataStream & operator<<(QDataStream & out, const Session & session);
+QDataStream & operator>>(QDataStream & in, Session & session);
 
 #endif // SESSION_H

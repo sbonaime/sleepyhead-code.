@@ -290,7 +290,9 @@ void OximeterImport::doImport()
         updateStatus(tr("Waiting for the device to start the upload process..."));
     } else {
         ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->loaderName())+"</h2>");
-        updateStatus(tr("Waiting for you to start the upload process..."));
+        ui->logBox->appendPlainText(tr("You need to tell your oximeter to begin sending data to the computer."));
+
+        updateStatus(tr("Please connect your oximeter, enter it's menu and select upload to commence data transfer..."));
     }
 
     connect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
@@ -952,6 +954,7 @@ void OximeterImport::on_saveButton_clicked()
 
     mach->AddSession(session);
     mach->Save();
+    mach->SaveSummary();
 
     mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
     mainwin->getOverview()->ReloadGraphs();

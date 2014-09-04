@@ -451,7 +451,6 @@ void Daily::closeEvent(QCloseEvent *event)
 void Daily::doToggleSession(Session * sess)
 {
     sess->setEnabled(!sess->enabled());
-    sess->StoreSummary();
 
     LoadDate(previous_date);
 }
@@ -471,7 +470,6 @@ void Daily::Link_clicked(const QUrl &url)
             return;
         int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
-        sess->StoreSummary();
 
         // Reload day
         LoadDate(previous_date);
@@ -483,8 +481,6 @@ void Daily::Link_clicked(const QUrl &url)
             return;
         int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
-
-        sess->StoreSummary();
 
         // Reload day
         LoadDate(previous_date);
@@ -1831,7 +1827,7 @@ void Daily::Unload(QDate date)
             // blah.. was updating overview graphs here.. Was too slow.
         }
         Machine *jm=p_profile->GetMachine(MT_JOURNAL);
-        if (jm) jm->SaveSession(journal);
+        if (jm) jm->SaveSummary(); //(journal);
     }
     UpdateCalendarDay(date);
 }

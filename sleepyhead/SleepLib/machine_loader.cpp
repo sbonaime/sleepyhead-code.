@@ -161,7 +161,17 @@ void MachineLoader::finishAddingSessions()
         Machine * mach = sess->machine();
         mach->AddSession(sess);
     }
+
     new_sessions.clear();
+
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loaderName());
+
+    if (mlit != MachineList.end()) {
+        for(QHash<QString, Machine *>::iterator mit = mlit.value().begin(); mit!=mlit.value().end(); ++mit) {
+            mit.value()->SaveSummary();
+        }
+    }
+
 }
 
 bool compressFile(QString inpath, QString outpath)

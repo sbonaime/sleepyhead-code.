@@ -86,8 +86,11 @@ class Machine
 
     //! \brief Load all Machine summary data
     bool Load();
+    bool LoadSummary();
+
     //! \brief Save all Sessions where changed bit is set.
     bool Save();
+    bool SaveSummary();
 
     //! \brief Save individual session
     bool SaveSession(Session *sess);
@@ -119,6 +122,7 @@ class Machine
     QDate pickDate(qint64 start);
 
     const QString getDataPath();
+    const QString getEventsPath();
     const QString getBackupPath();
 
     //! \brief Returns the machineID as a lower case hexadecimal string
@@ -140,6 +144,8 @@ class Machine
 
     //! \brief Add a new task to the multithreaded save code
     void queSaveList(Session * sess);
+
+    bool hasModifiedSessions();
 
     //! \brief Grab the next task in the multithreaded save code
     Session *popSaveList();
@@ -190,9 +196,13 @@ class Machine
     inline void setType(MachineType type) { info.type = type; }
     inline void setCap(quint32 value) { info.cap = value; }
 
+    bool saveSessionInfo();
+    bool loadSessionInfo();
+
     void setLoaderName(QString value);
 
-    QList<ChannelID> availableChannels(quint32 chantype);
+    QHash<quint32, QList<ChannelID> > availableCache;
+    QList<ChannelID> & availableChannels(quint32 chantype);
 
     MachineLoader * loader() { return m_loader; }
 
@@ -223,6 +233,8 @@ class Machine
     volatile bool m_save_threads_running;
 
     QList<ImportTask *> m_tasklist;
+
+    void invalidateCache();
 };
 
 

@@ -12,6 +12,8 @@
 #include <QString>
 #include <QObject>
 #include <QThreadPool>
+#include <QFile>
+#include <QDataStream>
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -58,6 +60,7 @@ Machine::Machine(MachineID id)
 }
 Machine::~Machine()
 {
+    saveSessionInfo();
     qDebug() << "Destroy Machine" << info.loadername << hex << m_id;
 }
 Session *Machine::SessionExists(SessionID session)
@@ -67,6 +70,82 @@ Session *Machine::SessionExists(SessionID session)
     } else {
         return nullptr;
     }
+}
+
+const quint16 sessinfo_version = 0;
+
+bool Machine::saveSessionInfo()
+{
+    QFile file(getDataPath() + "Sessions.info");
+    file.open(QFile::WriteOnly);
+
+    QDataStream out(&file);
+    out.setByteOrder(QDataStream::LittleEndian);
+    out.setVersion(QDataStream::Qt_5_0);
+
+    out << magic;
+    out << filetype_sessenabled;
+    out << sessinfo_version;
+
+    QHash<SessionID, Session *>::iterator s;
+
+    out << (int)sessionlist.size();
+    for (s = sessionlist.begin(); s != sessionlist.end(); ++s) {
+        Session * sess = s.value();
+        out << (quint32) sess->session();
+        out << (bool)(sess->enabled());
+    }
+    return true;
+}
+
+bool Machine::loadSessionInfo()
+{
+    QHash<SessionID, Session *>::iterator s;
+    QFile file(getDataPath() + "Sessions.info");
+    if (!file.open(QFile::ReadOnly)) {
+        for (s = sessionlist.begin(); s!= sessionlist.end(); ++s) {
+            Session * sess = s.value();
+            QHash<ChannelID, QVariant>::iterator it = sess->settings.find(SESSION_ENABLED);
+
+            bool b = true;
+            if (it != sess->settings.end()) {
+                b = it.value().toBool();
+            }
+            sess->setEnabled(b);        // Extract from session settings and save..
+        }
+        saveSessionInfo();
+        return true;
+    }
+
+    QDataStream in(&file);
+    in.setByteOrder(QDataStream::LittleEndian);
+    in.setVersion(QDataStream::Qt_5_0);
+
+    quint32 mag32;
+    in >> mag32;
+
+    quint16 ft16, version;
+    in >> ft16;
+    in >> version;
+
+    int size;
+    in >> size;
+
+    quint32 sid;
+    bool b;
+
+    for (int i=0; i< size; ++i) {
+        in >> sid;
+        in >> b;
+        s = sessionlist.find(sid);
+
+        if (s != sessionlist.end()) {
+            Session * sess = s.value();
+
+            sess->setEnabled(b);
+        }
+    }
+    return true;
 }
 
 // Find date this session belongs in
@@ -102,6 +181,8 @@ QDate Machine::pickDate(qint64 first)
 
 bool Machine::AddSession(Session *s)
 {
+    invalidateCache();
+
     Q_ASSERT(s != nullptr);
     Q_ASSERT(p_profile);
     Q_ASSERT(p_profile->isOpen());
@@ -304,6 +385,9 @@ bool Machine::Purge(int secret)
     QFile impfile(getDataPath()+"/imported_files.csv");
     impfile.remove();
 
+    QFile sumfile(getDataPath()+"Summaries.dat");
+    sumfile.remove();
+
     // Create a copy of the list so the hash can be manipulated
     QList<Session *> sessions = sessionlist.values();
 
@@ -320,6 +404,12 @@ bool Machine::Purge(int secret)
 
         delete sess;
     }
+
+    // Remove EVERYTHING under Events folder..
+    QString eventspath = getEventsPath();
+    QDir evdir(eventspath);
+    evdir.removeRecursively();
+
 
     // Clean up any straggling files (like from short sessions not being loaded...)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -348,8 +438,8 @@ bool Machine::Purge(int secret)
             qDebug() << "Didn't bother deleting cruft file" << fullpath;
             // cruft file..
         }
-
     }
+
 
     if (could_not_kill > 0) {
         qWarning() << "Could not purge path" << could_not_kill << "files in " << path;
@@ -377,6 +467,10 @@ void Machine::setInfo(MachineInfo inf)
 const QString Machine::getDataPath()
 {
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+}
+const QString Machine::getEventsPath()
+{
+    return getDataPath() + "Events/";
 }
 
 const QString Machine::getBackupPath()
@@ -406,60 +500,94 @@ bool Machine::Load()
 
     QProgressBar * progress = popup->progress;
 
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    dir.setSorting(QDir::Name);
+    if (!LoadSummary()) {
+        QTime time;
+        time.start();
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+        dir.setSorting(QDir::Name);
 
-    QFileInfoList list = dir.entryInfoList();
+        QFileInfoList list = dir.entryInfoList();
 
-    typedef QVector<QString> StringList;
-    QMap<SessionID, StringList> sessfiles;
-    QMap<SessionID, StringList>::iterator s;
+        typedef QVector<QString> StringList;
+        QMap<SessionID, StringList> sessfiles;
+        QMap<SessionID, StringList>::iterator s;
 
-    QString fullpath, ext_s, sesstr;
-    int ext;
-    SessionID sessid;
-    bool ok;
+        QString fullpath, ext_s, sesstr;
+        int ext;
+        SessionID sessid;
+        bool ok;
 
-    for (int i = 0; i < list.size(); i++) {
-        QFileInfo fi = list.at(i);
-        fullpath = fi.canonicalFilePath();
-        ext_s = fi.fileName().section(".", -1);
-        ext = ext_s.toInt(&ok, 10);
 
-        if (!ok) { continue; }
 
-        sesstr = fi.fileName().section(".", 0, -2);
-        sessid = sesstr.toLong(&ok, 16);
+        for (int i = 0; i < list.size(); i++) {
+            QFileInfo fi = list.at(i);
+            fullpath = fi.canonicalFilePath();
+            ext_s = fi.fileName().section(".", -1);
+            ext = ext_s.toInt(&ok, 10);
 
-        if (!ok) { continue; }
+            if (!ok) { continue; }
 
-        if (sessfiles[sessid].capacity() == 0) { sessfiles[sessid].resize(3); }
+            sesstr = fi.fileName().section(".", 0, -2);
+            sessid = sesstr.toLong(&ok, 16);
 
-        sessfiles[sessid][ext] = fi.canonicalFilePath();
-    }
+            if (!ok) { continue; }
 
-    int size = sessfiles.size();
-    int cnt = 0;
+            if (sessfiles[sessid].capacity() == 0) { sessfiles[sessid].resize(3); }
 
-    for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
-        if ((++cnt % 50) == 0) { // This is slow.. :-/
-            if (progress) { progress->setValue((float(cnt) / float(size) * 100.0)); }
-
-            QApplication::processEvents();
+            sessfiles[sessid][ext] = fi.canonicalFilePath();
         }
 
-        Session *sess = new Session(this, s.key());
+        int size = sessfiles.size();
+        int cnt = 0;
 
-        if (sess->LoadSummary(s.value()[0])) {
-            sess->SetEventFile(s.value()[1]);
-
-            AddSession(sess);
-        } else {
-            qWarning() << "Error unpacking summary data";
-            delete sess;
+        bool haveevents = false;
+        for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
+            if (!s.value()[1].isEmpty()) {
+                haveevents = true;
+                break;
+            }
         }
-    }
 
+        QString eventpath = getEventsPath();
+
+        if (haveevents) {
+            QDir dir;
+            dir.mkpath(eventpath);
+        }
+
+        for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
+            if ((++cnt % 50) == 0) { // This is slow.. :-/
+                if (progress) { progress->setValue((float(cnt) / float(size) * 100.0)); }
+
+                QApplication::processEvents();
+            }
+
+            Session *sess = new Session(this, s.key());
+
+            if (haveevents && !s.value()[1].isEmpty()) {
+                QFile::copy(s.value()[1], eventpath+s.value()[1].section("/",-1));
+                QFile::remove(s.value()[1]);
+            }
+
+            if (sess->LoadSummary(s.value()[0])) {
+                AddSession(sess);
+            } else {
+                qWarning() << "Error unpacking summary data";
+                delete sess;
+            }
+        }
+
+        if (hasModifiedSessions()) {
+            SaveSummary();
+            for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
+                QString summary = s.value()[0];
+                QFile file(summary);
+                file.remove();
+            }
+        }
+        qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
+    }
+    loadSessionInfo();
     if (progress) { progress->setValue(100); }
     QApplication::processEvents();
     popup->hide();
@@ -650,6 +778,96 @@ void Machine::runTasks()
     QThreadPool::globalInstance()->waitForDone(-1);
 }
 
+bool Machine::hasModifiedSessions()
+{
+    QHash<SessionID, Session *>::iterator s;
+
+    for (s = sessionlist.begin(); s != sessionlist.end(); s++) {
+        if (s.value()->IsChanged()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const QString summaryFileName = "Summaries.dat";
+
+bool Machine::LoadSummary()
+{
+    QTime time;
+    time.start();
+    qDebug() << "Loading Summaries";
+    QString filename = getDataPath() + summaryFileName;
+
+    QFile file(filename);
+
+    if (!file.exists() || !file.open(QFile::ReadOnly)) {
+        qDebug() << "Couldn't open" << filename;
+        return false;
+    }
+
+    QByteArray compressed = file.readAll();
+    file.close();
+    QTime time2;
+    time2.start();
+    QByteArray data = qUncompress(compressed);
+
+    qDebug() << "Uncompressed Summary Length" << data.size() << "in" << time2.elapsed() << "ms";
+
+    QDataStream in(&data, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_0);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 mag32;
+    quint16 ftype;
+    in >> mag32;
+    in >> ftype;
+
+    int session_count;
+    in >> session_count;
+
+    for (int i=0; i< session_count; ++i) {
+        Session * sess = new Session(this,0);
+        in >> *sess;
+        AddSession(sess);
+    }
+
+    qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
+
+    return true;
+}
+
+bool Machine::SaveSummary()
+{
+    qDebug() << "Saving Summaries";
+    QString filename = getDataPath() + summaryFileName;
+
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_0);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << (quint32)magic;
+    out << (quint16)filetype_summary;
+    out << (int)sessionlist.size();
+
+    QHash<SessionID, Session *>::iterator s;
+    for (s = sessionlist.begin(); s != sessionlist.end(); s++) {
+        Session * sess = s.value();
+        out << *sess;
+    }
+
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
+
+    qDebug() << "Uncompressed Summary Length" << data.size();
+
+    QByteArray compressed = qCompress(data);
+    file.write(compressed);
+    file.close();
+    return true;
+}
+
 bool Machine::Save()
 {
     //int size;
@@ -666,6 +884,7 @@ bool Machine::Save()
 
     m_savelist.clear();
 
+    // store any event summaries..
     for (s = sessionlist.begin(); s != sessionlist.end(); s++) {
         cnt++;
 
@@ -675,11 +894,23 @@ bool Machine::Save()
     }
 
     runTasks();
+
     return true;
 }
 
-QList<ChannelID> Machine::availableChannels(quint32 chantype)
+void Machine::invalidateCache()
 {
+    availableCache.clear();
+}
+
+QList<ChannelID> & Machine::availableChannels(quint32 chantype)
+{
+    QHash<quint32, QList<ChannelID> >::iterator ac = availableCache.find(chantype);
+    if (ac != availableCache.end()) {
+        return ac.value();
+
+    }
+
     QHash<ChannelID, int> chanhash;
 
     // look through the daylist and return a list of available channels for this machine
@@ -692,17 +923,18 @@ QList<ChannelID> Machine::availableChannels(quint32 chantype)
             Session * sess = (*sit);
             if (sess->machine() != this) continue;
 
-            int size = sess->availableChannels().size();
+            int size = sess->m_availableChannels.size();
             for (int i=0; i < size; ++i) {
-                ChannelID code = sess->availableChannels().at(i);
-                const schema::Channel & chan = schema::channel[code];
-                if (chan.type() & chantype) {
+                ChannelID code = sess->m_availableChannels.at(i);
+                QHash<ChannelID, schema::Channel *>::iterator ch = schema::channel.channels.find(code);
+                schema::Channel * chan = ch.value();
+                if (chan->type() & chantype) {
                     chanhash[code]++;
                 }
             }
         }
     }
-    return chanhash.keys();
+    return availableCache[chantype] = chanhash.keys();
 }
 
 
