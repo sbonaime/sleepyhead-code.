@@ -32,6 +32,7 @@
 #include "Graphs/glcommon.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gSummaryChart.h"
+#include "Graphs/gSessionTimesChart.h"
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFlagsLine.h"
 #include "SleepLib/profiles.h"
@@ -1269,6 +1270,9 @@ void gGraphView::paintGL()
 
     if (!graphs_drawn) { // No graphs drawn? show something useful :)
         QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.");
+        if (emptyText() == STR_Empty_Brick) {
+            txt += "\nI'm very sorry your machine doesn't record useful data to graph in Daily View :(";
+        }
 
 //        int x2, y2;
 //        GetTextExtent(m_emptytext, x2, y2, bigfont);
@@ -1868,9 +1872,11 @@ void gGraphView::populateMenu(gGraph * graph)
 
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
     SummaryChart * sc = dynamic_cast<SummaryChart *>(findLayer(graph,LT_SummaryChart));
+    gSessionTimesChart * stg = dynamic_cast<gSessionTimesChart *>(findLayer(graph,LT_SessionTimes));
+
 
     limits_menu->clear();
-    if (lc || sc) {
+    if (lc || sc || stg) {
         QWidgetAction * widget = new QWidgetAction(this);
         MinMaxWidget * minmax = new MinMaxWidget(graph, this);
 

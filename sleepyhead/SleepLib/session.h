@@ -23,6 +23,29 @@
 //class EventList;
 class Machine;
 
+enum SliceStatus {
+    UnknownStatus=0, EquipmentOff, EquipmentLeaking, EquipmentOn
+};
+
+class SessionSlice
+{
+public:
+    SessionSlice() {
+        start = end = 0;
+        status = UnknownStatus;
+    }
+    SessionSlice(const SessionSlice & copy) {
+        start = copy.start;
+        end = copy.end;
+        status = copy.status;
+    }
+    SessionSlice(qint64 start, qint64 end, SliceStatus status):start(start), end(end), status(status) {}
+
+    qint64 start;
+    qint64 end;
+    SliceStatus status;
+};
+
 /*! \class Session
     \brief Contains a single Sessions worth of machine event/waveform information.
 
@@ -178,6 +201,8 @@ class Session
     QHash<ChannelID, EventDataType> m_timeAboveTheshold;
 
     QList<ChannelID> m_availableChannels;
+
+    QList<SessionSlice> m_slices;
 
     const QList<ChannelID> & availableChannels() { return m_availableChannels; }
 

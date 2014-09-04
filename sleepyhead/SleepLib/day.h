@@ -91,6 +91,8 @@ class Day
     //! \brief Returns if the cache contains SummaryType information about the requested code
     bool hasData(ChannelID code, SummaryType type);
 
+    inline bool hasMachine(MachineType mt) const { return machines.contains(mt); }
+
     //! \brief Returns the Average of all Sessions setting 'code' for this day
     EventDataType settings_avg(ChannelID code);
 
@@ -278,7 +280,9 @@ class Day
     int useCounter() { return d_useCounter; }
 
   protected:
-    //! \brief A Vector containing all sessions for this day
+
+
+
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     //qint64 d_first,d_last;
   private:

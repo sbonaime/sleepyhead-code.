@@ -71,6 +71,8 @@ protected:
     int hl_day;
     int tz_offset;
     float tz_hours;
+    QDate firstday;
+    QDate lastday;
     QMap<quint32, QList<TimeSpan> > sessiontimes;
 };
 

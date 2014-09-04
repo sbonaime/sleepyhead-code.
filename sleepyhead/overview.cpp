@@ -124,6 +124,10 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     }
 
 
+    STG = createGraph("New Session", tr("Session Times2"), tr("Session Times"),  YT_Time);
+    stg = new gSessionTimesChart("STG", MT_CPAP);
+    STG->AddLayer(stg);
+
     UC = createGraph(STR_GRAPH_Usage, tr("Usage"), tr("Usage\n(hours)"));
 
     FL = createGraph(schema::channel[CPAP_FlowLimit].code(), schema::channel[CPAP_FlowLimit].label(), STR_TR_FlowLimit);

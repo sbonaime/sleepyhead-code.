@@ -1173,13 +1173,39 @@ bool PRS1Import::ParseCompliance()
     session->settings[PRS1_HumidStatus] = (bool)(data[0x0A] & 0x80);        // Humidifier Connected
     session->settings[PRS1_HumidLevel] = (int)(data[0x0A] & 7);          // Humidifier Value
 
+    // need to parse a repeating structure here containing lengths of mask on/off..
+    // 0x03 = mask on
+    // 0x01 = mask off
 
-    // This is probably wrong
-    summary_duration = data[0x12] | data[0x13] << 8;
+    qint64 start = qint64(compliance->timestamp) * 1000L;
+    qint64 tt = start;
 
-    session->set_first(qint64(compliance->timestamp) * 1000L);
-    session->set_last(qint64(compliance->timestamp + (summary_duration * 2)) * 1000L);
+    int len = compliance->size()-3;
+    int pos = 0x11;
+    do {
+        quint8 c = data[pos++];
+        quint64 duration = data[pos] | data[pos+1] << 8;
+        pos+=2;
+        duration *= 1000L;
+        SliceStatus status;
+        if (c == 0x03) {
+            status = EquipmentOn;
+        } else if (c == 0x02) {
+            status = EquipmentLeaking;
+        } else if (c == 0x01) {
+            status = EquipmentOff;
+        } else {
+            qDebug() << compliance->sessionid << "Wasn't expecting" << c;
+            break;
+        }
+        session->m_slices.append(SessionSlice(tt, tt + duration, status));
+        qDebug() << compliance->sessionid << "Added Slice" << tt << (tt+duration) << status;
 
+        tt += duration;
+    } while (pos < len);
+
+    session->set_first(start);
+    session->set_last(tt);
 
     // Bleh!! There is probably 10 different formats for these useless piece of junk machines
     return true;

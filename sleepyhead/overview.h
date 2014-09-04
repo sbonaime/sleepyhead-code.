@@ -16,6 +16,7 @@
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
 #include "Graphs/gSummaryChart.h"
+#include "Graphs/gSessionTimesChart.h"
 
 namespace Ui {
 class Overview;
@@ -62,10 +63,12 @@ class Overview : public QWidget
     gGraph *createGraph(QString code, QString name, QString units = "", YTickerType yttype = YT_Number);
     gGraph *AHI, *AHIHR, *UC, *FL, *SA, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2, *NLL,
 //    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2,
-           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK;
+           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK, *STG;
     SummaryChart *bc, *uc, *fl, *sa, *us, *pr, *lk, *npb, *set, *ses, *rr, *mv, *tv, *ptb, *pulse, *spo2,
  //   SummaryChart *bc, *uc, *fl, *us, *pr, *lk, *npb, *set, *ses, *rr, *mv, *tv, *ptb, *pulse, *spo2,
                  *weight, *zombie, *bmi, *ahihr, *tgmv, *totlk, *nll;
+
+    gSessionTimesChart * stg;
 
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;
