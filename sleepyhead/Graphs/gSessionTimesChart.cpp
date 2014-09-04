@@ -78,7 +78,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     QDate date = date2.date();
     QDate enddate = enddate2.date();
 
-    QString text = QString("Work in progress, I know about the bugs :P There is a very good and urgent reason for redoing this graph... "); //.arg(date2.toString("yyyyMMdd hh:mm:ss")).arg(enddate2.toString("yyyyMMdd hh:mm:ss"));
+    QString text = QString("Work in progress, overview is slightly broken... I know about the bugs :P There is a very good reason for redoing these overview graphs..."); //.arg(date2.toString("yyyyMMdd hh:mm:ss")).arg(enddate2.toString("yyyyMMdd hh:mm:ss"));
     painter.setFont(*defaultfont);
     painter.drawText(rect.left(), rect.top()-4, text);
 
