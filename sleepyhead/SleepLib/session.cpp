@@ -260,10 +260,7 @@ void Session::LoadSummaryData(QDataStream & in)
 
 bool Session::StoreSummary()
 {
-    // don't really want to call this anymore
-
-    return true;
-    QString filename = s_machine->getDataPath() + QString().sprintf("%08lx.000", s_session);
+    QString filename = s_machine->getSummariesPath() + QString().sprintf("%08lx.000", s_session);
 
     QFile file(filename);
     file.open(QIODevice::WriteOnly);

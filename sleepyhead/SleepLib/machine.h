@@ -123,6 +123,7 @@ class Machine
 
     const QString getDataPath();
     const QString getEventsPath();
+    const QString getSummariesPath();
     const QString getBackupPath();
 
     //! \brief Returns the machineID as a lower case hexadecimal string

@@ -14,6 +14,9 @@
 #include <QThreadPool>
 #include <QFile>
 #include <QDataStream>
+#include <QDomDocument>
+#include <QDomElement>
+
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -468,6 +471,10 @@ const QString Machine::getDataPath()
 {
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
 }
+const QString Machine::getSummariesPath()
+{
+    return getDataPath() + "Summaries/";
+}
 const QString Machine::getEventsPath()
 {
     return getDataPath() + "Events/";
@@ -501,94 +508,111 @@ bool Machine::Load()
     QProgressBar * progress = popup->progress;
 
     if (!LoadSummary()) {
+        // No XML index file, so assume upgrading, or it simply just got screwed up or deleted...
         QTime time;
         time.start();
         dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-        dir.setSorting(QDir::Name);
 
-        QFileInfoList list = dir.entryInfoList();
+        ///////////////////////////////////////////////////////////////////////
+        // First move any old files to correct locations
+        ///////////////////////////////////////////////////////////////////////
+        QString summarypath = getSummariesPath();
+        QString eventpath = getEventsPath();
 
-        typedef QVector<QString> StringList;
-        QMap<SessionID, StringList> sessfiles;
-        QMap<SessionID, StringList>::iterator s;
+        if (!dir.exists(summarypath)) dir.mkpath(summarypath);
 
-        QString fullpath, ext_s, sesstr;
-        int ext;
-        SessionID sessid;
-        bool ok;
+        QStringList filters;
+        filters << "*.000";
+        dir.setNameFilters(filters);
+        QStringList filelist = dir.entryList();
+        int size = filelist.size();
 
-
-
-        for (int i = 0; i < list.size(); i++) {
-            QFileInfo fi = list.at(i);
-            fullpath = fi.canonicalFilePath();
-            ext_s = fi.fileName().section(".", -1);
-            ext = ext_s.toInt(&ok, 10);
-
-            if (!ok) { continue; }
-
-            sesstr = fi.fileName().section(".", 0, -2);
-            sessid = sesstr.toLong(&ok, 16);
-
-            if (!ok) { continue; }
-
-            if (sessfiles[sessid].capacity() == 0) { sessfiles[sessid].resize(3); }
-
-            sessfiles[sessid][ext] = fi.canonicalFilePath();
+        if (progress) {
+            progress->setMinimum(0);
+            progress->setMaximum(0);
+            progress->setValue(0);
+            QApplication::processEvents();
         }
 
-        int size = sessfiles.size();
-        int cnt = 0;
+        for (int i=0; i < size; i++) {
+            QString filename = filelist.at(i);
+            QFile::copy(path+filename, summarypath+filename);
+            QFile::remove(path+filename);
+        }
+        // Copy old Event files to folder
+        filters.clear();
+        filters << "*.001";
+        dir.setNameFilters(filters);
+        filelist = dir.entryList();
+        size = filelist.size();
+        if (size > 0) {
+            if (!dir.exists(eventpath)) dir.mkpath(eventpath);
+            for (int i=0; i< filelist.size(); i++) {
+                if ((i % 50) == 0) { // This is slow.. :-/
+                    if (progress) { progress->setValue((float(i) / float(size) * 100.0)); }
 
-        bool haveevents = false;
-        for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
-            if (!s.value()[1].isEmpty()) {
-                haveevents = true;
-                break;
+                    QApplication::processEvents();
+                }
+
+                QString filename = filelist.at(i);
+                QFile::copy(path+filename, eventpath+filename);
+                QFile::remove(path+filename);
             }
         }
 
-        QString eventpath = getEventsPath();
+        ///////////////////////////////////////////////////////////////////////
+        // Now read summary files from correct location and load them
+        ///////////////////////////////////////////////////////////////////////
+        dir.setPath(summarypath);
+        filters.clear();
+        filters << "*.000";
+        dir.setNameFilters(filters);
+        filelist = dir.entryList();
+        size = filelist.size();
 
-        if (haveevents) {
-            QDir dir;
-            dir.mkpath(eventpath);
+        if (progress) {
+            progress->setMinimum(0);
+            progress->setMaximum(size);
+            progress->setValue(0);
+            QApplication::processEvents();
         }
 
-        for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
-            if ((++cnt % 50) == 0) { // This is slow.. :-/
-                if (progress) { progress->setValue((float(cnt) / float(size) * 100.0)); }
+        QString sesstr;
+        SessionID sessid;
+        bool ok;
+
+        for (int i=0; i < size; i++) {
+
+            if ((i % 50) == 0) { // This is slow.. :-/
+                if (progress) { progress->setValue(i); }
 
                 QApplication::processEvents();
             }
 
-            Session *sess = new Session(this, s.key());
+            QString filename = filelist.at(i);
+            sesstr = filename.section(".", 0, -2);
+            sessid = sesstr.toLong(&ok, 16);
 
-            if (haveevents && !s.value()[1].isEmpty()) {
-                QFile::copy(s.value()[1], eventpath+s.value()[1].section("/",-1));
-                QFile::remove(s.value()[1]);
-            }
+            if (!ok) { continue; }
 
-            if (sess->LoadSummary(s.value()[0])) {
+            QString str = summarypath+filename;
+            Session *sess = new Session(this, sessid);
+
+            if (sess->LoadSummary(str)) {
                 AddSession(sess);
             } else {
-                qWarning() << "Error unpacking summary data";
+                qWarning() << "Error loading summary file" << filename;
                 delete sess;
             }
         }
 
-        if (hasModifiedSessions()) {
-            SaveSummary();
-            for (s = sessfiles.begin(); s != sessfiles.end(); s++) {
-                QString summary = s.value()[0];
-                QFile file(summary);
-                file.remove();
-            }
-        }
+        SaveSummary();
         qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
+        if (progress) { progress->setValue(size); }
+    } else {
+        if (progress) { progress->setValue(100); }
     }
     loadSessionInfo();
-    if (progress) { progress->setValue(100); }
     QApplication::processEvents();
     popup->hide();
     delete popup;
@@ -790,81 +814,117 @@ bool Machine::hasModifiedSessions()
     return false;
 }
 
-const QString summaryFileName = "Summaries.dat";
+const QString summaryFileName = "Summaries.xml";
 
 bool Machine::LoadSummary()
 {
     QTime time;
     time.start();
     qDebug() << "Loading Summaries";
+
     QString filename = getDataPath() + summaryFileName;
 
+    QDomDocument doc;
     QFile file(filename);
+    qDebug() << "Opening " << filename;
 
-    if (!file.exists() || !file.open(QFile::ReadOnly)) {
-        qDebug() << "Couldn't open" << filename;
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << filename;
         return false;
     }
 
-    QByteArray compressed = file.readAll();
-    file.close();
-    QTime time2;
-    time2.start();
-    QByteArray data = qUncompress(compressed);
+    QByteArray data=file.readAll();
 
-    qDebug() << "Uncompressed Summary Length" << data.size() << "in" << time2.elapsed() << "ms";
+    QByteArray uncompressed = qUncompress(data);
 
-    QDataStream in(&data, QIODevice::ReadOnly);
-    in.setVersion(QDataStream::Qt_5_0);
-    in.setByteOrder(QDataStream::LittleEndian);
+    QString errorMsg;
+    int errorLine;
 
-    quint32 mag32;
-    quint16 ftype;
-    in >> mag32;
-    in >> ftype;
-
-    int session_count;
-    in >> session_count;
-
-    for (int i=0; i< session_count; ++i) {
-        Session * sess = new Session(this,0);
-        in >> *sess;
-        AddSession(sess);
+    if (!doc.setContent(uncompressed, false, &errorMsg, &errorLine)) {
+        qWarning() << "Invalid XML Content in" << filename;
+        qWarning() << "Error line" << errorLine << ":" << errorMsg;
+        return false;
     }
 
-    qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
+    file.close();
+
+
+    QDomElement root = doc.documentElement();
+    QDomNode node;
+
+    bool s_ok;
+
+    QString sumpath = getSummariesPath();
+    QDomNodeList sessionlist = root.childNodes();
+    int size = sessionlist.size();
+    for (int s=0; s < size; ++s) {
+        node = sessionlist.at(s);
+        QDomElement e = node.toElement();
+        SessionID sessid = e.attribute("id", "0").toLong(&s_ok);
+        qint64 first =  e.attribute("first", 0).toLongLong();
+        qint64 last =  e.attribute("last", 0).toLongLong();
+
+        if (s_ok) {
+            Session * sess = new Session(this, sessid);
+            QString filename = sumpath + QString().sprintf("%08lx.000", sessid);
+            if (sess->LoadSummary(filename)) {
+              AddSession(sess);
+            } else {
+                delete sess;
+            }
+        }
+    }
+
+    qDebug() << "Loaded" << info.series << info.model << "data in" << time.elapsed() << "ms";
 
     return true;
 }
+
+const int summaryxml_version=0;
 
 bool Machine::SaveSummary()
 {
     qDebug() << "Saving Summaries";
     QString filename = getDataPath() + summaryFileName;
 
-    QByteArray data;
-    QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_0);
-    out.setByteOrder(QDataStream::LittleEndian);
+    QDomDocument doc("SleepyHeadSessionIndex");
 
-    out << (quint32)magic;
-    out << (quint16)filetype_summary;
-    out << (int)sessionlist.size();
+    QDomElement root = doc.createElement("sessions");
+    root.setAttribute("version", summaryxml_version);
+    root.setAttribute("profile", p_profile->user->userName());
+    root.setAttribute("count", sessionlist.size());
+    root.setAttribute("loader", info.loadername);
+    root.setAttribute("serial", info.serial);
+
+    doc.appendChild(root);
+
+    if (!QDir().exists(getSummariesPath()))
+        QDir().mkpath(getSummariesPath());
 
     QHash<SessionID, Session *>::iterator s;
-    for (s = sessionlist.begin(); s != sessionlist.end(); s++) {
+    QHash<SessionID, Session *>::iterator sess_end = sessionlist.end();
+
+    for (s = sessionlist.begin(); s != sess_end; ++s) {
+        QDomElement el = doc.createElement("session");
         Session * sess = s.value();
-        out << *sess;
+        el.setAttribute("id", (quint32)sess->session());
+        el.setAttribute("first", sess->realFirst());
+        el.setAttribute("last", sess->realLast());
+        el.setAttribute("enabled", sess->enabled() ? "1" : "0");
+        el.setAttribute("events", sess->summaryOnly() ? "0" : "1");
+        root.appendChild(el);
+        if (sess->IsChanged())
+            sess->StoreSummary();
     }
 
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
-    qDebug() << "Uncompressed Summary Length" << data.size();
+    QByteArray ba = qCompress(doc.toByteArray());
+    file.write(ba);
 
-    QByteArray compressed = qCompress(data);
-    file.write(compressed);
     file.close();
+
     return true;
 }
 

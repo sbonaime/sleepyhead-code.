@@ -111,6 +111,9 @@ class Session
     //! \brief Sets whether or not session is being used.
     void setEnabled(bool b) { s_enabled = b; }
 
+    inline qint64 realFirst() const { return s_first; }
+    inline qint64 realLast() const { return s_last; }
+
     //! \brief Return the start of this sessions time range (in milliseconds since epoch)
     qint64 first();
 
@@ -208,8 +211,6 @@ class Session
     QList<ChannelID> m_availableChannels;
 
     QList<SessionSlice> m_slices;
-
-    const QList<ChannelID> & availableChannels() { return m_availableChannels; }
 
     //! \brief Generates sum and time data for each distinct value in 'code' events..
     void updateCountSummary(ChannelID code);
