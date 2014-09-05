@@ -86,7 +86,7 @@ class Machine
 
     //! \brief Load all Machine summary data
     bool Load();
-    bool LoadSummary();
+    bool LoadSummary(bool everything = false);
 
     //! \brief Save all Sessions where changed bit is set.
     bool Save();

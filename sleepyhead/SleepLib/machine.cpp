@@ -816,7 +816,7 @@ bool Machine::hasModifiedSessions()
 
 const QString summaryFileName = "Summaries.xml";
 
-bool Machine::LoadSummary()
+bool Machine::LoadSummary(bool everything)
 {
     QTime time;
     time.start();
@@ -863,6 +863,8 @@ bool Machine::LoadSummary()
         SessionID sessid = e.attribute("id", "0").toLong(&s_ok);
         qint64 first =  e.attribute("first", 0).toLongLong();
         qint64 last =  e.attribute("last", 0).toLongLong();
+
+
 
         if (s_ok) {
             Session * sess = new Session(this, sessid);
