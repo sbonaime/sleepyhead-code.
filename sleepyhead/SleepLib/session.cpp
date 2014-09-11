@@ -38,6 +38,7 @@ Session::Session(Machine *m, SessionID session)
     s_session = session;
     s_changed = false;
     s_events_loaded = false;
+    s_summary_loaded = false;
     _first_session = true;
     s_enabled = -1;
 
@@ -110,7 +111,7 @@ bool Session::OpenEvents()
 //        qWarning() << "Error Loading Events" << filename;
         return false;
     }
-    qDebug() << "opening" << filename;
+    qDebug() << "Loading" << s_machine->loaderName() << "Events" << filename;
 
     return s_events_loaded = true;
 }
@@ -263,7 +264,15 @@ bool Session::StoreSummary()
     QString filename = s_machine->getSummariesPath() + QString().sprintf("%08lx.000", s_session);
 
     QFile file(filename);
-    file.open(QIODevice::WriteOnly);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QDir dir;
+        dir.mkpath(s_machine->getSummariesPath());
+
+        if (!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "Summary open for writing failed";
+            return false;
+        }
+    }
 
     QDataStream out(&file);
     out.setVersion(QDataStream::Qt_4_6);
@@ -319,9 +328,13 @@ bool Session::StoreSummary()
 }
 
 
-bool Session::LoadSummary(QString filename)
+bool Session::LoadSummary()
 {
-    s_changed = true;
+    static int sumcnt = 0;
+
+    if (s_summary_loaded) return true;
+    QString filename = s_machine->getSummariesPath() + QString().sprintf("%08lx.000", s_session);
+
 
     if (filename.isEmpty()) {
         qDebug() << "Empty summary filename";
@@ -334,6 +347,9 @@ bool Session::LoadSummary(QString filename)
         qDebug() << "Couldn't open summary file" << filename;
         return false;
     }
+
+
+    qDebug() << "Loading" << s_machine->loaderName() << "Summary" << filename << sumcnt++;
 
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_6);
@@ -564,9 +580,10 @@ bool Session::LoadSummary(QString filename)
         } else {
             // summary only upgrades go here.
         }
-        SetChanged(true);
+        StoreSummary();
     }
 
+    s_summary_loaded = true;
     return true;
 }
 
@@ -1083,6 +1100,8 @@ void Session::UpdateSummaries()
         }
     }
     timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline());
+
+    s_machine->updateChannels(this);
 }
 
 EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)

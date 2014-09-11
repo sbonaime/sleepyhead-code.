@@ -53,6 +53,8 @@ public:
     */
 class Session
 {
+    friend class Day;
+    friend class Machine;
   public:
     /*! \fn Session(Machine *,SessionID);
         \brief Create a session object belonging to Machine, with supplied SessionID
@@ -83,7 +85,7 @@ class Session
     void LoadSummaryData(QDataStream & in);
 
     //! \brief Loads the Sessions Summary Indexes from filename, from SleepLibs custom data format.
-    bool LoadSummary(QString filename);
+    bool LoadSummary();
 
     //! \brief Loads the Sessions EventLists from filename, from SleepLibs custom data format.
     bool LoadEvents(QString filename);
@@ -389,6 +391,7 @@ protected:
     bool _first_session;
     bool s_summaryOnly;
 
+    bool s_summary_loaded;
     bool s_events_loaded;
     bool s_enabled;
 

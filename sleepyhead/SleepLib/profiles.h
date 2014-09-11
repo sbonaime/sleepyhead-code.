@@ -87,9 +87,15 @@ class Profile : public Preferences
     //! \brief Get Day record if data available for date and machine type, else return nullptr
     Day *GetDay(QDate date, MachineType type = MT_UNKNOWN);
 
+    //! \brief Same as GetDay but does not open the summaries
+    Day *FindDay(QDate date, MachineType type = MT_UNKNOWN);
+
     //! \brief Get Day record if data available for date and machine type,
     //         and has enabled session data, else return nullptr
     Day *GetGoodDay(QDate date, MachineType type);
+
+    //! \breif Same as GetGoodDay but does not open the summaries
+    Day *FindGoodDay(QDate date, MachineType type);
 
     //! \brief Returns a list of all machines of type t
     QList<Machine *> GetMachines(MachineType t = MT_UNKNOWN);
@@ -146,6 +152,11 @@ class Profile : public Preferences
 
     //! \brief Tests if Channel code is available in all day sets
     bool hasChannel(ChannelID code);
+
+
+    //! \brief Looks up if any machines report channel is available
+    bool channelAvailable(ChannelID code);
+
 
     //! \brief Calculates the minimum session settings value for channel code, between start and end dates
     EventDataType calcSettingsMin(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),

@@ -43,7 +43,7 @@ qint64 timezoneOffset();
 /*! \enum SummaryType
     \brief Calculation/Display method to select from dealing with summary information
   */
-enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_PERC, ST_90P, ST_MIN, ST_MAX, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM, ST_SESSIONID, ST_DATE };
+enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_PERC, ST_90P, ST_MIN, ST_MAX, ST_MID, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM, ST_SESSIONID, ST_DATE };
 
 /*! \enum MachineType
     \brief Generalized type of a machine

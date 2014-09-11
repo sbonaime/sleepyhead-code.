@@ -13,6 +13,7 @@
 #include <QHash>
 #include <QList>
 #include "SleepLib/schema.h"
+#include "SleepLib/machine.h"
 
 enum StatCalcType {
     SC_UNDEFINED=0, SC_COLUMNHEADERS, SC_HEADING, SC_SUBHEADING, SC_MEDIAN, SC_AVG, SC_WAVG, SC_90P, SC_MIN, SC_MAX, SC_CPH, SC_SPH, SC_AHI, SC_HOURS, SC_COMPLIANCE, SC_DAYS, SC_ABOVE, SC_BELOW
@@ -93,19 +94,78 @@ struct StatisticsRow {
     QString value(QDate start, QDate end);
 };
 
+class RXItem {
+public:
+    RXItem() {
+        machine = nullptr;
+        ahi = rdi = 0;
+        highlight = 0;
+        hours = 0;
+    }
+    RXItem(const RXItem & copy) {
+        start = copy.start;
+        end = copy.end;
+        days = copy.days;
+        s_count = copy.s_count;
+        s_sum = copy.s_sum;
+        ahi = copy.ahi;
+        rdi = copy.rdi;
+        hours = copy.hours;
+        machine = copy.machine;
+        relief = copy.relief;
+        mode = copy.mode;
+        pressure = copy.pressure;
+        dates = copy.dates;
+        highlight = copy.highlight;
+    }
+    inline quint64 count(ChannelID id) const {
+        QHash<ChannelID, quint64>::const_iterator it = s_count.find(id);
+        if (it == s_count.end()) return 0;
+        return it.value();
+    }
+    inline double sum(ChannelID id) const{
+        QHash<ChannelID, double>::const_iterator it = s_sum.find(id);
+        if (it == s_sum.end()) return 0;
+        return it.value();
+    }
+    QDate start;
+    QDate end;
+    int days;
+    QHash<ChannelID, quint64> s_count;
+    QHash<ChannelID, double> s_sum;
+    quint64 ahi;
+    quint64 rdi;
+    double hours;
+    Machine * machine;
+    QString relief;
+    QString mode;
+    QString pressure;
+    QMap<QDate, Day *> dates;
+    short highlight;
+};
+
 class Statistics : public QObject
 {
     Q_OBJECT
   public:
     explicit Statistics(QObject *parent = 0);
 
+    void loadRXChanges();
+    void saveRXChanges();
+    void updateRXChanges();
+
     QString GenerateHTML();
+    QString GenerateMachineList();
+    QString GenerateRXChanges();
+
 
   protected:
     // Using a map to maintain order
     QList<StatisticsRow> rows;
     QMap<StatCalcType, QString> calcnames;
     QMap<MachineType, QString> machinenames;
+
+    QMap<QDate, RXItem> rxitems;
 
   signals:
 

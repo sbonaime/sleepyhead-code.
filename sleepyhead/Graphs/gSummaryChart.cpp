@@ -651,7 +651,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     col = summaryColor;
                 }
                 if (zd == hl_day) {
-                    col = QColor("gold");
+                    col = COLOR_Gold;
                 }
 
                 QColor col1 = col;
@@ -749,7 +749,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     }
 
                     if (zd == hl_day) {
-                        col = QColor("gold");
+                        col = COLOR_Gold;
                     }
 
                     //if (!tmp) continue;

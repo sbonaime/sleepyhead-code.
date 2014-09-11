@@ -7,6 +7,8 @@
  * distribution for more details. */
 
 #include <QApplication>
+#include <QFile>
+#include <QDataStream>
 #include <cmath>
 
 #include "mainwindow.h"
@@ -21,6 +23,363 @@ QString formatTime(float time)
     int minutes = (seconds / 60) % 60;
     seconds %= 60;
     return QString().sprintf("%02i:%02i", hours, minutes); //,seconds);
+}
+
+QDataStream & operator>>(QDataStream & in, RXItem & rx)
+{
+    in >> rx.start;
+    in >> rx.end;
+    in >> rx.days;
+    in >> rx.ahi;
+    in >> rx.rdi;
+    in >> rx.hours;
+
+    QString loadername;
+    in >> loadername;
+    QString serial;
+    in >> serial;
+
+    MachineLoader * loader = GetLoader(loadername);
+    if (loader) {
+        rx.machine = loader->lookupMachine(serial);
+    } else {
+        qDebug() << "Bad machine object" << loadername << serial;
+        rx.machine = nullptr;
+    }
+
+    in >> rx.relief;
+    in >> rx.mode;
+    in >> rx.pressure;
+
+    QList<QDate> list;
+    in >> list;
+
+    rx.dates.clear();
+    for (int i=0; i<list.size(); ++i) {
+        QDate date = list.at(i);
+        rx.dates[date] = p_profile->FindDay(date, MT_CPAP);
+    }
+
+    in >> rx.s_count;
+    in >> rx.s_sum;
+
+    return in;
+}
+QDataStream & operator<<(QDataStream & out, const RXItem & rx)
+{
+    out << rx.start;
+    out << rx.end;
+    out << rx.days;
+    out << rx.ahi;
+    out << rx.rdi;
+    out << rx.hours;
+
+    out << rx.machine->loaderName();
+    out << rx.machine->serial();
+    out << rx.relief;
+    out << rx.mode;
+    out << rx.pressure;
+    out << rx.dates.keys();
+    out << rx.s_count;
+    out << rx.s_sum;
+
+    return out;
+}
+void Statistics::loadRXChanges()
+{
+    QString path = p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" );
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly)) {
+        return;
+    }
+    QDataStream in(&file);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 mag32;
+    if (in.version() != QDataStream::Qt_5_0) {
+    }
+
+    in >> mag32;
+
+    if (mag32 != magic) {
+        return;
+    }
+    quint16 version;
+    in >> version;
+
+    in >> rxitems;
+
+}
+void Statistics::saveRXChanges()
+{
+    QString path = p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" );
+    QFile file(path);
+    if (!file.open(QFile::WriteOnly)) {
+        return;
+    }
+    QDataStream out(&file);
+    out.setByteOrder(QDataStream::LittleEndian);
+    out.setVersion(QDataStream::Qt_5_0);
+    out << magic;
+    out << (quint16)0;
+    out << rxitems;
+
+}
+
+bool rxAHILessThan(const RXItem * rx1, const RXItem * rx2)
+{
+
+    return (double(rx1->ahi) / rx1->hours) < (double(rx2->ahi) / rx2->hours);
+}
+
+void Statistics::updateRXChanges()
+{
+    rxitems.clear();
+    loadRXChanges();
+    QMap<QDate, Day *>::iterator di;
+
+    QMap<QDate, Day *>::iterator it;
+    QMap<QDate, Day *>::iterator it_end = p_profile->daylist.end();
+
+    QMap<QDate, RXItem>::iterator ri;
+    QMap<QDate, RXItem>::iterator ri_end = rxitems.end();
+
+
+    quint64 tmp;
+    for (it = p_profile->daylist.begin(); it != it_end; ++it) {
+        const QDate & date = it.key();
+        Day * day = it.value();
+        Machine * mach = day->machine(MT_CPAP);
+        if (mach == nullptr) continue;
+
+        bool fnd = false;
+
+        ri_end = rxitems.end();
+        for (ri = rxitems.begin(); ri != ri_end; ++ri) {
+            RXItem & rx = ri.value();
+
+            if ((date >= rx.start) && (date <= rx.end)) {
+                // Fits in date range
+                if (rx.dates.contains(date)) {
+                    fnd = true;
+                    break;
+                }
+
+                // First up, check if fits in date range, but isn't loaded for some reason
+
+                // Need summaries for this
+                day->OpenSummary();
+                QList<ChannelID> flags = day->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
+
+                QString relief = day->getPressureRelief();
+                QString mode = day->getCPAPMode();
+                QString pressure = day->getPressureSettings();
+
+                if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == mach)) {
+                    for (int i=0; i < flags.size(); i++) {
+                        ChannelID code  = flags.at(i);
+                        rx.s_count[code] += day->count(code);
+                        rx.s_sum[code] += day->sum(code);
+                    }
+
+                    tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
+                    rx.ahi += tmp;
+                    rx.rdi += tmp + day->count(CPAP_RERA);
+                    rx.hours += day->hours(MT_CPAP);
+
+                    rx.dates[date] = day;
+                    rx.days = rx.dates.size();
+                    fnd = true;
+                    break;
+                } else {
+                    // Bleh.... split the day record!
+
+                    RXItem rx1, rx2;
+
+                    // First create the new day..
+                    rx1.start = date;
+                    rx1.end = date;
+                    rx1.days = 1;
+
+                    tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
+                    rx1.ahi = tmp;
+                    rx1.rdi = tmp + day->count(CPAP_RERA);
+                    for (int i=0; i < flags.size(); i++) {
+                        ChannelID code  = flags.at(i);
+                        rx1.s_count[code] = day->count(code);
+                        rx1.s_sum[code] = day->sum(code);
+                    }
+
+                    rx1.hours = day->hours(MT_CPAP);
+                    rx1.relief = relief;
+                    rx1.mode = mode;
+                    rx1.pressure = pressure;
+                    rx1.machine = day->machine(MT_CPAP);
+                    rx1.dates[date] = day;
+                    rxitems.insert(date, rx1);
+
+                    QMap<QDate, Day *> datecopy = rx.dates;
+
+                    rx.dates.clear();
+
+                    rx.end = rx.start;
+                    rx2.start = rx.end;
+                    rx2.end = rx.start;
+                    rx2.ahi = 0;
+                    rx2.rdi = 0;
+                    rx2.hours = 0;
+                    rx.ahi = 0;
+                    rx.rdi = 0;
+                    rx.hours = 0;
+                    rx.s_count.clear();
+                    rx2.s_count.clear();
+                    rx.s_sum.clear();
+                    rx2.s_sum.clear();
+                    for (di = datecopy.begin(); di != datecopy.end(); ++di) {
+                        // Split everything before
+                        if (di.key() < date) {
+                            Day * dy = rx.dates[di.key()] = p_profile->GetDay(di.key(), MT_CPAP);
+                            tmp = dy->count(CPAP_Hypopnea) + dy->count(CPAP_Obstructive) + dy->count(CPAP_Apnea) + dy->count(CPAP_ClearAirway);;
+                            rx.ahi += tmp;
+                            rx.rdi += tmp + dy->count(CPAP_RERA);
+                            QList<ChannelID> flags2 = dy->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
+
+                            for (int i=0; i < flags2.size(); i++) {
+                                ChannelID code  = flags2.at(i);
+                                rx.s_count[code] += dy->count(code);
+                                rx.s_sum[code] += dy->sum(code);
+                            }
+
+                            rx.hours += dy->hours(MT_CPAP);
+                            //rx.days++;
+                            rx.end = qMax(di.key(), rx.end);
+                        }
+                        // Split everything after
+                        if (di.key() > date) {
+                            Day * dy = rx2.dates[di.key()] = p_profile->GetDay(di.key(), MT_CPAP);
+                            tmp = dy->count(CPAP_Hypopnea) + dy->count(CPAP_Obstructive) + dy->count(CPAP_Apnea) + dy->count(CPAP_ClearAirway);;
+                            rx2.ahi += tmp;
+                            rx2.rdi += tmp + dy->count(CPAP_RERA);
+                            QList<ChannelID> flags2 = dy->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
+
+                            for (int i=0; i < flags2.size(); i++) {
+                                ChannelID code  = flags2.at(i);
+                                rx2.s_count[code] += dy->count(code);
+                                rx2.s_sum[code] += dy->sum(code);
+                            }
+
+                            rx2.hours += dy->hours(MT_CPAP);
+                            rx2.end = qMax(di.key(), rx2.end);
+                            rx2.start = qMin(di.key(), rx2.start);
+                        }
+                    }
+                    rx.days = rx.dates.size();
+
+                    rx2.pressure = rx.pressure;
+                    rx2.mode = rx.mode;
+                    rx2.relief = rx.relief;
+                    rx2.machine = rx.machine;
+                    rx2.days = rx2.dates.size();
+
+                    rxitems.insert(rx2.end, rx2);
+                    fnd = true;
+
+                    break;
+                }
+            }
+        }
+        if (fnd) continue;
+
+        day->OpenSummary();
+        QList<ChannelID> flags3 = day->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
+
+
+        QString relief = day->getPressureRelief();
+        QString mode = day->getCPAPMode();
+        QString pressure = day->getPressureSettings();
+
+        for (ri = rxitems.begin(); ri != ri_end; ++ri) {
+            RXItem & rx = ri.value();
+
+            if (rx.end.daysTo(date) == 1) {
+
+                if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == day->machine(MT_CPAP)) ) {
+
+                    tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
+                    rx.ahi += tmp;
+                    rx.rdi += tmp + day->count(CPAP_RERA);
+
+                    for (int i=0; i < flags3.size(); i++) {
+                        ChannelID code  = flags3.at(i);
+                        rx.s_count[code] += day->count(code);
+                        rx.s_sum[code] += day->sum(code);
+                    }
+
+                    rx.hours += day->hours(MT_CPAP);
+
+                    rx.dates[date] = day;
+                    rx.days = rx.dates.size();
+                    rx.end = date;
+                    fnd = true;
+                    break;
+                }
+            }
+        }
+
+        if (!fnd) {
+            RXItem rx;
+            rx.start = date;
+            rx.end = date;
+            rx.days = 1;
+            tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
+            rx.ahi = tmp;
+            rx.rdi = tmp + day->count(CPAP_RERA);
+            for (int i=0; i < flags3.size(); i++) {
+                ChannelID code  = flags3.at(i);
+                rx.s_count[code] = day->count(code);
+                rx.s_sum[code] = day->sum(code);
+            }
+            rx.hours = day->hours();
+            rx.relief = relief;
+            rx.mode = mode;
+            rx.pressure = pressure;
+            rx.machine = day->machine(MT_CPAP);
+            rx.dates.insert(date, day);
+
+            rxitems.insert(date, rx);
+
+        }
+
+    }
+    saveRXChanges();
+
+
+    QList<RXItem *> list;
+    ri_end = rxitems.end();
+
+    for (ri = rxitems.begin(); ri != ri_end; ++ri) {
+        list.append(&ri.value());
+        ri.value().highlight = 0;
+    }
+
+    qSort(list.begin(), list.end(), rxAHILessThan);
+
+    if (list.size() >= 4) {
+        list[0]->highlight = 1; // best
+        list[1]->highlight = 2; // best
+        int ls = list.size() - 1;
+        list[ls-1]->highlight = 3; // best
+        list[ls]->highlight = 4;
+    } else if (list.size() >= 2) {
+        list[0]->highlight = 1; // best
+        int ls = list.size() - 1;
+        list[ls]->highlight = 4;
+    } else if (list.size() > 0) {
+        list[0]->highlight = 1; // best
+    }
+
+    // update record box info..
+
 }
 
 
@@ -503,11 +862,178 @@ struct Period {
     QString header;
 };
 
+const QString heading_color="#ffffff";
+const QString subheading_color="#e0e0e0";
+const int rxthresh = 5;
+
+QString Statistics::GenerateMachineList()
+{
+    QList<Machine *> cpap_machines = p_profile->GetMachines(MT_CPAP);
+    QList<Machine *> oximeters = p_profile->GetMachines(MT_OXIMETER);
+    QList<Machine *> mach;
+
+    mach.append(cpap_machines);
+    mach.append(oximeters);
+
+    QString html;
+    if (mach.size() > 0) {
+        html += "<div align=center><br/>";
+
+        html += QString("<table class=curved style=\"page-break-before:auto;\" "+table_width+">");
+
+        html += "<thead>";
+        html += "<tr bgcolor='"+heading_color+"'><th colspan=7 align=center><font size=+2>" + tr("Machine Information") + "</font></th></tr>";
+
+        html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td></tr>")
+                .arg(STR_TR_Brand)
+                .arg(STR_TR_Series)
+                .arg(STR_TR_Model)
+                .arg(STR_TR_Serial)
+                .arg(tr("First Use"))
+                .arg(tr("Last Use"));
+
+        html += "</thead>";
+
+        Machine *m;
+
+        for (int i = 0; i < mach.size(); i++) {
+            m = mach.at(i);
+
+            if (m->type() == MT_JOURNAL) { continue; }
+
+            QDate d1 = m->FirstDay();
+            QDate d2 = m->LastDay();
+            QString mn = m->modelnumber();
+            html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(m->brand())
+                    .arg(m->series())
+                    .arg(m->model() +
+                         (mn.isEmpty() ? "" : QString(" (") + mn + QString(")")))
+                    .arg(m->serial())
+                    .arg(d1.toString(Qt::SystemLocaleShortDate))
+                    .arg(d2.toString(Qt::SystemLocaleShortDate));
+
+        }
+
+        html += "</table>";
+        html += "</div>";
+    }
+    return html;
+}
+QString Statistics::GenerateRXChanges()
+{
+    updateRXChanges();
+
+    QString ahitxt;
+
+    bool rdi = p_profile->general->calculateRDI();
+    if (rdi) {
+        ahitxt = STR_TR_RDI;
+    } else {
+        ahitxt = STR_TR_AHI;
+    }
+
+
+    QString html = "<div align=center><br/>";
+    html += QString("<table class=curved style=\"page-break-before:always;\" "+table_width+">");
+    html += "<thead>";
+    html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+2>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
+
+    QString extratxt;
+
+    QString tooltip;
+    QStringList hdrlist;
+    hdrlist.push_back(STR_TR_First);
+    hdrlist.push_back(STR_TR_Last);
+    hdrlist.push_back(tr("Days"));
+    hdrlist.push_back(ahitxt);
+    hdrlist.push_back(STR_TR_FL);
+    hdrlist.push_back(STR_TR_Machine);
+    hdrlist.push_back(tr("Pressure Relief"));
+    hdrlist.push_back(STR_TR_Mode);
+    hdrlist.push_back(tr("Pressure Settings"));
+
+    html+="<tr>\n";
+    for (int i=0; i < hdrlist.size(); ++i) {
+        html+=QString(" <th align=left><b>%1</b></th>\n").arg(hdrlist.at(i));
+    }
+    html+="</tr>\n";
+    html += "</thead>";
+//    html += "<tfoot>";
+//    html += "<tr><td colspan=10 align=center>";
+//    html += QString("<i>") +
+//            tr("Efficacy highlighting ignores prescription settings with less than %1 days of recorded data.").
+//            arg(rxthresh) + QString("</i><br/>");
+//    html += "</td></tr>";
+//    html += "</tfoot>";
+
+    QMapIterator<QDate, RXItem> it(rxitems);
+    it.toBack();
+    while (it.hasPrevious()) {
+        it.previous();
+        const RXItem & rx = it.value();
+
+        QString color;
+
+        if (rx.highlight == 1) {
+            color = "#c0ffc0";
+        } else if (rx.highlight == 2) {
+            color = "#e0ffe0";
+        } else if (rx.highlight == 3) {
+            color = "#ffe0e0";
+        } else if (rx.highlight == 4) {
+            color = "#ffc0c0";
+        } else { color = ""; }
+
+        QString datarowclass;
+        if (rx.highlight == 0) datarowclass="class=datarow";
+        html += QString("<tr %4 bgcolor='%1' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \"%1\");' onclick='alert(\"overview=%2,%3\");'>")
+                .arg(color)
+                .arg(rx.start.toString(Qt::ISODate))
+                .arg(rx.end.toString(Qt::ISODate))
+                .arg(datarowclass);
+
+        double ahi = rdi ? (double(rx.rdi) / rx.hours) : (double(rx.ahi) /rx.hours);
+        double fli = double(rx.count(CPAP_FlowLimit)) / rx. hours;
+
+        html += QString("<td>%1</td>").arg(rx.start.toString())+
+                QString("<td>%1</td>").arg(rx.end.toString())+
+                QString("<td>%1</td>").arg(rx.days)+
+                QString("<td>%1</td>").arg(ahi, 0, 'f', 2)+
+                QString("<td>%1</td>").arg(fli, 0, 'f', 2)+
+                QString("<td>%1</td>").arg(rx.machine->loaderName())+
+                QString("<td>%1</td>").arg(rx.relief)+
+                QString("<td>%1</td>").arg(rx.mode)+
+                QString("<td>%1</td>").arg(rx.pressure)+
+                "</tr>";
+    }
+    html+="</table></div>";
+
+    return html;
+}
+
 QString Statistics::GenerateHTML()
 {
+    QList<Machine *> cpap_machines = p_profile->GetMachines(MT_CPAP);
+    QList<Machine *> oximeters = p_profile->GetMachines(MT_OXIMETER);
+    QList<Machine *> mach;
 
-    QString heading_color="#ffffff";
-    QString subheading_color="#e0e0e0";
+    mach.append(cpap_machines);
+    mach.append(oximeters);
+
+    bool havedata = false;
+    for (int i=0; i < mach.size(); ++i) {
+        int daysize = mach[i]->day.size();
+        if (daysize > 0) {
+            havedata = true;
+            break;
+        }
+    }
+
+
+    QString html = htmlHeader(havedata);
+
+   // return "";
 
 
     // Find first and last days with valid CPAP data
@@ -525,23 +1051,6 @@ QString Statistics::GenerateHTML()
     if (cpap6month < firstcpap) { cpap6month = firstcpap; }
     if (cpapyear < firstcpap) { cpapyear = firstcpap; }
 
-    QList<Machine *> cpap_machines = p_profile->GetMachines(MT_CPAP);
-    QList<Machine *> oximeters = p_profile->GetMachines(MT_OXIMETER);
-    QList<Machine *> mach;
-
-    mach.append(cpap_machines);
-    mach.append(oximeters);
-
-    bool havedata = false;
-    for (int i=0; i < mach.size(); ++i) {
-        int daysize = mach[i]->day.size();
-        if (daysize > 0) {
-            havedata = true;
-            break;
-        }
-    }
-
-    QString html = htmlHeader(havedata);
 
     if (!havedata) {
         html += "<div align=center><table class=curved height=100% "+table_width+">";
@@ -554,6 +1063,7 @@ QString Statistics::GenerateHTML()
         html += htmlFooter(havedata);
         return html;
     }
+
 
     int cpapdays = p_profile->countDays(MT_CPAP, firstcpap, lastcpap);
 
@@ -590,7 +1100,6 @@ QString Statistics::GenerateHTML()
     QDate last = lastcpap, first = lastcpap;
 
     QList<Period> periods;
-
 
 
     bool skipsection = false;;
@@ -702,7 +1211,7 @@ QString Statistics::GenerateHTML()
             continue;
         } else {
             ChannelID id = schema::channel[row.src].id();
-            if ((id == NoChannel) || (!p_profile->hasChannel(id))) {
+            if ((id == NoChannel) || (!p_profile->channelAvailable(id))) {
                 continue;
             }
             name = calcnames[row.calc].arg(schema::channel[id].fullname());
@@ -733,6 +1242,7 @@ QString Statistics::GenerateHTML()
     html += "</table>";
     html += "</div>";
 
+    /*
     QList<UsageData> AHI;
 
     if (cpapdays > 0) {
@@ -1083,13 +1593,13 @@ QString Statistics::GenerateHTML()
 
         recbox += "</table>";
         recbox += "</body></html>";
-        mainwin->setRecBoxHTML(recbox);
+        mainwin->setRecBoxHTML(recbox); */
 
         /*RXsort=RX_min;
         RXorder=true;
         qSort(rxchange.begin(),rxchange.end());*/
 
-        html += "<div align=center><br/>";
+    /*    html += "<div align=center><br/>";
         html += QString("<table class=curved style=\"page-break-before:always;\" "+table_width+">");
         html += "<thead>";
         html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+2>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
@@ -1232,57 +1742,10 @@ QString Statistics::GenerateHTML()
         html += "</table>";
         html += "</div>";
 
-    }
+   } */
+    html += GenerateRXChanges();
+    html += GenerateMachineList();
 
-    if (mach.size() > 0) {
-        html += "<div align=center><br/>";
-
-        html += QString("<table class=curved style=\"page-break-before:auto;\" "+table_width+">");
-
-        html += "<thead>";
-        html += "<tr bgcolor='"+heading_color+"'><th colspan=7 align=center><font size=+2>" + tr("Machine Information") + "</font></th></tr>";
-
-        html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</b></td></tr>")
-                .arg(STR_TR_Brand)
-                .arg(STR_TR_Series)
-                .arg(STR_TR_Model)
-                .arg(STR_TR_Serial)
-                .arg(tr("First Use"))
-                .arg(tr("Last Use"))
-                .arg(STR_TR_AHI);
-
-        html += "</thead>";
-
-        Machine *m;
-
-        for (int i = 0; i < mach.size(); i++) {
-            m = mach.at(i);
-
-            if (m->type() == MT_JOURNAL) { continue; }
-
-            QDate d1 = m->FirstDay();
-            QDate d2 = m->LastDay();
-            QString ahi;
-            if (m->type() == MT_CPAP) {
-                float a = calcAHI(d1,d2);
-                ahi = QString::number(a,'f',2);
-            }
-            QString mn = m->modelnumber();
-            html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td></tr>")
-                    .arg(m->brand())
-                    .arg(m->series())
-                    .arg(m->model() +
-                         (mn.isEmpty() ? "" : QString(" (") + mn + QString(")")))
-                    .arg(m->serial())
-                    .arg(d1.toString(Qt::SystemLocaleShortDate))
-                    .arg(d2.toString(Qt::SystemLocaleShortDate))
-                    .arg(ahi);
-
-        }
-
-        html += "</table>";
-        html += "</div>";
-    }
 
     html += "<script type='text/javascript' language='javascript' src='qrc:/docs/script.js'></script>";
     //updateFavourites();

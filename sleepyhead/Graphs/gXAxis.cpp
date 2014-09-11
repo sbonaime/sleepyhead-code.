@@ -117,20 +117,17 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             // Allow zoom
             minx = w.min_x;
             maxx = w.max_x;
+
         }
 
         int days = ceil(double(maxx-minx) / 86400000.0);
 
-        bool buttuglydaysteps = !p_profile->appearance->animations();
-        if (buttuglydaysteps) {
-            if (m_roundDays && (days >= 1)) {
-                minx = floor(double(minx)/86400000.0);
-                minx *= 86400000L;
+        if (m_roundDays) {
+            minx = floor(double(minx)/86400000.0);
+            minx *= 86400000L;
 
-                maxx = minx + 86400000L * qint64(days);
-            }
+            maxx = minx + 86400000L * qint64(days);
         }
-
 
         // duration of graph display window in milliseconds.
         qint64 xx = maxx - minx;
@@ -357,3 +354,96 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 }
 
+
+gXAxisDay::gXAxisDay(QColor col)
+    :Layer(NoChannel)
+{
+    m_line_color = col;
+    m_text_color = col;
+    m_major_color = Qt::darkGray;
+    m_minor_color = Qt::lightGray;
+    m_show_major_lines = false;
+    m_show_minor_lines = false;
+    m_show_minor_ticks = true;
+    m_show_major_ticks = true;
+}
+gXAxisDay::~gXAxisDay()
+{
+}
+
+int gXAxisDay::minimumHeight()
+{
+    QFontMetrics fm(*defaultfont);
+    int h = fm.height();
+#if defined(Q_OS_MAC)
+    return 9+h;
+#else
+    return 11+h;
+#endif
+}
+
+void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
+{
+    float left = region.boundingRect().left();
+    float top = region.boundingRect().top();
+    float width = region.boundingRect().width();
+    float height = region.boundingRect().height();
+
+    QString months[] = {
+        QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),
+        QObject::tr("Jul"), QObject::tr("Aug"), QObject::tr("Sep"), QObject::tr("Oct"), QObject::tr("Nov"), QObject::tr("Dec")
+    };
+    qint64 minx;
+    qint64 maxx;
+
+    minx = graph.min_x;
+    maxx = graph.max_x;
+
+    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(minx);
+    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx);
+
+    QDate date = date2.date();
+//    QDate enddate = enddate2.date();
+
+    int days = ceil(double(maxx - minx) / 86400000.0);
+
+    float barw = width / float(days);
+
+    qint64 xx = maxx - minx;
+
+    // shouldn't really be negative, but this is safer than an assert
+    if (xx <= 0) {
+        return;
+    }
+
+
+    float lastx = left;
+    float y1 = top;
+
+    QString fd = "Mjj 00";
+    int x,y;
+    GetTextExtent(fd, x, y);
+    float xpos = (barw / 2.0) - (float(x) / 2.0);
+
+    float lastxpos = 0;
+    QVector<QLine> lines;
+    for (int i=0; i < days; i++) {
+        if ((lastx + barw) > (left + width + 1))
+            break;
+
+        QString tmpstr = QString("%1 %2").arg(months[date.month() - 1]).arg(date.day(), 2, 10, QChar('0'));
+
+        float x1 = lastx + xpos;
+        //lines.append(QLine(lastx, top, lastx, top+6));
+        if (x1 > (lastxpos + x + 8*graph.printScaleX())) {
+            graph.renderText(tmpstr, x1, y1 + y + 8);
+            lastxpos = x1;
+            lines.append(QLine(lastx+barw/2, top, lastx+barw/2, top+6));
+        }
+        lastx = lastx + barw;
+        date = date.addDays(1);
+    }
+    painter.setPen(QPen(Qt::black,1));
+    painter.drawLines(lines);
+
+}

@@ -18,11 +18,31 @@
 Day::Day()
 {
     d_firstsession = true;
+    d_summaries_open = false;
+    d_events_open = false;
+    d_invalidate = true;
+
 }
 Day::~Day()
 {
     for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); ++s) {
         delete(*s);
+    }
+}
+
+void Day::updateCPAPCache()
+{
+    d_count.clear();
+    d_sum.clear();
+    OpenSummary();
+    QList<ChannelID> channels = getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
+
+    int num_channels = channels.size();
+    for (int i=0; i< num_channels; ++i) {
+        ChannelID code = channels.at(i);
+        d_count[code] = count(code);
+        d_sum[code] = count(code);
+        d_machhours[MT_CPAP] = hours(MT_CPAP);
     }
 }
 
@@ -40,6 +60,7 @@ Session * Day::firstSession(MachineType type)
 
 bool Day::addMachine(Machine *mach)
 {
+    invalidate();
     if (!machines.contains(mach->type())) {
         machines[mach->type()] = mach;
         return true;
@@ -86,6 +107,7 @@ Session *Day::find(SessionID sessid)
 
 void Day::addSession(Session *s)
 {
+    invalidate();
     Q_ASSERT(s!=nullptr);
     QHash<MachineType, Machine *>::iterator mi = machines.find(s->machine()->type());
 
@@ -435,6 +457,9 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
         return v1;
     }
 
+    if (valcnt.size() == 1) {
+        return valcnt[0].value;
+    }
     v2 = valcnt[k + 1].value;
     w2 = valcnt[k + 1].count;
     sum2 = sum1 + w2;
@@ -1211,17 +1236,31 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
+    if (d_events_open)
+        return;
     Q_FOREACH(Session * session, sessions) {
         if (session->machine()->type() != MT_JOURNAL)
             session->OpenEvents();
     }
+    d_events_open = true;
 }
+
+void Day::OpenSummary()
+{
+    if (d_summaries_open) return;
+    Q_FOREACH(Session * session, sessions) {
+        session->LoadSummary();
+    }
+    d_summaries_open = true;
+}
+
 
 void Day::CloseEvents()
 {
     Q_FOREACH(Session * session, sessions) {
         session->TrashEvents();
     }
+    d_events_open = false;
 }
 
 QList<ChannelID> Day::getSortedMachineChannels(MachineType type, quint32 chantype)

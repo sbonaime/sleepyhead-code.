@@ -693,11 +693,11 @@ void Daily::UpdateCalendarDay(QDate date)
     nodata.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     nodata.setFontWeight(QFont::Normal);
 
-    bool hascpap=p_profile->GetDay(date,MT_CPAP)!=nullptr;
-    bool hasoxi=p_profile->GetDay(date,MT_OXIMETER)!=nullptr;
-    bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=nullptr;
-    bool hasstage=p_profile->GetDay(date,MT_SLEEPSTAGE)!=nullptr;
-    bool haspos=p_profile->GetDay(date,MT_POSITION)!=nullptr;
+    bool hascpap=p_profile->FindDay(date,MT_CPAP)!=nullptr;
+    bool hasoxi=p_profile->FindDay(date,MT_OXIMETER)!=nullptr;
+    bool hasjournal=p_profile->FindDay(date,MT_JOURNAL)!=nullptr;
+    bool hasstage=p_profile->FindDay(date,MT_SLEEPSTAGE)!=nullptr;
+    bool haspos=p_profile->FindDay(date,MT_POSITION)!=nullptr;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxicpap);
@@ -1334,17 +1334,10 @@ void Daily::Load(QDate date)
                 Day * d = di.value();
                 if (d->eventsLoaded()) {
                     if (d->useCounter() == 0) {
-                        for (QList<Session *>::iterator s=d->begin();s!=d->end();++s) {
-                            (*s)->TrashEvents();
-                        }
+                        d->CloseEvents();
                     }
                 }
             }
-//            if (lastcpapday->useCounter() == 0) {
-//                for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
-//                    (*s)->TrashEvents();
-//                }
-//            }
         }
     }
 
@@ -1625,7 +1618,7 @@ void Daily::Load(QDate date)
     html+="</body></html>";
 
     QColor cols[]={
-        QColor("gold"),
+        COLOR_Gold,
         QColor("light blue"),
     };
     const int maxcolors=sizeof(cols)/sizeof(QColor);
@@ -2262,7 +2255,8 @@ void Daily::on_ZombieMeter_valueChanged(int action)
     journal->settings[Journal_ZombieMeter]=ui->ZombieMeter->value();
     journal->SetChanged(true);
 
-    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Zombie");
+    // shouldn't be needed anymore with new overview model..
+    //if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Zombie");
 }
 
 void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
@@ -2363,7 +2357,9 @@ void Daily::on_ouncesSpinBox_editingFinished()
         }
     }
     journal->SetChanged(true);
-    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph(STR_GRAPH_Weight);
+
+    // shouldn't be needed anymore with new overview model
+    //if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph(STR_GRAPH_Weight);
 }
 
 QString Daily::GetDetailsText()

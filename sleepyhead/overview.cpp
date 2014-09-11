@@ -114,23 +114,19 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     ui->dateLayout->addWidget(dateLabel,1);
 
+
+
+//    uc = new SummaryChart(STR_UNIT_Hours, GT_BAR);
+//    uc->addSlice(NoChannel, COLOR_Green, ST_HOURS);
+//    UC->AddLayer(uc);
+
+  /*  return;
+
     // TODO: Automate graph creation process
-    ChannelID ahicode = p_profile->general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
-
-    if (ahicode == CPAP_RDI) {
-        AHI = createGraph(STR_GRAPH_AHI, STR_TR_RDI, tr("Respiratory\nDisturbance\nIndex"));
-    } else {
-        AHI = createGraph(STR_GRAPH_AHI, STR_TR_AHI, tr("Apnea\nHypopnea\nIndex"));
-    }
 
 
-    STG = createGraph("New Session", tr("Session Times2"), tr("Session Times"),  YT_Time);
-    stg = new gSessionTimesChart("STG", MT_CPAP);
-    STG->AddLayer(stg);
 
-    UC = createGraph(STR_GRAPH_Usage, tr("Usage"), tr("Usage\n(hours)"));
 
-    FL = createGraph(schema::channel[CPAP_FlowLimit].code(), schema::channel[CPAP_FlowLimit].label(), STR_TR_FlowLimit);
 
     float percentile = p_profile->general->prefCalcPercentile() / 100.0;
     int mididx = p_profile->general->prefCalcMiddle();
@@ -144,32 +140,13 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     const EventDataType maxperc = 0.995F;
 
     US = createGraph(STR_GRAPH_SessionTimes, tr("Session Times"), tr("Session Times\n(hours)"), YT_Time);
-    PR = createGraph("Pressure", STR_TR_Pressure, STR_TR_Pressure + "\n(" + STR_UNIT_CMH2O + ")");
     SET = createGraph("Settings", STR_TR_Settings, STR_TR_Settings);
-    LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
-    TOTLK = createGraph("TotalLeaks", STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
-    NPB = createGraph("TimeInPB", tr("% in %1").arg(schema::channel[CPAP_CSR].label()), tr("%1\n(% of night)").arg(schema::channel[CPAP_LargeLeak].description()));
-    NLL = createGraph("TimeInLL", tr("% in %1").arg(schema::channel[CPAP_LargeLeak].label()), tr("Large Leaks\n(% of night)"));
 
-    if (ahicode == CPAP_RDI) {
-        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
-    } else {
-        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak AHI"), tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
-    }
 
-    RR = createGraph(schema::channel[CPAP_RespRate].code(), schema::channel[CPAP_RespRate].label(), schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].units());
-    TV = createGraph(schema::channel[CPAP_TidalVolume].code(),schema::channel[CPAP_TidalVolume].label(), tr("Tidal\nVolume\n(ml)"));
-    MV = createGraph(schema::channel[CPAP_MinuteVent].code(), schema::channel[CPAP_MinuteVent].label(), tr("Minute\nVentilation\n(L/min)"));
     TGMV = createGraph(schema::channel[CPAP_TgMV].code(), schema::channel[CPAP_TgMV].label(), tr("Target\nVentilation\n(L/min)"));
     PTB = createGraph(schema::channel[CPAP_PTB].code(), schema::channel[CPAP_PTB].label(), tr("Patient\nTriggered\nBreaths\n(%)"));
     SES = createGraph(STR_GRAPH_Sessions, STR_TR_Sessions, STR_TR_Sessions + tr("\n(count)"));
-    PULSE = createGraph(schema::channel[OXI_Pulse].code(), schema::channel[OXI_Pulse].label(), STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
-    SPO2 = createGraph(schema::channel[OXI_SPO2].code(), schema::channel[OXI_SPO2].label(), tr("Oxygen Saturation\n(%)"));
-    SA = createGraph(schema::channel[CPAP_SensAwake].code(), schema::channel[CPAP_SensAwake].label(), tr("SensAwake\n(count)"));
 
-    WEIGHT = createGraph(STR_GRAPH_Weight, STR_TR_Weight, STR_TR_Weight, YT_Weight);
-    BMI = createGraph(STR_GRAPH_BMI, STR_TR_BMI, tr("Body\nMass\nIndex"));
-    ZOMBIE = createGraph(STR_GRAPH_Zombie, STR_TR_Zombie, tr("How you felt\n(0-10)"));
 
     ahihr = new SummaryChart(STR_UNIT_EventsPerHour, GT_POINTS);
     ahihr->addSlice(ahicode, COLOR_Blue, ST_MAX);
@@ -205,9 +182,6 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     spo2->addSlice(OXI_SPO2, COLOR_Blue, ST_MIN);
     SPO2->AddLayer(spo2);
 
-    uc = new SummaryChart(STR_UNIT_Hours, GT_BAR);
-    uc->addSlice(NoChannel, COLOR_Green, ST_HOURS);
-    UC->AddLayer(uc);
 
     fl = new SummaryChart(STR_TR_FL, GT_POINTS);
     fl->addSlice(CPAP_FlowLimit, COLOR_Brown, ST_CPH);
@@ -296,13 +270,6 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     // Added in summarychart.. Slightly annoying..
     PR->AddLayer(pr);
 
-    lk = new SummaryChart(STR_TR_Leaks, GT_POINTS);
-    lk->addSlice(CPAP_Leak, COLOR_LightBlue, ST_mid, 0.5);
-    lk->addSlice(CPAP_Leak, COLOR_DarkGray, ST_PERC, percentile);
-    //lk->addSlice(CPAP_Leak,COLOR_DarkBlue,ST_WAVG);
-    lk->addSlice(CPAP_Leak, COLOR_Gray, ST_max, maxperc);
-    //lk->addSlice(CPAP_Leak,COLOR_DarkYellow);
-    LK->AddLayer(lk);
 
     totlk = new SummaryChart(STR_TR_TotalLeaks, GT_POINTS);
     totlk->addSlice(CPAP_LeakTotal, COLOR_LightBlue, ST_mid, 0.5);
@@ -312,20 +279,24 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     //tot->addSlice(CPAP_Leak, COLOR_DarkYellow);
     TOTLK->AddLayer(totlk);
 
-    NPB->AddLayer(npb = new SummaryChart(tr("% PB"), GT_POINTS));
-    npb->addSlice(CPAP_CSR, schema::channel[CPAP_CSR].defaultColor(), ST_SPH);
 
     NLL->AddLayer(nll = new SummaryChart(tr("% %1").arg(schema::channel[CPAP_LargeLeak].fullname()), GT_POINTS));
     nll->addSlice(CPAP_LargeLeak, schema::channel[CPAP_LargeLeak].defaultColor(), ST_SPH);
     // <--- The code to the previous marker is crap
 
     AHI->setPinned(false);
-    ui->rangeCombo->setCurrentIndex(p_profile->general->lastOverviewRange());
-    icon_on = new QIcon(":/icons/session-on.png");
-    icon_off = new QIcon(":/icons/session-off.png");
     SES->setRecMinY(1);
     SET->setRecMinY(0);
+
     //SET->setRecMaxY(5);
+
+    */
+    RebuildGraphs(false);
+
+    ui->rangeCombo->setCurrentIndex(p_profile->general->lastOverviewRange());
+
+    icon_on = new QIcon(":/icons/session-on.png");
+    icon_off = new QIcon(":/icons/session-off.png");
 
     GraphView->resetLayout();
     GraphView->LoadSettings("Overview"); //no trans
@@ -340,8 +311,121 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 Overview::~Overview()
 {
     delete ui;
-    delete icon_on;
-    delete icon_off;
+//    delete icon_on;
+//    delete icon_off;
+}
+
+void Overview::RebuildGraphs(bool reset)
+{
+    qint64 minx, maxx;
+    if (reset) {
+        GraphView->GetXBounds(minx, maxx);
+    }
+
+    GraphView->trashGraphs(true);
+    ChannelID ahicode = p_profile->general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
+
+    if (ahicode == CPAP_RDI) {
+        AHI = createGraph("AHIBreakdown", STR_TR_RDI, tr("Respiratory\nDisturbance\nIndex"));
+    } else {
+        AHI = createGraph("AHIBreakdown", STR_TR_AHI, tr("Apnea\nHypopnea\nIndex"));
+    }
+
+
+    ahi = new gAHIChart();
+    AHI->AddLayer(ahi);
+
+    UC = createGraph(STR_GRAPH_Usage, tr("Usage"), tr("Usage\n(hours)"));
+    UC->AddLayer(uc = new gUsageChart());
+
+    STG = createGraph("New Session", tr("Session Times"), tr("Session Times"),  YT_Time);
+    stg = new gSessionTimesChart();
+    STG->AddLayer(stg);
+
+    PR = createGraph("Pressure Settings", STR_TR_Pressure, STR_TR_Pressure + "\n(" + STR_UNIT_CMH2O + ")");
+    pres = new gPressureChart();
+    PR->AddLayer(pres);
+
+//    LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
+//    LK->AddLayer(new gSummaryChart(CPAP_Leak, MT_CPAP));
+
+//    TOTLK = createGraph("TotalLeaks", STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
+//    TOTLK->AddLayer(new gSummaryChart(CPAP_LeakTotal, MT_CPAP));
+
+//    NLL = createGraph("TimeInLL", tr("% in %1").arg(schema::channel[CPAP_LargeLeak].label()), tr("Large Leaks\n(% of night)"));
+//    NLL->AddLayer(nll = new gSummaryChart("TimeInLL", MT_CPAP));
+//    nll->addCalc(CPAP_LargeLeak, ST_SPH);
+
+//    RR = createGraph(schema::channel[CPAP_RespRate].code(), schema::channel[CPAP_RespRate].label(), schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].units());
+//    RR->AddLayer(new gSummaryChart(CPAP_RespRate, MT_CPAP));
+//    TV = createGraph(schema::channel[CPAP_TidalVolume].code(),schema::channel[CPAP_TidalVolume].label(), tr("Tidal\nVolume\n(ml)"));
+//    TV->AddLayer(new gSummaryChart(CPAP_TidalVolume, MT_CPAP));
+//    MV = createGraph(schema::channel[CPAP_MinuteVent].code(), schema::channel[CPAP_MinuteVent].label(), tr("Minute\nVentilation\n(L/min)"));
+//    MV->AddLayer(new gSummaryChart(CPAP_MinuteVent, MT_CPAP));
+//    FL = createGraph(schema::channel[CPAP_FLG].code(), schema::channel[CPAP_FLG].label(), STR_TR_FlowLimit);
+//    FL->AddLayer(new gSummaryChart(CPAP_FLG, MT_CPAP));
+//    SN = createGraph(schema::channel[CPAP_Snore].code(), schema::channel[CPAP_Snore].label(), schema::channel[CPAP_Snore].fullname()+"\n"+schema::channel[CPAP_Snore].units());
+//    SN->AddLayer(new gSummaryChart(CPAP_Snore, MT_CPAP));
+
+    QHash<ChannelID, schema::Channel *>::iterator chit;
+    QHash<ChannelID, schema::Channel *>::iterator chit_end = schema::channel.channels.end();
+    for (chit = schema::channel.channels.begin(); chit != chit_end; ++chit) {
+        schema::Channel * chan = chit.value();
+
+        if (chan->showInOverview()) {
+            ChannelID code = chan->id();
+            QString name = chan->fullname();
+            if (name.length() > 16) name = chan->label();
+            gGraph *G = createGraph(chan->code(), name, chan->description());
+            if ((chan->type() == schema::FLAG) || (chan->type() == schema::MINOR_FLAG)) {
+                gSummaryChart * sc = new gSummaryChart(chan->code(), MT_CPAP);
+                sc->addCalc(code, ST_CPH);
+                G->AddLayer(sc);
+            } else if (chan->type() == schema::SPAN) {
+                gSummaryChart * sc = new gSummaryChart(chan->code(), MT_CPAP);
+                sc->addCalc(code, ST_SPH);
+                G->AddLayer(sc);
+            } else if (chan->type() == schema::WAVEFORM) {
+                G->AddLayer(new gSummaryChart(code, chan->machtype()));
+            }
+        }
+
+    }
+
+/*    PULSE = createGraph(schema::channel[OXI_Pulse].code(), schema::channel[OXI_Pulse].label(), STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
+    PULSE->AddLayer(new gSummaryChart(OXI_Pulse, MT_OXIMETER));
+
+    SPO2 = createGraph(schema::channel[OXI_SPO2].code(), schema::channel[OXI_SPO2].label(), tr("Oxygen Saturation\n(%)"));
+    SPO2->AddLayer(new gSummaryChart(OXI_SPO2, MT_OXIMETER));
+
+
+    NPB = createGraph("TimeInPB", tr("% in %1").arg(schema::channel[CPAP_CSR].label()), tr("%1\n(% of night)").arg(schema::channel[CPAP_LargeLeak].description()));
+    NPB->AddLayer(npb = new gSummaryChart(tr("% PB"), MT_CPAP));
+    npb->addCalc(CPAP_CSR, ST_SPH);
+
+    if (ahicode == CPAP_RDI) {
+        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
+        AHIHR->AddLayer(new gSummaryChart(CPAP_RDI, MT_CPAP));
+    } else {
+        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak AHI"), tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
+        AHIHR->AddLayer(new gSummaryChart(CPAP_AHI, MT_CPAP));
+    } */
+
+    WEIGHT = createGraph(STR_GRAPH_Weight, STR_TR_Weight, STR_TR_Weight, YT_Weight);
+    BMI = createGraph(STR_GRAPH_BMI, STR_TR_BMI, tr("Body\nMass\nIndex"));
+    ZOMBIE = createGraph(STR_GRAPH_Zombie, STR_TR_Zombie, tr("How you felt\n(0-10)"));
+
+    if (reset) {
+//        GraphView->setDay(nullptr);
+        GraphView->resetLayout();
+        GraphView->setDay(nullptr);
+//        GraphView->resetLayout();
+        GraphView->SetXBounds(minx, maxx, 0, false);
+        GraphView->resetLayout();
+        updateGraphCombo();
+    }
+
+
 }
 
 void Overview::closeEvent(QCloseEvent *event)
@@ -374,10 +458,8 @@ gGraph *Overview::createGraph(QString code, QString name, QString units, YTicker
     }
 
     g->AddLayer(yt, LayerLeft, gYAxis::Margin);
-    gXAxis *x = new gXAxis();
-    x->setUtcFix(true);
-    x->setRoundDays(true);
-    g->AddLayer(x, LayerBottom, 0, gXAxis::Margin);
+    gXAxisDay *x = new gXAxisDay();
+    g->AddLayer(x, LayerBottom, 0, gXAxisDay::Margin);
     g->AddLayer(new gXGrid());
     return g;
 }
@@ -475,8 +557,8 @@ void Overview::UpdateCalendarDay(QDateEdit *dateedit, QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap = p_profile->GetDay(date, MT_CPAP) != nullptr;
-    bool hasoxi = p_profile->GetDay(date, MT_OXIMETER) != nullptr;
+    bool hascpap = p_profile->FindDay(date, MT_CPAP) != nullptr;
+    bool hasoxi = p_profile->FindDay(date, MT_OXIMETER) != nullptr;
     //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=nullptr;
 
     if (hascpap) {

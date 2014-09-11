@@ -470,7 +470,7 @@ class gGraphView
     void showSplitter() { m_showsplitter = true; }
 
     //! \brief Trash all graph objects listed (without destroying Graph contents)
-    void trashGraphs();
+    void trashGraphs(bool destroy);
 
     //! \brief Enable or disable the Text Pixmap Caching system preference overide
     void setUsePixmapCache(bool b) { use_pixmap_cache = b; }
@@ -511,6 +511,9 @@ class gGraphView
     void resetMouse() { m_mouse = QPoint(0,0); }
 
     void getSelectionTimes(qint64 & start, qint64 & end);
+
+    //! \brief Whether to show a little authorship message down the bottom of empty graphs.
+    void setShowAuthorMessage(bool b) { m_showAuthorMessage = b; }
 
     // for profiling purposes, a count of lines drawn in a single frame
     int lines_drawn_this_frame;
@@ -562,6 +565,7 @@ class gGraphView
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *, int originX, int originY, int width, int height);
+
 
     Day *m_day;
 
@@ -648,6 +652,8 @@ class gGraphView
 
     QAction * zoom100_action;
 
+    bool m_showAuthorMessage;
+
   signals:
     void updateCurrentTime(double);
     void updateRange(double,double);
@@ -670,6 +676,7 @@ class gGraphView
         ResetBounds(true);
     }
 
+
     bool hasSnapshots();
 
     void togglePin();
@@ -678,6 +685,7 @@ protected slots:
     void onPlotsClicked(QAction *);
     void onOverlaysClicked(QAction *);
     void onSnapshotGraphToggle();
+
 };
 
 #endif // GGRAPHVIEW_H

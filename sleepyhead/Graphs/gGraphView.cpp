@@ -152,7 +152,7 @@ void gToolTip::paint(QPainter &painter)     //actually paints it.
     if (xx < 0) { xx = 0; }
 
     rect.setLeft(xx);
-    rect.setTop(rect.y() - rect.height() / 2);
+    rect.setTop(rect.y() - 15);
     rect.setWidth(w);
 
     int z = rect.x() + rect.width();
@@ -256,8 +256,13 @@ void gGraphView::queGraph(gGraph *g, int left, int top, int width, int height)
 #endif
 }
 
-void gGraphView::trashGraphs()
+void gGraphView::trashGraphs(bool destroy)
 {
+    if (destroy) {
+        for (int i=0; i< m_graphs.size(); ++i) {
+            delete m_graphs[i];
+        }
+    }
     // Don't actually want to delete them here.. we are just borrowing the graphs
     m_graphs.clear();
     m_graphsbyname.clear();
@@ -300,6 +305,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_selected_graph = nullptr;
     m_scrollbar = nullptr;
     m_point_released = m_point_clicked = QPoint(0,0);
+    m_showAuthorMessage = true;
 
     horizScrollTime.start();
     vertScrollTime.start();
@@ -889,7 +895,8 @@ void gGraphView::updateScale()
 
 
     if (th < h) {
-        th -= visibleGraphs() * graphSpacer;   // compensate for spacer height
+        th -= graphSpacer;
+    //    th -= visibleGraphs() * graphSpacer;   // compensate for spacer height
         m_scaleY = h / th;  // less graphs than fits on screen, so scale to fit
     } else {
         m_scaleY = 1.0;
@@ -941,6 +948,7 @@ void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
 
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
+    if (m_graphs.size() == 0) return;
     Q_UNUSED(refresh)
     qint64 m1 = 0, m2 = 0;
     gGraph *g = nullptr;
@@ -964,7 +972,9 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 //        }
 //    }
 
-    if (!g) { g = m_graphs[0]; }
+    if (!g) {
+        g = m_graphs[0];
+    }
 
     m_minx = g->min_x;
     m_maxx = g->max_x;
@@ -989,7 +999,7 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
     m_minx = minx;
     m_maxx = maxx;
 
-    if (refresh) { redraw(); }
+    if (refresh) { timedRedraw(0); }
 }
 
 void gGraphView::updateScrollBar()
@@ -1269,11 +1279,15 @@ void gGraphView::paintGL()
     graphs_drawn = renderGraphs(painter);
 
     if (!graphs_drawn) { // No graphs drawn? show something useful :)
-        QString txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.");
-        if (emptyText() == STR_Empty_Brick) {
-            txt += "\nI'm very sorry your machine doesn't record useful data to graph in Daily View :(";
+        QString txt;
+        if (m_showAuthorMessage) {
+            if (emptyText() == STR_Empty_Brick) {
+                txt = "\nI'm very sorry your machine doesn't record useful data to graph in Daily View :(";
+            } else {
+                // not proud of telling them their machine is a Brick.. ;)
+                txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.");
+            }
         }
-
 //        int x2, y2;
 //        GetTextExtent(m_emptytext, x2, y2, bigfont);
 //        int tp2, tp1;
@@ -1872,7 +1886,7 @@ void gGraphView::populateMenu(gGraph * graph)
 
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
     SummaryChart * sc = dynamic_cast<SummaryChart *>(findLayer(graph,LT_SummaryChart));
-    gSessionTimesChart * stg = dynamic_cast<gSessionTimesChart *>(findLayer(graph,LT_SessionTimes));
+    gSummaryChart * stg = dynamic_cast<gSummaryChart *>(findLayer(graph,LT_Overview));
 
 
     limits_menu->clear();
@@ -3212,7 +3226,7 @@ bool gGraphView::LoadSettings(QString title)
     in.setByteOrder(QDataStream::LittleEndian);
 
     quint32 t1;
-    quint16 t2;
+    quint16 version;
 
     in >> t1;
 
@@ -3221,9 +3235,9 @@ bool gGraphView::LoadSettings(QString title)
         return false;
     }
 
-    in >> t2;
+    in >> version;
 
-    if (t2 < gvversion) {
+    if (version < gvversion) {
         qDebug() << "gGraphView" << title << "settings will be upgraded.";
     }
 
@@ -3272,15 +3286,16 @@ bool gGraphView::LoadSettings(QString title)
 
         gGraph *g = nullptr;
 
-        if (t2 <= 2) {
-            // Names were stored as translated strings, so look up title instead.
-            g = nullptr;
-            for (int z=0; z<m_graphs.size(); ++z) {
-                if (m_graphs[z]->title() == name) {
-                    g = m_graphs[z];
-                    break;
-                }
-            }
+        if (version <= 2) {
+            continue;
+//            // Names were stored as translated strings, so look up title instead.
+//            g = nullptr;
+//            for (int z=0; z<m_graphs.size(); ++z) {
+//                if (m_graphs[z]->title() == name) {
+//                    g = m_graphs[z];
+//                    break;
+//                }
+//            }
         } else {
             gi = m_graphsbyname.find(name);
             if (gi == m_graphsbyname.end()) {

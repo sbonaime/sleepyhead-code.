@@ -145,9 +145,10 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
 
-    if ((m_lastminx != m_minx) || (m_lastmaxx != m_maxx)) {
+    if (graph.printing() || ((m_lastminx != m_minx) || (m_lastmaxx != m_maxx))) {
         recalculate(&graph);
     }
+
 
     m_lastminx = m_minx;
     m_lastmaxx = m_maxx;
@@ -158,11 +159,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     if (graph.printing()) {
         // lock the other mutex...
-        while (recalculating()) {};
-        recalculate(&graph);
+//        while (recalculating()) {};
+//        recalculate(&graph);
         while (recalculating()) {};
 
     }
+    if (!painter.isActive()) return;
 
 
     // Lock the stuff we need to draw

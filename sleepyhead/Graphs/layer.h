@@ -26,7 +26,7 @@ enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, 
 
 enum ToolTipAlignment { TT_AlignCenter, TT_AlignLeft, TT_AlignRight };
 
-enum LayerType { LT_Other = 0, LT_LineChart, LT_SummaryChart, LT_EventFlags, LT_Spacer, LT_SessionTimes };
+enum LayerType { LT_Other = 0, LT_LineChart, LT_SummaryChart, LT_EventFlags, LT_Spacer, LT_Overview };
 
 /*! \class Layer
     \brief The base component for all individual Graph layers

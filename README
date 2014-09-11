@@ -3,9 +3,21 @@ SleepyHead QT port v0.9 branch
 SleepyHead is cross platform, opensource sleep tracking program for reviewing CPAP and Oximetry data, 
 which are devices used in the treatment of Sleep Disorders like Obstructive Sleep Apnea.
 
-To Build:
+Requirements:
+-------------
+Qt5 SDK with webkit (opengl stuff recommended)
+Linux needs libudev-dev for qserialport to compile
 
-qmake
+
+Building:
+--------
+
+Recommend shadow building to not cruft up the source code folder:
+
+cd ..
+mkdir build_sleepyhead
+cd build_sleepyhead
+qmake ../sleepyhead-code/SleepyHeadQT.pro 
 make
 
 You may need to add a -spec option to qmake to suit your platform. 
@@ -13,15 +25,12 @@ Adding -j3 speeds up the make command on a dual core or greater system.
 
 
 Author: Mark Watkins <jedimark@users.sourceforge.net>
-Copyright (C)2011 Mark Watkins
+Copyright (C)2011-2014 Mark Watkins
 
 Licence Stuff
 -------------
-This software is released under the GNU Public License, at a GPL version of my choosing at a later date. 
+This software is released under the GNU Public License version 3.0
 
 Exceptions and 3rd Party Libraries:
-Incorporates QextSerialPort. Insert New BSD license here? (Apparently PD.. need to verify)
-http://code.google.com/p/qextserialport/
-
 It uses QuaZip, by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package..
 http://sourceforge.net/projects/quazip/

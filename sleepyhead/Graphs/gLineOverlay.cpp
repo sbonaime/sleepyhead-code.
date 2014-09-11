@@ -248,7 +248,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 //                            painter.drawLine(rect.x(), bottom, rect.x()+d1, bottom);
 //                            painter.drawLine(rect.x(), top, rect.x(), bottom);
 
-                           // col = QColor("gold");
+                           // col = COLOR_Gold;
                             hover = true;
                             painter.setPen(QPen(col,3));
                         } else {

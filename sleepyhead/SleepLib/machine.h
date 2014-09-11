@@ -103,6 +103,10 @@ class Machine
 
     bool unlinkDay(Day * day);
 
+    inline bool hasChannel(ChannelID code) {
+        return m_availableChannels.contains(code);
+    }
+
     //! \brief Contains a secondary index of day data, containing just this machines sessions
     QMap<QDate, Day *> day;
 
@@ -202,8 +206,7 @@ class Machine
 
     void setLoaderName(QString value);
 
-    QHash<quint32, QList<ChannelID> > availableCache;
-    QList<ChannelID> & availableChannels(quint32 chantype);
+    QList<ChannelID> availableChannels(quint32 chantype);
 
     MachineLoader * loader() { return m_loader; }
 
@@ -214,6 +217,8 @@ class Machine
 
     void setInfo(MachineInfo inf);
     const MachineInfo getInfo() { return info; }
+
+    void updateChannels(Session * sess);
 
   protected:
     MachineInfo info;
@@ -235,7 +240,7 @@ class Machine
 
     QList<ImportTask *> m_tasklist;
 
-    void invalidateCache();
+    QHash<ChannelID, bool> m_availableChannels;
 };
 
 

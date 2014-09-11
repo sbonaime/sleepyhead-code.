@@ -87,7 +87,7 @@ extern Channel EmptyChannel;
 class Channel
 {
   public:
-    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; m_order = 255; m_machtype = MT_UNKNOWN; }
+    Channel() { m_id = 0; m_upperThreshold = 0; m_lowerThreshold = 0; m_enabled = true; m_order = 255; m_machtype = MT_UNKNOWN; m_showInOverview = false; }
     Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType scope, QString code, QString fullname,
             QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
             int link = 0);
@@ -104,6 +104,8 @@ class Channel
     const QString &label() { return m_label; }
     const QString &units() { return m_unit; }
     inline short order() const { return m_order; }
+
+    bool showInOverview() { return m_showInOverview; }
 
     inline EventDataType upperThreshold() const { return m_upperThreshold; }
     inline EventDataType lowerThreshold() const { return m_lowerThreshold; }
@@ -123,6 +125,8 @@ class Channel
     void setLowerThreshold(EventDataType value) { m_lowerThreshold = value; }
     void setLowerThresholdColor(QColor color) { m_lowerThresholdColor = color; }
     void setOrder(short order) { m_order = order; }
+
+    void setShowInOverview(bool b) { m_showInOverview = b; }
 
     QString option(int i) {
         if (m_options.contains(i)) {
@@ -170,6 +174,8 @@ class Channel
 
     bool m_enabled;
     short m_order;
+
+    bool m_showInOverview;
 };
 
 /*! \class ChannelList

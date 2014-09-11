@@ -142,11 +142,11 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMin   = 0x1020, SETTING, MT_CPAP, SESSION,
                         "PressureMin",   QObject::tr("Min Pressure") ,   QObject::tr("Minimum Therapy Pressure"),
-                        QObject::tr("Pressure Min"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+                        QObject::tr("Pressure Min"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("orange")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_PressureMax   = 0x1021, SETTING, MT_CPAP, SESSION,
                         "PressureMax",   QObject::tr("Max Pressure"),    QObject::tr("Maximum Therapy Pressure"),
-                        QObject::tr("Pressure Max"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("black")));
+                        QObject::tr("Pressure Max"),     STR_UNIT_CMH2O,         DEFAULT,    QColor("light blue")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RampTime      = 0x1022, SETTING, MT_CPAP, SESSION,
                         "RampTime",      QObject::tr("Ramp Time") ,      QObject::tr("Ramp Delay Period"),
@@ -170,13 +170,13 @@ void init()
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, FLAG,    MT_CPAP, SESSION,
-                        "ClearAirway",    QObject::tr("Clear Airway Apnea"),
+                        "ClearAirway",    QObject::tr("Clear Airway"),
                         QObject::tr("An apnea where the airway is open"),
                         QObject::tr("CA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("purple")));
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_Obstructive   = 0x1002, FLAG,    MT_CPAP, SESSION,
-                        "Obstructive",    QObject::tr("Obstructive Apnea"),
+                        "Obstructive",    QObject::tr("Obstructive"),
                         QObject::tr("An apnea caused by airway obstruction"),
                         QObject::tr("OA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("#40c0ff")));
 
@@ -197,9 +197,9 @@ void init()
                         QObject::tr("FL"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("#404040")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_RERA          = 0x1006, FLAG,    MT_CPAP, SESSION, "RERA",
-                        QObject::tr("Respiratory Effort Related Arousal"),
-                        QObject::tr("An restriction in breathing that causes an either an awakening or sleep disturbance."),
-                        QObject::tr("RE"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("gold")));
+                        QObject::tr("RERA"),
+                        QObject::tr("Respiratory Effort Related Arousal: An restriction in breathing that causes an either an awakening or sleep disturbance."),
+                        QObject::tr("RE"),       STR_UNIT_EventsPerHour,    DEFAULT,    COLOR_Gold));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_VSnore        = 0x1007, FLAG,    MT_CPAP, SESSION, "VSnore",
                         QObject::tr("Vibratory Snore"),                       QObject::tr("A vibratory snore"),
@@ -235,7 +235,7 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_SensAwake     = 0x100d, FLAG,    MT_CPAP, SESSION,
                         "SensAwake",      QObject::tr("SensAwake"),
                         QObject::tr("SensAwake feature will reduce pressure when waking is detected."),
-                        QObject::tr("SA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("gold")));
+                        QObject::tr("SA"),       STR_UNIT_EventsPerHour,    DEFAULT,    COLOR_Gold));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_UserFlag1     = 0x101e, FLAG,    MT_CPAP, SESSION,
                         "UserFlag1",      QObject::tr("User Flag #1"),
@@ -592,6 +592,7 @@ Channel::Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType sc
         calc[Calc_LowerThresh] = ChannelCalc(id, Calc_LowerThresh, Qt::blue, false);
         calc[Calc_UpperThresh] = ChannelCalc(id, Calc_UpperThresh, Qt::red, false);
     }
+    m_showInOverview = false;
 }
 bool Channel::isNull()
 {
@@ -871,6 +872,7 @@ bool ChannelList::Save(QString filename)
             cn.setAttribute("order", chan->order());
             cn.setAttribute("type", chan->type());
             cn.setAttribute("datatype", chan->datatype());
+            cn.setAttribute("overview", chan->showInOverview());
             QHash<int, QString>::iterator op;
             for (op = chan->m_options.begin(); op!=chan->m_options.end(); ++op) {
                 QDomElement c2 = doc.createElement("option");

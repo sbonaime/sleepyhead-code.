@@ -75,7 +75,7 @@ Session *Machine::SessionExists(SessionID session)
     }
 }
 
-const quint16 sessinfo_version = 0;
+const quint16 sessinfo_version = 1;
 
 bool Machine::saveSessionInfo()
 {
@@ -89,6 +89,8 @@ bool Machine::saveSessionInfo()
     out << magic;
     out << filetype_sessenabled;
     out << sessinfo_version;
+
+    out << m_availableChannels;
 
     QHash<SessionID, Session *>::iterator s;
 
@@ -130,6 +132,10 @@ bool Machine::loadSessionInfo()
     quint16 ft16, version;
     in >> ft16;
     in >> version;
+
+    if (version >= 1) {
+        in >> m_availableChannels;
+    }
 
     int size;
     in >> size;
@@ -184,8 +190,6 @@ QDate Machine::pickDate(qint64 first)
 
 bool Machine::AddSession(Session *s)
 {
-    invalidateCache();
-
     Q_ASSERT(s != nullptr);
     Q_ASSERT(p_profile);
     Q_ASSERT(p_profile->isOpen());
@@ -388,7 +392,10 @@ bool Machine::Purge(int secret)
     QFile impfile(getDataPath()+"/imported_files.csv");
     impfile.remove();
 
-    QFile sumfile(getDataPath()+"Summaries.dat");
+    QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
+    rxcache.remove();
+
+    QFile sumfile(getDataPath()+"Summaries.xml");
     sumfile.remove();
 
     // Create a copy of the list so the hash can be manipulated
@@ -412,6 +419,10 @@ bool Machine::Purge(int secret)
     QString eventspath = getEventsPath();
     QDir evdir(eventspath);
     evdir.removeRecursively();
+
+    QString summariespath = getSummariesPath();
+    QDir sumdir(summariespath);
+    sumdir.removeRecursively();
 
 
     // Clean up any straggling files (like from short sessions not being loaded...)
@@ -595,10 +606,10 @@ bool Machine::Load()
 
             if (!ok) { continue; }
 
-            QString str = summarypath+filename;
             Session *sess = new Session(this, sessid);
 
-            if (sess->LoadSummary(str)) {
+            // Forced to load it, because know nothing about this session..
+            if (sess->LoadSummary()) {
                 AddSession(sess);
             } else {
                 qWarning() << "Error loading summary file" << filename;
@@ -854,26 +865,25 @@ bool Machine::LoadSummary(bool everything)
 
     bool s_ok;
 
-    QString sumpath = getSummariesPath();
     QDomNodeList sessionlist = root.childNodes();
+
     int size = sessionlist.size();
     for (int s=0; s < size; ++s) {
         node = sessionlist.at(s);
         QDomElement e = node.toElement();
         SessionID sessid = e.attribute("id", "0").toLong(&s_ok);
-        qint64 first =  e.attribute("first", 0).toLongLong();
-        qint64 last =  e.attribute("last", 0).toLongLong();
-
-
-
+        qint64 first =  e.attribute("first", "0").toLongLong();
+        qint64 last =  e.attribute("last", "0").toLongLong();
+        bool enabled = e.attribute("enabled", "1").toInt() == 1;
+        bool events = e.attribute("events", "1").toInt() == 1;
         if (s_ok) {
             Session * sess = new Session(this, sessid);
-            QString filename = sumpath + QString().sprintf("%08lx.000", sessid);
-            if (sess->LoadSummary(filename)) {
-              AddSession(sess);
-            } else {
-                delete sess;
-            }
+            sess->really_set_first(first);
+            sess->really_set_last(last);
+            sess->setEnabled(enabled);
+            sess->setSummaryOnly(!events);
+            AddSession(sess);
+      //      sess->LoadSummary();
         }
     }
 
@@ -960,43 +970,29 @@ bool Machine::Save()
     return true;
 }
 
-void Machine::invalidateCache()
+void Machine::updateChannels(Session * sess)
 {
-    availableCache.clear();
+    int size = sess->m_availableChannels.size();
+    for (int i=0; i < size; ++i) {
+        ChannelID code = sess->m_availableChannels.at(i);
+        m_availableChannels[code] = true;
+    }
 }
 
-QList<ChannelID> & Machine::availableChannels(quint32 chantype)
+QList<ChannelID> Machine::availableChannels(quint32 chantype)
 {
-    QHash<quint32, QList<ChannelID> >::iterator ac = availableCache.find(chantype);
-    if (ac != availableCache.end()) {
-        return ac.value();
+    QList<ChannelID> list;
 
-    }
-
-    QHash<ChannelID, int> chanhash;
-
-    // look through the daylist and return a list of available channels for this machine
-    QMap<QDate, Day *>::iterator dit;
-    QMap<QDate, Day *>::iterator day_end = day.end();
-    for (dit = day.begin(); dit != day_end; ++dit) {
-        QList<Session *>::iterator sess_end = dit.value()->end();
-
-        for (QList<Session *>::iterator sit = dit.value()->begin(); sit != sess_end; ++sit) {
-            Session * sess = (*sit);
-            if (sess->machine() != this) continue;
-
-            int size = sess->m_availableChannels.size();
-            for (int i=0; i < size; ++i) {
-                ChannelID code = sess->m_availableChannels.at(i);
-                QHash<ChannelID, schema::Channel *>::iterator ch = schema::channel.channels.find(code);
-                schema::Channel * chan = ch.value();
-                if (chan->type() & chantype) {
-                    chanhash[code]++;
-                }
-            }
+    QHash<ChannelID, bool>::iterator end = m_availableChannels.end();
+    QHash<ChannelID, bool>::iterator it;
+    for (it = m_availableChannels.begin(); it != end; ++it) {
+        ChannelID code = it.key();
+        const schema::Channel & chan = schema::channel[code];
+        if (chan.type() & chantype) {
+            list.push_back(code);
         }
     }
-    return availableCache[chantype] = chanhash.keys();
+    return list;
 }
 
 

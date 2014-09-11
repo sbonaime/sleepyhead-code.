@@ -406,17 +406,19 @@ void PreferencesDialog::InitChanInfo()
     headers.append(tr("Name"));
     headers.append(tr("Color"));
     headers.append(tr("Flag Type"));
+    headers.append(tr("Overview"));
     headers.append(tr("Label"));
     headers.append(tr("Details"));
     chanModel->setHorizontalHeaderLabels(headers);
     ui->chanView->setColumnWidth(0, 200);
     ui->chanView->setColumnWidth(1, 50);
     ui->chanView->setColumnWidth(2, 100);
-    ui->chanView->setColumnWidth(3, 100);
+    ui->chanView->setColumnWidth(3, 60);
+    ui->chanView->setColumnWidth(4, 100);
     ui->chanView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->chanView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
-    chanModel->setColumnCount(5);
+    chanModel->setColumnCount(6);
 
     QStandardItem *hdr = nullptr;
 
@@ -437,7 +439,7 @@ void PreferencesDialog::InitChanInfo()
         hdr->setEditable(false);
         QList<QStandardItem *> list;
         list.append(hdr);
-        for (int i=0; i<4; i++) {
+        for (int i=0; i<5; i++) {
             QStandardItem *it = new QStandardItem();
             it->setEnabled(false);
             list.append(it);
@@ -485,6 +487,13 @@ void PreferencesDialog::InitChanInfo()
         it->setEditable(type != schema::UNKNOWN);
         items.push_back(it);
 
+        it = new QStandardItem(QString());
+        it->setToolTip(tr("Whether this flag has a dedicated overview chart."));
+        it->setCheckable(true);
+        it->setCheckState(chan->showInOverview() ? Qt::Checked : Qt::Unchecked);
+        it->setData(chan->id(), Qt::UserRole);
+        items.push_back(it);
+
         it = new QStandardItem(chan->label());
         it->setToolTip(tr("This is the short-form label to indicate this channel on screen."));
 
@@ -524,6 +533,7 @@ void PreferencesDialog::InitWaveInfo()
     QStringList headers;
     headers.append(tr("Name"));
     headers.append(tr("Color"));
+    headers.append(tr("Overview"));
     headers.append(tr("Lower"));
     headers.append(tr("Upper"));
     headers.append(tr("Label"));
@@ -531,13 +541,14 @@ void PreferencesDialog::InitWaveInfo()
     waveModel->setHorizontalHeaderLabels(headers);
     ui->waveView->setColumnWidth(0, 200);
     ui->waveView->setColumnWidth(1, 50);
-    ui->waveView->setColumnWidth(2, 50);
+    ui->waveView->setColumnWidth(2, 60);
     ui->waveView->setColumnWidth(3, 50);
-    ui->waveView->setColumnWidth(4, 100);
+    ui->waveView->setColumnWidth(4, 50);
+    ui->waveView->setColumnWidth(5, 100);
     ui->waveView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->waveView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
-    waveModel->setColumnCount(6);
+    waveModel->setColumnCount(7);
 
     QStandardItem *hdr = nullptr;
 
@@ -555,7 +566,7 @@ void PreferencesDialog::InitWaveInfo()
         hdr->setEditable(false);
         QList<QStandardItem *> list;
         list.append(hdr);
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<6; i++) {
             QStandardItem *it = new QStandardItem();
             it->setEnabled(false);
             list.append(it);
@@ -594,9 +605,17 @@ void PreferencesDialog::InitWaveInfo()
         it->setEditable(false);
         it->setData(chan->defaultColor().rgba(), Qt::UserRole);
         it->setToolTip(tr("Double click to change the default color for this channel plot/flag/data."));
-
         it->setSelectable(false);
         items.push_back(it);
+
+        it = new QStandardItem();
+        it->setCheckable(true);
+        it->setCheckState(chan->showInOverview() ? Qt::Checked : Qt::Unchecked);
+        it->setEditable(true);
+        it->setData(chan->id(), Qt::UserRole);
+        it->setToolTip(tr("Whether a breakdown of this waveform displays in overview."));
+        items.push_back(it);
+
 
         it = new QStandardItem(QString::number(chan->lowerThreshold(),'f',1));
         it->setToolTip(tr("Here you can set the <b>lower</b> threshold used for certain calculations on the %1 waveform").arg(chan->fullname()));
@@ -894,10 +913,11 @@ bool PreferencesDialog::Save()
             chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
             chan.setFullname(item->text());
             chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
-            chan.setLowerThreshold(topitem->child(j,2)->text().toDouble());
-            chan.setUpperThreshold(topitem->child(j,3)->text().toDouble());
-            chan.setLabel(topitem->child(j,4)->text());
-            chan.setDescription(topitem->child(j,5)->text());
+            chan.setShowInOverview(topitem->child(j,2)->checkState() == Qt::Checked);
+            chan.setLowerThreshold(topitem->child(j,3)->text().toDouble());
+            chan.setUpperThreshold(topitem->child(j,4)->text().toDouble());
+            chan.setLabel(topitem->child(j,5)->text());
+            chan.setDescription(topitem->child(j,6)->text());
         }
     }
 
@@ -927,8 +947,9 @@ bool PreferencesDialog::Save()
                 }
             }
             chan.setType(type);
-            chan.setLabel(topitem->child(j,3)->text());
-            chan.setDescription(topitem->child(j,4)->text());
+            chan.setShowInOverview(topitem->child(j,3)->checkState() == Qt::Checked);
+            chan.setLabel(topitem->child(j,4)->text());
+            chan.setDescription(topitem->child(j,5)->text());
         }
     }
 

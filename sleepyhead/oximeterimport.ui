@@ -976,7 +976,7 @@ background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 white, stop:1 #cccccc)
             </font>
            </property>
            <property name="text">
-            <string notr="true">placeholder</string>
+            <string>If you can read this, you likely have your oximeter type set wrong in preferences.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

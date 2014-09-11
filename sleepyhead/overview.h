@@ -62,20 +62,21 @@ class Overview : public QWidget
         \param QString units The units of measurements to show in the popup */
     gGraph *createGraph(QString code, QString name, QString units = "", YTickerType yttype = YT_Number);
     gGraph *AHI, *AHIHR, *UC, *FL, *SA, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2, *NLL,
-//    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2,
-           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK, *STG;
-    SummaryChart *bc, *uc, *fl, *sa, *us, *pr, *lk, *npb, *set, *ses, *rr, *mv, *tv, *ptb, *pulse, *spo2,
- //   SummaryChart *bc, *uc, *fl, *us, *pr, *lk, *npb, *set, *ses, *rr, *mv, *tv, *ptb, *pulse, *spo2,
-                 *weight, *zombie, *bmi, *ahihr, *tgmv, *totlk, *nll;
+           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK, *STG, *SN;
+    SummaryChart *bc, *sa, *us, *pr,  *set, *ses,  *ptb, *pulse, *spo2,
+                 *weight, *zombie, *bmi, *ahihr, *tgmv, *totlk;
 
-    gSessionTimesChart * stg;
+    gSummaryChart * stg, *uc, *ahi, * pres, *lk, *npb, *rr, *mv, *tv, *nll, *sn;
 
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;
 
     void ResetGraph(QString name);
 
+    void RebuildGraphs(bool reset = true);
+
   public slots:
+    void onRebuildGraphs() { RebuildGraphs(true); }
     // ! \brief Print button down the bottom, does the same as File->Print
     //void on_printButton_clicked();
 

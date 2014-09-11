@@ -37,6 +37,7 @@ OximeterImport::OximeterImport(QWidget *parent) :
     oximodule = nullptr;
     liveView = new gGraphView(this);
     liveView->setVisible(false);
+    liveView->setShowAuthorMessage(false);
     ui->retryButton->setVisible(false);
     ui->stopButton->setVisible(false);
     ui->saveButton->setVisible(false);

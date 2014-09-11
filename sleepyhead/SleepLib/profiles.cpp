@@ -614,13 +614,35 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
     // For a machine match, find at least one enabled Session.
     for (int i = 0; i < day->size(); ++i) {
         Session * sess = (*day)[i];
-        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled())
+        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled()) {
+            day->OpenSummary();
+
             return day;
+        }
     }
 
     // No enabled Sessions were found.
     return nullptr;
 }
+
+Day *Profile::FindGoodDay(QDate date, MachineType type)
+{
+    Day *day = FindDay(date, type);
+    if (!day)
+        return nullptr;
+
+    // For a machine match, find at least one enabled Session.
+    for (int i = 0; i < day->size(); ++i) {
+        Session * sess = (*day)[i];
+        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled()) {
+            return day;
+        }
+    }
+
+    // No enabled Sessions were found.
+    return nullptr;
+}
+
 
 Day *Profile::GetDay(QDate date, MachineType type)
 {
@@ -629,9 +651,33 @@ Day *Profile::GetDay(QDate date, MachineType type)
 
     Day * day = di.value();
 
-    if (type == MT_UNKNOWN) return day; // just want the day record
+    if (type == MT_UNKNOWN) {
+        day->OpenSummary();
+        return day; // just want the day record
+    }
 
-    if (day->machines.contains(type)) return day;
+    if (day->machines.contains(type)) {
+        day->OpenSummary();
+        return day;
+    }
+
+    return nullptr;
+}
+
+Day *Profile::FindDay(QDate date, MachineType type)
+{
+    QMap<QDate, Day *>::iterator di = daylist.find(date);
+    if (di == daylist.end()) return nullptr;
+
+    Day * day = di.value();
+
+    if (type == MT_UNKNOWN) {
+        return day; // just want the day record
+    }
+
+    if (day->machines.contains(type)) {
+        return day;
+    }
 
     return nullptr;
 }
@@ -923,7 +969,7 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
     int days = 0;
 
     do {
-        Day *day = GetGoodDay(date, mt);
+        Day *day = FindGoodDay(date, mt);
 
         if (day) {
             days++;
@@ -1552,7 +1598,7 @@ QDate Profile::FirstDay(MachineType mt)
     QDate d = m_first;
 
     do {
-        if (GetDay(d, mt) != nullptr) {
+        if (FindDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1572,7 +1618,7 @@ QDate Profile::LastDay(MachineType mt)
     QDate d = m_last;
 
     do {
-        if (GetDay(d, mt) != nullptr) {
+        if (FindDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1597,7 +1643,7 @@ QDate Profile::FirstGoodDay(MachineType mt)
     }
 
     do {
-        if (GetGoodDay(d, mt) != nullptr) {
+        if (FindGoodDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1620,7 +1666,7 @@ QDate Profile::LastGoodDay(MachineType mt)
     }
 
     do {
-        if (GetGoodDay(d, mt) != nullptr) {
+        if (FindGoodDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1629,6 +1675,20 @@ QDate Profile::LastGoodDay(MachineType mt)
 
     return f;
 }
+
+bool Profile::channelAvailable(ChannelID code)
+{
+    QHash<MachineID, Machine *>::iterator it;
+    QHash<MachineID, Machine *>::iterator machlist_end=machlist.end();
+
+    for (it = machlist.begin(); it != machlist_end; it++) {
+        Machine * mach = it.value();
+        if (mach->hasChannel(code))
+            return true;
+    }
+    return false;
+}
+
 bool Profile::hasChannel(ChannelID code)
 {
     QDate d = LastDay();
@@ -1647,6 +1707,7 @@ bool Profile::hasChannel(ChannelID code)
 
         if (dit != daylist.end()) {
             Day *day = dit.value();
+
 
             if (day->channelHasData(code)) {
                 found = true;

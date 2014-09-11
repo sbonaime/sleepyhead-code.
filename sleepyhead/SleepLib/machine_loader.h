@@ -48,6 +48,7 @@ class MachineLoader: public QObject
     virtual int Version() = 0;
 
     static Machine * CreateMachine(MachineInfo info, MachineID id = 0);
+    Machine * lookupMachine(QString serial);
 
     // !\\brief Used internally by loaders, override to return base MachineInfo record
     virtual MachineInfo newInfo() { return MachineInfo(); }

@@ -115,7 +115,6 @@ private:
 
     MySortFilterProxyModel * waveFilterModel;
     QStandardItemModel *waveModel;
-
 };
 
 

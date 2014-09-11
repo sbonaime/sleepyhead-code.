@@ -159,8 +159,18 @@ class Day
     bool hasEnabledSessions();
 
     //! \brief Return the total time in decimal hours for this day
-    EventDataType hours() { return double(total_time()) / 3600000.0; }
-    EventDataType hours(MachineType type) { return double(total_time(type)) / 3600000.0; }
+    EventDataType hours() {
+        if (!d_invalidate) return d_hours;
+        d_invalidate = false;
+        return d_hours = double(total_time()) / 3600000.0;
+    }
+    EventDataType hours(MachineType type) {
+        QHash<MachineType, EventDataType>::iterator it = d_machhours.find(type);
+        if (it == d_machhours.end()) {
+            return d_machhours[type] = double(total_time(type)) / 3600000.0;
+        }
+        return it.value();
+    }
 
     //! \brief Return the session indexed by i
     Session *operator [](int i) { return sessions[i]; }
@@ -183,6 +193,8 @@ class Day
 
     //! \brief Loads all Events files for this Days Sessions
     void OpenEvents();
+    void OpenSummary();
+
 
     //! \brief Closes all Events files for this Days Sessions
     void CloseEvents();
@@ -218,21 +230,21 @@ class Day
     //! \brief Calculate AHI (Apnea Hypopnea Index)
     EventDataType calcAHI() {
         EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway);
-        EventDataType minutes = hours() * 60.0;
+        EventDataType minutes = hours(MT_CPAP) * 60.0;
         return (c * 60.0) / minutes;
     }
 
     //! \brief Calculate RDI (Respiratory Disturbance Index)
     EventDataType calcRDI() {
         EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway) + count(CPAP_RERA);
-        EventDataType minutes = hours() * 60.0;
+        EventDataType minutes = hours(MT_CPAP) * 60.0;
         return (c * 60.0) / minutes;
     }
 
     //! \brief Percent of night for specified channel
     EventDataType calcPON(ChannelID code) {
         EventDataType c = sum(code);
-        EventDataType minutes = hours() * 60.0;
+        EventDataType minutes = hours(MT_CPAP) * 60.0;
 
         return (100.0 / minutes) * (c / 60.0);
     }
@@ -240,7 +252,7 @@ class Day
     //! \brief Calculate index (count per hour) for specified channel
     EventDataType calcIdx(ChannelID code) {
         EventDataType c = count(code);
-        EventDataType minutes = hours() * 60.0;
+        EventDataType minutes = hours(MT_CPAP) * 60.0;
 
         return (c * 60.0) / minutes;
     }
@@ -248,7 +260,7 @@ class Day
     //! \brief SleepyyHead Events Index, AHI combined with SleepyHead detected events.. :)
     EventDataType calcSHEI() {
         EventDataType c = count(CPAP_Hypopnea) + count(CPAP_Obstructive) + count(CPAP_Apnea) + count(CPAP_ClearAirway) + count(CPAP_UserFlag1) + count(CPAP_UserFlag2);
-        EventDataType minutes = hours() * 60.0;
+        EventDataType minutes = hours(MT_CPAP) * 60.0;
         return (c * 60.0) / minutes;
     }
     //! \brief Total duration of all Apnea/Hypopnea events in seconds,
@@ -279,6 +291,13 @@ class Day
     void decUseCounter() { d_useCounter--; if (d_useCounter<0) d_useCounter = 0; }
     int useCounter() { return d_useCounter; }
 
+
+    void invalidate() {
+        d_invalidate = true;
+        d_machhours.clear();
+    }
+
+    void updateCPAPCache();
   protected:
 
 
@@ -288,6 +307,13 @@ class Day
   private:
     bool d_firstsession;
     int d_useCounter;
+    bool d_summaries_open;
+    bool d_events_open;
+    float d_hours;
+    QHash<MachineType, EventDataType> d_machhours;
+    QHash<ChannelID, long> d_count;
+    QHash<ChannelID, double> d_sum;
+    bool d_invalidate;
 };
 
 

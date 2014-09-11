@@ -336,7 +336,7 @@ void MainWindow::on_changeWarningMessage()
 }
 
 
-quint16 chandata_version = 0;
+quint16 chandata_version = 1;
 
 void saveChannels()
 {
@@ -370,6 +370,7 @@ void saveChannels()
         out << chan->lowerThresholdColor();
         out << chan->upperThreshold();
         out << chan->upperThresholdColor();
+        out << chan->showInOverview();
     }
 
     f.close();
@@ -420,6 +421,7 @@ void loadChannels()
     QString fullname;
     QString label;
     QString description;
+    bool showOverview = false;
 
     for (int i=0; i < size; i++) {
         in >> code;
@@ -438,6 +440,10 @@ void loadChannels()
         in >> lowerThresholdColor;
         in >> upperThreshold;
         in >> upperThresholdColor;
+        if (version >= 1) {
+            in >> showOverview;
+        }
+
         if (chan->isNull()) {
             qDebug() << "loadChannels has no idea about channel" << name;
             if (in.atEnd()) return;
@@ -452,6 +458,8 @@ void loadChannels()
         chan->setLowerThresholdColor(lowerThresholdColor);
         chan->setUpperThreshold(upperThreshold);
         chan->setUpperThresholdColor(upperThresholdColor);
+
+        chan->setShowInOverview(showOverview);
         if (in.atEnd()) return;
     }
 
@@ -1470,8 +1478,8 @@ void MainWindow::on_action_Preferences_triggered()
         }
 
         if (overview) {
-            overview->ReloadGraphs();
-            overview->RedrawGraphs();
+            overview->RebuildGraphs(true);
+            //overview->RedrawGraphs();
         }
     }
 

@@ -2827,8 +2827,9 @@ void ResInitModelMap()
     resmed_codes[CPAP_PSMin].push_back("Min PS");
     resmed_codes[CPAP_PSMax].push_back("Max PS");
 
-    resmed_codes[CPAP_Leak].push_back("Leak");
+    resmed_codes[CPAP_Leak].push_back("Leak"); // Leak Leck Lekk Läck Fuites
     resmed_codes[CPAP_Leak].push_back("Leck");
+    resmed_codes[CPAP_Leak].push_back("Fuites");
 
     resmed_codes[CPAP_Leak].push_back("\xE6\xBC\x8F\xE6\xB0\x94");
     resmed_codes[CPAP_Leak].push_back("Lekk");
@@ -2849,6 +2850,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_TgMV].push_back("TgMV");
     resmed_codes[OXI_Pulse].push_back("Pulse");
     resmed_codes[OXI_Pulse].push_back("Puls");
+    resmed_codes[OXI_Pulse].push_back("Pouls");
     resmed_codes[OXI_Pulse].push_back("Pols");
     resmed_codes[OXI_SPO2].push_back("SpO2");
     resmed_codes[CPAP_Obstructive].push_back("Obstructive apnea");
