@@ -35,47 +35,18 @@ typedef QMessageBox::StandardButtons StandardButtons;
 
 QHash<schema::ChanType, QString> channeltype;
 
-
-MaskProfile masks[] = {
-    {Mask_Unknown, QObject::tr("Unspecified"), {{4, 25}, {8, 25}, {12, 25}, {16, 25}, {20, 25}}},
-    {Mask_NasalPillows, QObject::tr("Nasal Pillows"), {{4, 20}, {8, 29}, {12, 37}, {16, 43}, {20, 49}}},
-    {Mask_Hybrid, QObject::tr("Hybrid F/F Mask"), {{4, 20}, {8, 29}, {12, 37}, {16, 43}, {20, 49}}},
-    {Mask_StandardNasal, QObject::tr("Nasal Interface"), {{4, 20}, {8, 29}, {12, 37}, {16, 43}, {20, 49}}},
-    {Mask_FullFace, QObject::tr("Full-Face Mask"), {{4, 20}, {8, 29}, {12, 37}, {16, 43}, {20, 49}}},
-};
-const int num_masks = sizeof(masks) / sizeof(MaskProfile);
-
 PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     QDialog(parent),
     ui(new Ui::PreferencesDialog),
     profile(_profile)
 {
     ui->setupUi(this);
-    ui->leakProfile->setRowCount(5);
-    ui->leakProfile->setColumnCount(2);
-    ui->leakProfile->horizontalHeader()->setStretchLastSection(true);
-    ui->leakProfile->setColumnWidth(0, 100);
-    ui->maskTypeCombo->clear();
 
     channeltype.clear();
     channeltype[schema::FLAG] = tr("Flag");
     channeltype[schema::MINOR_FLAG] = tr("Minor Flag");
     channeltype[schema::SPAN] = tr("Span");
     channeltype[schema::UNKNOWN] = tr("Always Minor");
-
-    //ui->customEventGroupbox->setEnabled(false);
-
-    QString masktype = tr("Nasal Pillows");
-
-    //masktype=PROFILEMaskType
-    for (int i = 0; i < num_masks; i++) {
-        ui->maskTypeCombo->addItem(masks[i].name);
-
-        /*if (masktype==masks[i].name) {
-            ui->maskTypeCombo->setCurrentIndex(i);
-            on_maskTypeCombo_activated(i);
-        }*/
-    }
 
 //#ifdef LOCK_RESMED_SESSIONS
 //    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
@@ -97,20 +68,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         shortformat.replace("yy", "yyyy");
     }
 
-    ui->startedUsingMask->setDisplayFormat(shortformat);
     Qt::DayOfWeek dow = firstDayOfWeekFromLocale();
 
-    ui->startedUsingMask->calendarWidget()->setFirstDayOfWeek(dow);
-
-    //ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->colourTab));
-
-    // Stop both calendar drop downs highlighting weekends in red
-    QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
-    ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
-    ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
-
-    //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
+//    QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+//    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
 
     Q_ASSERT(profile != nullptr);
     ui->tabWidget->setCurrentIndex(0);
@@ -130,7 +91,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
     ui->pulseChangeTime->setValue(profile->oxi->pulseChangeDuration());
     ui->oxiDiscardThreshold->setValue(profile->oxi->oxiDiscardThreshold());
-    ui->AddRERAtoAHI->setChecked(profile->general->calculateRDI());
+
+    ui->eventIndexCombo->setCurrentIndex(profile->general->calculateRDI() ? 1 : 0);
     ui->automaticImport->setChecked(profile->cpap->autoImport());
 
     ui->timeEdit->setTime(profile->session->daySplitTime());
@@ -176,17 +138,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->lineThicknessSlider->setValue(profile->appearance->lineThickness()*2);
 
-    ui->startedUsingMask->setDate(profile->cpap->maskStartDate());
-
-    ui->leakModeCombo->setCurrentIndex(profile->cpap->leakMode());
-
-    int mt = (int)profile->cpap->maskType();
-    ui->maskTypeCombo->setCurrentIndex(mt);
-    on_maskTypeCombo_activated(mt);
-
     ui->resyncMachineDetectedEvents->setChecked(profile->cpap->resyncFromUserFlagging());
 
-    ui->maskDescription->setText(profile->cpap->maskDescription());
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
     ui->usePixmapCaching->setChecked(profile->appearance->usePixmapCaching());
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
@@ -197,14 +150,21 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
     ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
 
-    ui->clockDrift->setValue(profile->cpap->clockDrift());
+    int s = profile->cpap->clockDrift();
+    int m = (s / 60) % 60;
+    int h = (s / 3600);
+    s %= 60;
+    ui->clockDriftHours->setValue(h);
+    ui->clockDriftMinutes->setValue(m);
+    ui->clockDriftSeconds->setValue(s);
 
     ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
     ui->showUnknownFlags->setChecked(profile->general->showUnknownFlags());
     ui->enableMultithreading->setChecked(profile->session->multithreading());
     ui->cacheSessionData->setChecked(profile->session->cacheSessions());
+    ui->preloadSummaries->setChecked(profile->session->preloadSummaries());
     ui->animationsAndTransitionsCheckbox->setChecked(profile->appearance->animations());
-    ui->complianceGroupbox->setChecked(profile->cpap->showComplianceInfo());
+    ui->complianceCheckBox->setChecked(profile->cpap->showComplianceInfo());
     ui->complianceHours->setValue(profile->cpap->complianceHours());
 
     ui->prefCalcMiddle->setCurrentIndex(profile->general->prefCalcMiddle());
@@ -405,15 +365,15 @@ void PreferencesDialog::InitChanInfo()
     QStringList headers;
     headers.append(tr("Name"));
     headers.append(tr("Color"));
-    headers.append(tr("Flag Type"));
     headers.append(tr("Overview"));
+    headers.append(tr("Flag Type"));
     headers.append(tr("Label"));
     headers.append(tr("Details"));
     chanModel->setHorizontalHeaderLabels(headers);
     ui->chanView->setColumnWidth(0, 200);
-    ui->chanView->setColumnWidth(1, 50);
-    ui->chanView->setColumnWidth(2, 100);
-    ui->chanView->setColumnWidth(3, 60);
+    ui->chanView->setColumnWidth(1, 40);
+    ui->chanView->setColumnWidth(2, 60);
+    ui->chanView->setColumnWidth(3, 100);
     ui->chanView->setColumnWidth(4, 100);
     ui->chanView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->chanView->setSelectionBehavior(QAbstractItemView::SelectItems);
@@ -467,7 +427,10 @@ void PreferencesDialog::InitChanInfo()
         it->setCheckState(chan->enabled() ? Qt::Checked : Qt::Unchecked);
         it->setEditable(true);
         it->setData(chan->id(), Qt::UserRole);
-        it->setToolTip(tr("Double click to change the descriptive name this channel."));
+
+        // Dear translators: %1 is a unique ascii english string used to indentify channels in the code, I'd like feedback on how this goes..
+        // It's here in case users mess up which field is which.. it will always show the Channel Code underneath in the tooltip.
+        it->setToolTip(tr("Double click to change the descriptive name the '%1' channel.").arg(chan->code()));
         items.push_back(it);
 
 
@@ -476,8 +439,15 @@ void PreferencesDialog::InitChanInfo()
         it->setEditable(false);
         it->setData(chan->defaultColor().rgba(), Qt::UserRole);
         it->setToolTip(tr("Double click to change the default color for this channel plot/flag/data."));
-
         it->setSelectable(false);
+        items.push_back(it);
+
+        it = new QStandardItem(QString());
+        it->setToolTip(tr("Whether this flag has a dedicated overview chart."));
+        it->setCheckable(true);
+        it->setCheckState(chan->showInOverview() ? Qt::Checked : Qt::Unchecked);
+        it->setTextAlignment(Qt::AlignCenter);
+        it->setData(chan->id(), Qt::UserRole);
         items.push_back(it);
 
         schema::ChanType type = chan->type();
@@ -485,13 +455,6 @@ void PreferencesDialog::InitChanInfo()
         it = new QStandardItem(channeltype[type]);
         it->setToolTip(tr("Here you can change the type of flag shown for this event"));
         it->setEditable(type != schema::UNKNOWN);
-        items.push_back(it);
-
-        it = new QStandardItem(QString());
-        it->setToolTip(tr("Whether this flag has a dedicated overview chart."));
-        it->setCheckable(true);
-        it->setCheckState(chan->showInOverview() ? Qt::Checked : Qt::Unchecked);
-        it->setData(chan->id(), Qt::UserRole);
         items.push_back(it);
 
         it = new QStandardItem(chan->label());
@@ -540,7 +503,7 @@ void PreferencesDialog::InitWaveInfo()
     headers.append(tr("Details"));
     waveModel->setHorizontalHeaderLabels(headers);
     ui->waveView->setColumnWidth(0, 200);
-    ui->waveView->setColumnWidth(1, 50);
+    ui->waveView->setColumnWidth(1, 40);
     ui->waveView->setColumnWidth(2, 60);
     ui->waveView->setColumnWidth(3, 50);
     ui->waveView->setColumnWidth(4, 50);
@@ -685,7 +648,8 @@ bool PreferencesDialog::Save()
         needs_restart = true;
     }
 
-    if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
+    int rdi_set = profile->general->calculateRDI() ? 1 : 0;
+    if (rdi_set != ui->eventIndexCombo->currentIndex()) {
         //recalc_events=true;
         needs_restart = true;
     }
@@ -764,23 +728,22 @@ bool PreferencesDialog::Save()
     profile->general->setShowUnknownFlags(ui->showUnknownFlags->isChecked());
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
-    profile->cpap->setMaskDescription(ui->maskDescription->text());
+    profile->session->setPreloadSummaries(ui->preloadSummaries->isChecked());
     profile->appearance->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
 
     profile->cpap->setShowLeakRedline(ui->showLeakRedline->isChecked());
     profile->cpap->setLeakRedline(ui->leakRedlineSpinbox->value());
 
-    profile->cpap->setShowComplianceInfo(ui->complianceGroupbox->isChecked());
+    profile->cpap->setShowComplianceInfo(ui->complianceCheckBox->isChecked());
     profile->cpap->setComplianceHours(ui->complianceHours->value());
 
-    profile->cpap->setMaskStartDate(ui->startedUsingMask->date());
     profile->appearance->setGraphHeight(ui->graphHeight->value());
 
     profile->general->setPrefCalcMiddle(ui->prefCalcMiddle->currentIndex());
     profile->general->setPrefCalcMax(ui->prefCalcMax->currentIndex());
     profile->general->setPrefCalcPercentile(ui->prefCalcPercentile->value());
 
-    profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
+    profile->general->setCalculateRDI((ui->eventIndexCombo->currentIndex() == 1));
     profile->session->setBackupCardData(ui->createSDBackups->isChecked());
     profile->session->setCompressBackupData(ui->compressSDBackups->isChecked());
     profile->session->setCompressSessionData(ui->compressSessionData->isChecked());
@@ -791,14 +754,12 @@ bool PreferencesDialog::Save()
     profile->session->setIgnoreOlderSessions(ui->ignoreOlderSessionsCheck->isChecked());
     profile->session->setIgnoreOlderSessionsDate(ui->ignoreOlderSessionsDate->date());
 
-    profile->cpap->setClockDrift(ui->clockDrift->value());
+    int s = ui->clockDriftHours->value() * 3600 + ui->clockDriftMinutes->value() * 60 + ui->clockDriftSeconds->value();
+    profile->cpap->setClockDrift(s);
 
     profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
     profile->appearance->setOverviewLinechartMode((OverviewLinechartModes)
             ui->overviewLinecharts->currentIndex());
-
-    profile->cpap->setLeakMode(ui->leakModeCombo->currentIndex());
-    profile->cpap->setMaskType((MaskType)ui->maskTypeCombo->currentIndex());
 
     profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
     int oxigrp = ui->oximetrySync->isChecked() ? 0 : 1;
@@ -895,6 +856,72 @@ bool PreferencesDialog::Save()
     bigfont->setItalic(ui->bigFontItalic->isChecked());
 
 
+    saveChanInfo();
+    saveWaveInfo();
+    //qDebug() << "TODO: Save channels.xml to update channel data";
+
+    PREF.Save();
+    p_profile->Save();
+
+    if (recalc_events) {
+        // send a signal instead?
+        mainwin->reprocessEvents(needs_restart);
+    } else if (needs_restart) {
+        p_profile->removeLock();
+        mainwin->RestartApplication();
+    } else {
+        mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
+        // Save early.. just in case..
+        mainwin->getDaily()->graphView()->SaveSettings("Daily");
+        mainwin->getOverview()->graphView()->SaveSettings("Overview");
+    }
+
+    return true;
+}
+
+void PreferencesDialog::saveChanInfo()
+{
+    // Change focus to force save of any open editors..
+    ui->channelSearch->setFocus();
+
+    int toprows = chanModel->rowCount();
+    bool ok;
+
+    for (int i=0; i < toprows; i++) {
+        QStandardItem * topitem = chanModel->item(i,0);
+
+        if (!topitem) continue;
+        int rows = topitem->rowCount();
+        for (int j=0; j< rows; ++j) {
+            QStandardItem * item = topitem->child(j, 0);
+            if (!item) continue;
+
+            ChannelID id = item->data(Qt::UserRole).toUInt(&ok);
+            schema::Channel & chan = schema::channel[id];
+            if (chan.isNull()) continue;
+            chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
+            chan.setFullname(item->text());
+            chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
+            chan.setShowInOverview(topitem->child(j,2)->checkState() == Qt::Checked);
+            QString ts = topitem->child(j,3)->text();
+            schema::ChanType type = schema::MINOR_FLAG;
+            for (QHash<schema::ChanType, QString>::iterator it = channeltype.begin(); it!= channeltype.end(); ++it) {
+                if (it.value() == ts) {
+                    type = it.key();
+                    break;
+                }
+            }
+            chan.setType(type);
+            chan.setLabel(topitem->child(j,4)->text());
+            chan.setDescription(topitem->child(j,5)->text());
+        }
+    }
+}
+void PreferencesDialog::saveWaveInfo()
+{
+    // Change focus to force save of any open editors..
+    ui->waveSearch->setFocus();
+
     int toprows = waveModel->rowCount();
 
     bool ok;
@@ -920,58 +947,6 @@ bool PreferencesDialog::Save()
             chan.setDescription(topitem->child(j,6)->text());
         }
     }
-
-    toprows = chanModel->rowCount();
-
-    for (int i=0; i < toprows; i++) {
-        QStandardItem * topitem = chanModel->item(i,0);
-
-        if (!topitem) continue;
-        int rows = topitem->rowCount();
-        for (int j=0; j< rows; ++j) {
-            QStandardItem * item = topitem->child(j, 0);
-            if (!item) continue;
-
-            ChannelID id = item->data(Qt::UserRole).toUInt(&ok);
-            schema::Channel & chan = schema::channel[id];
-            if (chan.isNull()) continue;
-            chan.setEnabled(item->checkState() == Qt::Checked ? true : false);
-            chan.setFullname(item->text());
-            chan.setDefaultColor(QColor(topitem->child(j,1)->data(Qt::UserRole).toUInt()));
-            QString ts = topitem->child(j,2)->text();
-            schema::ChanType type = schema::MINOR_FLAG;
-            for (QHash<schema::ChanType, QString>::iterator it = channeltype.begin(); it!= channeltype.end(); ++it) {
-                if (it.value() == ts) {
-                    type = it.key();
-                    break;
-                }
-            }
-            chan.setType(type);
-            chan.setShowInOverview(topitem->child(j,3)->checkState() == Qt::Checked);
-            chan.setLabel(topitem->child(j,4)->text());
-            chan.setDescription(topitem->child(j,5)->text());
-        }
-    }
-
-    //qDebug() << "TODO: Save channels.xml to update channel data";
-
-    PREF.Save();
-    p_profile->Save();
-
-    if (recalc_events) {
-        // send a signal instead?
-        mainwin->reprocessEvents(needs_restart);
-    } else if (needs_restart) {
-        p_profile->removeLock();
-        mainwin->RestartApplication();
-    } else {
-        mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
-        // Save early.. just in case..
-        mainwin->getDaily()->graphView()->SaveSettings("Daily");
-        mainwin->getOverview()->graphView()->SaveSettings("Overview");
-    }
-
-    return true;
 }
 
 void PreferencesDialog::on_combineSlider_valueChanged(int position)
@@ -1001,12 +976,6 @@ void PreferencesDialog::on_checkForUpdatesButton_clicked()
     mainwin->CheckForUpdates();
 }
 
-void PreferencesDialog::on_graphView_activated(const QModelIndex &index)
-{
-    QString a = index.data().toString();
-    qDebug() << "Could do something here with" << a;
-}
-
 MySortFilterProxyModel::MySortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
 {
@@ -1025,7 +994,7 @@ bool MySortFilterProxyModel::filterAcceptsRow(int source_row,
     return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
 
-
+// Might still be useful..
 //void PreferencesDialog::on_resetGraphButton_clicked()
 //{
 //    QString title = tr("Confirmation");
@@ -1066,38 +1035,6 @@ bool MySortFilterProxyModel::filterAcceptsRow(int source_row,
 //    resetGraphModel();
 //    ui->graphView->update();
 //}
-
-/*void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
-{
-    item->setCheckState(item->checkState()==Qt::Checked ? Qt::Unchecked : Qt::Checked);
-}  */
-
-void PreferencesDialog::on_maskTypeCombo_activated(int index)
-{
-    if (index < num_masks) {
-        QTableWidgetItem *item;
-
-        for (int i = 0; i < 5; i++) {
-            MaskProfile &mp = masks[index];
-
-            item = ui->leakProfile->item(i, 0);
-            QString val = QString::number(mp.pflow[i][0], 'f', 2);
-
-            if (!item) {
-                item = new QTableWidgetItem(val);
-                ui->leakProfile->setItem(i, 0, item);
-            } else { item->setText(val); }
-
-            val = QString::number(mp.pflow[i][1], 'f', 2);
-            item = ui->leakProfile->item(i, 1);
-
-            if (!item) {
-                item = new QTableWidgetItem(val);
-                ui->leakProfile->setItem(i, 1, item);
-            } else { item->setText(val); }
-        }
-    }
-}
 
 void PreferencesDialog::on_createSDBackups_toggled(bool checked)
 {
@@ -1152,6 +1089,7 @@ void PreferencesDialog::on_resetChannelDefaults_clicked()
 {
     if (QMessageBox::question(this, STR_MessageBox_Warning, QObject::tr("Are you sure you want to reset all your channel colors and settings to defaults?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
         schema::resetChannels();
+        saveWaveInfo();
         InitChanInfo();
     }
 }
@@ -1196,4 +1134,34 @@ void PreferencesDialog::on_chanView_doubleClicked(const QModelIndex &index)
 void PreferencesDialog::on_waveSearch_textChanged(const QString &arg1)
 {
     waveFilterModel->setFilterFixedString(arg1);
+}
+
+void PreferencesDialog::on_resetWaveformChannels_clicked()
+{
+    if (QMessageBox::question(this, STR_MessageBox_Warning, QObject::tr("Are you sure you want to reset all your waveform channel colors and settings to defaults?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
+        schema::resetChannels();
+        saveChanInfo(); // reset clears EVERYTHING, so have to put these back in case they cancel.
+        InitWaveInfo();
+    }
+}
+
+void PreferencesDialog::on_waveView_doubleClicked(const QModelIndex &index)
+{
+    if (index.column() == 1) {
+        QColorDialog a;
+
+        if (!(index.flags() & Qt::ItemIsEnabled)) return;
+        quint32 color = index.data(Qt::UserRole).toUInt();
+
+        a.setCurrentColor(QColor((QRgb)color));
+
+        if (a.exec() == QColorDialog::Accepted) {
+            quint32 cv = a.currentColor().rgba();
+
+            waveFilterModel->setData(index, cv, Qt::UserRole);
+            waveFilterModel->setData(index, a.currentColor(), Qt::BackgroundRole);
+
+        }
+
+    }
 }

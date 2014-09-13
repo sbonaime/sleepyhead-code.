@@ -42,10 +42,10 @@ gSummaryChart::gSummaryChart(ChannelID code, MachineType machtype)
     tz_hours = tz_offset / 3600.0;
     expected_slices = 5;
 
-    addCalc(code, ST_MIN);
-    addCalc(code, ST_MID);
-    addCalc(code, ST_90P);
-    addCalc(code, ST_MAX);
+    addCalc(code, ST_MIN, brighten(schema::channel[code].defaultColor() ,0.90));
+    addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.30));
+    addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.50));
+    addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,1.80));
 }
 
 gSummaryChart::~gSummaryChart()
@@ -150,6 +150,146 @@ bool gSummaryChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 QMap<QDate, int> gSummaryChart::dayindex;
 QList<Day *> gSummaryChart::daylist;
 
+void gSummaryChart::preCalc()
+{
+    for (int i=0; i<calcitems.size(); ++i) {
+        SummaryCalcItem & calc = calcitems[i];
+        calc.min = 99999;
+        calc.max = -99999;
+        calc.sum = 0;
+        calc.divisor = 0;
+    }
+}
+
+void gSummaryChart::customCalc(Day *day, QList<SummaryChartSlice> & slices)
+{
+    if (slices.size() != calcitems.size()) {
+        return;
+    }
+    float hour = day->hours(m_machtype);
+    for (int i=0; i<slices.size(); ++i) {
+        const SummaryChartSlice & slice = slices.at(i);
+        SummaryCalcItem & calc = calcitems[i];
+
+        calc.min = qMin(calc.min, slice.value);
+        calc.max = qMax(calc.max, slice.value);
+
+        switch (calc.type) {
+        case ST_CPH:
+        case ST_SPH:
+            calc.sum += slice.value * hour;
+            calc.divisor += hour;
+            break;
+        default:
+            calc.sum += slice.value;
+            calc.divisor += 1;
+            break;
+
+        }
+    }
+}
+
+void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
+{
+    if (totaldays == nousedays) return;
+
+    if (calcitems.size() == 0) return;
+
+    QStringList strlist;
+    QString txt;
+
+    int mid = p_profile->general->prefCalcMiddle();
+    QString midstr;
+    if (mid == 0) {
+        midstr = QObject::tr("Med.");
+    } else if (mid == 1) {
+        midstr = QObject::tr("Avg");
+    } else {
+        midstr = QObject::tr("W-Avg");
+    }
+    float perc = p_profile->general->prefCalcPercentile();
+    QString percstr = QObject::tr("%1%").arg(perc, 0, 'f',0);
+
+    schema::Channel & chan = schema::channel[calcitems.at(0).code];
+
+    for (int i=0; i<calcitems.size(); ++i) {
+        const SummaryCalcItem & calc = calcitems.at(i);
+        if (calcitems.size() == 1) {
+            float val = calc.min;
+            if (val < 99998)
+                strlist.append(QObject::tr("Min: %1").arg(val,0,'f',2));
+        }
+
+        float val = 0;
+        switch (calc.type) {
+        case ST_CPH:
+            val = calc.sum / calc.divisor;
+            txt = QObject::tr("Avg: ");
+            break;
+        case ST_SPH:
+            val = calc.sum / calc.divisor;
+            txt = QObject::tr("Avg: ");
+            break;
+        case ST_MIN:
+            val = calc.min;
+            if (val >= 99998) continue;
+            txt = QObject::tr("Min: ");
+            break;
+        case ST_MAX:
+            val = calc.max;
+            if (val <= -99998) continue;
+            txt = QObject::tr("Max: ");
+            break;
+        case ST_SETMIN:
+            val = calc.min;
+            if (val >= 99998) continue;
+            txt = QObject::tr("Min: ");
+            break;
+        case ST_SETMAX:
+            val = calc.max;
+            if (val <= -99998) continue;
+            txt = QObject::tr("Max: ");
+            break;
+        case ST_MID:
+            val = calc.sum / calc.divisor;
+            txt = QObject::tr("%1: ").arg(midstr);
+            break;
+        case ST_90P:
+            val = calc.sum / calc.divisor;
+            txt = QObject::tr("%1: ").arg(percstr);
+            break;
+        default:
+            val = calc.sum / calc.divisor;
+            txt = QObject::tr("???: ");
+            break;
+        }
+        strlist.append(QString("%1%2").arg(txt).arg(val,0,'f',2));
+        if (calcitems.size() == 1) {
+            val = calc.max;
+            if (val > -99998)
+                strlist.append(QObject::tr("Max: %1").arg(val,0,'f',2));
+        }
+    }
+
+    QString str;
+    if (totaldays > 1) {
+        str = QObject::tr("%1 (%2 days): ").arg(chan.fullname()).arg(totaldays);
+    } else {
+        str = QObject::tr("%1 (%2 day): ").arg(chan.fullname()).arg(totaldays);
+    }
+    str += " "+strlist.join(", ");
+
+    QRectF rec(rect.left(), rect.top(), 0,0);
+    painter.setFont(*defaultfont);
+    rec = painter.boundingRect(rec, Qt::AlignTop, str);
+    rec.moveBottom(rect.top()-3*graph.printScaleY());
+    painter.drawText(rec, Qt::AlignTop, str);
+
+//    graph.renderText(str, rect.left(), rect.top()-5*graph.printScaleY(), 0);
+
+
+}
+
 QString gSummaryChart::tooltipData(Day *, int idx)
 {
     QList<SummaryChartSlice> & slices = cache[idx];
@@ -180,7 +320,7 @@ void gSummaryChart::populate(Day * day, int idx)
     float hours = day->hours(m_machtype);
     float base = 0;
     for (int i=0; i < size; ++i) {
-        const SummaryCalcItem & item = calcitems.at(i);
+        SummaryCalcItem & item = calcitems[i];
         ChannelID code = item.code;
         schema::Channel & chan = schema::channel[code];
         float value = 0;
@@ -190,47 +330,47 @@ void gSummaryChart::populate(Day * day, int idx)
         case ST_CPH:
             value = day->count(code) / hours;
             name = chan.label();
-            color = chan.defaultColor();
-            slices.append(SummaryChartSlice(code, value, value, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value, name, color));
             break;
         case ST_SPH:
             value = (100.0 / hours) * (day->sum(code) / 3600.0);
             name = QObject::tr("% in %1").arg(chan.label());
-            color = chan.defaultColor();
-            slices.append(SummaryChartSlice(code, value, value, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value, name, color));
             break;
         case ST_HOURS:
             value = hours;
             name = QObject::tr("Hours");
             color = COLOR_LightBlue;
-            slices.append(SummaryChartSlice(code, hours, hours, name, color));
+            slices.append(SummaryChartSlice(&item, hours, hours, name, color));
             break;
         case ST_MIN:
             value = day->Min(code);
             name = QObject::tr("Min %1").arg(chan.label());
-            color = brighten(chan.defaultColor(),0.60);
-            slices.append(SummaryChartSlice(code, value, value - base, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value - base, name, color));
             base = value;
             break;
         case ST_MID:
             value = day->calcMiddle(code);
             name = day->calcMiddleLabel(code);
-            color = brighten(chan.defaultColor(),1.25);
-            slices.append(SummaryChartSlice(code, value, value - base, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value - base, name, color));
             base = value;
             break;
         case ST_90P:
             value = day->calcPercentile(code);
             name = day->calcPercentileLabel(code);
-            color = brighten(chan.defaultColor(),1.50);
-            slices.append(SummaryChartSlice(code, value, value - base, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value - base, name, color));
             base = value;
             break;
         case ST_MAX:
             value = day->calcMax(code);
             name = day->calcMaxLabel(code);
-            color = brighten(chan.defaultColor(),2);
-            slices.append(SummaryChartSlice(code, value, value - base, name, color));
+            color = item.color;
+            slices.append(SummaryChartSlice(&item, value, value - base, name, color));
             base = value;
             break;
         default:
@@ -264,13 +404,14 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     float lastx1 = rect.left();
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
-    int idx=0;
+    idx_start=0;
     if (it != dayindex.end()) {
-        idx = it.value();
+        idx_start = it.value();
     }
+    int idx = idx_start;
 
     QMap<QDate, int>::iterator ite = dayindex.find(enddate);
-    int idx_end = daylist.size()-1;
+    idx_end = daylist.size()-1;
     if (ite != dayindex.end()) {
         idx_end = ite.value();
     }
@@ -315,7 +456,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     /// Calculate Graph Peaks
     /////////////////////////////////////////////////////////////////////
     peak_value = 0;
-    for (int i=idx; i < idx_end; ++i) {
+    for (int i=idx; i <= idx_end; ++i) {
         Day * day = daylist.at(i);
 
         if (!day)
@@ -414,6 +555,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
             for (int i=0; i < listsize; ++i) {
                 SummaryChartSlice & slice = list[i];
+                SummaryCalcItem * calc = slice.calc;
 
                 val = slice.height;
                 y1 = ((lastval-miny) * ymult);
@@ -499,13 +641,13 @@ void gUsageChart::populate(Day *day, int idx)
 
     float hours = day->hours();
 
-    QColor cpapcolor = day->summaryOnly() ? QColor(128,128,128) : QColor(64,128,255);
+    QColor cpapcolor = day->summaryOnly() ? QColor(128,128,128) : calcitems[0].color;
     bool haveoxi = day->hasMachine(MT_OXIMETER);
 
     QColor goodcolor = haveoxi ? QColor(128,255,196) : cpapcolor;
 
     QColor color = (hours < compliance_threshold) ? QColor(255,64,64) : goodcolor;
-    slices.append(SummaryChartSlice(NoChannel, hours, hours, QObject::tr("Hours"), color));
+    slices.append(SummaryChartSlice(&calcitems[0], hours, hours, QObject::tr("Hours"), color));
 }
 
 void gUsageChart::preCalc()
@@ -514,6 +656,9 @@ void gUsageChart::preCalc()
     incompdays = 0;
     totalhours = 0;
     totaldays = 0;
+
+    hour_data.clear();
+    hour_data.reserve(idx_end-idx_start);
 }
 
 void gUsageChart::customCalc(Day *, QList<SummaryChartSlice> &list)
@@ -521,15 +666,21 @@ void gUsageChart::customCalc(Day *, QList<SummaryChartSlice> &list)
     SummaryChartSlice & slice = list[0];
     if (slice.value < compliance_threshold) incompdays++;
     totalhours += slice.value;
+    hour_data.append(slice.value);
     totaldays++;
 }
 
 void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 {
+    if (totaldays == nousedays) return;
+
     if (totaldays > 1) {
         float comp = 100.0 - ((float(incompdays + nousedays) / float(totaldays)) * 100.0);
         double avg = totalhours / double(totaldays);
-        QString txt = QObject::tr("%1 low usage, %2 no usage, out of %3 days (%4% compliant.) Average %5 hours").arg(incompdays).arg(nousedays).arg(totaldays).arg(comp,0,'f',1).arg(avg, 0, 'f', 2);
+
+        float med = median(hour_data.begin(), hour_data.end());
+        QString txt = QObject::tr("%1 low usage, %2 no usage, out of %3 days (%4% compliant.) Avg %5, Med %6 hours").
+                arg(incompdays).arg(nousedays).arg(totaldays).arg(comp,0,'f',1).arg(avg, 0, 'f', 2).arg(med, 0, 'f', 2);
         graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
     }
 }
@@ -538,10 +689,17 @@ void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 
 void gSessionTimesChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 {
+    if (totaldays == nousedays) return;
+
+    float med = 0;
+    if (session_data.size() > 0)
+        med = median(session_data.begin(), session_data.end());
+
+
     float avgsess = float(num_slices) / float(num_days);
     double avglength = total_length / double(num_slices);
 
-    QString txt = QObject::tr("Avg Sessions: %1 Avg Length: %2").arg(avgsess, 0, 'f', 1).arg(avglength, 0, 'f', 2);
+    QString txt = QObject::tr("Avg Sessions: %1 Length Avg: %2 Med %3").arg(avgsess, 0, 'f', 1).arg(avglength, 0, 'f', 2).arg(med, 0, 'f', 2);
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
 }
 
@@ -632,7 +790,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                         float s2 = double(slice.end - slice.start) / 3600000.0;
 
                         QColor col = (slice.status == EquipmentOn) ? goodcolor : Qt::black;
-                        slices.append(SummaryChartSlice(NoChannel, s1, s2, (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off"), col));
+                        slices.append(SummaryChartSlice(&calcitems[0], s1, s2, (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off"), col));
                     }
                 } else {
                     // otherwise just show session duration
@@ -644,7 +802,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
                     QString txt = QObject::tr("%1\nStart:%2\nLength:%3").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
-                    slices.append(SummaryChartSlice(NoChannel, s1, s2, txt, goodcolor));
+                    slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, goodcolor));
                 }
             }
 
@@ -696,10 +854,13 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         if ((lastx1 + barw) > (rect.left()+rect.width()+1))
             break;
 
+        totaldays++;
+
 
         if (!day) {
             lasty1 = rect.bottom();
             lastx1 += barw;
+            nousedays++;
          //   it++;
             continue;
         }
@@ -760,7 +921,6 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         }
 
 
-   //     it++;
         lastx1 = x1;
     } while (++idx <= idx_end);
 
@@ -771,39 +931,76 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
 void gAHIChart::preCalc()
 {
-    indices.clear();
+    gSummaryChart::preCalc();
+
     ahi_total = 0;
     calc_cnt = 0;
     total_hours = 0;
+    min_ahi = 99999;
+    max_ahi = -99999;
+
+    ahi_data.clear();
+    ahi_data.reserve(idx_end-idx_start);
 }
 void gAHIChart::customCalc(Day *day, QList<SummaryChartSlice> &list)
 {
     int size = list.size();
-    float hours = day->hours(m_machtype);
+    if (size == 0) return;
+    EventDataType hours = day->hours(m_machtype);
+    EventDataType ahi_cnt = 0;
     for (int i=0; i < size; ++i) {
-        const SummaryChartSlice & slice = list.at(i);
+        SummaryChartSlice & slice = list[i];
+        SummaryCalcItem * calc = slice.calc;
+
         EventDataType value = slice.value;
-        indices[slice.code] += value;
-        ahi_total += value;
+
+        calc->sum += value;
+        calc->divisor += hours;
+
+        calc->min = qMin(value / hours, calc->min);
+        calc->max = qMax(value / hours, calc->max);
+
+        ahi_cnt += value;
     }
+    min_ahi = qMin(ahi_cnt / hours, min_ahi);
+    max_ahi = qMax(ahi_cnt / hours, max_ahi);
+
+    ahi_data.append(ahi_cnt / hours);
+
+    ahi_total += ahi_cnt;
     total_hours += hours;
     calc_cnt++;
 }
 void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 {
-    QStringList txtlist;
-    txtlist.append(QString("%1: %2").arg(STR_TR_AHI).arg(ahi_total / total_hours, 0, 'f', 2));
+    if (totaldays == nousedays) return;
 
-    QHash<ChannelID, double>::iterator it;
-    QHash<ChannelID, double>::iterator it_end = indices.end();
+    int size = idx_end - idx_start;
 
-    for (it = indices.begin(); it != it_end; ++it) {
-        ChannelID code = it.key();
-        schema::Channel & chan = schema::channel[code];
-        double indice = it.value() / total_hours;
-        txtlist.append(QString("%1: %2").arg(chan.label()).arg(indice, 0, 'f', 2));
+    int mpos = size /2 ;
+
+    float med = 0;
+    if (size > 0) {
+
+        //nth_element(ahi_data.begin(), ahi_data.begin()+ mpos, ahi_data.end());
+        med = median(ahi_data.begin(), ahi_data.end());
     }
-    QString txt = txtlist.join(" ");
+
+    QStringList txtlist;
+    txtlist.append(QObject::tr("%1 %2 / %3 / %4").arg(STR_TR_AHI).arg(min_ahi, 0, 'f', 2).arg(med, 0, 'f', 2).arg(max_ahi, 0, 'f', 2));
+
+    int num_channels = calcitems.size();
+
+    for (int i=0; i < num_channels; ++i) {
+        SummaryCalcItem & calc = calcitems[i];
+        if (calc.divisor > 0) {
+            ChannelID code = calc.code;
+            schema::Channel & chan = schema::channel[code];
+            double indice = calc.sum / calc.divisor;
+            txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(indice, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
+        }
+    }
+    QString txt = txtlist.join(", ");
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
 }
 
@@ -812,12 +1009,17 @@ void gAHIChart::populate(Day *day, int idx)
     QList<SummaryChartSlice> & slices = cache[idx];
 
     float hours = day->hours();
+    int num_channels = calcitems.size();
+
     for (int i=0; i < num_channels; ++i) {
-        ChannelID code = channels.at(i);
+        SummaryCalcItem & calc = calcitems[i];
+        ChannelID code = calc.code;
         if (!day->hasData(code, ST_CNT)) continue;
+
         schema::Channel *chan = schema::channel.channels.find(code).value();
+
         float c = day->count(code);
-        slices.append(SummaryChartSlice(code, c, c  / hours, chan->label(), chan->defaultColor()));
+        slices.append(SummaryChartSlice(&calc, c, c  / hours, chan->label(), calc.color));
     }
 }
 QString gAHIChart::tooltipData(Day *day, int idx)
@@ -835,108 +1037,134 @@ QString gAHIChart::tooltipData(Day *day, int idx)
     return QString("\n%1: %2").arg(STR_TR_AHI).arg(float(total) / hour,0,'f',2)+txt;
 }
 
+
+gPressureChart::gPressureChart()
+    :gSummaryChart("Pressure", MT_CPAP)
+{
+
+    // Do not reorder these!!! :P
+    addCalc(CPAP_Pressure, ST_SETMAX, schema::channel[CPAP_Pressure].defaultColor());    // 00
+    addCalc(CPAP_Pressure, ST_MID, schema::channel[CPAP_Pressure].defaultColor());       // 01
+    addCalc(CPAP_Pressure, ST_90P, brighten(schema::channel[CPAP_Pressure].defaultColor(), 1.33)); // 02
+    addCalc(CPAP_PressureMin, ST_SETMIN, schema::channel[CPAP_PressureMin].defaultColor());  // 03
+    addCalc(CPAP_PressureMax, ST_SETMAX, schema::channel[CPAP_PressureMax].defaultColor());  // 04
+
+    addCalc(CPAP_EPAP, ST_SETMAX, schema::channel[CPAP_EPAP].defaultColor());      // 05
+    addCalc(CPAP_IPAP, ST_SETMAX, schema::channel[CPAP_IPAP].defaultColor());      // 06
+    addCalc(CPAP_EPAPLo, ST_SETMAX, schema::channel[CPAP_EPAPLo].defaultColor());    // 07
+    addCalc(CPAP_IPAPHi, ST_SETMAX, schema::channel[CPAP_IPAPHi].defaultColor());    // 08
+
+    addCalc(CPAP_EPAP, ST_MID, schema::channel[CPAP_EPAP].defaultColor());         // 09
+    addCalc(CPAP_EPAP, ST_90P, brighten(schema::channel[CPAP_EPAP].defaultColor(),1.33));         // 10
+    addCalc(CPAP_IPAP, ST_MID, schema::channel[CPAP_IPAP].defaultColor());         // 11
+    addCalc(CPAP_IPAP, ST_90P, brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33));         // 12
+}
+
+
 void gPressureChart::populate(Day * day, int idx)
 {
     float tmp;
     CPAPMode mode =  (CPAPMode)(int)qRound(day->settings_wavg(CPAP_Mode));
+    QList<SummaryChartSlice> & slices = cache[idx];
+
     if (mode == MODE_CPAP) {
         float pr = day->settings_max(CPAP_Pressure);
-        cache[idx].append(SummaryChartSlice(CPAP_Pressure, pr, pr, schema::channel[CPAP_Pressure].label(), schema::channel[CPAP_Pressure].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[0], pr, pr, schema::channel[CPAP_Pressure].label(), calcitems[0].color));
     } else if (mode == MODE_APAP) {
         float min = day->settings_min(CPAP_PressureMin);
         float max = day->settings_max(CPAP_PressureMax);
-        QList<SummaryChartSlice> & slices = cache[idx];
 
         tmp = min;
 
-        slices.append(SummaryChartSlice(CPAP_PressureMin, min, min, schema::channel[CPAP_PressureMin].label(), schema::channel[CPAP_PressureMin].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[3], min, min, schema::channel[CPAP_PressureMin].label(), calcitems[3].color));
         if (!day->summaryOnly()) {
             float med = day->calcMiddle(CPAP_Pressure);
-            slices.append(SummaryChartSlice(CPAP_Pressure, med, med - tmp, day->calcMiddleLabel(CPAP_Pressure), schema::channel[CPAP_Pressure].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[1], med, med - tmp, day->calcMiddleLabel(CPAP_Pressure), calcitems[1].color));
             tmp += med - tmp;
 
             float p90 = day->calcPercentile(CPAP_Pressure);
-            slices.append(SummaryChartSlice(CPAP_Pressure, p90, p90 - tmp, day->calcPercentileLabel(CPAP_Pressure), brighten(schema::channel[CPAP_Pressure].defaultColor(), 1.33)));
+            slices.append(SummaryChartSlice(&calcitems[2], p90, p90 - tmp, day->calcPercentileLabel(CPAP_Pressure), calcitems[2].color));
             tmp += p90 - tmp;
         }
-        slices.append(SummaryChartSlice(CPAP_PressureMax, max, max - tmp, schema::channel[CPAP_PressureMax].label(), schema::channel[CPAP_PressureMax].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[4], max, max - tmp, schema::channel[CPAP_PressureMax].label(), calcitems[4].color));
 
     } else if (mode == MODE_BILEVEL_FIXED) {
         float epap = day->settings_max(CPAP_EPAP);
         float ipap = day->settings_max(CPAP_IPAP);
-        QList<SummaryChartSlice> & slices = cache[idx];
 
-        slices.append(SummaryChartSlice(CPAP_EPAP, epap, epap, schema::channel[CPAP_EPAP].label(), schema::channel[CPAP_EPAP].defaultColor()));
-        slices.append(SummaryChartSlice(CPAP_IPAP, ipap, ipap - epap, schema::channel[CPAP_IPAP].label(), schema::channel[CPAP_IPAP].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[5], epap, epap, schema::channel[CPAP_EPAP].label(), calcitems[5].color));
+        slices.append(SummaryChartSlice(&calcitems[6], ipap, ipap - epap, schema::channel[CPAP_IPAP].label(), calcitems[6].color));
 
     } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
         float epap = day->settings_max(CPAP_EPAPLo);
         tmp = epap;
         float ipap = day->settings_max(CPAP_IPAPHi);
-        QList<SummaryChartSlice> & slices = cache[idx];
 
-        slices.append(SummaryChartSlice(CPAP_EPAP, epap, epap, schema::channel[CPAP_EPAPLo].label(), schema::channel[CPAP_EPAPLo].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[7], epap, epap, schema::channel[CPAP_EPAPLo].label(), calcitems[7].color));
         if (!day->summaryOnly()) {
 
             float e50 = day->calcMiddle(CPAP_EPAP);
-            slices.append(SummaryChartSlice(CPAP_EPAP, e50, e50 - tmp, day->calcMiddleLabel(CPAP_EPAP), schema::channel[CPAP_EPAP].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[9], e50, e50 - tmp, day->calcMiddleLabel(CPAP_EPAP), calcitems[9].color));
             tmp += e50 - tmp;
 
             float e90 = day->calcPercentile(CPAP_EPAP);
-            slices.append(SummaryChartSlice(CPAP_EPAP, e90, e90 - tmp, day->calcPercentileLabel(CPAP_EPAP), brighten(schema::channel[CPAP_EPAP].defaultColor(),1.33)));
+            slices.append(SummaryChartSlice(&calcitems[10], e90, e90 - tmp, day->calcPercentileLabel(CPAP_EPAP), calcitems[10].color));
             tmp += e90 - tmp;
 
             float i50 = day->calcMiddle(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), schema::channel[CPAP_IPAP].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[11], i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), calcitems[11].color));
             tmp += i50 - tmp;
 
             float i90 = day->calcPercentile(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33)));
+            slices.append(SummaryChartSlice(&calcitems[12], i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), calcitems[12].color));
             tmp += i90 - tmp;
         }
-        slices.append(SummaryChartSlice(CPAP_EPAP, ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), schema::channel[CPAP_IPAPHi].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[8], ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), calcitems[8].color));
     } else if ((mode == MODE_BILEVEL_AUTO_VARIABLE_PS) || (mode == MODE_ASV_VARIABLE_EPAP)) {
         float epap = day->settings_max(CPAP_EPAPLo);
         tmp = epap;
-        QList<SummaryChartSlice> & slices = cache[idx];
 
-        slices.append(SummaryChartSlice(CPAP_EPAPLo, epap, epap, schema::channel[CPAP_EPAPLo].label(), schema::channel[CPAP_EPAPLo].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[7], epap, epap, schema::channel[CPAP_EPAPLo].label(), calcitems[7].color));
         if (!day->summaryOnly()) {
             float e50 = day->calcMiddle(CPAP_EPAP);
-            slices.append(SummaryChartSlice(CPAP_EPAP, e50, e50 - tmp, day->calcMiddleLabel(CPAP_EPAP), schema::channel[CPAP_EPAP].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[9], e50, e50 - tmp, day->calcMiddleLabel(CPAP_EPAP), calcitems[9].color));
             tmp += e50 - tmp;
 
             float e90 = day->calcPercentile(CPAP_EPAP);
-            slices.append(SummaryChartSlice(CPAP_EPAP, e90, e90 - tmp, day->calcPercentileLabel(CPAP_EPAP), brighten(schema::channel[CPAP_EPAP].defaultColor(),1.33)));
+            slices.append(SummaryChartSlice(&calcitems[10], e90, e90 - tmp, day->calcPercentileLabel(CPAP_EPAP), calcitems[10].color));
             tmp += e90 - tmp;
 
             float i50 = day->calcMiddle(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), schema::channel[CPAP_IPAP].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[11], i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), calcitems[11].color));
             tmp += i50 - tmp;
 
             float i90 = day->calcPercentile(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33)));
+            slices.append(SummaryChartSlice(&calcitems[12], i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), calcitems[12].color));
             tmp += i90 - tmp;
         }
         float ipap = day->settings_max(CPAP_IPAPHi);
-        slices.append(SummaryChartSlice(CPAP_IPAPHi, ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), schema::channel[CPAP_IPAPHi].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[8], ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), calcitems[8].color));
     } else if (mode == MODE_ASV) {
         float epap = day->settings_max(CPAP_EPAP);
         tmp = epap;
-        QList<SummaryChartSlice> & slices = cache[idx];
 
-        slices.append(SummaryChartSlice(CPAP_EPAP, epap, epap, schema::channel[CPAP_EPAP].label(), schema::channel[CPAP_EPAP].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[5], epap, epap, schema::channel[CPAP_EPAP].label(), calcitems[5].color));
         if (!day->summaryOnly()) {
             float i50 = day->calcMiddle(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), schema::channel[CPAP_IPAP].defaultColor()));
+            slices.append(SummaryChartSlice(&calcitems[11], i50, i50 - tmp, day->calcMiddleLabel(CPAP_IPAP), calcitems[11].color));
             tmp += i50 - tmp;
 
             float i90 = day->calcPercentile(CPAP_IPAP);
-            slices.append(SummaryChartSlice(CPAP_IPAP, i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33)));
+            slices.append(SummaryChartSlice(&calcitems[12], i90, i90 - tmp, day->calcPercentileLabel(CPAP_IPAP), calcitems[12].color));
             tmp += i90 - tmp;
         }
         float ipap = day->settings_max(CPAP_IPAPHi);
-        slices.append(SummaryChartSlice(CPAP_IPAPHi, ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), schema::channel[CPAP_IPAPHi].defaultColor()));
+        slices.append(SummaryChartSlice(&calcitems[8], ipap, ipap - tmp, schema::channel[CPAP_IPAPHi].label(), calcitems[8].color));
     }
 
 }
+
+//void gPressureChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
+//{
+//}
+

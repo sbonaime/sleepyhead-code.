@@ -375,7 +375,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         if (ll->position() == LayerLeft) {
             QRect rect(originX + left, originY + top, tmp, height - top - bottom);
             ll->m_rect = rect;
-            ll->paint(painter, *this, QRegion(rect));
+          //  ll->paint(painter, *this, QRegion(rect));
             left += tmp;
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
@@ -388,7 +388,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
             right += tmp;
             QRect rect(originX + width - right, originY + top, tmp, height - top - bottom);
             ll->m_rect = rect;
-            ll->paint(painter, *this, QRegion(rect));
+            //ll->paint(painter, *this, QRegion(rect));
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
             painter.setPen(col);
@@ -439,6 +439,16 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         }
     }
 
+    // Draw anything like the YAxis labels afterwards, in case the graph scale was updated during draw
+    for (int i = 0; i < m_layers.size(); i++) {
+        Layer *ll = m_layers[i];
+
+        if (!ll->visible()) { continue; }
+        if ((ll->position() == LayerLeft) || (ll->position() == LayerRight)) {
+            ll->paint(painter, *this, QRegion(ll->m_rect));
+        }
+    }
+
     if (m_selection.width() > 0 && m_selecting_area) {
         QColor col(128, 128, 255, 128);
         painter.fillRect(originX + m_selection.x(), originY + top, m_selection.width(), height - bottom - top,QBrush(col));
@@ -448,7 +458,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 //                     originX + m_selection.x(), originY + height - bottom, col.rgba());
     }
 
-    if (isPinned()) {
+    if (isPinned() && !printing()) {
         painter.drawPixmap(-5, originY-10, m_graphview->pin_icon);
     }
 

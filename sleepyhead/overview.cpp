@@ -379,11 +379,11 @@ void Overview::RebuildGraphs(bool reset)
             gGraph *G = createGraph(chan->code(), name, chan->description());
             if ((chan->type() == schema::FLAG) || (chan->type() == schema::MINOR_FLAG)) {
                 gSummaryChart * sc = new gSummaryChart(chan->code(), MT_CPAP);
-                sc->addCalc(code, ST_CPH);
+                sc->addCalc(code, ST_CPH, schema::channel[code].defaultColor());
                 G->AddLayer(sc);
             } else if (chan->type() == schema::SPAN) {
                 gSummaryChart * sc = new gSummaryChart(chan->code(), MT_CPAP);
-                sc->addCalc(code, ST_SPH);
+                sc->addCalc(code, ST_SPH, schema::channel[code].defaultColor());
                 G->AddLayer(sc);
             } else if (chan->type() == schema::WAVEFORM) {
                 G->AddLayer(new gSummaryChart(code, chan->machtype()));

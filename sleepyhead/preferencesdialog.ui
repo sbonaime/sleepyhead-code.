@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>721</width>
+    <width>809</width>
     <height>610</height>
    </rect>
   </property>
@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -76,7 +76,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="title">
-          <string>Session Settings</string>
+          <string>Session Splitting Settings</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <property name="spacing">
@@ -94,6 +94,19 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention ResMed users:&lt;/span&gt; There are some pitfalls you may want to consider before trying to split sessions away from ResMed's 12:00 noon day model, click &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;here&lt;/a&gt; for more information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
@@ -142,7 +155,7 @@
                <number>10</number>
               </property>
               <property name="pageStep">
-               <number>60</number>
+               <number>30</number>
               </property>
               <property name="value">
                <number>0</number>
@@ -160,7 +173,7 @@
                <enum>QSlider::TicksAbove</enum>
               </property>
               <property name="tickInterval">
-               <number>30</number>
+               <number>10</number>
               </property>
              </widget>
             </item>
@@ -277,12 +290,28 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="cacheSessionData">
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="LockSummarySessionSplitting">
               <property name="toolTip">
-               <string>Keep session data in memory to speed up revisiting days.</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;This setting should be used with caution...&lt;/span&gt; Switching it off comes with consequences involving accuracy of summary only days, as certain calculations only work properly provided summary only sessions that came from individual day records are kept together. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;ResMed users:&lt;/span&gt; Just because it seems natural to you and I that the 12 noon session restart should be in the previous day, does not mean ResMed's data agrees with us. The STF.edf summary index format has serious weaknesses that make doing this not a good idea.&lt;/p&gt;&lt;p&gt;This option exists to pacify those who don't care and want to see this &amp;quot;fixed&amp;quot; no matter the costs, but know it comes with a cost. If you keep your SD card in every night, and import at least once a week, and you won't see problems with this very often.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Cache Session Data (uses more system memory)</string>
+               <string>Don't Split Summary Days (Warning: read the tooltip!)</string>
               </property>
              </widget>
             </item>
@@ -301,7 +330,112 @@ p, li { white-space: pre-wrap; }
             </item>
            </layout>
           </item>
-          <item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Session Storage Options</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>0</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_41">
+            <property name="text">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Changing SD Backup compression options doesn't automatically recompress backup data.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="compressSDBackups">
+            <property name="toolTip">
+             <string>Compress ResMed (EDF) backups to save disk space.
+Backed up EDF files are stored in the .gz format, 
+which is common on Mac &amp; Linux platforms.. 
+
+SleepyHead can import from this compressed backup directory natively.. 
+To use with ResScan will require the .gz files to be uncompressed first..</string>
+            </property>
+            <property name="text">
+             <string>Compress SD Card Backups (slower first import, but makes backups smaller)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_32">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>The following options affect the amount of disk space SleepyHead uses, and all have an effect on how long import takes.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="compressSessionData">
+            <property name="toolTip">
+             <string>This makes SleepyHead's data take around half as much space.
+But it makes import and day changing take longer.. 
+If you've got a new computer with a small solid state disk, this is a good option.</string>
+            </property>
+            <property name="text">
+             <string>Compress Session Data (makes SleepyHead data smaller, but day changing slower.)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="createSDBackups">
+            <property name="toolTip">
+             <string>This maintains a backup of SD-card data for ResMed machines, 
+
+ResMed machines delete high resolution data older than 7 days, 
+and graph data older than 30 days..
+
+SleepyHead can keep a copy of this data if you ever need to reinstall. 
+(Highly recomended, unless your short on disk space or don't care about the graph data)</string>
+            </property>
+            <property name="text">
+             <string>Create SD Card Backups during Import (Turn this off at your own peril!)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_18">
             <property name="leftMargin">
              <number>0</number>
@@ -356,16 +490,6 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="LockSummarySessionSplitting">
-              <property name="toolTip">
-               <string>Summary only data is more accurate for ResMed users if this is left on.</string>
-              </property>
-              <property name="text">
-               <string>Don't Split Summary Days</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <spacer name="horizontalSpacer_6">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -384,104 +508,48 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QGroupBox" name="groupBox_8">
          <property name="title">
-          <string>Session Storage Options</string>
+          <string>Memory and Startup Options</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <property name="leftMargin">
-           <number>4</number>
-          </property>
-          <property name="topMargin">
-           <number>9</number>
-          </property>
-          <property name="rightMargin">
-           <number>4</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="horizontalSpacing">
-           <number>0</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>4</number>
-          </property>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="createSDBackups">
-            <property name="toolTip">
-             <string>This maintains a backup of SD-card data for ResMed machines, 
-
-ResMed machines delete high resolution data older than 7 days, 
-and graph data older than 30 days..
-
-SleepyHead can keep a copy of this data if you ever need to reinstall. 
-(Highly recomended, unless your short on disk space or don't care about the graph data)</string>
-            </property>
-            <property name="text">
-             <string>Create SD Card Backups during Import (Turn this off at your own peril!)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="compressSessionData">
-            <property name="toolTip">
-             <string>This makes SleepyHead's data take around half as much space.
-But it makes import and day changing take longer.. 
-If you've got a new computer with a small solid state disk, this is a good option.</string>
-            </property>
-            <property name="text">
-             <string>Compress Session Data (makes SleepyHead data smaller, but day changing slower.)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="compressSDBackups">
-            <property name="toolTip">
-             <string>Compress ResMed (EDF) backups to save disk space.
-Backed up EDF files are stored in the .gz format, 
-which is common on Mac &amp; Linux platforms.. 
-
-SleepyHead can import from this compressed backup directory natively.. 
-To use with ResScan will require the .gz files to be uncompressed first..</string>
-            </property>
-            <property name="text">
-             <string>Compress SD Card Backups (slower first import, but makes backups smaller)</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayout_14">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_32">
-            <property name="font">
-             <font>
-              <italic>true</italic>
-             </font>
+           <widget class="QCheckBox" name="preloadSummaries">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes starting SleepyHead a bit slower, by pre-loading all the summary data in advance, which speeds up overview browsing and a few other calculations later on. &lt;/p&gt;&lt;p&gt;If you have a large amount of data, it might be worth keeping this switched off, but if you typically like to view &lt;span style=&quot; font-style:italic;&quot;&gt;everything&lt;/span&gt; in overview, all the summary data still has to be loaded anyway. &lt;/p&gt;&lt;p&gt;Note this setting doesn't affect waveform and event data, which is always demand loaded as needed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>The following options affect the amount of disk space SleepyHead uses, and all have an effect on how long import takes.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
+             <string>Pre-Load all summary data at startup</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_41">
-            <property name="text">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Changing SD Backup compression options doesn't automatically recompress backup data.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="cacheSessionData">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting keeps waveform and event data in memory after use to speed up revisiting days.&lt;/p&gt;&lt;p&gt;This is not really a necessary option, as your operating system caches previously used files too.&lt;/p&gt;&lt;p&gt;Recommendation is to leave it switched off, unless your computer has a ton of memory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="wordWrap">
-             <bool>true</bool>
+            <property name="text">
+             <string>Keep Waveform/Event data in memory</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="automaticImport">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogs during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Import without asking for confirmation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="skipLoginScreen">
+            <property name="toolTip">
+             <string>Bypass the login screen and load the most recent User Profile</string>
+            </property>
+            <property name="text">
+             <string>Skip Login Screen</string>
             </property>
            </widget>
           </item>
@@ -507,10 +575,7 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string>&amp;CPAP</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_15">
-       <property name="spacing">
-        <number>4</number>
-       </property>
+      <layout class="QGridLayout" name="gridLayout_8">
        <property name="leftMargin">
         <number>4</number>
        </property>
@@ -523,60 +588,325 @@ p, li { white-space: pre-wrap; }
        <property name="bottomMargin">
         <number>4</number>
        </property>
-       <item>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item row="0" column="2">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="title">
-          <string>CPAP Mask Information</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
+          <string>General CPAP and Related Settings</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>2</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="horizontalSpacing">
-           <number>4</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>2</number>
-          </property>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_27">
-            <property name="text">
-             <string>Mask Type</string>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="complianceHours">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</string>
+            </property>
+            <property name="suffix">
+             <string> hours</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>8.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>4.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="QComboBox" name="maskTypeCombo">
+          <item row="2" column="2">
+           <widget class="QDoubleSpinBox" name="leakRedlineSpinbox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
-             <string>Generic mask type. Select the one that's closest to your mask.</string>
+             <string>User definable threshold considered large leak</string>
+            </property>
+            <property name="suffix">
+             <string> L/min</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QCheckBox" name="showUnknownFlags">
+            <property name="toolTip">
+             <string>Show flags for machine detected events that haven't been identified yet.</string>
+            </property>
+            <property name="text">
+             <string>Enable Unknown Events Channels</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="eventIndexCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
             <item>
              <property name="text">
-              <string/>
+              <string extracomment="Apnea Hypopnea Index">AHI</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string extracomment="Respiratory Disturbance Index">RDI</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>AHI/Hour Graph Time Window</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>Preferred major event index</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="complianceCheckBox">
+            <property name="text">
+             <string>Compliance defined as</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QSpinBox" name="ahiGraphWindowSize">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Adjusts the amount of data considered for each point in the AHI/Hour graph.
+Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
+            </property>
+            <property name="suffix">
+             <string> minutes</string>
+            </property>
+            <property name="minimum">
+             <number>5</number>
+            </property>
+            <property name="maximum">
+             <number>999</number>
+            </property>
+            <property name="value">
+             <number>60</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="showLeakRedline">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>Whether to show the leak redline in the leak graph</string>
+            </property>
+            <property name="text">
+             <string>Flag leaks over threshold</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QCheckBox" name="ahiGraphZeroReset">
+            <property name="toolTip">
+             <string>Reset the counter to zero at beginning of each (time) window.</string>
+            </property>
+            <property name="text">
+             <string>Zero Reset</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>CPAP Clock Drift</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_15">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>4</number>
+          </property>
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="clockDriftMinutes">
+            <property name="minimum">
+             <number>-59</number>
+            </property>
+            <property name="maximum">
+             <number>59</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QSpinBox" name="clockDriftHours">
+            <property name="minimum">
+             <number>-99</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_31">
+            <property name="text">
+             <string>Seconds</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="3">
+           <widget class="QLabel" name="label_7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note: This is not intended for timezone corrections! Make sure your operating system clock and timezone is set correctly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QSpinBox" name="clockDriftSeconds">
+            <property name="minimum">
+             <number>-9999</number>
+            </property>
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Minutes</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Hours</string>
+            </property>
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="label_29">
+           <spacer name="verticalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QGroupBox" name="PreferredCalcs">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Changes to the following settings needs a restart, but not a recalc.</string>
+         </property>
+         <property name="title">
+          <string>Preferred Calculation Methods</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_42">
+            <property name="text">
+             <string>Upper Percentile</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_43">
+            <property name="text">
+             <string>Maximum Calcs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_37">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -584,118 +914,177 @@ p, li { white-space: pre-wrap; }
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Description</string>
+             <string>Middle Calculations</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="QLineEdit" name="maskDescription">
+          <item row="1" column="1">
+           <widget class="QComboBox" name="prefCalcMiddle">
             <property name="toolTip">
-             <string>The name of your mask, or at least the name you call it.</string>
+             <string>Median is recommended for ResMed users.</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Median</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Weighted Average</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Normal Average</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="prefCalcPercentile">
+            <property name="toolTip">
+             <string>For consistancy, ResMed users should use 95% here,
+as this is the only value available on summary-only days.</string>
+            </property>
+            <property name="suffix">
+             <string notr="true">%</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
             </property>
            </widget>
           </item>
-          <item row="4" column="1" colspan="2">
-           <widget class="QComboBox" name="leakModeCombo">
+          <item row="3" column="1">
+           <widget class="QComboBox" name="prefCalcMax">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="toolTip">
-             <string>Method of unintentional leaks calculation if not provided by your machine.
-Note: Statistical Model is experimental.</string>
+             <string>ResMed users probably should use 99th Percentile for visual consistency.</string>
             </property>
             <item>
              <property name="text">
-              <string>Mask Profile</string>
+              <string>True Maximum</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Statistical Model</string>
+              <string>99% Percentile</string>
              </property>
             </item>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_17">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="customEventGroupbox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Enable/disable experimental event flagging enhancements. 
+It allows detecting borderline events, and some the machine missed.
+This option must be enabled before import, otherwise a purge is required.</string>
+         </property>
+         <property name="title">
+          <string>Custom CPAP User Event Flagging</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>4</number>
+          </property>
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <item row="3" column="2">
+           <widget class="QDoubleSpinBox" name="apneaDuration2">
+            <property name="suffix">
+             <string>s</string>
             </property>
-            <property name="text">
-             <string>Leak calcs</string>
+            <property name="value">
+             <double>10.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="apneaFlowRestriction2">
+            <property name="suffix">
+             <string>%</string>
             </property>
-            <property name="text">
-             <string>Started Using</string>
+            <property name="value">
+             <double>10.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item row="9" column="1" colspan="2">
-           <widget class="QDateEdit" name="startedUsingMask">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+          <item row="6" column="0" colspan="4">
+           <widget class="QCheckBox" name="resyncMachineDetectedEvents">
             <property name="toolTip">
-             <string>The date you started using this mask</string>
-            </property>
-            <property name="calendarPopup">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QLabel" name="label_28">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
+             <string>This experimental option attempts to use SleepyHead's event flagging system to improve machine detected event positioning.</string>
             </property>
             <property name="text">
-             <string>Leak Profile</string>
+             <string>Resync Machine Detected Events (Experimental)</string>
             </property>
            </widget>
           </item>
-          <item row="12" column="0" colspan="3">
-           <widget class="QTableWidget" name="leakProfile">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_50">
+            <property name="text">
+             <string>#2</string>
             </property>
-            <attribute name="verticalHeaderVisible">
-             <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string>Pressure</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Leak</string>
-             </property>
-            </column>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
-          <item row="10" column="0" colspan="3">
-           <widget class="QLabel" name="label_31">
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_35">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Flow Restriction</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="4">
+           <widget class="QLabel" name="label_34">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <italic>true</italic>
@@ -706,602 +1095,91 @@ Note: Statistical Model is experimental.</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:normal;&quot;&gt;Note: &lt;/span&gt;Leak profiles currently does not work yet..&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Custom flagging is an experimental method of detecting events missed by the machine. They are &lt;span style=&quot; text-decoration: underline;&quot;&gt;not&lt;/span&gt; included in AHI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Percentage of restriction in airflow from the median value. 
+A value of 20% works well for detecting apneas. </string>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="value">
+             <double>10.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="4">
+           <widget class="QCheckBox" name="showUserFlagsInPie">
+            <property name="text">
+             <string>Show in Event Breakdown Piechart</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QDoubleSpinBox" name="apneaDuration">
+            <property name="toolTip">
+             <string>Duration of airflow restriction</string>
+            </property>
+            <property name="suffix">
+             <string>s</string>
+            </property>
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>10.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_49">
+            <property name="text">
+             <string>#1</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="4">
+           <widget class="QCheckBox" name="userEventDuplicates">
+            <property name="text">
+             <string>Allow duplicates near machine events.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_38">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Event Duration</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout_11">
-         <item row="5" column="0" rowspan="2" colspan="2">
-          <widget class="QGroupBox" name="customEventGroupbox">
-           <property name="toolTip">
-            <string>Enable/disable experimental event flagging enhancements. 
-It allows detecting borderline events, and some the machine missed.
-This option must be enabled before import, otherwise a purge is required.</string>
-           </property>
-           <property name="title">
-            <string>Custom User Event Flagging</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <property name="leftMargin">
-             <number>4</number>
-            </property>
-            <property name="topMargin">
-             <number>9</number>
-            </property>
-            <property name="rightMargin">
-             <number>4</number>
-            </property>
-            <property name="bottomMargin">
-             <number>4</number>
-            </property>
-            <property name="spacing">
-             <number>4</number>
-            </property>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="apneaFlowRestriction2">
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1" colspan="5">
-             <widget class="QCheckBox" name="showUserFlagsInPie">
-              <property name="text">
-               <string>Show in Event Breakdown Piechart</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_49">
-              <property name="text">
-               <string>#1</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_50">
-              <property name="text">
-               <string>#2</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_35">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Flow Restriction</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QDoubleSpinBox" name="apneaDuration2">
-              <property name="suffix">
-               <string>s</string>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="label_38">
-              <property name="text">
-               <string>Event Duration</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QDoubleSpinBox" name="apneaDuration">
-              <property name="toolTip">
-               <string>Duration of airflow restriction</string>
-              </property>
-              <property name="suffix">
-               <string>s</string>
-              </property>
-              <property name="minimum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>Percentage of restriction in airflow from the median value. 
-A value of 20% works well for detecting apneas. </string>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1" colspan="5">
-             <widget class="QCheckBox" name="userEventDuplicates">
-              <property name="text">
-               <string>Allow duplicates near machine events.</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="6">
-             <widget class="QLabel" name="label_34">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <italic>true</italic>
-               </font>
-              </property>
-              <property name="text">
-               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Custom flagging is an experimental method of detecting events missed by the machine. They are &lt;span style=&quot; text-decoration: underline;&quot;&gt;not&lt;/span&gt; included in AHI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="5">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="5" column="1" colspan="5">
-             <widget class="QCheckBox" name="resyncMachineDetectedEvents">
-              <property name="toolTip">
-               <string>This experimental option attempts to use SleepyHead's event flagging system to improve machine detected event positioning.</string>
-              </property>
-              <property name="text">
-               <string>Resync Machine Detected Events (Experimental)</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="showLeakRedline">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Whether to show the leak redline in the leak graph</string>
-           </property>
-           <property name="text">
-            <string>Show Leak Redline</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="leakRedlineSpinbox">
-           <property name="toolTip">
-            <string>User definable threshold considered large leak</string>
-           </property>
-           <property name="suffix">
-            <string> L/min</string>
-           </property>
-           <property name="decimals">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0" colspan="2">
-          <widget class="QGroupBox" name="ahiGraphGroupbox">
-           <property name="title">
-            <string>AHI/Hour Graph Settings</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_8">
-            <property name="leftMargin">
-             <number>4</number>
-            </property>
-            <property name="topMargin">
-             <number>4</number>
-            </property>
-            <property name="rightMargin">
-             <number>4</number>
-            </property>
-            <property name="bottomMargin">
-             <number>4</number>
-            </property>
-            <property name="horizontalSpacing">
-             <number>4</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_36">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Window</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="ahiGraphWindowSize">
-              <property name="toolTip">
-               <string>Adjusts the amount of data considered for each point in the AHI/Hour graph.
-Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
-              </property>
-              <property name="suffix">
-               <string> minutes</string>
-              </property>
-              <property name="minimum">
-               <number>5</number>
-              </property>
-              <property name="maximum">
-               <number>999</number>
-              </property>
-              <property name="value">
-               <number>60</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QCheckBox" name="ahiGraphZeroReset">
-              <property name="toolTip">
-               <string>Reset the counter to zero at beginning of each (time) window.</string>
-              </property>
-              <property name="text">
-               <string>Zero Reset</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_44">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>CPAP Clock Drift</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSpinBox" name="clockDrift">
-           <property name="toolTip">
-            <string>Don't touch this unless you know your CPAP clock is out.
-Try to sync it to your PC's clock (which should be synced to a timeserver)</string>
-           </property>
-           <property name="suffix">
-            <string> seconds</string>
-           </property>
-           <property name="minimum">
-            <number>-7200</number>
-           </property>
-           <property name="maximum">
-            <number>7200</number>
-           </property>
-           <property name="value">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0" colspan="2">
-          <spacer name="verticalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="3" column="0" rowspan="2" colspan="2">
-          <widget class="QGroupBox" name="complianceGroupbox">
-           <property name="toolTip">
-            <string>Don't show any compliance information</string>
-           </property>
-           <property name="title">
-            <string>Show Compliance</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_7">
-            <property name="leftMargin">
-             <number>4</number>
-            </property>
-            <property name="topMargin">
-             <number>4</number>
-            </property>
-            <property name="rightMargin">
-             <number>4</number>
-            </property>
-            <property name="bottomMargin">
-             <number>4</number>
-            </property>
-            <property name="spacing">
-             <number>4</number>
-            </property>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="complianceHours">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</string>
-              </property>
-              <property name="suffix">
-               <string> hours</string>
-              </property>
-              <property name="decimals">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <double>8.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>4.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_39">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>as over</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_40">
-              <property name="text">
-               <string>of usage per night</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QCheckBox" name="AddRERAtoAHI">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</string>
-           </property>
-           <property name="text">
-            <string>Use RDI instead of AHI (PRS1 only)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="colourTab">
-      <attribute name="title">
-       <string>Events</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="spacing">
-        <number>4</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_19">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Search</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="channelSearch"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QTreeView" name="chanView"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_20">
-         <item>
-          <widget class="QPushButton" name="resetChannelDefaults">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Reset &amp;Defaults</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_51">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it's good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="waveforms">
-      <attribute name="title">
-       <string>Waveforms</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_8">
-       <property name="spacing">
-        <number>4</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_21">
-         <item>
-          <widget class="QLabel" name="label_55">
-           <property name="text">
-            <string>Search</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="waveSearch"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QTreeView" name="waveView"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_22">
-         <item>
-          <widget class="QPushButton" name="resetChannelDefaults_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Reset &amp;Defaults</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_56">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it's good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>
@@ -1448,27 +1326,28 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
              <string>Other oximetry options</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_13">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_52">
-               <property name="text">
-                <string>Flag SPO2 Desaturations Below</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="oxiDesaturationThreshold">
+               <property name="suffix">
+                <string>%</string>
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_33">
-               <property name="text">
-                <string>Discard segments under</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="flagPulseAbove">
+               <property name="suffix">
+                <string> bpm</string>
                </property>
               </widget>
              </item>
              <item row="3" column="1">
+              <widget class="QSpinBox" name="flagPulseBelow">
+               <property name="suffix">
+                <string> bpm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
               <widget class="QSpinBox" name="oxiDiscardThreshold">
                <property name="toolTip">
                 <string>Small chunks of oximetry data under this amount will be discarded.</string>
@@ -1481,14 +1360,27 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="oxiDesaturationThreshold">
-               <property name="suffix">
-                <string>%</string>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_52">
+               <property name="text">
+                <string>Flag SPO2 Desaturations Below</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_33">
+               <property name="text">
+                <string>Discard segments under</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
               <widget class="QLabel" name="label_53">
                <property name="text">
                 <string>Flag Pulse Rate Above</string>
@@ -1498,7 +1390,7 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
+             <item row="3" column="0">
               <widget class="QLabel" name="label_54">
                <property name="text">
                 <string>Flag Pulse Rate Below</string>
@@ -1508,17 +1400,13 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QSpinBox" name="flagPulseAbove">
-               <property name="suffix">
-                <string> bpm</string>
+             <item row="0" column="0" colspan="2">
+              <widget class="QCheckBox" name="syncOximeterClock">
+               <property name="toolTip">
+                <string>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</string>
                </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QSpinBox" name="flagPulseBelow">
-               <property name="suffix">
-                <string> bpm</string>
+               <property name="text">
+                <string>Update Oximeter Clock during import</string>
                </property>
               </widget>
              </item>
@@ -1604,16 +1492,6 @@ Try to sync it to your PC's clock (which should be synced to a timeserver)</stri
             </property>
            </spacer>
           </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QCheckBox" name="syncOximeterClock">
-            <property name="toolTip">
-             <string>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</string>
-            </property>
-            <property name="text">
-             <string>Update Oximeter Clock during import</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -1644,6 +1522,150 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="colourTab">
+      <attribute name="title">
+       <string>Events</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_19">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="channelSearch"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeView" name="chanView"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_20">
+         <item>
+          <widget class="QPushButton" name="resetChannelDefaults">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Reset &amp;Defaults</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_51">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it's good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="waveforms">
+      <attribute name="title">
+       <string>Waveforms</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_21">
+         <item>
+          <widget class="QLabel" name="label_55">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="waveSearch"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeView" name="waveView"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_22">
+         <item>
+          <widget class="QPushButton" name="resetWaveformChannels">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Reset &amp;Defaults</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_56">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it's good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
        <string>&amp;General</string>
@@ -1665,133 +1687,7 @@ p, li { white-space: pre-wrap; }
         <number>4</number>
        </property>
        <item>
-        <widget class="Line" name="line_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_14">
-         <item>
-          <widget class="QGroupBox" name="PreferredCalcs">
-           <property name="toolTip">
-            <string>Changes to the following settings needs a restart, but not a recalc.</string>
-           </property>
-           <property name="title">
-            <string>Preferred Calculation Methods</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>4</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <property name="spacing">
-             <number>4</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_37">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Middle Calculations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_42">
-              <property name="text">
-               <string>Upper Percentile</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QSpinBox" name="prefCalcPercentile">
-              <property name="toolTip">
-               <string>For consistancy, ResMed users should use 95% here,
-as this is the only value available on summary-only days.</string>
-              </property>
-              <property name="suffix">
-               <string notr="true">%</string>
-              </property>
-              <property name="minimum">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QComboBox" name="prefCalcMiddle">
-              <property name="toolTip">
-               <string>Median is recommended for ResMed users.</string>
-              </property>
-              <item>
-               <property name="text">
-                <string>Median</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Weighted Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Normal Average</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QComboBox" name="prefCalcMax">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>140</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>ResMed users probably should use 99th Percentile for visual consistency.</string>
-              </property>
-              <item>
-               <property name="text">
-                <string>True Maximum</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>99% Percentile</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_43">
-              <property name="text">
-               <string>Maximum Calcs</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item>
           <widget class="QGroupBox" name="GeneralSettings">
            <property name="title">
@@ -1813,26 +1709,6 @@ as this is the only value available on summary-only days.</string>
             <property name="spacing">
              <number>4</number>
             </property>
-            <item row="5" column="1">
-             <widget class="QCheckBox" name="showUnknownFlags">
-              <property name="toolTip">
-               <string>Show flags for machine detected events that haven't been identified yet.</string>
-              </property>
-              <property name="text">
-               <string>Show Unknown Flags</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="skipLoginScreen">
-              <property name="toolTip">
-               <string>Bypass the login screen and load the most recent User Profile</string>
-              </property>
-              <property name="text">
-               <string>Skip Login Screen</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="1">
              <widget class="QCheckBox" name="enableMultithreading">
               <property name="toolTip">
@@ -1841,23 +1717,6 @@ Mainly affects the importer.</string>
               </property>
               <property name="text">
                <string>Enable Multithreading</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QCheckBox" name="skipEmptyDays">
-              <property name="toolTip">
-               <string>Daily view navigation buttons will skip over days without data records</string>
-              </property>
-              <property name="text">
-               <string>Skip over Empty Days</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QCheckBox" name="automaticImport">
-              <property name="text">
-               <string>Import without nagging</string>
               </property>
              </widget>
             </item>
@@ -2481,6 +2340,16 @@ this application to be unstable with this feature enabled.</string>
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="skipEmptyDays">
+              <property name="toolTip">
+               <string>Daily view navigation buttons will skip over days without data records</string>
+              </property>
+              <property name="text">
+               <string>Skip over Empty Days</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="allowYAxisScaling">
               <property name="toolTip">
                <string>Whether to allow changing yAxis scales by double clicking on yAxis labels</string>
@@ -2505,7 +2374,7 @@ this application to be unstable with this feature enabled.</string>
        <item>
         <widget class="QGroupBox" name="fontGroupBox">
          <property name="title">
-          <string>Application Fonts</string>
+          <string>Fonts (Application wide settings)</string>
          </property>
          <property name="flat">
           <bool>false</bool>

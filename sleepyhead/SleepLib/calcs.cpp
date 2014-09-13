@@ -1177,7 +1177,7 @@ struct zMaskProfile {
   protected:
     static const quint32 version = 0;
     void scanLeakList(EventList *leak);
-    void scanPressureList(EventList *el);
+    void scanPressureList(Session *session, ChannelID code);
 
     MaskType    m_type;
     QString     m_name;
@@ -1251,60 +1251,49 @@ void zMaskProfile::save()
     f.close();
 }
 
-void zMaskProfile::scanPressureList(EventList *el)
+void zMaskProfile::scanPressureList(Session *session, ChannelID code)
 {
-    qint64 start = el->first();
-    int count = el->count();
-    EventStoreType *dptr = el->rawData();
-    EventStoreType *eptr = dptr + count;
-    quint32 *tptr = el->rawTime();
-    qint64 time;
-    EventStoreType pressure;
+    QHash<ChannelID, QVector<EventList *> >::iterator it = session->eventlist.find(code);
 
-    for (; dptr < eptr; dptr++) {
-        time = start + *tptr++;
-        pressure = *dptr;
-        Pressure.push_back(TimeValue(time, pressure));
+    if (it == session->eventlist.end()) return;
+
+    int prescnt = session->count(code);
+    Pressure.reserve(Pressure.size() + prescnt);
+
+    QVector<EventList *> &EVL = it.value();
+    int size = EVL.size();
+
+    for (int j = 0; j < size; ++j) {
+        EventList * el = EVL[j];
+
+        qint64 start = el->first();
+        int count = el->count();
+        EventStoreType *dptr = el->rawData();
+        EventStoreType *eptr = dptr + count;
+        quint32 *tptr = el->rawTime();
+        qint64 time;
+        EventStoreType pressure;
+
+        for (; dptr < eptr; dptr++) {
+            time = start + *tptr++;
+            pressure = *dptr;
+            Pressure.push_back(TimeValue(time, pressure));
+        }
     }
 }
 void zMaskProfile::scanPressure(Session *session)
 {
     Pressure.clear();
 
-    int prescnt = 0;
-
-    //EventStoreType pressure;
-    if (session->eventlist.contains(CPAP_Pressure)) {
-        prescnt = session->count(CPAP_Pressure);
-        Pressure.reserve(prescnt);
-
-        // WTF IS THIS DOING??? WHY THE HECK DID I PUT AN INNER LOOP HERE??
-        QVector<EventList *> &EVL=session->eventlist[CPAP_Pressure];
-        int size = EVL.size();
-        for (int j = 0; j < size; ++j) {
-            scanPressureList(EVL[j]);
-//            QVector<EventList *> &el = session->eventlist[CPAP_Pressure];
-
-//            for (int e = 0; e < el.size(); e++) {
-//                scanPressureList(el[e]);
-//            }
-        }
-    } else if (session->eventlist.contains(CPAP_IPAP)) {
-        prescnt = session->count(CPAP_IPAP);
-        Pressure.reserve(prescnt);
-
-        QVector<EventList *> &EVL=session->eventlist[CPAP_IPAP];
-        int size = EVL.size();
-
-        for (int j = 0; j < size; ++j) {
-            scanPressureList(EVL[j]);
-        }
-    }
+    scanPressureList(session, CPAP_Pressure);
+    scanPressureList(session, CPAP_IPAP);
 
     qSort(Pressure);
 }
 void zMaskProfile::scanLeakList(EventList *el)
 {
+    // Scans through Leak list, and builds a histogram of each leak value for each pressure.
+
     qint64 start = el->first();
     int count = el->count();
     EventStoreType *dptr = el->rawData();
@@ -1325,6 +1314,7 @@ void zMaskProfile::scanLeakList(EventList *el)
     TimeValue *tvend = tvstr + (psize - 1);
     TimeValue *p1, *p2;
 
+    // Scan through each leak item in event list
     for (; dptr < eptr; dptr++) {
         leak = *dptr;
         ti = start + *tptr++;
@@ -1333,14 +1323,17 @@ void zMaskProfile::scanLeakList(EventList *el)
         pressure = Pressure[0].value;
 
         if (psize > 1) {
+            // Scan through pressure list to find pressure at this particular leak time
             for (p1 = tvstr; p1 != tvend; ++p1) {
                 p2 = p1+1;
 
                 if ((p2->time > ti) && (p1->time <= ti)) {
+                    // leak within current pressure range
                     pressure = p1->value;
                     found = true;
                     break;
                 } else if (p2->time == ti) {
+                    // can't remember why a added this condition...
                     pressure = p2->value;
                     found = true;
                     break;
@@ -1362,10 +1355,12 @@ void zMaskProfile::scanLeakList(EventList *el)
 //                }
             }
         } else {
+            // were talking CPAP here with no ramp..
             found = true;
         }
 
         if (found) {
+            // update the histogram of leak values for this pressure
             pressureleaks[pressure][leak]++;
             //            pmin=pressuremin.find(pressure);
             //            fleak=EventDataType(leak) * gain;
@@ -1378,8 +1373,6 @@ void zMaskProfile::scanLeakList(EventList *el)
             //                    pressurecount[pressure]=pressureleaks[pressure][leak];
             //                }
             //            }
-        } else {
-            //int i=5;
         }
     }
 
@@ -1387,7 +1380,10 @@ void zMaskProfile::scanLeakList(EventList *el)
 }
 void zMaskProfile::scanLeaks(Session *session)
 {
-    QVector<EventList *> &elv = session->eventlist[CPAP_LeakTotal];
+    QHash<ChannelID, QVector<EventList *> >::iterator ELV = session->eventlist.find(CPAP_LeakTotal);
+
+    if (ELV == session->eventlist.end()) return;
+    QVector<EventList *> &elv = ELV.value();
 
     int size=elv.size();
     if (!size)

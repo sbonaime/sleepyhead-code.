@@ -37,15 +37,6 @@ class MySortFilterProxyModel: public QSortFilterProxyModel
 
 };
 
-/*! \struct MaskProfile
-    \brief This in still a work in progress, and may be used in Unintentional leaks calculations.
-    */
-struct MaskProfile {
-    MaskType type;
-    QString name;
-    EventDataType pflow[5][2];
-};
-
 /*! \class PreferencesDialog
     \brief SleepyHead's Main Preferences Window
 
@@ -72,11 +63,7 @@ class PreferencesDialog : public QDialog
 
     void on_checkForUpdatesButton_clicked();
 
-    void on_graphView_activated(const QModelIndex &index);
-
     //void on_genOpWidget_itemActivated(QListWidgetItem *item);
-
-    void on_maskTypeCombo_activated(int index);
 
     void on_createSDBackups_toggled(bool checked);
 
@@ -96,9 +83,16 @@ class PreferencesDialog : public QDialog
 
     void on_waveSearch_textChanged(const QString &arg1);
 
+    void on_resetWaveformChannels_clicked();
+
+    void on_waveView_doubleClicked(const QModelIndex &index);
+
 private:
     void InitChanInfo();
     void InitWaveInfo();
+
+    void saveChanInfo();
+    void saveWaveInfo();
 
     QHash<MachineType, QStandardItem *> toplevel;
     QHash<MachineType, QStandardItem *> machlevel;

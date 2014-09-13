@@ -300,6 +300,7 @@ const QString STR_CS_ShowLeakRedline = "ShowLeakRedline";
 
 // ImportSettings Strings
 const QString STR_IS_DaySplitTime = "DaySplitTime";
+const QString STR_IS_PreloadSummaries = "PreloadSummaries";
 const QString STR_IS_CacheSessions = "MemoryHog";
 const QString STR_IS_CombineCloseSessions = "CombineCloserSessions";
 const QString STR_IS_IgnoreShorterSessions = "IgnoreShorterSessions";
@@ -333,6 +334,7 @@ const QString STR_US_EventWindowSize = "EventWindowSize";
 const QString STR_US_SkipEmptyDays = "SkipEmptyDays";
 const QString STR_US_RebuildCache = "RebuildCache";
 const QString STR_US_ShowDebug = "ShowDebug";
+const QString STR_US_ShowPerformance = "ShowPerformance";
 const QString STR_US_LinkGroups = "LinkGroups";
 const QString STR_US_CalculateRDI = "CalculateRDI";
 const QString STR_US_ShowSerialNumbers = "ShowSerialNumbers";
@@ -636,6 +638,7 @@ class SessionSettings : public ProfileSettings
     {
         initPref(STR_IS_DaySplitTime, QTime(12, 0, 0));
         initPref(STR_IS_CacheSessions, false);
+        initPref(STR_IS_PreloadSummaries, false);
         initPref(STR_IS_CombineCloseSessions, 240);
         initPref(STR_IS_IgnoreShorterSessions, 5);
         initPref(STR_IS_Multithreading, QThread::idealThreadCount() > 1);
@@ -650,6 +653,7 @@ class SessionSettings : public ProfileSettings
 
     QTime daySplitTime() const { return getPref(STR_IS_DaySplitTime).toTime(); }
     bool cacheSessions() const { return getPref(STR_IS_CacheSessions).toBool(); }
+    bool preloadSummaries() const { return getPref(STR_IS_PreloadSummaries).toBool(); }
     double combineCloseSessions() const { return getPref(STR_IS_CombineCloseSessions).toDouble(); }
     double ignoreShortSessions() const { return getPref(STR_IS_IgnoreShorterSessions).toDouble(); }
     bool multithreading() const { return getPref(STR_IS_Multithreading).toBool(); }
@@ -662,6 +666,7 @@ class SessionSettings : public ProfileSettings
 
     void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, time); }
     void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
+    void setPreloadSummaries(bool b) { setPref(STR_IS_PreloadSummaries, b); }
     void setCombineCloseSessions(double val) { setPref(STR_IS_CombineCloseSessions, val); }
     void setIgnoreShortSessions(double val) { setPref(STR_IS_IgnoreShorterSessions, val); }
     void setMultithreading(bool enabled) { setPref(STR_IS_Multithreading, enabled); }
@@ -781,7 +786,7 @@ class UserSettings : public ProfileSettings
         initPref(STR_US_SkipEmptyDays, true);
         initPref(STR_US_RebuildCache, false); // FIXME: jedimark: can't remember...
         initPref(STR_US_ShowDebug, false);
-//        initPref(STR_US_LinkGroups, true); // FIXME: jedimark: can't remember...
+        initPref(STR_US_ShowPerformance, false);
         initPref(STR_US_CalculateRDI, false);
         initPref(STR_US_ShowSerialNumbers, false);
         initPref(STR_US_PrefCalcMiddle, (int)0);
@@ -799,7 +804,7 @@ class UserSettings : public ProfileSettings
     bool skipEmptyDays() const { return getPref(STR_US_SkipEmptyDays).toBool(); }
     bool rebuildCache() const { return getPref(STR_US_RebuildCache).toBool(); }
     bool showDebug() const { return getPref(STR_US_ShowDebug).toBool(); }
-//    bool linkGroups() const { return getPref(STR_US_LinkGroups).toBool(); }
+    bool showPerformance() const { return getPref(STR_US_ShowPerformance).toBool(); }
     bool calculateRDI() const { return getPref(STR_US_CalculateRDI).toBool(); }
     bool showSerialNumbers() const { return getPref(STR_US_ShowSerialNumbers).toBool(); }
     int prefCalcMiddle() const { return getPref(STR_US_PrefCalcMiddle).toInt(); }
@@ -816,7 +821,7 @@ class UserSettings : public ProfileSettings
     void setSkipEmptyDays(bool skip) { setPref(STR_US_SkipEmptyDays, skip); }
     void setRebuildCache(bool rebuild) { setPref(STR_US_RebuildCache, rebuild); }
     void setShowDebug(bool b) { setPref(STR_US_ShowDebug, b); }
- //   void setLinkGroups(bool link) { setPref(STR_US_LinkGroups, link); }
+    void setShowPerformance(bool b) { setPref(STR_US_ShowPerformance, b); }
     void setCalculateRDI(bool rdi) { setPref(STR_US_CalculateRDI, rdi); }
     void setShowSerialNumbers(bool enabled) { setPref(STR_US_ShowSerialNumbers, enabled); }
     void setPrefCalcMiddle(int i) { setPref(STR_US_PrefCalcMiddle, i); }

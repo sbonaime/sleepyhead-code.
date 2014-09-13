@@ -14,6 +14,39 @@
 #include "gGraphView.h"
 
 
+///Represents the exception for taking the median of an empty list
+class median_of_empty_list_exception:public std::exception{
+  virtual const char* what() const throw() {
+    return "Attempt to take the median of an empty list of numbers.  "
+      "The median of an empty list is undefined.";
+  }
+};
+
+///Return the median of a sequence of numbers defined by the random
+///access iterators begin and end.  The sequence must not be empty
+///(median is undefined for an empty set).
+///
+///The numbers must be convertible to double.
+template<class RandAccessIter>
+double median(RandAccessIter begin, RandAccessIter end)
+  throw(median_of_empty_list_exception){
+  if(begin == end){ throw median_of_empty_list_exception(); }
+  std::size_t size = end - begin;
+  std::size_t middleIdx = size/2;
+  RandAccessIter target = begin + middleIdx;
+  std::nth_element(begin, target, end);
+
+  if(size % 2 != 0){ //Odd number of elements
+    return *target;
+  }else{            //Even number of elements
+    double a = *target;
+    RandAccessIter targetNeighbor= target-1;
+    std::nth_element(begin, targetNeighbor, end);
+    return (a+*targetNeighbor)/2.0;
+  }
+}
+
+
 struct TimeSpan
 {
 public:
@@ -32,34 +65,49 @@ struct SummaryCalcItem {
     SummaryCalcItem() {
         code = 0;
         type = ST_CNT;
+        color = Qt::black;
     }
     SummaryCalcItem(const SummaryCalcItem & copy) {
         code = copy.code;
         type = copy.type;
+        color = copy.color;
+
+        sum = copy.sum;
+        divisor = copy.divisor;
+        min = copy.min;
+        max = copy.max;
     }
-    SummaryCalcItem(ChannelID code, SummaryType type)
-        :code(code), type(type) {}
+    SummaryCalcItem(ChannelID code, SummaryType type, QColor color)
+        :code(code), type(type), color(color) {}
     ChannelID code;
     SummaryType type;
+    QColor color;
+
+    double sum;
+    double divisor;
+    EventDataType min;
+    EventDataType max;
 };
 
 struct SummaryChartSlice {
     SummaryChartSlice() {
-        code = 0;
+        calc = nullptr;
         height = 0;
         value = 0;
         name = ST_CNT;
+        color = Qt::black;
     }
     SummaryChartSlice(const SummaryChartSlice & copy) {
-        code = copy.code;
+        calc = copy.calc;
         value = copy.value;
         height = copy.height;
         name = copy.name;
         color = copy.color;
     }
-    SummaryChartSlice(ChannelID code, EventDataType value, EventDataType height, QString name, QColor color)
-        :code(code), value(value), height(height), name(name), color(color) {}
-    ChannelID code;
+
+    SummaryChartSlice(SummaryCalcItem * calc, EventDataType value, EventDataType height, QString name, QColor color)
+        :calc(calc), value(value), height(height), name(name), color(color) {}
+    SummaryCalcItem * calc;
     EventDataType value;
     EventDataType height;
     QString name;
@@ -85,18 +133,23 @@ public:
     virtual void populate(Day *, int idx);
 
     //! \brief Override to setup custom stuff before main loop
-    virtual void preCalc() {}
+    virtual void preCalc();
 
     //! \brief Override to call stuff in main loop
-    virtual void customCalc(Day *, QList<SummaryChartSlice> &) {}
+    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
 
     //! \brief Override to call stuff after draw is complete
-    virtual void afterDraw(QPainter &, gGraph &, QRect) {}
+    virtual void afterDraw(QPainter &, gGraph &, QRect);
 
     //! \brief Return any extra data to show beneath the date in the hover over tooltip
     virtual QString tooltipData(Day *, int);
 
-    void addCalc(ChannelID code, SummaryType type) { calcitems.append(SummaryCalcItem(code, type)); }
+    void addCalc(ChannelID code, SummaryType type, QColor color) {
+        calcitems.append(SummaryCalcItem(code, type, color));
+    }
+    void addCalc(ChannelID code, SummaryType type) {
+        calcitems.append(SummaryCalcItem(code, type, schema::channel[code].defaultColor()));
+    }
 
     virtual Layer * Clone() {
         gSummaryChart * sc = new gSummaryChart(m_label, m_machtype);
@@ -152,6 +205,9 @@ protected:
 
     EventDataType peak_value;
     EventDataType min_value;
+
+    int idx_start;
+    int idx_end;
 };
 
 
@@ -162,7 +218,9 @@ class gSessionTimesChart : public gSummaryChart
 {
 public:
     gSessionTimesChart()
-        :gSummaryChart("SessionTimes", MT_CPAP) {}
+        :gSummaryChart("SessionTimes", MT_CPAP) {
+        addCalc(NoChannel, ST_SESSIONS, QColor(64,128,255));
+    }
     virtual ~gSessionTimesChart() {}
 
     virtual void SetDay(Day * day = nullptr) {
@@ -177,6 +235,9 @@ public:
         num_slices = 0;
         num_days = 0;
         total_length = 0;
+        session_data.clear();
+        session_data.reserve(idx_end-idx_start);
+
     }
     virtual void customCalc(Day *, QList<SummaryChartSlice> & slices) {
         int size = slices.size();
@@ -185,6 +246,7 @@ public:
         for (int i=0; i<size; ++i) {
             const SummaryChartSlice & slice = slices.at(i);
             total_length += slice.height;
+            session_data.append(slice.height);
         }
 
         num_days++;
@@ -209,6 +271,8 @@ public:
     int num_days;
     int total_slices;
     double total_length;
+    QList<float> session_data;
+
 };
 
 
@@ -217,7 +281,7 @@ class gUsageChart : public gSummaryChart
 public:
     gUsageChart()
         :gSummaryChart("Usage", MT_CPAP) {
-        addCalc(NoChannel, ST_HOURS);
+        addCalc(NoChannel, ST_HOURS, QColor(64,128,255));
     }
     virtual ~gUsageChart() {}
 
@@ -246,6 +310,8 @@ private:
     EventDataType compliance_threshold;
     double totalhours;
     int totaldays;
+    QList<float> hour_data;
+
 
 };
 
@@ -254,13 +320,12 @@ class gAHIChart : public gSummaryChart
 public:
     gAHIChart()
         :gSummaryChart("AHIChart", MT_CPAP) {
-        channels.append(CPAP_ClearAirway);
-        channels.append(CPAP_Obstructive);
-        channels.append(CPAP_Apnea);
-        channels.append(CPAP_Hypopnea);
+        addCalc(CPAP_ClearAirway, ST_CPH);
+        addCalc(CPAP_Obstructive, ST_CPH);
+        addCalc(CPAP_Apnea, ST_CPH);
+        addCalc(CPAP_Hypopnea, ST_CPH);
         if (p_profile->general->calculateRDI())
-            channels.append(CPAP_RERA);
-        num_channels = channels.size();
+            addCalc(CPAP_RERA, ST_CPH);
     }
     virtual ~gAHIChart() {}
 
@@ -280,37 +345,25 @@ public:
     }
 
     void CloneInto(gAHIChart * layer) {
-        layer->channels = channels;
-        layer->num_channels = num_channels;
-        layer->indices = indices;
         layer->ahi_total = ahi_total;
         layer->calc_cnt = calc_cnt;
     }
 
-    QList<ChannelID> channels;
-    int num_channels;
-
-    QHash<ChannelID, double> indices;
     double ahi_total;
     double total_hours;
+    float max_ahi;
+    float min_ahi;
+
     int calc_cnt;
+    QList<float> ahi_data;
 };
 
 
 class gPressureChart : public gSummaryChart
 {
 public:
-    gPressureChart()
-        :gSummaryChart("Pressure", MT_CPAP) {
-    }
+    gPressureChart();
     virtual ~gPressureChart() {}
-
-    virtual void SetDay(Day * day = nullptr) {
-        gSummaryChart::SetDay(day);
-        m_miny = 0;
-        m_maxy = 24;
-    }
-
 
     virtual Layer * Clone() {
         gPressureChart * sc = new gPressureChart();
@@ -318,10 +371,12 @@ public:
         return sc;
     }
 
+//    virtual void afterDraw(QPainter &, gGraph &, QRect);
+
     virtual void populate(Day * day, int idx);
+
     virtual QString tooltipData(Day * day, int idx) {
         return day->getCPAPMode() + "\n" + day->getPressureSettings() + gSummaryChart::tooltipData(day, idx);
-
     }
 
 };

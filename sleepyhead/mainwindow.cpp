@@ -240,6 +240,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
+    ui->actionShow_Performance_Counters->setChecked(p_profile->general->showPerformance());
+
 #ifdef Q_OS_MAC
     p_profile->appearance->setAntiAliasing(false);
 #endif
@@ -2660,4 +2662,9 @@ void MainWindow::on_actionExport_Journal_triggered()
     QString filename = QFileDialog::getSaveFileName(this, tr("Choose where to save journal"), folder, tr("XML Files (*.xml)"));
 
     BackupJournal(filename);
+}
+
+void MainWindow::on_actionShow_Performance_Counters_toggled(bool arg1)
+{
+    p_profile->general->setShowPerformance(arg1);
 }

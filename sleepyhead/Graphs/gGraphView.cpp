@@ -1328,7 +1328,7 @@ void gGraphView::paintGL()
     static int rp = 0;
 
     // Show FPS and draw time
-    if (m_showsplitter && p_profile->general->showDebug()) {
+    if (m_showsplitter && p_profile->general->showPerformance()) {
         QString ss;
         qint64 ela = time.nsecsElapsed();
         double ms = double(ela) / 1000000.0;
