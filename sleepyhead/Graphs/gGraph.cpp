@@ -676,6 +676,15 @@ void gGraph::AddLayer(Layer *l, LayerPosition position, short width, short heigh
     l->addref();
     m_layers.push_back(l);
 }
+
+void gGraph::dataChanged()
+{
+    int size = m_layers.size();
+    for (int i=0; i < size; i++) {
+        m_layers[i]->dataChanged();
+    }
+}
+
 void gGraph::redraw()
 {
     m_graphview->redraw();

@@ -676,6 +676,8 @@ class gGraphView
         ResetBounds(true);
     }
 
+    void dataChanged();
+
 
     bool hasSnapshots();
 

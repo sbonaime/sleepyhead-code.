@@ -50,6 +50,10 @@ class Profile : public Preferences
     //! \brief Open profile, parse profile.xml file, and initialize helper classes
     virtual bool Open(QString filename = "");
 
+    //! \brief Parse machines.xml
+    bool OpenMachines();
+    bool StoreMachines();
+
     //! \brief Returns hostname that locked profile, or empty string if unlocked
     QString checkLock();
 
@@ -71,7 +75,9 @@ class Profile : public Preferences
     //! \brief Barf because data format has changed. This does a purge of CPAP data for machine *m
     void DataFormatError(Machine *m);
 
-    /*! \brief Import Machine Data
+    QString path() { return p_path; }
+
+        /*! \brief Import Machine Data
         \param path containing import location
      */
     int Import(QString path);
@@ -177,7 +183,6 @@ class Profile : public Preferences
 
     // XML load components
     virtual void ExtraLoad(QDomElement &root);
-    virtual QDomElement ExtraSave(QDomDocument &doc);
 
     //! \brief Looks for the first date containing a day record matching machinetype
     QDate FirstDay(MachineType mt = MT_UNKNOWN);
@@ -218,6 +223,7 @@ class Profile : public Preferences
     QDate m_last;
 
     bool m_opened;
+    bool m_machopened;
 };
 
 class MachineLoader;

@@ -542,6 +542,13 @@ void init()
     ZEO_TimeInLight = schema::channel["TimeInLight"].id();
     ZEO_TimeInDeep = schema::channel["TimeInDeep"].id();
     ZEO_TimeToZ = schema::channel["TimeToZ"].id();
+
+    schema::channel[CPAP_Leak].setShowInOverview(true);
+    schema::channel[CPAP_RespRate].setShowInOverview(true);
+    schema::channel[CPAP_MinuteVent].setShowInOverview(true);
+    schema::channel[CPAP_TidalVolume].setShowInOverview(true);
+    schema::channel[CPAP_CSR].setShowInOverview(true);
+    schema::channel[CPAP_LargeLeak].setShowInOverview(true);
 }
 
 

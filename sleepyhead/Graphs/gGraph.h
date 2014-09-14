@@ -265,6 +265,8 @@ class gGraph : public QObject
 
     double screenToTime(int xpos);
 
+    void dataChanged();
+
     //! \brief Sets the margins for the four sides of this graph.
     void setMargins(short left, short right, short top, short bottom) {
         m_marginleft = left;

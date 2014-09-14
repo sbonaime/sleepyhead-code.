@@ -34,7 +34,8 @@ Profile *p_profile;
 
 Profile::Profile(QString path)
   : is_first_day(true),
-     m_opened(false)
+     m_opened(false),
+     m_machopened(false)
 {
     p_name = STR_GEN_Profile;
 
@@ -94,7 +95,7 @@ Profile::~Profile()
 bool Profile::Save(QString filename)
 {
     if (m_opened) {
-        return Preferences::Save(filename);
+        return Preferences::Save(filename) && p_profile->StoreMachines();
     } else return false;
 }
 
@@ -132,14 +133,6 @@ bool Profile::Open(QString filename)
     }
     bool b = Preferences::Open(filename);
 
-    QString lockfile=p_path+"/lockfile";
-    QFile file(lockfile);
-    file.open(QFile::WriteOnly);
-    QByteArray ba;
-    ba.append(QHostInfo::localHostName());
-    file.write(ba);
-    file.close();
-
     m_opened=true;
     doctor = new DoctorInfo(this);
     user = new UserInfo(this);
@@ -150,6 +143,192 @@ bool Profile::Open(QString filename)
     general = new UserSettings(this);
     return b;
 }
+
+const QString STR_PROP_Brand = "brand";
+const QString STR_PROP_Model = "model";
+const QString STR_PROP_Series = "series";
+const QString STR_PROP_ModelNumber = "modelnumber";
+const QString STR_PROP_SubModel = "submodel";
+const QString STR_PROP_Serial = "serial";
+const QString STR_PROP_DataVersion = "dataversion";
+const QString STR_PROP_LastImported = "lastimported";
+
+bool Profile::OpenMachines()
+{
+    if (m_machopened)
+        return true;
+
+    if (!m_opened) {
+        Open();
+    }
+    QFile lockfile(p_path+"lockfile");
+    lockfile.open(QFile::WriteOnly);
+    QByteArray ba;
+    ba.append(QHostInfo::localHostName());
+    lockfile.write(ba);
+    lockfile.close();
+
+    QString filename = p_path+"machines.xml";
+    QFile file(filename);
+    if (!file.open(QFile::ReadOnly)) {
+        qWarning() << "Could not open" << QDir::toNativeSeparators(filename);
+        return false;
+    }
+    QDomDocument doc("machines.xml");
+
+    if (!doc.setContent(&file)) {
+        qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(filename);
+        return false;
+    }
+    file.close();
+    QDomElement root = doc.firstChild().toElement();
+
+    if (root.tagName().toLower() != "machines") {
+        //qDebug() << "No Machines Tag in Profiles.xml";
+        return false;
+    }
+
+    QDomElement elem = root.firstChildElement();
+
+    while (!elem.isNull()) {
+        QString pKey = elem.tagName();
+
+        if (pKey.toLower() != "machine") {
+            qWarning() << "Profile::ExtraLoad() pKey!=\"machine\"";
+            elem = elem.nextSiblingElement();
+            continue;
+        }
+
+        int m_id;
+        bool ok;
+        m_id = elem.attribute("id", "").toInt(&ok);
+        int mt;
+        mt = elem.attribute("type", "").toInt(&ok);
+        MachineType m_type = (MachineType)mt;
+
+        QString m_class = elem.attribute("class", "");
+
+        MachineInfo info;
+
+        info.type = m_type;
+        info.loadername = m_class;
+
+        QHash<QString, QString> prop;
+
+        QDomElement e = elem.firstChildElement();
+
+        for (; !e.isNull(); e = e.nextSiblingElement()) {
+            QString pKey = e.tagName();
+            QString key = pKey.toLower();
+            if (key == STR_PROP_Brand) {
+                info.brand = e.text();
+            } else if (key == STR_PROP_Model) {
+                info.model = e.text();
+            } else if (key == STR_PROP_ModelNumber) {
+                info.modelnumber = e.text();
+            } else if (key == STR_PROP_Serial) {
+                info.serial = e.text();
+            } else if (key == STR_PROP_Series) {
+                info.series = e.text();
+            } else if (key == STR_PROP_DataVersion) {
+                info.version = e.text().toInt();
+            } else if (key == STR_PROP_LastImported) {
+                info.lastimported = QDateTime::fromString(e.text(), Qt::ISODate);
+            } else if (key == "properties") {
+                QDomElement pe = e.firstChildElement();
+                for (; !pe.isNull(); pe = pe.nextSiblingElement()) {
+                    prop[pe.tagName()] = pe.text();
+                }
+            } else {
+                // skip any old rubbish
+                if ((key == "backuppath") || (key == "path") || (key == "submodel")) continue;
+
+                prop[pKey] = e.text();
+            }
+        }
+
+
+        Machine *m = nullptr;
+
+        m = MachineLoader::CreateMachine(info, m_id);
+        //m->setId(m_id);
+        if (m) m->properties = prop;
+
+        elem = elem.nextSiblingElement();
+    }
+
+    m_machopened = true;
+
+    return true;
+
+}
+
+bool Profile::StoreMachines()
+{
+    QDomDocument doc("Machines");
+    QDomElement elem = ExtraSave(doc);
+    doc.appendChild(elem);
+
+    QDomElement mach = doc.createElement("machines");
+
+    for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
+        QDomElement me = doc.createElement("machine");
+        Machine *m = i.value();
+        me.setAttribute("id", (int)m->id());
+        me.setAttribute("type", (int)m->type());
+        me.setAttribute("class", m->loaderName());
+
+        QDomElement pe = doc.createElement("properties");
+        me.appendChild(pe);
+
+        for (QHash<QString, QString>::iterator j = i.value()->properties.begin(); j != i.value()->properties.end(); j++) {
+            QDomElement pp = doc.createElement(j.key());
+            pp.appendChild(doc.createTextNode(j.value()));
+            pe.appendChild(pp);
+        }
+
+        QDomElement mp = doc.createElement(STR_PROP_Brand);
+        mp.appendChild(doc.createTextNode(m->brand()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Model);
+        mp.appendChild(doc.createTextNode(m->model()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_ModelNumber);
+        mp.appendChild(doc.createTextNode(m->modelnumber()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Serial);
+        mp.appendChild(doc.createTextNode(m->serial()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_Series);
+        mp.appendChild(doc.createTextNode(m->series()));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_DataVersion);
+        mp.appendChild(doc.createTextNode(QString::number(m->version())));
+        me.appendChild(mp);
+
+        mp = doc.createElement(STR_PROP_LastImported);
+        mp.appendChild(doc.createTextNode(m->lastImported().toString(Qt::ISODate)));
+        me.appendChild(mp);
+
+        mach.appendChild(me);
+    }
+
+    doc.appendChild(mach);
+
+    QString filename = p_path+"machines.xml";
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly)) {
+        return false;
+    }
+    file.write(doc.toByteArray());
+    return true;
+}
+
 
 #if defined(Q_OS_WIN)
 class Environment
@@ -387,6 +566,7 @@ void Profile::DataFormatError(Machine *m)
 }
 void Profile::LoadMachineData()
 {
+    if (!m_machopened) OpenMachines();
     QHash<MachineID, QMap<QDate, QHash<ChannelID, EventDataType> > > cache;
 
     for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
@@ -411,96 +591,30 @@ void Profile::LoadMachineData()
     }
 }
 
-const QString STR_PROP_Brand = "brand";
-const QString STR_PROP_Model = "model";
-const QString STR_PROP_Series = "series";
-const QString STR_PROP_ModelNumber = "modelnumber";
-const QString STR_PROP_SubModel = "submodel";
-const QString STR_PROP_Serial = "serial";
-const QString STR_PROP_DataVersion = "dataversion";
-const QString STR_PROP_LastImported = "lastimported";
-
-
 
 /**
- * @brief Machine XML section in profile.
+ * @brief Upgrade Machine XML section from old "profile.xml"
  * @param root
  */
 void Profile::ExtraLoad(QDomElement &root)
 {
     if (root.tagName().toLower() != "machines") {
-        qDebug() << "No Machines Tag in Profiles.xml";
+        // Good!
         return;
     }
 
-    QDomElement elem = root.firstChildElement();
+    // Save this sucker
+    QDomDocument doc("Machines");
 
-    while (!elem.isNull()) {
-        QString pKey = elem.tagName();
+    doc.appendChild(root);
 
-        if (pKey.toLower() != "machine") {
-            qWarning() << "Profile::ExtraLoad() pKey!=\"machine\"";
-            elem = elem.nextSiblingElement();
-            continue;
-        }
+    QFile file(p_path+"/machines.xml");
 
-        int m_id;
-        bool ok;
-        m_id = elem.attribute("id", "").toInt(&ok);
-        int mt;
-        mt = elem.attribute("type", "").toInt(&ok);
-        MachineType m_type = (MachineType)mt;
+    file.open(QFile::WriteOnly);
 
-        QString m_class = elem.attribute("class", "");
+    file.write(doc.toByteArray());
 
-        MachineInfo info;
-
-        info.type = m_type;
-        info.loadername = m_class;
-
-        QHash<QString, QString> prop;
-
-        QDomElement e = elem.firstChildElement();
-
-        for (; !e.isNull(); e = e.nextSiblingElement()) {
-            QString pKey = e.tagName();
-            QString key = pKey.toLower();
-            if (key == STR_PROP_Brand) {
-                info.brand = e.text();
-            } else if (key == STR_PROP_Model) {
-                info.model = e.text();
-            } else if (key == STR_PROP_ModelNumber) {
-                info.modelnumber = e.text();
-            } else if (key == STR_PROP_Serial) {
-                info.serial = e.text();
-            } else if (key == STR_PROP_Series) {
-                info.series = e.text();
-            } else if (key == STR_PROP_DataVersion) {
-                info.version = e.text().toInt();
-            } else if (key == STR_PROP_LastImported) {
-                info.lastimported = QDateTime::fromString(e.text(), Qt::ISODate);
-            } else if (key == "properties") {
-                QDomElement pe = e.firstChildElement();
-                for (; !pe.isNull(); pe = pe.nextSiblingElement()) {
-                    prop[pe.tagName()] = pe.text();
-                }
-            } else {
-                // skip any old rubbish
-                if ((key == "backuppath") || (key == "path") || (key == "submodel")) continue;
-
-                prop[pKey] = e.text();
-            }
-        }
-
-
-        Machine *m = nullptr;
-
-        m = MachineLoader::CreateMachine(info, m_id);
-        //m->setId(m_id);
-        if (m) m->properties = prop;
-
-        elem = elem.nextSiblingElement();
-    }
+    file.close();
 }
 void Profile::AddMachine(Machine *m)
 {
@@ -522,63 +636,6 @@ void Profile::DelMachine(Machine *m)
     m->loader()->removeMachine(m);
     machlist.erase(machlist.find(m->id()));
 }
-
-
-// Potential Memory Leak Here..
-QDomElement Profile::ExtraSave(QDomDocument &doc)
-{
-    QDomElement mach = doc.createElement("machines");
-
-    for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
-        QDomElement me = doc.createElement("machine");
-        Machine *m = i.value();
-        me.setAttribute("id", (int)m->id());
-        me.setAttribute("type", (int)m->type());
-        me.setAttribute("class", m->loaderName());
-
-        QDomElement pe = doc.createElement("properties");
-        me.appendChild(pe);
-
-        for (QHash<QString, QString>::iterator j = i.value()->properties.begin(); j != i.value()->properties.end(); j++) {
-            QDomElement pp = doc.createElement(j.key());
-            pp.appendChild(doc.createTextNode(j.value()));
-            pe.appendChild(pp);
-        }
-
-        QDomElement mp = doc.createElement(STR_PROP_Brand);
-        mp.appendChild(doc.createTextNode(m->brand()));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_Model);
-        mp.appendChild(doc.createTextNode(m->model()));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_ModelNumber);
-        mp.appendChild(doc.createTextNode(m->modelnumber()));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_Serial);
-        mp.appendChild(doc.createTextNode(m->serial()));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_Series);
-        mp.appendChild(doc.createTextNode(m->series()));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_DataVersion);
-        mp.appendChild(doc.createTextNode(QString::number(m->version())));
-        me.appendChild(mp);
-
-        mp = doc.createElement(STR_PROP_LastImported);
-        mp.appendChild(doc.createTextNode(m->lastImported().toString(Qt::ISODate)));
-        me.appendChild(mp);
-
-        mach.appendChild(me);
-    }
-
-    return mach;
-}
-
 
 Day *Profile::addDay(QDate date)
 {
@@ -870,6 +927,32 @@ Profile *Get()
     return profiles[getUserName()];;
 }
 
+void saveProfileList()
+{
+    QString filename = PREF.Get("{home}/profiles.xml");
+
+    QDomDocument doc("profiles");
+
+    QDomElement root = doc.createElement("profiles");
+    doc.appendChild(root);
+
+    QMap<QString, Profile *>::iterator it;
+
+    for (it = profiles.begin(); it != profiles.end(); ++it) {
+        QDomElement elem = doc.createElement("profile");
+        elem.setAttribute("name", it.key());
+        // Not technically nessesary..
+        elem.setAttribute("path", QString("{home}/Profiles/%1/Profile.xml").arg(it.key()));
+        root.appendChild(elem);
+    }
+
+    QFile file(filename);
+    file.open(QFile::WriteOnly);
+
+    file.write(doc.toByteArray());
+
+    file.close();
+}
 
 
 /**
@@ -899,10 +982,13 @@ void Scan()
         QFileInfo fi = list.at(i);
         QString npath = fi.canonicalFilePath();
         Profile *prof = new Profile(npath);
+        //prof->Open();
 
         profiles[fi.fileName()] = prof;
     }
 
+    // Update profiles.xml for mobile version
+    saveProfileList();
 }
 
 

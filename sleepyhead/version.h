@@ -17,7 +17,7 @@
 
 const int major_version = 0;   // incompatible API changes
 const int minor_version = 9;   // new features that don't break things
-const int revision_number = 7;    // bugfixes, revisions
+const int revision_number = 8;    // bugfixes, revisions
 
 #ifdef TEST_BUILD
 const QString ReleaseStatus = "testing";

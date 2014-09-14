@@ -154,10 +154,7 @@ void gSummaryChart::preCalc()
 {
     for (int i=0; i<calcitems.size(); ++i) {
         SummaryCalcItem & calc = calcitems[i];
-        calc.min = 99999;
-        calc.max = -99999;
-        calc.sum = 0;
-        calc.divisor = 0;
+        calc.reset(idx_end - idx_start);
     }
 }
 
@@ -171,22 +168,8 @@ void gSummaryChart::customCalc(Day *day, QList<SummaryChartSlice> & slices)
         const SummaryChartSlice & slice = slices.at(i);
         SummaryCalcItem & calc = calcitems[i];
 
-        calc.min = qMin(calc.min, slice.value);
-        calc.max = qMax(calc.max, slice.value);
-
-        switch (calc.type) {
-        case ST_CPH:
-        case ST_SPH:
-            calc.sum += slice.value * hour;
-            calc.divisor += hour;
-            break;
-        default:
-            calc.sum += slice.value;
-            calc.divisor += 1;
-            break;
-
-        }
-    }
+        calc.update(slice.value, hour);
+     }
 }
 
 void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
@@ -198,37 +181,54 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
     QStringList strlist;
     QString txt;
 
-    int mid = p_profile->general->prefCalcMiddle();
+    int midcalc = p_profile->general->prefCalcMiddle();
     QString midstr;
-    if (mid == 0) {
+    if (midcalc == 0) {
         midstr = QObject::tr("Med.");
-    } else if (mid == 1) {
-        midstr = QObject::tr("Avg");
-    } else {
+    } else if (midcalc == 1) {
         midstr = QObject::tr("W-Avg");
+    } else {
+        midstr = QObject::tr("Avg");
     }
+
+
     float perc = p_profile->general->prefCalcPercentile();
     QString percstr = QObject::tr("%1%").arg(perc, 0, 'f',0);
 
     schema::Channel & chan = schema::channel[calcitems.at(0).code];
 
     for (int i=0; i<calcitems.size(); ++i) {
-        const SummaryCalcItem & calc = calcitems.at(i);
+        SummaryCalcItem & calc = calcitems[i];
         if (calcitems.size() == 1) {
             float val = calc.min;
             if (val < 99998)
                 strlist.append(QObject::tr("Min: %1").arg(val,0,'f',2));
         }
 
+        float mid = 0;
+        switch (midcalc) {
+        case 0:
+            if (calc.median_data.size() > 0) {
+                mid = median(calc.median_data.begin(), calc.median_data.end());
+            }
+            break;
+        case 1:
+            mid = calc.wavg_sum / calc.divisor;
+            break;
+        case 2:
+            mid = calc.avg_sum / calc.cnt;
+            break;
+        }
+
         float val = 0;
         switch (calc.type) {
         case ST_CPH:
-            val = calc.sum / calc.divisor;
-            txt = QObject::tr("Avg: ");
+            val = mid;
+            txt = midstr+": ";
             break;
         case ST_SPH:
-            val = calc.sum / calc.divisor;
-            txt = QObject::tr("Avg: ");
+            val = mid;
+            txt = midstr+": ";
             break;
         case ST_MIN:
             val = calc.min;
@@ -251,15 +251,15 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
             txt = QObject::tr("Max: ");
             break;
         case ST_MID:
-            val = calc.sum / calc.divisor;
+            val = mid;
             txt = QObject::tr("%1: ").arg(midstr);
             break;
         case ST_90P:
-            val = calc.sum / calc.divisor;
+            val = mid;
             txt = QObject::tr("%1: ").arg(percstr);
             break;
         default:
-            val = calc.sum / calc.divisor;
+            val = mid;
             txt = QObject::tr("???: ");
             break;
         }
@@ -421,7 +421,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     nousedays = 0;
     totaldays = 0;
 
-    QRectF hl_rect, hl2_rect;
+    QRectF hl_rect;
     QDate hl_date;
     Day * hl_day = nullptr;
     int hl_idx = -1;
@@ -555,7 +555,6 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
             for (int i=0; i < listsize; ++i) {
                 SummaryChartSlice & slice = list[i];
-                SummaryCalcItem * calc = slice.calc;
 
                 val = slice.height;
                 y1 = ((lastval-miny) * ymult);
@@ -654,20 +653,24 @@ void gUsageChart::preCalc()
 {
     compliance_threshold = p_profile->cpap->complianceHours();
     incompdays = 0;
-    totalhours = 0;
-    totaldays = 0;
 
-    hour_data.clear();
-    hour_data.reserve(idx_end-idx_start);
+    SummaryCalcItem & calc = calcitems[0];
+    calc.reset(idx_end - idx_start);
 }
 
 void gUsageChart::customCalc(Day *, QList<SummaryChartSlice> &list)
 {
+    if (list.size() == 0) {
+        incompdays++;
+        return;
+    }
+
     SummaryChartSlice & slice = list[0];
+    SummaryCalcItem & calc = calcitems[0];
+
     if (slice.value < compliance_threshold) incompdays++;
-    totalhours += slice.value;
-    hour_data.append(slice.value);
-    totaldays++;
+
+    calc.update(slice.value, 1);
 }
 
 void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
@@ -676,30 +679,106 @@ void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 
     if (totaldays > 1) {
         float comp = 100.0 - ((float(incompdays + nousedays) / float(totaldays)) * 100.0);
-        double avg = totalhours / double(totaldays);
 
-        float med = median(hour_data.begin(), hour_data.end());
-        QString txt = QObject::tr("%1 low usage, %2 no usage, out of %3 days (%4% compliant.) Avg %5, Med %6 hours").
-                arg(incompdays).arg(nousedays).arg(totaldays).arg(comp,0,'f',1).arg(avg, 0, 'f', 2).arg(med, 0, 'f', 2);
+        int midcalc = p_profile->general->prefCalcMiddle();
+        float mid = 0;
+        SummaryCalcItem & calc = calcitems[0];
+        switch (midcalc) {
+        case 0: // median
+            mid = median(calc.median_data.begin(), calc.median_data.end());
+            break;
+        case 1: // w-avg
+            mid = calc.wavg_sum / calc.divisor;
+            break;
+        case 2:
+            mid = calc.avg_sum / calc.cnt;
+            break;
+        }
+
+        QString txt = QObject::tr("%1 low usage, %2 no usage, out of %3 days (%4% compliant.) Length: %5 / %6 / %7").
+                arg(incompdays).arg(nousedays).arg(totaldays).arg(comp,0,'f',1).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2);;
         graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
     }
 }
 
 
+void gSessionTimesChart::preCalc() {
+    num_slices = 0;
+    num_days = 0;
+    total_length = 0;
+    SummaryCalcItem  & calc = calcitems[0];
+
+    calc.reset((idx_end - idx_start) * 6);
+
+    SummaryCalcItem  & calc1 = calcitems[1];
+
+    calc1.reset(idx_end - idx_start);
+
+    SummaryCalcItem  & calc2 = calcitems[2];
+    calc2.reset(idx_end - idx_start);
+}
+
+void gSessionTimesChart::customCalc(Day *, QList<SummaryChartSlice> & slices) {
+    int size = slices.size();
+    num_slices += size;
+
+    SummaryCalcItem  & calc1 = calcitems[1];
+    calc1.update(slices.size(), 1);
+
+    EventDataType max = 0;
+    for (int i=0; i<size; ++i) {
+        SummaryChartSlice & slice = slices[i];
+        SummaryCalcItem & calc = *slice.calc;
+
+        calc.update(slice.height, slice.height);
+
+        max = qMax(slice.height, max);
+    }
+    SummaryCalcItem  & calc2 = calcitems[2];
+
+    calc2.update(max, max);
+
+    num_days++;
+}
 
 void gSessionTimesChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 {
     if (totaldays == nousedays) return;
 
-    float med = 0;
-    if (session_data.size() > 0)
-        med = median(session_data.begin(), session_data.end());
+    SummaryCalcItem  & calc = calcitems[0]; // session length
+    SummaryCalcItem  & calc1 = calcitems[1]; // number of sessions
+    SummaryCalcItem  & calc2 = calcitems[2]; // number of sessions
+
+    int midcalc = p_profile->general->prefCalcMiddle();
+
+    float mid = 0, mid1 = 0, midlongest = 0;
+    switch (midcalc) {
+    case 0:
+        if (calc.median_data.size() > 0) {
+            mid = median(calc.median_data.begin(), calc.median_data.end());
+            mid1 = median(calc1.median_data.begin(), calc1.median_data.end());
+            midlongest = median(calc2.median_data.begin(), calc2.median_data.end());
+        }
+        break;
+    case 1:
+        mid = calc.wavg_sum / calc.divisor;
+        mid1 = calc1.wavg_sum / calc1.divisor;
+        midlongest = calc2.wavg_sum / calc2.divisor;
+        break;
+    case 2:
+        mid = calc.avg_sum / calc.cnt;
+        mid1 = calc1.avg_sum / calc1.cnt;
+        midlongest = calc2.avg_sum / calc2.cnt;
+        break;
+    }
 
 
-    float avgsess = float(num_slices) / float(num_days);
-    double avglength = total_length / double(num_slices);
+//    float avgsess = float(num_slices) / float(num_days);
 
-    QString txt = QObject::tr("Avg Sessions: %1 Length Avg: %2 Med %3").arg(avgsess, 0, 'f', 1).arg(avglength, 0, 'f', 2).arg(med, 0, 'f', 2);
+    QString txt = QObject::tr("Sessions: %1 / %2 / %3 Length: %4 / %5 / %6 Longest: %7 / %8 / %9")
+            .arg(calc1.min, 0, 'f', 2).arg(mid1, 0, 'f', 2).arg(calc1.max, 0, 'f', 2)
+            .arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2)
+            .arg(calc2.min, 0, 'f', 2).arg(midlongest, 0, 'f', 2).arg(calc2.max, 0, 'f', 2);
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
 }
 
@@ -844,6 +923,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
 
     preCalc();
+    totaldays = 0;
+    nousedays = 0;
 
     /////////////////////////////////////////////////////////////////////
     /// Main Loop scaling
@@ -933,7 +1014,8 @@ void gAHIChart::preCalc()
 {
     gSummaryChart::preCalc();
 
-    ahi_total = 0;
+    ahi_wavg = 0;
+    ahi_avg = 0;
     calc_cnt = 0;
     total_hours = 0;
     min_ahi = 99999;
@@ -954,11 +1036,18 @@ void gAHIChart::customCalc(Day *day, QList<SummaryChartSlice> &list)
 
         EventDataType value = slice.value;
 
-        calc->sum += value;
+        calc->wavg_sum += value;
         calc->divisor += hours;
 
-        calc->min = qMin(value / hours, calc->min);
-        calc->max = qMax(value / hours, calc->max);
+        calc->avg_sum += value;
+        calc->cnt++;
+
+        float valh =  value/ hours;
+
+        calc->median_data.append(valh);
+
+        calc->min = qMin(valh, calc->min);
+        calc->max = qMax(valh, calc->max);
 
         ahi_cnt += value;
     }
@@ -967,7 +1056,8 @@ void gAHIChart::customCalc(Day *day, QList<SummaryChartSlice> &list)
 
     ahi_data.append(ahi_cnt / hours);
 
-    ahi_total += ahi_cnt;
+    ahi_wavg += ahi_cnt;
+    ahi_avg += ahi_cnt;
     total_hours += hours;
     calc_cnt++;
 }
@@ -976,6 +1066,8 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
     if (totaldays == nousedays) return;
 
     int size = idx_end - idx_start;
+
+    int midcalc = p_profile->general->prefCalcMiddle();
 
     int mpos = size /2 ;
 
@@ -996,8 +1088,22 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
         if (calc.divisor > 0) {
             ChannelID code = calc.code;
             schema::Channel & chan = schema::channel[code];
-            double indice = calc.sum / calc.divisor;
-            txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(indice, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
+            float mid = 0;
+            switch (midcalc) {
+            case 0:
+                if (calc.median_data.size() > 0) {
+                    mid = median(calc.median_data.begin(), calc.median_data.end());
+                }
+                break;
+            case 1:
+                mid = calc.wavg_sum / calc.divisor;
+                break;
+            case 2:
+                mid = calc.avg_sum / calc.divisor;
+                break;
+            }
+
+            txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
         }
     }
     QString txt = txtlist.join(", ");

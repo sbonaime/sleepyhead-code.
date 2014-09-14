@@ -3365,6 +3365,14 @@ int gGraphView::visibleGraphs()
     return cnt;
 }
 
+void gGraphView::dataChanged()
+{
+    for (int i = 0; i < m_graphs.size(); i++) {
+        m_graphs[i]->dataChanged();
+    }
+}
+
+
 void gGraphView::redraw()
 {
 #ifdef BROKEN_OPENGL_BUILD

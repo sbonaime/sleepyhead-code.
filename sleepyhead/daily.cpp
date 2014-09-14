@@ -453,6 +453,7 @@ void Daily::doToggleSession(Session * sess)
     sess->setEnabled(!sess->enabled());
 
     LoadDate(previous_date);
+    mainwin->getOverview()->graphView()->dataChanged();
 }
 
 void Daily::Link_clicked(const QUrl &url)
@@ -903,10 +904,7 @@ QString Daily::getSessionInformation(Day * day)
             int s1=len % 60;
 
             Session *sess=*s;
-            if (!sess->settings.contains(SESSION_ENABLED)) {
-                sess->settings[SESSION_ENABLED]=true;
-            }
-            bool b=sess->settings[SESSION_ENABLED].toBool();
+            bool b=sess->enabled();
 
             html+=QString("<tr class='datarow2'><td colspan=5 align=center>%2</td></tr>"
                           "<tr class='datarow2'>"
@@ -969,8 +967,8 @@ QString Daily::getMachineSettings(Day * day) {
         ChannelID cpapmode = loader->CPAPModeChannel();
         schema::Channel & chan = schema::channel[cpapmode];
         first[cpapmode] = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
-                .arg(schema::channel[cpapmode].label())
-                .arg(schema::channel[cpapmode].description())
+                .arg(chan.label())
+                .arg(chan.description())
                 .arg(day->getCPAPMode());
 
 
@@ -1248,15 +1246,15 @@ QString Daily::getStatisticsInfo(Day * day)
             html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("Time outside of ramp")+
                     QString("</td><td colspan=2 bgcolor='white'>%1:%2:%3</td></tr>").arg(q / 3600, 2, 10, QChar('0')).arg((q / 60) % 60, 2, 10, QChar('0')).arg(q % 60, 2, 10, QChar('0'));
 
-            EventDataType hc = day->count(CPAP_Hypopnea) - day->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
-            EventDataType oc = day->count(CPAP_Obstructive) - day->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
+//            EventDataType hc = day->count(CPAP_Hypopnea) - day->countInsideSpan(CPAP_Ramp, CPAP_Hypopnea);
+//            EventDataType oc = day->count(CPAP_Obstructive) - day->countInsideSpan(CPAP_Ramp, CPAP_Obstructive);
 
-            EventDataType tc = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive);
-            EventDataType ahi = (hc+oc) / v;
+            //EventDataType tc = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive);
+//            EventDataType ahi = (hc+oc) / v;
             // Not sure if i was trying to be funny, and left on my replication of Devilbiss's bug here...  :P
 
-            html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("AHI excluding ramp")+
-                    QString("</td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
+//            html+="<tr><td colspan=3 align='left' bgcolor='white'>"+tr("AHI excluding ramp")+
+//                    QString("</td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(ahi, 0, 'f', 2);
         }
 
     }

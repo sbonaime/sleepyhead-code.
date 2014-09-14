@@ -68,7 +68,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         shortformat.replace("yy", "yyyy");
     }
 
-    Qt::DayOfWeek dow = firstDayOfWeekFromLocale();
+//    Qt::DayOfWeek dow = firstDayOfWeekFromLocale();
 
 //    QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
 //    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));

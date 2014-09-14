@@ -905,6 +905,20 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             </property>
            </widget>
           </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="prefCalcPercentile">
+            <property name="toolTip">
+             <string>For consistancy, ResMed users should use 95% here,
+as this is the only value available on summary-only days.</string>
+            </property>
+            <property name="suffix">
+             <string notr="true">%</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_37">
             <property name="sizePolicy">
@@ -940,20 +954,6 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             </item>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="prefCalcPercentile">
-            <property name="toolTip">
-             <string>For consistancy, ResMed users should use 95% here,
-as this is the only value available on summary-only days.</string>
-            </property>
-            <property name="suffix">
-             <string notr="true">%</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="1">
            <widget class="QComboBox" name="prefCalcMax">
             <property name="sizePolicy">
@@ -969,7 +969,7 @@ as this is the only value available on summary-only days.</string>
              </size>
             </property>
             <property name="toolTip">
-             <string>ResMed users probably should use 99th Percentile for visual consistency.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;True maximum is the maximum of the data set.&lt;/p&gt;&lt;p&gt;99th percentile filters out the rarest outliers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <item>
              <property name="text">
@@ -981,6 +981,37 @@ as this is the only value available on summary-only days.</string>
               <string>99% Percentile</string>
              </property>
             </item>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="culminativeIndices">
+            <item>
+             <property name="text">
+              <string>Combined Count divided by Total Hours</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Time Weighted average of Indice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Standard average of indice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Median</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>Culminative Indices</string>
+            </property>
            </widget>
           </item>
          </layout>

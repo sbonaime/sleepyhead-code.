@@ -14,39 +14,6 @@
 #include "gGraphView.h"
 
 
-///Represents the exception for taking the median of an empty list
-class median_of_empty_list_exception:public std::exception{
-  virtual const char* what() const throw() {
-    return "Attempt to take the median of an empty list of numbers.  "
-      "The median of an empty list is undefined.";
-  }
-};
-
-///Return the median of a sequence of numbers defined by the random
-///access iterators begin and end.  The sequence must not be empty
-///(median is undefined for an empty set).
-///
-///The numbers must be convertible to double.
-template<class RandAccessIter>
-double median(RandAccessIter begin, RandAccessIter end)
-  throw(median_of_empty_list_exception){
-  if(begin == end){ throw median_of_empty_list_exception(); }
-  std::size_t size = end - begin;
-  std::size_t middleIdx = size/2;
-  RandAccessIter target = begin + middleIdx;
-  std::nth_element(begin, target, end);
-
-  if(size % 2 != 0){ //Odd number of elements
-    return *target;
-  }else{            //Even number of elements
-    double a = *target;
-    RandAccessIter targetNeighbor= target-1;
-    std::nth_element(begin, targetNeighbor, end);
-    return (a+*targetNeighbor)/2.0;
-  }
-}
-
-
 struct TimeSpan
 {
 public:
@@ -66,27 +33,63 @@ struct SummaryCalcItem {
         code = 0;
         type = ST_CNT;
         color = Qt::black;
+        wavg_sum = 0;
+        avg_sum = 0;
+        cnt = 0;
+        divisor = 0;
+        min = 0;
+        max = 0;
     }
     SummaryCalcItem(const SummaryCalcItem & copy) {
         code = copy.code;
         type = copy.type;
         color = copy.color;
 
-        sum = copy.sum;
-        divisor = copy.divisor;
-        min = copy.min;
-        max = copy.max;
+        wavg_sum = 0;
+        avg_sum = 0;
+        cnt = 0;
+        divisor = 0;
+        min = 0;
+        max = 0;
     }
+
     SummaryCalcItem(ChannelID code, SummaryType type, QColor color)
-        :code(code), type(type), color(color) {}
+        :code(code), type(type), color(color) {
+    }
+
+    inline void update(float value, float weight) {
+        wavg_sum += value * weight;
+        divisor += weight;
+        avg_sum += value;
+        cnt++;
+        median_data.append(value);
+        min = qMin(min, value);
+        max = qMax(max, value);
+    }
+
+    void reset(int reserve) {
+        wavg_sum = 0;
+        avg_sum = 0;
+        divisor = 0;
+        cnt = 0;
+        min = 99999;
+        max = -99999;
+        median_data.clear();
+        median_data.reserve(reserve);
+    }
     ChannelID code;
     SummaryType type;
     QColor color;
 
-    double sum;
+    double wavg_sum;
     double divisor;
+    double avg_sum;
+    int cnt;
     EventDataType min;
     EventDataType max;
+
+    QList<float> median_data;
+
 };
 
 struct SummaryChartSlice {
@@ -144,6 +147,11 @@ public:
     //! \brief Return any extra data to show beneath the date in the hover over tooltip
     virtual QString tooltipData(Day *, int);
 
+    virtual void dataChanged() {
+        cache.clear();
+    }
+
+
     void addCalc(ChannelID code, SummaryType type, QColor color) {
         calcitems.append(SummaryCalcItem(code, type, color));
     }
@@ -162,12 +170,14 @@ public:
         layer->m_empty = m_empty;
         layer->firstday = firstday;
         layer->lastday = lastday;
-        layer->cache = cache;
-        layer->calcitems = calcitems;
+//        layer->calcitems = calcitems;
         layer->expected_slices = expected_slices;
         layer->nousedays = nousedays;
         layer->totaldays = totaldays;
         layer->peak_value = peak_value;
+        layer->idx_start = idx_start;
+        layer->idx_end = idx_end;
+        layer->cache.clear();
     }
 
 protected:
@@ -220,6 +230,8 @@ public:
     gSessionTimesChart()
         :gSummaryChart("SessionTimes", MT_CPAP) {
         addCalc(NoChannel, ST_SESSIONS, QColor(64,128,255));
+        addCalc(NoChannel, ST_SESSIONS, QColor(64,128,255));
+        addCalc(NoChannel, ST_SESSIONS, QColor(64,128,255));
     }
     virtual ~gSessionTimesChart() {}
 
@@ -231,28 +243,9 @@ public:
         m_maxy = 28;
     }
 
-    virtual void preCalc() {
-        num_slices = 0;
-        num_days = 0;
-        total_length = 0;
-        session_data.clear();
-        session_data.reserve(idx_end-idx_start);
-
-    }
-    virtual void customCalc(Day *, QList<SummaryChartSlice> & slices) {
-        int size = slices.size();
-        num_slices += size;
-
-        for (int i=0; i<size; ++i) {
-            const SummaryChartSlice & slice = slices.at(i);
-            total_length += slice.height;
-            session_data.append(slice.height);
-        }
-
-        num_days++;
-    }
+    virtual void preCalc();
+    virtual void customCalc(Day *, QList<SummaryChartSlice> & slices);
     virtual void afterDraw(QPainter &, gGraph &, QRect);
-
 
     //! \brief Renders the graph to the QPainter object
     virtual void paint(QPainter &painter, gGraph &graph, const QRegion &region);
@@ -308,11 +301,6 @@ public:
 private:
     int incompdays;
     EventDataType compliance_threshold;
-    double totalhours;
-    int totaldays;
-    QList<float> hour_data;
-
-
 };
 
 class gAHIChart : public gSummaryChart
@@ -345,11 +333,20 @@ public:
     }
 
     void CloneInto(gAHIChart * layer) {
-        layer->ahi_total = ahi_total;
-        layer->calc_cnt = calc_cnt;
+//        layer->ahicalc = ahicalc;
+//        layer->ahi_wavg = ahi_wavg;
+//        layer->ahi_avg = ahi_avg;
+//        layer->total_hours = total_hours;
+//        layer->max_ahi = max_ahi;
+//        layer->min_ahi = min_ahi;
+//        layer->calc_cnt = calc_cnt;
+//        layer->ahi_data = ahi_data;
     }
 
-    double ahi_total;
+  //  SummaryCalcItem ahicalc;
+    double ahi_wavg;
+    double ahi_avg;
+
     double total_hours;
     float max_ahi;
     float min_ahi;

@@ -129,6 +129,8 @@ class Layer
 
     inline bool recalculating() const { return m_recalculating; }
 
+    virtual void dataChanged() {}
+
     /*! \brief Override this for the drawing code, using GLBuffer components for drawing
         \param gGraph & gv    Graph Object that holds this layer
         \param int left
