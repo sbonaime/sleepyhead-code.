@@ -844,7 +844,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     /////////////////////////////////////////////////////////////////////
     peak_value = 0;
     min_value = 999;
-    for (int i=idx; i <= idx_end; ++i, ++it2) {
+    QMap<QDate, int>::iterator it_end = dayindex.end();
+    for (int i=idx; (i <= idx_end) && (it2 != it_end); ++i, ++it2) {
         Day * day = daylist.at(i);
 
         if (!day)
