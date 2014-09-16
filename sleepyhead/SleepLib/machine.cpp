@@ -825,6 +825,8 @@ bool Machine::hasModifiedSessions()
     return false;
 }
 
+BROKEN... DO NOT TRY TO BUILD THIS
+
 const QString summaryFileName = "Summaries.xml";
 
 bool Machine::LoadSummary(bool everything)
