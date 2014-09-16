@@ -17,7 +17,8 @@
 #include "gYAxis.h"
 
 extern MainWindow * mainwin;
-QColor brighten(QColor color, float mult = 2.0);
+
+short SummaryCalcItem::midcalc;
 
 gSummaryChart::gSummaryChart(QString label, MachineType machtype)
     :Layer(NoChannel), m_label(label), m_machtype(machtype)
@@ -152,6 +153,8 @@ QList<Day *> gSummaryChart::daylist;
 
 void gSummaryChart::preCalc()
 {
+    midcalc = p_profile->general->prefCalcMiddle();
+
     for (int i=0; i<calcitems.size(); ++i) {
         SummaryCalcItem & calc = calcitems[i];
         calc.reset(idx_end - idx_start);
@@ -503,7 +506,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     do {
         Day * day = daylist.at(idx);
 
-        if ((lastx1 + barw) > (rect.left()+rect.width()+1))
+        if ((lastx1 + barw) > (rect.left() + rect.width() + 1))
             break;
 
         totaldays++;
@@ -552,6 +555,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             customCalc(day, list);
 
             int listsize = list.size();
+            QLinearGradient gradient(lastx1, 0, lastx1 + barw, 0); //rect.bottom(), barw, rect.bottom());
 
             for (int i=0; i < listsize; ++i) {
                 SummaryChartSlice & slice = list[i];
@@ -560,9 +564,8 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
                 y1 = ((lastval-miny) * ymult);
                 y2 = (val * ymult);
                 QColor color = slice.color;
-                QRectF rec(lastx1, rect.bottom() - y1, barw, -y2);
 
-                rec = rec.intersected(rect);
+                QRectF rec = QRectF(lastx1, rect.bottom() - y1, barw, -y2).intersected(rect);
 
                 if (hlday) {
                     if (rec.contains(mouse.x(), mouse.y())) {
@@ -571,19 +574,17 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
                     }
                 }
 
-                QColor col2 = brighten(color,2.5);
-
-                if (barw > 8) {
-                    QLinearGradient gradient(lastx1, rect.bottom(), lastx1+barw, rect.bottom());
+                if (barw <= 3) {
+                    painter.fillRect(rec, QBrush(color));
+                } else if (barw > 8) {
                     gradient.setColorAt(0,color);
-                    gradient.setColorAt(1,col2);
+                    gradient.setColorAt(1,brighten(color, 2.0));
                     painter.fillRect(rec, QBrush(gradient));
-                    outlines.append(rec);
-                } else if (barw > 3) {
-                    painter.fillRect(rec, QBrush(brighten(color,1.25)));
+//                    painter.fillRect(rec, slice.brush);
                     outlines.append(rec);
                 } else {
-                    painter.fillRect(rec, QBrush(color));
+                    painter.fillRect(rec, QBrush(brighten(color,1.25)));
+                    outlines.append(rec);
                 }
 
                 lastval += val;
@@ -617,7 +618,11 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
         graph.ToolTip(txt, mouse.x()-15, mouse.y()+5, TT_AlignRight);
     }
-    afterDraw(painter, graph, rect);
+    try {
+        afterDraw(painter, graph, rect);
+    } catch(...) {
+        qDebug() << "Bad median call in" << m_label;
+    }
 
 
     // This could be turning off graphs prematurely..
@@ -651,6 +656,8 @@ void gUsageChart::populate(Day *day, int idx)
 
 void gUsageChart::preCalc()
 {
+    midcalc = p_profile->general->prefCalcMiddle();
+
     compliance_threshold = p_profile->cpap->complianceHours();
     incompdays = 0;
 
@@ -703,6 +710,9 @@ void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 
 
 void gSessionTimesChart::preCalc() {
+
+    midcalc = p_profile->general->prefCalcMiddle();
+
     num_slices = 0;
     num_days = 0;
     total_length = 0;
@@ -965,6 +975,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             customCalc(day, slices);
             int size = slices.size();
 
+            QLinearGradient gradient(lastx1, rect.bottom(), lastx1+barw, rect.bottom());
+
             for (int i=0; i < size; ++i) {
                 const SummaryChartSlice & slice = slices.at(i);
                 float s1 = slice.value - miny;
@@ -978,18 +990,18 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                 QRect rec(lastx1, rect.bottom() - y1 - y2, barw, y2);
                 rec = rec.intersected(rect);
 
+//                QBrush brush = slice.brush;
                 if (rec.contains(mouse)) {
                     col = Qt::yellow;
                     graph.ToolTip(slice.name, mouse.x() - 15,mouse.y() + 15, TT_AlignRight);
 
                 }
-                QColor col2 = brighten(col,2.5);
 
                 if (barw > 8) {
-                    QLinearGradient gradient(lastx1, rect.bottom(), lastx1+barw, rect.bottom());
                     gradient.setColorAt(0,col);
-                    gradient.setColorAt(1,col2);
+                    gradient.setColorAt(1,brighten(col, 2.0));
                     painter.fillRect(rec, QBrush(gradient));
+//                    painter.fillRect(rec, brush);
                     outlines.append(rec);
                 } else if (barw > 3) {
                     painter.fillRect(rec, QBrush(brighten(col,1.25)));
@@ -1035,16 +1047,22 @@ void gAHIChart::customCalc(Day *day, QList<SummaryChartSlice> &list)
         SummaryCalcItem * calc = slice.calc;
 
         EventDataType value = slice.value;
-
-        calc->wavg_sum += value;
-        calc->divisor += hours;
-
-        calc->avg_sum += value;
-        calc->cnt++;
-
         float valh =  value/ hours;
 
-        calc->median_data.append(valh);
+        switch (midcalc) {
+        case 0:
+            calc->median_data.append(valh);
+            break;
+        case 1:
+            calc->wavg_sum += value;
+            calc->divisor += hours;
+        default:
+            calc->avg_sum += value;
+            calc->cnt++;
+            break;
+        }
+
+
 
         calc->min = qMin(valh, calc->min);
         calc->max = qMax(valh, calc->max);
@@ -1065,17 +1083,21 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 {
     if (totaldays == nousedays) return;
 
-    int size = idx_end - idx_start;
-
-    int midcalc = p_profile->general->prefCalcMiddle();
-
-    int mpos = size /2 ;
+    //int size = idx_end - idx_start;
 
     float med = 0;
-    if (size > 0) {
-
-        //nth_element(ahi_data.begin(), ahi_data.begin()+ mpos, ahi_data.end());
-        med = median(ahi_data.begin(), ahi_data.end());
+    switch (midcalc) {
+    case 0:
+        if (ahi_data.size() > 0) {
+            med = median(ahi_data.begin(), ahi_data.end());
+        }
+        break;
+    case 1: // wavg
+        med = ahi_wavg / total_hours;
+        break;
+    case 2: // avg
+        med = ahi_avg / calc_cnt;
+        break;
     }
 
     QStringList txtlist;

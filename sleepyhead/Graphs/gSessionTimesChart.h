@@ -51,6 +51,8 @@ struct SummaryCalcItem {
         divisor = 0;
         min = 0;
         max = 0;
+        midcalc = p_profile->general->prefCalcMiddle();
+
     }
 
     SummaryCalcItem(ChannelID code, SummaryType type, QColor color)
@@ -58,16 +60,25 @@ struct SummaryCalcItem {
     }
 
     inline void update(float value, float weight) {
-        wavg_sum += value * weight;
-        divisor += weight;
-        avg_sum += value;
-        cnt++;
-        median_data.append(value);
+        switch (midcalc) {
+        case 0:
+            median_data.append(value);
+            break;
+        case 1:
+            wavg_sum += value * weight;
+            divisor += weight;
+            break;
+        default:
+            avg_sum += value;
+            cnt++;
+        }
         min = qMin(min, value);
         max = qMax(max, value);
     }
 
     void reset(int reserve) {
+        midcalc = p_profile->general->prefCalcMiddle();
+
         wavg_sum = 0;
         avg_sum = 0;
         divisor = 0;
@@ -75,7 +86,9 @@ struct SummaryCalcItem {
         min = 99999;
         max = -99999;
         median_data.clear();
-        median_data.reserve(reserve);
+        if (midcalc == 0) {
+            median_data.reserve(reserve);
+        }
     }
     ChannelID code;
     SummaryType type;
@@ -87,6 +100,7 @@ struct SummaryCalcItem {
     int cnt;
     EventDataType min;
     EventDataType max;
+    static short midcalc;
 
     QList<float> median_data;
 
@@ -106,15 +120,23 @@ struct SummaryChartSlice {
         height = copy.height;
         name = copy.name;
         color = copy.color;
+//        brush = copy.brush;
     }
 
     SummaryChartSlice(SummaryCalcItem * calc, EventDataType value, EventDataType height, QString name, QColor color)
-        :calc(calc), value(value), height(height), name(name), color(color) {}
+        :calc(calc), value(value), height(height), name(name), color(color) {
+//        QLinearGradient gradient(0, 0, 1, 0);
+//        gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+//        gradient.setColorAt(0,color);
+//        gradient.setColorAt(1,brighten(color));
+//        brush = QBrush(gradient);
+    }
     SummaryCalcItem * calc;
     EventDataType value;
     EventDataType height;
     QString name;
     QColor color;
+//    QBrush brush;
 };
 
 class gSummaryChart : public Layer
@@ -218,6 +240,8 @@ protected:
 
     int idx_start;
     int idx_end;
+
+    short midcalc;
 };
 
 
@@ -249,6 +273,7 @@ public:
 
     //! \brief Renders the graph to the QPainter object
     virtual void paint(QPainter &painter, gGraph &graph, const QRegion &region);
+
     virtual Layer * Clone() {
         gSessionTimesChart * sc = new gSessionTimesChart();
         gSummaryChart::CloneInto(sc);
@@ -332,7 +357,7 @@ public:
         return sc;
     }
 
-    void CloneInto(gAHIChart * layer) {
+    void CloneInto(gAHIChart * /* layer */) {
 //        layer->ahicalc = ahicalc;
 //        layer->ahi_wavg = ahi_wavg;
 //        layer->ahi_avg = ahi_avg;

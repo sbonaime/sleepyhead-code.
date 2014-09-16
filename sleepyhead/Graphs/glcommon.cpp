@@ -14,6 +14,34 @@ float brightness(QColor color) {
 }
 
 
+QColor brighten(QColor color, float mult)
+{
+    int cr, cg, cb;
+
+    cr = color.red();
+    cg = color.green();
+    cb = color.blue();
+
+    if (cr < 64) { cr = 64; }
+
+    if (cg < 64) { cg = 64; }
+
+    if (cb < 64) { cb = 64; }
+
+    cr *= mult;
+    cg *= mult;
+    cb *= mult;
+
+    if (cr > 255) { cr = 255; }
+
+    if (cg > 255) { cg = 255; }
+
+    if (cb > 255) { cb = 255; }
+
+    return QColor(cr, cg, cb, 255);
+
+}
+
 #ifdef BUILD_WITH_MSVC
 
 #if (_MSC_VER < 1800)
@@ -23,4 +51,5 @@ double round(double number)
 }
 #endif
 #endif
+
 

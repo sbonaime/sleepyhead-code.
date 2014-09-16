@@ -382,34 +382,6 @@ void SummaryChart::SetDay(Day * nullday)
     m_physminy = m_miny;
 }
 
-QColor brighten(QColor color, float mult = 2.0)
-{
-    int cr, cg, cb;
-
-    cr = color.red();
-    cg = color.green();
-    cb = color.blue();
-
-    if (cr < 64) { cr = 64; }
-
-    if (cg < 64) { cg = 64; }
-
-    if (cb < 64) { cb = 64; }
-
-    cr *= mult;
-    cg *= mult;
-    cb *= mult;
-
-    if (cr > 255) { cr = 255; }
-
-    if (cg > 255) { cg = 255; }
-
-    if (cb > 255) { cb = 255; }
-
-    return QColor(cr, cg, cb, 255);
-
-}
-
 void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();

@@ -20,6 +20,7 @@
     */
 enum GraphType { GT_BAR, GT_LINE, GT_POINTS, GT_SESSIONS };
 
+
 /*! \class SummaryChart
     \brief The main overall chart type layer used in Overview page
     */
