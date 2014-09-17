@@ -2142,18 +2142,22 @@ void MainWindow::purgeMachine(Machine * mach)
             daily->clearLastDay(); // otherwise Daily will crash
             daily->ReloadGraphs();
         }
-        GenerateStatistics();
+        //GenerateStatistics();
         return;
     }
 
     if (overview) overview->ReloadGraphs();
+    QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
+    rxcache.remove();
 
     if (daily) {
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
-    GenerateStatistics();
     QApplication::processEvents();
+
+
+//    GenerateStatistics();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

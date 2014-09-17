@@ -93,6 +93,8 @@ class Day
 
     inline bool hasMachine(MachineType mt) const { return machines.contains(mt); }
 
+    bool searchMachine(MachineType mt);
+
     //! \brief Returns the Average of all Sessions setting 'code' for this day
     EventDataType settings_avg(ChannelID code);
 

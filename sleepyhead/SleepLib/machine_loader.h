@@ -14,9 +14,8 @@
 
 #include "profiles.h"
 #include "machine.h"
-
-
 #include "zlib.h"
+
 
 class MachineLoader;
 enum DeviceStatus { NEUTRAL, IMPORTING, LIVE, DETECTING };

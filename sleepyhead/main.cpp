@@ -32,6 +32,7 @@
 #include "newprofile.h"
 #include "translation.h"
 #include "common_gui.h"
+#include "SleepLib/machine_loader.h"
 
 
 // Gah! I must add the real darn plugin system one day.
@@ -45,6 +46,7 @@
 #include "SleepLib/loader_plugins/intellipap_loader.h"
 #include "SleepLib/loader_plugins/icon_loader.h"
 #include "SleepLib/loader_plugins/weinmann_loader.h"
+
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>

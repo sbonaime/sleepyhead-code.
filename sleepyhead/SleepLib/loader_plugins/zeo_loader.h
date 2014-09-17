@@ -23,6 +23,7 @@ class ZEOLoader : public MachineLoader
   public:
     ZEOLoader();
     virtual ~ZEOLoader();
+
     virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
 
     virtual int Open(QString path);

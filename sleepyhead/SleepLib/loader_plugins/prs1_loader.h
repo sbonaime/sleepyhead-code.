@@ -102,6 +102,7 @@ public:
         delete event;
         for (int i=0;i < waveforms.size(); ++i) {delete waveforms.at(i); }
     }
+
     virtual void run();
 
     PRS1DataChunk * compliance;

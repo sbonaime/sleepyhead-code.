@@ -84,7 +84,6 @@ Machine * MachineLoader::lookupMachine(QString serial)
     return nullptr;
 }
 
-
 Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
 {
     Q_ASSERT(p_profile != nullptr);

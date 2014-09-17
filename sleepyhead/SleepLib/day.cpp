@@ -1424,8 +1424,21 @@ qint64 Day::last(MachineType type)
 
 bool Day::removeSession(Session *sess)
 {
-    return sessions.removeAll(sess) > 0;
+    MachineType mt = sess->type();
+    bool b = sessions.removeAll(sess) > 0;
+    if (!searchMachine(mt)) {
+        machines.remove(mt);
+    }
+    return b;
 }
+bool Day::searchMachine(MachineType mt) {
+    for (int i=0;  i < sessions.size(); ++i) {
+        if (sessions.at(i)->type() == mt)
+            return true;
+    }
+    return false;
+}
+
 
 QString Day::getCPAPMode()
 {

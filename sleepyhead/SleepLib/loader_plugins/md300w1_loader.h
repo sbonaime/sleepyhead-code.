@@ -22,8 +22,6 @@ class MD300W1Loader : public SerialOximeter
 {
 Q_OBJECT
   public:
-
-
     MD300W1Loader();
     virtual ~MD300W1Loader();
 
