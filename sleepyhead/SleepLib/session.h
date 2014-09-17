@@ -361,6 +361,11 @@ class Session
         s_summaryOnly = b;
     }
 
+    void setOpened(bool b = true) {
+        s_events_loaded = b;
+        s_summary_loaded = b;
+    }
+
     //! \brief Completely purges Session from memory and disk.
     bool Destroy();
 
@@ -374,6 +379,10 @@ class Session
 
 
     QString eventFile() const;
+
+    MachineType type() { return s_machtype; }
+
+
 
 #if defined(SESSION_DEBUG)
     QStringList session_files;
@@ -397,6 +406,7 @@ protected:
 
     // for debugging
     bool destroyed;
+    MachineType s_machtype;
 };
 
 QDataStream & operator<<(QDataStream & out, const Session & session);

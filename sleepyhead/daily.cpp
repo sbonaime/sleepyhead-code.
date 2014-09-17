@@ -530,7 +530,7 @@ void Daily::ReloadGraphs()
 
     if (previous_date.isValid()) {
         d=previous_date;
-//        Unload(d);
+        //Unload(d);
     }
     d=p_profile->LastDay();
     if (!d.isValid()) {
@@ -598,7 +598,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             m = sess->eventlist.find(code);
             if (m == sess->eventlist.end()) continue;
 
-            drift=(sess->machine()->type() == MT_CPAP) ? clockdrift : 0;
+            drift=(sess->type() == MT_CPAP) ? clockdrift : 0;
 
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -892,7 +892,7 @@ QString Daily::getSessionInformation(Day * day)
         QList<Session *> sesslist = day->getSessions(mi.key(), true);
 
         for (QList<Session *>::iterator s=sesslist.begin(); s != sesslist.end(); ++s) {
-            if (((*s)->machine()->type() == MT_CPAP) &&
+            if (((*s)->type() == MT_CPAP) &&
                 ((*s)->settings.find(CPAP_BrokenWaveform) != (*s)->settings.end()))
                     corrupted_waveform=true;
 
@@ -1631,7 +1631,7 @@ void Daily::Load(QDate date)
 
         for (i=day->begin();i!=day->end();++i) {
             Session * s=*i;
-            if ((*s).machine()->type() == MT_CPAP)
+            if ((*s).type() == MT_CPAP)
                 sessbar->add(s, cols[c % maxcolors]);
             c++;
         }

@@ -459,13 +459,8 @@ int WeinmannLoader::Open(QString path)
             p += 6;
         }
 
-
-
         sess->UpdateSummaries();
         mach->AddSession(sess);
-
-
-
     }
     delete [] data;
     delete [] st;

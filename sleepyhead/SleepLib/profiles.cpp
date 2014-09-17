@@ -672,7 +672,7 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
     // For a machine match, find at least one enabled Session.
     for (int i = 0; i < day->size(); ++i) {
         Session * sess = (*day)[i];
-        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled()) {
+        if (((type == MT_UNKNOWN) || (sess->type() == type)) && sess->enabled()) {
             day->OpenSummary();
 
             return day;
@@ -692,7 +692,7 @@ Day *Profile::FindGoodDay(QDate date, MachineType type)
     // For a machine match, find at least one enabled Session.
     for (int i = 0; i < day->size(); ++i) {
         Session * sess = (*day)[i];
-        if (((type == MT_UNKNOWN) || (sess->machine()->type() == type)) && sess->enabled()) {
+        if (((type == MT_UNKNOWN) || (sess->type() == type)) && sess->enabled()) {
             return day;
         }
     }

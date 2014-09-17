@@ -861,7 +861,7 @@ void FlowParser::flagEvents()
 
 void calcRespRate(Session *session, FlowParser *flowparser)
 {
-    if (session->machine()->type() != MT_CPAP) { return; }
+    if (session->type() != MT_CPAP) { return; }
 
     //    if (session->machine()->loaderName() != STR_MACH_PRS1) return;
 
@@ -1001,7 +1001,7 @@ int calcAHIGraph(Session *session)
 
     bool zeroreset = p_profile->cpap->AHIReset();
 
-    if (session->machine()->type() != MT_CPAP) { return 0; }
+    if (session->type() != MT_CPAP) { return 0; }
 
     bool hasahi = session->eventlist.contains(CPAP_AHI);
     bool hasrdi = session->eventlist.contains(CPAP_RDI);
@@ -1746,7 +1746,7 @@ bool mmaskFirst = true;
 int calcLeaks(Session *session)
 {
 
-    if (session->machine()->type() != MT_CPAP) { return 0; }
+    if (session->type() != MT_CPAP) { return 0; }
 
     if (session->eventlist.contains(CPAP_Leak)) { return 0; } // abort if already there
 

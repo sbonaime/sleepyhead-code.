@@ -870,7 +870,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
             for (si = day->begin(); si != day->end(); ++si) {
                 Session *sess = (*si);
-                if (!sess->enabled() || (sess->machine()->type() != m_machtype)) continue;
+                if (!sess->enabled() || (sess->type() != m_machtype)) continue;
 
                 // Look at mask on/off slices...
                 int slize = sess->m_slices.size();

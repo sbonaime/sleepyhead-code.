@@ -545,8 +545,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         dot.visible = false;
     }
 
+    Session * sess = nullptr;
+    ChannelID code;
+
     for (int gi = 0; gi < m_codes.size(); gi++) {
-        ChannelID code = m_codes[gi];
+        code = m_codes[gi];
         schema::Channel &chan = schema::channel[code];
 
         ////////////////////////////////////////////////////////////////////////
@@ -579,14 +582,14 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         // For each session...
         int daysize = m_day->size();
         for (int svi = 0; svi < daysize; svi++) {
-            Session *sess = (*m_day)[svi];
+            sess = (*m_day)[svi];
 
             if (!sess) {
                 qWarning() << "gLineChart::Plot() nullptr Session Record.. This should not happen";
                 continue;
             }
 
-            drift = (sess->machine()->type() == MT_CPAP) ? clockdrift : 0;
+            drift = (sess->type() == MT_CPAP) ? clockdrift : 0;
 
             if (!sess->enabled()) { continue; }
 
@@ -1042,7 +1045,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     for (int i=0; i < dotlinesize; i++) {
         DottedLine & dot = m_dotlines[i];
         if (!dot.visible) continue;
-        ChannelID code = dot.code;
+        code = dot.code;
         schema::Channel &chan = schema::channel[code];
         int linewidth = (10 * ratioX);
         QRectF rec(0, rect.top()-3, 0,0);
@@ -1084,8 +1087,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     // Calculate the CPAP session time.
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
-        Session * sess = *s;
-        if (!sess->enabled() || (sess->machine()->type() != MT_CPAP)) continue;
+        sess = *s;
+        if (!sess->enabled() || (sess->type() != MT_CPAP)) continue;
 
         first = sess->first();
         last = sess->last();
@@ -1127,10 +1130,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         bool blockhover = false;
 
         for (fit = flags.begin(); fit != flags.end(); ++fit) {
-            ChannelID code = fit.key();
-            if (code == 4098) {
-                int i=5; Q_UNUSED(i);
-            }
+            code = fit.key();
             if ((!m_flags_enabled[code]) || (!m_day->channelExists(code))) continue;
             gLineOverlayBar * lob = fit.value();
             lob->setBlockHover(blockhover);
@@ -1143,8 +1143,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
         }
     }
-    if (m_codes[0] == OXI_SPO2Drop) {
-    }
+//    if (m_codes[0] == OXI_SPO2Drop) {
+//    }
     if (m_codes[0] == CPAP_FlowRate) {
         float hours = time / 3600.0;
         int h = time / 3600;

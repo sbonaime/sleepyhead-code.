@@ -555,8 +555,8 @@ int IntellipapLoader::Open(QString path)
                 sess->settings[CPAP_RampPressure] = ramp_pressure;
                 sess->settings[CPAP_RampTime] = ramp_time;
 
-
                 sess->UpdateSummaries();
+
                 addSession(sess);
             } else {
                 delete sess;

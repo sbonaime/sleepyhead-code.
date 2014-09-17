@@ -96,7 +96,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if (evlist.size() == 0) { continue; }
 
-        drift = ((*s)->machine()->type() == MT_CPAP) ? clockdrift : 0;
+        drift = ((*s)->type() == MT_CPAP) ? clockdrift : 0;
 
         // Could loop through here, but nowhere uses more than one yet..
         for (int k = 0; k < evlist.size(); k++) {

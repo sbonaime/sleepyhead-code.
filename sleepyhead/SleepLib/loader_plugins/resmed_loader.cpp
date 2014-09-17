@@ -757,11 +757,21 @@ void ResmedImport::run()
     Q_FOREACH(QString file, files[EDF_CSL]) {
 //        loader->LoadCSL(sess, file);
     }
+
+    bool haveeve = false;
     Q_FOREACH(QString file, files[EDF_EVE]) {
         loader->LoadEVE(sess, file);
 #ifdef SESSION_DEBUG
         sess->session_files.append(file);
 #endif
+        haveeve = true;
+    }
+
+    if (!haveeve) {
+        sess->AddEventList(CPAP_Obstructive, EVL_Event);
+        sess->AddEventList(CPAP_ClearAirway, EVL_Event);
+        sess->AddEventList(CPAP_Apnea, EVL_Event);
+        sess->AddEventList(CPAP_Hypopnea, EVL_Event);
     }
 
 
@@ -924,6 +934,7 @@ void ResmedImportStage2::run()
     // Claim this record for future imports
     sess->settings[RMS9_MaskOnTime] = R.maskon;
     sess->setSummaryOnly(true);
+
 #ifdef SESSION_DEBUG
     sess->session_files.append("STR.edf");
 #endif

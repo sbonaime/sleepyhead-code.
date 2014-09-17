@@ -454,6 +454,8 @@ void OximeterImport::on_liveImportButton_clicked()
 
     ELplethy->setFirst(start_ti);
     session->really_set_first(start_ti);
+    session->setOpened(true);
+
     dummyday->addSession(session);
 
     plethyChart->setMinX(start_ti);
@@ -822,7 +824,8 @@ void OximeterImport::on_saveButton_clicked()
     qint64 step = (importMode == IM_LIVE) ? oximodule->liveResolution() : oximodule->importResolution();
     int size = oxirec->size();
 
-    for (int i=1; i < size; ++i) {
+    // why was I skipping the first sample? not priming it anymore..
+    for (int i=0; i < size; ++i) {
         OxiRecord * rec = &(*oxirec)[i];
 
         if (rec->pulse > 0) {
@@ -952,6 +955,8 @@ void OximeterImport::on_saveButton_clicked()
 
     session->really_set_last(ti);
     session->SetChanged(true);
+
+    session->setOpened(true);
 
     mach->AddSession(session);
     mach->Save();

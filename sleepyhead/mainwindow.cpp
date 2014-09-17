@@ -708,7 +708,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
 
 void MainWindow::finishCPAPImport()
 {
-    p_profile->Save();
+    p_profile->StoreMachines();
     GenerateStatistics();
 
     if (overview) { overview->ReloadGraphs(); }
@@ -2082,11 +2082,12 @@ void MainWindow::on_actionRebuildCPAP(QAction *action)
     }
     if (overview) overview->ReloadGraphs();
     if (daily) {
+        daily->Unload();
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
     GenerateStatistics();
-    p_profile->Save();
+    p_profile->StoreMachines();
 }
 
 void MainWindow::on_actionPurgeMachine(QAction *action)

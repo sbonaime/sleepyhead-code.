@@ -35,6 +35,7 @@ Session::Session(Machine *m, SessionID session)
     }
 
     s_machine = m;
+    s_machtype = m->type();
     s_session = session;
     s_changed = false;
     s_events_loaded = false;

@@ -51,7 +51,7 @@ Session * Day::firstSession(MachineType type)
     for (int i=0; i<sessions.size(); i++) {
         Session * sess = sessions.at(i);
         if (!sess->enabled()) continue;
-        if (sess->machine()->type() == type) {
+        if (sess->type() == type) {
             return sess;
         }
     }
@@ -86,7 +86,7 @@ QList<Session *> Day::getSessions(MachineType type, bool ignore_enabled)
         if (!ignore_enabled && !(*it)->enabled())
             continue;
 
-        if ((*it)->machine()->type() == type)
+        if ((*it)->type() == type)
             newlist.append((*it));
     }
 
@@ -109,7 +109,7 @@ void Day::addSession(Session *s)
 {
     invalidate();
     Q_ASSERT(s!=nullptr);
-    QHash<MachineType, Machine *>::iterator mi = machines.find(s->machine()->type());
+    QHash<MachineType, Machine *>::iterator mi = machines.find(s->type());
 
     if (mi != machines.end()) {
         if (mi.value() != s->machine()) {
@@ -117,7 +117,7 @@ void Day::addSession(Session *s)
             return;
         }
     } else {
-        machines[s->machine()->type()] = s->machine();
+        machines[s->type()] = s->machine();
     }
 
     sessions.push_back(s);
@@ -717,7 +717,7 @@ qint64 Day::total_time()
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
-        if (sess.enabled() && (sess.machine()->type() != MT_JOURNAL)) {
+        if (sess.enabled() && (sess.type() != MT_JOURNAL)) {
             first = sess.first();
             last = sess.last();
 
@@ -778,7 +778,7 @@ qint64 Day::total_time(MachineType type)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
-        if ((sess.machine()->type() == type) && sess.enabled()) {
+        if ((sess.type() == type) && sess.enabled()) {
             first = sess.first();
             last = sess.last();
 
@@ -844,7 +844,7 @@ bool Day::hasEnabledSessions(MachineType type)
     QList<Session *>::iterator end = sessions.end();
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        if (((*it)->machine()->type() == type) && (*it)->enabled()) {
+        if (((*it)->type() == type) && (*it)->enabled()) {
             return true;
         }
     }
@@ -979,7 +979,7 @@ bool Day::hasData(ChannelID code, SummaryType type)
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
-        if (sess.machine()->type() == MT_JOURNAL) continue;
+        if (sess.type() == MT_JOURNAL) continue;
 
         if (sess.enabled()) {
             switch (type) {
@@ -1218,14 +1218,15 @@ bool Day::channelHasData(ChannelID id)
         Session & sess = *(*it);
 
         if (sess.enabled()) {
-            if (sess.channelExists(id)) {
+            if (sess.m_cnt.contains(id)) {
+                return true;
+            }
+
+            if (sess.eventlist.contains(id)) {
                 return true;
             }
 
             if (sess.m_valuesummary.contains(id)) {
-                return true;
-            }
-            if (sess.m_cnt.contains(id)) {
                 return true;
             }
         }
@@ -1236,10 +1237,10 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
-    if (d_events_open)
-        return;
+//    if (d_events_open)
+//        return;
     Q_FOREACH(Session * session, sessions) {
-        if (session->machine()->type() != MT_JOURNAL)
+        if (session->type() != MT_JOURNAL)
             session->OpenEvents();
     }
     d_events_open = true;
@@ -1325,7 +1326,7 @@ qint64 Day::first(MachineType type)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
 
-        if ((sess.machine()->type() == type) && sess.enabled()) {
+        if ((sess.type() == type) && sess.enabled()) {
             tmp = sess.first();
 
             if (!tmp) { continue; }
@@ -1349,7 +1350,7 @@ qint64 Day::first()
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
-        if (sess.machine()->type() == MT_JOURNAL) continue;
+        if (sess.type() == MT_JOURNAL) continue;
         if (sess.enabled()) {
             tmp = sess.first();
 
@@ -1376,7 +1377,7 @@ qint64 Day::last()
 
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
-        if (sess.machine()->type() == MT_JOURNAL) continue;
+        if (sess.type() == MT_JOURNAL) continue;
 
         if (sess.enabled()) {
             tmp = sess.last();
@@ -1405,7 +1406,7 @@ qint64 Day::last(MachineType type)
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
 
-        if ((sess.machine()->type() == type) && sess.enabled()) {
+        if ((sess.type() == type) && sess.enabled()) {
             tmp = sess.last();
 
             if (!tmp) { continue; }

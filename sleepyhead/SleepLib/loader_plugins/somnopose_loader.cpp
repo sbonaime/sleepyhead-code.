@@ -162,6 +162,7 @@ int SomnoposeLoader::OpenFile(QString filename)
 
     sess->really_set_last(time);
     sess->SetChanged(true);
+
     mach->AddSession(sess);
 
     mach->Save();

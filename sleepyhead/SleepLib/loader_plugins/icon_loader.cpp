@@ -739,6 +739,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
             sess->settings[CPAP_HumidSetting] = x2;
             //sess->settings[CPAP_PresReliefType]=PR_SENSAWAKE;
             Sessions[ts] = sess;
+
             addSession(sess);
         }
     } while (!in.atEnd());
