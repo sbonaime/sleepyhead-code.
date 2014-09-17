@@ -825,8 +825,6 @@ bool Machine::hasModifiedSessions()
     return false;
 }
 
-BROKEN... DO NOT TRY TO BUILD THIS
-
 const QString summaryFileName = "Summaries.xml";
 
 bool Machine::LoadSummary(bool everything)
@@ -884,7 +882,8 @@ bool Machine::LoadSummary(bool everything)
             sess->really_set_last(last);
             sess->setEnabled(enabled);
             sess->setSummaryOnly(!events);
-            AddSession(sess);
+            if (!AddSession(sess))
+                delete sess;
       //      sess->LoadSummary();
         }
     }

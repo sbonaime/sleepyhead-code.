@@ -63,9 +63,9 @@ void gSummaryChart::SetDay(Day *unused_day)
     firstday = p_profile->FirstDay(m_machtype);
     lastday = p_profile->LastDay(m_machtype);
 
-
     dayindex.clear();
     daylist.clear();
+
     if (!firstday.isValid() || !lastday.isValid()) return;
    // daylist.reserve(firstday.daysTo(lastday)+1);
     QDate date = firstday;
@@ -75,7 +75,6 @@ void gSummaryChart::SetDay(Day *unused_day)
         Day * day = nullptr;
         if (di != p_profile->daylist.end()) {
             day = di.value();
-            if (!day->hasMachine(m_machtype)) day = nullptr;
         }
         daylist.append(day);
         dayindex[date] = idx;
@@ -91,6 +90,11 @@ void gSummaryChart::SetDay(Day *unused_day)
     m_empty = false;
 
 }
+
+
+//QMap<QDate, int> gSummaryChart::dayindex;
+//QList<Day *> gSummaryChart::daylist;
+
 
 bool gSummaryChart::keyPressEvent(QKeyEvent *event, gGraph *graph)
 {
@@ -147,9 +151,6 @@ bool gSummaryChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 
     return true;
 }
-
-QMap<QDate, int> gSummaryChart::dayindex;
-QList<Day *> gSummaryChart::daylist;
 
 void gSummaryChart::preCalc()
 {
@@ -307,6 +308,7 @@ QString gSummaryChart::tooltipData(Day *, int idx)
 
 void gSummaryChart::populate(Day * day, int idx)
 {
+
     int size = calcitems.size();
     bool good = false;
     for (int i=0; i < size; ++i) {
@@ -462,7 +464,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     for (int i=idx; i <= idx_end; ++i) {
         Day * day = daylist.at(i);
 
-        if (!day)
+        if (!day) // || !day->hasMachine(m_machtype))
             continue;
 
         day->OpenSummary();
@@ -511,7 +513,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
         totaldays++;
 
-        if (!day) {
+        if (!day) {//  || !day->hasMachine(m_machtype)) {
             lasty1 = rect.bottom();
             lastx1 += barw;
             it++;
@@ -848,7 +850,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     for (int i=idx; (i <= idx_end) && (it2 != it_end); ++i, ++it2) {
         Day * day = daylist.at(i);
 
-        if (!day)
+
+        if (!day) // || !day->hasMachine(m_machtype))
             continue;
 
         QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(i);
@@ -949,7 +952,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         totaldays++;
 
 
-        if (!day) {
+        if (!day) { // || !day->hasMachine(m_machtype)) {
             lasty1 = rect.bottom();
             lastx1 += barw;
             nousedays++;

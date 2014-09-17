@@ -298,6 +298,9 @@ class Day
     }
 
     void updateCPAPCache();
+
+    inline QDate date() const { return d_date; }
+    void setDate(QDate date) { d_date = date; }
   protected:
 
 
@@ -314,6 +317,7 @@ class Day
     QHash<ChannelID, long> d_count;
     QHash<ChannelID, double> d_sum;
     bool d_invalidate;
+    QDate d_date;
 };
 
 

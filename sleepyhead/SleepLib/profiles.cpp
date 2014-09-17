@@ -644,6 +644,7 @@ Day *Profile::addDay(QDate date)
         dit = daylist.insert(date, new Day());
     }
     Day * day = dit.value();
+    day->setDate(date);
 
     if (is_first_day) {
         m_first = m_last = date;

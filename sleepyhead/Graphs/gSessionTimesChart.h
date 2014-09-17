@@ -200,6 +200,8 @@ public:
         layer->idx_start = idx_start;
         layer->idx_end = idx_end;
         layer->cache.clear();
+        layer->dayindex = dayindex;
+        layer->daylist = daylist;
     }
 
 protected:
@@ -224,8 +226,8 @@ protected:
     QDate firstday;
     QDate lastday;
 
-    static QMap<QDate, int> dayindex;
-    static QList<Day *> daylist;
+    QMap<QDate, int> dayindex;
+    QList<Day *> daylist;
 
     QHash<int, QList<SummaryChartSlice> > cache;
     QList<SummaryCalcItem> calcitems;
