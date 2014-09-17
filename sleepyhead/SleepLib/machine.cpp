@@ -335,6 +335,8 @@ bool Machine::unlinkDay(Day * d)
 
 bool Machine::unlinkSession(Session * sess)
 {
+    MachineType mt = sess->type();
+
     // Remove the object from the machine object's session list
     bool b=sessionlist.remove(sess->session());
 
@@ -358,6 +360,10 @@ bool Machine::unlinkSession(Session * sess)
         d = days.at(i);
         if (d->sessions.removeAll(sess)) {
             b=true;
+            if (!d->searchMachine(mt)) {
+                d->machines.remove(mt);
+            }
+
             if (d->size() == 0) {
                 day.remove(dates[i]);
                 p_profile->unlinkDay(d);
