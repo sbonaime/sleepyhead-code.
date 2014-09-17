@@ -148,7 +148,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             dividx = 0;
             divmax = 10;
             fitmode = 0;
-        } else if (xx > 600000) {  // Minutes
+        } else if (xx > 1800000) {  // Minutes
             fd = " j0:00";
             dividx = 10;
             divmax = 21;
