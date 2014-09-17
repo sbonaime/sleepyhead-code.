@@ -120,9 +120,13 @@ struct WaveHeaderList {
 
 PRS1Loader::PRS1Loader()
 {
-    // Todo: Register PRS1 custom channels
+    const QString PRS1_ICON = ":/icons/prs1.png";
 
-    //genCRCTable();
+    QString s = newInfo().series;
+    m_pixmap_paths[s] = PRS1_ICON;
+    m_pixmaps[s] = QPixmap(PRS1_ICON);
+
+    //genCRCTable();  // find what I did with this..
     m_buffer = nullptr;
     m_type = MT_CPAP;
 }

@@ -333,6 +333,19 @@ bool Machine::unlinkDay(Day * d)
     return day.remove(day.key(d)) > 0;
 }
 
+QString Machine::getPixmapPath()
+{
+    if (!loader()) return "";
+    return loader()->getPixmapPath(info.series);
+}
+
+QPixmap & Machine::getPixmap()
+{
+    static QPixmap pm;
+    if (!loader()) return pm;
+    return loader()->getPixmap(info.series);
+}
+
 bool Machine::unlinkSession(Session * sess)
 {
     MachineType mt = sess->type();
@@ -514,11 +527,9 @@ bool Machine::Load()
     }
 
     ProgressDialog * popup = new ProgressDialog(nullptr);
-    QPixmap image(getCPAPPixmap(info.loadername));
-    if (!image.isNull()) {
-        image = image.scaled(64,64);
-        popup->setPixmap(image);
-    }
+
+    QPixmap image = getPixmap().scaled(64,64);
+    popup->setPixmap(image);
     popup->setMessage(QObject::tr("Loading %1 data...").arg(info.brand));
     popup->show();
 

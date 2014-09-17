@@ -16,6 +16,9 @@ extern QProgressBar *qprogress;
 
 #include "machine_loader.h"
 
+bool genpixmapinit = false;
+QPixmap * MachineLoader::genericCPAPPixmap;
+
 // This crap moves to Profile
 QList<MachineLoader *> m_loaders;
 
@@ -150,6 +153,10 @@ void DestroyLoaders()
 
 MachineLoader::MachineLoader() :QObject(nullptr)
 {
+    if (!genpixmapinit) {
+        genericCPAPPixmap = new QPixmap(genericPixmapPath);
+        genpixmapinit = true;
+    }
     m_abort = false;
     m_type = MT_UNKNOWN;
     m_status = NEUTRAL;

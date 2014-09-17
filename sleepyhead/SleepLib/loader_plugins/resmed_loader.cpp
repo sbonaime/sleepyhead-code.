@@ -33,6 +33,10 @@ const QString STR_UnknownModel = "Resmed S9 ???";
 
 ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode;
 
+const QString STR_ResMed_AirSense10 = "AirSense 10";
+const QString STR_ResMed_S9 = "S9";
+
+
 
 // Return the model name matching the supplied model number.
 const QString & lookupModel(quint16 model)
@@ -344,6 +348,13 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
                     epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                 }
+
+                if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
+                    epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    epr += 1;
+                }
+
+
 
                 if ((epr >= 0) && (epr_level >= 0)) {
                     R.epr_level = epr_level;
@@ -916,6 +927,14 @@ void ResmedImport::run()
 
 ResmedLoader::ResmedLoader()
 {
+    const QString RMS9_ICON = ":/icons/rms9.png";
+    const QString RM10_ICON = ":/icons/sheep.png";
+
+    m_pixmaps[STR_ResMed_S9] = QPixmap(RMS9_ICON);
+    m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);
+    m_pixmap_paths[STR_ResMed_S9] = RMS9_ICON;
+    m_pixmap_paths[STR_ResMed_AirSense10] = RM10_ICON;
+
     m_type = MT_CPAP;
 }
 ResmedLoader::~ResmedLoader()
@@ -1119,12 +1138,12 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
             } else if (key == "PNA") {  // Product Name
                 value.replace("_"," ");
 
-                if (value.contains("S9")) {
-                    value.replace("S9", "");
-                    info.series = value;
-                } else if (value.contains("AirSense 10")) {
-                    value.replace("AirSense 10", "");
-                    info.series = "AirSense 10";
+                if (value.contains(STR_ResMed_S9)) {
+                    value.replace(STR_ResMed_S9, "");
+                    info.series = STR_ResMed_S9;
+                } else if (value.contains(STR_ResMed_AirSense10)) {
+                    value.replace(STR_ResMed_AirSense10, "");
+                    info.series = STR_ResMed_AirSense10;
                 }
                 value.replace("(","");
                 value.replace(")","");
@@ -2259,7 +2278,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
     // Notes: Event records have useless duration record.
    // sess->updateFirst(edf.startdate);
 
-    EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr;
+    EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr, *RE = nullptr;
 
     // Allow for empty sessions..
 
@@ -2353,6 +2372,12 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
                         if (sess->checkInside(tt)) HY->AddEvent(tt, duration + 10); // Only Hyponea's Need the extra duration???
                     } else if (matchSignal(CPAP_Apnea, t)) {
                         if (sess->checkInside(tt)) UA->AddEvent(tt, duration);
+                    } else if (matchSignal(CPAP_RERA, t)) {
+                        // Not all machines have it, so only create it when necessary..
+                        if (!RE) {
+                            if (!(RE = sess->AddEventList(CPAP_RERA, EVL_Event))) { return false; }
+                        }
+                        if (sess->checkInside(tt)) RE->AddEvent(tt, duration);
                     } else if (matchSignal(CPAP_ClearAirway, t)) {
                         // Not all machines have it, so only create it when necessary..
                         if (!CA) {
@@ -2867,6 +2892,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_Obstructive].push_back("Obstructive apnea");
     resmed_codes[CPAP_Hypopnea].push_back("Hypopnea");
     resmed_codes[CPAP_Apnea].push_back("Apnea");
+    resmed_codes[CPAP_RERA].push_back("Arousal");
     resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus");
@@ -2882,7 +2908,7 @@ void ResInitModelMap()
     resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
 
     resmed_codes[RMS9_EPR].push_back("EPR");
-    resmed_codes[RMS9_EPR].push_back("S.EPR.EPRType");
+    //resmed_codes[RMS9_EPR].push_back("S.EPR.EPRType");
 
     resmed_codes[RMS9_EPR].push_back("\xE5\x91\xBC\xE6\xB0\x94\xE9\x87\x8A\xE5\x8E\x8B\x28\x45\x50"); // Chinese
     resmed_codes[RMS9_EPRLevel].push_back("EPR Level");

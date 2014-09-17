@@ -13,6 +13,7 @@
 #include <QString>
 #include <QVariant>
 #include <QDateTime>
+#include <QPixmap>
 #include <QRunnable>
 #include <QThread>
 #include <QMutex>
@@ -219,6 +220,10 @@ class Machine
     const MachineInfo getInfo() { return info; }
 
     void updateChannels(Session * sess);
+
+
+    QString getPixmapPath();
+    QPixmap & getPixmap();
 
   protected:
     MachineInfo info;

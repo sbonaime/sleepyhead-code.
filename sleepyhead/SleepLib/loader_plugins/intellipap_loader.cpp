@@ -28,6 +28,11 @@ Intellipap::~Intellipap()
 
 IntellipapLoader::IntellipapLoader()
 {
+    const QString INTELLIPAP_ICON = ":/icons/intellipap.png";
+    QString s = newInfo().series;
+    m_pixmap_paths[s] = INTELLIPAP_ICON;
+    m_pixmaps[s] = QPixmap(INTELLIPAP_ICON);
+
     m_buffer = nullptr;
     m_type = MT_CPAP;
 }

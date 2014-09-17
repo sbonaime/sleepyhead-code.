@@ -11,6 +11,8 @@
 
 #include <QMutex>
 #include <QRunnable>
+#include <QPixmap>
+
 
 #include "profiles.h"
 #include "machine.h"
@@ -20,6 +22,7 @@
 class MachineLoader;
 enum DeviceStatus { NEUTRAL, IMPORTING, LIVE, DETECTING };
 
+const QString genericPixmapPath = ":/icons/mask.png";
 
 
 /*! \class MachineLoader
@@ -84,6 +87,20 @@ class MachineLoader: public QObject
     void removeMachine(Machine * m);
 
     virtual void initChannels() {}
+    QPixmap & getPixmap(QString series) {
+        QHash<QString, QPixmap>::iterator it = m_pixmaps.find(series);
+        if (it != m_pixmaps.end()) {
+            return it.value();
+        }
+        return *genericCPAPPixmap;
+    }
+    QString getPixmapPath(QString series) {
+        QHash<QString, QString>::iterator it = m_pixmap_paths.find(series);
+        if (it != m_pixmap_paths.end()) {
+            return it.value();
+        }
+        return genericPixmapPath;
+    }
 
 signals:
     void updateProgress(int cnt, int total);
@@ -91,6 +108,8 @@ signals:
   protected:
     //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
+
+    static QPixmap * genericCPAPPixmap;
 
     MachineType m_type;
     QString m_class;
@@ -106,9 +125,11 @@ signals:
     void finishAddingSessions();
     QMap<SessionID, Session *> new_sessions;
 
+    QHash<QString, QPixmap> m_pixmaps;
+    QHash<QString, QString> m_pixmap_paths;
+
   private:
     QList<ImportTask *> m_tasklist;
-
 };
 
 class CPAPLoader:public MachineLoader

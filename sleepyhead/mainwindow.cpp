@@ -573,12 +573,12 @@ QString getCPAPPixmap(QString mach_class)
     return cpapimage;
 }
 
-QIcon getCPAPIcon(QString mach_class)
-{
-    QString cpapimage = getCPAPPixmap(mach_class);
+//QIcon getCPAPIcon(QString mach_class)
+//{
+//    QString cpapimage = getCPAPPixmap(mach_class);
 
-    return QIcon(cpapimage);
-}
+//    return QIcon(cpapimage);
+//}
 
 void MainWindow::PopulatePurgeMenu()
 {
@@ -597,13 +597,13 @@ void MainWindow::PopulatePurgeMenu()
 
         QAction * action = new QAction(name.replace("&","&&"), ui->menu_Rebuild_CPAP_Data);
         action->setIconVisibleInMenu(true);
-        action->setIcon(getCPAPIcon(mach->loaderName()));
+        action->setIcon(mach->getPixmap());
         action->setData(mach->loaderName()+":"+mach->serial());
         ui->menu_Rebuild_CPAP_Data->addAction(action);
 
         action = new QAction(name.replace("&","&&"), ui->menuPurge_CPAP_Data);
         action->setIconVisibleInMenu(true);
-        action->setIcon(getCPAPIcon(mach->loaderName()));
+        action->setIcon(mach->getPixmap()); //getCPAPIcon(mach->loaderName()));
         action->setData(mach->loaderName()+":"+mach->serial());
 
         ui->menuPurge_CPAP_Data->addAction(action);
@@ -672,7 +672,9 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     QHBoxLayout *hlayout = new QHBoxLayout;
 
     QLabel * imglabel = new QLabel(popup);
-    QPixmap image(getCPAPPixmap(import.loader->loaderName()));
+
+    QPixmap image = import.loader->getPixmap(import.loader->PeekInfo(import.path).series);
+//    QPixmap image(getCPAPPixmap(import.loader->loaderName()));
     image = image.scaled(64,64);
     imglabel->setPixmap(image);
 
@@ -914,7 +916,9 @@ void MainWindow::on_action_Import_Data_triggered()
             mbox.setDefaultButton(QMessageBox::Yes);
             mbox.setButtonText(QMessageBox::No, tr("Specify"));
 
-            QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
+            QPixmap pixmap = datacards[0].loader->getPixmap(datacards[0].loader->PeekInfo(datacards[0].path).series);
+
+            //QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
             mbox.setIconPixmap(pixmap);
             int res = mbox.exec();
 

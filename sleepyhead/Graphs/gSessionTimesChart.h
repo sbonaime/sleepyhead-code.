@@ -185,6 +185,10 @@ public:
         gSummaryChart * sc = new gSummaryChart(m_label, m_machtype);
         Layer::CloneInto(sc);
         CloneInto(sc);
+
+        // copy this here, because only base summary charts need it
+        sc->calcitems = calcitems;
+
         return sc;
     }
 
@@ -192,7 +196,6 @@ public:
         layer->m_empty = m_empty;
         layer->firstday = firstday;
         layer->lastday = lastday;
-//        layer->calcitems = calcitems;
         layer->expected_slices = expected_slices;
         layer->nousedays = nousedays;
         layer->totaldays = totaldays;

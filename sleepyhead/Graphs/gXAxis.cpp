@@ -151,7 +151,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         } else if (xx > 600000) {  // Minutes
             fd = " j0:00";
             dividx = 10;
-            divmax = 27;
+            divmax = 21;
             fitmode = 1;
         } else if (xx > 5000) {    // Seconds
             fd = " j0:00:00";
@@ -286,9 +286,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             if (!m_utcfix) { j += tz_offset; }
 
             ms = j % 1000;
+            s = (j / 1000L) % 60L;
             m = (j / 60000L) % 60L;
             h = (j / 3600000L) % 24L;
-            s = (j / 1000L) % 60L;
             //int d=(j/86400000) % 7;
 
             if (fitmode == 0) {
@@ -305,11 +305,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             } else if (fitmode == 1) { // minute
                 tmpstr = QString("%1:%2").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0'));
             } else if (fitmode == 2) { // second
-                tmpstr = QString("%1:%2:%3").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10,
-                         QChar('0'));
+                tmpstr = QString("%1:%2:%3").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0'));
             } else if (fitmode == 3) { // milli
-                tmpstr = QString("%1:%2:%3:%4").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10,
-                         QChar('0')).arg(ms, 3, 10, QChar('0'));
+                tmpstr = QString("%1:%2:%3:%4").arg(h, 2, 10, QChar('0')).arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0')).arg(ms, 3, 10, QChar('0'));
             }
 
             int tx = px - x / 2.0;

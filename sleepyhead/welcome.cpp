@@ -130,9 +130,7 @@ QString GenerateWelcomeHTML()
 
             Machine * cpap = day->machine(MT_CPAP);
             if (cpap) {
-                if (cpap->loaderName() == STR_MACH_ResMed) cpapimage = "qrc:/icons/rms9.png";
-                else if (cpap->loaderName() == STR_MACH_PRS1) cpapimage = "qrc:/icons/prs1.png";
-                else if (cpap->loaderName() == STR_MACH_Intellipap) cpapimage = "qrc:/icons/intellipap.png";
+                cpapimage = "qrc"+cpap->getPixmapPath();
             }
             html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
