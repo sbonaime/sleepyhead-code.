@@ -898,7 +898,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                         float s2 = double(slice.end - slice.start) / 3600000.0;
 
                         QColor col = (slice.status == EquipmentOn) ? goodcolor : Qt::black;
-                        QString txt = QObject::tr("%1\nLength:%3\nStart:%2\n").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+                        QString txt = QObject::tr("%1\nLength: %3\nStart: %2\n").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
                         txt += (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off");
                         slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, col));
@@ -911,7 +911,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
                     float s2 = sess->hours();
 
-                    QString txt = QObject::tr("%1\nLength:%3\nStart:%2").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+                    QString txt = QObject::tr("%1\nLength: %3\nStart: %2").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
                     slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, goodcolor));
                 }

@@ -387,6 +387,10 @@ void Overview::RebuildGraphs(bool reset)
                 G->AddLayer(sc);
             } else if (chan->type() == schema::WAVEFORM) {
                 G->AddLayer(new gSummaryChart(code, chan->machtype()));
+            } else if (chan->type() == schema::UNKNOWN) {
+                gSummaryChart * sc = new gSummaryChart(chan->code(), MT_CPAP);
+                sc->addCalc(code, ST_CPH, schema::channel[code].defaultColor());
+                G->AddLayer(sc);
             }
         }
 
@@ -473,7 +477,7 @@ void Overview::on_LineCursorUpdate(double time)
     } else dateLabel->setText(QString(GraphView->emptyText()));
 }
 
-void Overview::on_RangeUpdate(double minx, double maxx)
+void Overview::on_RangeUpdate(double minx, double /* maxx */)
 {
     if (minx > 1) {
         dateLabel->setText(GraphView->getRangeString());

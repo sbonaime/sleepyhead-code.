@@ -405,7 +405,7 @@ void PreferencesDialog::InitChanInfo()
 
     ComboBoxDelegate * combobox = new ComboBoxDelegate(ui->waveView);
 
-    ui->chanView->setItemDelegateForColumn(2,combobox);
+    ui->chanView->setItemDelegateForColumn(3,combobox);
 
     int row = 0;
     for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
@@ -536,8 +536,8 @@ void PreferencesDialog::InitWaveInfo()
 
     SpinBoxDelegate * spinbox = new SpinBoxDelegate(ui->waveView);
 
-    ui->waveView->setItemDelegateForColumn(2,spinbox);
     ui->waveView->setItemDelegateForColumn(3,spinbox);
+    ui->waveView->setItemDelegateForColumn(4,spinbox);
 
     int row = 0;
     for (ci = schema::channel.names.begin(); ci != schema::channel.names.end(); ci++) {
