@@ -301,7 +301,10 @@ void OximeterImport::doImport()
     oximodule->Open("import");
 
     if (oximodule->commandDriven()) {
-        int chosen=chosen_sessions.takeFirst();
+        int chosen = 0;
+        if (chosen_sessions.size() > 0) {
+            chosen = chosen_sessions.takeFirst();
+        }
         oximodule->getSessionData(chosen);
     }
 
