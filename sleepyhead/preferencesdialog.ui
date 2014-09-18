@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -549,7 +549,7 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
              <string>Bypass the login screen and load the most recent User Profile</string>
             </property>
             <property name="text">
-             <string>Skip Login Screen</string>
+             <string>Skip user selection screen</string>
             </property>
            </widget>
           </item>

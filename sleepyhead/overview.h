@@ -62,11 +62,11 @@ class Overview : public QWidget
         \param QString units The units of measurements to show in the popup */
     gGraph *createGraph(QString code, QString name, QString units = "", YTickerType yttype = YT_Number);
     gGraph *AHI, *AHIHR, *UC, *FL, *SA, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2, *NLL,
-           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK, *STG, *SN;
+           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK, *STG, *SN, *TTIA;
     SummaryChart *bc, *sa, *us, *pr,  *set, *ses,  *ptb, *pulse, *spo2,
                  *weight, *zombie, *bmi, *ahihr, *tgmv, *totlk;
 
-    gSummaryChart * stg, *uc, *ahi, * pres, *lk, *npb, *rr, *mv, *tv, *nll, *sn;
+    gSummaryChart * stg, *uc, *ahi, * pres, *lk, *npb, *rr, *mv, *tv, *nll, *sn, *ttia;
 
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;

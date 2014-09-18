@@ -346,6 +346,10 @@ void Overview::RebuildGraphs(bool reset)
     pres = new gPressureChart();
     PR->AddLayer(pres);
 
+    TTIA = createGraph("TTIA", tr("Total Time in Apnea"), tr("Total Time in Apnea\n(Minutes)"));
+    ttia = new gTTIAChart();
+    TTIA->AddLayer(ttia);
+
 //    LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
 //    LK->AddLayer(new gSummaryChart(CPAP_Leak, MT_CPAP));
 

@@ -333,6 +333,34 @@ private:
     EventDataType compliance_threshold;
 };
 
+class gTTIAChart : public gSummaryChart
+{
+public:
+    gTTIAChart()
+        :gSummaryChart("TTIA", MT_CPAP) {
+        addCalc(NoChannel, ST_CNT, QColor(255,147,150));
+    }
+    virtual ~gTTIAChart() {}
+
+    virtual void preCalc();
+    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
+    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void populate(Day *day, int idx);
+    virtual QString tooltipData(Day * day, int);
+
+    virtual Layer * Clone() {
+        gTTIAChart * sc = new gTTIAChart();
+        gSummaryChart::CloneInto(sc);
+        CloneInto(sc);
+        return sc;
+    }
+
+    void CloneInto(gTTIAChart * /* layer*/) {
+    }
+
+private:
+};
+
 class gAHIChart : public gSummaryChart
 {
 public:

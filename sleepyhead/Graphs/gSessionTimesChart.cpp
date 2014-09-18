@@ -405,7 +405,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
     int days = ceil(double(m_maxx - m_minx) / 86400000.0);
 
-    float lasty1 = rect.bottom();
+    //float lasty1 = rect.bottom();
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
     idx_start=0;
@@ -1045,6 +1045,77 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     afterDraw(painter, graph, rect);
 }
 
+////////////////////////////////////////////////////////////////////////////
+/// Total Time in Apnea Chart Stuff
+////////////////////////////////////////////////////////////////////////////
+
+void gTTIAChart::preCalc()
+{
+    gSummaryChart::preCalc();
+}
+void gTTIAChart::customCalc(Day *, QList<SummaryChartSlice> & slices)
+{
+    if (slices.size() == 0) return;
+    const SummaryChartSlice & slice = slices.at(0);
+
+    calcitems[0].update(slice.value, slice.value);
+}
+void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
+{
+    QStringList txtlist;
+    int num_channels = calcitems.size();
+
+    for (int i=0; i < num_channels; ++i) {
+        SummaryCalcItem & calc = calcitems[i];
+        ChannelID code = calc.code;
+        schema::Channel & chan = schema::channel[code];
+        float mid = 0;
+        switch (midcalc) {
+        case 0:
+            if (calc.median_data.size() > 0) {
+                mid = median(calc.median_data.begin(), calc.median_data.end());
+            }
+            break;
+        case 1:
+            if (calc.divisor > 0) {
+                mid = calc.wavg_sum / calc.divisor;
+            }
+            break;
+        case 2:
+            if (calc.divisor > 0) {
+                mid = calc.avg_sum / calc.divisor;
+            }
+            break;
+        }
+
+        txtlist.append(QString("%1 %2 / %3 / %4").arg(QObject::tr("TTIA:")).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
+    }
+    QString txt = txtlist.join(", ");
+    graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
+}
+void gTTIAChart::populate(Day *day, int idx)
+{
+    QList<SummaryChartSlice> & slices = cache[idx];
+    float ttia = day->sum(CPAP_Obstructive) + day->sum(CPAP_ClearAirway) + day->sum(CPAP_Apnea) + day->sum(CPAP_Hypopnea);
+    int h = ttia / 3600;
+    int m = int(ttia) / 60 % 60;
+    int s = int(ttia) % 60;
+    slices.append(SummaryChartSlice(&calcitems[0], ttia / 60.0, ttia / 60.0, QObject::tr("\nTTIA: %1").arg(QString().sprintf("%02i:%02i:%02i",h,m,s)), QColor(255,147,150)));
+
+
+}
+QString gTTIAChart::tooltipData(Day *, int idx)
+{
+    QList<SummaryChartSlice> & slices = cache[idx];
+    if (slices.size() == 0) return QString();
+
+    const SummaryChartSlice & slice = slices.at(0);
+    return slice.name;
+}
+
+////////////////////////////////////////////////////////////////////////////
+/// AHI Chart Stuff
+////////////////////////////////////////////////////////////////////////////
 void gAHIChart::preCalc()
 {
     gSummaryChart::preCalc();
@@ -1116,10 +1187,14 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
         }
         break;
     case 1: // wavg
-        med = ahi_wavg / total_hours;
+        if (total_hours > 0) {
+            med = ahi_wavg / total_hours;
+        }
         break;
     case 2: // avg
-        med = ahi_avg / calc_cnt;
+        if (calc_cnt > 0) {
+            med = ahi_avg / calc_cnt;
+        }
         break;
     }
 
@@ -1130,26 +1205,28 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 
     for (int i=0; i < num_channels; ++i) {
         SummaryCalcItem & calc = calcitems[i];
-        if (calc.divisor > 0) {
-            ChannelID code = calc.code;
-            schema::Channel & chan = schema::channel[code];
-            float mid = 0;
-            switch (midcalc) {
-            case 0:
-                if (calc.median_data.size() > 0) {
-                    mid = median(calc.median_data.begin(), calc.median_data.end());
-                }
-                break;
-            case 1:
-                mid = calc.wavg_sum / calc.divisor;
-                break;
-            case 2:
-                mid = calc.avg_sum / calc.divisor;
-                break;
+        ChannelID code = calc.code;
+        schema::Channel & chan = schema::channel[code];
+        float mid = 0;
+        switch (midcalc) {
+        case 0:
+            if (calc.median_data.size() > 0) {
+                mid = median(calc.median_data.begin(), calc.median_data.end());
             }
-
-            txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
+            break;
+        case 1:
+            if (calc.divisor > 0) {
+                mid = calc.wavg_sum / calc.divisor;
+            }
+            break;
+        case 2:
+            if (calc.divisor > 0) {
+                mid = calc.avg_sum / calc.divisor;
+            }
+            break;
         }
+
+        txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
     }
     QString txt = txtlist.join(", ");
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
