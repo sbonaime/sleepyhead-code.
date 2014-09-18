@@ -55,8 +55,15 @@ public:
     virtual QString getModel() { return QString(); }
     virtual QString getVendor()  { return QString(); }
     virtual QString getDeviceString()  { return QString(); }
+
     virtual void getSessionData(int session) { Q_UNUSED(session); }
     virtual void syncClock() {}
+
+    virtual QString getDeviceID() { return QString(); }
+    virtual void setDeviceID(QString) {}
+
+    virtual void eraseSession(int /*user*/, int /*session*/) {}
+
 
 
     virtual bool commandDriven() { return false; }

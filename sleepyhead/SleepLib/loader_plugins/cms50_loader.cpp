@@ -57,7 +57,7 @@ CMS50Loader::~CMS50Loader()
 
 bool CMS50Loader::Detect(const QString &path)
 {
-    if (p_profile->oxi->oximeterType() == QString("Contec CMS50D+/E/F")) {
+    if (p_profile->oxi->oximeterType() == 1) {
         return true;
     }
 

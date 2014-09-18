@@ -100,7 +100,7 @@ bool CMS50F37Loader::openDevice()
 
 bool CMS50F37Loader::Detect(const QString &path)
 {
-    if (p_profile->oxi->oximeterType() == QString("Contec CMS50F v3.7+")) {
+    if (p_profile->oxi->oximeterType() == 0) {
         return true;
     }
     Q_UNUSED(path);
@@ -160,16 +160,18 @@ unsigned char cms50_sequence[] = { 0xa7, 0xa2, 0xa0, 0xb0, 0xac, 0xb3, 0xad, 0xa
 const int TIMEOUT = 2000;
 
 
-const quint8 COMMAND_CMS50_HELLO1 = 0x27;          // 0xa7
-const quint8 COMMAND_CMS50_HELLO2 = 0x22;          // 0xa2
-const quint8 COMMAND_GET_SESSION_COUNT = 0x23;     // 0xA3
-const quint8 COMMAND_GET_SESSION_TIME = 0x25;      // 0xA5
-const quint8 COMMAND_GET_SESSION_DURATION = 0x24;  // 0xA4
-const quint8 COMMAND_GET_USER_INFO = 0x2B;         // 0xAB
-const quint8 COMMAND_GET_SESSION_DATA = 0x26;      // 0xA6
-const quint8 COMMAND_GET_OXIMETER_INFO = 0x30;     // 0xb0
-const quint8 COMMAND_GET_OXIMETER_MODEL = 0x28;    // 0xA8
-const quint8 COMMAND_GET_OXIMETER_VENDOR = 0x29;    // 0xA9
+const quint8 COMMAND_CMS50_HELLO1 = 0xa7;
+const quint8 COMMAND_CMS50_HELLO2 = 0xa2;
+const quint8 COMMAND_GET_SESSION_COUNT = 0xA3;
+const quint8 COMMAND_GET_SESSION_TIME = 0xA5;
+const quint8 COMMAND_GET_SESSION_DURATION = 0xA4;
+const quint8 COMMAND_GET_USER_INFO = 0xAB;
+const quint8 COMMAND_GET_SESSION_DATA = 0xA6;
+const quint8 COMMAND_GET_OXIMETER_DEVICEID = 0xAA;
+const quint8 COMMAND_GET_OXIMETER_INFO = 0xb0;
+const quint8 COMMAND_GET_OXIMETER_MODEL = 0xA8;
+const quint8 COMMAND_GET_OXIMETER_VENDOR = 0xA9;
+const quint8 COMMAND_SESSION_ERASE = 0xAE;
 
 
 int cms50_seqlength = sizeof(cms50_sequence);
@@ -230,6 +232,20 @@ QString CMS50F37Loader::getModel()
 QString CMS50F37Loader::getDeviceString()
 {
     return QString("%1 %2").arg(getVendor()).arg(getModel());
+}
+
+QString CMS50F37Loader::getDeviceID()
+{
+    if (!devid.isEmpty()) return devid;
+
+    sendCommand(COMMAND_GET_OXIMETER_DEVICEID);
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while (devid.isEmpty() && (time.elapsed() < TIMEOUT));
+    return devid;
 }
 
 int CMS50F37Loader::getSessionCount()
@@ -301,7 +317,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
     QString tmpstr;
 
-    int lengths[32] = { 0, 0, 9, 9, 0, 9, 4, 8, 8, 6, 4, 4, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int lengths[32] = { 0, 0, 9, 9, 9, 9, 4, 8, 8, 6, 4, 4, 2, 0, 3, 8, 3, 9, 8, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     buffer.append(bytes);
     int size = buffer.size();
@@ -343,19 +359,30 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
         }
 
         if (!started_reading) switch(res) {
-        case 0x02:
+        case 0x02: // Model name string (there are two in sequnce.. second might be the next chunk!)
             data = buffer.at(idx+1);
             if (data == 0) {
                 model = QString(buffer.mid(idx+3, 6));
                 qDebug() << "Model:" << model;
+            } else {
+                qDebug() << "Extra Model:" << data;
             }
             break;
-        case 0x03:
+        case 0x03: // Vendor string
             data = buffer.at(idx+1);
             if (data == 0) {
                 vendor = QString(buffer.mid(idx+2, 6));
                 qDebug() << "Vendor:" << vendor;
             }
+            break;
+
+        case 0x04: // Device Identifiers
+            for (int i = 2, msb = buffer.at(idx+1); i < len; i++, msb>>= 1) {
+                buffer[idx+i] = (buffer[idx+i] & 0x7f) | (msb & 0x01 ? 0x80 : 0);
+            }
+
+            devid = QString(buffer.mid(idx+2, 7));
+            qDebug() << "Device ID:" << devid;
             break;
 
             // COMMAND_GET_USER_INFO
@@ -577,6 +604,67 @@ void CMS50F37Loader::sendCommand(quint8 c, quint8 c2)
     if (serial.write((char *)cmd, 9) == -1) {
         qDebug() << "Couldn't write data reset bytes to CMS50";
     }
+}
+
+void CMS50F37Loader::eraseSession(int user, int session)
+{
+    quint8 cmd[] = { 0x7d, 0x81, COMMAND_SESSION_ERASE, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+
+    cmd[3] = (user & 0x7f) | 0x80;
+    cmd[4] = (session & 0x7f) | 0x80;
+
+    QString out;
+    for (int i=0; i < 9; ++i) out += QString().sprintf("%02X ",cmd[i]);
+    qDebug() << "Write:" << out;
+
+    if (serial.write((char *)cmd, 9) == -1) {
+        qDebug() << "Couldn't write data reset bytes to CMS50";
+    }
+
+    int z = timectr;
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while ((timectr == z) && (time.elapsed() < TIMEOUT));
+}
+
+
+void CMS50F37Loader::setDeviceID(QString str)
+{
+    str.truncate(7);
+    if (str.length() < 7) {
+        str = QString(" ").repeated(7-str.length()) + str;
+    }
+    quint8 cmd[] = { 0x04, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
+
+    quint8 msb = 0;
+
+    QByteArray ba = str.toLocal8Bit();
+    for (int i=6; i > 0; i--) {
+        msb <<= 1;
+        msb |= (ba.at(i) >> 7) & 1;
+        cmd[i+2] = ba.at(i) | 0x80;
+    }
+
+    cmd[1] = msb & 0x80;
+
+    QString out;
+    for (int i=0; i < 9; ++i) out += QString().sprintf("%02X ",cmd[i]);
+    qDebug() << "Write:" << out;
+
+    if (serial.write((char *)cmd, 9) == -1) {
+        qDebug() << "Couldn't write data reset bytes to CMS50";
+    }
+
+    // Supposed to return 0x04 command, so reset devid..
+    devid = QString();
+
+    QTime time;
+    time.start();
+    do {
+        QApplication::processEvents();
+    } while (devid.isEmpty() && (time.elapsed() < TIMEOUT));
 }
 
 void CMS50F37Loader::syncClock()

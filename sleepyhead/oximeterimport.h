@@ -77,6 +77,14 @@ private slots:
 
     void on_chooseSessionButton_clicked();
 
+    void on_oximeterType_currentIndexChanged(int index);
+
+    void on_cms50CheckName_clicked(bool checked);
+
+    void on_cms50SyncTime_clicked(bool checked);
+
+    void on_cms50DeviceName_textEdited(const QString &arg1);
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
     void finishedRecording();
@@ -102,7 +110,6 @@ private:
     qint64 start_ti, ti;
     QTimer updateTimer;
     OximeterImportMode importMode;
-
 
     int pulse;
     int spo2;

@@ -23,6 +23,7 @@ extern MainWindow * mainwin;
 
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/cms50f37_loader.h"
+#include "SleepLib/loader_plugins/md300w1_loader.h"
 
 Qt::DayOfWeek firstDayOfWeekFromLocale();
 QList<SerialOximeter *> GetOxiLoaders();
@@ -101,6 +102,15 @@ OximeterImport::OximeterImport(QWidget *parent) :
 
     ui->dateTimeEdit->setMinimumHeight(ui->dateTimeEdit->height()+10);
     setInformation();
+
+    ui->cms50DeviceName->setText(p_profile->oxi->defaultDevice());
+    int oxitype = p_profile->oxi->oximeterType();
+    ui->oximeterType->setCurrentIndex(oxitype);
+    on_oximeterType_currentIndexChanged(oxitype);
+    ui->cms50DeviceName->setEnabled(false);
+    ui->cms50SyncTime->setChecked(p_profile->oxi->syncOximeterClock());
+
+
 }
 
 OximeterImport::~OximeterImport()
@@ -160,11 +170,14 @@ SerialOximeter * OximeterImport::detectOximeter()
 
     QList<SerialOximeter *> loaders; //= GetOxiLoaders();
 
-    if (p_profile->oxi->oximeterType() == "Contec CMS50D+/E/F") {
+    if (ui->oximeterType->currentIndex() == 0) { // CMS50F3.7
+        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50f37_class_name));
+        loaders.push_back(oxi);
+    } else if (ui->oximeterType->currentIndex() == 1) { // CMS50D+/E/F
         SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50_class_name));
         loaders.push_back(oxi);
-    } else if (p_profile->oxi->oximeterType() == "Contec CMS50F v3.7+") {
-        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50f37_class_name));
+    } else if (ui->oximeterType->currentIndex() == 2) { // ChoiceMed
+        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(md300w1_class_name));
         loaders.push_back(oxi);
     } else return nullptr;
 
@@ -202,6 +215,7 @@ SerialOximeter * OximeterImport::detectOximeter()
 
     if (!oximodule) {
         updateStatus(tr("Could not detect any connected oximeter devices."));
+        ui->retryButton->setVisible(true);
         return nullptr;
     }
 
@@ -230,8 +244,18 @@ void OximeterImport::on_directImportButton_clicked()
 
     QString model = oximodule->getModel();
     QString user = oximodule->getUser();
+    QString devid = oximodule->getDeviceID();
 
-
+    if (oximodule->commandDriven()) {
+        if (devid != ui->cms50DeviceName->text()) {
+            if (ui->cms50CheckName->isChecked()) {
+                mainwin->Notify(STR_MessageBox_Information, tr("Renaming this oximeter from '%1' to '%2'").arg(devid).arg(ui->cms50DeviceName->text()));
+                oximodule->setDeviceID(ui->cms50DeviceName->text());
+            } else {
+                QMessageBox::information(this, STR_MessageBox_Information, tr("Oximeter name is different.. If you only have one and are sharing it between profiles, set the name to the same on both profiles."), QMessageBox::Ok);
+            }
+        }
+    }
 
     oximodule->resetDevice();
     int session_count = oximodule->getSessionCount();
@@ -288,10 +312,10 @@ void OximeterImport::doImport()
 {
     if (oximodule->commandDriven()) {
         if (chosen_sessions.size() == 0) {
-            ui->connectLabel->setText("<h2>"+tr("Nothing to import for %1").arg(oximodule->getModel())+"</h2>");
-            ui->logBox->appendPlainText(tr("Could not find any valid sessions on your oximeter."));
+            ui->connectLabel->setText("<h2>"+tr("Nothing to import")+"</h2>");
 
-            updateStatus(tr("Your oximeter did not have any valid sessions"));
+            updateStatus(tr("Your oximeter did not have any valid sessions."));
+            ui->cancelButton->setText(tr("Close"));
             return;
         }
         ui->connectLabel->setText("<h2>"+tr("Waiting for %1 to start").arg(oximodule->getModel())+"</h2>");
@@ -308,7 +332,7 @@ void OximeterImport::doImport()
     oximodule->Open("import");
 
     if (oximodule->commandDriven()) {
-        int chosen = chosen_sessions.takeFirst();
+        int chosen = chosen_sessions.at(0);
         oximodule->getSessionData(chosen);
     }
 
@@ -1071,4 +1095,51 @@ void OximeterImport::setInformation()
             +tr("Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.")+"</p></body></html>";
     ui->textBrowser->setHtml(html);
     ui->textBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
+
+void OximeterImport::on_oximeterType_currentIndexChanged(int index)
+{
+    switch (index) {
+    case 0: //New CMS50's
+        ui->directImportButton->setEnabled(true);
+        ui->liveImportButton->setEnabled(false);
+        ui->fileImportButton->setEnabled(true);
+        ui->oldCMS50specific->setVisible(false);
+        ui->newCMS50settingsPanel->setVisible(true);
+        break;
+    case 1:
+        ui->directImportButton->setEnabled(true);
+        ui->liveImportButton->setEnabled(true);
+        ui->fileImportButton->setEnabled(true);
+        ui->oldCMS50specific->setVisible(true);
+        ui->newCMS50settingsPanel->setVisible(false);
+        break;
+    default:
+        ui->directImportButton->setEnabled(false);
+        ui->liveImportButton->setEnabled(false);
+        ui->fileImportButton->setEnabled(true);
+        ui->oldCMS50specific->setVisible(false);
+        ui->newCMS50settingsPanel->setVisible(false);
+    }
+    p_profile->oxi->setOximeterType(index);
+
+}
+
+void OximeterImport::on_cms50CheckName_clicked(bool checked)
+{
+    ui->cms50DeviceName->setEnabled(checked);
+    if (checked) {
+        ui->cms50DeviceName->setFocus();
+        ui->cms50DeviceName->setCursorPosition(0);
+    }
+}
+
+void OximeterImport::on_cms50SyncTime_clicked(bool checked)
+{
+    p_profile->oxi->setSyncOximeterClock(checked);
+}
+
+void OximeterImport::on_cms50DeviceName_textEdited(const QString &arg1)
+{
+    p_profile->oxi->setDefaultDevice(arg1);
 }

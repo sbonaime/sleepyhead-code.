@@ -203,15 +203,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
-    ui->syncOximeterClock->setChecked(profile->oxi->syncOximeterClock());
-    ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
-    ui->oximetrySync->setVisible(false);
-    int ot = ui->oximetryType->findText(profile->oxi->oximeterType(), Qt::MatchExactly);
-
-    if (ot < 0) { ot = 0; }
-
-    ui->oximetryType->setCurrentIndex(ot);
-
     ui->ahiGraphWindowSize->setEnabled(false);
     ui->ahiGraphWindowSize->setValue(profile->cpap->AHIWindow());
     ui->ahiGraphZeroReset->setChecked(profile->cpap->AHIReset());
@@ -758,32 +749,7 @@ bool PreferencesDialog::Save()
     profile->cpap->setClockDrift(s);
 
     profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
-    profile->appearance->setOverviewLinechartMode((OverviewLinechartModes)
-            ui->overviewLinecharts->currentIndex());
-
-    profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
-    int oxigrp = ui->oximetrySync->isChecked() ? 0 : 1;
-    gGraphView *gv = mainwin->getDaily()->graphView();
-    gGraph *g = gv->findGraph(schema::channel[OXI_Pulse].code());
-
-    if (g) {
-        g->setGroup(oxigrp);
-    }
-
-    g = gv->findGraph(schema::channel[OXI_SPO2].code());
-
-    if (g) {
-        g->setGroup(oxigrp);
-    }
-
-    g = gv->findGraph(schema::channel[OXI_Plethy].code());
-
-    if (g) {
-        g->setGroup(oxigrp);
-    }
-
-    profile->oxi->setOximeterType(ui->oximetryType->currentText());
-    profile->oxi->setSyncOximeterClock(ui->syncOximeterClock->isChecked());
+    profile->appearance->setOverviewLinechartMode((OverviewLinechartModes)ui->overviewLinecharts->currentIndex());
 
     profile->oxi->setSpO2DropPercentage(ui->spo2Drop->value());
     profile->oxi->setSpO2DropDuration(ui->spo2DropTime->value());

@@ -262,7 +262,7 @@ const QString STR_UI_DST = "DST";
 
 // OxiSettings Strings
 const QString STR_OS_EnableOximetry = "EnableOximetry";
-const QString STR_OS_SyncOximetry = "SyncOximetry";
+const QString STR_OS_DefaultDevice = "DefaultOxiDevice";
 const QString STR_OS_SyncOximeterClock = "SyncOximeterClock";
 const QString STR_OS_OximeterType = "OximeterType";
 const QString STR_OS_OxiDiscardThreshold = "OxiDiscardThreshold";
@@ -487,9 +487,9 @@ class OxiSettings : public ProfileSettings
       : ProfileSettings(profile)
     {
         initPref(STR_OS_EnableOximetry, false);
-        initPref(STR_OS_SyncOximetry, true);
+        initPref(STR_OS_DefaultDevice, QString());
         initPref(STR_OS_SyncOximeterClock, true);
-        initPref(STR_OS_OximeterType, "CMS50");
+        initPref(STR_OS_OximeterType, 0);
         initPref(STR_OS_OxiDiscardThreshold, 0.0);
         initPref(STR_OS_SPO2DropDuration, 8.0);
         initPref(STR_OS_SPO2DropPercentage, 3.0);
@@ -499,9 +499,9 @@ class OxiSettings : public ProfileSettings
     }
 
     bool oximetryEnabled() const { return getPref(STR_OS_EnableOximetry).toBool(); }
-    bool syncOximetry() const { return getPref(STR_OS_SyncOximetry).toBool(); }
+    QString defaultDevice() const { return getPref(STR_OS_DefaultDevice).toString(); }
     bool syncOximeterClock() const { return getPref(STR_OS_SyncOximeterClock).toBool(); }
-    QString oximeterType() const { return getPref(STR_OS_OximeterType).toString(); }
+    int oximeterType() const { return getPref(STR_OS_OximeterType).toInt(); }
     double oxiDiscardThreshold() const { return getPref(STR_OS_OxiDiscardThreshold).toDouble(); }
     double spO2DropDuration() const { return getPref(STR_OS_SPO2DropDuration).toDouble(); }
     double spO2DropPercentage() const { return getPref(STR_OS_SPO2DropPercentage).toDouble(); }
@@ -511,9 +511,9 @@ class OxiSettings : public ProfileSettings
 
 
     void setOximetryEnabled(bool enabled) { setPref(STR_OS_EnableOximetry, enabled); }
-    void setSyncOximetry(bool synced) { setPref(STR_OS_SyncOximetry, synced); }
+    void setDefaultDevice(QString name) { setPref(STR_OS_DefaultDevice, name); }
     void setSyncOximeterClock(bool synced) { setPref(STR_OS_SyncOximeterClock, synced); }
-    void setOximeterType(QString oxitype) { setPref(STR_OS_OximeterType, oxitype); }
+    void setOximeterType(int oxitype) { setPref(STR_OS_OximeterType, oxitype); }
     void setOxiDiscardThreshold(double thresh) { setPref(STR_OS_OxiDiscardThreshold, thresh); }
     void setSpO2DropDuration(double duration) { setPref(STR_OS_SPO2DropDuration, duration); }
     void setPulseChangeBPM(double bpm) { setPref(STR_OS_PulseChangeBPM, bpm); }

@@ -57,8 +57,12 @@ Q_OBJECT
     virtual int getDuration(int session);
     virtual int getSessionCount();
     virtual int getOximeterInfo();
+    virtual void eraseSession(int user, int session);
 
     virtual void syncClock();
+    virtual QString getDeviceID();
+    virtual void setDeviceID(QString);
+
 
     virtual void setDuration(int d) { duration=d; }
 
@@ -135,6 +139,7 @@ protected:
     int device_info;
     QString model;
     QString vendor;
+    QString devid;
 
     int duration_divisor;
     int selected_session;

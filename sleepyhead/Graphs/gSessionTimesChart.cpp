@@ -406,7 +406,6 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     int days = ceil(double(m_maxx - m_minx) / 86400000.0);
 
     float lasty1 = rect.bottom();
-    float lastx1 = rect.left();
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
     idx_start=0;
@@ -457,15 +456,23 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     // Virtual call to setup any custom graph stuff
     preCalc();
 
+    float lastx1 = rect.left();
+    float right_edge = (rect.left()+rect.width()+1);
+
+
     /////////////////////////////////////////////////////////////////////
     /// Calculate Graph Peaks
     /////////////////////////////////////////////////////////////////////
     peak_value = 0;
-    for (int i=idx; i <= idx_end; ++i) {
+    for (int i=idx; i <= idx_end; ++i, lastx1 += barw) {
         Day * day = daylist.at(i);
 
-        if (!day) // || !day->hasMachine(m_machtype))
+        if ((lastx1 + barw) > right_edge)
+            break;
+
+        if (!day) {
             continue;
+        }
 
         day->OpenSummary();
 
@@ -487,7 +494,6 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             }
             peak_value = qMax(peak_value, base);
         }
-
     }
     m_miny = 0;
     m_maxy = ceil(peak_value);
@@ -502,19 +508,21 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     graph.roundY(miny, maxy);
     float ymult = float(rect.height()) / (maxy-miny);
 
+    lastx1 = rect.left();
+
     /////////////////////////////////////////////////////////////////////
     /// Main drawing loop
     /////////////////////////////////////////////////////////////////////
     do {
         Day * day = daylist.at(idx);
 
-        if ((lastx1 + barw) > (rect.left() + rect.width() + 1))
+        if ((lastx1 + barw) > right_edge)
             break;
 
         totaldays++;
 
         if (!day) {//  || !day->hasMachine(m_machtype)) {
-            lasty1 = rect.bottom();
+           // lasty1 = rect.bottom();
             lastx1 += barw;
             it++;
             nousedays++;
@@ -816,7 +824,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
     QDateTime splittime;
 
-    float lasty1 = rect.bottom();
+//    float lasty1 = rect.bottom();
     float lastx1 = rect.left();
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
@@ -847,12 +855,17 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     peak_value = 0;
     min_value = 999;
     QMap<QDate, int>::iterator it_end = dayindex.end();
-    for (int i=idx; (i <= idx_end) && (it2 != it_end); ++i, ++it2) {
+
+    float right_edge = (rect.left()+rect.width()+1);
+    for (int i=idx; (i <= idx_end) && (it2 != it_end); ++i, ++it2, lastx1 += barw) {
         Day * day = daylist.at(i);
 
+        if ((lastx1 + barw) > right_edge)
+            break;
 
-        if (!day) // || !day->hasMachine(m_machtype))
+        if (!day) {
             continue;
+        }
 
         QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(i);
 
@@ -893,7 +906,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
                     float s2 = sess->hours();
 
-                    QString txt = QObject::tr("%1\nStart:%2\nLength:%3").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+                    QString txt = QObject::tr("%1\nLength:%3\nStart:%2").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
                     slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, goodcolor));
                 }
@@ -920,7 +933,6 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             min_value = qMin(min_value, base);
 
         }
-
     }
     m_miny = (min_value < 999) ? floor(min_value) : 0;
     m_maxy = ceil(peak_value);
@@ -940,20 +952,22 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     totaldays = 0;
     nousedays = 0;
 
+    lastx1 = rect.left();
+
     /////////////////////////////////////////////////////////////////////
     /// Main Loop scaling
     /////////////////////////////////////////////////////////////////////
     do {
         Day * day = daylist.at(idx);
 
-        if ((lastx1 + barw) > (rect.left()+rect.width()+1))
+        if ((lastx1 + barw) > right_edge)
             break;
 
         totaldays++;
 
 
         if (!day) { // || !day->hasMachine(m_machtype)) {
-            lasty1 = rect.bottom();
+           // lasty1 = rect.bottom();
             lastx1 += barw;
             nousedays++;
          //   it++;
