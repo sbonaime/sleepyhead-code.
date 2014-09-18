@@ -641,7 +641,7 @@ void CMS50F37Loader::setDeviceID(QString str)
     quint8 msb = 0;
 
     QByteArray ba = str.toLocal8Bit();
-    for (int i=6; i > 0; i--) {
+    for (int i=6; i >= 0; i--) {
         msb <<= 1;
         msb |= (ba.at(i) >> 7) & 1;
         cmd[i+2] = ba.at(i) | 0x80;
