@@ -891,12 +891,17 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                     // segments
                     for (int j=0; j<slize; ++j) {
                         const SessionSlice & slice = sess->m_slices.at(j);
-                        float s1 = float(splittime.secsTo(QDateTime::fromMSecsSinceEpoch(slice.start))) / 3600.0;
+                        QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start);
+
+                        float s1 = float(splittime.secsTo(st)) / 3600.0;
 
                         float s2 = double(slice.end - slice.start) / 3600000.0;
 
                         QColor col = (slice.status == EquipmentOn) ? goodcolor : Qt::black;
-                        slices.append(SummaryChartSlice(&calcitems[0], s1, s2, (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off"), col));
+                        QString txt = QObject::tr("%1\nLength:%3\nStart:%2\n").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+
+                        txt += (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off");
+                        slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, col));
                     }
                 } else {
                     // otherwise just show session duration

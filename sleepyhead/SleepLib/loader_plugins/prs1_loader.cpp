@@ -1172,7 +1172,8 @@ bool PRS1Import::ParseCompliance()
 
     session->settings[PRS1_FlexMode] = (int)flexmode;
     session->settings[PRS1_FlexLevel] = (int)flexlevel;
-    session->settings[CPAP_SummaryOnly] = true;
+    session->setSummaryOnly(true);
+    //session->settings[CPAP_SummaryOnly] = true;
 
     session->settings[PRS1_HumidStatus] = (bool)(data[0x0A] & 0x80);        // Humidifier Connected
     session->settings[PRS1_HumidLevel] = (int)(data[0x0A] & 7);          // Humidifier Value

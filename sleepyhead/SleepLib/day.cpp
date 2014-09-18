@@ -716,16 +716,28 @@ qint64 Day::total_time()
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
+        int slicesize = sess.m_slices.size();
 
         if (sess.enabled() && (sess.type() != MT_JOURNAL)) {
             first = sess.first();
             last = sess.last();
 
-            // This algorithm relies on non zero length, and correctly ordered sessions
-            if (last > first) {
-                range.insert(first, 0);
-                range.insert(last, 1);
-                d_totaltime += sess.length();
+            if (slicesize == 0) {
+                // This algorithm relies on non zero length, and correctly ordered sessions
+                if (last > first) {
+                    range.insert(first, 0);
+                    range.insert(last, 1);
+                    d_totaltime += sess.length();
+                }
+            } else {
+                for (int i=0; i<slicesize; ++i) {
+                    const SessionSlice & slice = sess.m_slices.at(i);
+                    if (slice.status == EquipmentOn) {
+                        range.insert(slice.start, 0);
+                        range.insert(slice.end, 1);
+                        d_totaltime += slice.end - slice.start;
+                    }
+                }
             }
         }
     }
@@ -777,16 +789,28 @@ qint64 Day::total_time(MachineType type)
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
+        int slicesize = sess.m_slices.size();
 
         if ((sess.type() == type) && sess.enabled()) {
             first = sess.first();
             last = sess.last();
 
             // This algorithm relies on non zero length, and correctly ordered sessions
-            if (last > first) {
-                range.insert(first, 0);
-                range.insert(last, 1);
-                d_totaltime += sess.length();
+            if (slicesize == 0) {
+                if (last > first) {
+                    range.insert(first, 0);
+                    range.insert(last, 1);
+                    d_totaltime += sess.length();
+                }
+            } else {
+                for (int i=0; i<slicesize; ++i) {
+                    const SessionSlice & slice = sess.m_slices.at(i);
+                    if (slice.status == EquipmentOn) {
+                        range.insert(slice.start, 0);
+                        range.insert(slice.end, 1);
+                        d_totaltime += slice.end - slice.start;
+                    }
+                }
             }
         }
     }

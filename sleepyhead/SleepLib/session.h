@@ -125,6 +125,21 @@ class Session
     //! \brief Return the millisecond length of this session
     qint64 length() {
         return s_last - s_first;
+//        qint64 t;
+//        int size = m_slices.size();
+//        if (size == 0) {
+//            t = (s_last - s_first);
+//        } else {
+//            t = 0;
+//            for (int i=0; i<size; ++i) {
+//                const SessionSlice & slice = m_slices.at(i);
+//                if (slice.status == EquipmentOn) {
+//                    t += slice.end - slice.start;
+//                }
+//            }
+//        }
+
+//        return t;
     }
 
     //! \brief Set this Sessions ID (Not does not update indexes)
@@ -157,7 +172,19 @@ class Session
 
     //! \brief Return Session Length in decimal hours
     double hours() {
-        double t = (s_last - s_first) / 3600000.0;
+        double t;
+        int size = m_slices.size();
+        if (size == 0) {
+            t = (s_last - s_first) / 3600000.0;
+        } else {
+            t = 0;
+            for (int i=0; i<size; ++i) {
+                const SessionSlice & slice = m_slices.at(i);
+                if (slice.status == EquipmentOn) {
+                    t += slice.end - slice.start;
+                }
+            }
+        }
         return t;
     }
 

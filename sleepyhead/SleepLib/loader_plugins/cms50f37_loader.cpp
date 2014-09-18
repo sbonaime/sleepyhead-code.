@@ -647,7 +647,7 @@ void CMS50F37Loader::setDeviceID(QString str)
         cmd[i+2] = ba.at(i) | 0x80;
     }
 
-    cmd[1] = msb & 0x80;
+    cmd[1] = msb | 0x80;
 
     QString out;
     for (int i=0; i < 9; ++i) out += QString().sprintf("%02X ",cmd[i]);

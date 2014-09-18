@@ -669,6 +669,7 @@ void OximeterImport::updateLiveDisplay()
         liveView->redraw();
     }
 
+    if (!oximodule->oxirec) return;
     int size = oximodule->oxirec->size();
 
     if (size > 0) {
