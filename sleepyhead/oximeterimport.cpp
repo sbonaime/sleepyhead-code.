@@ -288,13 +288,13 @@ void OximeterImport::doImport()
 {
     if (oximodule->commandDriven()) {
         if (chosen_sessions.size() == 0) {
-            ui->connectLabel->setText("<h2>"+tr("Nothing to import for %1").arg(oximodule->loaderName())+"</h2>");
+            ui->connectLabel->setText("<h2>"+tr("Nothing to import for %1").arg(oximodule->getModel())+"</h2>");
             ui->logBox->appendPlainText(tr("Could not find any valid sessions on your oximeter."));
 
             updateStatus(tr("Your oximeter did not have any valid sessions"));
             return;
         }
-        ui->connectLabel->setText("<h2>"+tr("Waiting for %1 to start").arg(oximodule->loaderName())+"</h2>");
+        ui->connectLabel->setText("<h2>"+tr("Waiting for %1 to start").arg(oximodule->getModel())+"</h2>");
         updateStatus(tr("Waiting for the device to start the upload process..."));
     } else {
         ui->connectLabel->setText("<h2>"+tr("Select upload option on %1").arg(oximodule->loaderName())+"</h2>");
