@@ -27,6 +27,7 @@ QList<SerialOximeter *> GetOxiLoaders()
 }
 bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 product_id)
 {
+    static bool dumponce = true;
     QStringList ports;
 
     //qDebug() << "Scanning for USB Serial devices";
@@ -52,7 +53,7 @@ bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 produ
 
             qDebug() << dbg.toLocal8Bit().data();
             break;
-        } else {
+        } else if (dumponce) {
             QString dbg=QString("Other Serial Port: %1 %2 %3 %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
 
             if (info->hasProductIdentifier()) //60000
@@ -63,6 +64,7 @@ bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 produ
             qDebug() << dbg.toLocal8Bit().data();
         }
     }
+    dumponce = false;
     if (ports.isEmpty()) {
         return false;
     }
