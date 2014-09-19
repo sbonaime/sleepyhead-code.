@@ -215,14 +215,16 @@ QString CMS50F37Loader::getModel()
 {
     if (!model.isEmpty()) return model;
 
+    modelsegments = 0;
     sendCommand(COMMAND_GET_OXIMETER_MODEL);
 
     QTime time;
     time.start();
     do {
         QApplication::processEvents();
-    } while (model.isEmpty() && (time.elapsed() < TIMEOUT));
+    } while ((modelsegments < 2) && (time.elapsed() < TIMEOUT));
 
+    // Give a little more time for the second one..
     QThread::msleep(100);
     QApplication::processEvents();
 
@@ -368,9 +370,12 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
             data = buffer.at(idx+1);
             if (data == 0) {
                 model = QString(buffer.mid(idx+3, 6));
-                qDebug() << "Model:" << model;
+                modelsegments++;
             } else {
-                qDebug() << "Extra Model:" << data;
+                QString extra = QString(buffer.mid(idx+3, 6));
+                model += extra.trimmed();
+                modelsegments++;
+                qDebug() << "Model:" << model;
             }
             break;
         case 0x03: // Vendor string

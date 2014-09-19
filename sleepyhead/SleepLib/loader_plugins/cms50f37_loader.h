@@ -146,6 +146,8 @@ protected:
 
     int timectr;
 
+    int modelsegments;
+
 };
 
 

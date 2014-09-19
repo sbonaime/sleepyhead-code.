@@ -25,7 +25,7 @@ QList<SerialOximeter *> GetOxiLoaders()
 
     return oxiloaders;
 }
-bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 product_id)
+bool SerialOximeter::scanDevice(QString keyword, quint16 vendor_id, quint16 product_id)
 {
     static bool dumponce = true;
     QStringList ports;
