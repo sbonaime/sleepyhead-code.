@@ -69,7 +69,7 @@ bool CMS50F37Loader::openDevice()
     if (port.isEmpty()) {
         bool b = scanDevice("",m_vendorID, m_productID);
         if (!b) {
-            b = scanDevice("rfcomm", 0, 0);
+            b = scanDevice("rfcomm", 0, 0); // Linux
         }
         if (!b) {
             return false;
