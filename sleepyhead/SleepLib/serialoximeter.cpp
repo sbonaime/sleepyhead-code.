@@ -34,24 +34,33 @@ bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 produ
 
     // How does the mac detect this as a SPO2 device?
     for (int i=0;i<list.size();i++) {
-        const QSerialPortInfo * info=&list.at(i);
-        QString name=info->portName();
-        QString desc=info->description();
+        const QSerialPortInfo * info = &list.at(i);
+        QString name = info->portName();
+        QString desc = info->description();
 
         if ((!keyword.isEmpty() && desc.contains(keyword)) ||
-            ((info->hasVendorIdentifier() && (info->vendorIdentifier()==vendor_id))
-                && (info->hasProductIdentifier() && (info->productIdentifier()==product_id))))
+            ((info->hasVendorIdentifier() && (info->vendorIdentifier() == vendor_id))
+                && (info->hasProductIdentifier() && (info->productIdentifier() == product_id))))
         {
             ports.push_back(name);
             QString dbg=QString("Found Serial Port: %1 %2 %3 %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
 
             if (info->hasProductIdentifier()) //60000
-                dbg+=QString(" PID: %1").arg(info->productIdentifier());
+                dbg += QString(" PID: %1").arg(info->productIdentifier());
             if (info->hasVendorIdentifier()) // 4292
-                dbg+=QString(" VID: %1").arg(info->vendorIdentifier());
+                dbg += QString(" VID: %1").arg(info->vendorIdentifier());
 
             qDebug() << dbg.toLocal8Bit().data();
             break;
+        } else {
+            QString dbg=QString("Other Serial Port: %1 %2 %3 %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
+
+            if (info->hasProductIdentifier()) //60000
+                dbg += QString(" PID: %1").arg(info->productIdentifier());
+            if (info->hasVendorIdentifier()) // 4292
+                dbg += QString(" VID: %1").arg(info->vendorIdentifier());
+
+            qDebug() << dbg.toLocal8Bit().data();
         }
     }
     if (ports.isEmpty()) {

@@ -67,8 +67,13 @@ CMS50F37Loader::~CMS50F37Loader()
 bool CMS50F37Loader::openDevice()
 {
     if (port.isEmpty()) {
-        if (!scanDevice("",m_vendorID, m_productID))
+        bool b = scanDevice("",m_vendorID, m_productID);
+        if (!b) {
+//            b = scanDevice("", 0, 0);
+        }
+        if (!b) {
             return false;
+        }
     }
     serial.setPortName(port);
     if (!serial.open(QSerialPort::ReadWrite))

@@ -429,9 +429,10 @@ void RecalcMAP::run()
 
     ChannelID prescode = CPAP_Pressure;
 
-    if (day->channelExists(CPAP_IPAP)) {
-        prescode = CPAP_IPAP;
-    } else if (day->channelExists(CPAP_EPAP)) {
+//    if (day->channelExists(CPAP_IPAP)) {
+//        prescode = CPAP_IPAP;
+//    } else
+    if (day->channelExists(CPAP_EPAP)) {
         prescode = CPAP_EPAP;
     }
 
