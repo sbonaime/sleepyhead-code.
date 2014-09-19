@@ -39,12 +39,12 @@ bool SerialOximeter::scanDevice(QString keyword,quint16 vendor_id, quint16 produ
         QString name = info->portName();
         QString desc = info->description();
 
-        if ((!keyword.isEmpty() && desc.contains(keyword)) ||
+        if ((!keyword.isEmpty() && desc.contains(keyword, Qt::CaseInsensitive)) ||
             ((info->hasVendorIdentifier() && (info->vendorIdentifier() == vendor_id))
                 && (info->hasProductIdentifier() && (info->productIdentifier() == product_id))))
         {
             ports.push_back(name);
-            QString dbg=QString("Found Serial Port: %1 %2 %3 %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
+            QString dbg=QString("Found Serial Port: Name: %1 Desc: %2 Manufacturer: %3 Location: %4").arg(name).arg(desc).arg(info->manufacturer()).arg(info->systemLocation());
 
             if (info->hasProductIdentifier()) //60000
                 dbg += QString(" PID: %1").arg(info->productIdentifier());
