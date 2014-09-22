@@ -764,9 +764,11 @@ void ResmedImport::run()
 #endif
     }
 
-    // Load annotations afterwards so durations are set correctly
     Q_FOREACH(QString file, files[EDF_CSL]) {
-//        loader->LoadCSL(sess, file);
+        loader->LoadCSL(sess, file);
+#ifdef SESSION_DEBUG
+        sess->session_files.append(file);
+#endif
     }
 
     bool haveeve = false;
@@ -1198,7 +1200,7 @@ EDFType lookupEDFType(QString text)
 }
 
 // Pretend to parse the EVE file to get the duration out of it.
-int PeekEVE(const QString & path, quint32 &start, quint32 &end)
+int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
 {
     EDFParser edf(path);
     if (!edf.Parse())
@@ -1251,7 +1253,7 @@ int PeekEVE(const QString & path, quint32 &start, quint32 &end)
             d = t.toDouble(&ok);
 
             if (!ok) {
-                qDebug() << "Faulty EDF EVE file " << edf.filename;
+                qDebug() << "Faulty EDF Annotations file " << edf.filename;
                 break;
             }
 
@@ -1275,7 +1277,7 @@ int PeekEVE(const QString & path, quint32 &start, quint32 &end)
                 duration = t.toDouble(&ok);
 
                 if (!ok) {
-                    qDebug() << "Faulty EDF EVE file (at %" << pos << ") " << edf.filename;
+                    qDebug() << "Faulty EDF Annotations file (at %" << pos << ") " << edf.filename;
                     break;
                 }
             }
@@ -1300,23 +1302,13 @@ int PeekEVE(const QString & path, quint32 &start, quint32 &end)
 
                 if (!t.isEmpty() && (t!="recording starts")) {
                     goodrecs++;
-//                    if (matchSignal(CPAP_Obstructive, t)) {
-//                    } else if (matchSignal(CPAP_Hypopnea, t)) {
-//                    } else if (matchSignal(CPAP_Apnea, t)) {
-//                    } else if (matchSignal(CPAP_ClearAirway, t)) {
-//                    } else {
-//                        if (t != "recording starts") {
-//                            qDebug() << "Unobserved ResMed annotation field: " << t;
-//                        }
-//                    }
                 }
 
                 if (pos >= recs) {
-                    qDebug() << "Short EDF EVE file" << edf.filename;
+                    qDebug() << "Short EDF Annotations file" << edf.filename;
                     break;
                 }
 
-                // pos++;
             }
 
             while ((data[pos] == 0) && (pos < recs)) { pos++; }
@@ -1429,12 +1421,12 @@ EDFduration getEDFDuration(QString filename)
 
     if (end < start) end = qMax(st2, start);
 
-    if (ext == "EVE") {
+    if ((ext == "EVE") || (ext == "CSL")) {
         // S10 Forces us to parse EVE files to find their real durations
         quint32 en2;
 
         // Have to get the actual duration of the EVE file by parsing the annotations. :(
-        int recs = PeekEVE(filename, st2, en2);
+        int recs = PeekAnnotations(filename, st2, en2);
         if (recs > 0) {
             start = qMin(st2, start);
             end = qMax(en2, end);
@@ -1444,7 +1436,7 @@ EDFduration getEDFDuration(QString filename)
 
             return dur;
         } else {
-            // empty EVE file, don't give a crap about it...
+            // empty annotations file, don't give a crap about it...
             return EDFduration(0, 0, filename);
         }
         // A Firmware bug causes (perhaps with failing SD card) sessions to sometimes take a long time to write
@@ -1593,9 +1585,8 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     EDForder.push_back(EDF_PLD);
     EDForder.push_back(EDF_BRP);
     EDForder.push_back(EDF_SAD);
-    EDForder.push_back(EDF_CSL);
 
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<3; i++) {
         EDFType basetype = EDForder.takeFirst();
 
         // Process PLD files
@@ -1656,6 +1647,24 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
                     files.append(dur2->filename);
 
                     grp[EDF_EVE].append(create_backups ? backup(dur2->path, backup_path) : dur2->path);
+                }
+            }
+
+            // CSL files contain CSR flags
+            QList<EDFduration *> & CSL_list = filesbytype[EDF_CSL];
+            list_end = CSL_list.end();
+            for (item = CSL_list.begin(); item != list_end; ++item) {
+                const EDFduration * dur2 = *item;
+                if (dur2->start == 0) continue;
+
+                // Do the sessions Overlap?
+                if ((start < dur2->end) && ( dur2->start < end)) {
+//                    start = qMin(start, dur2->start);
+//                    end = qMax(end, dur2->end);
+
+                    files.append(dur2->filename);
+
+                    grp[EDF_CSL].append(create_backups ? backup(dur2->path, backup_path) : dur2->path);
                 }
             }
 
@@ -2257,6 +2266,147 @@ QString ResmedLoader::backup(QString fullname, QString backup_path)
     return newname;
 }
 
+bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
+{
+    EDFParser edf(path);
+    if (!edf.Parse())
+        return false;
+
+    QString t;
+
+    long recs;
+    double duration;
+    char *data;
+    char c;
+    long pos;
+    bool sign, ok;
+    double d;
+    double tt;
+
+    // Notes: Event records have useless duration record.
+   // sess->updateFirst(edf.startdate);
+
+    EventList *CSR = nullptr;
+
+    // Allow for empty sessions..
+    qint64 csr_starts = 0;
+
+
+    // Process event annotation records
+    for (int s = 0; s < edf.GetNumSignals(); s++) {
+        recs = edf.edfsignals[s].nr * edf.GetNumDataRecords() * 2;
+
+        data = (char *)edf.edfsignals[s].data;
+        pos = 0;
+        tt = edf.startdate;
+    //    sess->updateFirst(tt);
+        duration = 0;
+
+        while (pos < recs) {
+            c = data[pos];
+
+            if ((c != '+') && (c != '-')) {
+                break;
+            }
+
+            if (data[pos++] == '+') { sign = true; }
+            else { sign = false; }
+
+            t = "";
+            c = data[pos];
+
+            do {
+                t += c;
+                pos++;
+                c = data[pos];
+            } while ((c != 20) && (c != 21)); // start code
+
+            d = t.toDouble(&ok);
+
+            if (!ok) {
+                qDebug() << "Faulty EDF CSL file " << edf.filename;
+                break;
+            }
+
+            if (!sign) { d = -d; }
+
+            tt = edf.startdate + qint64(d * 1000.0);
+            duration = 0;
+            // First entry
+
+            if (data[pos] == 21) {
+                pos++;
+                // get duration.
+                t = "";
+
+                do {
+                    t += data[pos];
+                    pos++;
+                } while ((data[pos] != 20) && (pos < recs)); // start code
+
+                duration = t.toDouble(&ok);
+
+                if (!ok) {
+                    qDebug() << "Faulty EDF CSL file (at %" << pos << ") " << edf.filename;
+                    break;
+                }
+            }
+
+            while ((data[pos] == 20) && (pos < recs)) {
+                t = "";
+                pos++;
+
+                if (data[pos] == 0) {
+                    break;
+                }
+
+                if (data[pos] == 20) {
+                    pos++;
+                    break;
+                }
+
+                do {
+                    t += tolower(data[pos++]);
+                } while ((data[pos] != 20) && (pos < recs)); // start code
+
+                if (!t.isEmpty()) {
+                    if (t == "csr start") {
+                        csr_starts = tt;
+                    } else if (t == "csr end") {
+                        if (!CSR) {
+                            CSR = sess->AddEventList(CPAP_CSR, EVL_Event);
+                        }
+
+                        if (csr_starts > 0) {
+                            if (sess->checkInside(csr_starts))
+                                CSR->AddEvent(tt, double(tt - csr_starts) / 1000.0);
+                            csr_starts = 0;
+                        } else {
+                            qDebug() << "If you can read this, ResMed sucks and split CSR flagging!";
+                        }
+                    } else if (t != "recording starts") {
+                        qDebug() << "Unobserved ResMed CSL annotation field: " << t;
+                    }
+                }
+
+                if (pos >= recs) {
+                    qDebug() << "Short EDF CSL file" << edf.filename;
+                    break;
+                }
+
+                // pos++;
+            }
+
+            while ((data[pos] == 0) && (pos < recs)) { pos++; }
+
+            if (pos >= recs) { break; }
+        }
+
+    //    sess->updateLast(tt);
+    }
+
+    return true;
+}
 
 bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
 {

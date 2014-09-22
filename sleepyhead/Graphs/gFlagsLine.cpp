@@ -176,11 +176,17 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
     QColor barcol;
 
     for (int i = 0; i < visflags.size(); i++) {
+        schema::Channel & chan = schema::channel[visflags.at(i)->code()];
+
         // Alternating box color
         if (i & 1) { barcol = COLOR_ALT_BG1; }
         else { barcol = COLOR_ALT_BG2; }
 
-        painter.fillRect(left, linetop, width-1, m_barh, QBrush(barcol));
+        painter.fillRect(left, floor(linetop), width-1, ceil(m_barh), QBrush(barcol));
+
+//        barcol = chan.defaultColor();
+//        barcol.setAlpha(16);
+//        painter.fillRect(left, floor(linetop), width-1, ceil(m_barh), QBrush(barcol));
 
         // Paint the actual flags
         QRect rect(left, linetop, width, m_barh);
@@ -350,12 +356,12 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 for (; dptr < eptr; dptr++) {
                     X = start + * tptr++;
 
-                    if (X > maxx) {
-                        break;
-                    }
 
                     L = *dptr * 1000L;
                     X2 = X - L;
+                    if (X2 > maxx) {
+                        break;
+                    }
 
                     x1 = double(X - minx) * xmult + left;
                     x2 = double(X2 - minx) * xmult + left;

@@ -424,6 +424,10 @@ class ResmedLoader : public CPAPLoader
     //! This contains all Hypopnea, Obstructive Apnea, Central and Apnea codes
     bool LoadEVE(Session *sess, const QString & path);
 
+    //! \brief Parse the CSL Event annotation data, and save to Session * sess
+    //! This contains Cheyne Stokes Respiration flagging on the AirSense 10
+    bool LoadCSL(Session *sess, const QString & path);
+
     //! \brief Parse the BRP High Resolution data, and save to Session * sess
     //! This contains Flow Rate, Mask Pressure, and Resp. Event  data
     bool LoadBRP(Session *sess, const QString & path);

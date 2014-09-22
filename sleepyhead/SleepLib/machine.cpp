@@ -844,7 +844,7 @@ bool Machine::hasModifiedSessions()
 
 const QString summaryFileName = "Summaries.xml";
 
-bool Machine::LoadSummary(bool everything)
+bool Machine::LoadSummary()
 {
     QTime time;
     time.start();
@@ -885,6 +885,9 @@ bool Machine::LoadSummary(bool everything)
     QDomNodeList sessionlist = root.childNodes();
 
     int size = sessionlist.size();
+
+    QMap<qint64, Session *>  sess_order;
+
     for (int s=0; s < size; ++s) {
         node = sessionlist.at(s);
         QDomElement e = node.toElement();
@@ -899,9 +902,21 @@ bool Machine::LoadSummary(bool everything)
             sess->really_set_last(last);
             sess->setEnabled(enabled);
             sess->setSummaryOnly(!events);
-            if (!AddSession(sess))
-                delete sess;
-      //      sess->LoadSummary();
+
+            sess_order[first] = sess;
+        }
+    }
+    QMap<qint64, Session *>::iterator it_end = sess_order.end();
+    QMap<qint64, Session *>::iterator it;
+    int cnt = 0;
+    bool loadSummaries = p_profile->session->preloadSummaries();
+
+    for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
+        Session * sess = it.value();
+        if (!AddSession(sess)) {
+            delete sess;
+        } else {
+            if (loadSummaries) sess->LoadSummary();
         }
     }
 

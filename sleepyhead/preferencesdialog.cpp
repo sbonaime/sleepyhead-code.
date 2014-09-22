@@ -728,7 +728,11 @@ bool PreferencesDialog::Save()
     profile->cpap->setShowComplianceInfo(ui->complianceCheckBox->isChecked());
     profile->cpap->setComplianceHours(ui->complianceHours->value());
 
-    profile->appearance->setGraphHeight(ui->graphHeight->value());
+    if (ui->graphHeight->value() != profile->appearance->graphHeight()) {
+        profile->appearance->setGraphHeight(ui->graphHeight->value());
+        mainwin->getDaily()->ResetGraphLayout();
+        mainwin->getOverview()->ResetGraphLayout();
+    }
 
     profile->general->setPrefCalcMiddle(ui->prefCalcMiddle->currentIndex());
     profile->general->setPrefCalcMax(ui->prefCalcMax->currentIndex());

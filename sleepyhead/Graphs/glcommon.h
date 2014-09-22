@@ -50,7 +50,7 @@ const QColor COLOR_Brown = QColor("brown");
 const QColor COLOR_Text = Qt::black;
 const QColor COLOR_Outline = Qt::black;
 
-const QColor COLOR_ALT_BG1 = QColor(0xd8, 0xff, 0xd8, 0xff); // Alternating Background Color 1 (Event Flags)
+const QColor COLOR_ALT_BG1 = QColor(0xc8, 0xff, 0xc8, 0x7f); // Alternating Background Color 1 (Event Flags)
 const QColor COLOR_ALT_BG2 = COLOR_White;                    // Alternating Background Color 2 (Event Flags)
 
 
