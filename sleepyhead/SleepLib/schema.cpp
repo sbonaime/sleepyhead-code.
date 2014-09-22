@@ -56,6 +56,24 @@ QHash<QString, ScopeType> Scopes;
 
 bool schema_initialized = false;
 
+void setOrders() {
+    schema::channel[CPAP_CSR].setOrder(1);
+    schema::channel[CPAP_Ramp].setOrder(2);
+    schema::channel[CPAP_LargeLeak].setOrder(2);
+    schema::channel[CPAP_ClearAirway].setOrder(3);
+    schema::channel[CPAP_Obstructive].setOrder(4);
+    schema::channel[CPAP_Apnea].setOrder(4);
+    schema::channel[CPAP_NRI].setOrder(3);
+    schema::channel[CPAP_Hypopnea].setOrder(5);
+    schema::channel[CPAP_FlowLimit].setOrder(6);
+    schema::channel[CPAP_RERA].setOrder(6);
+    schema::channel[CPAP_VSnore].setOrder(7);
+    schema::channel[CPAP_VSnore2].setOrder(8);
+    schema::channel[CPAP_ExP].setOrder(6);
+    schema::channel[CPAP_UserFlag1].setOrder(256);
+    schema::channel[CPAP_UserFlag2].setOrder(257);
+}
+
 void init()
 {
     if (schema_initialized) { return; }
@@ -164,9 +182,9 @@ void init()
 
     // Flags
     schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, SPAN,    MT_CPAP, SESSION, "CSR",
-                        QObject::tr("Periodic Breathing"),
-                        QObject::tr("A period of periodic breathing"),
-                        QObject::tr("PB"),       STR_UNIT_Percentage,            DEFAULT,    COLOR_CSR));
+                        QObject::tr("Cheyne Stokes Respiration"),
+                        QObject::tr("An abnormal period of Periodic Breathing/Cheyne Stokes Respiration"),
+                        QObject::tr("CSR"),       STR_UNIT_Percentage,            DEFAULT,    COLOR_CSR));
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, FLAG,    MT_CPAP, SESSION,
@@ -566,6 +584,7 @@ void resetChannels()
         MachineLoader * loader = list.at(i);
         loader->initChannels();
     }
+    setOrders();
 }
 
 Channel::Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType scope, QString code, QString fullname,

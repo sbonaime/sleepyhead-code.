@@ -374,9 +374,16 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                         painter.drawRect(x2, bartop, x1-x2, bottom-bartop);
                         int x,y;
-                        QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
+                        int s = *dptr;
+                        int m = s / 60;
+                        s %= 60;
+                        QString lab = QString("%1").arg(schema::channel[m_code].fullname());
+                        if (m>0) {
+                            lab += QObject::tr(" (%2 min, %3 sec)").arg(m).arg(s);
+                        } else {
+                            lab += QObject::tr(" (%3 sec)").arg(m).arg(s);
+                        }
                         GetTextExtent(lab, x, y);
-
                         w.ToolTip(lab, x2 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
 
                     }

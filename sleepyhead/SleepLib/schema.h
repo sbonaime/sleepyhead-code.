@@ -55,6 +55,8 @@ public:
 
 namespace schema {
 void resetChannels();
+void setOrders();
+
 
 enum Function {
     NONE = 0, AVG, WAVG, MIN, MAX, SUM, CNT, P90, CPH, SPH, HOURS, SET
