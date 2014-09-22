@@ -374,7 +374,7 @@ bool Session::LoadSummary()
     }
 
 
-    qDebug() << "Loading" << s_machine->loaderName() << "Summary" << filename << sumcnt++;
+   // qDebug() << "Loading" << s_machine->loaderName() << "Summary" << filename << sumcnt++;
 
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_6);

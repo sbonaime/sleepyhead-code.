@@ -18,6 +18,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
+#include <QProgressBar>
 
 #include <QHash>
 #include <QVector>
@@ -87,7 +88,7 @@ class Machine
 
     //! \brief Load all Machine summary data
     bool Load();
-    bool LoadSummary();
+    bool LoadSummary(QProgressBar * progress);
 
     //! \brief Save all Sessions where changed bit is set.
     bool Save();
@@ -246,6 +247,10 @@ class Machine
     QList<ImportTask *> m_tasklist;
 
     QHash<ChannelID, bool> m_availableChannels;
+
+    QString m_summaryPath;
+    QString m_eventsPath;
+    QString m_dataPath;
 };
 
 

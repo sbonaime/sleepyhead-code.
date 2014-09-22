@@ -499,7 +499,10 @@ void Machine::setInfo(MachineInfo inf)
 
 const QString Machine::getDataPath()
 {
-    return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+    if (m_dataPath.isEmpty()) {
+        m_dataPath = p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+    }
+    return m_dataPath;
 }
 const QString Machine::getSummariesPath()
 {
@@ -535,7 +538,7 @@ bool Machine::Load()
 
     QProgressBar * progress = popup->progress;
 
-    if (!LoadSummary()) {
+    if (!LoadSummary(progress)) {
         // No XML index file, so assume upgrading, or it simply just got screwed up or deleted...
         QTime time;
         time.start();
@@ -844,7 +847,7 @@ bool Machine::hasModifiedSessions()
 
 const QString summaryFileName = "Summaries.xml";
 
-bool Machine::LoadSummary()
+bool Machine::LoadSummary(QProgressBar * progress)
 {
     QTime time;
     time.start();
@@ -911,7 +914,12 @@ bool Machine::LoadSummary()
     int cnt = 0;
     bool loadSummaries = p_profile->session->preloadSummaries();
 
+    progress->setMaximum(sess_order.size());
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
+        if ((cnt % 100) == 0) {
+            progress->setValue(cnt);
+            QApplication::processEvents();
+        }
         Session * sess = it.value();
         if (!AddSession(sess)) {
             delete sess;
@@ -919,6 +927,8 @@ bool Machine::LoadSummary()
             if (loadSummaries) sess->LoadSummary();
         }
     }
+    progress->setValue(sess_order.size());
+    QApplication::processEvents();
 
     qDebug() << "Loaded" << info.series << info.model << "data in" << time.elapsed() << "ms";
 
