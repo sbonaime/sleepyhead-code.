@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml
+QT += core gui network xml printsupport
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets

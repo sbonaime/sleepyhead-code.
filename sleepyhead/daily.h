@@ -145,6 +145,9 @@ public:
 
     QLabel * getDateDisplay();
 
+    //void populateSessionWidget();
+
+
 public slots:
     void on_LineCursorUpdate(double time);
     void on_RangeUpdate(double minx, double maxx);
@@ -275,6 +278,8 @@ private slots:
 
     void updateGraphCombo();
 
+
+    //void on_sessionWidget_itemSelectionChanged();
 
 protected:
     virtual void closeEvent(QCloseEvent *);

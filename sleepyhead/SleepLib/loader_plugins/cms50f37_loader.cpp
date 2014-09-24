@@ -228,7 +228,7 @@ QString CMS50F37Loader::getModel()
     QThread::msleep(100);
     QApplication::processEvents();
 
-    if (model.startsWith("CMS50I")) {
+    if (model.startsWith("CMS50I") || model.startsWith("CMS50H")) {
         duration_divisor = 4;
     } else {
         duration_divisor = 2;

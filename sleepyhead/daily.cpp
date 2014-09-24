@@ -417,13 +417,46 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 }
 
 
+//void Daily::populateSessionWidget()
+//{
+
+//    ui->sessionWidget->clearContents();
+//    ui->sessionWidget->setColumnCount(2);
+
+//    QMap<QDate, Day *>::iterator it;
+//    QMap<QDate, Day *>::iterator it_end = p_profile->daylist.end();
+
+//    int row = 0;
+//    for (it = p_profile->daylist.begin(); it != it_end; ++it) {
+//        const QDate & date = it.key();
+//        Day * day = it.value();
+//        QList<Session *> sessions = day->getSessions(MT_CPAP);
+//        int size = sessions.size();
+//        if (size > 0) {
+//            QTableWidgetItem * item = new QTableWidgetItem(date.toString(Qt::SystemLocaleShortDate));
+//            item->setData(Qt::UserRole, date);
+//            ui->sessionWidget->setItem(row, 0, item);
+//            SessionBar * sb = new SessionBar();
+
+//            for (int i=0; i < size; i++) {
+//                Session * sess = sessions[i];
+//                QColor col = Qt::blue;
+//                sb->add(sess, col);
+//            }
+//            ui->sessionWidget->setCellWidget(row, 1, sb);
+//            row++;
+//        }
+//    }
+//    ui->sessionWidget->setRowCount(row-1);
+//    ui->sessionWidget->setCurrentCell(row-1, 0);
+//    ui->sessionWidget->scrollToBottom();
+//}
 Daily::~Daily()
 {
 //    disconnect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
 
     // Save any last minute changes..
 
-//    delete splitter;
     delete ui;
     delete icon_on;
     delete icon_off;
@@ -721,7 +754,6 @@ void Daily::UpdateCalendarDay(QDate date)
         ui->calendar->setDateTextFormat(date,nodata);
     }
     ui->calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
-
 }
 void Daily::LoadDate(QDate date)
 {
@@ -2505,3 +2537,16 @@ void Daily::on_toggleEvents_clicked(bool checked)
     updateCube();
     GraphView->redraw();
 }
+
+//void Daily::on_sessionWidget_itemSelectionChanged()
+//{
+//    int row = ui->sessionWidget->currentRow();
+//    QTableWidgetItem *item = ui->sessionWidget->item(row, 0);
+//    if (item) {
+//        QDate date = item->data(Qt::UserRole).toDate();
+//        LoadDate(date);
+//        qDebug() << "Clicked.. changing date to" << date;
+
+//       // ui->sessionWidget->setCurrentItem(item);
+//    }
+//}

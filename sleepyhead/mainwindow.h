@@ -325,6 +325,7 @@ class MainWindow : public QMainWindow
     void on_actionExport_Journal_triggered();
 
     void on_actionShow_Performance_Counters_toggled(bool arg1);
+    void on_aboutToQuit();
 
 private:
     void importCPAPBackups();

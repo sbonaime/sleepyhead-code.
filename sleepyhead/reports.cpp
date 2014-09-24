@@ -7,8 +7,10 @@
  * distribution for more details. */
 
 #include <QMessageBox>
-#include <QPrinter>
-#include <QPrintDialog>
+#include <QtPrintSupport/qprinter.h>
+#include <QtPrintSupport/qprintdialog.h>
+// #include <QPrinter>
+//#include <QPrintDialog>
 #include <QTextDocument>
 #include <QProgressBar>
 #include <QApplication>

@@ -614,7 +614,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
         QColor col2(255,0,0,64);
         painter.fillRect(hl_rect, QBrush(col2));
 
-        QString txt = hl_date.toString(Qt::SystemLocaleDate)+" ";
+        QString txt = hl_date.toString(Qt::SystemLocaleShortDate)+" ";
         if (hl_day) {
             // grab extra tooltip data
             txt += tooltipData(hl_day, hl_idx);
@@ -881,6 +881,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
             QColor goodcolor = haveoxi ? QColor(128,255,196) : QColor(64,128,255);
 
+            QString datestr = date.toString(Qt::SystemLocaleShortDate);
+
             for (si = day->begin(); si != day->end(); ++si) {
                 Session *sess = (*si);
                 if (!sess->enabled() || (sess->type() != m_machtype)) continue;
@@ -898,7 +900,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                         float s2 = double(slice.end - slice.start) / 3600000.0;
 
                         QColor col = (slice.status == EquipmentOn) ? goodcolor : Qt::black;
-                        QString txt = QObject::tr("%1\nLength: %3\nStart: %2\n").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+                        QString txt = QObject::tr("%1\nLength: %3\nStart: %2\n").arg(datestr).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
                         txt += (slice.status == EquipmentOn) ? QObject::tr("Mask On") : QObject::tr("Mask Off");
                         slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, col));
@@ -911,7 +913,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
                     float s2 = sess->hours();
 
-                    QString txt = QObject::tr("%1\nLength: %3\nStart: %2").arg(it.key().toString(Qt::SystemLocaleDate)).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
+                    QString txt = QObject::tr("%1\nLength: %3\nStart: %2").arg(datestr).arg(st.time().toString("hh:mm:ss")).arg(s2,0,'f',2);
 
                     slices.append(SummaryChartSlice(&calcitems[0], s1, s2, txt, goodcolor));
                 }

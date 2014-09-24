@@ -327,6 +327,9 @@ MainWindow::MainWindow(QWidget *parent) :
     warnidx = 0;
     wtimer.singleShot(0, this, SLOT(on_changeWarningMessage()));
     loadChannels();
+
+    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
+
 }
 
 void MainWindow::on_changeWarningMessage()
@@ -468,8 +471,16 @@ void loadChannels()
     f.close();
 }
 
+void MainWindow::on_aboutToQuit()
+{
+    Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
+    QThread::msleep(1000);
+    QApplication::processEvents();
+}
+
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+
     saveChannels();
     schema::channel.Save();
 
@@ -644,8 +655,6 @@ void MainWindow::Startup()
     ui->statStartDate->setDate(p_profile->FirstDay());
     ui->statEndDate->setDate(p_profile->LastDay());
 
-    if (daily) { daily->ReloadGraphs(); }
-
     if (overview) { overview->ReloadGraphs(); }
 
     qprogress->hide();
@@ -658,6 +667,10 @@ void MainWindow::Startup()
 
     ui->tabWidget->setCurrentWidget(ui->welcomeTab);
 
+    if (daily) {
+        daily->ReloadGraphs();
+//        daily->populateSessionWidget();
+    }
 
 }
 
@@ -705,6 +718,8 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
 
     delete popup;
 
+    disconnect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
+    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
     return c;
 }
 
@@ -714,7 +729,10 @@ void MainWindow::finishCPAPImport()
     GenerateStatistics();
 
     if (overview) { overview->ReloadGraphs(); }
-    if (daily) { daily->ReloadGraphs(); }
+    if (daily) {
+//        daily->populateSessionWidget();
+        daily->ReloadGraphs();
+    }
 }
 
 void MainWindow::importCPAPBackups()
@@ -924,7 +942,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
             if (res == QMessageBox::Cancel) {
                 // Give the communal progress bar back
-                ui->statusbar->insertWidget(2,qprogress,1);
+                ui->statusbar->insertWidget(1,qprogress,1);
                 return;
             } else if (res == QMessageBox::No) {
                 waitmsg->setText(tr("Please wait, launching file dialog..."));
@@ -992,7 +1010,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
         if (w.exec() != QDialog::Accepted) {
             popup.hide();
-            ui->statusbar->insertWidget(2,qprogress,1);
+            ui->statusbar->insertWidget(1,qprogress,1);
 
             return;
         }
@@ -1047,7 +1065,7 @@ void MainWindow::on_action_Import_Data_triggered()
     }
 //    popup.hide();
 
-//    ui->statusbar->insertWidget(2, qprogress,1);
+//    ui->statusbar->insertWidget(1, qprogress,1);
 
     if (newdata)  {
         finishCPAPImport();
@@ -1515,7 +1533,7 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
 bool toolbox_visible = false;
 void MainWindow::on_action_Screenshot_triggered()
 {
-    getDaily()->hideSpaceHogs();
+    daily->hideSpaceHogs();
     toolbox_visible = ui->toolBox->isVisible();
     ui->toolBox->hide();
     QTimer::singleShot(250, this, SLOT(DelayedScreenshot()));
@@ -1560,7 +1578,7 @@ void MainWindow::DelayedScreenshot()
     } else {
         Notify(tr("Screenshot saved to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     }
-    getDaily()->showSpaceHogs();
+    daily->showSpaceHogs();
     ui->toolBox->setVisible(toolbox_visible);
 
 }
@@ -1884,9 +1902,8 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
         m->SaveSummary();
     }
 
-    getDaily()->LoadDate(getDaily()->getDate());
-    //getDaily()->ReloadGraphs();
-    getOverview()->ReloadGraphs();
+    daily->LoadDate(getDaily()->getDate());
+    overview->ReloadGraphs();
 }
 
 void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
