@@ -565,7 +565,11 @@ void Daily::ReloadGraphs()
         d=previous_date;
         //Unload(d);
     }
-    d=p_profile->LastDay();
+    QDate lastcpap = p_profile->LastDay(MT_CPAP);
+    QDate lastoxi = p_profile->LastDay(MT_OXIMETER);
+
+    d = qMax(lastcpap, lastoxi);
+
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
@@ -722,36 +726,36 @@ void Daily::UpdateCalendarDay(QDate date)
     oxicpap.setFontWeight(QFont::Bold);
     stageday.setForeground(QBrush(COLOR_Magenta, Qt::SolidPattern));
     stageday.setFontWeight(QFont::Bold);
-    jourday.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
+    jourday.setForeground(QBrush(COLOR_DarkYellow, Qt::SolidPattern));
     jourday.setFontWeight(QFont::Bold);
     nodata.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     nodata.setFontWeight(QFont::Normal);
 
-    bool hascpap=p_profile->FindDay(date,MT_CPAP)!=nullptr;
-    bool hasoxi=p_profile->FindDay(date,MT_OXIMETER)!=nullptr;
-    bool hasjournal=p_profile->FindDay(date,MT_JOURNAL)!=nullptr;
-    bool hasstage=p_profile->FindDay(date,MT_SLEEPSTAGE)!=nullptr;
-    bool haspos=p_profile->FindDay(date,MT_POSITION)!=nullptr;
+    bool hascpap = p_profile->FindDay(date, MT_CPAP)!=nullptr;
+    bool hasoxi = p_profile->FindDay(date, MT_OXIMETER)!=nullptr;
+    bool hasjournal = p_profile->FindDay(date, MT_JOURNAL)!=nullptr;
+    bool hasstage = p_profile->FindDay(date, MT_SLEEPSTAGE)!=nullptr;
+    bool haspos = p_profile->FindDay(date, MT_POSITION)!=nullptr;
     if (hascpap) {
         if (hasoxi) {
-            ui->calendar->setDateTextFormat(date,oxicpap);
+            ui->calendar->setDateTextFormat(date, oxicpap);
         } else if (hasjournal) {
-            ui->calendar->setDateTextFormat(date,cpapjour);
+            ui->calendar->setDateTextFormat(date, cpapjour);
         } else if (hasstage || haspos) {
-            ui->calendar->setDateTextFormat(date,stageday);
+            ui->calendar->setDateTextFormat(date, stageday);
         } else {
-            ui->calendar->setDateTextFormat(date,cpaponly);
+            ui->calendar->setDateTextFormat(date, cpaponly);
         }
     } else if (hasoxi) {
-        ui->calendar->setDateTextFormat(date,oxiday);
+        ui->calendar->setDateTextFormat(date, oxiday);
     } else if (hasjournal) {
-        ui->calendar->setDateTextFormat(date,jourday);
+        ui->calendar->setDateTextFormat(date, jourday);
     } else if (hasstage) {
-        ui->calendar->setDateTextFormat(date,oxiday);
+        ui->calendar->setDateTextFormat(date, oxiday);
     } else if (haspos) {
-        ui->calendar->setDateTextFormat(date,oxiday);
+        ui->calendar->setDateTextFormat(date, oxiday);
     } else {
-        ui->calendar->setDateTextFormat(date,nodata);
+        ui->calendar->setDateTextFormat(date, nodata);
     }
     ui->calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
 }
@@ -2127,8 +2131,13 @@ void Daily::on_calButton_toggled(bool checked)
 
 void Daily::on_todayButton_clicked()
 {
-    QDate d=QDate::currentDate();
-    if (d > p_profile->LastDay()) d=p_profile->LastDay();
+//    QDate d=QDate::currentDate();
+//    if (d > p_profile->LastDay()) {
+        QDate lastcpap = p_profile->LastDay(MT_CPAP);
+        QDate lastoxi = p_profile->LastDay(MT_OXIMETER);
+
+        QDate d = qMax(lastcpap, lastoxi);
+//    }
     LoadDate(d);
 }
 
