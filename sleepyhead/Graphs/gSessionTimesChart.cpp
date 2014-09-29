@@ -162,13 +162,14 @@ void gSummaryChart::preCalc()
     }
 }
 
-void gSummaryChart::customCalc(Day *day, QList<SummaryChartSlice> & slices)
+void gSummaryChart::customCalc(Day *day, QVector<SummaryChartSlice> & slices)
 {
-    if (slices.size() != calcitems.size()) {
+    int size = slices.size();
+    if (size != calcitems.size()) {
         return;
     }
     float hour = day->hours(m_machtype);
-    for (int i=0; i<slices.size(); ++i) {
+    for (int i=0; i < size; ++i) {
         const SummaryChartSlice & slice = slices.at(i);
         SummaryCalcItem & calc = calcitems[i];
 
@@ -296,7 +297,7 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
 
 QString gSummaryChart::tooltipData(Day *, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
     QString txt;
     for (int i=0; i< slices.size(); ++i) {
         SummaryChartSlice & slice = slices[i];
@@ -320,7 +321,7 @@ void gSummaryChart::populate(Day * day, int idx)
     }
     if (!good) return;
 
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
 
     float hours = day->hours(m_machtype);
     float base = 0;
@@ -476,7 +477,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
         day->OpenSummary();
 
-        QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(i);
+        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(i);
 
         if (cit == cache.end()) {
             populate(day, i);
@@ -484,7 +485,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
         }
 
         if (cit != cache.end()) {
-            QList<SummaryChartSlice> & list = cit.value();
+            QVector<SummaryChartSlice> & list = cit.value();
             float base = 0, val;
             int listsize = list.size();
             for (int j=0; j < listsize; ++j) {
@@ -549,7 +550,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             hlday = true;
         }
 
-        QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(idx);
+        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(idx);
 
         if (cit == cache.end()) {
             populate(day, idx);
@@ -561,7 +562,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             /////////////////////////////////////////////////////////////////////////////////////
             /// Draw pressure settings
             /////////////////////////////////////////////////////////////////////////////////////
-            QList<SummaryChartSlice> & list = cit.value();
+            QVector<SummaryChartSlice> & list = cit.value();
             customCalc(day, list);
 
             int listsize = list.size();
@@ -651,7 +652,7 @@ QString gUsageChart::tooltipData(Day * day, int)
 
 void gUsageChart::populate(Day *day, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
 
     float hours = day->hours();
 
@@ -675,7 +676,7 @@ void gUsageChart::preCalc()
     calc.reset(idx_end - idx_start);
 }
 
-void gUsageChart::customCalc(Day *, QList<SummaryChartSlice> &list)
+void gUsageChart::customCalc(Day *, QVector<SummaryChartSlice> &list)
 {
     if (list.size() == 0) {
         incompdays++;
@@ -738,7 +739,7 @@ void gSessionTimesChart::preCalc() {
     calc2.reset(idx_end - idx_start);
 }
 
-void gSessionTimesChart::customCalc(Day *, QList<SummaryChartSlice> & slices) {
+void gSessionTimesChart::customCalc(Day *, QVector<SummaryChartSlice> & slices) {
     int size = slices.size();
     num_slices += size;
 
@@ -867,7 +868,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             continue;
         }
 
-        QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(i);
+        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(i);
 
         if (cit == cache.end()) {
             day->OpenSummary();
@@ -875,7 +876,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             splittime = QDateTime(date, split);
             QList<Session *>::iterator si;
 
-            QList<SummaryChartSlice> & slices = cache[i];
+            QVector<SummaryChartSlice> & slices = cache[i];
 
             bool haveoxi = day->hasMachine(MT_OXIMETER);
 
@@ -923,7 +924,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         }
 
         if (cit != cache.end()) {
-            QList<SummaryChartSlice> & list = cit.value();
+            QVector<SummaryChartSlice> & list = cit.value();
             int listsize = list.size();
 
             float peak = 0, base = 999;
@@ -981,7 +982,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             continue;
         }
 
-        QHash<int, QList<SummaryChartSlice> >::iterator cit = cache.find(idx);
+        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(idx);
 
         float x1 = lastx1 + barw;
 
@@ -995,7 +996,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         }
 
         if (cit != cache.end()) {
-            QList<SummaryChartSlice> & slices = cit.value();
+            QVector<SummaryChartSlice> & slices = cit.value();
 
             customCalc(day, slices);
             int size = slices.size();
@@ -1055,7 +1056,7 @@ void gTTIAChart::preCalc()
 {
     gSummaryChart::preCalc();
 }
-void gTTIAChart::customCalc(Day *, QList<SummaryChartSlice> & slices)
+void gTTIAChart::customCalc(Day *, QVector<SummaryChartSlice> & slices)
 {
     if (slices.size() == 0) return;
     const SummaryChartSlice & slice = slices.at(0);
@@ -1069,8 +1070,8 @@ void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 
     for (int i=0; i < num_channels; ++i) {
         SummaryCalcItem & calc = calcitems[i];
-        ChannelID code = calc.code;
-        schema::Channel & chan = schema::channel[code];
+        //ChannelID code = calc.code;
+        //schema::Channel & chan = schema::channel[code];
         float mid = 0;
         switch (midcalc) {
         case 0:
@@ -1097,7 +1098,7 @@ void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 }
 void gTTIAChart::populate(Day *day, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
     float ttia = day->sum(CPAP_Obstructive) + day->sum(CPAP_ClearAirway) + day->sum(CPAP_Apnea) + day->sum(CPAP_Hypopnea);
     int h = ttia / 3600;
     int m = int(ttia) / 60 % 60;
@@ -1108,7 +1109,7 @@ void gTTIAChart::populate(Day *day, int idx)
 }
 QString gTTIAChart::tooltipData(Day *, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
     if (slices.size() == 0) return QString();
 
     const SummaryChartSlice & slice = slices.at(0);
@@ -1132,7 +1133,7 @@ void gAHIChart::preCalc()
     ahi_data.clear();
     ahi_data.reserve(idx_end-idx_start);
 }
-void gAHIChart::customCalc(Day *day, QList<SummaryChartSlice> &list)
+void gAHIChart::customCalc(Day *day, QVector<SummaryChartSlice> &list)
 {
     int size = list.size();
     if (size == 0) return;
@@ -1181,27 +1182,31 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 
     //int size = idx_end - idx_start;
 
+    bool skip = true;
     float med = 0;
     switch (midcalc) {
     case 0:
         if (ahi_data.size() > 0) {
             med = median(ahi_data.begin(), ahi_data.end());
+            skip = false;
         }
         break;
     case 1: // wavg
         if (total_hours > 0) {
             med = ahi_wavg / total_hours;
+            skip = false;
         }
         break;
     case 2: // avg
         if (calc_cnt > 0) {
             med = ahi_avg / calc_cnt;
+            skip = false;
         }
         break;
     }
 
     QStringList txtlist;
-    txtlist.append(QObject::tr("%1 %2 / %3 / %4").arg(STR_TR_AHI).arg(min_ahi, 0, 'f', 2).arg(med, 0, 'f', 2).arg(max_ahi, 0, 'f', 2));
+    if (!skip) txtlist.append(QObject::tr("%1 %2 / %3 / %4").arg(STR_TR_AHI).arg(min_ahi, 0, 'f', 2).arg(med, 0, 'f', 2).arg(max_ahi, 0, 'f', 2));
 
     int num_channels = calcitems.size();
 
@@ -1210,25 +1215,29 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
         ChannelID code = calc.code;
         schema::Channel & chan = schema::channel[code];
         float mid = 0;
+        skip = true;
         switch (midcalc) {
         case 0:
             if (calc.median_data.size() > 0) {
                 mid = median(calc.median_data.begin(), calc.median_data.end());
+                skip = false;
             }
             break;
         case 1:
             if (calc.divisor > 0) {
                 mid = calc.wavg_sum / calc.divisor;
+                skip = false;
             }
             break;
         case 2:
-            if (calc.divisor > 0) {
-                mid = calc.avg_sum / calc.divisor;
+            if (calc.cnt > 0) {
+                mid = calc.avg_sum / calc.cnt;
+                skip = false;
             }
             break;
         }
 
-        txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
+        if (!skip) txtlist.append(QString("%1 %2 / %3 / %4").arg(chan.label()).arg(calc.min, 0, 'f', 2).arg(mid, 0, 'f', 2).arg(calc.max, 0, 'f', 2));
     }
     QString txt = txtlist.join(", ");
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
@@ -1236,7 +1245,7 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 
 void gAHIChart::populate(Day *day, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
 
     float hours = day->hours();
     int num_channels = calcitems.size();
@@ -1254,7 +1263,7 @@ void gAHIChart::populate(Day *day, int idx)
 }
 QString gAHIChart::tooltipData(Day *day, int idx)
 {
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
     float total = 0;
     float hour = day->hours(m_machtype);
     QString txt;
@@ -1290,12 +1299,76 @@ gPressureChart::gPressureChart()
     addCalc(CPAP_IPAP, ST_90P, brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33));         // 12
 }
 
+void gPressureChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
+{
+    int pressure_cnt = calcitems[0].cnt;
+    int pressuremin_cnt = calcitems[3].cnt;
+    int epap_cnt = calcitems[5].cnt;
+    int ipap_cnt = calcitems[6].cnt;
+    int ipaphi_cnt = calcitems[8].cnt;
+    int epaplo_cnt = calcitems[7].cnt;
+
+    QStringList presstr;
+
+    float mid = 0;
+
+    if (pressure_cnt > 0) {
+        mid = calcitems[0].mid();
+        presstr.append(QString("%1 %2/%3/%4").
+                arg(STR_TR_CPAP).
+                arg(calcitems[0].min,0,'f',1).
+                arg(mid, 0, 'f', 1).
+                arg(calcitems[0].max,0,'f',1));
+    }
+    if (pressuremin_cnt > 0) {
+        presstr.append(QString("%1 %2/%3/%4/%5").
+                arg(STR_TR_APAP).
+                arg(calcitems[3].min,0,'f',1).
+                arg(calcitems[1].mid(), 0, 'f', 1).
+                arg(calcitems[2].mid(),0,'f',1).
+                arg(calcitems[4].max, 0, 'f', 1));
+
+    }
+    if (epap_cnt > 0) {
+        presstr.append(QString("%1 %2/%3/%4").
+                arg(STR_TR_EPAP).
+                arg(calcitems[5].min,0,'f',1).
+                arg(calcitems[5].mid(), 0, 'f', 1).
+                arg(calcitems[5].max, 0, 'f', 1));
+    }
+    if (ipap_cnt > 0) {
+        presstr.append(QString("%1 %2/%3/%4").
+             arg(STR_TR_IPAP).
+             arg(calcitems[6].min,0,'f',1).
+             arg(calcitems[6].mid(), 0, 'f', 1).
+             arg(calcitems[6].max, 0, 'f', 1));
+    }
+    if (epaplo_cnt > 0) {
+        presstr.append(QString("%1 %2/%3/%4").
+            arg(STR_TR_EPAPLo).
+            arg(calcitems[7].min,0,'f',1).
+            arg(calcitems[7].mid(), 0, 'f', 1).
+            arg(calcitems[7].max, 0, 'f', 1));
+    }
+
+    if (ipaphi_cnt > 0) {
+        presstr.append(QString("%1 %2/%3/%4").
+            arg(STR_TR_IPAPHi).
+            arg(calcitems[8].min,0,'f',1).
+            arg(calcitems[8].mid(), 0, 'f', 1).
+            arg(calcitems[8].max, 0, 'f', 1));
+    }
+    QString txt = presstr.join(" ");
+    graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
+
+}
+
 
 void gPressureChart::populate(Day * day, int idx)
 {
     float tmp;
     CPAPMode mode =  (CPAPMode)(int)qRound(day->settings_wavg(CPAP_Mode));
-    QList<SummaryChartSlice> & slices = cache[idx];
+    QVector<SummaryChartSlice> & slices = cache[idx];
 
     if (mode == MODE_CPAP) {
         float pr = day->settings_max(CPAP_Pressure);

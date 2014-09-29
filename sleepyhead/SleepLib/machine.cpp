@@ -43,6 +43,7 @@ Machine::Machine(MachineID id)
 {
     day.clear();
     highest_sessionid = 0;
+    m_unsupported = false;
 
     if (!id) {
         srand(time(nullptr));
@@ -79,8 +80,15 @@ const quint16 sessinfo_version = 1;
 
 bool Machine::saveSessionInfo()
 {
-    QFile file(getDataPath() + "Sessions.info");
-    file.open(QFile::WriteOnly);
+    if (info.type == MT_JOURNAL) return false;
+
+    qDebug() << "Saving" << info.brand << "session info" << info.loadername;
+    QString filename = getDataPath() + "Sessions.info";
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Couldn't open" << filename << "for writing";
+        return false;
+    }
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);
@@ -99,12 +107,19 @@ bool Machine::saveSessionInfo()
         Session * sess = s.value();
         out << (quint32) sess->session();
         out << (bool)(sess->enabled());
+
+        //out << sess->m_availableChannels;
     }
+    qDebug() << "Done Saving" << info.brand << "session info";
+
     return true;
 }
 
 bool Machine::loadSessionInfo()
 {
+    if (info.type == MT_JOURNAL)
+        return true;
+
     QHash<SessionID, Session *>::iterator s;
     QFile file(getDataPath() + "Sessions.info");
     if (!file.open(QFile::ReadOnly)) {
@@ -146,12 +161,20 @@ bool Machine::loadSessionInfo()
     for (int i=0; i< size; ++i) {
         in >> sid;
         in >> b;
+//        QList<ChannelID> avail_channels;
+//        if (version >= 2) {
+//            in >> avail_channels;
+//        }
+
         s = sessionlist.find(sid);
 
         if (s != sessionlist.end()) {
             Session * sess = s.value();
 
             sess->setEnabled(b);
+//            if (version >= 2) {
+//                sess->m_availableChannels = avail_channels;
+//            }
         }
     }
     return true;
@@ -846,6 +869,7 @@ bool Machine::hasModifiedSessions()
 }
 
 const QString summaryFileName = "Summaries.xml";
+const int summaryxml_version=1;
 
 bool Machine::LoadSummary(QProgressBar * progress)
 {
@@ -853,7 +877,7 @@ bool Machine::LoadSummary(QProgressBar * progress)
     time.start();
     qDebug() << "Loading Summaries";
 
-    QString filename = getDataPath() + summaryFileName;
+    QString filename = getDataPath() + summaryFileName + ".gz";
 
     QDomDocument doc;
     QFile file(filename);
@@ -864,9 +888,9 @@ bool Machine::LoadSummary(QProgressBar * progress)
         return false;
     }
 
-    QByteArray data=file.readAll();
+    QByteArray data = file.readAll();
 
-    QByteArray uncompressed = qUncompress(data);
+    QByteArray uncompressed = gUncompress(data);
 
     QString errorMsg;
     int errorLine;
@@ -879,8 +903,18 @@ bool Machine::LoadSummary(QProgressBar * progress)
 
     file.close();
 
-
     QDomElement root = doc.documentElement();
+
+    if (root.tagName().compare("sessions", Qt::CaseInsensitive) != 0) {
+        qDebug() << "Summaries cache messed up, recreating...";
+        return false;
+    }
+    bool ok;
+    int version = root.attribute("version", "").toInt(&ok);
+    if (!ok || (version != summaryxml_version)) {
+        qDebug() << "Summaries cache outdated, recreating...";
+        return false;
+    }
     QDomNode node;
 
     bool s_ok;
@@ -905,6 +939,37 @@ bool Machine::LoadSummary(QProgressBar * progress)
             sess->really_set_last(last);
             sess->setEnabled(enabled);
             sess->setSummaryOnly(!events);
+
+            if (e.hasChildNodes()) {
+                QList<ChannelID> available_channels;
+                QList<ChannelID> available_settings;
+
+                QDomElement chans = e.firstChildElement("channels");
+                if (chans.isElement()) {
+                    QDomNode node = chans.firstChild();
+                    QString txt = node.nodeValue();
+                    QStringList channels = txt.split(",");
+                    for (int i=0; i<channels.size(); ++i) {
+                        bool ok;
+                        ChannelID code = channels.at(i).toInt(&ok, 16);
+                        available_channels.append(code);
+                    }
+                }
+                sess->m_availableChannels = available_channels;
+
+                QDomElement sete = e.firstChildElement("settings");
+                if (sete.isElement()) {
+                    QString sets = sete.firstChild().nodeValue();
+                    QStringList settings = sets.split(",");
+                    for (int i=0; i<settings.size(); ++i) {
+                        bool ok;
+                        ChannelID code = settings.at(i).toInt(&ok, 16);
+                        available_settings.append(code);
+                    }
+                }
+                sess->m_availableSettings = available_settings;
+            }
+
 
             sess_order[first] = sess;
         }
@@ -935,11 +1000,9 @@ bool Machine::LoadSummary(QProgressBar * progress)
     return true;
 }
 
-const int summaryxml_version=0;
-
 bool Machine::SaveSummary()
 {
-    qDebug() << "Saving Summaries";
+    qDebug() << "Saving" << info.brand << info.model <<  "Summaries";
     QString filename = getDataPath() + summaryFileName;
 
     QDomDocument doc("SleepyHeadSessionIndex");
@@ -967,18 +1030,49 @@ bool Machine::SaveSummary()
         el.setAttribute("last", sess->realLast());
         el.setAttribute("enabled", sess->enabled() ? "1" : "0");
         el.setAttribute("events", sess->summaryOnly() ? "0" : "1");
+
+        QHash<ChannelID, QVector<EventList *> >::iterator ev;
+        QHash<ChannelID, QVector<EventList *> >::iterator ev_end = sess->eventlist.end();
+        QStringList chanlist;
+        for (ev = sess->eventlist.begin(); ev != ev_end; ++ev) {
+            chanlist.append(QString::number(ev.key(), 16));
+        }
+        if (chanlist.size() == 0) {
+            for (int i=0; i<sess->m_availableChannels.size(); i++) {
+                ChannelID code = sess->m_availableChannels.at(i);
+                chanlist.append(QString::number(code, 16));
+            }
+        }
+
+        QDomElement chans = doc.createElement("channels");
+        chans.appendChild(doc.createTextNode(chanlist.join(",")));
+        el.appendChild(chans);
+
+        chanlist.clear();
+        QHash<ChannelID, QVariant>::iterator si;
+        QHash<ChannelID, QVariant>::iterator set_end = sess->settings.end();
+        for (si = sess->settings.begin(); si != set_end; ++si) {
+            chanlist.append(QString::number(si.key(), 16));
+        }
+        QDomElement settings = doc.createElement("settings");
+        settings.appendChild(doc.createTextNode(chanlist.join(",")));
+        el.appendChild(settings);
+
         root.appendChild(el);
         if (sess->IsChanged())
             sess->StoreSummary();
     }
 
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly);
+    QString xmltext;
+    QTextStream ts(&xmltext);
+    doc.save(ts, 1);
 
-    QByteArray ba = qCompress(doc.toByteArray());
-    file.write(ba);
+    QByteArray data = gCompress(xmltext.toUtf8());
 
-    file.close();
+    QFile file(filename + ".gz");
+
+    file.open(QFile::WriteOnly);
+    file.write(data);
 
     return true;
 }

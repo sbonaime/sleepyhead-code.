@@ -634,6 +634,11 @@ void MainWindow::Startup()
     // profile is a global variable set in main after login
     p_profile->LoadMachineData();
 
+    QList<MachineLoader *> loaders = GetLoaders();
+    for (int i=0; i<loaders.size(); ++i) {
+        connect(loaders.at(i), SIGNAL(machineUnsupported(Machine*)), this, SLOT(MachineUnsupported(Machine*)));
+    }
+
     PopulatePurgeMenu();
 
 //    SnapshotGraph = new gGraphView(this, daily->graphView());
@@ -860,10 +865,16 @@ QList<ImportPath> MainWindow::detectCPAPCards()
     progress.setVisible(true);
     popup.show();
     QApplication::processEvents();
+    QString lastpath = (*p_profile)[STR_PREF_LastCPAPPath].toString();
 
     do {
         // Rescan in case card inserted
         QStringList AutoScannerPaths = getDriveList();
+        //AutoScannerPaths.push_back(lastpath);
+
+        if (!AutoScannerPaths.contains(lastpath)) {
+            AutoScannerPaths.append(lastpath);
+        }
 
         Q_FOREACH(const QString &path, AutoScannerPaths) {
             // Scan through available machine loaders and test if this folder contains valid folder structure
@@ -883,6 +894,7 @@ QList<ImportPath> MainWindow::detectCPAPCards()
         // needs a slight delay here
         QThread::msleep(200);
     } while (detectedCards.size() == 0);
+
     popup.hide();
     popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
 
@@ -934,7 +946,7 @@ void MainWindow::on_action_Import_Data_triggered()
             mbox.setDefaultButton(QMessageBox::Yes);
             mbox.setButtonText(QMessageBox::No, tr("Specify"));
 
-            QPixmap pixmap = datacards[0].loader->getPixmap(datacards[0].loader->PeekInfo(datacards[0].path).series);
+            QPixmap pixmap = datacards[0].loader->getPixmap(datacards[0].loader->PeekInfo(datacards[0].path).series).scaled(64,64);
 
             //QPixmap pixmap = QPixmap(getCPAPPixmap(datacards[0].loader->loaderName())).scaled(64,64);
             mbox.setIconPixmap(pixmap);
@@ -1051,7 +1063,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
             if (c >= 0) {
             //    goodlocations.push_back(dir);
-                QDir d(dir.section("/",0,-2));
+                QDir d(dir.section("/",0,-1));
                 (*p_profile)[STR_PREF_LastCPAPPath] = d.absolutePath();
             }
 
@@ -2306,6 +2318,12 @@ void MainWindow::FreeSessions()
 
         date = date.addDays(-1);
     }  while (date >= first);
+}
+
+void MainWindow::MachineUnsupported(Machine * m)
+{
+    Q_ASSERT(m != nullptr);
+    QMessageBox::information(this, STR_MessageBox_Error, QObject::tr("Sorry, your %1 %2 machine is not currently supported.").arg(m->brand()).arg(m->model()), QMessageBox::Ok);
 }
 
 void MainWindow::doReprocessEvents()

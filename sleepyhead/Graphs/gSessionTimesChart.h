@@ -58,20 +58,35 @@ struct SummaryCalcItem {
     SummaryCalcItem(ChannelID code, SummaryType type, QColor color)
         :code(code), type(type), color(color) {
     }
-
-    inline void update(float value, float weight) {
+    float mid()
+    {
+        float val = 0;
         switch (midcalc) {
         case 0:
-            median_data.append(value);
+            if (median_data.size() > 0)
+                val = median(median_data.begin(), median_data.end());
             break;
         case 1:
-            wavg_sum += value * weight;
-            divisor += weight;
+            if (divisor > 0)
+                val = wavg_sum / divisor;
             break;
-        default:
-            avg_sum += value;
-            cnt++;
+        case 2:
+            if (cnt > 0)
+                val = avg_sum / cnt;
         }
+        return val;
+    }
+
+
+    inline void update(float value, float weight) {
+        if (midcalc == 0) {
+            median_data.append(value);
+        }
+
+        avg_sum += value;
+        cnt++;
+        wavg_sum += value * weight;
+        divisor += weight;
         min = qMin(min, value);
         max = qMax(max, value);
     }
@@ -161,7 +176,7 @@ public:
     virtual void preCalc();
 
     //! \brief Override to call stuff in main loop
-    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
+    virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
 
     //! \brief Override to call stuff after draw is complete
     virtual void afterDraw(QPainter &, gGraph &, QRect);
@@ -232,8 +247,8 @@ protected:
     QMap<QDate, int> dayindex;
     QList<Day *> daylist;
 
-    QHash<int, QList<SummaryChartSlice> > cache;
-    QList<SummaryCalcItem> calcitems;
+    QHash<int, QVector<SummaryChartSlice> > cache;
+    QVector<SummaryCalcItem> calcitems;
 
     int expected_slices;
 
@@ -273,7 +288,7 @@ public:
     }
 
     virtual void preCalc();
-    virtual void customCalc(Day *, QList<SummaryChartSlice> & slices);
+    virtual void customCalc(Day *, QVector<SummaryChartSlice> & slices);
     virtual void afterDraw(QPainter &, gGraph &, QRect);
 
     //! \brief Renders the graph to the QPainter object
@@ -309,7 +324,7 @@ public:
     virtual ~gUsageChart() {}
 
     virtual void preCalc();
-    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
+    virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
     virtual void afterDraw(QPainter &, gGraph &, QRect);
     virtual void populate(Day *day, int idx);
 
@@ -343,7 +358,7 @@ public:
     virtual ~gTTIAChart() {}
 
     virtual void preCalc();
-    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
+    virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
     virtual void afterDraw(QPainter &, gGraph &, QRect);
     virtual void populate(Day *day, int idx);
     virtual QString tooltipData(Day * day, int);
@@ -376,7 +391,7 @@ public:
     virtual ~gAHIChart() {}
 
     virtual void preCalc();
-    virtual void customCalc(Day *, QList<SummaryChartSlice> &);
+    virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
     virtual void afterDraw(QPainter &, gGraph &, QRect);
 
     virtual void populate(Day *, int idx);
@@ -426,7 +441,18 @@ public:
         return sc;
     }
 
-//    virtual void afterDraw(QPainter &, gGraph &, QRect);
+//    virtual void preCalc();
+    virtual void customCalc(Day *day, QVector<SummaryChartSlice> &slices) {
+        int size = slices.size();
+        float hour = day->hours(m_machtype);
+        for (int i=0; i < size; ++i) {
+            SummaryChartSlice & slice = slices[i];
+            SummaryCalcItem * calc = slices[i].calc;
+
+            calc->update(slice.value, hour);
+         }
+    }
+    virtual void afterDraw(QPainter &, gGraph &, QRect);
 
     virtual void populate(Day * day, int idx);
 

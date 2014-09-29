@@ -76,6 +76,7 @@ QDataStream & operator<<(QDataStream & out, const RXItem & rx)
 
     out << rx.machine->loaderName();
     out << rx.machine->serial();
+
     out << rx.relief;
     out << rx.mode;
     out << rx.pressure;

@@ -23,7 +23,7 @@ using namespace std;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version = 16;
+const quint16 summary_version = 17;
 const quint16 events_version = 10;
 
 Session::Session(Machine *m, SessionID session)
@@ -164,7 +164,7 @@ bool Session::Store(QString path)
 
     return a;
 }
-QDataStream & operator<<(QDataStream & out, const Session & session)
+/*QDataStream & operator<<(QDataStream & out, const Session & session)
 {
     session.StoreSummaryData(out);
     return out;
@@ -201,6 +201,7 @@ void Session::StoreSummaryData(QDataStream & out) const
     out << m_gain;
 
     out << m_availableChannels;
+
     out << m_timeAboveTheshold;
     out << m_upperThreshold;
     out << m_timeBelowTheshold;
@@ -259,7 +260,7 @@ void Session::LoadSummaryData(QDataStream & in)
     in >> s_summaryOnly;
 
     s_enabled = 1;
-}
+} */
 
 QDataStream & operator>>(QDataStream & in, SessionSlice & slice)
 {
@@ -593,7 +594,14 @@ bool Session::LoadSummary()
             in >> s_summaryOnly;
         }
 
-        if (version >= 16) {
+        if (version == 16) {
+            QList<SessionSlice> slices;
+            in >> slices;
+            m_slices.clear();
+            for (int i=0;i<slices.size(); ++i) {
+                m_slices.append(slices[i]);
+            }
+        } else if (version >= 17) {
             in >> m_slices;
         }
     }

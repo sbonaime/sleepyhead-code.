@@ -3170,6 +3170,7 @@ const quint16 gvversion = 4;
 
 void gGraphView::SaveSettings(QString title)
 {
+    qDebug() << "Saving" << title << "settings";
     QString filename = p_profile->Get("{DataFolder}/") + title.toLower() + ".shg";
     QFile f(filename);
     f.open(QFile::WriteOnly);

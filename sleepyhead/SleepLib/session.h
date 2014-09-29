@@ -73,16 +73,16 @@ class Session
     //! \brief Writes the Sessions Summary Indexes to filename, in SleepLibs custom data format.
     bool StoreSummary();
 
-    //! \brief Save the Sessions Summary Indexes to the stream
-    void StoreSummaryData(QDataStream & out) const;
+//    //! \brief Save the Sessions Summary Indexes to the stream
+//    void StoreSummaryData(QDataStream & out) const;
 
     //! \brief Writes the Sessions EventLists to filename, in SleepLibs custom data format.
     bool StoreEvents();
 
     //bool Load(QString path);
 
-    //! \brief Loads the Sessions Summary Indexes from stream
-    void LoadSummaryData(QDataStream & in);
+//    //! \brief Loads the Sessions Summary Indexes from stream
+//    void LoadSummaryData(QDataStream & in);
 
     //! \brief Loads the Sessions Summary Indexes from filename, from SleepLibs custom data format.
     bool LoadSummary();
@@ -238,8 +238,9 @@ class Session
     QHash<ChannelID, EventDataType> m_timeAboveTheshold;
 
     QList<ChannelID> m_availableChannels;
+    QList<ChannelID> m_availableSettings;
 
-    QList<SessionSlice> m_slices;
+    QVector<SessionSlice> m_slices;
 
     //! \brief Generates sum and time data for each distinct value in 'code' events..
     void updateCountSummary(ChannelID code);

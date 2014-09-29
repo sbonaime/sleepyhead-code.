@@ -51,5 +51,6 @@
         <file>icons/intellipap.png</file>
         <file>icons/pushpin.png</file>
         <file>icons/eye.png</file>
+        <file>icons/prs1_60s.png</file>
     </qresource>
 </RCC>

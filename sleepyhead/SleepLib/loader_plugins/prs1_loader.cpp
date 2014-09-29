@@ -121,10 +121,13 @@ struct WaveHeaderList {
 PRS1Loader::PRS1Loader()
 {
     const QString PRS1_ICON = ":/icons/prs1.png";
+    const QString PRS1_60_ICON = ":/icons/prs1_60s.png";
 
     QString s = newInfo().series;
-    m_pixmap_paths[s] = PRS1_ICON;
-    m_pixmaps[s] = QPixmap(PRS1_ICON);
+    m_pixmap_paths["System One"] = PRS1_ICON;
+    m_pixmaps["System One"] = QPixmap(PRS1_ICON);
+    m_pixmap_paths["System One (60 Series)"] = PRS1_60_ICON;
+    m_pixmaps["System One (60 Series)"] = QPixmap(PRS1_60_ICON);
 
     //genCRCTable();  // find what I did with this..
     m_buffer = nullptr;
@@ -148,6 +151,14 @@ const QString PR_STR_PSeries = "P-Series";
 // Tests path to see if it has (what looks like) a valid PRS1 folder structure
 bool PRS1Loader::Detect(const QString & path)
 {
+    QString newpath = checkDir(path);
+
+    return !newpath.isEmpty();
+}
+
+
+QString PRS1Loader::checkDir(const QString & path)
+{
     QString newpath = path;
 
     newpath.replace("\\", "/");
@@ -159,32 +170,132 @@ bool PRS1Loader::Detect(const QString & path)
     QDir dir(newpath);
 
     if ((!dir.exists() || !dir.isReadable())) {
-        return false;
+        return QString();
     }
     qDebug() << "PRS1Loader::Detect path=" << newpath;
 
     QFile lastfile(newpath+"/last.txt");
-    if (!lastfile.exists()) {
-        return false;
+
+    QString machpath;
+    if (lastfile.exists()) {
+        if (!lastfile.open(QIODevice::ReadOnly)) {
+            qDebug() << "PRS1Loader: last.txt exists but I couldn't open it!";
+        } else {
+            QTextStream ts(&lastfile);
+            QString serial = ts.readLine(64).trimmed();
+            lastfile.close();
+
+            machpath = newpath+"/"+serial;
+
+            if (!QDir(machpath).exists()) {
+                machpath = QString();
+            }
+        }
     }
 
-    if (!lastfile.open(QIODevice::ReadOnly)) {
-        qDebug() << "PRS1Loader: last.txt exists but I couldn't open it!";
-        return false;
+    if (machpath.isEmpty()) {
+        QDir dir(newpath);
+        QStringList dirs = dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
+        if (dirs.size() > 0) {
+            machpath = dirs[0];
+        }
     }
 
-    QString last = lastfile.readLine(64);
-    last = last.trimmed();
-    lastfile.close();
 
-    QFile f(newpath+"/"+last);
-    if (!f.exists()) {
-        qDebug() << "in PRS1Loader::Detect():" << last << "does not exist, despite last.txt saying it does";
+    return machpath;
+}
+
+void parseModel(MachineInfo & info, QString modelnum)
+{
+    info.modelnumber = modelnum;
+    if (!modelnum.endsWith("P")) {
+        qDebug() << "Weird PRS1 Model number" << modelnum;
+    }
+    modelnum.chop(1);
+    int country = modelnum[modelnum.length() - 1].digitValue();
+    modelnum.chop(1);
+    int ser = modelnum[modelnum.length() - 1].digitValue();
+    modelnum.chop(1);
+    bool ok;
+    int typ = modelnum.toInt(&ok);
+
+    switch (typ) {
+    case 4: // cpap
+        info.model = QObject::tr("RemStar Plus with C-Flex+");
+        break;
+    case 5: // apap
+        info.model = QObject::tr("RemStar Auto with A-Flex");
+        break;
+    case 6: // bipap
+        info.model = QObject::tr("RemStar BiPAP Pro with Bi-Flex");
+        break;
+    case 7: // bipap auto
+        info.model = QObject::tr("RemStar BiPAP Auto with Bi-Flex");
+        break;
+    case 9: // asv
+        info.model = QObject::tr("BiPAP autoSV Advanced");
+        break;
+    case 10: // Avaps
+        info.model = QObject::tr("BiPAP AVAPS");
+        break;
+    default:
+        info.model = QObject::tr("Unknown Model");
+    }
+
+    switch (ser) {
+    case 5:
+        info.series = QObject::tr("System One");
+        break;
+    case 6:
+        info.series = QObject::tr("System One (60 Series)");
+        break;
+    default:
+        info.series = QObject::tr("unknown");
+        break;
+
+    }
+    switch (country) {
+    case '0':
+        break;
+    case '1':
+        break;
+    default:
+        break;
+    }
+}
+
+bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename)
+{
+    QFile f(filename);
+    if (!f.open(QFile::ReadOnly)) {
         return false;
     }
-    // newpath is a valid path
+    QTextStream in(&f);
+    do {
+        QString line = in.readLine();
+        QStringList pair = line.split("=");
+
+        if (pair[0].compare("ModelNumber", Qt::CaseInsensitive) == 0) {
+            QString modelnum = pair[1];
+            parseModel(info, modelnum);
+        }
+    } while (!in.atEnd());
     return true;
 }
+
+
+MachineInfo PRS1Loader::PeekInfo(const QString & path)
+{
+    QString newpath = checkDir(path);
+    if (newpath.isEmpty())
+        return MachineInfo();
+
+    MachineInfo info = newInfo();
+    info.serial = newpath.section("/", -1);
+    PeekProperties(info, newpath+"/properties.txt");
+    return info;
+}
+
 
 int PRS1Loader::Open(QString path)
 {
@@ -216,9 +327,7 @@ int PRS1Loader::Open(QString path)
         QFileInfo fi = flist.at(i);
         QString filename = fi.fileName();
 
-        if ((filename[0] == 'P') && (isdigit(filename[1])) && (isdigit(filename[2]))) {
-            SerialNumbers.push_back(filename);
-        } else if (isdigit(filename[0]) && isdigit(filename[1])) {
+        if (fi.isDir() && (filename.size() > 4) && (isdigit(filename[1])) && (isdigit(filename[2]))) {
             SerialNumbers.push_back(filename);
         } else if (filename.toLower() == "last.txt") { // last.txt points to the current serial number
             QString file = fi.canonicalFilePath();
@@ -302,12 +411,12 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 
         if (value == s) { continue; }
 
-        if (key.toLower() == "serialnumber") {
+        if (key.contains("serialnumber",Qt::CaseInsensitive)) {
             info.serial = value;
-        } else if (key.toLower() == "modelnumber") {
-            info.modelnumber = value;
+        } else if (key.contains("modelnumber",Qt::CaseInsensitive)) {
+            parseModel(info, value);
         } else {
-            if (key.toLower() == "producttype") {
+            if (key.contains("producttype", Qt::CaseInsensitive)) {
                 int i = value.toInt(&ok, 16);
 
                 if (ok) {
@@ -344,11 +453,6 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     if (!dir.exists() || (!dir.isReadable())) {
         return 0;
     }
-    QString backupPath = m->getBackupPath() + path.section("/", -2);
-
-    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
-        copyPath(path, backupPath);
-    }
 
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -360,20 +464,34 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
     QStringList paths;
 
+    int sessionid_base = 10;
+
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
         filename = fi.fileName();
 
-        if ((filename[0].toLower() == 'p') && (isdigit(filename[1]))) {
-            // p0, p1, p2.. etc.. folders contain the session data
-            paths.push_back(fi.canonicalFilePath());
-        } else if ((filename.toLower() == "properties.txt") || (filename.toLower() == "prop.txt")) {
+        if (fi.isDir()) {
+            if ((filename[0].toLower() == 'p') && (isdigit(filename[1]))) {
+                // p0, p1, p2.. etc.. folders contain the session data
+                paths.push_back(fi.canonicalFilePath());
+            } else if (filename.toLower() == "e") {
+                // Error files..
+                // Reminder: I have been given some info about these. should check it over.
+            }
+        } else if (filename.compare("properties.txt",Qt::CaseInsensitive) == 0) {
             ParseProperties(m, fi.canonicalFilePath());
-        } else if (filename.toLower() == "e") {
-            // Error files..
-            // Reminder: I have been given some info about these. should check it over.
+        } else if (filename.compare("PROP.TXT",Qt::CaseInsensitive) == 0) {
+            sessionid_base = 16;
+            ParseProperties(m, fi.canonicalFilePath());
         }
     }
+
+    QString backupPath = m->getBackupPath() + path.section("/", -2);
+
+    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
+        copyPath(path, backupPath);
+    }
+
 
     QString modelstr = m->modelnumber();
 
@@ -430,7 +548,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
             }
 
             QString session_s = fi.fileName().section(".", 0, -2);
-            sid = session_s.toInt(&ok);
+            sid = session_s.toInt(&ok, sessionid_base);
             if (!ok) {
                 // not a numerical session ID
                 continue;
@@ -441,7 +559,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                 continue;
             }
 
-            if (ext == 5) {
+            if ((ext == 5) || (ext == 6)) {
                 // Waveform files aren't grouped... so we just want to add the filename for later
                 QHash<SessionID, PRS1Import *>::iterator it = sesstasks.find(sid);
                 if (it != sesstasks.end()) {
@@ -453,8 +571,13 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                     queTask(task);
                 }
 
-                if (!task->waveform.isEmpty()) continue;
-                task->waveform = fi.canonicalFilePath();
+                if (ext == 5) {
+                    if (!task->wavefile.isEmpty()) continue;
+                    task->wavefile = fi.canonicalFilePath();
+                } else if (ext == 6) {
+                    if (!task->oxifile.isEmpty()) continue;
+                    task->oxifile = fi.canonicalFilePath();
+                }
 
                 continue;
             }
@@ -464,6 +587,16 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
             for (int i=0; i < Chunks.size(); ++i) {
                 PRS1DataChunk * chunk = Chunks.at(i);
+
+                if (ext <= 1) {
+                    const unsigned char * data = (unsigned char *)chunk->m_data.constData();
+
+                    if (data[0x00] != 0) {
+                        delete chunk;
+                        continue;
+                    }
+                }
+
                 sid = chunk->sessionid;
 
                 task = nullptr;
@@ -500,7 +633,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     int tasks = countTasks();
     runTasks(p_profile->session->multithreading());
     finishAddingSessions();
-    return tasks;
+
+    return m->unsupported() ? -1 : tasks;
 }
 
 bool PRS1Import::ParseF5Events()
@@ -1138,7 +1272,7 @@ bool PRS1Import::ParseCompliance()
     session->settings[CPAP_Mode] = (int)MODE_CPAP;
 
     EventDataType min_pressure = float(data[0x03]) / 10.0;
-    EventDataType max_pressure = float(data[0x04]) / 10.0;
+   // EventDataType max_pressure = float(data[0x04]) / 10.0;
 
     session->settings[CPAP_Pressure] = min_pressure;
 
@@ -1638,7 +1772,6 @@ bool PRS1Import::ParseSummary()
     session->setPhysMax(CPAP_PS, 25);
     session->setPhysMin(CPAP_PS, 0);
 
-
     switch (summary->family) {
     case 0:
         if (summary->familyVersion == 4) {
@@ -1647,7 +1780,8 @@ bool PRS1Import::ParseSummary()
             return ParseSummaryF0();
         }
     case 3:
-        return ParseSummaryF3();
+  //      return ParseSummaryF3();
+        break;
     case 5:
         if (summary->familyVersion == 0) {
             return ParseSummaryF5V0();
@@ -1656,7 +1790,12 @@ bool PRS1Import::ParseSummary()
         }
     }
 
-    // Else machine is unsupported
+    this->loader->saveMutex.lock();
+    if (!mach->unsupported()) {
+        this->loader->unsupported(mach);
+    }
+    this->loader->saveMutex.unlock();
+    return false;
 
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
@@ -1865,6 +2004,50 @@ bool PRS1Import::ParseEvents()
     return res;
 }
 
+bool PRS1Import::ParseOximetery()
+{
+    int size = oximetery.size();
+
+    for (int i=0; i < size; ++i) {
+        PRS1DataChunk * oxi = oximetery.at(i);
+        int num = oxi->waveformInfo.size();
+
+        int size = oxi->m_data.size();
+        if (size == 0) {
+            continue;
+        }
+        quint64 ti = quint64(oxi->timestamp) * 1000L;
+        qint64 dur = qint64(oxi->duration) * 1000L;
+
+        if (num > 1) {
+            // Process interleaved samples
+            QVector<QByteArray> data;
+            data.resize(num);
+
+            int pos = 0;
+            do {
+                for (int n=0; n < num; n++) {
+                    int interleave = oxi->waveformInfo.at(n).interleave;
+                    data[n].append(oxi->m_data.mid(pos, interleave));
+                    pos += interleave;
+                }
+            } while (pos < size);
+
+            if (data[0].size() > 0) {
+                EventList * pulse = session->AddEventList(OXI_Pulse, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[0].size());
+                pulse->AddWaveform(ti, (unsigned char *)data[0].data(), data[0].size(), dur);
+            }
+
+            if (data[1].size() > 0) {
+                EventList * spo2 = session->AddEventList(OXI_SPO2, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[1].size());
+                spo2->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), dur);
+            }
+
+        }
+    }
+    return true;
+}
+
 bool PRS1Import::ParseWaveforms()
 {
     int size = waveforms.size();
@@ -1915,13 +2098,18 @@ bool PRS1Import::ParseWaveforms()
 
 void PRS1Import::run()
 {
+    if (mach->unsupported())
+        return;
     session = new Session(mach, sessionid);
 
     if ((compliance && ParseCompliance()) || (summary && ParseSummary())) {
         if (event && !ParseEvents()) {
         }
-        waveforms = loader->ParseFile(waveform);
+        waveforms = loader->ParseFile(wavefile);
         ParseWaveforms();
+
+        oximetery = loader->ParseFile(oxifile);
+        ParseOximetery();
 
         if (session->first() > 0) {
             if (session->last() < session->first()) {
@@ -2012,7 +2200,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
                 && (lastchunk->htype != chunk->htype)) {
                 QByteArray junk = f.read(lastblocksize - 16);
 
-
+                Q_UNUSED(junk)
                 if (lastchunk->ext == 5) {
                     // The data is random crap
 //                    lastchunk->m_data.append(junk.mid(lastheadersize-16));
@@ -2032,7 +2220,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         //////////////////////////////////////////////////////////
         // Waveform Header
         //////////////////////////////////////////////////////////
-        if (chunk->ext == 5) {
+        if ((chunk->ext == 5) || (chunk->ext == 6)) {
             // Get extra 8 bytes in waveform header.
             QByteArray extra = f.read(4);
             if (extra.size() != 4) {
@@ -2107,7 +2295,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         }
 #endif
 
-        if (chunk->ext == 5) {
+        if ((chunk->ext == 5) || (chunk->ext == 6)){
             if (lastchunk != nullptr) {
 
                 Q_ASSERT(lastchunk->sessionid == chunk->sessionid);

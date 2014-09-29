@@ -109,13 +109,17 @@ public:
     PRS1DataChunk * summary;
     PRS1DataChunk * event;
     QList<PRS1DataChunk *> waveforms;
+    QList<PRS1DataChunk *> oximetery;
 
-    QString waveform;
+    QString wavefile;
+    QString oxifile;
 
     bool ParseCompliance();
     bool ParseSummary();
     bool ParseEvents();
     bool ParseWaveforms();
+    bool ParseOximetery();
+
 
     bool ParseSummaryF0();
     bool ParseSummaryF0V4();
@@ -148,8 +152,14 @@ class PRS1Loader : public CPAPLoader
     PRS1Loader();
     virtual ~PRS1Loader();
 
+    QString checkDir(const QString & path);
+    bool PeekProperties(MachineInfo & info, QString path);
+
+
     //! \brief Detect if the given path contains a valid Folder structure
     virtual bool Detect(const QString & path);
+
+    virtual MachineInfo PeekInfo(const QString & path);
 
     //! \brief Scans directory path for valid PRS1 signature
     virtual int Open(QString path);

@@ -48,7 +48,7 @@ SessionBar::SessionBar(QWidget *parent) :
 //    :QWidget(this)
 //{
 //    timer.setParent(this);
-//    QList<SBSeg>::const_iterator i;
+//    QVector<SBSeg>::const_iterator i;
 //    for (i=copy.segments.begin();i!=copy.segments.end();++i) {
 //        segments.push_back(*i);
 //    }
@@ -60,7 +60,7 @@ SessionBar::~SessionBar()
 void SessionBar::updateTimer()
 {
     if (!underMouse()) {
-        QList<SBSeg>::iterator i;
+        QVector<SBSeg>::iterator i;
 
         for (i = segments.begin(); i != segments.end(); ++i) {
             (*i).highlight = false;
@@ -78,7 +78,7 @@ SegType SessionBar::min()
         return 0;
     }
 
-    QList<SBSeg>::iterator i = segments.begin();
+    QVector<SBSeg>::iterator i = segments.begin();
     SegType min = (*i).session->first();
     i++;
 
@@ -101,7 +101,7 @@ SegType SessionBar::max()
         return 0;
     }
 
-    QList<SBSeg>::iterator i = segments.begin();
+    QVector<SBSeg>::iterator i = segments.begin();
     SegType max = (*i).session->last();
     i++;
     qint64 val;
@@ -132,7 +132,7 @@ void SessionBar::mousePressEvent(QMouseEvent *ev)
     double px = double(width() ) / double(total);
 
     double sx, ex;
-    QList<SBSeg>::iterator i;
+    QVector<SBSeg>::iterator i;
 
     int cnt = 0;
 
@@ -174,7 +174,7 @@ void SessionBar::mouseMoveEvent(QMouseEvent *ev)
     double px = double(width() - 5) / double(total);
 
     double sx, ex;
-    QList<SBSeg>::iterator i;
+    QVector<SBSeg>::iterator i;
 
     for (i = segments.begin(); i != segments.end(); ++i) {
         SBSeg &seg = *i;
@@ -216,7 +216,7 @@ void SessionBar::paintEvent(QPaintEvent *)
     double px = double(width() - 5) / double(total);
 
     double sx, ex;
-    QList<SBSeg>::iterator i;
+    QVector<SBSeg>::iterator i;
     QRect selectRect;
 
     int cnt = 0;

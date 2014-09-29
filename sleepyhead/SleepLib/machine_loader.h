@@ -59,6 +59,12 @@ class MachineLoader: public QObject
     virtual const QString &loaderName() = 0;
     inline MachineType type() { return m_type; }
 
+    void unsupported(Machine * m) {
+        Q_ASSERT(m != nullptr);
+        m->setUnsupported(true);
+        emit machineUnsupported(m);
+    }
+
     void queTask(ImportTask * task);
 
     void addSession(Session * sess)
@@ -104,8 +110,9 @@ class MachineLoader: public QObject
 
 signals:
     void updateProgress(int cnt, int total);
+    void machineUnsupported(Machine *);
 
-  protected:
+protected:
     //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
 

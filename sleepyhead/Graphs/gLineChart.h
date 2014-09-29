@@ -121,7 +121,7 @@ class gLineChart: public Layer
     QString getMetaString(qint64 time);
 
     void addDotLine(DottedLine dot) { m_dotlines.append(dot); }
-    QList<DottedLine> m_dotlines;
+    QVector<DottedLine> m_dotlines;
     QHash<ChannelID, bool> m_flags_enabled;
     QHash<ChannelID, QHash<quint32, bool> > m_dot_enabled;
 

@@ -262,6 +262,11 @@ int CMS50Loader::doImportMode()
             // Either a CMS50D+, has a bad header, or it's really midnight, set a flag anyway for later to help choose the right sync time
             cms50dplus = (hour == 0) && (minute == 0);
 
+            MachineInfo info = newInfo();
+            info.model = cms50dplus ? QObject::tr("CMS50D+") : QObject::tr("CMS50E/F");
+            info.serial = QString();
+            Machine * mach = CreateMachine(info);
+
             qDebug() << QString("Receiving Oximeter transmission %1:%2").arg(hour).arg(minute);
             // set importing to true or whatever..
 

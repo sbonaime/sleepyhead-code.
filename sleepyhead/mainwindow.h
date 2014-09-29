@@ -92,6 +92,7 @@ class MainWindow : public QMainWindow
     //! \brief Start the automatic update checker process
     void CheckForUpdates();
 
+
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
         \param QString string
@@ -143,6 +144,9 @@ class MainWindow : public QMainWindow
   public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();
+
+    void MachineUnsupported(Machine * m);
+
 
   protected:
     virtual void closeEvent(QCloseEvent *);

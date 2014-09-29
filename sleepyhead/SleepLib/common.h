@@ -19,6 +19,9 @@
 
 #endif
 
+QByteArray gCompress(const QByteArray& data);
+QByteArray gUncompress(const QByteArray &data);
+
 const quint16 filetype_summary = 0;
 const quint16 filetype_data = 1;
 const quint16 filetype_sessenabled = 5;

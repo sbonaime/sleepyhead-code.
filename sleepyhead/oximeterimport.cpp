@@ -993,6 +993,7 @@ void OximeterImport::on_saveButton_clicked()
     mach->AddSession(session);
     mach->Save();
     mach->SaveSummary();
+    p_profile->StoreMachines();
 
     mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
     mainwin->getOverview()->ReloadGraphs();

@@ -184,10 +184,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         graphlist[schema::channel[code].code()] = new gGraph(schema::channel[code].code(), GraphView, schema::channel[code].label(), channelInfo(code), default_height);
     }
 
-    int oxigrp=p_profile->ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
+    //int oxigrp=p_profile->ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
     for (int i=0; i < oxisize; ++i) {
         ChannelID code = oxicodes[i];
-        graphlist[schema::channel[code].code()] = new gGraph(schema::channel[code].code(), GraphView, schema::channel[code].label(), channelInfo(code), default_height, oxigrp);
+        graphlist[schema::channel[code].code()] = new gGraph(schema::channel[code].code(), GraphView, schema::channel[code].label(), channelInfo(code), default_height);
     }
 
     if (p_profile->general->calculateRDI()) {
@@ -1123,8 +1123,8 @@ QString Daily::getCPAPInformation(Day * day)
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    html+="<tr><td align=center><a class=info2 href='#'>"+info.series+" "+info.model+"<span>";
-    QString tooltip=(info.brand+"\n"+info.series+" "+info.modelnumber+"\n"+info.serial);
+    html+="<tr><td align=center><a class=info2 href='#'>"+info.brand + " "+ info.series+"<br/> "+info.model+"<span>";
+    QString tooltip=("Model "+info.modelnumber+" - "+info.serial);
     tooltip=tooltip.replace(" ","&nbsp;");
 
     html+=tooltip;

@@ -860,6 +860,7 @@ void ChannelList::add(QString group, Channel *chan)
 
 bool ChannelList::Save(QString filename)
 {
+    qDebug() << "Saving Channels.xml";
     if (filename.isEmpty()) {
         filename = p_profile->Get("{DataFolder}/") + "channels.xml";
     }
@@ -923,6 +924,7 @@ bool ChannelList::Save(QString filename)
     QTextStream ts(&file);
     ts << doc.toString();
     file.close();
+
 
     return true;
 }

@@ -3132,12 +3132,20 @@ border-radius: 10px;
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuExp_ort_CSV_Data">
+     <property name="title">
+      <string>Exp&amp;ort Data</string>
+     </property>
+     <addaction name="actionExport_CSV"/>
+     <addaction name="separator"/>
+     <addaction name="actionExport_Current_Day"/>
+    </widget>
     <addaction name="action_Import_Data"/>
     <addaction name="action_Preferences"/>
     <addaction name="action_Edit_Profile"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_Report"/>
-    <addaction name="actionExp_ort"/>
+    <addaction name="menuExp_ort_CSV_Data"/>
     <addaction name="separator"/>
     <addaction name="actionExport_Journal"/>
     <addaction name="separator"/>
@@ -3366,11 +3374,6 @@ border-radius: 10px;
     <string>&amp;Edit Profile</string>
    </property>
   </action>
-  <action name="actionExp_ort">
-   <property name="text">
-    <string>Exp&amp;ort Data</string>
-   </property>
-  </action>
   <action name="actionOnline_Users_Guide">
    <property name="text">
     <string>Online Users &amp;Guide</string>
@@ -3519,6 +3522,16 @@ border-radius: 10px;
    </property>
    <property name="text">
     <string>Show Performance Information</string>
+   </property>
+  </action>
+  <action name="actionExport_CSV">
+   <property name="text">
+    <string>Export as CSV</string>
+   </property>
+  </action>
+  <action name="actionExport_Current_Day">
+   <property name="text">
+    <string>Export for Review</string>
    </property>
   </action>
  </widget>

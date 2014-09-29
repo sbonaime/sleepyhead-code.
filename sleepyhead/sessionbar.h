@@ -9,7 +9,7 @@
 #ifndef SESSIONBAR_H
 #define SESSIONBAR_H
 
-#include <QList>
+#include <QVector>
 #include <QColor>
 #include <QWidget>
 #include <QTimer>
@@ -60,7 +60,7 @@ class SessionBar : public QWidget
     SegType min();
     SegType max();
 
-    QList<SBSeg> segments;
+    QVector<SBSeg> segments;
     QTimer timer;
     int m_selectIDX;
     bool m_selectMode;

@@ -521,7 +521,7 @@ class gGraphView
     int strings_drawn_this_frame;
     int strings_cached_this_frame;
 
-    QList<SelectionHistoryItem> history;
+    QVector<SelectionHistoryItem> history;
 
   protected:
 
@@ -621,7 +621,7 @@ class gGraphView
 
     qint64 m_minx, m_maxx;
 
-    QList<SelectionHistoryItem> fwd_history;
+    QVector<SelectionHistoryItem> fwd_history;
     float print_scaleX, print_scaleY;
 
     QPixmap previous_day_snapshot;

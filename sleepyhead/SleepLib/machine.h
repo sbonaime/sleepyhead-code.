@@ -173,6 +173,11 @@ class Machine
     QMutex listMutex;
     QSemaphore *savelistSem;
 
+    bool m_unsupported;
+
+    bool unsupported() { return m_unsupported; }
+    void setUnsupported(bool b) { m_unsupported = b; }
+
     void lockSaveMutex() { listMutex.lock(); }
     void unlockSaveMutex() { listMutex.unlock(); }
     void skipSaveTask() { lockSaveMutex(); m_donetasks++; unlockSaveMutex(); }

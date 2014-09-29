@@ -8,6 +8,7 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <zlib.h>
 
 #include "profiles.h"
 
@@ -506,4 +507,115 @@ void initializeStrings()
     STR_TR_Median = QObject::tr("Median");
     STR_TR_Avg = QObject::tr("Avg");      // Average
     STR_TR_WAvg = QObject::tr("W-Avg");   // Weighted Average
+}
+
+
+
+
+quint32 CRC32(const char * data, quint32 length)
+{
+  quint32 crc32 = 0xffffffff;
+
+  for (quint32 idx=0; idx<length; idx++) {
+
+    quint32 i = (data[idx]) ^ ((crc32) & 0x000000ff);
+
+    for(int j=8; j > 0; j--) {
+        if (i & 1) {
+            i = (i >> 1) ^ 0xedb88320;
+        } else {
+            i >>= 1;
+        }
+    }
+
+    crc32 = ((crc32) >> 8) ^ i;
+  }
+
+  return ~crc32;
+}
+
+quint32 crc32buf(const QByteArray& data)
+{
+    return CRC32(data.constData(), data.size());
+}
+
+// Gzip function
+QByteArray gCompress(const QByteArray& data)
+{
+    QByteArray compressedData = qCompress(data);
+    //  Strip the first six bytes (a 4-byte length put on by qCompress and a 2-byte zlib header)
+    // and the last four bytes (a zlib integrity check).
+    compressedData.remove(0, 6);
+    compressedData.chop(4);
+
+    QByteArray header;
+    QDataStream ds1(&header, QIODevice::WriteOnly);
+    // Prepend a generic 10-byte gzip header (see RFC 1952),
+    ds1 << quint16(0x1f8b)
+        << quint16(0x0800)
+        << quint16(0x0000)
+        << quint16(0x0000)
+        << quint16(0x000b);
+
+    // Append a four-byte CRC-32 of the uncompressed data
+    // Append 4 bytes uncompressed input size modulo 2^32
+    QByteArray footer;
+    QDataStream ds2(&footer, QIODevice::WriteOnly);
+    ds2.setByteOrder(QDataStream::LittleEndian);
+    ds2 << crc32buf(data)
+        << quint32(data.size());
+
+    return header + compressedData + footer;
+}
+
+
+// Pinched from http://stackoverflow.com/questions/2690328/qt-quncompress-gzip-data
+QByteArray gUncompress(const QByteArray &data)
+{
+    if (data.size() <= 4) {
+        qWarning("gUncompress: Input data is truncated");
+        return QByteArray();
+    }
+
+    QByteArray result;
+
+    int ret;
+    z_stream strm;
+    static const int CHUNK_SIZE = 1024;
+    char out[CHUNK_SIZE];
+
+    /* allocate inflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = data.size();
+    strm.next_in = (Bytef*)(data.data());
+
+    ret = inflateInit2(&strm, 15 +  32); // gzip decoding
+    if (ret != Z_OK)
+        return QByteArray();
+
+    // run inflate()
+    do {
+        strm.avail_out = CHUNK_SIZE;
+        strm.next_out = (Bytef*)(out);
+
+        ret = inflate(&strm, Z_NO_FLUSH);
+        Q_ASSERT(ret != Z_STREAM_ERROR);  // state not clobbered
+
+        switch (ret) {
+        case Z_NEED_DICT:
+            ret = Z_DATA_ERROR;     // and fall through
+        case Z_DATA_ERROR:
+        case Z_MEM_ERROR:
+            (void)inflateEnd(&strm);
+            return QByteArray();
+        }
+
+        result.append(out, CHUNK_SIZE - strm.avail_out);
+    } while (strm.avail_out == 0);
+
+    // clean up and return
+    inflateEnd(&strm);
+    return result;
 }
