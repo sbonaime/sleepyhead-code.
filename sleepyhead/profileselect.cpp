@@ -266,7 +266,8 @@ void ProfileSelect::deleteProfile()
             QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
         }
 
-        model->removeRow(ui->listView->currentIndex().row());
+        int row = ui->listView->currentIndex().row();
+        proxy->removeRow(row);
         delete p_profile;
         p_profile = nullptr;
     }
