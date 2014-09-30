@@ -683,24 +683,26 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     for (QHash<ChannelID,QTreeWidgetItem *>::iterator m=mcroot.begin();m!=mcroot.end();m++) {
         tree->insertTopLevelItem(cnt++,m.value());
     }
-    QTreeWidgetItem * start = new QTreeWidgetItem(QStringList(tr("Session Start Times")));
-    QTreeWidgetItem * end = new QTreeWidgetItem(QStringList(tr("Session End Times")));
-    tree->insertTopLevelItem(cnt++ , start);
-    tree->insertTopLevelItem(cnt++ , end);
-    for (QList<Session *>::iterator s=day->begin(); s!=day->end(); ++s) {
-        QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first());
-        QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last());
 
-        QTreeWidgetItem * item = new QTreeWidgetItem(QStringList(st.toString("HH:mm:ss")));
-        item->setData(0,Qt::UserRole, (*s)->first());
-        start->addChild(item);
+    if (day->hasMachine(MT_CPAP) || day->hasMachine(MT_OXIMETER) || day->hasMachine(MT_POSITION)) {
+        QTreeWidgetItem * start = new QTreeWidgetItem(QStringList(tr("Session Start Times")));
+        QTreeWidgetItem * end = new QTreeWidgetItem(QStringList(tr("Session End Times")));
+        tree->insertTopLevelItem(cnt++ , start);
+        tree->insertTopLevelItem(cnt++ , end);
+        for (QList<Session *>::iterator s=day->begin(); s!=day->end(); ++s) {
+            QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first());
+            QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last());
+
+            QTreeWidgetItem * item = new QTreeWidgetItem(QStringList(st.toString("HH:mm:ss")));
+            item->setData(0,Qt::UserRole, (*s)->first());
+            start->addChild(item);
 
 
-        item = new QTreeWidgetItem(QStringList(et.toString("HH:mm:ss")));
-        item->setData(0,Qt::UserRole, (*s)->last());
-        end->addChild(item);
+            item = new QTreeWidgetItem(QStringList(et.toString("HH:mm:ss")));
+            item->setData(0,Qt::UserRole, (*s)->last());
+            end->addChild(item);
+        }
     }
-
     //tree->insertTopLevelItem(cnt++,new QTreeWidgetItem(QStringList("[Total Events ("+QString::number(total_events)+")]")));
     tree->sortByColumn(0,Qt::AscendingOrder);
     //tree->expandAll();

@@ -398,10 +398,10 @@ bool Machine::unlinkSession(Session * sess)
             b=true;
             if (!d->searchMachine(mt)) {
                 d->machines.remove(mt);
+                day.remove(dates[i]);
             }
 
             if (d->size() == 0) {
-                day.remove(dates[i]);
                 p_profile->unlinkDay(d);
             }
         }
@@ -437,7 +437,7 @@ bool Machine::Purge(int secret)
     QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
     rxcache.remove();
 
-    QFile sumfile(getDataPath()+"Summaries.xml");
+    QFile sumfile(getDataPath()+"Summaries.xml.gz");
     sumfile.remove();
 
     // Create a copy of the list so the hash can be manipulated

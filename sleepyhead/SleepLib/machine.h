@@ -231,8 +231,9 @@ class Machine
     QString getPixmapPath();
     QPixmap & getPixmap();
 
-  protected:
     MachineInfo info;
+
+  protected:
     QDate firstday, lastday;
     SessionID highest_sessionid;
     MachineID m_id;

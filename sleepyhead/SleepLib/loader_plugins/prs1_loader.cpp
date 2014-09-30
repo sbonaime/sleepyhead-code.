@@ -130,7 +130,6 @@ PRS1Loader::PRS1Loader()
     m_pixmaps["System One (60 Series)"] = QPixmap(PRS1_60_ICON);
 
     //genCRCTable();  // find what I did with this..
-    m_buffer = nullptr;
     m_type = MT_CPAP;
 }
 
@@ -176,8 +175,15 @@ QString PRS1Loader::checkDir(const QString & path)
 
     QFile lastfile(newpath+"/last.txt");
 
+    bool exists = true;
+    if (!lastfile.exists()) {
+        lastfile.setFileName(newpath+"/LAST.TXT");
+        if (!lastfile.exists())
+            exists = false;
+    }
+
     QString machpath;
-    if (lastfile.exists()) {
+    if (exists) {
         if (!lastfile.open(QIODevice::ReadOnly)) {
             qDebug() << "PRS1Loader: last.txt exists but I couldn't open it!";
         } else {
@@ -264,7 +270,7 @@ void parseModel(MachineInfo & info, QString modelnum)
     }
 }
 
-bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename)
+bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * mach)
 {
     QFile f(filename);
     if (!f.open(QFile::ReadOnly)) {
@@ -275,10 +281,21 @@ bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename)
         QString line = in.readLine();
         QStringList pair = line.split("=");
 
-        if (pair[0].compare("ModelNumber", Qt::CaseInsensitive) == 0) {
+        bool skip = false;
+
+        if (pair[0].contains("ModelNumber", Qt::CaseInsensitive)) {
             QString modelnum = pair[1];
             parseModel(info, modelnum);
+            skip = true;
         }
+        if (pair[0].contains("SerialNumber", Qt::CaseInsensitive)) {
+            info.serial = pair[1];
+            skip = true;
+        }
+        if (!mach || skip) continue;
+
+        mach->properties[pair[0]] = pair[1];
+
     } while (!in.atEnd());
     return true;
 }
@@ -292,6 +309,7 @@ MachineInfo PRS1Loader::PeekInfo(const QString & path)
 
     MachineInfo info = newInfo();
     info.serial = newpath.section("/", -1);
+
     PeekProperties(info, newpath+"/properties.txt");
     return info;
 }
@@ -320,8 +338,8 @@ int PRS1Loader::Open(QString path)
     dir.setSorting(QDir::Name);
     QFileInfoList flist = dir.entryInfoList();
 
-    QList<QString> SerialNumbers;
-    QList<QString>::iterator sn;
+    QStringList SerialNumbers;
+    QStringList::iterator sn;
 
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
@@ -351,40 +369,23 @@ int PRS1Loader::Open(QString path)
 
     if (SerialNumbers.empty()) { return -1; }
 
-    m_buffer = new unsigned char [max_load_buffer_size]; //allocate once and reuse.
-    Machine *m;
-
     int c = 0;
 
     for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
-        if (*sn == last) {
+        if ((*sn)[0].isLetter()) {
+            c += OpenMachine(newpath + "/" + *sn);
         }
-
-        MachineInfo info = newInfo();
-        info.serial = *sn;
-        m = CreateMachine(info);
-
-        try {
-            if (m) {
-                c += OpenMachine(m, newpath + "/" + info.serial);
-            }
-        } catch (OneTypePerDay e) {
-            Q_UNUSED(e)
-            p_profile->DelMachine(m);
-            PRS1List.erase(PRS1List.find(info.serial));
-            QMessageBox::warning(nullptr,
-                                 QObject::tr("Import Error"),
-                                 QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),
-                                 QMessageBox::Ok);
-            delete m;
+    }
+    for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
+        if (!(*sn)[0].isLetter()) {
+            c += OpenMachine(newpath + "/" + *sn);
         }
     }
 
-    delete [] m_buffer;
     return c;
 }
 
-bool PRS1Loader::ParseProperties(Machine *m, QString filename)
+/*bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 {
     QFile f(filename);
 
@@ -441,9 +442,9 @@ bool PRS1Loader::ParseProperties(Machine *m, QString filename)
 
     f.close();
     return true;
-}
+}*/
 
-int PRS1Loader::OpenMachine(Machine *m, QString path)
+int PRS1Loader::OpenMachine(QString path)
 {
     Q_ASSERT(p_profile != nullptr);
 
@@ -466,6 +467,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
 
     int sessionid_base = 10;
 
+    QString propertyfile;
+
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
         filename = fi.fileName();
@@ -479,21 +482,18 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                 // Reminder: I have been given some info about these. should check it over.
             }
         } else if (filename.compare("properties.txt",Qt::CaseInsensitive) == 0) {
-            ParseProperties(m, fi.canonicalFilePath());
+            propertyfile = fi.canonicalFilePath();
         } else if (filename.compare("PROP.TXT",Qt::CaseInsensitive) == 0) {
             sessionid_base = 16;
-            ParseProperties(m, fi.canonicalFilePath());
+            propertyfile = fi.canonicalFilePath();
         }
     }
 
-    QString backupPath = m->getBackupPath() + path.section("/", -2);
+    MachineInfo info = newInfo();
+    // Have a peek first to get the serial number.
+    PeekProperties(info, propertyfile);
 
-    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
-        copyPath(path, backupPath);
-    }
-
-
-    QString modelstr = m->modelnumber();
+    QString modelstr = info.modelnumber;
 
     if (modelstr.endsWith("P"))
         modelstr.chop(1);
@@ -501,20 +501,54 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
     bool ok;
     int model = modelstr.toInt(&ok);
     if (ok) {
+        int series = ((model / 10) % 10);
+        int type = (model / 100);
+
         // Assumption is made here all PRS1 machines less than 450P are not data capable.. this could be wrong one day.
-        if ((model < 450) && p_profile->cpap->brickWarning()) {
+        if ((type < 4) && p_profile->cpap->brickWarning()) {
             QApplication::processEvents();
             QMessageBox::information(QApplication::activeWindow(),
                                      QObject::tr("Non Data Capable Machine"),
                                      QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
                                              QObject::tr("I'm sorry to report that SleepyHead can only track hours of use and very basic settings for this machine.")).
-                                     arg(m->modelnumber()),QMessageBox::Ok);
+                                     arg(info.modelnumber),QMessageBox::Ok);
             p_profile->cpap->setBrickWarning(false);
 
         }
+
+        // A bit of protection against future annoyances..
+        if (((series != 5) && (series != 6)) || (type >= 10)) {
+            QMessageBox::information(QApplication::activeWindow(),
+                                     QObject::tr("Machine Unsupported"),
+                                     QObject::tr("Sorry, your Philips Respironics CPAP machine (Model %1) is not supported yet.").arg(info.modelnumber) +"\n\n"+
+                                     QObject::tr("JediMark needs a .zip copy of this machines' SD card and matching Encore .pdf reports to make it work with SleepyHead.")
+                                     ,QMessageBox::Ok);
+
+            return -1;
+        }
     } else {
-        // model number didn't parse.. Meh...
+        // model number didn't parse.. Meh... Silently ignore it
+//        QMessageBox::information(QApplication::activeWindow(),
+//                                 QObject::tr("Machine Unsupported"),
+//                                 QObject::tr("SleepyHead could not parse the model number, this machine can not be imported..") +"\n\n"+
+//                                 QObject::tr("JediMark needs a .zip copy of this machines' SD card and matching Encore .pdf reports to make it work with SleepyHead.")
+//                                ,QMessageBox::Ok);
+        return -1;
     }
+
+
+    // Which is needed to get the right machine record..
+    Machine *m = CreateMachine(info);
+
+    // This time supply the machine object so it can populate machine properties..
+    PeekProperties(m->info, propertyfile, m);
+
+    QString backupPath = m->getBackupPath() + path.section("/", -2);
+
+    if (QDir::cleanPath(path).compare(QDir::cleanPath(backupPath)) != 0) {
+        copyPath(path, backupPath);
+    }
+
 
     SessionID sid;
     long ext;
@@ -565,6 +599,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                 if (it != sesstasks.end()) {
                     task = it.value();
                 } else {
+                    // Should probably check if session already imported has this data missing..
+
                     // Create the group if we see it first..
                     task = new PRS1Import(this, sid, m);
                     sesstasks[sid] = task;
@@ -597,15 +633,20 @@ int PRS1Loader::OpenMachine(Machine *m, QString path)
                     }
                 }
 
-                sid = chunk->sessionid;
+                SessionID chunk_sid = chunk->sessionid;
+                if (m->SessionExists(sid)) {
+                    delete chunk;
+                    continue;
+                }
+
 
                 task = nullptr;
-                QHash<SessionID, PRS1Import *>::iterator it = sesstasks.find(sid);
+                QHash<SessionID, PRS1Import *>::iterator it = sesstasks.find(chunk_sid);
                 if (it != sesstasks.end()) {
                     task = it.value();
                 } else {
-                    task = new PRS1Import(this, sid, m);
-                    sesstasks[sid] = task;
+                    task = new PRS1Import(this, chunk_sid, m);
+                    sesstasks[chunk_sid] = task;
                     // save a loop an que this now
                     queTask(task);
                 }
