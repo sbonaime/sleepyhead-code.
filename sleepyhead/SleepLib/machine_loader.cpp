@@ -103,6 +103,19 @@ Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
         }
     }
 
+    // Before we create, find any lost folder to get the old ID
+    if ((id == 0) && ((info.type == MT_OXIMETER) || (info.type == MT_JOURNAL) || (info.type == MT_POSITION)|| (info.type == MT_SLEEPSTAGE))) {
+        QString dataPath = p_profile->Get("{" + STR_GEN_DataFolder + "}/");
+        QDir dir(dataPath);
+        QStringList namefilter(QString(info.loadername+"_*"));
+        QStringList files = dir.entryList(namefilter, QDir::Dirs);
+        if (files.size() > 0) {
+            QString idstr = files[0].section("_",-1);
+            bool ok;
+            id = idstr.toInt(&ok, 16);
+        }
+    }
+
     switch (info.type) {
     case MT_CPAP:
         m = new CPAP(id);
