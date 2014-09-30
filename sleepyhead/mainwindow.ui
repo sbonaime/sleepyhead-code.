@@ -1334,7 +1334,7 @@ color: yellow;</string>
       <widget class="QToolBox" name="toolBox">
        <property name="minimumSize">
         <size>
-         <width>230</width>
+         <width>240</width>
          <height>0</height>
         </size>
        </property>
@@ -1494,7 +1494,7 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>250</width>
+          <width>230</width>
           <height>724</height>
          </rect>
         </property>
@@ -1908,7 +1908,7 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>250</width>
+          <width>230</width>
           <height>724</height>
          </rect>
         </property>
@@ -3056,7 +3056,7 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>230</width>
+          <width>240</width>
           <height>724</height>
          </rect>
         </property>

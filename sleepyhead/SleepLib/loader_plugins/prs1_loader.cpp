@@ -227,7 +227,7 @@ void parseModel(MachineInfo & info, QString modelnum)
 
     switch (typ) {
     case 4: // cpap
-        info.model = QObject::tr("RemStar Plus with C-Flex+");
+        info.model = QObject::tr("RemStar Pro with C-Flex+");
         break;
     case 5: // apap
         info.model = QObject::tr("RemStar Auto with A-Flex");
