@@ -76,7 +76,7 @@ Session *Machine::SessionExists(SessionID session)
     }
 }
 
-const quint16 sessinfo_version = 1;
+const quint16 sessinfo_version = 2;
 
 bool Machine::saveSessionInfo()
 {
@@ -97,8 +97,6 @@ bool Machine::saveSessionInfo()
     out << magic;
     out << filetype_sessenabled;
     out << sessinfo_version;
-
-    out << m_availableChannels;
 
     QHash<SessionID, Session *>::iterator s;
 
@@ -148,8 +146,10 @@ bool Machine::loadSessionInfo()
     in >> ft16;
     in >> version;
 
-    if (version >= 1) {
-        in >> m_availableChannels;
+    if (version == 1) {
+        // was available channels
+        QHash<ChannelID, bool> crap;
+        in >> crap;
     }
 
     int size;
@@ -161,10 +161,6 @@ bool Machine::loadSessionInfo()
     for (int i=0; i< size; ++i) {
         in >> sid;
         in >> b;
-//        QList<ChannelID> avail_channels;
-//        if (version >= 2) {
-//            in >> avail_channels;
-//        }
 
         s = sessionlist.find(sid);
 
@@ -172,9 +168,6 @@ bool Machine::loadSessionInfo()
             Session * sess = s.value();
 
             sess->setEnabled(b);
-//            if (version >= 2) {
-//                sess->m_availableChannels = avail_channels;
-//            }
         }
     }
     return true;
@@ -216,6 +209,11 @@ bool Machine::AddSession(Session *s)
     Q_ASSERT(s != nullptr);
     Q_ASSERT(p_profile);
     Q_ASSERT(p_profile->isOpen());
+
+    if (s->type() == MT_OXIMETER) {
+        int i=5;
+    }
+    updateChannels(s);
 
     if (p_profile->session->ignoreOlderSessions()) {
         qint64 ignorebefore = p_profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
@@ -1113,6 +1111,12 @@ void Machine::updateChannels(Session * sess)
     for (int i=0; i < size; ++i) {
         ChannelID code = sess->m_availableChannels.at(i);
         m_availableChannels[code] = true;
+    }
+
+    size = sess->m_availableSettings.size();
+    for (int i=0; i < size; ++i) {
+        ChannelID code = sess->m_availableSettings.at(i);
+        m_availableSettings[code] = true;
     }
 }
 

@@ -696,17 +696,17 @@ class AppearanceSettings : public ProfileSettings
       : ProfileSettings(profile)
     {
         initPref(STR_AS_GraphHeight, 180.0);
-        initPref(STR_AS_AntiAliasing, false); // I think it's ugly.
+        initPref(STR_AS_AntiAliasing, true);
         initPref(STR_AS_GraphSnapshots, true);
         initPref(STR_AS_Animations, true);
         initPref(STR_AS_SquareWave, false);
         initPref(STR_AS_AllowYAxisScaling, true);
         initPref(STR_AS_GraphTooltips, true);
-        initPref(STR_AS_UsePixmapCaching, true);
+        initPref(STR_AS_UsePixmapCaching, false);
         initPref(STR_AS_OverlayType, ODT_Bars);
         initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
         initPref(STR_AS_LineThickness, 1.0);
-        initPref(STR_AS_LineCursorMode, false);
+        initPref(STR_AS_LineCursorMode, true);
         initPref(STR_AS_CalendarVisible, true);
         initPref(STR_AS_RightSidebarVisible, true);
     }

@@ -520,8 +520,7 @@ bool EDFParser::Parse()
         serialnumber += recordingident[i];
     }
 
-    QDateTime startDate = QDateTime::fromString(QString::fromLatin1(header.datetime, 16),
-                          "dd.MM.yyHH.mm.ss");
+    QDateTime startDate = QDateTime::fromString(QString::fromLatin1(header.datetime, 16), "dd.MM.yyHH.mm.ss");
     //startDate.toTimeSpec(Qt::UTC);
 
     QDate d2 = startDate.date();
@@ -930,7 +929,7 @@ void ResmedImport::run()
 ResmedLoader::ResmedLoader()
 {
     const QString RMS9_ICON = ":/icons/rms9.png";
-    const QString RM10_ICON = ":/icons/sheep.png";
+    const QString RM10_ICON = ":/icons/rms9.png";
 
     m_pixmaps[STR_ResMed_S9] = QPixmap(RMS9_ICON);
     m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);

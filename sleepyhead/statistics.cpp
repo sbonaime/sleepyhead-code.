@@ -641,11 +641,11 @@ struct RXChange {
     short highlight;
 };
 
-enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_ps, RX_pshi, RX_maxipap, RX_per1, RX_per2, RX_weighted };
-RXSortMode RXsort = RX_first;
-bool RXorder = false;
+//enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_ps, RX_pshi, RX_maxipap, RX_per1, RX_per2, RX_weighted };
+//RXSortMode RXsort = RX_first;
+//bool RXorder = false;
 
-bool operator<(const RXChange &c1, const RXChange &c2)
+/*bool operator<(const RXChange &c1, const RXChange &c2)
 {
     const RXChange *comp1 = &c1;
     const RXChange *comp2 = &c2;
@@ -824,7 +824,7 @@ bool RXSort(const RXChange *comp1, const RXChange *comp2)
     }
 
     return true;
-}
+} */
 struct UsageData {
     UsageData() { ahi = 0; hours = 0; }
     UsageData(QDate d, EventDataType v, EventDataType h) { date = d; ahi = v; hours = h; }
@@ -865,7 +865,7 @@ struct Period {
 
 const QString heading_color="#ffffff";
 const QString subheading_color="#e0e0e0";
-const int rxthresh = 5;
+//const int rxthresh = 5;
 
 QString Statistics::GenerateMachineList()
 {
@@ -1066,11 +1066,11 @@ QString Statistics::GenerateHTML()
     }
 
 
-    int cpapdays = p_profile->countDays(MT_CPAP, firstcpap, lastcpap);
+   // int cpapdays = p_profile->countDays(MT_CPAP, firstcpap, lastcpap);
 
 //    CPAPMode cpapmode = (CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode, MT_CPAP, firstcpap, lastcpap);
 
-    float percentile = p_profile->general->prefCalcPercentile() / 100.0;
+ //   float percentile = p_profile->general->prefCalcPercentile() / 100.0;
 
     //    int mididx=p_profile->general->prefCalcMiddle();
     //    SummaryType ST_mid;
@@ -1086,7 +1086,7 @@ QString Statistics::GenerateHTML()
         ahitxt = STR_TR_AHI;
     }
 
-    int decimals = 2;
+  //  int decimals = 2;
     html += "<div align=center>";
     html += QString("<table class=curved "+table_width+">");
 

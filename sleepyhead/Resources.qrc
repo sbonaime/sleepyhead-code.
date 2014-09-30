@@ -26,8 +26,6 @@
         <file>icons/smileyface.png</file>
         <file>icons/sadface.png</file>
         <file>icons/mask.png</file>
-        <file>icons/brick.png</file>
-        <file>icons/nodata.png</file>
         <file>icons/cubeoximeter.png</file>
         <file>icons/trophy.png</file>
         <file>icons/bookmark.png</file>
@@ -37,10 +35,7 @@
         <file>icons/session-on.png</file>
         <file>icons/bob-v3.0.png</file>
         <file>docs/script.js</file>
-        <file>icons/nographs.png</file>
-        <file>icons/sheep.png</file>
         <file>docs/sheep.png</file>
-        <file>icons/Bob Strikes Back.png</file>
         <file>icons/Jedimark.png</file>
         <file>COPYING</file>
         <file>icons/sdcard-lock.png</file>

@@ -109,6 +109,10 @@ class Machine
         return m_availableChannels.contains(code);
     }
 
+    inline bool hasSetting(ChannelID code) {
+        return m_availableSettings.contains(code);
+    }
+
     //! \brief Contains a secondary index of day data, containing just this machines sessions
     QMap<QDate, Day *> day;
 
@@ -253,6 +257,7 @@ class Machine
     QList<ImportTask *> m_tasklist;
 
     QHash<ChannelID, bool> m_availableChannels;
+    QHash<ChannelID, bool> m_availableSettings;
 
     QString m_summaryPath;
     QString m_eventsPath;
