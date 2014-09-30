@@ -1002,7 +1002,7 @@ QString Statistics::GenerateRXChanges()
                 QString("<td>%1</td>").arg(rx.days)+
                 QString("<td>%1</td>").arg(ahi, 0, 'f', 2)+
                 QString("<td>%1</td>").arg(fli, 0, 'f', 2)+
-                QString("<td>%1</td>").arg(rx.machine->loaderName())+
+                QString("<td>%1 (%2)</td>").arg(rx.machine->model()).arg(rx.machine->modelnumber())+
                 QString("<td>%1</td>").arg(rx.relief)+
                 QString("<td>%1</td>").arg(rx.mode)+
                 QString("<td>%1</td>").arg(rx.pressure)+
