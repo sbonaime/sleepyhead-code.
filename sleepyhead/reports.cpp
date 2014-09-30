@@ -438,7 +438,10 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
                 if (!g->visible()) { continue; }
 
-                if (cpap) {
+                if (cpap && oxi) {
+                    st = qMin(day->first(MT_CPAP), day->first(MT_OXIMETER));
+                    et = qMax(day->last(MT_CPAP), day->last(MT_OXIMETER));
+                } else if (cpap) {
                     st = day->first(MT_CPAP);
                     et = day->last(MT_CPAP);
                 } else if (oxi) {
@@ -447,7 +450,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                 }
 
                 if (!g->isSnapshot() && (g->name() == schema::channel[CPAP_FlowRate].code())) {
-                    if (!((qAbs(g->min_x - st) < 2000) && (qAbs(g->max_x - et) < 2000))) {
+                    if (!((qAbs(g->min_x - st) < 5000) && (qAbs(g->max_x - et) < 60000))) {
+                        qDebug() << "Current Selection difference" << (g->min_x - st) << " bleh " << (g->max_x - et);
                         start.push_back(st);
                         end.push_back(et);
                         graphs.push_back(g);

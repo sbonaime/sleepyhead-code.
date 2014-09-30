@@ -414,7 +414,9 @@ bool Session::LoadSummary()
     qint32 ts32;
     in >> ts32;      // MachineID (dont need this result)
 
+    bool upgrade = false;
     if (ts32 != s_machine->id()) {
+        upgrade = true;
         qWarning() << "Machine ID does not match in" << filename <<
                    " I will try to load anyway in case you know what your doing.";
     }
@@ -607,7 +609,7 @@ bool Session::LoadSummary()
     }
 
     // not really a good idea to do this... should flag and do a reindex
-    if (version < summary_version) {
+    if (upgrade || (version < summary_version)) {
 
         qDebug() << "Upgrading Summary file to version" << summary_version;
         if (!s_summaryOnly) {

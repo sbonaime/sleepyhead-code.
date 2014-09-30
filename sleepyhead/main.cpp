@@ -333,10 +333,18 @@ retry_directory:
     } else {
         if (PREF.contains(STR_PREF_VersionString)) {
 
-            if (compareVersion(PREF[STR_PREF_VersionString].toString()) < 0) {
+            int vc = compareVersion(PREF[STR_PREF_VersionString].toString());
+            if (vc < 0) {
                 release_notes();
 
                 check_updates = false;
+            } else if (vc > 0) {
+                if (QMessageBox::warning(nullptr, STR_MessageBox_Error, QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
+                                         QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
+
+                    return 0;
+                }
+
             }
         }
 

@@ -154,9 +154,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_lastmaxx = m_maxx;
 
     QMap<EventStoreType, int>::iterator it;
-    painter.setFont(*defaultfont);
-    painter.setPen(Qt::black);
-
     if (graph.printing()) {
         // lock the other mutex...
 //        while (recalculating()) {};
@@ -164,11 +161,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         while (recalculating()) {};
 
     }
-    if (!painter.isActive()) return;
 
+    if (!painter.isActive()) return;
 
     // Lock the stuff we need to draw
     timelock.lock();
+    painter.setFont(*defaultfont);
+    painter.setPen(Qt::black);
 
     QMap<EventStoreType, int>::iterator times_end = times.end();
     QPoint mouse = graph.graphView()->currentMousePos();
@@ -205,11 +204,15 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         QString value = QString("%1").arg(float(it.value()) / 60.0, 5, 'f', 1);
         QRectF rec(xpos, top, pix-1, hix);
 
-        painter.fillRect(rec, QColor("orange"));
-        graph.renderText(text, rec, Qt::AlignCenter);
+        GetTextExtent(text, w,h);
 
-        rec.moveTop(top + hix);
-        graph.renderText(value, rec, Qt::AlignCenter);
+        painter.fillRect(rec, QColor("orange"));
+        graph.renderText(text, xpos + pix/2 - w/2, top + hix /2 + h/2);
+
+        GetTextExtent(value, w,h);
+
+//        rec.moveTop(top + hix);
+        graph.renderText(value, xpos + pix/2 - w/2, top + hix+ hix /2+ h/2);
 
         xpos += pix;
     }
@@ -270,8 +273,11 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 painter.fillRect(rec, QColor(245,245,255,240));
             }
 
+            text = QString(fmt).arg(value,5,'f',2);
 
-            graph.renderText(QString(fmt).arg(value,5,'f',2), rec, Qt::AlignCenter);
+            GetTextExtent(text, w,h);
+
+            graph.renderText(text, xpos + pix/2 - w/2, ypos + hix /2 + h/2);
           //  painter.drawText(rec, Qt::AlignCenter, QString(fmt).arg(value,5,'f',2));
             xpos += pix;
 
