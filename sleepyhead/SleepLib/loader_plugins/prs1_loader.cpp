@@ -214,18 +214,24 @@ QString PRS1Loader::checkDir(const QString & path)
 void parseModel(MachineInfo & info, QString modelnum)
 {
     info.modelnumber = modelnum;
-    if (!modelnum.endsWith("P")) {
-        qDebug() << "Weird PRS1 Model number" << modelnum;
-    }
-    modelnum.chop(1);
-    int country = modelnum[modelnum.length() - 1].digitValue();
-    modelnum.chop(1);
-    int ser = modelnum[modelnum.length() - 1].digitValue();
-    modelnum.chop(1);
-    bool ok;
-    int typ = modelnum.toInt(&ok);
 
-    switch (typ) {
+    QString modelstr;
+    for (int i=0; i<modelnum.size(); i++) {
+        QChar c = modelnum.at(i);
+        if (c.isDigit()) {
+            modelstr += c;
+        } else break;
+    }
+
+    bool ok;
+    int num = modelstr.toInt(&ok);
+
+    int series = ((num / 10) % 10);
+    int type = (num / 100);
+    int country = num % 10;
+
+
+    switch (type) {
     case 4: // cpap
         info.model = QObject::tr("RemStar Pro with C-Flex+");
         break;
@@ -248,7 +254,7 @@ void parseModel(MachineInfo & info, QString modelnum)
         info.model = QObject::tr("Unknown Model");
     }
 
-    switch (ser) {
+    switch (series) {
     case 5:
         info.series = QObject::tr("System One");
         break;
@@ -493,10 +499,13 @@ int PRS1Loader::OpenMachine(QString path)
     // Have a peek first to get the serial number.
     PeekProperties(info, propertyfile);
 
-    QString modelstr = info.modelnumber;
-
-    if (modelstr.endsWith("P"))
-        modelstr.chop(1);
+    QString modelstr;
+    for (int i=0; i<info.modelnumber.size(); i++) {
+        QChar c = info.modelnumber.at(i);
+        if (c.isDigit()) {
+            modelstr += c;
+        } else break;
+    }
 
     bool ok;
     int model = modelstr.toInt(&ok);
