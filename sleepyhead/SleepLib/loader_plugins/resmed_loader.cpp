@@ -341,19 +341,21 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     R.max_ipap = R.epap + R.max_ps;
                 }
 
+
                 EventDataType epr = -1, epr_level = -1;
-                if ((sig = str.lookupSignal(RMS9_EPR))) {
-                    epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
-                    epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
+                if ((mode == MODE_CPAP) || (mode == MODE_APAP)) {
+                    if ((sig = str.lookupSignal(RMS9_EPR))) {
+                        epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
+                        epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
 
-                if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
-                    epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    epr += 1;
+                    if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
+                        epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        epr += 1;
+                    }
                 }
-
 
 
                 if ((epr >= 0) && (epr_level >= 0)) {
@@ -374,7 +376,6 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                         R.epr = (epr_level > 0) ? 1 : 0;
                     }
                 }
-
 
 
                 if ((sig = str.lookupLabel("AHI"))) {

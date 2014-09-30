@@ -315,10 +315,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     warnmsg.push_back(tr("<b>Warning:</b> This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes."));
     warnmsg.push_back(tr("If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu."));
-    warnmsg.push_back(tr("Make sure your keep your SleepyHead data folder backed up when trying testing versions."));
+    warnmsg.push_back(tr("Make sure you keep your SleepyHead data folder backed up when trying testing versions."));
     warnmsg.push_back(tr("Please ensure you are running the latest version before reporting any bugs."));
     warnmsg.push_back(tr("When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model."));
-    warnmsg.push_back(tr("Make sure your willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report."));
+    warnmsg.push_back(tr("Make sure you're willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report."));
     warnmsg.push_back(tr("Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!"));
     warnmsg.push_back(tr("This red message line is intentional, and will not be a feature in the final version..."));
     warnmsg.push_back(tr(""));
