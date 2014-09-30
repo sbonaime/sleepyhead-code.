@@ -144,6 +144,8 @@ public:
     short highlight;
 };
 
+
+
 class Statistics : public QObject
 {
     Q_OBJECT
@@ -158,6 +160,8 @@ class Statistics : public QObject
     QString GenerateMachineList();
     QString GenerateRXChanges();
 
+    void UpdateRecordsBox();
+
 
   protected:
     // Using a map to maintain order
@@ -166,6 +170,9 @@ class Statistics : public QObject
     QMap<MachineType, QString> machinenames;
 
     QMap<QDate, RXItem> rxitems;
+
+    QList<QDate> record_best_ahi;
+    QList<QDate> record_worst_ahi;
 
   signals:
 

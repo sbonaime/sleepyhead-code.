@@ -1747,12 +1747,274 @@ QString Statistics::GenerateHTML()
     html += GenerateRXChanges();
     html += GenerateMachineList();
 
+    UpdateRecordsBox();
+
+
 
     html += "<script type='text/javascript' language='javascript' src='qrc:/docs/script.js'></script>";
     //updateFavourites();
     html += htmlFooter();
     return html;
 }
+
+void Statistics::UpdateRecordsBox()
+{
+    QString html = "<html><head><style type='text/css'>"
+                     "p,a,td,body { font-family: '" + QApplication::font().family() + "'; }"
+                     "p,a,td,body { font-size: " + QString::number(QApplication::font().pointSize() + 2) + "px; }"
+                     "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
+                     "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
+                     "</style></head><body>";
+
+    Machine * cpap = p_profile->GetMachine(MT_CPAP);
+    if (cpap) {
+        QDate first = p_profile->FirstGoodDay(MT_CPAP);
+        QDate last = p_profile->LastGoodDay(MT_CPAP);
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        /// Compliance and usage information
+        /////////////////////////////////////////////////////////////////////////////////////
+        int totaldays = p_profile->countDays(MT_CPAP, first, last);
+        int compliant = p_profile->countCompliantDays(MT_CPAP, first, last);
+
+        float comperc = (100.0 / float(totaldays)) * float(compliant);
+
+        html += "<b>"+QObject::tr("CPAP Usage")+"</b><br/>";
+        html += QObject::tr("Days Used: %1").arg(totaldays) + "<br/>";
+        html += QObject::tr("Low Use Days: %1").arg(totaldays - compliant) + "<br/>";
+        html += QObject::tr("Compliance: %1%").arg(comperc, 0, 'f', 1)  + "<br/>";
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        /// AHI Records
+        /////////////////////////////////////////////////////////////////////////////////////
+
+        if (p_profile->session->preloadSummaries()) {
+            const int show_records = 5;
+            QMultiMap<float, QDate>::iterator it;
+            QMultiMap<float, QDate>::iterator it_end;
+
+            QMultiMap<float, QDate> ahilist;
+            int baddays = 0;
+
+            for (QDate date = first; date <= last; date = date.addDays(1)) {
+                Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+                if (!day) continue;
+
+                float ahi = day->calcAHI();
+                if (ahi >= 5) {
+                    baddays++;
+                }
+                ahilist.insert(ahi, date);
+            }
+            html += QObject::tr("Days AHI of 5 or greater: %1").arg(baddays) + "<br/><br/>";
+
+
+            if (ahilist.size() > (show_records * 2)) {
+                it = ahilist.begin();
+                it_end = ahilist.end();
+
+                html += "<b>"+QObject::tr("Best AHI")+"</b><br/>";
+
+                for (int i=0; (i<show_records) && (it != it_end); ++i, ++it) {
+                    html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                            +QObject::tr("Date: %1 AHI: %2").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+
+                }
+
+                html += "<br/>";
+
+                html += "<b>"+QObject::tr("Worst AHI")+"</b><br/>";
+
+                it = ahilist.end() - 1;
+                it_end = ahilist.begin();
+                for (int i=0; (i<show_records) && (it != it_end); ++i, --it) {
+                    html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                        +QObject::tr("Date: %1 AHI: %2").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+
+                }
+
+                html += "<br/>";
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            /// Flow Limitation Records
+            /////////////////////////////////////////////////////////////////////////////////////
+
+            ahilist.clear();
+            for (QDate date = first; date <= last; date = date.addDays(1)) {
+                Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+                if (!day) continue;
+
+                float val = 0;
+                if (day->channelHasData(CPAP_FlowLimit)) {
+                    val = day->calcIdx(CPAP_FlowLimit);
+                } else if (day->channelHasData(CPAP_FLG)) {
+                    // Use 90th percentile
+                    val = day->calcPercentile(CPAP_FLG);
+                }
+                ahilist.insert(val, date);
+            }
+
+            int cnt = 0;
+            if (ahilist.size() > (show_records * 2)) {
+                it = ahilist.begin();
+                it_end = ahilist.end();
+
+                html += "<b>"+QObject::tr("Best Flow Limitation")+"</b><br/>";
+
+                for (int i=0; (i<show_records) && (it != it_end); ++i, ++it) {
+                    html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                        +QObject::tr("Date: %1 FL: %2").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+
+                }
+
+                html += "<br/>";
+
+                html += "<b>"+QObject::tr("Worst Flow Limtation")+"</b><br/>";
+
+                it = ahilist.end() - 1;
+                it_end = ahilist.begin();
+                for (int i=0; (i<show_records) && (it != it_end); ++i, --it) {
+                    if (it.key() > 0) {
+                        html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                            +QObject::tr("Date: %1 FL: %2").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+                        cnt++;
+                    }
+                }
+                if (cnt == 0) {
+                    html+= "<i>"+QObject::tr("No Flow Limitation on record")+"</i><br/>";
+                }
+
+                html += "<br/>";
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            /// Large Leak Records
+            /////////////////////////////////////////////////////////////////////////////////////
+
+            ahilist.clear();
+            for (QDate date = first; date <= last; date = date.addDays(1)) {
+                Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+                if (!day) continue;
+
+                float leak = day->calcPON(CPAP_LargeLeak);
+                ahilist.insert(leak, date);
+            }
+
+            cnt = 0;
+            if (ahilist.size() > (show_records * 2)) {
+                html += "<b>"+QObject::tr("Worst Large Leaks")+"</b><br/>";
+
+                it = ahilist.end() - 1;
+                it_end = ahilist.begin();
+
+                for (int i=0; (i<show_records) && (it != it_end); ++i, --it) {
+                    if (it.key() > 0) {
+                        html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                            +QObject::tr("Date: %1 Leak: %2%").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+                        cnt++;
+                    }
+
+                }
+                if (cnt == 0) {
+                    html+= "<i>"+QObject::tr("No Large Leaks on record")+"</i><br/>";
+                }
+
+                html += "<br/>";
+            }
+
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            /// ÇSR Records
+            /////////////////////////////////////////////////////////////////////////////////////
+
+            cnt = 0;
+            if (p_profile->hasChannel(CPAP_CSR)) {
+                ahilist.clear();
+                for (QDate date = first; date <= last; date = date.addDays(1)) {
+                    Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+                    if (!day) continue;
+
+                    float leak = day->calcPON(CPAP_CSR);
+                    ahilist.insert(leak, date);
+                }
+
+                if (ahilist.size() > (show_records * 2)) {
+                    html += "<b>"+QObject::tr("Worst CSR")+"</b><br/>";
+
+                    it = ahilist.end() - 1;
+                    it_end = ahilist.begin();
+                    for (int i=0; (i<show_records) && (it != it_end); ++i, --it) {
+
+                        if (it.key() > 0) {
+                            html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                                +QObject::tr("Date: %1 CSR: %2%").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+                            cnt++;
+                        }
+                    }
+                    if (cnt == 0) {
+                        html+= "<i>"+QObject::tr("No CSR on record")+"</i><br/>";
+                    }
+
+                    html += "<br/>";
+                }
+            }
+
+        } else {
+            html += "<br/><b>"+QObject::tr("Want more information?")+"</b><br/>";
+            html += "<i>"+QObject::tr("SleepyHead needs all summary data loaded to calculate best/worst data for individual days.")+"</i><br/><br/>";
+            html += "<i>"+QObject::tr("Please enable Pre-Load Summaries checkbox in preferences to make sure this data is available.")+"</i><br/><br/>";
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        /// Sort the RX list to get best and worst settings.
+        /////////////////////////////////////////////////////////////////////////////////////
+        QList<RXItem *> list;
+        QMap<QDate, RXItem>::iterator ri_end = rxitems.end();
+        QMap<QDate, RXItem>::iterator ri;
+
+        for (ri = rxitems.begin(); ri != ri_end; ++ri) {
+            list.append(&ri.value());
+            ri.value().highlight = 0;
+        }
+
+        qSort(list.begin(), list.end(), rxAHILessThan);
+
+
+        if (list.size() >= 2) {
+            html += "<b>"+QObject::tr("Best RX Setting")+"</b><br/>";
+            const RXItem & rxbest = *list.at(0);
+            html += QString("<a href='overview=%1,%2'>").arg(rxbest.start.toString(Qt::ISODate)).arg(rxbest.end.toString(Qt::ISODate)) +
+                QObject::tr("Date: %1 - %2").arg(rxbest.start.toString(Qt::SystemLocaleShortDate)).arg(rxbest.end.toString(Qt::SystemLocaleShortDate)) + "</a><br/>";
+            html += QString("%1").arg(rxbest.machine->model()) + "<br/>";
+            html += QString("Serial: %1").arg(rxbest.machine->serial()) + "<br/>";
+            html += QObject::tr("Culminative AHI: %1").arg(double(rxbest.ahi) / rxbest.hours, 0, 'f', 2) + "<br/>";
+            html += QObject::tr("Culminative Hours: %1").arg(rxbest.hours, 0, 'f', 2) + "<br/>";
+            html += QString("%1").arg(rxbest.pressure) + "<br/>";
+            html += QString("%1").arg(rxbest.relief) + "<br/>";
+            html += "<br/>";
+
+            html += "<b>"+QObject::tr("Worst RX Setting")+"</b><br/>";
+            const RXItem & rxworst = *list.at(list.size() -1);
+            html += QString("<a href='overview=%1,%2'>").arg(rxworst.start.toString(Qt::ISODate)).arg(rxworst.end.toString(Qt::ISODate)) +
+                    QObject::tr("Date: %1 - %2").arg(rxworst.start.toString(Qt::SystemLocaleShortDate)).arg(rxworst.end.toString(Qt::SystemLocaleShortDate)) + "</a><br/>";
+            html += QString("%1").arg(rxworst.machine->model()) + "<br/>";
+            html += QString("Serial: %1").arg(rxworst.machine->serial()) + "<br/>";
+            html += QObject::tr("Culminative AHI: %1").arg(double(rxworst.ahi) / rxworst.hours, 0, 'f', 2) + "<br/>";
+            html += QObject::tr("Culminative Hours: %1").arg(rxworst.hours, 0, 'f', 2) + "<br/>";
+
+            html += QString("%1").arg(rxworst.pressure) + "<br/>";
+            html += QString("%1").arg(rxworst.relief) + "<br/>";
+        }
+    }
+
+
+
+    html += "</body></html>";
+    mainwin->setRecBoxHTML(html);
+}
+
 
 
 QString StatisticsRow::value(QDate start, QDate end)

@@ -1090,7 +1090,7 @@ int Profile::countCompliantDays(MachineType mt, QDate start, QDate end)
     int days = 0;
 
     do {
-        Day *day = GetGoodDay(date, mt);
+        Day *day = FindGoodDay(date, mt);
 
         if (day) {
             if (day->hours(mt) > compliance) { days++; }
