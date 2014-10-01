@@ -1288,6 +1288,7 @@ void zMaskProfile::scanPressure(Session *session)
     scanPressureList(session, CPAP_Pressure);
     scanPressureList(session, CPAP_IPAP);
 
+    // Sort by time
     qSort(Pressure);
 }
 void zMaskProfile::scanLeakList(EventList *el)
@@ -1304,7 +1305,7 @@ void zMaskProfile::scanLeakList(EventList *el)
     EventStoreType pressure, leak;
 
     //EventDataType fleak;
-    QMap<EventStoreType, EventDataType>::iterator pmin;
+   // QMap<EventStoreType, EventDataType>::iterator pmin;
     qint64 ti;
     bool found;
 
@@ -1416,6 +1417,9 @@ void zMaskProfile::updatePressureMin()
     QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator plend = pressureleaks.end();
 
     QMap<EventStoreType, quint32>::iterator lmend;
+
+    // Calculate a weighted percentile of all leak values contained within each pressure, using pressureleaks histogram
+
     for (it = pressureleaks.begin(); it != plend; it++) {
         pressure = it.key();
         QMap<EventStoreType, quint32> &leakmap = it.value();
@@ -1450,6 +1454,7 @@ void zMaskProfile::updatePressureMin()
 
         pressuretotal[pressure] = total;
 
+        k = 0;
         for (QMap<EventStoreType, quint32>::iterator lit = leakmap.begin(); lit != lmend; ++lit, ++k) {
             //for (k=0;k < N;k++) {
             v1 = lit.key();
@@ -1497,13 +1502,14 @@ void zMaskProfile::updatePressureMin()
 
 EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
 {
+//    return pressuremin[pressure];
+
     if (maxP == minP) {
         return pressuremin[pressure];
     }
 
     EventDataType leak = (pressure - minP) * (m_factor) + minL;
     return leak;
-
 }
 
 void zMaskProfile::updateProfile(Session *session)
@@ -1512,7 +1518,9 @@ void zMaskProfile::updateProfile(Session *session)
     scanLeaks(session);
     updatePressureMin();
 
+    // PressureMin contains the baseline for each Pressure
 
+    // There is only one pressure (CPAP).. so switch off baseline and just use linear calculations
     if (pressuremin.size() <= 1) {
         maxP = minP = 0;
         maxL = minL = 0;
@@ -1673,6 +1681,112 @@ void zMaskProfile::updateProfile(Session *session)
     //    }
 }
 
+QMutex zMaskmutex;
+zMaskProfile mmaskProfile(Mask_NasalPillows, "ResMed Swift FX");
+bool mmaskFirst = true;
+
+int calcLeaks(Session *session)
+{
+
+    if (session->type() != MT_CPAP) { return 0; }
+
+    if (session->eventlist.contains(CPAP_Leak)) { return 0; } // abort if already there
+
+    if (!session->eventlist.contains(CPAP_LeakTotal)) { return 0; } // can't calculate without this..
+
+    zMaskmutex.lock();
+    zMaskProfile *maskProfile = &mmaskProfile;
+
+    if (mmaskFirst) {
+        mmaskFirst = false;
+        maskProfile->load(p_profile);
+    }
+
+    //    if (!maskProfile) {
+    //        maskProfile=new zMaskProfile(Mask_NasalPillows,"ResMed Swift FX");
+    //    }
+    maskProfile->reset();
+    maskProfile->updateProfile(session);
+
+    EventList *leak = session->AddEventList(CPAP_Leak, EVL_Event, 1);
+
+    QVector<EventList *> & EVL = session->eventlist[CPAP_LeakTotal];
+    int evlsize = EVL.size();
+
+    TimeValue *p2, *pstr, *pend;
+
+    // can this go out of the loop?
+    int mppressize = maskProfile->Pressure.size();
+    pstr = maskProfile->Pressure.data();
+    pend = maskProfile->Pressure.data()+(mppressize-1);
+
+    for (int i = 0; i < evlsize; ++i) {
+        EventList &el = *EVL[i];
+        EventDataType gain = el.gain(), tmp, val;
+        int count = el.count();
+        EventStoreType *dptr = el.rawData();
+        EventStoreType *eptr = dptr + count;
+        quint32 *tptr = el.rawTime();
+        qint64 start = el.first(), ti;
+        EventStoreType pressure;
+        tptr = el.rawTime();
+        start = el.first();
+
+        bool found;
+
+        // For each Total Leak value...
+        for (; dptr < eptr; ++dptr) {
+            tmp = EventDataType(*dptr) * gain;
+            ti = start + *tptr++;
+
+            found = false;
+            pressure = pstr->value;
+
+            for (TimeValue *p1 = pstr; p1 != pend; ++p1) {
+                p2 = p1+1;
+                if ((p2->time > ti) && (p1->time <= ti)) {
+                    pressure = p1->value;
+                    found = true;
+                    break;
+                } else if (p2->time == ti) {
+                    pressure = p2->value;
+                    found = true;
+                    break;
+                }
+            }
+
+//            for (int i = 0; i < mppressize - 1; ++i) {
+//                const TimeValue &p1 = &maskProfile->Pressure[i];
+//                const TimeValue &p2 = maskProfile->Pressure[i + 1];
+
+//                if ((p2.time > ti) && (p1.time <= ti)) {
+//                    pressure = p1.value;
+//                    found = true;
+//                    break;
+//                } else if (p2.time == ti) {
+//                    pressure = p2.value;
+//                    found = true;
+//                    break;
+//                }
+//            }
+
+            if (found) {
+                // lookup and subtract the calculated leak baseline for this pressure
+                val = tmp - maskProfile->calcLeak(pressure);
+
+                if (val < 0) {
+                    val = 0;
+                }
+
+                leak->AddEvent(ti, val);
+            }
+        }
+    }
+
+    zMaskmutex.unlock();
+
+    return leak->count();
+}
 
 void flagLargeLeaks(Session *session)
 {
@@ -1738,112 +1852,6 @@ void flagLargeLeaks(Session *session)
         LL->AddEvent(time, duration);
     }
 }
-
-QMutex zMaskmutex;
-zMaskProfile mmaskProfile(Mask_NasalPillows, "ResMed Swift FX");
-bool mmaskFirst = true;
-
-int calcLeaks(Session *session)
-{
-
-    if (session->type() != MT_CPAP) { return 0; }
-
-    if (session->eventlist.contains(CPAP_Leak)) { return 0; } // abort if already there
-
-    if (!session->eventlist.contains(CPAP_LeakTotal)) { return 0; } // can't calculate without this..
-
-    zMaskmutex.lock();
-    zMaskProfile *maskProfile = &mmaskProfile;
-
-    if (mmaskFirst) {
-        mmaskFirst = false;
-        maskProfile->load(p_profile);
-    }
-
-    //    if (!maskProfile) {
-    //        maskProfile=new zMaskProfile(Mask_NasalPillows,"ResMed Swift FX");
-    //    }
-    maskProfile->reset();
-    maskProfile->updateProfile(session);
-
-    EventList *leak = session->AddEventList(CPAP_Leak, EVL_Event, 1);
-
-    QVector<EventList *> & EVL = session->eventlist[CPAP_LeakTotal];
-    int evlsize = EVL.size();
-
-    TimeValue *p2, *pstr, *pend;
-
-    // can this go out of the loop?
-    int mppressize = maskProfile->Pressure.size();
-    pstr = maskProfile->Pressure.data();
-    pend = maskProfile->Pressure.data()+(mppressize-1);
-
-    for (int i = 0; i < evlsize; ++i) {
-        EventList &el = *EVL[i];
-        EventDataType gain = el.gain(), tmp, val;
-        int count = el.count();
-        EventStoreType *dptr = el.rawData();
-        EventStoreType *eptr = dptr + count;
-        quint32 *tptr = el.rawTime();
-        qint64 start = el.first(), ti;
-        EventStoreType pressure;
-        tptr = el.rawTime();
-        start = el.first();
-
-        bool found;
-
-        for (; dptr < eptr; ++dptr) {
-            tmp = EventDataType(*dptr) * gain;
-            ti = start + *tptr++;
-
-            found = false;
-            pressure = pstr->value;
-
-            for (TimeValue *p1 = pstr; p1 != pend; ++p1) {
-                p2 = p1+1;
-                if ((p2->time > ti) && (p1->time <= ti)) {
-                    pressure = p1->value;
-                    found = true;
-                    break;
-                } else if (p2->time == ti) {
-                    pressure = p2->value;
-                    found = true;
-                    break;
-                }
-            }
-
-//            for (int i = 0; i < mppressize - 1; ++i) {
-//                const TimeValue &p1 = &maskProfile->Pressure[i];
-//                const TimeValue &p2 = maskProfile->Pressure[i + 1];
-
-//                if ((p2.time > ti) && (p1.time <= ti)) {
-//                    pressure = p1.value;
-//                    found = true;
-//                    break;
-//                } else if (p2.time == ti) {
-//                    pressure = p2.value;
-//                    found = true;
-//                    break;
-//                }
-//            }
-
-            if (found) {
-                val = tmp - maskProfile->calcLeak(pressure);
-
-                if (val < 0) {
-                    val = 0;
-                }
-
-                leak->AddEvent(ti, val);
-            }
-        }
-    }
-
-    zMaskmutex.unlock();
-
-    return leak->count();
-}
-
 
 int calcPulseChange(Session *session)
 {

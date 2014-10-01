@@ -610,6 +610,9 @@ void Profile::ExtraLoad(QDomElement &root)
 
     QFile file(p_path+"/machines.xml");
 
+    // Don't do anything if machines.xml already exists.. the user ran the old version!
+    if (file.exists()) return;
+
     file.open(QFile::WriteOnly);
 
     file.write(doc.toByteArray());
