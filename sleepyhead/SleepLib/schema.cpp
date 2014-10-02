@@ -206,7 +206,7 @@ void init()
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_Apnea         = 0x1004, FLAG,    MT_CPAP, SESSION, "Apnea",
                         QObject::tr("Unclassified Apnea"),
-                        QObject::tr("An apnea that could not fit into a category"),
+                        QObject::tr("an apnea that couldn't be determined as Central or Obstructive, due to excessive leakage interfering with the classification process."),
                         QObject::tr("UA"),       STR_UNIT_EventsPerHour,    DEFAULT,    QColor("dark green")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_FlowLimit     = 0x1005, FLAG,    MT_CPAP, SESSION,
