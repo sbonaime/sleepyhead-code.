@@ -1494,7 +1494,7 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>230</width>
+          <width>240</width>
           <height>724</height>
          </rect>
         </property>
@@ -1908,7 +1908,7 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>230</width>
+          <width>240</width>
           <height>724</height>
          </rect>
         </property>
@@ -3138,15 +3138,15 @@ border-radius: 10px;
      </property>
      <addaction name="actionExport_CSV"/>
      <addaction name="separator"/>
-     <addaction name="actionExport_Current_Day"/>
+     <addaction name="actionExport_Review"/>
     </widget>
     <addaction name="action_Import_Data"/>
     <addaction name="action_Preferences"/>
     <addaction name="action_Edit_Profile"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_Report"/>
-    <addaction name="menuExp_ort_CSV_Data"/>
     <addaction name="separator"/>
+    <addaction name="menuExp_ort_CSV_Data"/>
     <addaction name="actionExport_Journal"/>
     <addaction name="separator"/>
     <addaction name="actionChange_User"/>
@@ -3526,10 +3526,10 @@ border-radius: 10px;
   </action>
   <action name="actionExport_CSV">
    <property name="text">
-    <string>Export as CSV</string>
+    <string>CSV Export Wizard</string>
    </property>
   </action>
-  <action name="actionExport_Current_Day">
+  <action name="actionExport_Review">
    <property name="text">
     <string>Export for Review</string>
    </property>

@@ -43,10 +43,10 @@ gSummaryChart::gSummaryChart(ChannelID code, MachineType machtype)
     tz_hours = tz_offset / 3600.0;
     expected_slices = 5;
 
-    addCalc(code, ST_MIN, brighten(schema::channel[code].defaultColor() ,0.90));
-    addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.30));
-    addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.50));
-    addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,1.80));
+    addCalc(code, ST_MIN, brighten(schema::channel[code].defaultColor() ,0.60));
+    addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.20));
+    addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.70));
+    addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,2.30));
 }
 
 gSummaryChart::~gSummaryChart()

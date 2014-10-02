@@ -1686,14 +1686,6 @@ void MainWindow::on_action_CycleTabs_triggered()
     ui->tabWidget->setCurrentIndex(i);
 }
 
-void MainWindow::on_actionExp_ort_triggered()
-{
-    ExportCSV ex(this);
-
-    if (ex.exec() == ExportCSV::Accepted) {
-    }
-}
-
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
     ui->webView->load(
@@ -2711,4 +2703,17 @@ void MainWindow::on_actionExport_Journal_triggered()
 void MainWindow::on_actionShow_Performance_Counters_toggled(bool arg1)
 {
     p_profile->general->setShowPerformance(arg1);
+}
+
+void MainWindow::on_actionExport_CSV_triggered()
+{
+    ExportCSV ex(this);
+
+    if (ex.exec() == ExportCSV::Accepted) {
+    }
+}
+
+void MainWindow::on_actionExport_Review_triggered()
+{
+    QMessageBox::information(nullptr, STR_MessageBox_Information, QObject::tr("Sorry, this feature is not implemented yet"), QMessageBox::Ok);
 }

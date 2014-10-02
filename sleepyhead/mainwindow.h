@@ -235,9 +235,6 @@ class MainWindow : public QMainWindow
     //! \brief Selects the next view tab
     void on_action_CycleTabs_triggered();
 
-    //! \brief Opens the CSV Export window
-    void on_actionExp_ort_triggered();
-
     //! \brief Opens the User Guide at the wiki in the welcome browser.
     void on_actionOnline_Users_Guide_triggered();
 
@@ -330,6 +327,10 @@ class MainWindow : public QMainWindow
 
     void on_actionShow_Performance_Counters_toggled(bool arg1);
     void on_aboutToQuit();
+
+    void on_actionExport_CSV_triggered();
+
+    void on_actionExport_Review_triggered();
 
 private:
     void importCPAPBackups();

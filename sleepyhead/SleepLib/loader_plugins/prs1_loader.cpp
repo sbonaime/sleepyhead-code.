@@ -216,11 +216,13 @@ void parseModel(MachineInfo & info, QString modelnum)
     info.modelnumber = modelnum;
 
     QString modelstr;
+    bool fnd = false;
     for (int i=0; i<modelnum.size(); i++) {
         QChar c = modelnum.at(i);
         if (c.isDigit()) {
             modelstr += c;
-        } else break;
+            fnd = true;
+        } else if (fnd) break;
     }
 
     bool ok;
@@ -232,6 +234,11 @@ void parseModel(MachineInfo & info, QString modelnum)
 
 
     switch (type) {
+    case 1: // cpap
+    case 2: // cpap
+    case 3: // cpap
+        info.model = QObject::tr("RemStar Plus Compliance Only");
+        break;
     case 4: // cpap
         info.model = QObject::tr("RemStar Pro with C-Flex+");
         break;
@@ -500,11 +507,13 @@ int PRS1Loader::OpenMachine(QString path)
     PeekProperties(info, propertyfile);
 
     QString modelstr;
+    bool fnd = false;
     for (int i=0; i<info.modelnumber.size(); i++) {
         QChar c = info.modelnumber.at(i);
         if (c.isDigit()) {
             modelstr += c;
-        } else break;
+            fnd = true;
+        } else if (fnd) break;
     }
 
     bool ok;
