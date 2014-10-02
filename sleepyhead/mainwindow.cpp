@@ -335,11 +335,9 @@ MainWindow::MainWindow(QWidget *parent) :
     int panel_width = p_profile->appearance->rightPanelWidth();
     a.push_back(this->width() - panel_width);
     a.push_back(panel_width);
-    ui->splitter_2->setStretchFactor(1,1);
     ui->splitter_2->setSizes(a);
-    ui->splitter_2->setStretchFactor(1,1);
-
-
+    ui->splitter_2->setStretchFactor(0,1);
+    ui->splitter_2->setStretchFactor(1,0);
 }
 
 void MainWindow::on_changeWarningMessage()
