@@ -304,10 +304,10 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
     ////////////////////////////////////////////////////////////////////////////////////////////
-    bool check_updates = false;
+    //bool check_updates = false;
 
     if (PREF[STR_GEN_UpdatesAutoCheck].toBool()) {
-        int update_frequency = PREF[STR_GEN_UpdateCheckFrequency].toInt();
+        //int update_frequency = PREF[STR_GEN_UpdateCheckFrequency].toInt();
         int days = 1000;
         lastchecked = PREF[STR_GEN_UpdatesLastChecked].toDateTime();
 
@@ -316,9 +316,9 @@ retry_directory:
             days /= 86400;
         };
 
-        if (days > update_frequency) {
-            check_updates = true;
-        }
+//        if (days > update_frequency) {
+//            check_updates = true;
+//        }
     }
 
     if (!Profiles::profiles.size()) {
@@ -337,7 +337,7 @@ retry_directory:
             if (vc < 0) {
                 release_notes();
 
-                check_updates = false;
+                //check_updates = false;
             } else if (vc > 0) {
                 if (QMessageBox::warning(nullptr, STR_MessageBox_Error, QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
                                          QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {

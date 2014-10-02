@@ -6,7 +6,8 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <QGLFormat>
+#include <QGLContext>
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QResource>
@@ -329,6 +330,15 @@ MainWindow::MainWindow(QWidget *parent) :
     loadChannels();
 
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
+
+    QList<int> a;
+    int panel_width = p_profile->appearance->rightPanelWidth();
+    a.push_back(this->width() - panel_width);
+    a.push_back(panel_width);
+    ui->splitter_2->setStretchFactor(1,1);
+    ui->splitter_2->setSizes(a);
+    ui->splitter_2->setStretchFactor(1,1);
+
 
 }
 
@@ -1563,7 +1573,7 @@ void MainWindow::DelayedScreenshot()
 #endif
 
 #if defined(Q_OS_WIN32) || defined(Q_OS_LINUX)
-     QRect rec = QApplication::desktop()->screenGeometry();
+     //QRect rec = QApplication::desktop()->screenGeometry();
 
      // grab the whole screen
      QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
@@ -2040,10 +2050,6 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         }
     }
     day = p_profile->GetDay(date, MT_CPAP);
-
-    if (day != nullptr) {
-        int i = 5;
-    }
 
     getDaily()->clearLastDay();
     getDaily()->LoadDate(date);
@@ -2716,4 +2722,9 @@ void MainWindow::on_actionExport_CSV_triggered()
 void MainWindow::on_actionExport_Review_triggered()
 {
     QMessageBox::information(nullptr, STR_MessageBox_Information, QObject::tr("Sorry, this feature is not implemented yet"), QMessageBox::Ok);
+}
+
+void MainWindow::on_splitter_2_splitterMoved(int, int)
+{
+    p_profile->appearance->setRightPanelWidth(ui->splitter_2->sizes()[1]);
 }

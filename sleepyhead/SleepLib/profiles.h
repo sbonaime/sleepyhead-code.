@@ -320,6 +320,8 @@ const QString STR_IS_LockSummarySessions = "LockSummarySessions";
 
 // AppearanceSettings Strings
 const QString STR_AS_GraphHeight = "GraphHeight";
+const QString STR_AS_DailyPanelWidth = "DailyPanelWidth";
+const QString STR_AS_RightPanelWidth = "RightPanelWidth";
 const QString STR_AS_AntiAliasing = "UseAntiAliasing";
 const QString STR_AS_GraphSnapshots = "EnableGraphSnapshots";
 const QString STR_AS_Animations = "AnimationsAndTransitions";
@@ -696,6 +698,8 @@ class AppearanceSettings : public ProfileSettings
       : ProfileSettings(profile)
     {
         initPref(STR_AS_GraphHeight, 180.0);
+        initPref(STR_AS_DailyPanelWidth, 350.0);
+        initPref(STR_AS_RightPanelWidth, 230.0);
         initPref(STR_AS_AntiAliasing, true);
         initPref(STR_AS_GraphSnapshots, true);
         initPref(STR_AS_Animations, true);
@@ -713,6 +717,10 @@ class AppearanceSettings : public ProfileSettings
 
     //! \brief Returns the normal (unscaled) height of a graph
     int graphHeight() const { return getPref(STR_AS_GraphHeight).toInt(); }
+    //! \brief Returns the normal (unscaled) height of a graph
+    int dailyPanelWidth() const { return getPref(STR_AS_DailyPanelWidth).toInt(); }
+    //! \brief Returns the normal (unscaled) height of a graph
+    int rightPanelWidth() const { return getPref(STR_AS_RightPanelWidth).toInt(); }
     //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
     bool antiAliasing() const { return getPref(STR_AS_AntiAliasing).toBool(); }
     //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
@@ -748,6 +756,10 @@ class AppearanceSettings : public ProfileSettings
 
     //! \brief Set the normal (unscaled) height of a graph.
     void setGraphHeight(int height) { setPref(STR_AS_GraphHeight, height); }
+    //! \brief Set the normal (unscaled) height of a graph.
+    void setDailyPanelWidth(int width) { setPref(STR_AS_DailyPanelWidth, width); }
+    //! \brief Set the normal (unscaled) height of a graph.
+    void setRightPanelWidth(int width) { setPref(STR_AS_RightPanelWidth, width); }
     //! \brief Set to true to turn on AntiAliasing (the graphical smoothing method)
     void setAntiAliasing(bool aa) { setPref(STR_AS_AntiAliasing, aa); }
     //! \brief Set to true if renderPixmap functions are in use, which takes snapshots of graphs.

@@ -59,7 +59,7 @@ void Daily::setSidebarVisible(bool visible)
 {
     QList<int> a;
 
-    int panel_width = visible ? 370 : 0;
+    int panel_width = visible ? p_profile->appearance->dailyPanelWidth() : 0;
     a.push_back(panel_width);
     a.push_back(this->width() - panel_width);
     ui->splitter_2->setStretchFactor(1,1);
@@ -1156,9 +1156,9 @@ QString Daily::getStatisticsInfo(Day * day)
 {
     if (!day) return QString();
 
-    Machine *cpap = day->machine(MT_CPAP),
-            *oxi = day->machine(MT_OXIMETER),
-            *pos = day->machine(MT_POSITION);
+    Machine *cpap = day->machine(MT_CPAP);
+//            *oxi = day->machine(MT_OXIMETER),
+//            *pos = day->machine(MT_POSITION);
 
 
     int mididx=p_profile->general->prefCalcMiddle();
@@ -1351,13 +1351,13 @@ void Daily::Load(QDate date)
     Day * day = p_profile->GetDay(date);
     Machine *cpap = nullptr,
             *oxi = nullptr,
-            *stage = nullptr,
+            //*stage = nullptr,
             *posit = nullptr;
 
     if (day) {
         cpap = day->machine(MT_CPAP);
         oxi = day->machine(MT_OXIMETER);
-        stage = day->machine(MT_SLEEPSTAGE);
+   //     stage = day->machine(MT_SLEEPSTAGE);
         posit = day->machine(MT_POSITION);
     }
 
@@ -2004,7 +2004,7 @@ void Daily::on_LineCursorUpdate(double time)
     } else dateDisplay->setText(QString(GraphView->emptyText()));
 }
 
-void Daily::on_RangeUpdate(double minx, double maxx)
+void Daily::on_RangeUpdate(double minx, double /*maxx*/)
 {
     if (minx > 1) {
         dateDisplay->setText(GraphView->getRangeString());
@@ -2561,3 +2561,10 @@ void Daily::on_toggleEvents_clicked(bool checked)
 //       // ui->sessionWidget->setCurrentItem(item);
 //    }
 //}
+
+void Daily::on_splitter_2_splitterMoved(int, int)
+{
+    int size = ui->splitter_2->sizes()[0];
+    if (size == 0) return;
+    p_profile->appearance->setDailyPanelWidth(size);
+}

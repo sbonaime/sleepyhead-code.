@@ -1124,12 +1124,12 @@ QString Statistics::GenerateHTML()
 
                 periods.push_back(Period(last,last,tr("Last Session")));
 
-                bool done=false;
+                //bool done=false;
                 int j=0;
                 do {
                     s=QDate(l.year(), l.month(), 1);
                     if (s < first) {
-                        done = true;
+                        //done = true;
                         s = first;
                     }
                     if (p_profile->countDays(row.type, s, l) > 0) {

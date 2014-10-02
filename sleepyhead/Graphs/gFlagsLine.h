@@ -68,7 +68,7 @@ class gFlagsLine: public Layer
     void setLineNum(int i) { line_num = i; }
 
     virtual Layer * Clone() {
-        gFlagsLine * layer = new gFlagsLine(nullptr);  //ouchie..
+        gFlagsLine * layer = new gFlagsLine(NoChannel);  //ouchie..
         Layer::CloneInto(layer);
         CloneInto(layer);
         return layer;

@@ -298,7 +298,8 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
     //m_marginbottom=5;
 
     left = marginLeft()*printScaleX(), right = marginRight()*printScaleX(), top = marginTop(), bottom = marginBottom() * printScaleY();
-    int x = 0, y = 0;
+    //int x;
+    int y;
 
     if (m_showTitle) {
         int title_x, yh;
@@ -309,7 +310,7 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         yh = fm.height();
         //GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
         y = yh;
-        x = fm.width(title());
+        //x = fm.width(title());
         //GetTextExtent(title(),x,y,mediumfont);
         title_x = float(yh) ;
 
@@ -482,11 +483,11 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
         fa.setPixelSize(28);
         fb.setPixelSize(32);
         fc.setPixelSize(70);
-        graphView()->setPrintScaleX(2.5);
-        graphView()->setPrintScaleY(2.2);
+        graphView()->setPrintScaleX(2.5f);
+        graphView()->setPrintScaleY(2.2f);
     } else {
-        graphView()->setPrintScaleX(1);
-        graphView()->setPrintScaleY(1);
+        graphView()->setPrintScaleX(1.0f);
+        graphView()->setPrintScaleY(1.0f);
     }
 
     defaultfont = &fa;
@@ -716,7 +717,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     int y = event->y();
     int x = event->x();
 
-    bool doredraw = false;
+    //bool doredraw = false;
 
     timedRedraw(0);
 
@@ -796,7 +797,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
             int offset = (x >= x2) ? 20 : - 20;
             ToolTip(m_selDurString, m_rect.left() + x + offset, m_rect.top() + y + 20, align);
 
-            doredraw = true;
+            //doredraw = true;
         } else if (event->buttons() & Qt::RightButton) {    // Right Mouse button dragging
             m_graphview->setPointClicked(event->pos());
             x -= left;
@@ -822,7 +823,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                 }
 
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
-                doredraw = true;
+              //  doredraw = true;
             } else {
                 qint64 qq = rmax_x - rmin_x;
                 xx = max_x - min_x;
@@ -845,7 +846,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
                 }
 
                 m_graphview->SetXBounds(min_x, max_x, m_group, false);
-                doredraw = true;
+                //doredraw = true;
             }
         }
     }
@@ -1180,7 +1181,7 @@ void gGraph::ZoomX(double mult, int origin_px)
         min = max - q;
     }
 
-    extern const int max_history;
+    //extern const int max_history;
 
     m_graphview->SetXBounds(min, max, m_group);
     //updateSelectionTime(max-min);
@@ -1415,9 +1416,9 @@ int gGraph::minHeight()
 {
     int minheight = m_min_height;
 
-    int top = 0;
-    int center = 0;
-    int bottom = 0;
+//    int top = 0;
+//    int center = 0;
+//    int bottom = 0;
     for (int i=0; i<m_layers.size(); ++i) {
         int mh = m_layers[i]->minimumHeight();
         mh += m_margintop + m_marginbottom;

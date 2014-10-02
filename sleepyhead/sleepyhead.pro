@@ -20,8 +20,8 @@ contains(DEFINES, BrokenGL) {
     DEFINES += BROKEN_OPENGL_BUILD
 } else {
     message("Building with QGLWidget gGraphView")
-    QT += opengl
 }
+QT += opengl
 
 #The following forces ResMed session locking.. it *may* not be necessary.. I'm still trying to assess this properly.
 DEFINES += LOCK_RESMED_SESSIONS

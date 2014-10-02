@@ -1712,7 +1712,7 @@ class MyWidgetAction : public QWidgetAction
 public:
     MyWidgetAction(ChannelID code, QObject * parent = nullptr) :QWidgetAction(parent), code(code) { chbox = nullptr; }
 protected:
-    virtual QWidget * createWidget(QWidget * parent) {
+    virtual QWidget * createWidget(QWidget * /*parent*/) {
         connect(chbox, SIGNAL(toggled(bool)), this, SLOT(setChecked(bool)));
         connect(chbox, SIGNAL(clicked()), this, SLOT(trigger()));
 
@@ -2793,7 +2793,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
     gGraph *graph = nullptr;
     int group = 0;
-    int x = event->x();
+    //int x = event->x();
     int y = event->y();
 
     float h, py = 0, pinned_height = 0;
@@ -2982,7 +2982,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
     }
 
     if ((m_metaselect) && (event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9)) {
-        int bk = (int)event->key()-Qt::Key_0;
+        //int bk = (int)event->key()-Qt::Key_0;
         m_metaselect = false;
 
         timedRedraw(0);

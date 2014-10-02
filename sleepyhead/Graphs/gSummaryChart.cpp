@@ -70,7 +70,8 @@ void SummaryChart::SetDay(Day * nullday)
 
         if (mididx == 0) { mid = ST_PERC; }
         else if (mididx == 1) { mid = ST_WAVG; }
-        else if (mididx == 2) { mid = ST_AVG; }
+        else mid = ST_AVG;
+
 
         if (cpapmode >= MODE_ASV) {
             addSlice(CPAP_EPAP, QColor("green"), ST_SETMIN);
@@ -94,7 +95,7 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_IPAPHi, QColor("blue"), ST_SETMAX);
         } else if (cpapmode >= MODE_APAP) {
             addSlice(CPAP_PressureMin, QColor("orange"), ST_SETMIN);
-            addSlice(CPAP_Pressure, QColor("dark green"), mid, 0.5);
+            addSlice(CPAP_Pressure, QColor("dark green"), mid, 0.5f);
             addSlice(CPAP_Pressure, QColor("grey"), ST_PERC, perc);
             addSlice(CPAP_PressureMax, QColor("red"), ST_SETMAX);
         } else {
@@ -627,7 +628,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 }
 
                 QColor col1 = col;
-                QColor col2 = brighten(col,2.37);
+                QColor col2 = brighten(col,2.37f);
                 //outlines->setColor(Qt::black);
 
                 int np = d.value().size();

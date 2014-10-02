@@ -41,7 +41,7 @@ Session::Session(Machine *m, SessionID session)
     s_events_loaded = false;
     s_summary_loaded = false;
     _first_session = true;
-    s_enabled = -1;
+    s_enabled = true;
 
     s_first = s_last = 0;
     s_evchecksum_checked = false;

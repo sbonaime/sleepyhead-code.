@@ -210,9 +210,6 @@ bool Machine::AddSession(Session *s)
     Q_ASSERT(p_profile);
     Q_ASSERT(p_profile->isOpen());
 
-    if (s->type() == MT_OXIMETER) {
-        int i=5;
-    }
     updateChannels(s);
 
     if (p_profile->session->ignoreOlderSessions()) {
@@ -442,12 +439,12 @@ bool Machine::Purge(int secret)
     QList<Session *> sessions = sessionlist.values();
 
     // Clean up any loaded sessions from memory first..
-    bool success = true;
+    //bool success = true;
     for (int i=0; i < sessions.size(); ++i) {
         Session * sess = sessions[i];
         if (!sess->Destroy()) {
             qDebug() << "Could not destroy "+ info.loadername +" ("+info.serial+") session" << sess->session();
-            success = false;
+      //      success = false;
         } else {
 //            sessionlist.remove(sess->session());
         }
@@ -485,7 +482,7 @@ bool Machine::Purge(int secret)
             qDebug() << "Deleting " << QDir::toNativeSeparators(fullpath);
             if (!dir.remove(fullpath)) {
                 qDebug() << "Could not purge file" << fullpath;
-                success=false;
+                //success=false;
                 could_not_kill++;
             }
         } else {
