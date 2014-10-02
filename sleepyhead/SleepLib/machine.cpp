@@ -210,9 +210,6 @@ bool Machine::AddSession(Session *s)
     Q_ASSERT(p_profile);
     Q_ASSERT(p_profile->isOpen());
 
-    if (s->type() == MT_OXIMETER) {
-        int i=5;
-    }
     updateChannels(s);
 
     if (p_profile->session->ignoreOlderSessions()) {

@@ -41,7 +41,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int start_py = topp;
 
     double xx = w.max_x - w.min_x;
-    double yy = w.max_y - w.min_y;
+    //double yy = w.max_y - w.min_y;
     double jj = double(width) / double(xx);
 
 

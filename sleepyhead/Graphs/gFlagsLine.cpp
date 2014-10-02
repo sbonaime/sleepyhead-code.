@@ -176,7 +176,7 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
     QColor barcol;
 
     for (int i = 0; i < visflags.size(); i++) {
-        schema::Channel & chan = schema::channel[visflags.at(i)->code()];
+        //schema::Channel & chan = schema::channel[visflags.at(i)->code()];
 
         // Alternating box color
         if (i & 1) { barcol = COLOR_ALT_BG1; }

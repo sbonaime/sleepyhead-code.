@@ -482,11 +482,11 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
         fa.setPixelSize(28);
         fb.setPixelSize(32);
         fc.setPixelSize(70);
-        graphView()->setPrintScaleX(2.5);
-        graphView()->setPrintScaleY(2.2);
+        graphView()->setPrintScaleX(2.5f);
+        graphView()->setPrintScaleY(2.2f);
     } else {
-        graphView()->setPrintScaleX(1);
-        graphView()->setPrintScaleY(1);
+        graphView()->setPrintScaleX(1.0f);
+        graphView()->setPrintScaleY(1.0f);
     }
 
     defaultfont = &fa;
@@ -1415,9 +1415,9 @@ int gGraph::minHeight()
 {
     int minheight = m_min_height;
 
-    int top = 0;
-    int center = 0;
-    int bottom = 0;
+//    int top = 0;
+//    int center = 0;
+//    int bottom = 0;
     for (int i=0; i<m_layers.size(); ++i) {
         int mh = m_layers[i]->minimumHeight();
         mh += m_margintop + m_marginbottom;

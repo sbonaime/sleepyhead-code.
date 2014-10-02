@@ -73,12 +73,12 @@ class median_of_empty_list_exception:public std::exception{
 ///
 ///The numbers must be convertible to double.
 template<class RandAccessIter>
-double median(RandAccessIter begin, RandAccessIter end)
-  throw (median_of_empty_list_exception)
+float median(RandAccessIter begin, RandAccessIter end)
+//  throw (median_of_empty_list_exception)
 {
   if (begin == end) { throw median_of_empty_list_exception(); }
-  std::size_t size = end - begin;
-  std::size_t middleIdx = size/2;
+  int size = end - begin;
+  int middleIdx = size/2;
   RandAccessIter target = begin + middleIdx;
   std::nth_element(begin, target, end);
 

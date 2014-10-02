@@ -627,7 +627,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 }
 
                 QColor col1 = col;
-                QColor col2 = brighten(col,2.37);
+                QColor col2 = brighten(col,2.37f);
                 //outlines->setColor(Qt::black);
 
                 int np = d.value().size();

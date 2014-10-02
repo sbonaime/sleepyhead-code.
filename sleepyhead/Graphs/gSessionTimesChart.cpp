@@ -43,10 +43,10 @@ gSummaryChart::gSummaryChart(ChannelID code, MachineType machtype)
     tz_hours = tz_offset / 3600.0;
     expected_slices = 5;
 
-    addCalc(code, ST_MIN, brighten(schema::channel[code].defaultColor() ,0.60));
-    addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.20));
-    addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.70));
-    addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,2.30));
+    addCalc(code, ST_MIN, brighten(schema::channel[code].defaultColor() ,0.60f));
+    addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.20f));
+    addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.70f));
+    addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,2.30f));
 }
 
 gSummaryChart::~gSummaryChart()
@@ -1284,7 +1284,7 @@ gPressureChart::gPressureChart()
     // Do not reorder these!!! :P
     addCalc(CPAP_Pressure, ST_SETMAX, schema::channel[CPAP_Pressure].defaultColor());    // 00
     addCalc(CPAP_Pressure, ST_MID, schema::channel[CPAP_Pressure].defaultColor());       // 01
-    addCalc(CPAP_Pressure, ST_90P, brighten(schema::channel[CPAP_Pressure].defaultColor(), 1.33)); // 02
+    addCalc(CPAP_Pressure, ST_90P, brighten(schema::channel[CPAP_Pressure].defaultColor(), 1.33f)); // 02
     addCalc(CPAP_PressureMin, ST_SETMIN, schema::channel[CPAP_PressureMin].defaultColor());  // 03
     addCalc(CPAP_PressureMax, ST_SETMAX, schema::channel[CPAP_PressureMax].defaultColor());  // 04
 
@@ -1294,9 +1294,9 @@ gPressureChart::gPressureChart()
     addCalc(CPAP_IPAPHi, ST_SETMAX, schema::channel[CPAP_IPAPHi].defaultColor());    // 08
 
     addCalc(CPAP_EPAP, ST_MID, schema::channel[CPAP_EPAP].defaultColor());         // 09
-    addCalc(CPAP_EPAP, ST_90P, brighten(schema::channel[CPAP_EPAP].defaultColor(),1.33));         // 10
+    addCalc(CPAP_EPAP, ST_90P, brighten(schema::channel[CPAP_EPAP].defaultColor(),1.33f));         // 10
     addCalc(CPAP_IPAP, ST_MID, schema::channel[CPAP_IPAP].defaultColor());         // 11
-    addCalc(CPAP_IPAP, ST_90P, brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33));         // 12
+    addCalc(CPAP_IPAP, ST_90P, brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33f));         // 12
 }
 
 void gPressureChart::afterDraw(QPainter &, gGraph &graph, QRect rect)

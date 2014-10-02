@@ -385,7 +385,7 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     float left = region.boundingRect().left();
     float top = region.boundingRect().top();
     float width = region.boundingRect().width();
-    float height = region.boundingRect().height();
+    //float height = region.boundingRect().height();
 
     QString months[] = {
         QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),

@@ -267,6 +267,8 @@ int CMS50Loader::doImportMode()
             info.serial = QString();
             Machine * mach = CreateMachine(info);
 
+            Q_UNUSED(mach);
+
             qDebug() << QString("Receiving Oximeter transmission %1:%2").arg(hour).arg(minute);
             // set importing to true or whatever..
 

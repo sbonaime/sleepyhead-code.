@@ -136,7 +136,7 @@ EventDataType Day::calcMiddle(ChannelID code)
 }
 EventDataType Day::calcMax(ChannelID code)
 {
-    return p_profile->general->prefCalcMax() ? percentile(code, 0.995) : Max(code);
+    return p_profile->general->prefCalcMax() ? percentile(code, 0.995f) : Max(code);
 }
 EventDataType Day::calcPercentile(ChannelID code)
 {

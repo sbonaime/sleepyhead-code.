@@ -377,7 +377,7 @@ int IntellipapLoader::Open(QString path)
     sid = 0;
     SessionID lastsid = 0;
 
-    int last_minp=0, last_maxp=0, last_ps=0, last_pres = 0;
+    //int last_minp=0, last_maxp=0, last_ps=0, last_pres = 0;
 
     for (int i = 0; i < recs; i++) {
         // convert timestamp to real epoch
@@ -543,7 +543,7 @@ int IntellipapLoader::Open(QString path)
             if (!sess) continue;
 
 //            quint64 first = qint64(sid) * 1000L;
-            quint64 last = qint64(SessionEnd[i]) * 1000L;
+            //quint64 last = qint64(SessionEnd[i]) * 1000L;
 
             if (sess->last() > 0) {
              //   sess->really_set_last(last);
