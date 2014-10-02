@@ -81,7 +81,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     qint64 clockdrift = qint64(p_profile->cpap->clockDrift()) * 1000L;
     qint64 drift = 0;
-    bool hover = false;
+    //bool hover = false;
 
     // For each session, process it's eventlist
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
@@ -125,7 +125,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 // FT_Span
                 ////////////////////////////////////////////////////////////////////////////
                 for (; dptr < eptr; dptr++) {
-                    hover = false;
+                    //hover = false;
 
                     X = stime + *tptr++;
                     raw = *dptr;
@@ -154,9 +154,9 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     QRect rect(x2, start_py, x1-x2, height);
                     QColor col = m_flag_color;
-                    if (rect.contains(mouse)) {
-                        hover = true;
-                    }
+//                    if (rect.contains(mouse)) {
+//                        hover = true;
+//                    }
 
                     painter.fillRect(rect, QBrush(col));
                 }
@@ -195,7 +195,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 // FT_Bar
                 ////////////////////////////////////////////////////////////////////////////
                 for (; dptr < eptr; dptr++) {
-                    hover = false;
+                   // hover = false;
                     X = stime + *tptr++;
                     raw = *dptr;
 
@@ -249,7 +249,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 //                            painter.drawLine(rect.x(), top, rect.x(), bottom);
 
                            // col = COLOR_Gold;
-                            hover = true;
+//                            hover = true;
                             painter.setPen(QPen(col,3));
                         } else {
                             painter.setPen(QPen(col,1));
@@ -266,11 +266,11 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         //////////////////////////////////////////////////////////////////////////////////////
                         // Top and bottom markers
                         //////////////////////////////////////////////////////////////////////////////////////
-                        bool b = false;
+                        //bool b = false;
                         if (!w.selectingArea() && !m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse) && !m_hover) {
                             // only want to draw the highlight/label once per frame
                             m_hover = true;
-                            b = true;
+                            //b = true;
 
                             // Draw text label
                             QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);

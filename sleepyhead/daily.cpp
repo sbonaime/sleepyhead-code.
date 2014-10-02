@@ -1156,9 +1156,9 @@ QString Daily::getStatisticsInfo(Day * day)
 {
     if (!day) return QString();
 
-    Machine *cpap = day->machine(MT_CPAP),
-            *oxi = day->machine(MT_OXIMETER),
-            *pos = day->machine(MT_POSITION);
+    Machine *cpap = day->machine(MT_CPAP);
+//            *oxi = day->machine(MT_OXIMETER),
+//            *pos = day->machine(MT_POSITION);
 
 
     int mididx=p_profile->general->prefCalcMiddle();
@@ -1351,13 +1351,13 @@ void Daily::Load(QDate date)
     Day * day = p_profile->GetDay(date);
     Machine *cpap = nullptr,
             *oxi = nullptr,
-            *stage = nullptr,
+            //*stage = nullptr,
             *posit = nullptr;
 
     if (day) {
         cpap = day->machine(MT_CPAP);
         oxi = day->machine(MT_OXIMETER);
-        stage = day->machine(MT_SLEEPSTAGE);
+   //     stage = day->machine(MT_SLEEPSTAGE);
         posit = day->machine(MT_POSITION);
     }
 
@@ -2004,7 +2004,7 @@ void Daily::on_LineCursorUpdate(double time)
     } else dateDisplay->setText(QString(GraphView->emptyText()));
 }
 
-void Daily::on_RangeUpdate(double minx, double maxx)
+void Daily::on_RangeUpdate(double minx, double /*maxx*/)
 {
     if (minx > 1) {
         dateDisplay->setText(GraphView->getRangeString());

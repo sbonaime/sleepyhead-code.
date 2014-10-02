@@ -6,7 +6,8 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <QGLFormat>
+#include <QGLContext>
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QResource>
@@ -1563,7 +1564,7 @@ void MainWindow::DelayedScreenshot()
 #endif
 
 #if defined(Q_OS_WIN32) || defined(Q_OS_LINUX)
-     QRect rec = QApplication::desktop()->screenGeometry();
+     //QRect rec = QApplication::desktop()->screenGeometry();
 
      // grab the whole screen
      QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
@@ -2040,10 +2041,6 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         }
     }
     day = p_profile->GetDay(date, MT_CPAP);
-
-    if (day != nullptr) {
-        int i = 5;
-    }
 
     getDaily()->clearLastDay();
     getDaily()->LoadDate(date);
