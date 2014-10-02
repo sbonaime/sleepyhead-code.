@@ -393,7 +393,7 @@ void ProfileSelect::on_listView_customContextMenuRequested(const QPoint &pos)
 
 void ProfileSelect::on_pushButton_clicked()
 {
-    MainWindow::RestartApplication(false, true);
+    MainWindow::RestartApplication(false, "-d");
 }
 
 void ProfileSelect::on_filter_textChanged(const QString &arg1)

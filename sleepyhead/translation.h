@@ -11,6 +11,8 @@
 
 #include <QSettings>
 
+const QString LangSetting = "Settings/Language";
+
 void initTranslations(QSettings & settings);
 
 #endif // TRANSLATION_H

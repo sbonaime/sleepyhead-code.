@@ -121,9 +121,6 @@ void MainWindow::logMessage(QString msg)
     ui->logText->appendPlainText(msg);
 }
 
-void loadChannels();
-void saveChannels();
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -327,7 +324,6 @@ MainWindow::MainWindow(QWidget *parent) :
     wtimer.setParent(this);
     warnidx = 0;
     wtimer.singleShot(0, this, SLOT(on_changeWarningMessage()));
-    loadChannels();
 
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
 
@@ -1918,8 +1914,10 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     overview->ReloadGraphs();
 }
 
-void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
+void MainWindow::RestartApplication(bool force_login, QString cmdline)
 {
+    p_profile->removeLock();
+
     QString apppath;
 #ifdef Q_OS_MAC
     // In Mac OS the full path of aplication binary is:
@@ -1938,7 +1936,7 @@ void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
 
     if (force_login) { args << "-l"; }
 
-    if (change_datafolder) { args << "-d"; }
+    args << cmdline;
 
     if (QProcess::startDetached("/usr/bin/open", args)) {
         QApplication::instance()->exit();
@@ -1958,7 +1956,9 @@ void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
 
     if (force_login) { args << "-l"; }
 
-    if (change_datafolder) { args << "-d"; }
+    args << cmdline;
+
+    //if (change_datafolder) { args << "-d"; }
 
     if (QProcess::startDetached(apppath, args)) {
         ::exit(0);
@@ -1972,7 +1972,6 @@ void MainWindow::on_actionChange_User_triggered()
 {
     p_profile->Save();
     PREF.Save();
-    p_profile->removeLock();
 
     RestartApplication(true);
 }
@@ -2507,14 +2506,13 @@ void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 
 void MainWindow::on_actionChange_Language_triggered()
 {
-    QSettings *settings = new QSettings(getDeveloperName(), getAppName());
-    settings->remove("Settings/Language");
-    delete settings;
+    //QSettings *settings = new QSettings(getDeveloperName(), getAppName());
+    //settings->remove("Settings/Language");
+    //delete settings;
     p_profile->Save();
     PREF.Save();
-    p_profile->removeLock();
 
-    RestartApplication(true);
+    RestartApplication(true, "-language");
 }
 
 void MainWindow::on_actionChange_Data_Folder_triggered()
@@ -2523,7 +2521,7 @@ void MainWindow::on_actionChange_Data_Folder_triggered()
     PREF.Save();
     p_profile->removeLock();
 
-    RestartApplication(false, true);
+    RestartApplication(false, "-d");
 }
 
 void MainWindow::on_actionImport_Somnopose_Data_triggered()

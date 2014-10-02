@@ -56,7 +56,7 @@ void initTranslations(QSettings & settings) {
     dir.setNameFilters(QStringList("*.qm"));
 
     QFileInfoList list = dir.entryInfoList();
-    QString language = settings.value("Settings/Language").toString();
+    QString language = settings.value(LangSetting).toString();
 
     QString langfile, langname;
 
@@ -140,7 +140,7 @@ void initTranslations(QSettings & settings) {
         langsel.disconnect(&langlist, SIGNAL(itemDoubleClicked(QListWidgetItem*)), &langsel, SLOT(close()));
         langname = langlist.currentItem()->text();
         language = langlist.currentItem()->data(Qt::UserRole).toString();
-        settings.setValue("Settings/Language", language);
+        settings.setValue(LangSetting, language);
     }
 
     langname=langNames[language];

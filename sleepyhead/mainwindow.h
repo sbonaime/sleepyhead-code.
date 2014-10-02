@@ -66,6 +66,9 @@ class Daily;
 class Report;
 class Overview;
 
+void loadChannels();
+void saveChannels();
+
 
 /*! \class MainWindow
     \author Mark Watkins
@@ -123,7 +126,7 @@ class MainWindow : public QMainWindow
 
         If force_login is set, it will return to the login menu even if it's set to skip
         */
-    static void RestartApplication(bool force_login = false, bool change_datafolder = false);
+    static void RestartApplication(bool force_login = false, QString cmdline = QString());
 
     void JumpDaily();
 

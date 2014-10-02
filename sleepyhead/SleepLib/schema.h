@@ -129,6 +129,11 @@ class Channel
     void setOrder(short order) { m_order = order; }
 
     void setShowInOverview(bool b) { m_showInOverview = b; }
+    void resetStrings() {
+        m_fullname = default_fullname;
+        m_label = default_label;
+        m_description = default_description;
+    }
 
     QString option(int i) {
         if (m_options.contains(i)) {
@@ -150,6 +155,8 @@ class Channel
     QHash<ChannelCalcType, ChannelCalc> calc;
 
   protected:
+
+
     int m_id;
 
     ChanType m_type;
@@ -162,6 +169,11 @@ class Channel
     QString m_description;
     QString m_label;
     QString m_unit;
+
+    QString default_fullname;
+    QString default_label;
+    QString default_description;
+
     DataType m_datatype;
     QColor m_defaultcolor;
 
@@ -213,6 +225,8 @@ class ChannelList
             return EmptyChannel;
         }
     }
+
+    void resetStrings();
 
     //! \brief Channel List indexed by integer ID
     QHash<ChannelID, Channel *> channels;

@@ -619,6 +619,11 @@ Channel::Channel(ChannelID id, ChanType type, MachineType machtype, ScopeType sc
         calc[Calc_UpperThresh] = ChannelCalc(id, Calc_UpperThresh, Qt::red, false);
     }
     m_showInOverview = false;
+
+    default_fullname = fullname;
+    default_label = label;
+    default_description = description;
+
 }
 bool Channel::isNull()
 {
@@ -826,6 +831,17 @@ bool ChannelList::Load(QString filename)
 
     return true;
 }
+
+void ChannelList::resetStrings()
+{
+    QHash<ChannelID, Channel *>::iterator it;
+    QHash<ChannelID, Channel *>::iterator it_end = channels.end();
+    for (it = channels.begin(); it != it_end; ++it) {
+        Channel * chan = it.value();
+        chan->resetStrings();
+    }
+}
+
 
 void ChannelList::add(QString group, Channel *chan)
 {

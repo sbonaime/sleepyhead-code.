@@ -106,17 +106,25 @@ int main(int argc, char *argv[])
 
     bool force_login_screen = false;
     bool force_data_dir = false;
+    bool changing_language = false;
 
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
 
     QSettings settings(getDeveloperName(), getAppName());
 
+    QString lastlanguage = settings.value(LangSetting, "").toString();
+    if (lastlanguage.isEmpty())
+        changing_language = true;
+
     for (int i = 1; i < args.size(); i++) {
         if (args[i] == "-l") { force_login_screen = true; }
         else if (args[i] == "-d") { force_data_dir = true; }
         else if (args[i] == "-language") {
-            settings.setValue("Settings/Language","");
+            changing_language = true;
+
+            // reset to force language dialog
+            settings.setValue(LangSetting,"");
         } else if (args[i] == "-p") {
             sDelay(1);
         }
@@ -129,9 +137,18 @@ int main(int argc, char *argv[])
     // Language Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
     initTranslations(settings);
+
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
 
+    if (settings.value(LangSetting, "").toString() == lastlanguage) {
+        // don't reset if they selected the same language again
+        changing_language = false;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // OpenGL Detection
+    ////////////////////////////////////////////////////////////////////////////////////////////
     float glversion = getOpenGLVersion();
 
     bool opengl2supported = glversion >= 2.0;
@@ -145,7 +162,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    QString lookfor = QObject::tr("Look for this build in <a href='%1'>SleepyHead's files hosted on Sourceforge</a>.").arg("http://sf.net/projects/sleepyhead/files");
 #ifdef BROKEN_OPENGL_BUILD
     Q_UNUSED(bad_graphics)
     Q_UNUSED(intel_graphics)
@@ -187,8 +203,7 @@ int main(int argc, char *argv[])
                              QObject::tr("You may need to update your computers graphics drivers from the GPU makers website. %1").
                                 arg(intel_graphics ? QObject::tr("(<a href='http://intel.com/support'>Intel's support site</a>)") : "")+"<br/><br/>"+
                              QObject::tr("Because graphs will not render correctly, and it may cause crashes, this build will now exit.")+"<br/><br/>"+
-                             QObject::tr("Don't be disheartened, there is another build available tagged \"<b>-BrokenGL</b>\" that should work on your computer.")+ "<br/><br/>"+
-                             lookfor+ "<br/><br/>"
+                             QObject::tr("There is another build available tagged \"<b>-BrokenGL</b>\" that should work on your computer.")
 
 
                              ,QMessageBox::Ok, QMessageBox::Ok);
@@ -397,8 +412,15 @@ retry_directory:
 
     // Must be initialized AFTER profile creation
     MainWindow w;
-
     mainwin = &w;
+
+    loadChannels();
+
+    if (changing_language) {
+        qDebug() << "Resetting Channel strings to defaults for language change";
+        schema::channel.resetStrings();
+    }
+
 
   //  if (check_updates) { mainwin->CheckForUpdates(); }
 
