@@ -59,7 +59,7 @@ void Daily::setSidebarVisible(bool visible)
 {
     QList<int> a;
 
-    int panel_width = visible ? 370 : 0;
+    int panel_width = visible ? p_profile->appearance->dailyPanelWidth() : 0;
     a.push_back(panel_width);
     a.push_back(this->width() - panel_width);
     ui->splitter_2->setStretchFactor(1,1);
@@ -2561,3 +2561,10 @@ void Daily::on_toggleEvents_clicked(bool checked)
 //       // ui->sessionWidget->setCurrentItem(item);
 //    }
 //}
+
+void Daily::on_splitter_2_splitterMoved(int, int)
+{
+    int size = ui->splitter_2->sizes()[0];
+    if (size == 0) return;
+    p_profile->appearance->setDailyPanelWidth(size);
+}

@@ -434,7 +434,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
     if ((daylist.size() == 0) || (it == dayindex.end())) return;
 
-    Day * lastday = nullptr;
+    //Day * lastday = nullptr;
 
     //    int dc = 0;
 //    for (int i=idx; i<=idx_end; ++i) {
@@ -527,11 +527,11 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             lastx1 += barw;
             it++;
             nousedays++;
-            lastday = day;
+            //lastday = day;
             continue;
         }
 
-        lastday = day;
+        //lastday = day;
 
         float x1 = lastx1 + barw;
 
@@ -986,13 +986,13 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
         float x1 = lastx1 + barw;
 
-        bool hl = false;
+        //bool hl = false;
 
         QRect rec2(lastx1, rect.top(), barw, rect.height());
         if (rec2.contains(mouse)) {
             QColor col2(255,0,0,64);
             painter.fillRect(rec2, QBrush(col2));
-            hl = true;
+            //hl = true;
         }
 
         if (cit != cache.end()) {

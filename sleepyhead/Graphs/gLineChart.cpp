@@ -462,9 +462,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
 
-    bool mouseover = false;
+    //bool mouseover = false;
     if (rect.contains(w.graphView()->currentMousePos())) {
-        mouseover = true;
+        //mouseover = true;
 
         painter.fillRect(rect, QBrush(QColor(255,255,245,128)));
     }
@@ -501,7 +501,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int idx;
     bool done;
     double x0, xL;
-    double sr;
+    double sr = 0.0;
     int sam;
     int minz, maxz;
 

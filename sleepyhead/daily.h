@@ -281,6 +281,8 @@ private slots:
 
     //void on_sessionWidget_itemSelectionChanged();
 
+    void on_splitter_2_splitterMoved(int pos, int index);
+
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void showEvent(QShowEvent *);

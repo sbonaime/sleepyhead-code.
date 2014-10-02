@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1005</width>
-    <height>849</height>
+    <width>687</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -926,7 +926,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -1332,18 +1332,6 @@ color: yellow;</string>
        </widget>
       </widget>
       <widget class="QToolBox" name="toolBox">
-       <property name="minimumSize">
-        <size>
-         <width>240</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>180</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="palette">
         <palette>
          <active>
@@ -1494,8 +1482,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>724</height>
+          <width>223</width>
+          <height>582</height>
          </rect>
         </property>
         <property name="palette">
@@ -1909,7 +1897,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>240</width>
-          <height>724</height>
+          <height>237</height>
          </rect>
         </property>
         <property name="palette">
@@ -3056,8 +3044,8 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>724</height>
+          <width>69</width>
+          <height>237</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3118,8 +3106,8 @@ border-radius: 10px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1005</width>
-     <height>22</height>
+     <width>687</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="sizePolicy">

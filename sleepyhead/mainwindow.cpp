@@ -331,6 +331,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
 
+    QList<int> a;
+    int panel_width = p_profile->appearance->rightPanelWidth();
+    a.push_back(this->width() - panel_width);
+    a.push_back(panel_width);
+    ui->splitter_2->setStretchFactor(1,1);
+    ui->splitter_2->setSizes(a);
+    ui->splitter_2->setStretchFactor(1,1);
+
+
 }
 
 void MainWindow::on_changeWarningMessage()
@@ -2713,4 +2722,9 @@ void MainWindow::on_actionExport_CSV_triggered()
 void MainWindow::on_actionExport_Review_triggered()
 {
     QMessageBox::information(nullptr, STR_MessageBox_Information, QObject::tr("Sorry, this feature is not implemented yet"), QMessageBox::Ok);
+}
+
+void MainWindow::on_splitter_2_splitterMoved(int, int)
+{
+    p_profile->appearance->setRightPanelWidth(ui->splitter_2->sizes()[1]);
 }
