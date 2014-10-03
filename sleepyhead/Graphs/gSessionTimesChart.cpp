@@ -30,6 +30,9 @@ gSummaryChart::gSummaryChart(QString label, MachineType machtype)
     tz_offset = d2.secsTo(d1);
     tz_hours = tz_offset / 3600.0;
     expected_slices = 5;
+
+    idx_end = 0;
+    idx_start = 0;
 }
 
 gSummaryChart::gSummaryChart(ChannelID code, MachineType machtype)
@@ -47,6 +50,9 @@ gSummaryChart::gSummaryChart(ChannelID code, MachineType machtype)
     addCalc(code, ST_MID, brighten(schema::channel[code].defaultColor() ,1.20f));
     addCalc(code, ST_90P, brighten(schema::channel[code].defaultColor() ,1.70f));
     addCalc(code, ST_MAX, brighten(schema::channel[code].defaultColor() ,2.30f));
+
+    idx_end = 0;
+    idx_start = 0;
 }
 
 gSummaryChart::~gSummaryChart()

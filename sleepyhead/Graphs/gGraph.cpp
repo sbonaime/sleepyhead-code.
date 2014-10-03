@@ -167,6 +167,8 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
     m_enforceMinY = m_enforceMaxY = false;
     m_showTitle = true;
     m_printing = false;
+
+    left = right = top = bottom = 0;
 }
 gGraph::~gGraph()
 {
