@@ -155,33 +155,29 @@ int main(int argc, char *argv[])
     bool bad_graphics = !opengl2supported;
     bool intel_graphics = getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
 
-#if defined(Q_OS_WIN)
-    bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);
-    if (bad_graphics) {
-        bad_graphics = !angle_supported;
-    }
-#endif
+//#if defined(Q_OS_WIN)
+//    bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);
+//    if (bad_graphics) {
+//        bad_graphics = !angle_supported;
+//    }
+//#endif
 
 #ifdef BROKEN_OPENGL_BUILD
     Q_UNUSED(bad_graphics)
     Q_UNUSED(intel_graphics)
 
-    QString betterbuild = "Settings/BetterBuild";
-
-    QString fasterbuildavailable = QObject::tr("A faster build of SleepyHead may be available");
-    QString notbotheragain = QObject::tr("You will not be bothered with this message again.");
-    QString betterresults = QObject::tr("This version will run fine, but a \"<b>%1</b>\" tagged build of SleepyHead will likely run much smoother on your computer.");
+    const QString BetterBuild = "Settings/BetterBuild";
 
     if (opengl2supported) {
-        if (!settings.value(betterbuild, false).toBool()) {
-            QMessageBox::information(nullptr, fasterbuildavailable,
-                             QObject::tr("This build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support, but it looks like your computer has full support for it.") + "<br/><br/>"+
-                             betterresults.arg("-OpenGL")+"<br/><br/>"+
-                             lookfor + "<br/><br/>"+
-                             notbotheragain, QMessageBox::Ok, QMessageBox::Ok);
-            settings.setValue(betterbuild, true);
+        if (!settings.value(BetterBuild, false).toBool()) {
+            QMessageBox::information(nullptr, QObject::tr("A faster build of SleepyHead may be available"),
+                             QObject::tr("This build of SleepyHead is a compatability version that also works on computers lacking OpenGL 2.0 support.")+"<br/><br/>"+
+                             QObject::tr("However it looks like your computer has full support for OpenGL 2.0!") + "<br/><br/>"+
+                             QObject::tr("This version will run fine, but a \"<b>%1</b>\" tagged build of SleepyHead will likely run a bit faster on your computer.").arg("-OpenGL")+"<br/><br/>"+
+                             QObject::tr("You will not be bothered with this message again."), QMessageBox::Ok, QMessageBox::Ok);
+            settings.setValue(BetterBuild, true);
         }
-    } else {
+    } /*else {
 #if defined(Q_OS_WIN)
         if (angle_supported) {
             if (!settings.value(betterbuild, false).toBool()) {
@@ -195,7 +191,7 @@ int main(int argc, char *argv[])
             }
         }
 #endif
-    }
+    } */
 #else
     if (bad_graphics) {
         QMessageBox::warning(nullptr, QObject::tr("Incompatible Graphics Hardware"),
@@ -204,8 +200,6 @@ int main(int argc, char *argv[])
                                 arg(intel_graphics ? QObject::tr("(<a href='http://intel.com/support'>Intel's support site</a>)") : "")+"<br/><br/>"+
                              QObject::tr("Because graphs will not render correctly, and it may cause crashes, this build will now exit.")+"<br/><br/>"+
                              QObject::tr("There is another build available tagged \"<b>-BrokenGL</b>\" that should work on your computer.")
-
-
                              ,QMessageBox::Ok, QMessageBox::Ok);
         exit(1);
     }
