@@ -356,7 +356,7 @@ bool Session::StoreSummary()
 
 bool Session::LoadSummary()
 {
-    static int sumcnt = 0;
+    //static int sumcnt = 0;
 
     if (s_summary_loaded) return true;
     QString filename = s_machine->getSummariesPath() + QString().sprintf("%08lx.000", s_session);

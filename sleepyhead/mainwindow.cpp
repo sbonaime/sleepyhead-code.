@@ -331,9 +331,9 @@ MainWindow::MainWindow(QWidget *parent) :
     int panel_width = p_profile->appearance->rightPanelWidth();
     a.push_back(this->width() - panel_width);
     a.push_back(panel_width);
-    ui->splitter_2->setSizes(a);
-    ui->splitter_2->setStretchFactor(0,1);
-    ui->splitter_2->setStretchFactor(1,0);
+    ui->mainsplitter->setSizes(a);
+    ui->mainsplitter->setStretchFactor(0,1);
+    ui->mainsplitter->setStretchFactor(1,0);
 }
 
 void MainWindow::on_changeWarningMessage()
@@ -2720,7 +2720,7 @@ void MainWindow::on_actionExport_Review_triggered()
     QMessageBox::information(nullptr, STR_MessageBox_Information, QObject::tr("Sorry, this feature is not implemented yet"), QMessageBox::Ok);
 }
 
-void MainWindow::on_splitter_2_splitterMoved(int, int)
+void MainWindow::on_mainsplitter_splitterMoved(int, int)
 {
-    p_profile->appearance->setRightPanelWidth(ui->splitter_2->sizes()[1]);
+    p_profile->appearance->setRightPanelWidth(ui->mainsplitter->sizes()[1]);
 }

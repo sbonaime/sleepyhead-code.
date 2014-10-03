@@ -1629,10 +1629,10 @@ bool PRS1Import::ParseSummaryF3()
 
     session->set_first(qint64(summary->timestamp) * 1000L);
 
-    EventDataType epap = data[0x04] | (data[0x05] << 8);
-    EventDataType ipap = data[0x06] | (data[0x07] << 8);
+//    EventDataType epap = data[0x04] | (data[0x05] << 8);
+//    EventDataType ipap = data[0x06] | (data[0x07] << 8);
 
-    EventDataType f1 = data[0x08] | (data[0x09] << 8);
+//    EventDataType f1 = data[0x08] | (data[0x09] << 8);
 
     return true;
 }
@@ -1667,7 +1667,7 @@ bool PRS1Import::ParseSummaryF5V0()
         session->settings[CPAP_IPAP] = imax_epap/10.0f;
 
     } else if (cpapmode == MODE_ASV_VARIABLE_EPAP) {
-        int imax_ipap = imax_epap + imax_ps;
+        //int imax_ipap = imax_epap + imax_ps;
         int imin_ipap = imin_epap + imin_ps;
 
         session->settings[CPAP_EPAPLo] = imin_epap / 10.0f;
@@ -1753,7 +1753,7 @@ bool PRS1Import::ParseSummaryF5V1()
         session->settings[CPAP_IPAP] = imax_epap/10.0f;
 
     } else if (cpapmode == MODE_ASV_VARIABLE_EPAP) {
-        int imax_ipap = imax_epap + imax_ps;
+        //int imax_ipap = imax_epap + imax_ps;
         int imin_ipap = imin_epap + imin_ps;
 
         session->settings[CPAP_EPAPLo] = imin_epap / 10.0f;

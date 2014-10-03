@@ -474,11 +474,11 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="mainsplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QSplitter" name="splitter">
+      <widget class="QSplitter" name="logsplitter">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -1482,8 +1482,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>223</width>
-          <height>582</height>
+          <width>98</width>
+          <height>606</height>
          </rect>
         </property>
         <property name="palette">
@@ -1896,8 +1896,8 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>237</height>
+          <width>100</width>
+          <height>30</height>
          </rect>
         </property>
         <property name="palette">
@@ -3044,8 +3044,8 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>69</width>
-          <height>237</height>
+          <width>77</width>
+          <height>236</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3107,7 +3107,7 @@ border-radius: 10px;
      <x>0</x>
      <y>0</y>
      <width>687</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="sizePolicy">

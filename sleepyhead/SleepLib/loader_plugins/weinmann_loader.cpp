@@ -135,11 +135,11 @@ int WeinmannLoader::Open(QString path)
 
     int WeekComplianceOffset = index["WeekComplianceOffset"];
     int WCD_Pin_Offset = index["WCD_Pin_Offset"];
-    int WCD_Pex_Offset = index["WCD_Pex_Offset"];
-    int WCD_Snore_Offset = index["WCD_Snore_Offset"];
-    int WCD_Lf_Offset = index["WCD_Lf_Offset"];
-    int WCD_Events_Offset = index["WCD_Events_Offset"];
-    int WCD_IO_Offset = index["WCD_IO_Offset"];
+//    int WCD_Pex_Offset = index["WCD_Pex_Offset"];
+//    int WCD_Snore_Offset = index["WCD_Snore_Offset"];
+//    int WCD_Lf_Offset = index["WCD_Lf_Offset"];
+//    int WCD_Events_Offset = index["WCD_Events_Offset"];
+//    int WCD_IO_Offset = index["WCD_IO_Offset"];
     int comp_start = index[CompOffset];
 
     int wccount = index["WeekComplianceCount"];
@@ -197,9 +197,9 @@ int WeinmannLoader::Open(QString path)
 
     float flow_sample_duration = 1000.0 / 5;
     float pressure_sample_duration = 1000.0 / 2;
-    float amv_sample_duration = 200 * 10;
+    //float amv_sample_duration = 200 * 10;
 
-    int c = index[DayComplianceCount];
+    //int c = index[DayComplianceCount];
     for (int i=0; i < 5; i++) {
         int year = QString().sprintf("%02i%02i", p[0], p[1]).toInt();
         int month = p[2];
@@ -348,13 +348,13 @@ int WeinmannLoader::Open(QString path)
         //EventList * MV = sess->AddEventList(CPAP_Snore, EVL_Waveform, 1.0f, 0.0, 0.0, 0.0, amv_sample_duration);
         //MV->AddWaveform(ti, (unsigned char *)&mv[ci.amv_start], ci.amv_size, (ci.amv_size/(1000/amv_sample_duration)) * 1000L);
 
-        EventList * L = sess->AddEventList(CPAP_Leak, EVL_Event);
-        EventList * S = sess->AddEventList(CPAP_Snore, EVL_Event);
+//        EventList * L = sess->AddEventList(CPAP_Leak, EVL_Event);
+//        EventList * S = sess->AddEventList(CPAP_Snore, EVL_Event);
         EventList * OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
         EventList * A = sess->AddEventList(CPAP_Apnea, EVL_Event);
         EventList * H = sess->AddEventList(CPAP_Hypopnea, EVL_Event);
         EventList * FL = sess->AddEventList(CPAP_FlowLimit, EVL_Event);
-        EventList * VS = sess->AddEventList(CPAP_VSnore, EVL_Event);
+//        EventList * VS = sess->AddEventList(CPAP_VSnore, EVL_Event);
         quint64 tt = ti;
         quint64 step = sess->length() / ci.event_recs;
         unsigned char *p = &ev[ci.event_start];
@@ -563,8 +563,8 @@ int WeinmannLoader::Open(QString path)
 
 void WeinmannLoader::initChannels()
 {
-    using namespace schema;
-    Channel * chan = nullptr;
+    //using namespace schema;
+    //Channel * chan = nullptr;
 //    channel.add(GRP_CPAP, chan = new Channel(INTP_SmartFlex = 0x1165, SETTING,   SESSION,
 //        "INTPSmartFlex", QObject::tr("SmartFlex"),
 //        QObject::tr("Weinmann pressure relief setting."),

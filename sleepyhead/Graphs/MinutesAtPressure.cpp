@@ -221,7 +221,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
   //  left = rect.left();
 
     QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
-    QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
+    //QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
     QMap<EventStoreType, EventDataType>::iterator vit;
 
 
@@ -547,7 +547,7 @@ skip:
 
     QList<EventStoreType> trash;
     for (it = times.begin(); it != times_end; ++it) {
-        EventStoreType key = it.key();
+        //EventStoreType key = it.key();
         int value = it.value();
 //        if (value == 0) {
 //            trash.append(key);
@@ -637,7 +637,7 @@ void MinutesAtPressure::recalcFinished()
 }
 
 
-bool MinutesAtPressure::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
+bool MinutesAtPressure::mouseMoveEvent(QMouseEvent *, gGraph *graph)
 {
 //    int y = event->y() - m_rect.top();
 //    int x = event->x() - graph->graphView()->titleWidth;
