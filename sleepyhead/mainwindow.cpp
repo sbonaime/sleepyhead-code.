@@ -270,8 +270,7 @@ MainWindow::MainWindow(QWidget *parent) :
         a->setEnabled(false);
         systraymenu->addSeparator();
         systraymenu->addAction(tr("&About"), this, SLOT(on_action_About_triggered()));
-        systraymenu->addAction(tr("Check for &Updates"), this,
-                               SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addAction(tr("Check for &Updates"), this, SLOT(on_actionCheck_for_Updates_triggered()));
         systraymenu->addSeparator();
         systraymenu->addAction(tr("E&xit"), this, SLOT(close()));
     } else { // if not available, the messages will popup in the taskbar
@@ -296,8 +295,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
     QString loadingtxt =
-        "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"
-        + tr("Loading...") + "</h1></td></tr></table></body></HTML>";
+        "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'>"
+        "<tr><td align=center>"
+        "<img src='qrc:/docs/sheep.png' heigh=300px>"
+        //"<h1>" + tr("Please Wait, Loading...") + "</h1>"
+        "</td></tr></table></body></HTML>";
     ui->statisticsView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
 

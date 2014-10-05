@@ -42,7 +42,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         return;
     }
 
-    QString username = p_profile->Get(QString("_{") + QString(STR_UI_UserName) + "}_");
+    //QString username = p_profile->Get(QString("_{") + QString(STR_UI_UserName) + "}_");
 
     bool print_bookmarks = false;
 
@@ -127,8 +127,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     qDebug() << "Printer Resolution is" << virt_width << "x" << virt_height;
 
     const int graphs_per_page = 6;
-    float full_graph_height = (virt_height - (normal_height * graphs_per_page)) / float(
-                                  graphs_per_page);
+    float full_graph_height = (virt_height - (normal_height * graphs_per_page)) / float(graphs_per_page);
 
     QString title = QObject::tr("%1 Report").arg(name);
     painter.setFont(title_font);
@@ -142,35 +141,43 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     int maxy = 0;
 
     if (!p_profile->user->firstName().isEmpty()) {
-        QString userinfo = STR_TR_Name + QString(":\t %1, %2\n").arg(p_profile->user->lastName()).arg(
-                               p_profile->user->firstName());
-        userinfo += STR_TR_DOB + QString(":\t%1\n").arg(p_profile->user->DOB().toString(
-                        Qt::SystemLocaleShortDate));
+        QString userinfo = STR_TR_Name + QString(":\t %1, %2\n").
+                arg(p_profile->user->lastName()).
+                arg(p_profile->user->firstName());
 
-        if (!p_profile->doctor->patientID().isEmpty()) { userinfo += STR_TR_PatientID + QString(":\t%1\n").arg(p_profile->doctor->patientID()); }
+        userinfo += STR_TR_DOB + QString(":\t%1\n").
+                arg(p_profile->user->DOB().toString(Qt::SystemLocaleShortDate));
+
+        if (!p_profile->doctor->patientID().isEmpty()) {
+            userinfo += STR_TR_PatientID + QString(":\t%1\n").arg(p_profile->doctor->patientID());
+        }
 
         userinfo += STR_TR_Phone + QString(":\t%1\n").arg(p_profile->user->phone());
         userinfo += STR_TR_Email + QString(":\t%1\n").arg(p_profile->user->email());
 
-        if (!p_profile->user->address().isEmpty()) { userinfo += "\n" + STR_TR_Address + QString(":\n%1").arg(p_profile->user->address()); }
+        if (!p_profile->user->address().isEmpty()) {
+            userinfo += "\n" + STR_TR_Address + QString(":\n%1").arg(p_profile->user->address());
+        }
 
         QRectF bounds = painter.boundingRect(QRectF(0, top, virt_width, 0), userinfo,
                                              QTextOption(Qt::AlignLeft | Qt::AlignTop));
         painter.drawText(bounds, userinfo, QTextOption(Qt::AlignLeft | Qt::AlignTop));
 
-        if (bounds.height() > maxy) { maxy = bounds.height(); }
+        if (bounds.height() > maxy) {
+            maxy = bounds.height();
+        }
     }
 
     Machine *cpap = nullptr, *oxi = nullptr;
 
     int graph_slots = 0;
     Day * day = p_profile->GetGoodDay(mainwin->getDaily()->getDate(), MT_CPAP);
+
     if (day) cpap = day->machine(MT_CPAP);
 
     if (name == STR_TR_Daily) {
 
         QString cpapinfo = date.toString(Qt::SystemLocaleLongDate) + "\n\n";
-
 
         if (cpap) {
             time_t f = day->first(MT_CPAP) / 1000L;
@@ -180,8 +187,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             int m = (tt / 60) % 60;
             int s = tt % 60;
 
-            cpapinfo += STR_TR_MaskTime + QObject::tr(": %1 hours, %2 minutes, %3 seconds\n").arg(h).arg(
-                            m).arg(s);
+            cpapinfo += STR_TR_MaskTime + QObject::tr(": %1 hours, %2 minutes, %3 seconds\n").arg(h).arg(m).arg(s);
             cpapinfo += STR_TR_BedTime + ": " + QDateTime::fromTime_t(f).time().toString("HH:mm:ss") + " ";
             cpapinfo += STR_TR_WakeUp + ": " + QDateTime::fromTime_t(l).time().toString("HH:mm:ss") + "\n\n";
             QString submodel;
@@ -191,55 +197,14 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 //                submodel = "\n" + cpap->machine->info.modeproperties[STR_PROP_SubModel];
 //            }
 
-            cpapinfo += cpap->brand() + " " +
-                        cpap->model() + submodel;
-            CPAPMode mode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
-            cpapinfo += "\n" + STR_TR_Mode + ": ";
+            cpapinfo += cpap->brand() + " " + cpap->series() + " " + cpap->model() + submodel + "\n";
 
-            if (mode == MODE_CPAP) {
-                EventDataType min = round(day->settings_wavg(CPAP_Pressure) * 2) / 2.0;
-                cpapinfo += STR_TR_CPAP + " " + QString::number(min) + STR_UNIT_CMH2O;
-            } else if (mode == MODE_APAP) {
-                EventDataType min = day->settings_min(CPAP_PressureMin);
-                EventDataType max = day->settings_max(CPAP_PressureMax);
-                cpapinfo += STR_TR_APAP + " " + QString::number(min) + "-" + QString::number(max) + STR_UNIT_CMH2O;
-            } else if (mode == MODE_BILEVEL_FIXED) {
-                EventDataType epap = day->settings_min(CPAP_EPAP);
-                EventDataType ipap = day->settings_max(CPAP_IPAP);
-                EventDataType ps = day->settings_max(CPAP_PS);
-                cpapinfo += STR_TR_BiLevel +
-                        QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 %3\n" + STR_TR_PS + ": %4")
-                            .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
-            } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-                EventDataType epap = day->settings_min(CPAP_EPAP);
-                EventDataType ipap = day->settings_max(CPAP_IPAP);
-                EventDataType ps = day->settings_max(CPAP_PS);
-                cpapinfo += STR_TR_BiLevel +
-                        QString("\n" + QObject::tr("Range")+ ": %1-%2 %3 " + QObject::tr("Fixed %1").arg(STR_TR_PS) + ": %4")
-                            .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(ps, 0, 'f', 1);
-            } /*else if (mode == MODE_BILEVEL_AUTO_FIXED_EPAP_VARIABLE_PS) {
-                EventDataType epap = cpap->settings_min(CPAP_EPAP);
-                EventDataType ipap = cpap->settings_max(CPAP_IPAPHi);
-                EventDataType psl = cpap->settings_max(CPAP_PSMin);
-                EventDataType psh = cpap->settings_max(CPAP_PSMax);
-                cpapinfo += STR_TR_BiLevel +
-                        QString("\n" + QObject::tr("Fixed %1").arg(STR_TR_EPAP) + ": %1 %3" + QObject::tr("Max %1").arg(STR_TR_IPAP) + ": %2 %3\n" + QObject::tr("Variable %1").arg(STR_TR_PS) + ": %4-%5")
-                            .arg(epap, 0, 'f', 1).arg(ipap, 0, 'f', 1).arg(STR_UNIT_CMH2O).arg(psl,0,'f',1).arg(psh,0,'f',1);
-            } */else if (mode == MODE_ASV) {
-                EventDataType epap = day->settings_min(CPAP_EPAP);
-                EventDataType low = day->settings_min(CPAP_IPAPLo);
-                EventDataType high = day->settings_max(CPAP_IPAPHi);
-                EventDataType psl = day->settings_min(CPAP_PSMin);
-                EventDataType psh = day->settings_max(CPAP_PSMax);
-                cpapinfo += STR_TR_ASV + QString("\n" + STR_TR_EPAP + ": %1 " + STR_TR_IPAP + ": %2 - %3 %4\n" +
-                                                 STR_TR_PS + ": %5 / %6")
-                            .arg(epap, 0, 'f', 1)
-                            .arg(low, 0, 'f', 1)
-                            .arg(high, 0, 'f', 1)
-                            .arg(STR_UNIT_CMH2O)
-                            .arg(psl, 0, 'f', 1)
-                            .arg(psh, 0, 'f', 1);
-            } else { cpapinfo += STR_TR_Unknown; }
+            cpapinfo += STR_TR_Mode + ": " + day->getCPAPMode() + "\n";
+            cpapinfo += day->getPressureSettings() + "\n";
+            QString pressurerelief = day->getPressureRelief();
+            if (pressurerelief.compare(STR_TR_None)) {
+                cpapinfo += /*QObject::tr("Pressure Relief")+": "+ */day->getPressureRelief() + "\n";
+            }
 
             float ahi = (day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) +
                          day->count(CPAP_ClearAirway) + day->count(CPAP_Apnea));
