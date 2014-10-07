@@ -2039,6 +2039,11 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             impfile.close();
         }
 
+        QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
+        rxcache.remove();
+
+        QFile sumfile(cpap->getDataPath()+"Summaries.xml.gz");
+        sumfile.remove();
 
 //        m->day.erase(m->day.find(date));
 
@@ -2047,6 +2052,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             sess->Destroy();
             delete sess;
         }
+
     }
     day = p_profile->GetDay(date, MT_CPAP);
 

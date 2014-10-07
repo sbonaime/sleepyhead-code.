@@ -1,6 +1,6 @@
 /* Reports/Printing Module
  *
- * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -9,8 +9,6 @@
 #include <QMessageBox>
 #include <QtPrintSupport/qprinter.h>
 #include <QtPrintSupport/qprintdialog.h>
-// #include <QPrinter>
-//#include <QPrintDialog>
 #include <QTextDocument>
 #include <QProgressBar>
 #include <QApplication>
@@ -55,7 +53,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
             if (book_start.size() > 0) {
                 if (QMessageBox::question(mainwin, STR_TR_Bookmarks,
-                                          QObject::tr("Would you like to show bookmarked areas in this report?"), QMessageBox::Yes,
+                                          QObject::tr("Would you like to show bookmarked areas in this report?"),
+                                          QMessageBox::Yes,
                                           QMessageBox::No) == QMessageBox::Yes) {
                     print_bookmarks = true;
                 }
@@ -193,9 +192,6 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             QString submodel;
             cpapinfo += STR_TR_Machine + ": ";
 
-//            if (cpap->machine->properties.find(STR_PROP_SubModel) != cpap->machine->properties.end()) {
-//                submodel = "\n" + cpap->machine->info.modeproperties[STR_PROP_SubModel];
-//            }
 
             cpapinfo += cpap->brand() + " " + cpap->series() + " " + cpap->model() + submodel + "\n";
 
@@ -240,8 +236,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                 stats = QObject::tr("AHI\t%1\n").arg(ahi, 0, 'f', 2);
             }
 
-            QRectF bounds = painter.boundingRect(QRectF(0, 0, virt_width, 0), stats,
-                                                 QTextOption(Qt::AlignRight));
+            QRectF bounds = painter.boundingRect(QRectF(0, 0, virt_width, 0), stats, QTextOption(Qt::AlignRight));
             painter.drawText(bounds, stats, QTextOption(Qt::AlignRight));
 
 
@@ -281,8 +276,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             } else if (cpap->loaderName() == STR_MACH_ResMed) {
                 stats += QObject::tr("UAI=%1 ").arg(uai, 0, 'f', 2);
             } else if (cpap->loaderName() == STR_MACH_Intellipap) {
-                stats += QObject::tr("NRI=%1 LKI=%2 EPI=%3").arg(nri, 0, 'f', 2).arg(lki, 0, 'f', 2).arg(exp, 0,
-                         'f', 2);
+                stats += QObject::tr("NRI=%1 LKI=%2 EPI=%3")
+                        .arg(nri, 0, 'f', 2).arg(lki, 0, 'f', 2).arg(exp, 0,'f', 2);
             }
 
             bounds = painter.boundingRect(QRectF(0, top + ttop, virt_width, 0), stats,
@@ -294,17 +289,18 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                 stats = "";
 
                 if (journal->settings.contains(Journal_Weight)) {
-                    stats += STR_TR_Weight + QString(" %1 ").arg(weightString(
-                                 journal->settings[Journal_Weight].toDouble()));
+                    stats += STR_TR_Weight + QString(" %1 ").
+                            arg(weightString(journal->settings[Journal_Weight].toDouble()));
                 }
 
                 if (journal->settings.contains(Journal_BMI)) {
-                    stats += STR_TR_BMI + QString(" %1 ").arg(journal->settings[Journal_BMI].toDouble(), 0, 'f', 2);
+                    stats += STR_TR_BMI + QString(" %1 ").
+                            arg(journal->settings[Journal_BMI].toDouble(), 0, 'f', 2);
                 }
 
                 if (journal->settings.contains(Journal_ZombieMeter)) {
-                    stats += STR_TR_Zombie + QString(" %1/10 ").arg(journal->settings[Journal_ZombieMeter].toDouble(),
-                             0, 'f', 0);
+                    stats += STR_TR_Zombie + QString(" %1/10 ").
+                            arg(journal->settings[Journal_ZombieMeter].toDouble(), 0, 'f', 0);
                 }
 
                 if (!stats.isEmpty()) {
@@ -349,8 +345,9 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     } else if (name == STR_TR_Overview) {
         QDateTime first = QDateTime::fromTime_t((*gv)[0]->min_x / 1000L);
         QDateTime last = QDateTime::fromTime_t((*gv)[0]->max_x / 1000L);
-        QString ovinfo = QObject::tr("Reporting from %1 to %2").arg(first.date().toString(
-                             Qt::SystemLocaleShortDate)).arg(last.date().toString(Qt::SystemLocaleShortDate));
+        QString ovinfo = QObject::tr("Reporting from %1 to %2").
+                arg(first.date().toString(Qt::SystemLocaleShortDate)).
+                arg(last.date().toString(Qt::SystemLocaleShortDate));
         QRectF bounds = painter.boundingRect(QRectF(0, top, virt_width, 0), ovinfo,
                                              QTextOption(Qt::AlignHCenter));
         painter.drawText(bounds, ovinfo, QTextOption(Qt::AlignHCenter));

@@ -119,15 +119,18 @@ bool Session::OpenEvents()
 
 bool Session::Destroy()
 {
-    QString path = s_machine->getDataPath();
-
-    QDir dir(path);
+    QDir dir;
     QString base;
     base.sprintf("%08lx", s_session);
-    base = path + "/" + base;
 
-    dir.remove(base + ".000");
-    dir.remove(base + ".001");
+    QString summaryfile = s_machine->getSummariesPath() + base + ".000";
+    QString eventfile = s_machine->getEventsPath() + base + ".001";
+    if (!dir.remove(summaryfile)) {
+        qDebug() << "Could not delete" << summaryfile;
+    }
+    if (!dir.remove(eventfile)) {
+        qDebug() << "Could not delete" << eventfile;
+    }
 
     return s_machine->unlinkSession(this); //!dir.exists(base + ".000") && !dir.exists(base + ".001");
 }
