@@ -101,14 +101,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     if (val > 0) {
         ui->combineLCD->display(val);
-    } else { ui->combineLCD->display(STR_GEN_Off); }
+    } else { ui->combineLCD->display(STR_TR_Off); }
 
     val = profile->session->ignoreShortSessions();
     ui->IgnoreSlider->setValue(val);
 
     if (val > 0) {
         ui->IgnoreLCD->display(val);
-    } else { ui->IgnoreLCD->display(STR_GEN_Off); }
+    } else { ui->IgnoreLCD->display(STR_TR_Off); }
 
     ui->LockSummarySessionSplitting->setChecked(profile->session->lockSummarySessions());
 
@@ -923,22 +923,21 @@ void PreferencesDialog::on_combineSlider_valueChanged(int position)
 {
     if (position > 0) {
         ui->combineLCD->display(position);
-    } else { ui->combineLCD->display(STR_GEN_Off); }
+    } else { ui->combineLCD->display(STR_TR_Off); }
 }
 
 void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
 {
     if (position > 0) {
         ui->IgnoreLCD->display(position);
-    } else { ui->IgnoreLCD->display(STR_GEN_Off); }
+    } else { ui->IgnoreLCD->display(STR_TR_Off); }
 }
 
 #include "mainwindow.h"
 extern MainWindow *mainwin;
 void PreferencesDialog::RefreshLastChecked()
 {
-    ui->updateLastChecked->setText(PREF[STR_GEN_UpdatesLastChecked].toDateTime().toString(
-                                       Qt::SystemLocaleLongDate));
+    ui->updateLastChecked->setText(PREF[STR_GEN_UpdatesLastChecked].toDateTime().toString(Qt::SystemLocaleLongDate));
 }
 
 void PreferencesDialog::on_checkForUpdatesButton_clicked()

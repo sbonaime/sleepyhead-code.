@@ -123,9 +123,6 @@ const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
 const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
 const QString STR_GEN_DataFolder = "DataFolder";
 
-const QString STR_GEN_On = QObject::tr("On");
-const QString STR_GEN_Off = QObject::tr("Off");
-
 const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
 const QString STR_PREF_ReimportBackup = "ReimportBackup";
 const QString STR_PREF_LastCPAPPath = "LastCPAPPath";

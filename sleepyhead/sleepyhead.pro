@@ -30,6 +30,10 @@ DEFINES += LOCK_RESMED_SESSIONS
 CONFIG += rtti
 
 
+*-g++* {
+    QMAKE_CXXFLAGS += -no-unused-variable
+}
+
 #static {
 #    CONFIG += static
 #    QTPLUGIN += qsvg qgif qpng

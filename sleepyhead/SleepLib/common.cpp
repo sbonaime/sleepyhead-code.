@@ -126,7 +126,6 @@ void copyPath(QString src, QString dst)
 }
 
 
-
 QString STR_UNIT_CM;
 QString STR_UNIT_INCH;
 QString STR_UNIT_FOOT;

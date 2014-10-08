@@ -191,7 +191,7 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int top = rect.top()-10;
     int left = rect.left();
-    int width = rect.width();
+    //int width = rect.width();
     int height = rect.height()+10;
 
     // Draw bounding box
