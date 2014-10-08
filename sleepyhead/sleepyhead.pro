@@ -31,7 +31,7 @@ CONFIG += rtti
 
 
 *-g++* {
-    QMAKE_CXXFLAGS += -no-unused-variable
+    QMAKE_CXXFLAGS += -Wno-unused-variable
 }
 
 #static {
