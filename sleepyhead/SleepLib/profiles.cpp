@@ -422,9 +422,9 @@ QString Environment::searchInPath(const QString &executable, const QStringList &
 #endif
 
 // Borrowed from QtCreator (http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt)
-void showInGraphicalShell(const QString &pathIn)
+void showInGraphicalShell(const QString & /*pathIn*/)
 {
-    QWidget * parent = NULL;
+    //QWidget * parent = NULL;
 
     // Mac, Windows support folder or file.
 #if defined(Q_OS_WIN)
@@ -442,7 +442,7 @@ void showInGraphicalShell(const QString &pathIn)
     param += QDir::toNativeSeparators(pathIn);
     QProcess::startDetached(explorer, QStringList(param));
 #elif defined(Q_OS_MAC)
-    Q_UNUSED(parent)
+   // Q_UNUSED(parent)
     QStringList scriptArgs;
     scriptArgs << QLatin1String("-e")
                << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")

@@ -159,7 +159,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
         EDFSignal *sig = nullptr;
         quint32 laston = 0;
 
-        bool skipday;
+        //bool skipday;
 
         int size = str.GetNumDataRecords();
         int cnt=0;
@@ -170,7 +170,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
             uint timestamp = dt.toTime_t();
             int recstart = rec * maskon->nr;
 
-            skipday = false;
+           // skipday = false;
             if ((++cnt % 10) == 0) {
                 // TODO: Change me to emit once MachineLoader is QObjectified...
                 if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
@@ -1208,7 +1208,7 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
 
     QString t;
 
-    double duration;
+    //double duration;
     char *data;
     char c;
     long pos;
@@ -1229,7 +1229,7 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
         data = (char *)edf.edfsignals[s].data;
         pos = 0;
         tt = edf.startdate;
-        duration = 0;
+        //duration = 0;
 
         while (pos < recs) {
             c = data[pos];
@@ -1261,7 +1261,7 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
 
             tt = edf.startdate + qint64(d * 1000.0);
 
-            duration = 0;
+            //duration = 0;
             // First entry
 
             if (data[pos] == 21) {
@@ -1274,7 +1274,7 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
                     pos++;
                 } while ((data[pos] != 20) && (pos < recs)); // start code
 
-                duration = t.toDouble(&ok);
+                //duration = t.toDouble(&ok);
 
                 if (!ok) {
                     qDebug() << "Faulty EDF Annotations file (at %" << pos << ") " << edf.filename;
@@ -1550,6 +1550,8 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
                 filename.chop(3);
                 gz = true;
             } else { gz = false; }
+
+            Q_UNUSED(gz)
 
             // Skip if this file is in the already imported list
             if (skipfiles.contains(filename)) continue;
@@ -2034,10 +2036,10 @@ int ResmedLoader::Open(QString path)
     QVector<qint8> dayused;
     dayused.resize(days);
 
-    time_t time = stredf.startdate / 1000L; // == 12pm on first day
+    //time_t time = stredf.startdate / 1000L; // == 12pm on first day
 
     // reset time to first day
-    time = stredf.startdate / 1000;
+    //time = stredf.startdate / 1000;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Scan DATALOG files, sort, and import any new sessions
@@ -2050,8 +2052,8 @@ int ResmedLoader::Open(QString path)
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-    int size = m->sessionlist.size();
-    int cnt=0;
+    //int size = m->sessionlist.size();
+    //int cnt=0;
     Session * sess;
 
 
@@ -2117,8 +2119,8 @@ int ResmedLoader::Open(QString path)
 
     ///
 
-    size = strsess.size();
-    cnt=0;
+    //size = strsess.size();
+    //cnt=0;
     quint32 ignoreolder = p_profile->session->ignoreOlderSessionsDate().toTime_t();
 
     bool ignoreold = p_profile->session->ignoreOlderSessions();
@@ -2404,6 +2406,8 @@ bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
 
     //    sess->updateLast(tt);
     }
+
+    Q_UNUSED(duration)
 
     return true;
 }

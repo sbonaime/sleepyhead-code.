@@ -319,7 +319,8 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
     double flowstart = m_flow->first();
     double lasttime, time;
 
-    double peakmax = flowstart, peakmin = flowstart;
+    //double peakmax = flowstart,
+    //double peakmin = flowstart;
 
     time = lasttime = flowstart;
     breaths.clear();
@@ -343,9 +344,10 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
 
 
     int sps = 1000 / m_rate;
-    int len = 0, lastk = 0;
+    int len = 0;
+    //int lastk = 0;
 
-    qint64 sttime = time;
+    //qint64 sttime = time;
 
     // For each samples, find the peak upper and lower breath components
     for (int k = 0; k < samples; k++) {
@@ -365,16 +367,16 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
 
                     // Set max for start of the upper breath cycle
                     max = c;
-                    peakmax = time;
+                    //peakmax = time;
 
                     // Starting point of next breath cycle
                     start = k;
-                    sttime = time;
+                    //sttime = time;
                 }
             } else if (c > max) {
                 // Update upper breath peak
                 max = c;
-                peakmax = time;
+                //peakmax = time;
             }
         }
 
@@ -384,13 +386,13 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
             if (lastc >= zeroline) {
                 // Set min for start of the lower breath cycle
                 min = c;
-                peakmin = time;
+                //peakmin = time;
                 middle = k;
 
             } else if (c < min) {
                 // Update lower breath peak
                 min = c;
-                peakmin = time;
+                //peakmin = time;
             }
 
         }
@@ -398,7 +400,7 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
         lasttime = time;
         time += rate;
         lastc = c;
-        lastk = k;
+        //lastk = k;
     }
 }
 
@@ -705,7 +707,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, EventDataType duration)
 {
     int numbreaths = breaths.size();
-    EventDataType val, mx, mn;
+    //EventDataType mx, mn;
 
     QVector<EventDataType> br;
     QVector<qint32> bstart;
@@ -756,10 +758,10 @@ void FlowParser::flagUserEvents(ChannelID code, EventDataType restriction, Event
         bm = p->middle;  // breath middle
         be = p->end;     // breath end
 
-        mx = p->max;
-        mn = p->min;
+//        mx = p->max;
+//        mn = p->min;
 
-        val = mx - mn;   // the total height from top to bottom of this breath
+        //val = mx - mn;   // the total height from top to bottom of this breath
 
         // Scan the breath in the flow data and stop at the first location more than the cutoff value
         // (Only really needs to scan to the middle.. I'm not sure why I made it go all the way to the end.)
@@ -1040,7 +1042,7 @@ int calcAHIGraph(Session *session)
 
     EventDataType ahi, rdi;
 
-    qint64 ti = first, lastti = first;
+    qint64 ti = first; //, lastti = first;
 
     double avgahi = 0;
     double avgrdi = 0;
@@ -1078,7 +1080,7 @@ int calcAHIGraph(Session *session)
                 cnt++;
             }
 
-            lastti = ti;
+            //lastti = ti;
             ti += window_size_ms;
         } while (ti < last);
 
@@ -1104,7 +1106,7 @@ int calcAHIGraph(Session *session)
             }
 
             cnt++;
-            lastti = ti;
+            //lastti = ti;
             ti += window_step;
         }
     }
@@ -1404,7 +1406,7 @@ void zMaskProfile::updatePressureMin()
     //EventDataType perc=0.1;
     //EventDataType tmp,l1,l2;
     //int idx1, idx2,
-    int lks;
+    //int lks;
     double SN;
     double percentile = 0.40;
 
@@ -1423,7 +1425,7 @@ void zMaskProfile::updatePressureMin()
     for (it = pressureleaks.begin(); it != plend; it++) {
         pressure = it.key();
         QMap<EventStoreType, quint32> &leakmap = it.value();
-        lks = leakmap.size();
+        //lks = leakmap.size();
         SN = 0;
 
         // First sum total counts of all leaks
@@ -1535,7 +1537,7 @@ void zMaskProfile::updateProfile(Session *session)
     long cnt = 0, vcnt;
     int n;
 
-    EventDataType maxcnt, maxval, lastval, lastcnt;
+    EventDataType maxcnt, maxval, lastval; //, lastcnt;
 
 
     QMap<EventStoreType, QMap<EventStoreType, quint32> >::iterator plend = pressureleaks.end();
@@ -1552,14 +1554,14 @@ void zMaskProfile::updateProfile(Session *session)
         n = leakval.size();
         sum = 0;
 
-        maxcnt = 0, maxval = 0, lastval = 0, lastcnt = 0;
+        maxcnt = 0, maxval = 0, lastval = 0;//, lastcnt = 0;
 
         lvend = leakval.end();
         for (lit = leakval.begin(); lit != lvend; ++lit) {
             cnt += lit.value();
 
             if (lit.value() > maxcnt) {
-                lastcnt = maxcnt;
+                //lastcnt = maxcnt;
                 maxcnt = lit.value();
                 lastval = maxval;
                 maxval = lit.key();
@@ -1820,7 +1822,7 @@ void flagLargeLeaks(Session *session)
         if (!count) continue;
 
         leaktime = 0;
-        EventDataType leakvalue = 0;
+        //EventDataType leakvalue = 0;
         lastvalue = -1;
 
 
@@ -1830,7 +1832,7 @@ void flagLargeLeaks(Session *session)
             if (value >= threshold) {
                 if (lastvalue < threshold) {
                     leaktime = time;
-                    leakvalue = value;
+                    //leakvalue = value;
                 }
             } else if (lastvalue > threshold) {
                 if (!LL) {
@@ -1948,7 +1950,7 @@ int calcSPO2Drop(Session *session)
 
     EventList *pc = new EventList(EVL_Event, 1, 0, 0, 0, 0, true);
     qint64 lastt;
-    EventDataType lv = 0;
+    //EventDataType lv = 0;
     int li = 0;
 
     // Fix me.. Time scale varies.
@@ -2039,7 +2041,7 @@ int calcSPO2Drop(Session *session)
 
             val = baseline;
             lastt = 0;
-            lv = val;
+            //lv = val;
 
 
             min = val;

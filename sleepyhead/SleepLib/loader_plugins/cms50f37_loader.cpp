@@ -681,13 +681,13 @@ void CMS50F37Loader::syncClock()
 {
     QDate date = QDate::currentDate();
     int year = date.year();
-    quint8 yh = year / 100;
-    quint8 yl = year % 100;
-    quint8 mon = date.month();
-    quint8 day = date.day();
-    quint8 wd = date.dayOfWeek() % 7;
+    quint8 yh = (year / 100) | 0x80;
+    quint8 yl = (year % 100) | 0x80;
+    quint8 mon = date.month() | 0x80;
+    quint8 day = date.day() | 0x80;
+    quint8 wd = (date.dayOfWeek() % 7) | 0x80;
 
-    quint8 datecmd[] = { 0x7d, 0x81, 0xb2, (yh | 0x80), yl |0x80, mon|0x80, day|0x80, wd|0x80, 0x80 };
+    quint8 datecmd[] = { 0x7d, 0x81, 0xb2, yh, yl, mon, day, wd, 0x80 };
 
     timectr = 0;
     if (serial.write((char *)datecmd, 9) == -1) {
@@ -705,11 +705,11 @@ void CMS50F37Loader::syncClock()
     QApplication::processEvents();
 
     QTime ctime = QTime::currentTime();
-    quint8 h = ctime.hour();
-    quint8 m = ctime.minute();
-    quint8 s = ctime.second();
+    quint8 h = ctime.hour() | 0x80;
+    quint8 m = ctime.minute() | 0x80;
+    quint8 s = ctime.second() | 0x80;
 
-    quint8 timecmd[] = { 0x7d, 0x81, 0xb1, h | 0x80, m |0x80, s|0x80, 0x80, 0x80, 0x80 };
+    quint8 timecmd[] = { 0x7d, 0x81, 0xb1, h, m, s, 0x80, 0x80, 0x80 };
 
     timectr = 0;
     if (serial.write((char *)timecmd, 9) == -1) {

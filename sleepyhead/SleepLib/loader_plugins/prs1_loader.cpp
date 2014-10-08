@@ -1350,10 +1350,10 @@ bool PRS1Import::ParseCompliance()
     FlexMode flexmode = FLEX_Unknown;
 
     flex &= 0xf8;
-    bool split = false;
+    //bool split = false;
 
     if (flex & 0x40) {  // This bit defines the Flex setting for the CPAP component of the Split night
-        split = true;
+      //  split = true;
     }
     if (flex & 0x80) { // CFlex bit
         if (flex & 8) { // Plus bit
@@ -2220,7 +2220,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
     unsigned char * header;
     int cnt = 0;
 
-    int lastheadersize = 0;
+    //int lastheadersize = 0;
     int lastblocksize = 0;
 
     int cruft = 0;
@@ -2320,7 +2320,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         int headersize = headerBA.size();
 
         lastblocksize = blocksize;
-        lastheadersize = headersize;
+        //lastheadersize = headersize;
         blocksize -= headersize;
 
         // Check header checksum

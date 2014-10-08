@@ -107,8 +107,10 @@ int ZEOLoader::OpenFile(QString filename)
     qint64 st, tt;
     int stage;
 
-    int ZQ, TotalZ, TimeToZ, TimeInWake, TimeInREM, TimeInLight, TimeInDeep, Awakenings;
-    int AlarmReason, SnoozeTime, WakeTone, WakeWindow, AlarmType, MorningFeel;
+    int ZQ, TimeToZ, TimeInWake, TimeInREM, TimeInLight, TimeInDeep, Awakenings;
+
+    //int AlarmReason, SnoozeTime, WakeTone, WakeWindow, AlarmType, TotalZ;
+    int MorningFeel;
     QString FirmwareVersion, MyZeoVersion;
 
     QDateTime FirstAlarmRing, LastAlarmRing, FirstSnoozeTime, LastSnoozeTime, SetAlarmTime;
@@ -120,7 +122,7 @@ int ZEOLoader::OpenFile(QString filename)
 
 
     int idxZQ = header.indexOf("ZQ");
-    int idxTotalZ = header.indexOf("Total Z");
+    //int idxTotalZ = header.indexOf("Total Z");
     int idxAwakenings = header.indexOf("Awakenings");
     int idxSG = header.indexOf("Sleep Graph");
     int idxDSG = header.indexOf("Detailed Sleep Graph");
@@ -132,11 +134,11 @@ int ZEOLoader::OpenFile(QString filename)
     int idxStartOfNight = header.indexOf("Start of Night");
     int idxEndOfNight = header.indexOf("End of Night");
     int idxRiseTime = header.indexOf("Rise Time");
-    int idxAlarmReason = header.indexOf("Alarm Reason");
-    int idxSnoozeTime = header.indexOf("Snooze Time");
-    int idxWakeTone = header.indexOf("Wake Tone");
-    int idxWakeWindow = header.indexOf("Wake Window");
-    int idxAlarmType = header.indexOf("Alarm Type");
+//    int idxAlarmReason = header.indexOf("Alarm Reason");
+//    int idxSnoozeTime = header.indexOf("Snooze Time");
+//    int idxWakeTone = header.indexOf("Wake Tone");
+//    int idxWakeWindow = header.indexOf("Wake Window");
+//    int idxAlarmType = header.indexOf("Alarm Type");
     int idxFirstAlaramRing = header.indexOf("First Alarm Ring");
     int idxLastAlaramRing = header.indexOf("Last Alarm Ring");
     int idxFirstSnoozeTime = header.indexOf("First Snooze Time");
@@ -160,9 +162,9 @@ int ZEOLoader::OpenFile(QString filename)
 
         if (!ok) { dodgy = true; }
 
-        TotalZ = linecomp[idxTotalZ].toInt(&ok);
+//        TotalZ = linecomp[idxTotalZ].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
         TimeToZ = linecomp[idxTimeToZ].toInt(&ok);
 
@@ -200,25 +202,25 @@ int ZEOLoader::OpenFile(QString filename)
 
         if (!rise_time.isValid()) { dodgy = true; }
 
-        AlarmReason = linecomp[idxAlarmReason].toInt(&ok);
+//        AlarmReason = linecomp[idxAlarmReason].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
-        SnoozeTime = linecomp[idxSnoozeTime].toInt(&ok);
+//        SnoozeTime = linecomp[idxSnoozeTime].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
-        WakeTone = linecomp[idxWakeTone].toInt(&ok);
+//        WakeTone = linecomp[idxWakeTone].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
-        WakeWindow = linecomp[idxWakeWindow].toInt(&ok);
+//        WakeWindow = linecomp[idxWakeWindow].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
-        AlarmType = linecomp[idxAlarmType].toInt(&ok);
+//        AlarmType = linecomp[idxAlarmType].toInt(&ok);
 
-        if (!ok) { dodgy = true; }
+//        if (!ok) { dodgy = true; }
 
         if (!linecomp[idxFirstAlaramRing].isEmpty()) {
             FirstAlarmRing = QDateTime::fromString(linecomp[idxFirstAlaramRing], "MM/dd/yyyy HH:mm");

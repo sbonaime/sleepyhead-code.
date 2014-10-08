@@ -308,7 +308,7 @@ EventDataType Day::settings_avg(ChannelID code)
         }
     }
 
-    val = (cnt > 0) ? val /= EventDataType(cnt) : val;
+    val = (cnt > 0) ? (val / EventDataType(cnt)) : val;
 
     return val;
 }
@@ -550,7 +550,7 @@ EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
         for (EL = EVEC.value().begin(); EL != EVEC_end; ++EL) {
             EventList * el = *EL;
             if (el->count() < 1) continue;
-            EventDataType lastdata = el->data(0);
+            //EventDataType lastdata = el->data(0);
             qint64 lasttime = el->time(0);
 
             if (lasttime < st)
@@ -562,7 +562,7 @@ EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
 
                 if (time < st) {
                     lasttime = st;
-                    lastdata = data;
+                    //lastdata = data;
                     continue;
                 }
 
@@ -577,7 +577,7 @@ EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
                 if (time >= et) break;
 
                 lasttime = time;
-                lastdata = data;
+                //lastdata = data;
             }
         }
     }

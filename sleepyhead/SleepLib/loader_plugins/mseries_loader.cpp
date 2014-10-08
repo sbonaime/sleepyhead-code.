@@ -177,7 +177,7 @@ int MSeriesLoader::Open(QString path)
 
     QList<quint16> head, tail;
     controlblock += 3;
-    quint16 datastarts, dataends, tmp16, h16, t16;
+    quint16 datastarts, dataends, h16, t16;//, tmp16,
 
     if (controlblock[0]) {
         datastarts = controlblock[1] | (controlblock[2] << 8);
@@ -199,7 +199,7 @@ int MSeriesLoader::Open(QString path)
     controlblock += 6;
     count -= 2;
 
-    tmp16 = controlblock[0] | controlblock[1] << 8;
+    //tmp16 = controlblock[0] | controlblock[1] << 8;
 
     controlblock += 2;
 
@@ -228,7 +228,7 @@ int MSeriesLoader::Open(QString path)
 
     unsigned char *cb = controlblock;
     quint16 u1, u2, u3, u4, d1;
-    quint32 ts, st, lt;
+    quint32 ts, st; //, lt;
     QDateTime dt;
     QDate date;
     QTime time;
@@ -255,13 +255,14 @@ int MSeriesLoader::Open(QString path)
 
     unsigned char *endcard = (unsigned char *)block.data() + dataends;
     bool done = false;
-    qint64 ti;
+    //qint64 ti;
     int cnt = 0;
 
     do {
         ts = cb[0] << 24 | cb[1] << 16 | cb[2] << 8 | cb[3];
-        lt = st = ts;
-        ti = qint64(ts) * 1000L;
+        //lt =
+        st = ts;
+        //ti = qint64(ts) * 1000L;
         dt = QDateTime::fromTime_t(ts);
         date = dt.date();
         time = dt.time();
@@ -290,9 +291,9 @@ int MSeriesLoader::Open(QString path)
                 if ((cb[0] & 0xc0) == 0xc0) {
                     cb += 2;
                     u1 &= 0x0fff; // time delta??
-                    lt = ts;
+                    //lt = ts;
                     ts = st + (u1 * 60);
-                    ti = qint64(ts) * 1000L;
+                    //ti = qint64(ts) * 1000L;
 
                     d1 = cb[0] << 8 | cb[1];
                     u2 = cb[2] << 8 | cb[3];
@@ -333,7 +334,7 @@ int MSeriesLoader::Open(QString path)
 
     done = false;
     //bool first=true;
-    quint8 exch;
+    //quint8 exch;
     cnt = 0;
 
     do {
@@ -355,7 +356,7 @@ int MSeriesLoader::Open(QString path)
         while (cb < endcard) {
             if (((cb[0] & 0xc0) != 0xc0) || ((cb[0] & 0xf0) == 0xf0)) {
                 // what is this for??
-                exch = cb[0];
+                //exch = cb[0];
                 cb++;
             }
 

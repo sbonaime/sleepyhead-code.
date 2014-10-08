@@ -191,8 +191,8 @@ int WeinmannLoader::Open(QString path)
     p = comp;
 
     QDateTime dt_epoch(QDate(2000,1,1), QTime(0,0,0));
-    int epoch = dt_epoch.toTime_t();
-    epoch = 0;
+    //int epoch = dt_epoch.toTime_t();
+    //epoch = 0;
 
 
     float flow_sample_duration = 1000.0 / 5;

@@ -660,7 +660,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
 
     quint16 d1, d2, d3;
 
-    int runtime, usage;
+    int usage; //,runtime;
 
     QDate date;
 
@@ -676,7 +676,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
         // the following two quite often match in value
         in >> a1;  // 0x04 Run Time
         in >> a2;  // 0x05 Usage Time
-        runtime = a1 * 360; // durations are in tenth of an hour intervals
+        //runtime = a1 * 360; // durations are in tenth of an hour intervals
         usage = a2 * 360;
 
         in >> a3;  // 0x06  // Ramps???

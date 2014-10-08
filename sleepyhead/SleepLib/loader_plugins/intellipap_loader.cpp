@@ -166,7 +166,8 @@ int IntellipapLoader::Open(QString path)
 
     bool ok;
 
-    EventDataType min_pressure = 0, max_pressure = 0, ramp_pressure = 0, set_epap = 0, set_ipap = 0, set_ps = 0, ramp_time = 0;
+    //EventDataType min_pressure = 0, max_pressure = 0, set_ipap = 0, set_ps = 0,
+    EventDataType ramp_pressure = 0, set_epap = 0, ramp_time = 0;
 
     int papmode = 0, smartflex = 0, smartflexmode = 0;
     while (1) {
@@ -191,15 +192,15 @@ int IntellipapLoader::Open(QString path)
         } else if (key == INT_PROP_Model) {
             info.model = value;
         } else if (key == INT_PROP_MinPressure) {
-            min_pressure = value.toFloat() / 10.0;
+            //min_pressure = value.toFloat() / 10.0;
         } else if (key == INT_PROP_MaxPressure) {
-            max_pressure = value.toFloat() / 10.0;
+            //max_pressure = value.toFloat() / 10.0;
         } else if (key == INT_PROP_IPAP) {
-            set_ipap = value.toFloat() / 10.0;
+            //set_ipap = value.toFloat() / 10.0;
         } else if (key == INT_PROP_EPAP) {
             set_epap = value.toFloat() / 10.0;
         } else if (key == INT_PROP_PS) {
-            set_ps = value.toFloat() / 10.0;
+            //set_ps = value.toFloat() / 10.0;
         } else if (key == INT_PROP_RampPressure) {
             ramp_pressure = value.toFloat() / 10.0;
         } else if (key == INT_PROP_RampTime) {
@@ -375,7 +376,7 @@ int IntellipapLoader::Open(QString path)
     long pos = 0;
     int rampval = 0;
     sid = 0;
-    SessionID lastsid = 0;
+    //SessionID lastsid = 0;
 
     //int last_minp=0, last_maxp=0, last_ps=0, last_pres = 0;
 
@@ -506,7 +507,7 @@ int IntellipapLoader::Open(QString path)
                 break;
             } else {
             }
-            lastsid = sid;
+            //lastsid = sid;
         }
 
         pos += 26;
