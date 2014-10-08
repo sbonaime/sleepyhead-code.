@@ -422,7 +422,7 @@ QString Environment::searchInPath(const QString &executable, const QStringList &
 #endif
 
 // Borrowed from QtCreator (http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt)
-void showInGraphicalShell(const QString & /*pathIn*/)
+void showInGraphicalShell(const QString & pathIn)
 {
     //QWidget * parent = NULL;
 
@@ -453,6 +453,7 @@ void showInGraphicalShell(const QString & /*pathIn*/)
                << QLatin1String("tell application \"Finder\" to activate");
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
+    Q_UNUSED(pathIn);
     // we cannot select a file here, because no file browser really supports it...
     /*
     const QFileInfo fileInfo(pathIn);
