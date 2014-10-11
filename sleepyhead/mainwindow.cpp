@@ -1918,7 +1918,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
 void MainWindow::RestartApplication(bool force_login, QString cmdline)
 {
-    p_profile->removeLock();
+    if (p_profile) p_profile->removeLock();
 
     QString apppath;
 #ifdef Q_OS_MAC

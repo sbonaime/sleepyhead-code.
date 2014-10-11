@@ -942,12 +942,12 @@ QString Daily::getSessionInformation(Day * day)
             int s1=len % 60;
 
             Session *sess=*s;
-            bool b=sess->enabled();
 
+            QString tooltip = QObject::tr("Click to %1 this session.").arg(sess->enabled() ? QObject::tr("disable") : QObject::tr("enable"));
             html+=QString("<tr class='datarow2'><td colspan=5 align=center>%2</td></tr>"
                           "<tr class='datarow2'>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
-                          "<img src='qrc:/icons/session-%4.png' width=24px></a></td>"
+                          "<img src='qrc:/icons/session-%4.png' width=24px title=\""+tooltip+"\"></a></td>"
                           "<td align=left>%5</td>"
                           "<td align=left>%6</td>"
                           "<td align=left>%7</td>"
@@ -956,7 +956,7 @@ QString Daily::getSessionInformation(Day * day)
                     .arg((*s)->session())
                     .arg(QObject::tr("%1 Session #%2").arg((*s)->machine()->loaderName()).arg((*s)->session(),8,10,QChar('0')))
                     .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
-                    .arg((b ? "on" : "off"))
+                    .arg((sess->enabled() ? "on" : "off"))
                     .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                     .arg(fd.toString("HH:mm:ss"))
                     .arg(ld.toString("HH:mm:ss"));
