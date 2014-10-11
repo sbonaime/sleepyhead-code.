@@ -86,6 +86,17 @@ void Session::TrashEvents()
     eventlist.squeeze();
 }
 
+void Session::setEnabled(bool b)
+{
+    s_enabled = b;
+    // not so simple.. we have to invalidate the hours cache in the day record..
+
+    Day * day = p_profile->findSessionDay(this);
+    if (day) {
+        day->invalidate();
+    }
+}
+
 QString Session::eventFile() const
 {
     return s_machine->getEventsPath()+QString().sprintf("%08lx.001", s_session);

@@ -791,7 +791,7 @@ qint64 Day::total_time(MachineType type)
         Session &sess = *(*it);
         int slicesize = sess.m_slices.size();
 
-        if ((sess.type() == type) && sess.enabled()) {
+        if (sess.enabled() && (sess.type() == type)) {
             first = sess.first();
             last = sess.last();
 

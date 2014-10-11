@@ -181,6 +181,7 @@ class Profile : public Preferences
                                      QDate start = QDate(), QDate end = QDate());
 
 
+    Day * findSessionDay(Session * session);
     // XML load components
     virtual void ExtraLoad(QDomElement &root);
 

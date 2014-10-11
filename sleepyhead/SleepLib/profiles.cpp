@@ -1260,6 +1260,39 @@ EventDataType Profile::calcBelowThreshold(ChannelID code, EventDataType threshol
     return val;
 }
 
+Day * Profile::findSessionDay(Session * session)
+{
+    MachineType mt = session->type();
+
+    QDate start = LastGoodDay(mt);
+    QDate end = LastGoodDay(mt);
+
+    QDate date = start;
+
+    if (date.isNull()) {
+        return 0;
+    }
+
+    double val = 0;
+    int cnt = 0;
+
+    do {
+        Day *day = FindGoodDay(date, mt);
+
+        if (day) {
+            for (int i=0; i<day->size(); i++) {
+                Session * s = day->sessions.at(i);
+                if (s == session) {
+                    return day;
+                }
+            }
+         }
+
+        date = date.addDays(1);
+    } while (date <= end);
+    return nullptr;
+}
+
 
 EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDate end)
 {

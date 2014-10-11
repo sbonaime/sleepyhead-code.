@@ -111,7 +111,7 @@ class Session
     inline bool enabled() const { return s_enabled; }
 
     //! \brief Sets whether or not session is being used.
-    void setEnabled(bool b) { s_enabled = b; }
+    void setEnabled(bool b);
 
     inline qint64 realFirst() const { return s_first; }
     inline qint64 realLast() const { return s_last; }
