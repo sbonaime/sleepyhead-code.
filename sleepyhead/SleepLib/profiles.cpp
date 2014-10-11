@@ -1262,34 +1262,19 @@ EventDataType Profile::calcBelowThreshold(ChannelID code, EventDataType threshol
 
 Day * Profile::findSessionDay(Session * session)
 {
-    MachineType mt = session->type();
+//    MachineType mt = session->type();
 
-    QDate start = LastGoodDay(mt);
-    QDate end = LastGoodDay(mt);
-
-    QDate date = start;
-
-    if (date.isNull()) {
-        return 0;
-    }
-
-    double val = 0;
-    int cnt = 0;
-
-    do {
-        Day *day = FindGoodDay(date, mt);
-
-        if (day) {
-            for (int i=0; i<day->size(); i++) {
-                Session * s = day->sessions.at(i);
-                if (s == session) {
-                    return day;
-                }
+    QMap<QDate, Day *>::iterator it;
+    QMap<QDate, Day *>::iterator it_end = p_profile->daylist.end();
+    for (it = p_profile->daylist.begin(); it != it_end; ++it) {
+        Day *day = it.value();
+        for (int i=0; i<day->size(); i++) {
+            Session * s = day->sessions.at(i);
+            if (s == session) {
+                return day;
             }
-         }
-
-        date = date.addDays(1);
-    } while (date <= end);
+        }
+    }
     return nullptr;
 }
 
