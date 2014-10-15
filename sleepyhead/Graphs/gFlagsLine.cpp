@@ -394,7 +394,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 // Draw Event Flag Bars
                 ///////////////////////////////////////////////////////////////////////////
 
-                for (int i = 0; i < np; i++) {
+                for (int i = 0; i < np; i++, dptr++) {
                     X = start + *tptr++;
 
                     if (X > maxx) {
