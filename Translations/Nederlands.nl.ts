@@ -6898,7 +6898,7 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
         <location filename="../sleepyhead/statistics.cpp" line="541"/>
         <source>SleepyHead is free open-source software available from http://sourceforge.net/projects/SleepyHead</source>
         <translation>SleepyHead is een gratis &quot;open-source&quot; programma, beschikbaar op &lt;a&gt;http://sleepfiles.com/SH/&lt;/a&gt;
-&lt;b&gt;Inlichtingen in Nederland en België: klerk@apneuvereniging.nl&lt;/b&gt;</translation>
+&lt;b&gt;Inlichtingen in Nederland en België: arie.klerk@gmail.com&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1782"/>
