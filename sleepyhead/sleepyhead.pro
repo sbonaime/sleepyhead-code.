@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION,4) {
 
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
-#provided the BrokenGL file resides in the SleepyHead source root directory
+#provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL)
 contains(DEFINES, BrokenGL) {
     message("Building with QWidget gGraphView")
     DEFINES += BROKEN_OPENGL_BUILD
@@ -24,6 +24,7 @@ contains(DEFINES, BrokenGL) {
 QT += opengl
 
 #The following forces ResMed session locking.. it *may* not be necessary.. I'm still trying to assess this properly.
+#Blah blah.. this isn't connected anymore.. just leaving it until I have the energy to clean it up
 DEFINES += LOCK_RESMED_SESSIONS
 
 #CONFIG += c++11

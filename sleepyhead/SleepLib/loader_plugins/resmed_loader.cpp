@@ -2031,6 +2031,12 @@ int ResmedLoader::Open(QString path)
 
     int days = duration / 86400000L; // GetNumDataRecords = this.. Duh!
 
+    if (days<0) {
+        qDebug() << "Error: Negative number of days in STR.edf, aborting import";
+        days=0;
+        return -1;
+    }
+
     // Process STR.edf and find first and last time for each day
 
     QVector<qint8> dayused;

@@ -134,7 +134,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     QRectF bounds = painter.boundingRect(QRectF(0, top, virt_width, 0), title,
                                          QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     painter.drawText(bounds, title, QTextOption(Qt::AlignHCenter | Qt::AlignTop));
-    top += bounds.height() + normal_height / 2.0;
+    top += bounds.height() + 90 / 2.0;
     painter.setFont(report_font);
 
     int maxy = 0;
