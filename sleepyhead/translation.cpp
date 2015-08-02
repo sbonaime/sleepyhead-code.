@@ -43,9 +43,7 @@ void initTranslations(QSettings & settings) {
     QHash<QString, QString> langFiles;
 
 #ifdef Q_OS_MAC
-    QString transdir = QDir::cleanPath(QCoreApplication::applicationDirPath() +
-                                   "/../Resources/Translations/");
-
+    QString transdir = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources/Translations/");
 #else
     const QString transdir = QCoreApplication::applicationDirPath() + "/Translations/";
 #endif

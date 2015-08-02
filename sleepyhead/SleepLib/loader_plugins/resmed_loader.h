@@ -360,7 +360,7 @@ struct EDFGroup {
 class ResmedImport:public ImportTask
 {
 public:
-    ResmedImport(ResmedLoader * l, SessionID s, QHash<EDFType, QStringList> f, Machine * m): loader(l), sessionid(s), files(f), mach(m) {}
+    ResmedImport(ResmedLoader * l, SessionID s, QHash<EDFType, QStringList> grp, Machine * m): loader(l), sessionid(s), files(grp), mach(m) {}
     virtual ~ResmedImport() {}
     virtual void run();
 

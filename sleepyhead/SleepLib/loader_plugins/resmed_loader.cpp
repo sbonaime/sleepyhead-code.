@@ -15,6 +15,7 @@
 #include <QProgressBar>
 #include <QTextStream>
 #include <QDebug>
+#include <QStringList>
 #include <cmath>
 
 #include "resmed_loader.h"
@@ -745,39 +746,61 @@ void ResmedImport::run()
     }
     loader->saveMutex.unlock();
 
-    Q_FOREACH(QString file, files[EDF_PLD]) {
-        loader->LoadPLD(sess, file);
+    if (files.contains(EDF_PLD)) {
+        QStringList & sl = files[EDF_PLD];
+        for (int i=0; i<sl.size(); ++i) {
+            QString file = sl.at(i);
+            loader->LoadPLD(sess, file);
 #ifdef SESSION_DEBUG
-        sess->session_files.append(file);
+            sess->session_files.append(file);
 #endif
+        }
     }
-    Q_FOREACH(QString file, files[EDF_BRP]) {
-        loader->LoadBRP(sess, file);
+    if (files.contains(EDF_BRP)) {
+        QStringList & sl = files[EDF_BRP];
+        for (int i=0; i<sl.size(); ++i) {
+            QString file = sl.at(i);
+
+            loader->LoadBRP(sess, file);
 #ifdef SESSION_DEBUG
-        sess->session_files.append(file);
+            sess->session_files.append(file);
 #endif
+        }
     }
-    Q_FOREACH(QString file, files[EDF_SAD]) {
-        loader->LoadSAD(sess, file);
+    if (files.contains(EDF_SAD)) {
+        QStringList & sl = files[EDF_SAD];
+        for (int i=0; i<sl.size(); ++i) {
+            QString file = sl.at(i);
+            loader->LoadSAD(sess, file);
 #ifdef SESSION_DEBUG
-        sess->session_files.append(file);
+            sess->session_files.append(file);
 #endif
+        }
     }
 
-    Q_FOREACH(QString file, files[EDF_CSL]) {
-        loader->LoadCSL(sess, file);
+    if (files.contains(EDF_CSL)) {
+        QStringList & sl = files[EDF_CSL];
+        for (int i=0; i<sl.size(); ++i) {
+            QString file = sl.at(i);
+            loader->LoadCSL(sess, file);
 #ifdef SESSION_DEBUG
-        sess->session_files.append(file);
+            sess->session_files.append(file);
 #endif
+        }
     }
 
     bool haveeve = false;
-    Q_FOREACH(QString file, files[EDF_EVE]) {
-        loader->LoadEVE(sess, file);
+    if (files.contains(EDF_EVE)) {
+        QStringList & sl = files[EDF_EVE];
+        for (int i=0; i<sl.size(); ++i) {
+            QString file = sl.at(i);
+            loader->LoadEVE(sess, file);
 #ifdef SESSION_DEBUG
-        sess->session_files.append(file);
+            sess->session_files.append(file);
 #endif
-        haveeve = true;
+
+            haveeve = true;
+        }
     }
 
     if (!haveeve) {
@@ -1524,6 +1547,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     QMap<QString, EDFduration> newfiles; // used for duplicate checking, and session overlap testing to group sessions
     QHash<EDFType, QList<EDFduration *> > filesbytype;
 
+
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
     for (int d=0; d < dirs.size(); ++d) {
         dir.setPath(dirs.at(d));
@@ -1587,6 +1611,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     EDForder.push_back(EDF_PLD);
     EDForder.push_back(EDF_BRP);
     EDForder.push_back(EDF_SAD);
+    QHash<EDFType, QStringList>::iterator gi;
 
     for (int i=0; i<3; i++) {
         EDFType basetype = EDForder.takeFirst();
@@ -1602,6 +1627,14 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 
             quint32 end = dur->end;
             QHash<EDFType, QStringList> grp;
+
+//            grp[EDF_PLD] = QStringList();
+//            grp[EDF_SAD] = QStringList();
+//            grp[EDF_BRP] = QStringList();
+//            grp[EDF_EVE] = QStringList();
+//            grp[EDF_CSL] = QStringList();
+
+
             grp[basetype].append(create_backups ? backup(dur->path, backup_path) : dur->path);
 
 
@@ -3026,6 +3059,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_Leak].push_back("Leak"); // Leak Leck Lekk Läck Fuites
     resmed_codes[CPAP_Leak].push_back("Leck");
     resmed_codes[CPAP_Leak].push_back("Fuites");
+    resmed_codes[CPAP_Leak].push_back("Fuite");
 
     resmed_codes[CPAP_Leak].push_back("\xE6\xBC\x8F\xE6\xB0\x94");
     resmed_codes[CPAP_Leak].push_back("Lekk");
@@ -3102,7 +3136,7 @@ void ResInitModelMap()
     // PLD file
     resmed_codes[CPAP_MaskPressure].push_back("MaskPress.2s");
     resmed_codes[CPAP_Pressure].push_back("Press.2s");
-    //resmed_codes[RMS9_EPRPressure].push_back("EPRPress.2s");
+    resmed_codes[CPAP_EPAP].push_back("EPRPress.2s");
     resmed_codes[CPAP_Leak].push_back("Leak.2s");
     resmed_codes[CPAP_RespRate].push_back("RespRate.2s");
     resmed_codes[CPAP_TidalVolume].push_back("TidVol.2s");
