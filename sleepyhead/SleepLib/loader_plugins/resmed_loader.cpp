@@ -3060,6 +3060,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_Leak].push_back("Leck");
     resmed_codes[CPAP_Leak].push_back("Fuites");
     resmed_codes[CPAP_Leak].push_back("Fuite");
+    resmed_codes[CPAP_Leak].push_back("Fuga");
 
     resmed_codes[CPAP_Leak].push_back("\xE6\xBC\x8F\xE6\xB0\x94");
     resmed_codes[CPAP_Leak].push_back("Lekk");
