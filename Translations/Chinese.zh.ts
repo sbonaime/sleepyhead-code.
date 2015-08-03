@@ -524,19 +524,19 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <source>Flags</source>
-        <translation type="unfinished">标记</translation>
+        <translation>标记</translation>
     </message>
     <message>
         <source>Graphs</source>
-        <translation type="unfinished">图表</translation>
+        <translation>图表</translation>
     </message>
     <message>
         <source>&quot;Nothing&apos;s here!&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;空&quot;</translation>
     </message>
     <message>
         <source>Bob is bored with this days lack of data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bob为缺乏此日的数据儿懊恼.</translation>
     </message>
 </context>
 <context>
@@ -1818,67 +1818,67 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>Exp&amp;ort Data</source>
-        <translation type="unfinished"></translation>
+        <translation>导&amp;出数据</translation>
     </message>
     <message>
         <source>Backup &amp;Journal</source>
-        <translation type="unfinished"></translation>
+        <translation>备份&amp;日志</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;警告:&lt;/b&gt; 这是一款仅以测试为目的的预发售版本软件，可能会运行不稳定.</translation>
     </message>
     <message>
         <source>If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu.</source>
-        <translation type="unfinished"></translation>
+        <translation>如果由于升级软件造成CPAP表格或者数据错误，请使用数据菜单中的功能项重建数据库.</translation>
     </message>
     <message>
         <source>Make sure your keep your SleepyHead data folder backed up when trying testing versions.</source>
-        <translation type="unfinished"></translation>
+        <translation>请再升级SLEEPYHEAD软件之前之前备份您的数据.</translation>
     </message>
     <message>
         <source>Please ensure you are running the latest version before reporting any bugs.</source>
-        <translation type="unfinished"></translation>
+        <translation>在上报BUG前，请确保您所使用的软件为最新版本.</translation>
     </message>
     <message>
         <source>Make sure your willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report.</source>
-        <translation type="unfinished"></translation>
+        <translation>在BUG报告中会包含您的CPAP打包数据以及软件崩溃信息，请在提交前确认您想要而且能够共享这些信息.</translation>
     </message>
     <message>
         <source>Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!</source>
-        <translation type="unfinished"></translation>
+        <translation>在提交您的BUG报告前，请先行搜索是否有相同的BUG报告!</translation>
     </message>
     <message>
         <source>This red message line is intentional, and will not be a feature in the final version...</source>
-        <translation type="unfinished"></translation>
+        <translation>红色的线将不会出现在最版本中...</translation>
     </message>
     <message>
         <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>数据文件夹位置: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Special thanks to Pugsy and Robysue from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
-        <translation type="unfinished"></translation>
+        <translation>特别感谢来自CAPAPTalk的 &lt;a href=&apos;http://cpaptalk.com&apos;&gt;Pugsy&lt;/a&gt; 对文档以及教程的制作的帮助, 也向其他协助测试软件并分享数据的各位致谢.</translation>
     </message>
     <message>
         <source>%1&apos;s Journal</source>
-        <translation type="unfinished"></translation>
+        <translation>%1&apos;的日志</translation>
     </message>
     <message>
         <source>Choose where to save journal</source>
-        <translation type="unfinished"></translation>
+        <translation>选择存储日志的文件夹</translation>
     </message>
     <message>
         <source>XML Files (*.xml)</source>
-        <translation type="unfinished"></translation>
+        <translation>XML Files (*.xml)</translation>
     </message>
 </context>
 <context>
@@ -2538,7 +2538,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Important Notes: &lt;/span&gt;For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, &lt;a href=&quot;http://sleepyhead.sf.net/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;click here&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Contec CMS50D+ devices do not have an internal clock, and do not record a starting time. If you do not have a CPAP session to link a recording to, you will have to enter the start time manually after the import process is completed.&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Lucida Grande UI&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -2555,263 +2555,263 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Skip this page next time.</source>
-        <translation type="unfinished"></translation>
+        <translation>下次略过这一页面.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead fully supports Contec CMS50D+/E/F serial oximeters, &lt;br/&gt;as well as data files made by ChoiceMMed MD300W1 oximeters&apos; software.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead 完全支持 Contec CMS50D+/E/F 系列血氧仪, &lt;br/&gt;以及由ChoiceMMed MD300W1 血氧软件生成的数据包.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Where would you like to import from?</source>
-        <translation type="unfinished"></translation>
+        <translation>从哪里导入数据?</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import (via cable) from your oximeters internal recordings.&lt;/p&gt;&lt;p&gt;After selecting on this option, some oximeters will require you to do something in the devices menu to initiate the upload.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;这一功能可以方便的通过数据线将您血氧仪内置数据卡中的数据导入.&lt;/p&gt;&lt;p&gt;一旦选择这个功能，有些血氧仪需要您进行适当的设置才能初始化上传数据&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Directly from a recording on a device</source>
-        <translation type="unfinished"></translation>
+        <translation>直接从设备读取存档</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you don&apos;t mind a being attached to a running computer overnight, this option provide a useful plethysomogram graph, which gives an indication of heart rhythm, on top of the normal oximetry readings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如果你不介意整晚连入电脑，可以生成容积图，可以直观的展现心率，显示在常规的血氧读数顶端.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Record attached to computer overnight (provides plethysomogram)</source>
-        <translation type="unfinished"></translation>
+        <translation>整晚连入电脑记录(提供体描仪)</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import from data files created by software that came with your Pulse Oximeter, such as SpO2Review.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;开启这个功能则允许由数据文件夹导入入SpO2Review这样的脉搏血氧仪记录的读数.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Import from a datafile saved by another program, like SpO2Review</source>
-        <translation type="unfinished"></translation>
+        <translation>导入其他程序创建的数据文件，例如SpO2Review所创建的文件</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Reminder for CPAP users: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;Did you remember to import your CPAP sessions first?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you forget, you won&apos;t have a valid time to sync this oximetry session to.&lt;br/&gt;&lt;br/&gt;To a ensure good sync between devices, always try to start both at the same time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;提醒: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;是否已经导入CPAP会话文件?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;如果没有，设备将无法与血氧仪会话在时间上同步.&lt;br/&gt;&lt;br/&gt;为了确保同步的可靠性，请习惯于同时开启CPAP设备以及血氧仪.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Please connect your oximeter device</source>
-        <translation type="unfinished"></translation>
+        <translation>请连接血氧仪</translation>
     </message>
     <message>
         <source>Press Start to commence recording</source>
-        <translation type="unfinished"></translation>
+        <translation>开始记录</translation>
     </message>
     <message>
         <source>Show Live Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>显示实时图表</translation>
     </message>
     <message>
         <source>Duration</source>
-        <translation type="unfinished">时长</translation>
+        <translation>时长</translation>
     </message>
     <message>
         <source>SpO2 %</source>
-        <translation type="unfinished">血氧饱和度 %</translation>
+        <translation>血氧饱和度 %</translation>
     </message>
     <message>
         <source>Pulse Rate</source>
-        <translation type="unfinished">脉搏</translation>
+        <translation>脉搏</translation>
     </message>
     <message>
         <source>Multiple Sessions Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>侦测到多重会话</translation>
     </message>
     <message>
         <source>Please choose which one you want to import into SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择将哪个导入SleepHead</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation type="unfinished">详情</translation>
+        <translation>详情</translation>
     </message>
     <message>
         <source>Import Completed. When did the recording start?</source>
-        <translation type="unfinished"></translation>
+        <translation>导入完成.何时开始记录?</translation>
     </message>
     <message>
         <source>Day recording (normally would of) started</source>
-        <translation type="unfinished"></translation>
+        <translation>日常记录开启</translation>
     </message>
     <message>
         <source>Oximeter Starting time</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪开启时间</translation>
     </message>
     <message>
         <source>I want to use the time reported by my oximeter&apos;s built in clock.</source>
-        <translation type="unfinished"></translation>
+        <translation>使用血氧仪的时间作为系统时钟.</translation>
     </message>
     <message>
         <source>I started this oximeter recording at (or near) the same time as a session on my CPAP machine.</source>
-        <translation type="unfinished"></translation>
+        <translation>开启血氧仪记录的时间和开启CPAP的时间一致（或相近）.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead needs a starting time to know where to save this oximetry session to.&lt;/p&gt;&lt;p&gt;Choose one of the following options:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead 需要一个起始时间作为血氧仪会话的开始来进行存储数据&lt;/p&gt;&lt;p&gt;请选择:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note: Syncing to CPAP session starting time will always be more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;注意:同步CPAP会话的起始时间往往更加准确.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Choose CPAP session to sync to:</source>
-        <translation type="unfinished"></translation>
+        <translation>选择CPAP会话同步于:</translation>
     </message>
     <message>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>You can manually adjust the time here if required:</source>
-        <translation type="unfinished"></translation>
+        <translation>您可以按需在此手动调整时间:</translation>
     </message>
     <message>
         <source>HH:mm:ssap</source>
-        <translation type="unfinished"></translation>
+        <translation>小时:分钟:秒</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;取消</translation>
+        <translation>&amp;取消</translation>
     </message>
     <message>
         <source>&amp;Information Page</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;信息页</translation>
     </message>
     <message>
         <source>&amp;Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;再试一次</translation>
     </message>
     <message>
         <source>&amp;Choose Session</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;选择会话</translation>
     </message>
     <message>
         <source>&amp;End Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;停止记录</translation>
     </message>
     <message>
         <source>&amp;Sync and Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;同步并存储</translation>
     </message>
     <message>
         <source>&amp;Save and Finish</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;存储并结束</translation>
     </message>
     <message>
         <source>&amp;Start</source>
-        <translation type="unfinished">&amp;开始</translation>
+        <translation>&amp;开始</translation>
     </message>
     <message>
         <source>Scanning for compatible oximeters</source>
-        <translation type="unfinished"></translation>
+        <translation>正在扫描所兼容的血氧仪</translation>
     </message>
     <message>
         <source>Could not detect any connected oximeter devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>没有连接血氧仪设备.</translation>
     </message>
     <message>
         <source>Connecting to %1 Oximeter</source>
-        <translation type="unfinished"></translation>
+        <translation>正在与%1血氧仪连接</translation>
     </message>
     <message>
         <source>Select upload option on %1</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1选择上传选项</translation>
     </message>
     <message>
         <source>Waiting for you to start the upload process...</source>
-        <translation type="unfinished"></translation>
+        <translation>等待您开始上传...</translation>
     </message>
     <message>
         <source>%1 device is uploading data...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1设备正在上传数据...</translation>
     </message>
     <message>
         <source>Please wait until oximeter upload process completes. Do not unplug your oximeter.</source>
-        <translation type="unfinished"></translation>
+        <translation>请等待血氧仪上传数据结束。期间不要拔出血氧仪.</translation>
     </message>
     <message>
         <source>Oximeter import completed..</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪数据导入完成..</translation>
     </message>
     <message>
         <source>Select a valid oximetry data file</source>
-        <translation type="unfinished"></translation>
+        <translation>选择一个可用的血氧仪数据文件</translation>
     </message>
     <message>
         <source>Oximetry Files (*.spo *.spor *.spo2 *.dat)</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪文件(*.spo *.spor *.spo2 *.dat)</translation>
     </message>
     <message>
         <source>No Oximetery module could parse the given file:</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪我无所解析您所选的文件:</translation>
     </message>
     <message>
         <source>Oximeter not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>未检测到血氧仪</translation>
     </message>
     <message>
         <source>Couldn&apos;t access oximeter</source>
-        <translation type="unfinished"></translation>
+        <translation>无法与血氧仪连通</translation>
     </message>
     <message>
         <source>Live Oximetery Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>实时血氧仪数据记录模式</translation>
     </message>
     <message>
         <source>Starting up...</source>
-        <translation type="unfinished"></translation>
+        <translation>开始....</translation>
     </message>
     <message>
         <source>If you can still read this after a few seconds, cancel and try again</source>
-        <translation type="unfinished"></translation>
+        <translation>如果到这里停住了，请取消重试</translation>
     </message>
     <message>
         <source>Live Import Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>实时导入已停止</translation>
     </message>
     <message>
         <source>Live Oximetery Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>实时血氧测量已停止</translation>
     </message>
     <message>
         <source>Live Oximetery import has been stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>实时血样数据导入已经停止</translation>
     </message>
     <message>
         <source>%1 session(s) on %2, starting at %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 会话 %2, 开始时间是 %3</translation>
     </message>
     <message>
         <source>No CPAP data available on %1</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1中没有可用的CPAP数据</translation>
     </message>
     <message>
         <source>%1</source>
-        <translation type="unfinished">%1% {1?}</translation>
+        <translation>%1</translation>
     </message>
     <message>
         <source>Recording...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在存储...</translation>
     </message>
     <message>
         <source>Finger not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>没有检测到手指</translation>
     </message>
     <message>
         <source>I want to use the time my computer recorded for this live oximetry session.</source>
-        <translation type="unfinished"></translation>
+        <translation>希望使用电脑的时间作为实时血氧会话的时间.</translation>
     </message>
     <message>
         <source>I need to set the time manually, because my oximeter doesn&apos;t have an internal clock.</source>
-        <translation type="unfinished"></translation>
+        <translation>我需要手动设置，因为我的血氧仪没有内置时钟.</translation>
     </message>
     <message>
         <source>Something went wrong getting session data</source>
-        <translation type="unfinished"></translation>
+        <translation>获取会话数据时出错</translation>
     </message>
     <message>
         <source>CMS50 Session %1</source>
@@ -2819,19 +2819,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Start Time</source>
-        <translation type="unfinished"></translation>
+        <translation>开始时间</translation>
     </message>
     <message>
         <source>&quot;%1&quot;, session %2</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot;, %2会话</translation>
     </message>
     <message>
         <source>Waiting for %1 to start</source>
-        <translation type="unfinished"></translation>
+        <translation>等待 %1 开始</translation>
     </message>
     <message>
         <source>Waiting for the device to start the upload process...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在等待设备开始上传数据...</translation>
     </message>
 </context>
 <context>
@@ -4115,151 +4115,151 @@ Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)<
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished">事件</translation>
+        <translation>事件</translation>
     </message>
     <message>
         <source>Flag rapid changes in oximetry stats</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪统计数据中标记快速改变</translation>
     </message>
     <message>
         <source>Other oximetry options</source>
-        <translation type="unfinished"></translation>
+        <translation>其他血氧仪选项</translation>
     </message>
     <message>
         <source>Flag SPO2 Desaturations Below</source>
-        <translation type="unfinished"></translation>
+        <translation>SPO2血氧不饱和度标记低</translation>
     </message>
     <message>
         <source>Discard segments under</source>
-        <translation type="unfinished"></translation>
+        <translation>删除偏低的数据</translation>
     </message>
     <message>
         <source>Flag Pulse Rate Above</source>
-        <translation type="unfinished"></translation>
+        <translation>心率标记高</translation>
     </message>
     <message>
         <source>Flag Pulse Rate Below</source>
-        <translation type="unfinished"></translation>
+        <translation>心率标记低</translation>
     </message>
     <message>
         <source>Contec CMS50D+/E/F</source>
-        <translation type="unfinished"></translation>
+        <translation>康泰 CMS50D+/E/F</translation>
     </message>
     <message>
         <source>Contec CMS50F v3.7+</source>
-        <translation type="unfinished">康泰 CMS50F v3.7+ {50F?}</translation>
+        <translation>康泰 CMS50F v3.7+ {50F?}</translation>
     </message>
     <message>
         <source>ChoiceMMed MD300W1</source>
-        <translation type="unfinished"></translation>
+        <translation>ChoiceMMed MD300W1</translation>
     </message>
     <message>
         <source>ResMed S9 Oximeter Module</source>
-        <translation type="unfinished"></translation>
+        <translation>ResMed S9 Oximeter Module</translation>
     </message>
     <message>
         <source>If your oximeter supports it, SleepyHead will attempt to set your Oximeters clock from your computers time.</source>
-        <translation type="unfinished"></translation>
+        <translation>如果你的血氧仪支持，SleepHead会将血氧仪的时间与您电脑同步.</translation>
     </message>
     <message>
         <source>Update Oximeter Clock during import</source>
-        <translation type="unfinished"></translation>
+        <translation>在导入的同时更新血氧仪时钟</translation>
     </message>
     <message>
         <source>Import without nagging</source>
-        <translation type="unfinished"></translation>
+        <translation>直接导入</translation>
     </message>
     <message>
         <source>Flag</source>
-        <translation type="unfinished"></translation>
+        <translation>标记</translation>
     </message>
     <message>
         <source>Minor Flag</source>
-        <translation type="unfinished"></translation>
+        <translation>次要标记</translation>
     </message>
     <message>
         <source>Span</source>
-        <translation type="unfinished"></translation>
+        <translation>范围</translation>
     </message>
     <message>
         <source>Always Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>总是次要</translation>
     </message>
     <message>
         <source>Flag Type</source>
-        <translation type="unfinished"></translation>
+        <translation>标记种类</translation>
     </message>
     <message>
         <source>CPAP Events</source>
-        <translation type="unfinished"></translation>
+        <translation>CPAP 事件</translation>
     </message>
     <message>
         <source>Oximeter Events</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪事件</translation>
     </message>
     <message>
         <source>Positional Events</source>
-        <translation type="unfinished"></translation>
+        <translation>位置事件</translation>
     </message>
     <message>
         <source>Sleep Stage Events</source>
-        <translation type="unfinished"></translation>
+        <translation>睡眠阶段事件</translation>
     </message>
     <message>
         <source>Unknown Events</source>
-        <translation type="unfinished"></translation>
+        <translation>未知事件</translation>
     </message>
     <message>
         <source>Double click to change the descriptive name this channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>双击改变这个通道的描述.</translation>
     </message>
     <message>
         <source>Double click to change the default color for this channel plot/flag/data.</source>
-        <translation type="unfinished"></translation>
+        <translation>双击改变这个区块/标记/数据的默认颜色.</translation>
     </message>
     <message>
         <source>Here you can change the type of flag shown for this event</source>
-        <translation type="unfinished"></translation>
+        <translation>在这里可以改变这类时间的标记种类</translation>
     </message>
     <message>
         <source>This is the short-form label to indicate this channel on screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>这是将在屏幕所显示的此通道的简短描述标签.</translation>
     </message>
     <message>
         <source>This is a description of what this channel does.</source>
-        <translation type="unfinished"></translation>
+        <translation>这里显示的是这个通道的作用.</translation>
     </message>
     <message>
         <source>Lower</source>
-        <translation type="unfinished"></translation>
+        <translation>更低</translation>
     </message>
     <message>
         <source>Upper</source>
-        <translation type="unfinished"></translation>
+        <translation>更高</translation>
     </message>
     <message>
         <source>CPAP Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation>CPAP波形</translation>
     </message>
     <message>
         <source>Oximeter Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation>血氧仪波形</translation>
     </message>
     <message>
         <source>Positional Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation>位置波形</translation>
     </message>
     <message>
         <source>Sleep Stage Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation>睡眠阶段波形</translation>
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation>在这里可以为%1波形设置&lt;b&gt;更低的&lt;/b&gt; 阈值来进行某些计算</translation>
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation>在这里可以为%1波形设置&lt;b&gt;更高的&lt;/b&gt; 阈值来进行某些计算</translation>
     </message>
     <message>
         <source>Top Markers</source>
@@ -6890,11 +6890,11 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>SleepyHead is proudly brought to you by JediMark.</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepHead由JediMark荣誉出品.</translation>
     </message>
     <message>
         <source>d MMM [ %1 - %2 ]</source>
-        <translation type="unfinished"></translation>
+        <translation>d MMM [ %1 - %2 ]</translation>
     </message>
     <message>
         <source>%1</source>
@@ -6902,27 +6902,27 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Hide All Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">隐藏所有事件</translation>
     </message>
     <message>
         <source>Show All Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">显示所有事件</translation>
     </message>
     <message>
         <source>Unpin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">解除锁定%1图表</translation>
     </message>
     <message>
         <source>Pin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">锁定%1图表</translation>
     </message>
     <message>
         <source>Plots Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">禁用区块</translation>
     </message>
     <message>
         <source>(Summary Only)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">（摘要）</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -6930,11 +6930,11 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Relief: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">压力释放： %1</translation>
     </message>
     <message>
         <source>Hours: %1h, %2m, %3s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">小时数:%1小时.%2分钟,%3秒</translation>
     </message>
     <message>
         <source>Machine Information</source>
@@ -6942,11 +6942,11 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Compliance Only :(</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Compliance Only :(</translation>
     </message>
     <message>
         <source>Graphs Switched Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">关闭图表</translation>
     </message>
     <message>
         <source>Summary Only :(</source>
@@ -6954,39 +6954,39 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Sessions Switched Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">关闭会话</translation>
     </message>
     <message>
         <source>Journal Data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">日志</translation>
     </message>
     <message>
         <source>SleepyHead found an old Journal folder, but it looks like it&apos;s been renamed:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepHead发现一个旧的日志文件夹，但是它被重新命名了:</translation>
     </message>
     <message>
         <source>SleepyHead will not touch this folder, and will create a new one instead.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepHead 不会使用这个文件夹，将会重新建立个新的.</translation>
     </message>
     <message>
         <source>Please be careful when playing in SleepyHead&apos;s profile folders :-P</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">请勿随意改变SleepHead配置文件夹内的文件 :-P</translation>
     </message>
     <message>
         <source>For some reason, sleepyHead couldn&apos;t find a journal object record in your profile, but did find multiple Journal data folders.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">因为一些未知原因，SleepHead没有找到您的日志记录，仅仅找到了日志文件夹.</translation>
     </message>
     <message>
         <source>SleepyHead picked only the first one of these, and will use it in future:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepHead 会选择第一个并一直采用:</translation>
     </message>
     <message>
         <source>If your old data is missing, copy the contents of all the other Journal_XXXXXXX folders to this one manually.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">如果您过往的数据已经丢失，请手动将所有的 Journal_XXXXXXX 文件夹内的文件拷贝到这里.</translation>
     </message>
     <message>
         <source>CMS50F3.7</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50F3.7</translation>
     </message>
     <message>
         <source>CMS50F</source>
@@ -6994,55 +6994,55 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Loading %1 data...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">读取 %1 数据...</translation>
     </message>
     <message>
         <source>PLease Wait...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">请稍后...</translation>
     </message>
     <message>
         <source>Perfusion Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">灌注指数</translation>
     </message>
     <message>
         <source>A relative assessment of the pulse strength at the monitoring site</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">脉搏的强度的相关评估</translation>
     </message>
     <message>
         <source>Perf. Index %</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">灌注指数 %</translation>
     </message>
     <message>
         <source>APAP (Variable)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">APAP（自动）</translation>
     </message>
     <message>
         <source>Zero</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">0</translation>
     </message>
     <message>
         <source>Upper Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">增加</translation>
     </message>
     <message>
         <source>Lower Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">降低</translation>
     </message>
     <message>
         <source>%1 Session #%2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 Session #%2</translation>
     </message>
     <message>
         <source>You machine was on for %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">你的机器在%1.</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;p&gt;&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</translation>
     </message>
     <message>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;p&gt;再次提醒，请妥善将数据存储卡由电脑中拔出!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>or</source>
@@ -7871,27 +7871,27 @@ Please Rebuild CPAP Data</source>
     <name>gGraphView</name>
     <message>
         <source>100% zoom level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">100% 显示</translation>
     </message>
     <message>
         <source>Reset Graph Layout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">重置图表结构</translation>
     </message>
     <message>
         <source>Plots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">区块</translation>
     </message>
     <message>
         <source>CPAP Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP 迭代</translation>
     </message>
     <message>
         <source>Oximeter Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">血氧仪 迭代</translation>
     </message>
     <message>
         <source>Dotted Lines</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">虚线</translation>
     </message>
     <message>
         <source>Restore X-axis zoom too 100% to view entire days data.</source>

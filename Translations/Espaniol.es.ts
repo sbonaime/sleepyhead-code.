@@ -1869,7 +1869,7 @@ No se pudieron encontrar nuevos datos de máquina en las ubicaciones proporciona
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
         <source>Make sure your keep your SleepyHead data folder backed up when trying testing versions.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="317"/>

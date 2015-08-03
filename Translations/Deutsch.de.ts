@@ -525,11 +525,11 @@ Wenn Sie vergessen haben, die heutigen CPAP-Daten zu importieren, sollten Sie Di
     </message>
     <message>
         <source>&quot;Nothing&apos;s here!&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;Hier ist nichts!&quot;</translation>
     </message>
     <message>
         <source>Bob is bored with this days lack of data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bob langweilt sich an diesem Tag wegen den mangelhaften Daten.</translation>
     </message>
 </context>
 <context>
@@ -1758,19 +1758,19 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Exp&amp;ort Data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exp&amp;ort Daten</translation>
     </message>
     <message>
         <source>Backup &amp;Journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sicherungskopie &amp;Journal</translation>
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;b&gt;Achtung:&lt;/ b&gt; Dies ist eine Pre-Release-Build, und kann manchmal instabiles Verhalten zeigen. Es ist für Testzwecke gedacht.</translation>
     </message>
     <message>
         <source>If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn Sie CPAP Grafik-Datenfehler nach dem Upgrade auf eine neue Version haben, probieren Sie die Wiederherstellung Ihrer CPAP-Datenbank aus dem Menü Daten.</translation>
     </message>
     <message>
         <source>Make sure your keep your SleepyHead data folder backed up when trying testing versions.</source>
@@ -1778,7 +1778,7 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Please ensure you are running the latest version before reporting any bugs.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte stellen Sie sicher, dass Sie die neuste Version benutzen bevor Sie einen neuen Bug melden.</translation>
     </message>
     <message>
         <source>Make sure your willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report.</source>
@@ -1786,15 +1786,15 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bevor Sie einen Bug-Bericht erstellen schauen Sie erst nach ob es zu diesem Thema bereits einen gibt. Wahrscheinlich sind Sie nicht der Erste!</translation>
     </message>
     <message>
         <source>This red message line is intentional, and will not be a feature in the final version...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese rote Meldezeile ist gewollt. In der finalen Version wird es diese Zeile nicht mehr geben...</translation>
     </message>
     <message>
         <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datenordner Lokalisation: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
@@ -1806,54 +1806,54 @@ Eines ist erforderlich, um diesen Abschnitt zu verwenden.</translation>
     </message>
     <message>
         <source>Special thanks to Pugsy and Robysue from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Besonderen Dank an Pugsy und Robysue von &lt;a href=&apos;http://cpaptalk.com&apos;&gt; CPAPTalk &lt;/a&gt; für ihre Hilfe bei Dokumentation und Tutorials, sowie alle, die durch die Prüfung und Weitergabe ihrer CPAP Daten geholfen haben.</translation>
     </message>
     <message>
         <source>%1&apos;s Journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1&apos;s Journal</translation>
     </message>
     <message>
         <source>Choose where to save journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wählen, wo das Blatt gespeichert werden soll</translation>
     </message>
     <message>
         <source>XML Files (*.xml)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">XML Datei (*.xml)</translation>
     </message>
 </context>
 <context>
     <name>MinMaxWidget</name>
     <message>
         <source>Auto-Fit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatische Anpassung</translation>
     </message>
     <message>
         <source>Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standardwerte</translation>
     </message>
     <message>
         <source>Override</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übersteuerung</translation>
     </message>
     <message>
         <source>The Y-Axis scaling mode, &apos;Auto-Fit&apos; for automatic scaling, &apos;Defaults&apos; for settings according to manufacturer, and &apos;Override&apos; to choose your own.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Y-Achsen Skalierungsmodus &quot;Automatische Anpassung&quot;, für die automatische Skalierung, sind Vorgaben vom Hersteller. Die &quot;Übersteuerung&quot; können Sie selbst wählen.</translation>
     </message>
     <message>
         <source>The Minimum Y-Axis value.. Note this can be a negative number if you wish.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn Sie es wünschen kann der Y-Achsen-Mindestwert eine negative Zahl sein..</translation>
     </message>
     <message>
         <source>The Maximum Y-Axis value.. Must be greater than Minimum to work.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Um damit zu arbeiten, muss der max. Y-Achsen Wert größer sein als der minimale Wert.</translation>
     </message>
     <message>
         <source>Scaling Mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skalierungsmodus</translation>
     </message>
     <message>
         <source>This button resets the Min and Max to match the Auto-Fit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Schaltfläche setzt die Automatische Anpassung für Min. und Max</translation>
     </message>
 </context>
 <context>
@@ -2702,19 +2702,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Start Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Startzeit</translation>
     </message>
     <message>
         <source>&quot;%1&quot;, session %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;%1&quot;, Sitzung %2</translation>
     </message>
     <message>
         <source>Waiting for %1 to start</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warten auf %1 zu starten</translation>
     </message>
     <message>
         <source>Waiting for the device to start the upload process...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warten auf das Gerät, um den Upload-Vorgang zu starten ...</translation>
     </message>
 </context>
 <context>
@@ -3934,27 +3934,27 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Flag rapid changes in oximetry stats</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flagge bei raschen Veränderungen in Oxymetrie-Statistik</translation>
     </message>
     <message>
         <source>Other oximetry options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Andere Oximetrie Optionen</translation>
     </message>
     <message>
         <source>Flag SPO2 Desaturations Below</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flagge bei SpO2 Entsättigung unter</translation>
     </message>
     <message>
         <source>Discard segments under</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Untere Segmente verwerfen</translation>
     </message>
     <message>
         <source>Flag Pulse Rate Above</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flagge bei Pulsrate über</translation>
     </message>
     <message>
         <source>Flag Pulse Rate Below</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flagge bei Pulsrate unter</translation>
     </message>
     <message>
         <source>Contec CMS50D+/E/F</source>
@@ -3986,99 +3986,99 @@ Versuchen Sie mit Ihrer PC-Uhr zu synchronisieren (was im Zeitserver synchronisi
     </message>
     <message>
         <source>Flag</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flagge</translation>
     </message>
     <message>
         <source>Minor Flag</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kleinere Flagge</translation>
     </message>
     <message>
         <source>Span</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Spannweite</translation>
     </message>
     <message>
         <source>Always Minor</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">immer Klein</translation>
     </message>
     <message>
         <source>Flag Type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flaggen Typ</translation>
     </message>
     <message>
         <source>CPAP Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP Ereignisse</translation>
     </message>
     <message>
         <source>Oximeter Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oximeter Ereignisse</translation>
     </message>
     <message>
         <source>Positional Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Positions Ereignisse</translation>
     </message>
     <message>
         <source>Sleep Stage Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schlafstadium Ereignisse</translation>
     </message>
     <message>
         <source>Unknown Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Unbekannte Ereignisse</translation>
     </message>
     <message>
         <source>Double click to change the descriptive name this channel.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klicken Sie doppelt auf den beschreibenden Namen diesen Kanal ändern.</translation>
     </message>
     <message>
         <source>Double click to change the default color for this channel plot/flag/data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klicken Sie doppelt auf die Standardfarbe für diesen Kanal Grundstück / Flagge / Daten ändern.</translation>
     </message>
     <message>
         <source>Here you can change the type of flag shown for this event</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hier können Sie die Art der Flagge für das gezeigte Ereigniss ändern</translation>
     </message>
     <message>
         <source>This is the short-form label to indicate this channel on screen.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das ist die Kurzform-Label, um diesen Kanal auf dem Bildschirm anzuzeigen.</translation>
     </message>
     <message>
         <source>This is a description of what this channel does.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dies ist eine Beschreibung von dem, was dieser Kanal nicht.</translation>
     </message>
     <message>
         <source>Lower</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">untere</translation>
     </message>
     <message>
         <source>Upper</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">obere</translation>
     </message>
     <message>
         <source>CPAP Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP Wellenform</translation>
     </message>
     <message>
         <source>Oximeter Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oximeter Wellenformen</translation>
     </message>
     <message>
         <source>Positional Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Positions-Wellenform</translation>
     </message>
     <message>
         <source>Sleep Stage Waveforms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schlafstadium-Wellenform</translation>
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hier können Sie einstellen &lt;b&gt;unteren&lt;/b&gt; Schwelle für bestimmte Berechnungen welche die Wellenform verwendet %1</translation>
     </message>
     <message>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hier können Sie einstellen &lt;b&gt;obere&lt;/b&gt; Schwelle für bestimmte Berechnungen welche die Wellenform verwendet %1</translation>
     </message>
     <message>
         <source>Top Markers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Obere Markierung</translation>
     </message>
 </context>
 <context>
@@ -6665,11 +6665,11 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>SleepyHead is proudly brought to you by JediMark.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">JediMark ist stolz Ihnen SleepyHead zu präsentieren.</translation>
     </message>
     <message>
         <source>d MMM [ %1 - %2 ]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">d MMM [ %1 - %2 ]</translation>
     </message>
     <message>
         <source>%1</source>
@@ -6677,27 +6677,27 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Hide All Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle Ereignisse verbergen</translation>
     </message>
     <message>
         <source>Show All Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle Ereignisse anzeigen</translation>
     </message>
     <message>
         <source>Unpin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Loslösen %1 Grafik</translation>
     </message>
     <message>
         <source>Pin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzeigen %1 Grafik</translation>
     </message>
     <message>
         <source>Plots Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Teile deaktivieren</translation>
     </message>
     <message>
         <source>(Summary Only)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">(Nur Zusammenfassung)</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -6705,11 +6705,11 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Relief: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Relief: %1</translation>
     </message>
     <message>
         <source>Hours: %1h, %2m, %3s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stunden: %1h, %2m, %3s</translation>
     </message>
     <message>
         <source>Machine Information</source>
@@ -6717,11 +6717,11 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Compliance Only :(</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Therapietreue einhalten :(</translation>
     </message>
     <message>
         <source>Graphs Switched Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diagramme abgemeldet</translation>
     </message>
     <message>
         <source>Summary Only :(</source>
@@ -6729,39 +6729,39 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Sessions Switched Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ereignisse abgemeldet</translation>
     </message>
     <message>
         <source>Journal Data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Journal Daten</translation>
     </message>
     <message>
         <source>SleepyHead found an old Journal folder, but it looks like it&apos;s been renamed:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead fand einen alten Journal Ordner, welcher wahrscheinlich umbenannt wurde:</translation>
     </message>
     <message>
         <source>SleepyHead will not touch this folder, and will create a new one instead.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lassen Sie den SleepyHead Ordner wie er ist und erstellen Sie statdessen einen neuen.</translation>
     </message>
     <message>
         <source>Please be careful when playing in SleepyHead&apos;s profile folders :-P</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte sind Sie vorsichtig, wenn Sie im Profil-Ordner SleepyHead :-P</translation>
     </message>
     <message>
         <source>For some reason, sleepyHead couldn&apos;t find a journal object record in your profile, but did find multiple Journal data folders.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aus irgendeinem Grund konnte Sleepyhead einen Journal Objektdatensatz in Ihrem Profil finden, aber fand mehrere Blatt Datenordner.</translation>
     </message>
     <message>
         <source>SleepyHead picked only the first one of these, and will use it in future:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead nahm nur die erste von Ihnen, und wird es in Zukunft nutzen:</translation>
     </message>
     <message>
         <source>If your old data is missing, copy the contents of all the other Journal_XXXXXXX folders to this one manually.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn Ihre alten Daten fehlen, kopieren Sie den Inhalt aller anderen Journal_XXXXXXX Ordner wie diese manuell.</translation>
     </message>
     <message>
         <source>CMS50F3.7</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50F3.7</translation>
     </message>
     <message>
         <source>CMS50F</source>
@@ -6769,63 +6769,63 @@ Bitte Rebuild CPAP Daten laden</translation>
     </message>
     <message>
         <source>Loading %1 data...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laden %1 Daten...</translation>
     </message>
     <message>
         <source>PLease Wait...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte warten...</translation>
     </message>
     <message>
         <source>Perfusion Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Durchfluss Index</translation>
     </message>
     <message>
         <source>A relative assessment of the pulse strength at the monitoring site</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eine relative Bewertung der Pulsstärke an der Messstelle</translation>
     </message>
     <message>
         <source>Perf. Index %</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Durchf. Index %</translation>
     </message>
     <message>
         <source>APAP (Variable)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">APAP (Variable)</translation>
     </message>
     <message>
         <source>Zero</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Null</translation>
     </message>
     <message>
         <source>Upper Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">obere Schwelle</translation>
     </message>
     <message>
         <source>Lower Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">untere Schwelle</translation>
     </message>
     <message>
         <source>%1 Session #%2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 Sitzung #%2</translation>
     </message>
     <message>
         <source>You machine was on for %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Gerät wurde für %1 verwendet.</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;p&gt;&lt;span title=&quot;Mac OSX und Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Bestimmte Betriebssysteme&lt;/font&gt;&lt;/span&gt; schreiben Index-Dateien auf die Karte, ohne Sie zu fragen. Dies kann Ihre Karte vom Gerät unlesbar machen.</translation>
     </message>
     <message>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;p&gt;Als weiteren Schutz, die Datenkarte IMMER mit dem &quot;sicheren Entfernen&quot; vom PC trennen!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>or</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">oder</translation>
     </message>
     <message>
         <source>Snapshot %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schnappschuss %1</translation>
     </message>
 </context>
 <context>
@@ -7393,47 +7393,47 @@ Bitte Rebuild CPAP Daten laden</translation>
     <name>gGraphView</name>
     <message>
         <source>100% zoom level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">100% Zoom-Stufe</translation>
     </message>
     <message>
         <source>Reset Graph Layout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zurücksetzen von Grafiklayout</translation>
     </message>
     <message>
         <source>Plots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stücke</translation>
     </message>
     <message>
         <source>CPAP Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP Überlagerung</translation>
     </message>
     <message>
         <source>Oximeter Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oximeter Überlagerung</translation>
     </message>
     <message>
         <source>Dotted Lines</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">gestrichelten Linien</translation>
     </message>
     <message>
         <source>Restore X-axis zoom too 100% to view entire days data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wiederherstellung Zoom X-Achse zu 100% auf ganze Tage Daten anzuzeigen.</translation>
     </message>
     <message>
         <source>Resets all graphs to a uniform height and default order.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Setzt alle Grafiken auf eine einheitliche Höhe und Standardreihenfolge.</translation>
     </message>
     <message>
         <source>Y-Axis</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Y-Achse</translation>
     </message>
     <message>
         <source>Remove Clone</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klon entfernen</translation>
     </message>
     <message>
         <source>Clone %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klon %1 Grafig</translation>
     </message>
 </context>
 </TS>
