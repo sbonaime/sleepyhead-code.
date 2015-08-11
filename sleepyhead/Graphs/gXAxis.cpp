@@ -397,8 +397,10 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     minx = graph.min_x;
     maxx = graph.max_x;
 
-    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(minx);
-    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx);
+    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(minx, Qt::UTC);
+    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx, Qt::UTC);
+
+    qInfo() << "Drawing date axis from " << date2 << " to " << enddate2;
 
     QDate date = date2.date();
 //    QDate enddate = enddate2.date();
