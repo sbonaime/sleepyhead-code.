@@ -2216,7 +2216,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
 void Daily::addBookmark(qint64 st, qint64 et, QString text)
 {
     ui->bookmarkTable->blockSignals(true);
-    QDateTime d=QDateTime::fromTime_t(st/1000L, Qt::UTC);
+    QDateTime d=QDateTime::fromTime_t(st/1000L, Qt::LocalTime);
     int row=ui->bookmarkTable->rowCount();
     ui->bookmarkTable->insertRow(row);
     QTableWidgetItem *tw=new QTableWidgetItem(text);
@@ -2244,7 +2244,7 @@ void Daily::on_addBookmarkButton_clicked()
 {
     qint64 st,et;
     GraphView->GetXBounds(st,et);
-    QDateTime d=QDateTime::fromTime_t(st/1000L);
+    QDateTime d=QDateTime::fromTime_t(st/1000L, Qt::LocalTime);
 
     addBookmark(st,et, tr("Bookmark at %1").arg(d.time().toString("HH:mm:ss")));
 }
