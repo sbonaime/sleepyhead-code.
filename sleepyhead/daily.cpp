@@ -1998,7 +1998,8 @@ void Daily::RedrawGraphs()
 void Daily::on_LineCursorUpdate(double time)
 {
     if (time > 1) {
-        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time, Qt::UTC);
+        // use local time since this string is displayed to the user
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time, Qt::LocalTime);
         QString txt = dt.toString("MMM dd HH:mm:ss.zzz");
         dateDisplay->setText(txt);
     } else dateDisplay->setText(QString(GraphView->emptyText()));
