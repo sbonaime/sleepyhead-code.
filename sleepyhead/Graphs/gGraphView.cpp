@@ -1385,6 +1385,14 @@ void gGraphView::paintGL()
 
 QString gGraphView::getRangeString()
 {
+    // a note about time zone usage here
+    // even though this string will be displayed to the user
+    // the graph is drawn using UTC times, so no conversion
+    // is needed to format the date and time for the user
+    // i.e. if the graph says the cursor is at 5pm, then that
+    // is what we should display.
+    // passing in UTC below is necessary to prevent QT
+    // from automatically converting the time to local time
     QString fmt;
 
     qint64 diff = m_maxx - m_minx;
