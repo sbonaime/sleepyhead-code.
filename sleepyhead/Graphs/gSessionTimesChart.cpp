@@ -900,7 +900,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                     // segments
                     for (int j=0; j<slize; ++j) {
                         const SessionSlice & slice = sess->m_slices.at(j);
-                        QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start, Qt::UTC);
+                        QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start, Qt::LocalTime);
 
                         float s1 = float(splittime.secsTo(st)) / 3600.0;
 
@@ -915,7 +915,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                 } else {
                     // otherwise just show session duration
                     qint64 sf = sess->first();
-                    QDateTime st = QDateTime::fromMSecsSinceEpoch(sf, Qt::UTC);
+                    QDateTime st = QDateTime::fromMSecsSinceEpoch(sf, Qt::LocalTime);
                     float s1 = float(splittime.secsTo(st)) / 3600.0;
 
                     float s2 = sess->hours();
