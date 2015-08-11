@@ -2125,7 +2125,10 @@ void gGraphView::onSnapshotGraphToggle()
 
         QString basename = name+";";
         if (graph->m_day) {
-            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x, Qt::UTC);
+            // append the date of the graph's left edge to the snapshot name
+            // so the user knows what day the snapshot starts
+            // because the name is displayed to the user, use local time
+            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x, Qt::LocalTime);
             basename += date.date().toString(Qt::SystemLocaleLongDate);
         }
         QString newname;
