@@ -24,6 +24,8 @@
 #include <QDoubleSpinBox>
 #include <QToolButton>
 #include <QTimer>
+#include <QGestureEvent>
+#include <QPinchGesture>
 
 #ifndef BROKEN_OPENGL_BUILD
 #if QT_VERSION < QT_VERSION_CHECK(5,4,0)
@@ -531,6 +533,12 @@ class gGraphView
 
   protected:
 
+    bool event(QEvent * event) Q_DECL_OVERRIDE;
+
+    bool gestureEvent(QGestureEvent * event);
+    bool pinchTriggered(QPinchGesture * gesture);
+
+
     virtual void leaveEvent (QEvent * event);
 
     //! \brief The heart of the drawing code
@@ -611,6 +619,8 @@ class gGraphView
 
     bool m_graph_dragging;
     int m_graph_index;
+
+    qint64 pinch_min, pinch_max;
 
     //! \brief List of all queue text to draw.. not sure why I didn't use a vector here.. Might of been a leak issue
     QVector<TextQue> m_textque;

@@ -37,6 +37,7 @@
 #include "Graphs/gFlagsLine.h"
 #include "SleepLib/profiles.h"
 
+
 extern MainWindow *mainwin;
 
 #include <QApplication>
@@ -297,6 +298,16 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 #endif
       m_offsetY(0), m_offsetX(0), m_scaleY(0.0), m_scrollbar(nullptr)
 {
+
+//    this->grabGesture(Qt::SwipeGesture);
+//    this->grabGesture(Qt::PanGesture);
+//    this->grabGesture(Qt::TapGesture);
+//    this->grabGesture(Qt::TapAndHoldGesture);
+//    this->grabGesture(Qt::CustomGesture);
+    this->grabGesture(Qt::PinchGesture);
+    this->setAttribute(Qt::WA_AcceptTouchEvents);
+//    this->setAttribute(Qt::WA_TouchPadAcceptSingleTouchEvents);
+
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
     m_metaselect = m_button_down = m_graph_dragging = m_sizer_dragging = false;
@@ -468,6 +479,90 @@ gGraphView::~gGraphView()
     delete m_tooltip;
     m_graphs.clear();
 }
+
+bool gGraphView::event(QEvent * event)
+{
+    if (event->type() == QEvent::Gesture) {
+        return gestureEvent(static_cast<QGestureEvent *>(event));
+    }
+    return QWidget::event(event);
+}
+
+bool gGraphView::gestureEvent(QGestureEvent * event)
+{
+    if (QGesture *pinch = event->gesture(Qt::PinchGesture))
+        pinchTriggered(static_cast<QPinchGesture *>(pinch));
+
+    return true;
+}
+
+
+bool gGraphView::pinchTriggered(QPinchGesture * gesture)
+{
+    gGraph * graph = nullptr;
+    int group =0;
+    if (!graph) {
+        // just pick any graph then
+        for (int i = 0; i < m_graphs.size(); i++) {
+            if (!m_graphs[i]) continue;
+            if (!m_graphs[i]->isEmpty()) {
+                graph = m_graphs[i];
+                group = graph->group();
+                break;
+            }
+        }
+    } else group=graph->group();
+
+    if (!graph) { return true; }
+
+    //qDebug() << gesture << gesture->scaleFactor();
+    if (gesture->state() == Qt::GestureStarted) {
+        pinch_min = m_minx;
+        pinch_max = m_maxx;
+    }
+
+     int origin_px = gesture->centerPoint().x() - titleWidth;
+
+     // could use this instead, and have it more dynamic
+     // graph->ZoomX(gesture->scaleFactor(), x);
+
+     static const double zoom_hard_limit = 500.0;
+
+     qint64 min = pinch_min;
+     qint64 max = pinch_max;
+
+     int width = graph->m_rect.width() - graph->left - graph->right;
+
+     double hardspan = graph->rmax_x - graph->rmin_x;
+     double span = max - min;
+     double ww = double(origin_px) / double(width);
+     double origin = ww * span;
+
+     double q = span * gesture->scaleFactor();
+
+     if (q > hardspan) { q = hardspan; }
+
+     if (q < hardspan / zoom_hard_limit) { q = hardspan / zoom_hard_limit; }
+
+     min = min + origin - (q * ww);
+     max = min + q;
+
+     if (min < graph->rmin_x) {
+         min = graph->rmin_x;
+         max = min + q;
+     }
+
+     if (max > graph->rmax_x) {
+         max = graph->rmax_x;
+         min = max - q;
+     }
+
+     //extern const int max_history;
+
+     SetXBounds(min, max, graph->m_group);
+    return true;
+}
+
 
 void gGraphView::dumpInfo()
 {

@@ -94,8 +94,7 @@ void UpdaterWindow::checkForUpdates()
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
     // language code?
-    update_url =
-        QUrl("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/update.xml/download");
+    update_url = QUrl("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/update.xml/download");
     downloadUpdateXML();
 }
 
