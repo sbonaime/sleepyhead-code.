@@ -406,7 +406,7 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     QDateTime date2 = QDateTime::fromMSecsSinceEpoch(minx, Qt::UTC);
     QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx, Qt::UTC);
 
-    qInfo() << "Drawing date axis from " << date2 << " to " << enddate2;
+    //qInfo() << "Drawing date axis from " << date2 << " to " << enddate2;
 
     QDate date = date2.date();
 //    QDate enddate = enddate2.date();
