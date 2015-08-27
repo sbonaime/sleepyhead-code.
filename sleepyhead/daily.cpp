@@ -668,7 +668,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                         t-=float(ev.raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
-                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
+                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t, Qt::UTC);
                     QString s=QString("#%1: %2 (%3)").arg((int)(++mccnt[code]),(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
                     QTreeWidgetItem *item=new QTreeWidgetItem(a);
@@ -690,8 +690,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
         tree->insertTopLevelItem(cnt++ , start);
         tree->insertTopLevelItem(cnt++ , end);
         for (QList<Session *>::iterator s=day->begin(); s!=day->end(); ++s) {
-            QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first());
-            QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last());
+            QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first(), Qt::UTC);
+            QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last(), Qt::UTC);
 
             QTreeWidgetItem * item = new QTreeWidgetItem(QStringList(st.toString("HH:mm:ss")));
             item->setData(0,Qt::UserRole, (*s)->first());
@@ -1998,7 +1998,8 @@ void Daily::RedrawGraphs()
 void Daily::on_LineCursorUpdate(double time)
 {
     if (time > 1) {
-        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time);
+        // use local time since this string is displayed to the user
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time, Qt::LocalTime);
         QString txt = dt.toString("MMM dd HH:mm:ss.zzz");
         dateDisplay->setText(txt);
     } else dateDisplay->setText(QString(GraphView->emptyText()));
@@ -2215,7 +2216,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
 void Daily::addBookmark(qint64 st, qint64 et, QString text)
 {
     ui->bookmarkTable->blockSignals(true);
-    QDateTime d=QDateTime::fromTime_t(st/1000L);
+    QDateTime d=QDateTime::fromTime_t(st/1000L, Qt::LocalTime);
     int row=ui->bookmarkTable->rowCount();
     ui->bookmarkTable->insertRow(row);
     QTableWidgetItem *tw=new QTableWidgetItem(text);
@@ -2243,7 +2244,7 @@ void Daily::on_addBookmarkButton_clicked()
 {
     qint64 st,et;
     GraphView->GetXBounds(st,et);
-    QDateTime d=QDateTime::fromTime_t(st/1000L);
+    QDateTime d=QDateTime::fromTime_t(st/1000L, Qt::LocalTime);
 
     addBookmark(st,et, tr("Bookmark at %1").arg(d.time().toString("HH:mm:ss")));
 }

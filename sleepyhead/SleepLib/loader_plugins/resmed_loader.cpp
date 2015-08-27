@@ -144,7 +144,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
             continue;
         }
 
-        QDateTime start = QDateTime::fromMSecsSinceEpoch(str.startdate);
+        QDateTime start = QDateTime::fromMSecsSinceEpoch(str.startdate, Qt::UTC);
         QDate date = start.date();
 
         qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
@@ -444,6 +444,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
                 laston = ontime;
 
+                // TODO UTC
                 QDateTime dontime = QDateTime::fromTime_t(ontime);
                 date = dontime.date();
                 R.date = date;
@@ -2017,7 +2018,7 @@ int ResmedLoader::Open(QString path)
         QFile::copy(path + RMS9_STR_idfile + STR_ext_TGT, backup_path + RMS9_STR_idfile + STR_ext_TGT);
         QFile::copy(path + RMS9_STR_idfile + STR_ext_CRC, backup_path + RMS9_STR_idfile + STR_ext_CRC);
 
-        QDateTime dts = QDateTime::fromMSecsSinceEpoch(stredf.startdate);
+        QDateTime dts = QDateTime::fromMSecsSinceEpoch(stredf.startdate, Qt::UTC);
         dir.mkpath(backup_path + "STR_Backup");
         QString strmonthly = backup_path + "STR_Backup/STR-" + dts.toString("yyyyMM") + "." + STR_ext_EDF;
 

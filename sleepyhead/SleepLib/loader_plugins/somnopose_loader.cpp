@@ -150,9 +150,6 @@ int SomnoposeLoader::OpenFile(QString filename)
         sess->set_last(time);
         ev_orientation->AddEvent(time, orientation);
         ev_inclination->AddEvent(time, inclination);
-
-        //  QDateTime dt=QDateTime::fromMSecsSinceEpoch(time);
-        //  qDebug() << dt << orientation << inclination;
     }
 
     sess->setMin(POS_Orientation, ev_orientation->Min());

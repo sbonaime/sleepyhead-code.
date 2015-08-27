@@ -475,7 +475,10 @@ gGraph *Overview::createGraph(QString code, QString name, QString units, YTicker
 void Overview::on_LineCursorUpdate(double time)
 {
     if (time > 1) {
-        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time,Qt::UTC);
+        // even though the generated string is displayed to the user
+        // no time zone conversion is neccessary, so pass UTC
+        // to prevent QT from automatically converting to local time
+        QDateTime dt = QDateTime::fromMSecsSinceEpoch(time, Qt::UTC);
         QString txt = dt.toString("dd MMM yyyy (dddd)");
         dateLabel->setText(txt);
     } else dateLabel->setText(QString(GraphView->emptyText()));

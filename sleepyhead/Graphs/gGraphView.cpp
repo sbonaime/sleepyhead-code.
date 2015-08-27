@@ -477,7 +477,7 @@ void gGraphView::dumpInfo()
 
     Day * day = p_profile->GetGoodDay(date, MT_CPAP);
     if (day) {
-        QDateTime dt=QDateTime::fromMSecsSinceEpoch(day->first());
+        QDateTime dt=QDateTime::fromMSecsSinceEpoch(day->first(), Qt::UTC);
 
         mainwin->log(QString("Available Channels for %1").arg(dt.toString("MMM dd yyyy")));
         QHash<schema::ChanType, QList<schema::Channel *> > list;
@@ -1402,6 +1402,14 @@ void gGraphView::paintGL()
 
 QString gGraphView::getRangeString()
 {
+    // a note about time zone usage here
+    // even though this string will be displayed to the user
+    // the graph is drawn using UTC times, so no conversion
+    // is needed to format the date and time for the user
+    // i.e. if the graph says the cursor is at 5pm, then that
+    // is what we should display.
+    // passing in UTC below is necessary to prevent QT
+    // from automatically converting the time to local time
     QString fmt;
 
     qint64 diff = m_maxx - m_minx;
@@ -1414,8 +1422,8 @@ QString gGraphView::getRangeString()
 
         qint64 maxx = minx + 86400000L * qint64(days)-1;
 
-        QDateTime st = QDateTime::fromMSecsSinceEpoch(minx);
-        QDateTime et = QDateTime::fromMSecsSinceEpoch(maxx);
+        QDateTime st = QDateTime::fromMSecsSinceEpoch(minx, Qt::UTC);
+        QDateTime et = QDateTime::fromMSecsSinceEpoch(maxx, Qt::UTC);
 
         QString txt = st.toString("d MMM") + " - " +  et.addDays(-1).toString("d MMM yyyy");
         return txt;
@@ -1424,8 +1432,8 @@ QString gGraphView::getRangeString()
     } else {
         fmt = "HH:mm:ss:zzz";
     }
-    QDateTime st = QDateTime::fromMSecsSinceEpoch(m_minx);
-    QDateTime et = QDateTime::fromMSecsSinceEpoch(m_maxx);
+    QDateTime st = QDateTime::fromMSecsSinceEpoch(m_minx, Qt::UTC);
+    QDateTime et = QDateTime::fromMSecsSinceEpoch(m_maxx, Qt::UTC);
 
     QString txt = st.toString(QObject::tr("d MMM [ %1 - %2 ]").arg(fmt).arg(et.toString(fmt))) ;
 
@@ -2142,7 +2150,10 @@ void gGraphView::onSnapshotGraphToggle()
 
         QString basename = name+";";
         if (graph->m_day) {
-            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x);
+            // append the date of the graph's left edge to the snapshot name
+            // so the user knows what day the snapshot starts
+            // because the name is displayed to the user, use local time
+            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x, Qt::LocalTime);
             basename += date.date().toString(Qt::SystemLocaleLongDate);
         }
         QString newname;
@@ -2987,8 +2998,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
                 m_metaselect=false;
                 qint64 start,end;
                 getSelectionTimes(start,end);
-                QDateTime d1 = QDateTime::fromMSecsSinceEpoch(start);
-        //        QDateTime d2 = QDateTime::fromMSecsSinceEpoch(end);
+                QDateTime d1 = QDateTime::fromMSecsSinceEpoch(start, Qt::UTC);
 
                 mainwin->getDaily()->addBookmark(start, end, QString("Bookmark at %1").arg(d1.time().toString("HH:mm:ss")));
                 m_graphs[m_graph_index]->cancelSelection();

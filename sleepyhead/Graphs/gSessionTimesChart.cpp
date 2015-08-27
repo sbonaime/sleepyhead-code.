@@ -136,7 +136,7 @@ bool gSummaryChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 
     graph->roundY(miny, maxy);
 
-    QDate date = QDateTime::fromMSecsSinceEpoch(m_minx).date();
+    QDate date = QDateTime::fromMSecsSinceEpoch(m_minx, Qt::UTC).date();
 
     int days = ceil(double(m_maxx - m_minx) / 86400000.0);
 
@@ -404,8 +404,8 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     m_maxx = graph.max_x;
 
 
-    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(m_minx);
-    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(m_maxx);
+    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(m_minx, Qt::UTC);
+    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(m_maxx, Qt::UTC);
 
     QDate date = date2.date();
     QDate enddate = enddate2.date();
@@ -819,8 +819,8 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
 
-    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(m_minx);
-    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(m_maxx);
+    QDateTime date2 = QDateTime::fromMSecsSinceEpoch(m_minx, Qt::UTC);
+    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(m_maxx, Qt::UTC);
 
     QDate date = date2.date();
     QDate enddate = enddate2.date();
@@ -900,7 +900,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                     // segments
                     for (int j=0; j<slize; ++j) {
                         const SessionSlice & slice = sess->m_slices.at(j);
-                        QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start);
+                        QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start, Qt::LocalTime);
 
                         float s1 = float(splittime.secsTo(st)) / 3600.0;
 
@@ -915,7 +915,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                 } else {
                     // otherwise just show session duration
                     qint64 sf = sess->first();
-                    QDateTime st = QDateTime::fromMSecsSinceEpoch(sf);
+                    QDateTime st = QDateTime::fromMSecsSinceEpoch(sf, Qt::LocalTime);
                     float s1 = float(splittime.secsTo(st)) / 3600.0;
 
                     float s2 = sess->hours();
