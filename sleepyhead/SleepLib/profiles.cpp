@@ -424,10 +424,10 @@ QString Environment::searchInPath(const QString &executable, const QStringList &
 // Borrowed from QtCreator (http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt)
 void showInGraphicalShell(const QString & pathIn)
 {
-    //QWidget * parent = NULL;
 
     // Mac, Windows support folder or file.
 #if defined(Q_OS_WIN)
+    QWidget * parent = NULL;
     Environment env;
     const QString explorer = env.searchInPath(QLatin1String("explorer.exe"));
     if (explorer.isEmpty()) {

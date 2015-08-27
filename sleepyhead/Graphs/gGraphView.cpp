@@ -1278,6 +1278,7 @@ void gGraphView::paintGL()
 
     // Create QPainter object, note this is only valid from paintGL events!
     QPainter painter(this);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
     painter.setRenderHint(QPainter::TextAntialiasing, true);
 
