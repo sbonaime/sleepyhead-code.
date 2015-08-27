@@ -17,6 +17,8 @@
 #include "Graphs/gGraphView.h"
 #include "SleepLib/profiles.h"
 
+#include <QFontMetrics>
+
 gXGrid::gXGrid(QColor col)
     : Layer(NoChannel)
 {
@@ -38,7 +40,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int width = region.boundingRect().width();
     int height = region.boundingRect().height();
 
-    int x, y;
+    //int x, y;
 
     EventDataType miny = w.physMinY();
     EventDataType maxy = w.physMaxY();
@@ -49,8 +51,10 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     if (height < 0) { return; }
 
-    static QString fd = "0";
-    GetTextExtent(fd, x, y);
+//    static QString fd = "0";
+//    GetTextExtent(fd, x, y);
+    QFontMetrics fm(*defaultfont);
+    int y=fm.height();
 
     double max_yticks = round(height / (y + 14.0*w.printScaleY())); // plus spacing between lines
     //double yt=1/max_yticks;
@@ -162,6 +166,9 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     //Todo: clean this up as there is a lot of duplicate code between the sections
 
+    QFontMetrics fm(*defaultfont);
+    static QString fd;
+
     if (0) {
     } else {
         if (height < 0) { return; }
@@ -178,8 +185,9 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         EventDataType dy = maxy - miny;
 
-        static QString fd = "0";
-        GetTextExtent(fd, x, y);
+//        GetTextExtent(fd, x, y);
+        y=fm.height();
+        x=0;
 
 #ifdef DEBUG_LAYOUT
         painter.setPen(Qt::green);
@@ -237,6 +245,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         QVector<QLine> ticks;
 
+        QRect r2;
         float shorttick = 4.0 * w.printScaleX();
         for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
             ty = (i - miny) * ymult;
@@ -247,7 +256,10 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 fd = Format(i * m_yaxis_scale, 1);
             }
 
-            GetTextExtent(fd, x, y); // performance bottleneck..
+            r2 = fm.boundingRect(fd);
+            x = r2.width();
+            y = r2.height();
+            //GetTextExtent(fd, x, y); // performance bottleneck..
 
             if (x > labelW) { labelW = x; }
 

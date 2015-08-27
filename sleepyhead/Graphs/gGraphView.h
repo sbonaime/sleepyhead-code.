@@ -1,6 +1,6 @@
 /* gGraphView Header
  *
- * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2015 Mark Watkins <jedimark@users.sourceforge.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -26,7 +26,11 @@
 #include <QTimer>
 
 #ifndef BROKEN_OPENGL_BUILD
+#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
 #include <QGLWidget>
+#else
+#include <QOpenGLWidget>
+#endif
 #endif
 
 #include <Graphs/gGraph.h>
@@ -286,8 +290,10 @@ struct SelectionHistoryItem {
 class gGraphView
 #ifdef BROKEN_OPENGL_BUILD
         :public QWidget
-#else
+#elif QT_VERSION < QT_VERSION_CHECK(5,4,0)
         :public QGLWidget
+#else
+        :public QOpenGLWidget
 #endif
 {
     friend class gGraph;

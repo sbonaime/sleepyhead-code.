@@ -61,6 +61,10 @@
 #include "reports.h"
 #include "statistics.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,4,0)
+#include <QOpenGLFunctions>
+#endif
+
 QProgressBar *qprogress;
 QLabel *qstatus;
 QStatusBar *qstatusbar;
@@ -75,7 +79,13 @@ QString getOpenGLVersionString()
         QGLWidget w;
         w.makeCurrent();
 
+#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
         glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+#else
+        QOpenGLFunctions f;
+        f.initializeOpenGLFunctions();
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(f.glGetString(GL_VERSION))));
+#endif
         qDebug() << "OpenGL Version:" << glversion;
     }
     return glversion;

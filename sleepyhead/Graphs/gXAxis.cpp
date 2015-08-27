@@ -60,18 +60,19 @@ int gXAxis::minimumHeight()
 #endif
 }
 
+const QString months[] = {
+    QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),
+    QObject::tr("Jul"), QObject::tr("Aug"), QObject::tr("Sep"), QObject::tr("Oct"), QObject::tr("Nov"), QObject::tr("Dec")
+};
+//static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+
+
 void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     int left = region.boundingRect().left();
     int top = region.boundingRect().top();
     int width = region.boundingRect().width();
     int height = region.boundingRect().height();
-
-    QString months[] = {
-        QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),
-        QObject::tr("Jul"), QObject::tr("Aug"), QObject::tr("Sep"), QObject::tr("Oct"), QObject::tr("Nov"), QObject::tr("Dec")
-    };
-    //static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
 
     QVector<QLine> ticks;
@@ -80,6 +81,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QPainter painter2; // Only need this for pixmap caching
 
     // pixmap caching screws font size when printing
+
+
+    QFontMetrics fm(*defaultfont);
 
     bool usepixmap = w.graphView()->usePixmapCache(); // Whether or not to use pixmap caching
 
@@ -169,7 +173,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         int x, y;
         // grab the text extent of the dummy text fields above to know how much space is needed
-        GetTextExtent(fd, x, y);
+        QRect r2 = fm.boundingRect(fd);
+        x = r2.width();
+        y = r2.height();
 
         // Not sure when this was a problem...
         Q_ASSERT(x > 0);

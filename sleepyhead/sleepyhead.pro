@@ -221,7 +221,6 @@ HEADERS  += \
     SleepLib/loader_plugins/cms50f37_loader.h \
     build_number.h
 
-
 FORMS += \
     daily.ui \
     overview.ui \

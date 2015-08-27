@@ -1430,7 +1430,7 @@ int gGraph::minHeight()
     return minheight;
 }
 
-void GetTextExtent(QString text, int &width, int &height, QFont *font)
+inline void GetTextExtent(QString text, int &width, int &height, QFont *font)
 {
 #ifdef ENABLE_THREADED_DRAWING
     static QMutex mut;
