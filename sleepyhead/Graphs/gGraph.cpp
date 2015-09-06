@@ -1430,26 +1430,6 @@ int gGraph::minHeight()
     return minheight;
 }
 
-inline void GetTextExtent(QString text, int &width, int &height, QFont *font)
-{
-#ifdef ENABLE_THREADED_DRAWING
-    static QMutex mut;
-    mut.lock();
-#endif
-    QFontMetrics fm(*font);
-    //#ifdef Q_OS_WIN32
-    QRect r = fm.boundingRect(text);
-    width = r.width();
-    height = r.height();
-    //#else
-    //    width=fm.width(text);
-    //    height=fm.xHeight()+2; // doesn't work properly on windows..
-    //#endif
-#ifdef ENABLE_THREADED_DRAWING
-    mut.unlock();
-#endif
-}
-
 int GetXHeight(QFont *font)
 {
     QFontMetrics fm(*font);

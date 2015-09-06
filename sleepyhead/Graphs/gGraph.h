@@ -34,6 +34,14 @@ void DestroyGraphGlobals();
 
 const int mouse_movement_threshold = 6;
 
+inline void GetTextExtent(QString text, int &width, int &height, QFont *font)
+{
+    QFontMetrics fm(*font);
+    QRect r = fm.boundingRect(text);
+    width = r.width();
+    height = r.height();
+}
+
 /*! \class gGraph
     \brief Single Graph object, containing multiple layers and Layer layout code
     */
