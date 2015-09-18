@@ -70,7 +70,7 @@ unix:!macx {
 }
 
 macx {
-  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6.8
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
 
   LIBS             += -lz
   ICON              = icons/iconfile.icns
