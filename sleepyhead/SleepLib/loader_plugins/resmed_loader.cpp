@@ -2647,8 +2647,15 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
             EventList *a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->setDimension(es.physical_dimension);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
-            sess->setMin(code, a->Min());
-            sess->setMax(code, a->Max());
+            EventDataType min = a->Min();
+            EventDataType max = a->Max();
+
+            // Cap to physical dimensions, because there can be ram glitches/whatever that throw really big outliers.
+            if (min < es.physical_minimum) min = es.physical_minimum;
+            if (max > es.physical_maximum) max = es.physical_maximum;
+
+            sess->setMin(code, min);
+            sess->setMax(code, max);
             sess->setPhysMin(code, es.physical_minimum);
             sess->setPhysMax(code, es.physical_maximum);
         }

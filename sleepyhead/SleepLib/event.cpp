@@ -169,7 +169,7 @@ void EventList::AddWaveform(qint64 start, qint16 *data, int recs, qint64 duratio
     if (m_update_minmax) {
         EventDataType min = m_min, max = m_max, val, gain = m_gain;
 
-        for (int i=0; i < recs; ++i ) {
+        for (int i=0; i < recs; ++i) {
             m_data[r++] = raw = *sp++;
             val = EventDataType(raw) * gain + m_offset;
             if (min > val) { min = val; }
