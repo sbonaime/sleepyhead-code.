@@ -40,11 +40,24 @@ FPIconLoader::~FPIconLoader()
 
 bool FPIconLoader::Detect(const QString & givenpath)
 {
-    QDir dir(givenpath);
+    QString path = givenpath;
+    
+    path = path.replace("\\", "/");
+
+    if (path.endsWith("/")) {
+        path.chop(1);
+    }
+
+    if (path.endsWith("/" + FPHCARE)) {
+        path = path.section("/",0,-2);
+    }
+    
+    QDir dir(path);
 
     if (!dir.exists()) {
         return false;
     }
+    
 
     // F&P Icon have a folder called FPHCARE in the root directory
     if (!dir.exists(FPHCARE)) {

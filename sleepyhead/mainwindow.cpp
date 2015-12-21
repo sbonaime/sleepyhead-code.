@@ -920,10 +920,16 @@ QList<ImportPath> MainWindow::detectCPAPCards()
 
 void MainWindow::on_action_Import_Data_triggered()
 {
+    static bool in_import = false;
     if (m_inRecalculation) {
         Notify(tr("Access to Import has been blocked while recalculations are in progress."),STR_MessageBox_Busy);
         return;
     }
+    if (in_import) {
+        Notify(tr("Import is already running in the background."),STR_MessageBox_Busy);
+        return;
+    }
+    in_import=true;
 
     QList<ImportPath> datacards = detectCPAPCards();
 
@@ -971,6 +977,7 @@ void MainWindow::on_action_Import_Data_triggered()
             if (res == QMessageBox::Cancel) {
                 // Give the communal progress bar back
                 ui->statusbar->insertWidget(1,qprogress,1);
+                in_import=false;
                 return;
             } else if (res == QMessageBox::No) {
                 waitmsg->setText(tr("Please wait, launching file dialog..."));
@@ -1039,6 +1046,7 @@ void MainWindow::on_action_Import_Data_triggered()
         if (w.exec() != QDialog::Accepted) {
             popup.hide();
             ui->statusbar->insertWidget(1,qprogress,1);
+            in_import=false;
 
             return;
         }
@@ -1099,6 +1107,8 @@ void MainWindow::on_action_Import_Data_triggered()
         finishCPAPImport();
         PopulatePurgeMenu();
     }
+    in_import=false;
+
 }
 
 QMenu *MainWindow::CreateMenu(QString title)
