@@ -134,7 +134,7 @@ int FPIconLoader::Open(QString path)
             if (m) {
                 c+=OpenMachine(m, npath);
             }
-        } catch (OneTypePerDay e) {
+        } catch (OneTypePerDay& e) {
             Q_UNUSED(e)
             p_profile->DelMachine(m);
             MachList.erase(MachList.find(info.serial));
