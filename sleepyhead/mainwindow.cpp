@@ -490,8 +490,8 @@ void loadChannels()
 void MainWindow::on_aboutToQuit()
 {
     Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
-    QThread::msleep(1000);
     QApplication::processEvents();
+    QThread::msleep(1000);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

@@ -581,7 +581,7 @@ void Profile::LoadMachineData()
             } else {
                 try {
                     m->Load();
-                } catch (OldDBVersion e) {
+                } catch (OldDBVersion& e) {
                     Q_UNUSED(e)
                     DataFormatError(m);
                 }
