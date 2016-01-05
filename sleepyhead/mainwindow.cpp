@@ -782,6 +782,8 @@ void MainWindow::importCPAPBackups()
 
 # if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
 #  include <sys/mount.h>
+# elif defined(Q_OS_HAIKU)
+// nothing needed
 # else
 #  include <sys/statfs.h>
 #  include <mntent.h>
@@ -809,7 +811,7 @@ QStringList getDriveList()
         }
     }
 
-#elif defined(Q_OS_UNIX)
+#elif defined(Q_OS_UNIX) && !defined(Q_OS_HAIKU)
     // Unix / Linux (except BSD)
     FILE *mtab = setmntent("/etc/mtab", "r");
     struct mntent *m;
@@ -833,7 +835,7 @@ QStringList getDriveList()
     }
     endmntent(mtab);
 
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WIN) || defined(Q_OS_HAIKU)
     QFileInfoList list = QDir::drives();
 
     for (int i = 0; i < list.size(); ++i) {
@@ -1588,7 +1590,7 @@ void MainWindow::DelayedScreenshot()
     h /= pr;
 #endif
 
-#if defined(Q_OS_WIN32) || defined(Q_OS_LINUX)
+#if defined(Q_OS_WIN32) || defined(Q_OS_LINUX) || defined(Q_OS_HAIKU)
      //QRect rec = QApplication::desktop()->screenGeometry();
 
      // grab the whole screen

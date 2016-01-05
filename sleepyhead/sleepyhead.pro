@@ -18,6 +18,10 @@ greaterThan(QT_MAJOR_VERSION,4) {
 contains(DEFINES, BrokenGL) {
     message("Building with QWidget gGraphView")
     DEFINES += BROKEN_OPENGL_BUILD
+} else:contains(DEFINES, NoGL) {
+    message("Building with QWidget gGraphView (No GL at all)")
+    DEFINES += BROKEN_OPENGL_BUILD
+    DEFINES += NO_OPENGL_BUILD
 } else {
     message("Building with QGLWidget gGraphView")
 }
@@ -39,7 +43,7 @@ CONFIG += rtti
 #}
 
 TARGET = SleepyHead
-unix:!macx {
+unix:!macx:!haiku {
     TARGET.path=/usr/bin
 }
 
@@ -64,7 +68,7 @@ exists(../.git):{
 DEFINES += TEST_BUILD
 
 
-unix:!macx {
+unix:!macx:!haiku {
     LIBS        += -lX11 -lz -lGLU
     DEFINES         += _TTY_POSIX_
 }
@@ -74,6 +78,11 @@ macx {
 
   LIBS             += -lz
   ICON              = icons/iconfile.icns
+}
+
+haiku {
+    LIBS        += -lz -lGLU
+    DEFINES         += _TTY_POSIX_
 }
 
 win32 {

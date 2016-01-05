@@ -149,11 +149,17 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection
     ////////////////////////////////////////////////////////////////////////////////////////////
-    float glversion = getOpenGLVersion();
+    float glversion = 0.0;
+#ifndef NO_OPENGL_BUILD
+    glversion = getOpenGLVersion();
+#endif
 
     bool opengl2supported = glversion >= 2.0;
     bool bad_graphics = !opengl2supported;
-    bool intel_graphics = getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
+    bool intel_graphics = false;
+#ifndef NO_OPENGL_BUILD
+    getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
+#endif
 
 //#if defined(Q_OS_WIN)
 //    bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);

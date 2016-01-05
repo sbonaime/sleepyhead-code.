@@ -1011,7 +1011,7 @@ void gGraphView::updateScale()
 
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,4,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,4,0) && !defined(BROKEN_OPENGL_BUILD)
     // This ques a needed redraw event..
     QOpenGLWidget::resizeEvent(e);
 #endif

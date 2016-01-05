@@ -34,6 +34,8 @@ const QString PlatformString = "MacOSX";
 const QString PlatformString = "Win32";
 #elif defined(Q_OS_LINUX)
 const QString PlatformString = "Linux";
+#elif defined(Q_OS_HAIKU)
+const QString PlatformString = "Haiku";
 #endif
 
 #endif // VERSION_H
