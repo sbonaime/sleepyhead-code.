@@ -139,8 +139,8 @@ class gLineChart: public Layer
         layer->m_report_empty = m_report_empty;
         layer->m_square_plot = m_square_plot;
         layer->m_disable_accel = m_disable_accel;
-        layer->subtract_offset = layer->subtract_offset;
-        layer->m_codes = layer->m_codes;
+        layer->subtract_offset = subtract_offset;
+        layer->m_codes = m_codes;
         layer->m_threshold = m_threshold;
         layer->m_square = m_square;
         layer->m_enabled = m_enabled;
