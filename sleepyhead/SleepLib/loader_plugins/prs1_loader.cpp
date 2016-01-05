@@ -296,12 +296,12 @@ bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * 
 
         bool skip = false;
 
-        if (pair[0].contains("ModelNumber", Qt::CaseInsensitive)) {
+        if (pair[0].contains("ModelNumber", Qt::CaseInsensitive) || pair[0].contains("MN", Qt::CaseInsensitive)) {
             QString modelnum = pair[1];
             parseModel(info, modelnum);
             skip = true;
         }
-        if (pair[0].contains("SerialNumber", Qt::CaseInsensitive)) {
+        if (pair[0].contains("SerialNumber", Qt::CaseInsensitive) || pair[0].contains("SN", Qt::CaseInsensitive)) {
             info.serial = pair[1];
             skip = true;
         }
@@ -535,7 +535,7 @@ int PRS1Loader::OpenMachine(QString path)
         }
 
         // A bit of protection against future annoyances..
-        if (((series != 5) && (series != 6)) || (type >= 10)) {
+        if (((series != 5) && (series != 6) && (series != 0)) || (type >= 10)) {
             QMessageBox::information(QApplication::activeWindow(),
                                      QObject::tr("Machine Unsupported"),
                                      QObject::tr("Sorry, your Philips Respironics CPAP machine (Model %1) is not supported yet.").arg(info.modelnumber) +"\n\n"+
@@ -2324,14 +2324,24 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         blocksize -= headersize;
 
         // Check header checksum
-        quint8 csum = 0;
-        for (int i=0; i < headersize-1; ++i) csum += header[i];
-        if (csum != header[headersize-1]) {
-            // header checksum error.
+
+        if (chunk->fileVersion==2) {
+            quint8 csum = 0;
+            for (int i=0; i < headersize-1; ++i) csum += header[i];
+            if (csum != header[headersize-1]) {
+                // header checksum error.
+                delete chunk;
+                return CHUNKS;
+            }
+        } else if (chunk->fileVersion==3) {
+            // DreamStation uses a different Checksum
+            // I don't know what it is yet, it is not CRC16 based.
+            // Skipping the test for now..
+        } else {
+            // uhhhh.. should not of got this far. because this is an unknown or corrupt file format.
             delete chunk;
             return CHUNKS;
         }
-
         // Read data block
         chunk->m_data = f.read(blocksize);
 
