@@ -1809,6 +1809,29 @@ bool PRS1Import::ParseSummaryF5V1()
     return true;
 }
 
+bool PRS1Import::ParseSummaryF6()
+{
+    // DreamStation machines...
+
+    // APAP models..
+
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+    CPAPMode cpapmode = MODE_UNKNOWN;
+
+    int imin_epap = data[0x3];
+    int imax_epap = data[0x4];
+    int imin_ps = data[0x5];
+    int imax_ps = data[0x6];
+    int imax_pressure = data[0x2];
+
+}
 
 bool PRS1Import::ParseSummary()
 {
@@ -1847,6 +1870,10 @@ bool PRS1Import::ParseSummary()
         } else {
             return ParseSummaryF5V1();
         }
+    case 6:
+       ParseSummaryF6();
+    default:
+        ;
     }
 
     this->loader->saveMutex.lock();
@@ -2320,23 +2347,51 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         int headersize = headerBA.size();
 
         lastblocksize = blocksize;
-        //lastheadersize = headersize;
         blocksize -= headersize;
+        //lastheadersize = headersize;
 
         // Check header checksum
 
+        quint8 csum = 0;
+        for (int i=0; i < headersize-1; ++i) csum += header[i];
+
         if (chunk->fileVersion==2) {
-            quint8 csum = 0;
-            for (int i=0; i < headersize-1; ++i) csum += header[i];
             if (csum != header[headersize-1]) {
                 // header checksum error.
                 delete chunk;
                 return CHUNKS;
             }
-        } else if (chunk->fileVersion==3) {
-            // DreamStation uses a different Checksum
-            // I don't know what it is yet, it is not CRC16 based.
-            // Skipping the test for now..
+        } else if ((chunk->fileVersion==3) && (chunk->ext == 1)) {
+            // DreamStation has an additional block of data following the timestamp, preceded by a length count,
+            // followed by the additive checksum
+
+            char len = header[headersize-1];
+
+            csum += len;
+
+            int h2len = len*2+1;
+
+            blocksize -= h2len;
+
+
+            // Read the extra data block
+            chunk->m_headerblock = f.read(h2len);
+
+            if (chunk->m_headerblock.size() < h2len) {
+                delete chunk;
+                return CHUNKS;
+            }
+            char * header2 = chunk->m_headerblock.data();
+
+            // Checksum the whole header
+            for (int i=0; i < h2len-1; ++i) csum += header2[i];
+
+            if (csum != header2[h2len-1]) {
+                // header checksum error.
+                delete chunk;
+                return CHUNKS;
+            }
+
         } else {
             // uhhhh.. should not of got this far. because this is an unknown or corrupt file format.
             delete chunk;

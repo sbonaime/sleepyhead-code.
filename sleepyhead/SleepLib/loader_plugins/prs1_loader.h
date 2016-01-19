@@ -69,6 +69,7 @@ public:
     inline int size() const { return m_data.size(); }
 
     QByteArray m_data;
+    QByteArray m_headerblock;
 
     SessionID sessionid;
 
@@ -126,6 +127,7 @@ public:
     bool ParseSummaryF3();
     bool ParseSummaryF5V0();
     bool ParseSummaryF5V1();
+    bool ParseSummaryF6();
 
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
