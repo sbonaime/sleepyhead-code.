@@ -1809,7 +1809,7 @@ bool PRS1Import::ParseSummaryF5V1()
     return true;
 }
 
-bool PRS1Import::ParseSummaryF6()
+bool PRS1Import::ParseSummaryF0V6()
 {
     // DreamStation machines...
 
@@ -1825,12 +1825,75 @@ bool PRS1Import::ParseSummaryF6()
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
-    int imin_epap = data[0x3];
-    int imax_epap = data[0x4];
-    int imin_ps = data[0x5];
-    int imax_ps = data[0x6];
-    int imax_pressure = data[0x2];
+    int imin_epap = 0;
+    int imax_epap = 0;
+    int imin_ps   = 0;
+    int imax_ps   = 0;
+    int imax_pressure = 0;
+    int duration  = 0;
 
+    // in 'data', we start with 3 bytes that don't follow the pattern
+    // pattern is varNumber, dataSize, dataValue(dataSize)
+    // examples, 0x0d 0x02 0x28 0xC8  , or 0x0a 0x01 0x64,
+    // first, verify that this dataSize is where we expect
+    //     each var pair in headerblock should be (indexByte, valueByte)
+    if ( 0x01 != summary->m_headerblock[1 * 2] ) {
+        return false;  //nope, not here
+        qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad datablock length";
+    }
+    int dataBlockSize = summary->m_headerblock[1 * 2 + 1];
+    int zero = 0;
+    const unsigned char *dataPtr;
+    //      start at 3rd byte ; did we go past the end? ; increment for dataSize + varNumberByte + dataSizeByte
+    for ( dataPtr = data + 3; dataPtr < (data + 3 + dataBlockSize); dataPtr+= dataPtr[1] + 2) {
+        switch( *dataPtr) {
+        case 10: // 0x0a
+            cpapmode = MODE_CPAP; //might be C_CHECK?
+            if (dataPtr[1] != 1) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad CPAP value";
+            imin_epap = dataPtr[2];
+            break;
+        case 13: // 0x0d
+            cpapmode = MODE_APAP; //might be C_CHECK?
+            if (dataPtr[1] != 2) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
+            imin_epap = dataPtr[2];
+            imax_epap = dataPtr[3];
+            break;
+        default:
+            // have not found this before
+            qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock value:" << (zero + *dataPtr) ;
+        }
+    }
+    // now we encounter yet a different format of data
+    const unsigned char *data2Ptr = data + 3 + dataBlockSize;
+
+    switch(*data2Ptr){
+    case 1:
+        //don't know yet.  data size is the '1' plus 16 bytes
+        data2Ptr += 5;
+        break;
+    case 3:
+        //don't know yet.  data size is the '3' plus 4 bytes
+        data2Ptr += 5;
+        break;
+    case 4:
+        // have seen multiple of these....may have to add them?
+        duration += ( data2Ptr[3] << 8 ) + data2Ptr[2];
+        data2Ptr += 3;
+        break;
+    case 5:
+        //don't know yet.  data size is the '5' plus 4 bytes
+        data2Ptr += 5;
+        break;
+    case 8:
+        //don't know yet.  data size is the '8' plus 20 bytes (might be a '0' in here...not enough different types found yet)
+        data2Ptr += 21;
+        break;
+    default:
+        qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *dataPtr) ;
+    }
+
+// need to use the proper data
+    return true;
 }
 
 bool PRS1Import::ParseSummary()
@@ -1858,6 +1921,8 @@ bool PRS1Import::ParseSummary()
     case 0:
         if (summary->familyVersion == 4) {
             return ParseSummaryF0V4();
+        } else if (summary->familyVersion == 6) {
+            return ParseSummaryF0V6();
         } else {
             return ParseSummaryF0();
         }
@@ -1870,8 +1935,6 @@ bool PRS1Import::ParseSummary()
         } else {
             return ParseSummaryF5V1();
         }
-    case 6:
-       ParseSummaryF6();
     default:
         ;
     }
@@ -2381,7 +2444,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
                 delete chunk;
                 return CHUNKS;
             }
-            char * header2 = chunk->m_headerblock.data();
+            unsigned char * header2 = (unsigned char*) chunk->m_headerblock.data();
 
             // Checksum the whole header
             for (int i=0; i < h2len-1; ++i) csum += header2[i];
