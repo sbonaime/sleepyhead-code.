@@ -2321,7 +2321,9 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
 
             wvfm_signals = header[0x12] | header[0x13] << 8;
 
-            int sbsize = wvfm_signals * 3 + 1;
+            int ws_size = (chunk->fileVersion == 3) ? 4 : 3;
+
+            int sbsize = wvfm_signals * ws_size + 1;
             QByteArray sbextra = f.read(sbsize);
             if (sbextra.size() != sbsize) {
                 delete chunk;
@@ -2331,12 +2333,19 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
             header = (unsigned char *)headerBA.data();
 
             // Read the waveform information in reverse.
-            int pos = 0x14 + (wvfm_signals - 1) * 3;
+            int pos = 0x14 + (wvfm_signals - 1) * ws_size;
             for (int i = 0; i < wvfm_signals; ++i) {
                 quint16 interleave = header[pos] | header[pos + 1] << 8;
-                quint8 sample_format = header[pos + 2];
-                chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
-                pos -= 3;
+
+                if (chunk->fileVersion == 2) {
+                    quint8 sample_format = header[pos + 2];
+                    chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
+                    pos -= 3;
+                } else if (chunk->fileVersion == 3) {
+                    quint16 sample_size = header[pos + 2] | header[pos + 3] << 8;
+                    chunk->waveformInfo.push_back(PRS1Waveform(interleave, 0));
+                    pos -= 4;
+                }
             }
             if (lastchunk != nullptr) {
                 diff = (chunk->timestamp - lastchunk->timestamp) - lastchunk->duration;
@@ -2355,13 +2364,13 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         quint8 csum = 0;
         for (int i=0; i < headersize-1; ++i) csum += header[i];
 
-        if (chunk->fileVersion==2) {
+        if ((chunk->fileVersion==2) || (chunk->ext >= 5)) {
             if (csum != header[headersize-1]) {
                 // header checksum error.
                 delete chunk;
                 return CHUNKS;
             }
-        } else if ((chunk->fileVersion==3) && (chunk->ext == 1)) {
+        } else if ((chunk->fileVersion==3) && (chunk->ext <= 2)) {
             // DreamStation has an additional block of data following the timestamp, preceded by a length count,
             // followed by the additive checksum
 
@@ -2373,7 +2382,6 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
 
             blocksize -= h2len;
 
-
             // Read the extra data block
             chunk->m_headerblock = f.read(h2len);
 
@@ -2381,7 +2389,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
                 delete chunk;
                 return CHUNKS;
             }
-            char * header2 = chunk->m_headerblock.data();
+            unsigned char * header2 = (unsigned char*)chunk->m_headerblock.data();
 
             // Checksum the whole header
             for (int i=0; i < h2len-1; ++i) csum += header2[i];
