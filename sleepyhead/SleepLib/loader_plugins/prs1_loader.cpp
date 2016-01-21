@@ -1899,12 +1899,16 @@ bool PRS1Import::ParseSummaryF0V6()
             //don't know yet.  data size is the '5' plus 4 bytes
             data2Ptr += 5;
             break;
+        case 6:
+            //don't know yet.  data size is the '5' plus 1 byte
+            data2Ptr += 2;
+            break;
         case 8:
             //don't know yet.  data size is the '8' plus 27 bytes (might be a '0' in here...not enough different types found yet)
             data2Ptr += 28;
             break;
         default:
-            qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *dataPtr) ;
+            qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *data2Ptr) ;
         }
     }
 // need to populate summary->
