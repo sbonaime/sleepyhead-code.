@@ -1849,6 +1849,10 @@ bool PRS1Import::ParseSummaryF0V6()
     //      start at 3rd byte ; did we go past the end? ; increment for dataSize + varNumberByte + dataSizeByte
     for ( dataPtr = data + 3; dataPtr < (data + 3 + dataBlockSize); dataPtr+= dataPtr[1] + 2) {
         switch( *dataPtr) {
+        case 00: // mode?
+            break;
+        case 01: // ???
+            break;
         case 10: // 0x0a
             cpapmode = MODE_CPAP; //might be C_CHECK?
             if (dataPtr[1] != 1) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad CPAP value";
@@ -1860,13 +1864,27 @@ bool PRS1Import::ParseSummaryF0V6()
             min_pressure = dataPtr[2];
             max_pressure = dataPtr[3];
             break;
+        case 15: // 0x0f
+            cpapmode = MODE_BILEVEL_AUTO_VARIABLE_PS; //might be C_CHECK?
+            if (dataPtr[1] != 4) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
+            min_pressure = dataPtr[2];
+            max_pressure = dataPtr[3];
+            imin_ps = dataPtr[4];
+            imax_ps = dataPtr[5];
+            break;
+
+        case 0x35:
+            duration += ( dataPtr[3] << 8 ) + dataPtr[2];
+            break;
+//        case 3:
+//            break;
         default:
             // have not found this before
             qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock value:" << (zero + *dataPtr) ;
         }
     }
     // now we encounter yet a different format of data
-    const unsigned char *data2Ptr = data + 3 + dataBlockSize;
+  /*  const unsigned char *data2Ptr = data + 3 + dataBlockSize;
     // pattern is byte/data, where length of data depends on value of 'byte'
     bool data2Done = false;
     while (!data2Done) {
@@ -1909,18 +1927,25 @@ bool PRS1Import::ParseSummaryF0V6()
             break;
         default:
             qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *data2Ptr) ;
+            break;
         }
-    }
+    }*/
 // need to populate summary->
 
-    summary->duration = duration;
+    summary_duration = duration;
     session->settings[CPAP_Mode] = (int)cpapmode;
     if (cpapmode == MODE_CPAP) {
         session->settings[CPAP_Pressure] = imin_epap/10.0f;
 
     } else if (cpapmode == MODE_APAP) {
-        session->settings[CPAP_PressureMin] = min_pressure;
-        session->settings[CPAP_PressureMax] = max_pressure;
+        session->settings[CPAP_PressureMin] = min_pressure/10.0f;
+        session->settings[CPAP_PressureMax] = max_pressure/10.0f;
+    } else if (cpapmode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
+        session->settings[CPAP_EPAPLo] = min_pressure/10.0f;
+        session->settings[CPAP_IPAPHi] = max_pressure/10.0f;
+        session->settings[CPAP_PSMin] = imin_ps/10.0f;
+        session->settings[CPAP_PSMax] = imax_ps/10.0f;
+
     }
 
     return true;
