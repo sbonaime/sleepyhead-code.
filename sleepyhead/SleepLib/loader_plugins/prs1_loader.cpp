@@ -1083,6 +1083,8 @@ bool PRS1Import::ParseF0Events()
     int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
 
     int size = event->m_data.size();
+
+    if (event->fileVersion == 3) size -= 2;
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     for (pos = 0; pos < size;) {
