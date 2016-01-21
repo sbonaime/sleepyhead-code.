@@ -127,7 +127,7 @@ public:
     bool ParseSummaryF3();
     bool ParseSummaryF5V0();
     bool ParseSummaryF5V1();
-    bool ParseSummaryF6();
+    bool ParseSummaryF0V6();
 
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
