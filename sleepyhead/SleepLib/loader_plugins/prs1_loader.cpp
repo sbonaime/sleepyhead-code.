@@ -1830,6 +1830,8 @@ bool PRS1Import::ParseSummaryF0V6()
     int imin_ps   = 0;
     int imax_ps   = 0;
     int imax_pressure = 0;
+    int min_pressure = 0;
+    int max_pressure = 0;
     int duration  = 0;
 
     // in 'data', we start with 3 bytes that don't follow the pattern
@@ -1855,8 +1857,8 @@ bool PRS1Import::ParseSummaryF0V6()
         case 13: // 0x0d
             cpapmode = MODE_APAP; //might be C_CHECK?
             if (dataPtr[1] != 2) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
-            imin_epap = dataPtr[2];
-            imax_epap = dataPtr[3];
+            min_pressure = dataPtr[2];
+            max_pressure = dataPtr[3];
             break;
         default:
             // have not found this before
@@ -1865,34 +1867,58 @@ bool PRS1Import::ParseSummaryF0V6()
     }
     // now we encounter yet a different format of data
     const unsigned char *data2Ptr = data + 3 + dataBlockSize;
+    // pattern is byte/data, where length of data depends on value of 'byte'
+    bool data2Done = false;
+    while (!data2Done) {
+        switch(*data2Ptr){
+        case 0:
+            //this appears to be the last one.  '0' plus 5 bytes **eats crc** without checking
+            data2Ptr += 4;
+            data2Ptr += 2; //this is the **CRC**??
+            data2Done = true; //hope this is always there, since we don't have blocksize from header
+            break;
+        case 1:
+            //don't know yet.  data size is the '1' plus 16 bytes
+            data2Ptr += 5;
+            break;
+        case 2:
+            //don't know yet.  data size is the '2' plus 16 bytes
+            data2Ptr += 3;
+            break;
+        case 3:
+            //don't know yet.  data size is the '3' plus 4 bytes
+            // have seen multiple of these....may have to add them?
+            data2Ptr += 5;
+            break;
+        case 4:
+            // have seen multiple of these....may have to add them?
+            duration += ( data2Ptr[3] << 8 ) + data2Ptr[2];
+            data2Ptr += 3;
+            break;
+        case 5:
+            //don't know yet.  data size is the '5' plus 4 bytes
+            data2Ptr += 5;
+            break;
+        case 8:
+            //don't know yet.  data size is the '8' plus 27 bytes (might be a '0' in here...not enough different types found yet)
+            data2Ptr += 28;
+            break;
+        default:
+            qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *dataPtr) ;
+        }
+    }
+// need to populate summary->
 
-    switch(*data2Ptr){
-    case 1:
-        //don't know yet.  data size is the '1' plus 16 bytes
-        data2Ptr += 5;
-        break;
-    case 3:
-        //don't know yet.  data size is the '3' plus 4 bytes
-        data2Ptr += 5;
-        break;
-    case 4:
-        // have seen multiple of these....may have to add them?
-        duration += ( data2Ptr[3] << 8 ) + data2Ptr[2];
-        data2Ptr += 3;
-        break;
-    case 5:
-        //don't know yet.  data size is the '5' plus 4 bytes
-        data2Ptr += 5;
-        break;
-    case 8:
-        //don't know yet.  data size is the '8' plus 20 bytes (might be a '0' in here...not enough different types found yet)
-        data2Ptr += 21;
-        break;
-    default:
-        qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock2 value:" << (zero + *dataPtr) ;
+    summary->duration = duration;
+    session->settings[CPAP_Mode] = (int)cpapmode;
+    if (cpapmode == MODE_CPAP) {
+        session->settings[CPAP_Pressure] = imin_epap/10.0f;
+
+    } else if (cpapmode == MODE_APAP) {
+        session->settings[CPAP_PressureMin] = min_pressure;
+        session->settings[CPAP_PressureMax] = max_pressure;
     }
 
-// need to use the proper data
     return true;
 }
 
