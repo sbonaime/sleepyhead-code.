@@ -1896,6 +1896,13 @@ bool PRS1Import::ParseSummaryF0V6()
             min_pressure = dataPtr[2];
             max_pressure = dataPtr[3];
             break;
+        case 14: // 0x0e  // <--- this is a total guess.. might be 3 and have a pressure support value
+            cpapmode = MODE_BILEVEL_FIXED;
+            if (dataPtr[1] != 2) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
+            min_pressure = dataPtr[2];
+            max_pressure = dataPtr[3];
+            imin_ps = max_pressure - min_pressure;
+            break;
         case 15: // 0x0f
             cpapmode = MODE_BILEVEL_AUTO_VARIABLE_PS; //might be C_CHECK?
             if (dataPtr[1] != 4) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
@@ -1972,6 +1979,11 @@ bool PRS1Import::ParseSummaryF0V6()
     } else if (cpapmode == MODE_APAP) {
         session->settings[CPAP_PressureMin] = min_pressure/10.0f;
         session->settings[CPAP_PressureMax] = max_pressure/10.0f;
+    } else if (cpapmode == MODE_BILEVEL_FIXED) {
+        // Guessing here.. haven't seen BIPAP data.
+        session->settings[CPAP_EPAP] = min_pressure/10.0f;
+        session->settings[CPAP_IPAP] = max_pressure/10.0f;
+        session->settings[CPAP_PS] = imin_ps/10.0f;
     } else if (cpapmode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
         session->settings[CPAP_EPAPLo] = min_pressure/10.0f;
         session->settings[CPAP_IPAPHi] = max_pressure/10.0f;
