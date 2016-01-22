@@ -1117,6 +1117,8 @@ bool PRS1Import::ParseF0Events()
     if (event->fileVersion == 3) size -= 2;
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
+    CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
+
     for (pos = 0; pos < size;) {
         lastcode3 = lastcode2;
         lastcode2 = lastcode;
@@ -1127,7 +1129,7 @@ bool PRS1Import::ParseF0Events()
         startpos = pos;
         code = buffer[pos++];
 
-        if (code > 0x12) {
+        if (code > 0x14) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
             qDebug() << "1: (" << hex << int(lastcode) << hex << lastpos << ")";
             qDebug() << "2: (" << hex << int(lastcode2) << hex << lastpos2 << ")";
@@ -1147,13 +1149,15 @@ bool PRS1Import::ParseF0Events()
         switch (code) {
 
         case 0x00: // Unknown 00
+
+            if (event->family == 3)
             if (!Code[0]) {
                 if (!(Code[0] = session->AddEventList(PRS1_00, EVL_Event))) { return false; }
             }
 
             Code[0]->AddEvent(t, buffer[pos++]);
 
-            if ((event->family == 0) && (event->familyVersion >= 4)) {
+            if (((event->family == 0) && (event->familyVersion >= 4)) || (event->fileVersion == 3)){
                 pos++;
             }
 
@@ -1204,17 +1208,27 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x03: // BIPAP Pressure
-            if (!EPAP) {
-                if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+            if (event->fileVersion == 3) {
+                if (!PRESSURE) {
+                    PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
 
-                if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
+                    if (!PRESSURE) { return false; }
+                }
+                PRESSURE->AddEvent(t, buffer[pos++]);
 
-                if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
+            } else {
+                if (!EPAP) {
+                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+
+                    if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
+
+                    if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
+                }
+
+                EPAP->AddEvent(t, data[0] = buffer[pos++]);
+                IPAP->AddEvent(t, data[1] = buffer[pos++]);
+                PS->AddEvent(t, data[1] - data[0]);
             }
-
-            EPAP->AddEvent(t, data[0] = buffer[pos++]);
-            IPAP->AddEvent(t, data[1] = buffer[pos++]);
-            PS->AddEvent(t, data[1] - data[0]);
             break;
 
         case 0x04: // Pressure Pulse
@@ -1264,26 +1278,10 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x0d: // Vibratory Snore
-            VS->AddEvent(t, 0);
-            break;
-
-        case 0x11: // Leak Rate & Snore Graphs
-            data[0] = buffer[pos++];
-            data[1] = buffer[pos++];
-
-            LEAK->AddEvent(t, data[0]);
-            SNORE->AddEvent(t, data[1]);
-
-            if (data[1] > 0) {
-                VS2->AddEvent(t, data[1]);
-            }
-
-            if ((event->family == 0) && (event->familyVersion >= 4)) {
-                data[0] = buffer[pos];
-
-                pos++;
-            }
-
+//            if (event->fileVersion == 3) {
+//            } else {
+                VS->AddEvent(t, 0);
+//            }
             break;
 
         case 0x0e: // Unknown
@@ -1302,6 +1300,13 @@ bool PRS1Import::ParseF0Events()
             //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
             break;
 
+        case 0x0f: // Cheyne Stokes Respiration
+            data[0] = buffer[pos + 1] << 8 | buffer[pos];
+            pos += 2;
+            data[1] = buffer[pos++];
+            tt = t - qint64(data[1]) * 1000L;
+            CSR->AddEvent(tt, data[0]);
+            break;
         case 0x10: // Large Leak
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
@@ -1311,12 +1316,23 @@ bool PRS1Import::ParseF0Events()
             LL->AddEvent(tt, data[0]);
             break;
 
-        case 0x0f: // Cheyne Stokes Respiration
-            data[0] = buffer[pos + 1] << 8 | buffer[pos];
-            pos += 2;
+        case 0x11: // Leak Rate & Snore Graphs
+            data[0] = buffer[pos++];
             data[1] = buffer[pos++];
-            tt = t - qint64(data[1]) * 1000L;
-            CSR->AddEvent(tt, data[0]);
+
+            LEAK->AddEvent(t, data[0]);
+            SNORE->AddEvent(t, data[1]);
+
+            if (data[1] > 0) {
+                VS2->AddEvent(t, data[1]);
+            }
+
+            if (((event->family == 0) && (event->familyVersion >= 4)) || (event->fileVersion == 3)) {
+                data[0] = buffer[pos];
+
+                pos++;
+            }
+
             break;
 
         case 0x12: // Summary
@@ -1330,6 +1346,12 @@ bool PRS1Import::ParseF0Events()
 //            }
 
 //            Code[24]->AddEvent(t, data[0]);
+            break;
+
+        case 0x14:  // DreamStation unknown code
+            tt = t - (qint64(data[0]) * 1000L);
+
+            pos++;
             break;
 
         default:
@@ -1878,6 +1900,7 @@ bool PRS1Import::ParseSummaryF0V6()
     int dataBlockSize = summary->m_headerblock[1 * 2 + 1];
     int zero = 0;
     const unsigned char *dataPtr;
+
     //      start at 3rd byte ; did we go past the end? ; increment for dataSize + varNumberByte + dataSizeByte
     for ( dataPtr = data + 3; dataPtr < (data + 3 + dataBlockSize); dataPtr+= dataPtr[1] + 2) {
         switch( *dataPtr) {
@@ -1949,7 +1972,7 @@ bool PRS1Import::ParseSummaryF0V6()
             break;
         case 4:
             // have seen multiple of these....may have to add them?
-            duration += ( data2Ptr[3] << 8 ) + data2Ptr[2];
+            duration = ( data2Ptr[3] << 8 ) + data2Ptr[2];
             data2Ptr += 3;
             break;
         case 5:
