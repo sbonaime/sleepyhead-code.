@@ -268,6 +268,9 @@ void parseModel(MachineInfo & info, QString modelnum)
     case 6:
         info.series = QObject::tr("System One (60 Series)");
         break;
+    case 7:
+        info.series = QObject::tr("DreamStation");
+        break;
     default:
         info.series = QObject::tr("unknown");
         break;
@@ -290,6 +293,10 @@ bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * 
         return false;
     }
     QTextStream in(&f);
+    QString modelnum;
+    int ptype=0;
+    int dfv=0;
+    bool ok;
     do {
         QString line = in.readLine();
         QStringList pair = line.split("=");
@@ -297,12 +304,19 @@ bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * 
         bool skip = false;
 
         if (pair[0].contains("ModelNumber", Qt::CaseInsensitive) || pair[0].contains("MN", Qt::CaseInsensitive)) {
-            QString modelnum = pair[1];
-            parseModel(info, modelnum);
+            modelnum = pair[1];
             skip = true;
         }
         if (pair[0].contains("SerialNumber", Qt::CaseInsensitive) || pair[0].contains("SN", Qt::CaseInsensitive)) {
             info.serial = pair[1];
+            skip = true;
+        }
+        if (pair[0].contains("ProductType", Qt::CaseInsensitive) || pair[0].contains("PT", Qt::CaseInsensitive)) {
+            ptype = pair[1].toInt(&ok, 16);
+            skip = true;
+        }
+        if (pair[0].contains("DataFormatVersion", Qt::CaseInsensitive) || pair[0].contains("DFV", Qt::CaseInsensitive)) {
+            dfv = pair[1].toInt(&ok, 10);
             skip = true;
         }
         if (!mach || skip) continue;
@@ -310,6 +324,22 @@ bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * 
         mach->properties[pair[0]] = pair[1];
 
     } while (!in.atEnd());
+
+    if (!modelnum.isEmpty()) {
+        parseModel(info, modelnum);
+    }
+
+    if (ptype > 0) {
+        if (ModelMap.contains(ptype)) {
+            info.model = ModelMap[ptype];
+        }
+    }
+
+    if (dfv == 3) {
+        info.series = QObject::tr("DreamStation");
+    }
+
+
     return true;
 }
 
@@ -2575,14 +2605,19 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
 
 void InitModelMap()
 {
-    ModelMap[0x34] = "RemStar Pro with C-Flex+"; // 450/460P
-    ModelMap[0x35] = "RemStar Auto with A-Flex"; // 550/560P
-    ModelMap[0x36] = "RemStar BiPAP Pro with Bi-Flex";
-    ModelMap[0x37] = "RemStar BiPAP Auto with Bi-Flex";
-    ModelMap[0x38] = "RemStar Plus :(";          // 150/250P/260P
-    ModelMap[0x41] = "BiPAP autoSV Advanced";
-    ModelMap[0x4a] = "BiPAP autoSV Advanced 60 Series";
-    ModelMap[0x4E] = "BiPAP AVAPS";
+    ModelMap[0x34] = QObject::tr("RemStar Pro with C-Flex+"); // 450/460P
+    ModelMap[0x35] = QObject::tr("RemStar Auto with A-Flex"); // 550/560P
+    ModelMap[0x36] = QObject::tr("RemStar BiPAP Pro with Bi-Flex");
+    ModelMap[0x37] = QObject::tr("RemStar BiPAP Auto with Bi-Flex");
+    ModelMap[0x38] = QObject::tr("RemStar Plus");          // 150/250P/260P
+    ModelMap[0x41] = QObject::tr("BiPAP autoSV Advanced");
+    ModelMap[0x4a] = QObject::tr("BiPAP autoSV Advanced 60 Series");
+    ModelMap[0x4E] = QObject::tr("BiPAP AVAPS");
+    ModelMap[0x58] = QObject::tr("CPAP");  // guessing
+    ModelMap[0x59] = QObject::tr("CPAP Pro"); // guessing
+    ModelMap[0x5A] = QObject::tr("Auto CPAP");
+    ModelMap[0x5B] = QObject::tr("BiPAP Pro"); // guessing
+    ModelMap[0x5C] = QObject::tr("Auto BiPAP");
 }
 
 bool initialized = false;
