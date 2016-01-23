@@ -1114,7 +1114,8 @@ bool PRS1Import::ParseF0Events()
 
     int size = event->m_data.size();
 
-    if (event->fileVersion == 3) size -= 2;
+    bool FV3 = (event->fileVersion == 3);
+    if (FV3) size -= 2;
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
@@ -1150,7 +1151,6 @@ bool PRS1Import::ParseF0Events()
 
         case 0x00: // Unknown 00
 
-            if (event->family == 3)
             if (!Code[0]) {
                 if (!(Code[0] = session->AddEventList(PRS1_00, EVL_Event))) { return false; }
             }
@@ -1208,7 +1208,7 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x03: // BIPAP Pressure
-            if (event->fileVersion == 3) {
+            if (FV3) {
                 if (!PRESSURE) {
                     PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
 

@@ -143,15 +143,11 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     }
 
-    QString version = VersionString;
+    QString version = VersionString + "-" + QString(GIT_REVISION) + "-" + getGraphicsEngine();
 
-#ifdef TEST_BUILD
-    version += QString(STR_TestBuild);
-#else
+#ifndef TEST_BUILD
     ui->warningLabel->hide();
 #endif
-
-    version += " "+getGraphicsEngine();
 
     if (QString(GIT_BRANCH) != "master") { version += " [" + QString(GIT_BRANCH)+" branch]"; }
 
