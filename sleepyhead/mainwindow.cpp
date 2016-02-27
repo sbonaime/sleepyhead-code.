@@ -1420,10 +1420,10 @@ void MainWindow::on_action_About_triggered()
                 // Credits section
                 "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
                 tr("Bugfixes, Patches and Platform Help:") + "</b> " +
-                tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.")
+                tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.")
                 + "</p>"
 
-                "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I've still to add here.") +
+                "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I've still to add here.") +
                 "</p>"
 
                 "<p><b>" + tr("3rd Party Libaries:") + "</b> " +

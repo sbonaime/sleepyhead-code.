@@ -1912,12 +1912,12 @@ bool PRS1Import::ParseSummaryF0V6()
         case 01: // ???
             break;
         case 10: // 0x0a
-            cpapmode = MODE_CPAP; //might be C_CHECK?
+            cpapmode = MODE_CPAP;
             if (dataPtr[1] != 1) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad CPAP value";
             imin_epap = dataPtr[2];
             break;
         case 13: // 0x0d
-            cpapmode = MODE_APAP; //might be C_CHECK?
+            cpapmode = MODE_APAP;
             if (dataPtr[1] != 2) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
             min_pressure = dataPtr[2];
             max_pressure = dataPtr[3];
@@ -1936,6 +1936,12 @@ bool PRS1Import::ParseSummaryF0V6()
             max_pressure = dataPtr[3];
             imin_ps = dataPtr[4];
             imax_ps = dataPtr[5];
+            break;
+        case 0x10: // Auto Trial mode
+            cpapmode = MODE_APAP;
+            if (dataPtr[1] != 3) qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad APAP value";
+            min_pressure = dataPtr[3];
+            max_pressure = dataPtr[4];
             break;
 
         case 0x35:
