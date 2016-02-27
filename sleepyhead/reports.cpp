@@ -210,6 +210,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             float hours = day->hours(MT_CPAP);
             ahi /= hours;
             float csr = (100.0 / hours) * (day->sum(CPAP_CSR) / 3600.0);
+            float pb = (100.0 / hours) * (day->sum(CPAP_PB) / 3600.0);
             float uai = day->count(CPAP_Apnea) / hours;
             float oai = day->count(CPAP_Obstructive) / hours;
             float hi = (day->count(CPAP_ExP) + day->count(CPAP_Hypopnea)) / hours;
@@ -270,6 +271,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                     2);
 
             if (cpap->loaderName() == STR_MACH_PRS1) {
+
+                // FIXME: PB / CSR are now separate flags
                 stats += QObject::tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%")
                          .arg(rei, 0, 'f', 2).arg(vsi, 0, 'f', 2)
                          .arg(fli, 0, 'f', 2).arg(csr, 0, 'f', 2);

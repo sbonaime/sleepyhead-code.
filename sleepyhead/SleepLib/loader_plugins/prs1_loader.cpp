@@ -730,7 +730,7 @@ bool PRS1Import::ParseF5Events()
 {
     ChannelID Codes[] = {
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
-        CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
+        CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_PB,
         PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F,
         CPAP_LargeLeak, // Large leak apparently
         CPAP_LeakTotal, PRS1_12
@@ -741,7 +741,7 @@ bool PRS1Import::ParseF5Events()
 
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
-    EventList *CSR = session->AddEventList(CPAP_CSR, EVL_Event);
+    EventList *PB = session->AddEventList(CPAP_PB, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
@@ -928,14 +928,14 @@ bool PRS1Import::ParseF5Events()
             //tt-=delta;
             tt -= qint64(data[1]) * 1000L;
 
-            if (!CSR) {
-                if (!(CSR = session->AddEventList(cpapcode, EVL_Event))) {
-                    qDebug() << "!CSR addeventlist exit";
+            if (!PB) {
+                if (!(PB = session->AddEventList(cpapcode, EVL_Event))) {
+                    qDebug() << "!PB addeventlist exit";
                     return false;
                 }
             }
 
-            CSR->AddEvent(tt, data[0]);
+            PB->AddEvent(tt, data[0]);
             break;
 
         case 0x0c:
@@ -1086,7 +1086,7 @@ bool PRS1Import::ParseF0Events()
 
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
-    EventList *CSR = session->AddEventList(CPAP_CSR, EVL_Event);
+    EventList *PB = session->AddEventList(CPAP_PB, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
 
@@ -1141,6 +1141,7 @@ bool PRS1Import::ParseF0Events()
         if (code != 0x12) {
             delta = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
+
             t += qint64(delta) * 1000L;
             tt = t;
         }
@@ -1232,8 +1233,10 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x04: // Pressure Pulse
+            data[0] = buffer[pos++];
+            tt = t - (qint64(data[0]) * 1000L);
 
-            PP->AddEvent(t, buffer[pos++]);
+            PP->AddEvent(tt, data[0]);
             break;
 
         case 0x05: // RERA
@@ -1297,7 +1300,7 @@ bool PRS1Import::ParseF0Events()
             //qDebug() << hex << data[0] << data[1] << data[2];
             //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
             //tt-=data[1]*1000;
-            //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
+            //session->AddEvent(new Event(t,CPAP_PB, data, 2));
             break;
 
         case 0x0f: // Cheyne Stokes Respiration
@@ -1305,7 +1308,7 @@ bool PRS1Import::ParseF0Events()
             pos += 2;
             data[1] = buffer[pos++];
             tt = t - qint64(data[1]) * 1000L;
-            CSR->AddEvent(tt, data[0]);
+            PB->AddEvent(tt, data[0]);
             break;
         case 0x10: // Large Leak
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
@@ -1349,9 +1352,12 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x14:  // DreamStation unknown code
+            data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
+            HY->AddEvent(tt, data[0]);
+//            tt = t - (qint64(data[0]) * 1000L);
 
-            pos++;
+//            pos++;
             break;
 
         default:

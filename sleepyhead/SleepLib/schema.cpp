@@ -57,6 +57,7 @@ QHash<QString, ScopeType> Scopes;
 bool schema_initialized = false;
 
 void setOrders() {
+    schema::channel[CPAP_PB].setOrder(1);
     schema::channel[CPAP_CSR].setOrder(1);
     schema::channel[CPAP_Ramp].setOrder(2);
     schema::channel[CPAP_LargeLeak].setOrder(2);
@@ -183,8 +184,13 @@ void init()
     // Flags
     schema::channel.add(GRP_CPAP, new Channel(CPAP_CSR           = 0x1000, SPAN,    MT_CPAP, SESSION, "CSR",
                         QObject::tr("Cheyne Stokes Respiration"),
-                        QObject::tr("An abnormal period of Periodic Breathing/Cheyne Stokes Respiration"),
+                        QObject::tr("An abnormal period of Cheyne Stokes Respiration"),
                         QObject::tr("CSR"),       STR_UNIT_Percentage,            DEFAULT,    COLOR_CSR));
+
+    schema::channel.add(GRP_CPAP, new Channel(CPAP_PB            = 0x1028, SPAN,    MT_CPAP, SESSION, "PB",
+                        QObject::tr("Periodic Breathing"),
+                        QObject::tr("An abnormal period of Periodic Breathing"),
+                        QObject::tr("PB"),       STR_UNIT_Percentage,            DEFAULT,    COLOR_CSR));
 
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_ClearAirway   = 0x1001, FLAG,    MT_CPAP, SESSION,

@@ -664,8 +664,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 for (quint32 o=0;o<ev.count();o++) {
                     qint64 t=ev.time(o)+drift;
 
-                    if (code==CPAP_CSR) { // center it in the middle of span
-                        t-=float(ev.raw(o)/2.0)*1000.0;
+                    if ((code == CPAP_CSR) || (code == CPAP_PB)) { // center it in the middle of span
+                        t -= float(ev.raw(o) / 2.0) * 1000.0;
                     }
                     QStringList a;
                     QDateTime d=QDateTime::fromMSecsSinceEpoch(t, Qt::UTC);

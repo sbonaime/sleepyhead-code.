@@ -1959,6 +1959,36 @@ void Statistics::UpdateRecordsBox()
                     html += "<br/>";
                 }
             }
+            if (p_profile->hasChannel(CPAP_PB)) {
+                ahilist.clear();
+                for (QDate date = first; date <= last; date = date.addDays(1)) {
+                    Day * day = p_profile->GetGoodDay(date, MT_CPAP);
+                    if (!day) continue;
+
+                    float leak = day->calcPON(CPAP_PB);
+                    ahilist.insert(leak, date);
+                }
+
+                if (ahilist.size() > (show_records * 2)) {
+                    html += "<b>"+QObject::tr("Worst PB")+"</b><br/>";
+
+                    it = ahilist.end() - 1;
+                    it_end = ahilist.begin();
+                    for (int i=0; (i < show_records) && (it != it_end); ++i, --it) {
+
+                        if (it.key() > 0) {
+                            html += QString("<a href='daily=%1'>").arg(it.value().toString(Qt::ISODate))
+                                +QObject::tr("Date: %1 PB: %2%").arg(it.value().toString(Qt::SystemLocaleShortDate)).arg(it.key(), 0, 'f', 2) + "</a><br/>";
+                            cnt++;
+                        }
+                    }
+                    if (cnt == 0) {
+                        html+= "<i>"+QObject::tr("No PB on record")+"</i><br/>";
+                    }
+
+                    html += "<br/>";
+                }
+            }
 
         } else {
             html += "<br/><b>"+QObject::tr("Want more information?")+"</b><br/>";
