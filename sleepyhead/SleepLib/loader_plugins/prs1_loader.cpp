@@ -1107,6 +1107,8 @@ bool PRS1Import::ParseF0Events()
     EventList *IPAP = nullptr;
     EventList *PS = nullptr;
 
+    EventList *Code15 = nullptr;
+
     //session->AddEventList(CPAP_VSnore, EVL_Event);
     //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
     unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0;
@@ -1130,7 +1132,7 @@ bool PRS1Import::ParseF0Events()
         startpos = pos;
         code = buffer[pos++];
 
-        if (code > 0x14) {
+        if (code > 0x15) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
             qDebug() << "1: (" << hex << int(lastcode) << hex << lastpos << ")";
             qDebug() << "2: (" << hex << int(lastcode2) << hex << lastpos2 << ")";
@@ -1355,6 +1357,22 @@ bool PRS1Import::ParseF0Events()
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
             HY->AddEvent(tt, data[0]);
+            break;
+
+        case 0x15:  // DreamStation Hypopnea // Also a hypopnea.. Hmmm. grouped together by encore.
+            data[0] = buffer[pos++];
+            tt = t - (qint64(data[0]) * 1000L);
+            HY->AddEvent(tt, data[0]);
+
+
+            // This will create an ugly overlay... :/
+//            if (!Code15) {
+//                Code15 = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
+
+//                if (!Code15) { return false; }
+//            }
+//            Code15->AddEvent(t, data[0]);
+
             break;
 
         default:
@@ -1951,7 +1969,8 @@ bool PRS1Import::ParseSummaryF0V6()
 //            break;
         default:
             // have not found this before
-            qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock value:" << (zero + *dataPtr) ;
+            ;
+         //   qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Unknown datablock value:" << (zero + *dataPtr) ;
         }
     }
     // now we encounter yet a different format of data
@@ -2896,6 +2915,13 @@ void PRS1Loader::initChannels()
 //        QString(unknownshort).arg(0x12,2,16,QChar('0')),
 //        STR_UNIT_Unknown,
 //        DEFAULT,    QColor("black")));
+    channel.add(GRP_CPAP, new Channel(PRS1_15 = 0x115A, UNKNOWN,  MT_CPAP,   SESSION,
+        "PRS1_15",
+        QString(unknownname).arg(0x15,2,16,QChar('0')),
+        QString(unknowndesc).arg(0x15,2,16,QChar('0')),
+        QString(unknownshort).arg(0x15,2,16,QChar('0')),
+        STR_UNIT_Unknown,
+        DEFAULT,    QColor("black")));
 
 
     channel.add(GRP_CPAP, new Channel(PRS1_TimedBreath = 0x1180, MINOR_FLAG, MT_CPAP,    SESSION,
