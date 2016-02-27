@@ -1115,7 +1115,7 @@ bool PRS1Import::ParseF0Events()
     int size = event->m_data.size();
 
     bool FV3 = (event->fileVersion == 3);
-    if (FV3) size -= 2;
+   // if (FV3) size -= 2;
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
@@ -1351,13 +1351,10 @@ bool PRS1Import::ParseF0Events()
 //            Code[24]->AddEvent(t, data[0]);
             break;
 
-        case 0x14:  // DreamStation unknown code
+        case 0x14:  // DreamStation Hypopnea
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
             HY->AddEvent(tt, data[0]);
-//            tt = t - (qint64(data[0]) * 1000L);
-
-//            pos++;
             break;
 
         default:
@@ -2328,6 +2325,7 @@ bool PRS1Import::ParseOximetery()
 bool PRS1Import::ParseWaveforms()
 {
     int size = waveforms.size();
+    quint64 s1, s2;
 
     for (int i=0; i < size; ++i) {
         PRS1DataChunk * waveform = waveforms.at(i);
@@ -2338,7 +2336,7 @@ bool PRS1Import::ParseWaveforms()
             continue;
         }
         quint64 ti = quint64(waveform->timestamp) * 1000L;
-        qint64 dur = qint64(waveform->duration) * 1000L;
+        quint64 dur = qint64(waveform->duration) * 1000L;
 
         if (num > 1) {
             // Process interleaved samples
@@ -2354,19 +2352,22 @@ bool PRS1Import::ParseWaveforms()
                 }
             } while (pos < size);
 
-            if (data[0].size() > 0) {
-                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / data[0].size());
+            s1 = data[0].size();
+            s2 = data[1].size();
+
+            if (s1 > 0) {
+                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(dur) / double(s1));
                 flow->AddWaveform(ti, (char *)data[0].data(), data[0].size(), dur);
             }
 
-            if (data[1].size() > 0) {
-                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, dur / data[1].size());
+            if (s2 > 0) {
+                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, double(dur) / double(s2));
                 pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), dur);
             }
 
         } else {
             // Non interleaved, so can process it much faster
-            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, dur / waveform->m_data.size());
+            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(dur) / double(waveform->m_data.size()));
             flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), dur);
         }
     }
@@ -2526,14 +2527,15 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
             // Read the waveform information in reverse.
             int pos = 0x14 + (wvfm_signals - 1) * ws_size;
             for (int i = 0; i < wvfm_signals; ++i) {
-                quint16 interleave = header[pos] | header[pos + 1] << 8;
+                quint16 interleave = header[pos] | header[pos + 1] << 8; // samples per block (Usually 05 00)
 
                 if (chunk->fileVersion == 2) {
                     quint8 sample_format = header[pos + 2];
                     chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
                     pos -= 3;
                 } else if (chunk->fileVersion == 3) {
-                    quint16 sample_size = header[pos + 2] | header[pos + 3] << 8;
+                    quint16 sample_size = header[pos + 2] | header[pos + 3] << 8; // size in bits?? (08 00)
+                    // Possibly this is size in bits, and sign bit for the other byte?
                     chunk->waveformInfo.push_back(PRS1Waveform(interleave, 0));
                     pos -= 4;
                 }
@@ -2604,19 +2606,24 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
             break;
         }
 
-        // last two bytes contain crc16 checksum.
-        int ds = chunk->m_data.size();
-        quint16 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
-        chunk->m_data.chop(2);
-
+        if (chunk->fileVersion==3) {
+            //int ds = chunk->m_data.size();
+            //quint32 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
+            chunk->m_data.chop(4);
+        } else {
+            // last two bytes contain crc16 checksum.
+            int ds = chunk->m_data.size();
+            quint16 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
+            chunk->m_data.chop(2);
 #ifdef PRS1_CRC_CHECK
-        // This fails.. it needs to include the header!
-        quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
-        if (calc16 != crc16) {
-            // corrupt data block.. bleh..
-         //   qDebug() << "CRC16 doesn't match for chunk" << chunk->sessionid << "for" << path;
-        }
+            // This fails.. it needs to include the header!
+            quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
+            if (calc16 != crc16) {
+                // corrupt data block.. bleh..
+            //   qDebug() << "CRC16 doesn't match for chunk" << chunk->sessionid << "for" << path;
+            }
 #endif
+        }
 
         if ((chunk->ext == 5) || (chunk->ext == 6)){
             if (lastchunk != nullptr) {
