@@ -1234,9 +1234,9 @@ bool PRS1Import::ParseF0Events()
 
         case 0x04: // Pressure Pulse
             data[0] = buffer[pos++];
-            tt = t - (qint64(data[0]) * 1000L);
+            //tt = t - (qint64(data[0]) * 1000L);
 
-            PP->AddEvent(tt, data[0]);
+            PP->AddEvent(t, data[0]);
             break;
 
         case 0x05: // RERA
