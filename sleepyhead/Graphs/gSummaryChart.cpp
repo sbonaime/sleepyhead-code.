@@ -1,6 +1,6 @@
 /* gSummaryChart Implementation
  *
- * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2016 Mark Watkins <jedimark@users.sourceforge.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -411,7 +411,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int days = ceil(double(maxx-minx) / 86400000.0);
 
-    bool buttuglydaysteps = !p_profile->appearance->animations();
+    bool buttuglydaysteps = false ; //!p_profile->appearance->animations();
 
     double lcursor = w.graphView()->currentTime();
     if (days >= 1) {

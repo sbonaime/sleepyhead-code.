@@ -1293,14 +1293,24 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x0e: // Unknown
-            data[0] = ((char *)buffer)[pos++];
-            data[1] = buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
-            //data[0]/=10.0;
-            //pos+=2;
-            data[2] = buffer[pos++];
+            data[0] = buffer[pos + 1] << 8 | buffer[pos];
+            pos += 2;
+            data[1] = buffer[pos++];
 
-            tdata = unsigned(data[1]) << 8 | unsigned(data[0]);
-            Code[17]->AddEvent(t, tdata);
+            tt = t - qint64(data[1]) * 1000L;
+            //LL->AddEvent(tt, data[0]);
+            Code[17]->AddEvent(t, data[1]);
+
+
+
+//            data[0] = ((char *)buffer)[pos++];
+//            data[1] = buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
+//            //data[0]/=10.0;
+//            //pos+=2;
+//            data[2] = buffer[pos++];
+
+//            tdata = unsigned(data[1]) << 8 | unsigned(data[0]);
+//            Code[17]->AddEvent(t, tdata);
             //qDebug() << hex << data[0] << data[1] << data[2];
             //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
             //tt-=data[1]*1000;

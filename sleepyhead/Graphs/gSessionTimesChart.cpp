@@ -415,10 +415,13 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     //float lasty1 = rect.bottom();
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
-    idx_start=0;
-    if (it != dayindex.end()) {
+    idx_start = 0;
+    if (it == dayindex.end()) {
+        it = dayindex.begin();
+    } else {
         idx_start = it.value();
     }
+
     int idx = idx_start;
 
     QMap<QDate, int>::iterator ite = dayindex.find(enddate);
@@ -438,7 +441,8 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     int hl_idx = -1;
     bool hl = false;
 
-    if ((daylist.size() == 0) || (it == dayindex.end())) return;
+    if ((daylist.size() == 0) || (it == dayindex.end()))
+        return;
 
     //Day * lastday = nullptr;
 
@@ -836,7 +840,10 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
     QMap<QDate, int>::iterator it = dayindex.find(date);
     int idx=0;
-    if (it != dayindex.end()) {
+
+    if (it == dayindex.end()) {
+        it = dayindex.begin();
+    } else {
         idx = it.value();
     }
 
