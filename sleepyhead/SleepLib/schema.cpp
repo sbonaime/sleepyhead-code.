@@ -470,6 +470,7 @@ void init()
     ch->addOption(5, QObject::tr("Auto Bi-Level (Variable PS)"));
     ch->addOption(6, QObject::tr("ASV (Fixed EPAP)"));
     ch->addOption(7, QObject::tr("ASV (Variable EPAP)"));
+    ch->addOption(8, QObject::tr("AVAPS"));
 
 
 //    <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">

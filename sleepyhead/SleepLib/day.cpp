@@ -1552,6 +1552,8 @@ QString Day::getPressureSettings()
                 arg(settings_max(CPAP_PSMin),0,'f',1).
                 arg(settings_min(CPAP_PSMax),0,'f',1).
                 arg(units);
+    } else if (mode == MODE_AVAPS) {
+        return QObject::tr("EPAP %1 IPAP %2 (%3)").arg(settings_min(CPAP_EPAP),0,'f',1).arg(settings_max(CPAP_IPAP),0,'f',1).arg(units);
     }
 
     return STR_TR_Unknown;

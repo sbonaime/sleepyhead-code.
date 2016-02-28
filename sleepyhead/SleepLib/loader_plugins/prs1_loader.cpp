@@ -1085,6 +1085,7 @@ bool PRS1Import::ParseF3Events()
     EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
+    //EventList *TMV = session->AddEventList(CPAP_TgMV, EVL_Event);
     EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event,10.0);
     EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
     EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
@@ -1094,9 +1095,6 @@ bool PRS1Import::ParseF3Events()
 
     int size = event->m_data.size()/0x10;
     unsigned char * h = (unsigned char *)event->m_data.data();
-
-    quint16 tmp;
-    EventDataType epap;
 
     int hy, oa, ca;
     qint64 div = 0;
@@ -1111,12 +1109,14 @@ bool PRS1Import::ParseF3Events()
         FLOW->AddEvent(t, h[6]);
         PTB->AddEvent(t, h[7]);
         RR->AddEvent(t, h[8]);
-        MV->AddEvent(t, h[9]);
+        //TMV->AddEvent(t, h[9]); // not sure what this is.. encore doesn't graph it.
+        MV->AddEvent(t, h[11]);
 
-        hy = h[12];
-        ca = h[13];
-        oa = h[14];
+        hy = h[12];  // count of hypopnea events
+        ca = h[13];  // count of clear airway events
+        oa = h[14];  // count of obstructive events
 
+        // divide each event evenly over the 2 minute block
         if (hy > 0) {
             div = block_duration / hy;
 
@@ -1799,8 +1799,14 @@ bool PRS1Import::ParseSummaryF3()
     session->set_first(qint64(summary->timestamp) * 1000L);
     summary_duration = data[0x23] | data[0x24] << 8;
 
-//    EventDataType epap = data[0x04] | (data[0x05] << 8);
-//    EventDataType ipap = data[0x06] | (data[0x07] << 8);
+    EventDataType epap = data[0x04] | (data[0x05] << 8);
+    EventDataType ipap = data[0x06] | (data[0x07] << 8);
+    // why is there another high setting?
+
+    session->settings[CPAP_EPAP] = epap/10.0;
+    session->settings[CPAP_IPAP] = ipap/10.0;
+    session->settings[CPAP_Mode] = (CPAPMode)MODE_AVAPS;
+
 
 //    EventDataType f1 = data[0x08] | (data[0x09] << 8);
 

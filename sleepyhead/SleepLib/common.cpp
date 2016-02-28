@@ -199,6 +199,7 @@ QString STR_TR_IPAPLo;  // Inspiratory Positive Airway Pressure, Low
 QString STR_TR_IPAPHi;  // Inspiratory Positive Airway Pressure, High
 QString STR_TR_APAP;    // Automatic Positive Airway Pressure
 QString STR_TR_ASV;     // Assisted Servo Ventilator
+QString STR_TR_AVAPS;   // Average Volume Assured Pressure Support
 QString STR_TR_STASV;
 
 QString STR_TR_Humidifier;
@@ -389,6 +390,7 @@ void initializeStrings()
     STR_TR_IPAPHi = QObject::tr("Max IPAP"); // Higher Inspiratory Positive Airway Pressure
     STR_TR_APAP = QObject::tr("APAP");    // Automatic Positive Airway Pressure
     STR_TR_ASV = QObject::tr("ASV");      // Assisted Servo Ventilator
+    STR_TR_AVAPS = QObject::tr("AVAPS");  // Average Volume Assured Pressure Support
     STR_TR_STASV = QObject::tr("ST/ASV");
 
     STR_TR_Humidifier = QObject::tr("Humidifier");

@@ -222,6 +222,7 @@ extern QString STR_TR_IPAPLo;  // Inspiratory Positive Airway Pressure, Low
 extern QString STR_TR_IPAPHi;  // Inspiratory Positive Airway Pressure, High
 extern QString STR_TR_APAP;    // Automatic Positive Airway Pressure
 extern QString STR_TR_ASV;     // Assisted Servo Ventilator
+extern QString STR_TR_AVAPS;   // Average Volume Assured Pressure Support
 extern QString STR_TR_STASV;
 
 extern QString STR_TR_Humidifier;
