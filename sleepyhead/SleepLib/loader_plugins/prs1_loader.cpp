@@ -1084,6 +1084,7 @@ bool PRS1Import::ParseF3Events()
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
     EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
+    EventList *ULK = session->AddEventList(CPAP_Leak, EVL_Event);
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
     //EventList *TMV = session->AddEventList(CPAP_TgMV, EVL_Event);
     EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event,10.0);
@@ -1111,6 +1112,7 @@ bool PRS1Import::ParseF3Events()
         RR->AddEvent(t, h[8]);
         //TMV->AddEvent(t, h[9]); // not sure what this is.. encore doesn't graph it.
         MV->AddEvent(t, h[11]);
+        ULK->AddEvent(t, h[15]);
 
         hy = h[12];  // count of hypopnea events
         ca = h[13];  // count of clear airway events
