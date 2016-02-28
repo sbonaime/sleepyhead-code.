@@ -744,6 +744,7 @@ bool PRS1Import::ParseF5Events()
 
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
+
     EventList *PB = session->AddEventList(CPAP_PB, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
@@ -1071,6 +1072,83 @@ bool PRS1Import::ParseF5Events()
     session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
 
     return true;
+
+}
+
+bool PRS1Import::ParseF3Events()
+{
+    qint64 t = qint64(event->timestamp) * 1000L, tt;
+
+    session->updateFirst(t);
+    EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
+    EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
+    EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
+    EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
+    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event,10.0);
+    EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
+    EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
+    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event,0.1);
+    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event,0.1);
+    EventList *FLOW = session->AddEventList(CPAP_FlowRate, EVL_Event);
+
+    int size = event->m_data.size()/0x10;
+    unsigned char * h = (unsigned char *)event->m_data.data();
+
+    quint16 tmp;
+    EventDataType epap;
+
+    int hy, oa, ca;
+    qint64 div = 0;
+
+    const qint64 block_duration = 120000;
+
+    for (int x=0; x < size; x++) {
+        IPAP->AddEvent(t, h[0] | (h[1] << 8));
+        EPAP->AddEvent(t, h[2] | (h[3] << 8));
+        LEAK->AddEvent(t, h[4]);
+        TV->AddEvent(t, h[5]);
+        FLOW->AddEvent(t, h[6]);
+        PTB->AddEvent(t, h[7]);
+        RR->AddEvent(t, h[8]);
+        MV->AddEvent(t, h[9]);
+
+        hy = h[12];
+        ca = h[13];
+        oa = h[14];
+
+        if (hy > 0) {
+            div = block_duration / hy;
+
+            tt = t;
+            for (int i=0; i < hy; ++i) {
+                HY->AddEvent(t, hy);
+                tt += div;
+            }
+        }
+        if (ca > 0) {
+            div = block_duration / ca;
+
+            tt = t;
+
+            for (int i=0; i < ca; ++i) {
+                CA->AddEvent(tt, ca);
+                tt += div;
+            }
+        }
+        if (oa > 0) {
+            div = block_duration / oa;
+
+            tt = t;
+            for (int i=0; i < oa; ++i) {
+                OA->AddEvent(t, oa);
+                tt += div;
+            }
+        }
+
+        h += 0x10;
+        t += block_duration;
+    }
 
 }
 
@@ -1719,6 +1797,7 @@ bool PRS1Import::ParseSummaryF3()
     }
 
     session->set_first(qint64(summary->timestamp) * 1000L);
+    summary_duration = data[0x23] | data[0x24] << 8;
 
 //    EventDataType epap = data[0x04] | (data[0x05] << 8);
 //    EventDataType ipap = data[0x06] | (data[0x07] << 8);
@@ -2093,7 +2172,7 @@ bool PRS1Import::ParseSummary()
             return ParseSummaryF0();
         }
     case 3:
-  //      return ParseSummaryF3();
+        return ParseSummaryF3();
         break;
     case 5:
         if (summary->familyVersion == 0) {
@@ -2262,6 +2341,9 @@ bool PRS1Import::ParseEvents()
     switch (event->family) {
     case 0:
         res = ParseF0Events();
+        break;
+    case 3:
+        res = ParseF3Events();
         break;
     case 5:
         res= ParseF5Events();
@@ -2547,6 +2629,8 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
             }
             headerBA.append(extra);
             header = (unsigned char *)headerBA.data();
+            chunk->m_headerblock = headerBA.right(48);
+
         }
 
 

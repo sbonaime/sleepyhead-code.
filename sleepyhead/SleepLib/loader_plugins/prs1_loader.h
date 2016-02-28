@@ -133,6 +133,9 @@ public:
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
     bool ParseF0Events();
 
+    //! \brief Parse a single data chunk from a .002 file containing event data for a AVAPS 1060P machine
+    bool ParseF3Events();
+
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool ParseF5Events();
 
