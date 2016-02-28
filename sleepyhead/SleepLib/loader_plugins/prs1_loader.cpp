@@ -1308,7 +1308,11 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x0f: // Cheyne Stokes Respiration
-            data[0] = (buffer[pos + 1] << 8 | buffer[pos]) * 2;
+            data[0] = (buffer[pos + 1] << 8 | buffer[pos]);
+            if (event->familyVersion > 4) {
+                 // might not doublerize on older machines
+                data[0] *= 2;
+            }
             pos += 2;
             data[1] = buffer[pos++];
             tt = t - qint64(data[1]) * 1000L;
