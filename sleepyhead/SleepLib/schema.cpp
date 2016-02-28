@@ -572,6 +572,7 @@ void init()
     schema::channel[CPAP_MinuteVent].setShowInOverview(true);
     schema::channel[CPAP_TidalVolume].setShowInOverview(true);
     schema::channel[CPAP_CSR].setShowInOverview(true);
+    schema::channel[CPAP_PB].setShowInOverview(true);
     schema::channel[CPAP_LargeLeak].setShowInOverview(true);
 }
 
