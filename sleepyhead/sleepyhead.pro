@@ -55,7 +55,8 @@ exists(../.git):{
 
     GIT_BRANCH=$$system(git rev-parse --abbrev-ref HEAD)
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
+#    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
+    DEFINES += GIT_REVISION="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
 
 #    contains(GIT_BRANCH,"testing"):
 
