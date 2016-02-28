@@ -568,7 +568,7 @@ int PRS1Loader::OpenMachine(QString path)
         }
 
         // A bit of protection against future annoyances..
-        if (((series != 5) && (series != 6) && (series != 0)) || (type >= 10)) {
+        if (((series != 5) && (series != 6) && (series != 0))) { // || (type >= 10)) {
             QMessageBox::information(QApplication::activeWindow(),
                                      QObject::tr("Machine Unsupported"),
                                      QObject::tr("Sorry, your Philips Respironics CPAP machine (Model %1) is not supported yet.").arg(info.modelnumber) +"\n\n"+
@@ -2524,6 +2524,20 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         int diff = 0;
 
         //////////////////////////////////////////////////////////
+        // Family 3 (1060P)
+        //////////////////////////////////////////////////////////
+        if ((chunk->family == 3) && (chunk->ext == 2)) {
+            QByteArray extra = f.read(47);
+            if (extra.size() != 47) {
+                delete chunk;
+                break;
+            }
+            headerBA.append(extra);
+            header = (unsigned char *)headerBA.data();
+        }
+
+
+        //////////////////////////////////////////////////////////
         // Waveform Header
         //////////////////////////////////////////////////////////
         if ((chunk->ext == 5) || (chunk->ext == 6)) {
@@ -2562,7 +2576,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
                     chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
                     pos -= 3;
                 } else if (chunk->fileVersion == 3) {
-                    quint16 sample_size = header[pos + 2] | header[pos + 3] << 8; // size in bits?? (08 00)
+                    //quint16 sample_size = header[pos + 2] | header[pos + 3] << 8; // size in bits?? (08 00)
                     // Possibly this is size in bits, and sign bit for the other byte?
                     chunk->waveformInfo.push_back(PRS1Waveform(interleave, 0));
                     pos -= 4;
@@ -2626,6 +2640,8 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
             delete chunk;
             return CHUNKS;
         }
+
+
         // Read data block
         chunk->m_data = f.read(blocksize);
 
