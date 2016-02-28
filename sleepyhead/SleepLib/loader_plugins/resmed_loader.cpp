@@ -982,7 +982,7 @@ void ResmedImport::run()
 ResmedLoader::ResmedLoader()
 {
     const QString RMS9_ICON = ":/icons/rms9.png";
-    const QString RM10_ICON = ":/icons/rms9.png";
+    const QString RM10_ICON = ":/icons/airsense10.png";
 
     m_pixmaps[STR_ResMed_S9] = QPixmap(RMS9_ICON);
     m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);

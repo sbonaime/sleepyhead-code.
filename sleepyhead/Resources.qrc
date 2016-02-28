@@ -47,5 +47,7 @@
         <file>icons/pushpin.png</file>
         <file>icons/eye.png</file>
         <file>icons/prs1_60s.png</file>
+        <file>icons/dreamstation.png</file>
+        <file>icons/airsense10.png</file>
     </qresource>
 </RCC>
