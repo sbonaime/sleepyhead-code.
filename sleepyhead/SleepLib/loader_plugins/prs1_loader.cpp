@@ -122,12 +122,15 @@ PRS1Loader::PRS1Loader()
 {
     const QString PRS1_ICON = ":/icons/prs1.png";
     const QString PRS1_60_ICON = ":/icons/prs1_60s.png";
+    const QString DREAMSTATION_ICON = ":/icons/dreamstation.png";
 
-    QString s = newInfo().series;
+   // QString s = newInfo().series;
     m_pixmap_paths["System One"] = PRS1_ICON;
     m_pixmaps["System One"] = QPixmap(PRS1_ICON);
     m_pixmap_paths["System One (60 Series)"] = PRS1_60_ICON;
     m_pixmaps["System One (60 Series)"] = QPixmap(PRS1_60_ICON);
+    m_pixmap_paths["DreamStation"] = DREAMSTATION_ICON;
+    m_pixmaps["DreamStation"] = QPixmap(DREAMSTATION_ICON);
 
     //genCRCTable();  // find what I did with this..
     m_type = MT_CPAP;
