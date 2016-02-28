@@ -88,8 +88,8 @@ void gSummaryChart::SetDay(Day *unused_day)
         date = date.addDays(1);
     } while (date <= lastday);
 
-    m_minx = QDateTime(firstday, QTime(0,0,0)).toMSecsSinceEpoch();
-    m_maxx = QDateTime(lastday, QTime(23,59,59)).toMSecsSinceEpoch();
+    m_minx = QDateTime(firstday, QTime(0,0,0), Qt::UTC).toMSecsSinceEpoch();
+    m_maxx = QDateTime(lastday, QTime(23,59,59), Qt::UTC).toMSecsSinceEpoch();
     m_miny = 0;
     m_maxy = 20;
 
