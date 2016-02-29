@@ -1374,12 +1374,17 @@ bool PRS1Import::ParseF0Events()
 
         case 0x0e: // Unknown
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
+            if (event->familyVersion >= 4) {
+                 // might not doublerize on older machines
+                data[0] *= 2;
+            }
+
             pos += 2;
             data[1] = buffer[pos++];
 
             tt = t - qint64(data[1]) * 1000L;
             //LL->AddEvent(tt, data[0]);
-            Code[17]->AddEvent(t, data[1]);
+            Code[17]->AddEvent(t, data[0]);
 
 
 
@@ -1399,7 +1404,7 @@ bool PRS1Import::ParseF0Events()
 
         case 0x0f: // Cheyne Stokes Respiration
             data[0] = (buffer[pos + 1] << 8 | buffer[pos]);
-            if (event->familyVersion > 4) {
+            if (event->familyVersion >= 4) {
                  // might not doublerize on older machines
                 data[0] *= 2;
             }
@@ -1410,7 +1415,7 @@ bool PRS1Import::ParseF0Events()
             break;
         case 0x10: // Large Leak
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
-            if (event->familyVersion > 4) {
+            if (event->familyVersion >= 4) {
                  // might not doublerize on older machines
                 data[0] *= 2;
             }
@@ -1435,10 +1440,8 @@ bool PRS1Import::ParseF0Events()
             if (((event->family == 0) && (event->familyVersion >= 4)) || (event->fileVersion == 3)) {
                 // EPAP / Flex Pressure
                 data[0] = buffer[pos++];
-                if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-                EPAP->AddEvent(t, data[0]);
-
-//                pos++;
+                //if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+                //EPAP->AddEvent(t, data[0]);
             }
 
             break;
