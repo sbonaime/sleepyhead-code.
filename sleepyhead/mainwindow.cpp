@@ -1,6 +1,6 @@
 /* SleepyHead MainWindow Implementation
  *
- * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2016 Mark Watkins <jedimark@users.sourceforge.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -1200,7 +1200,7 @@ QString MainWindow::getWelcomeHTML()
            "<tr>"
            "<td colspan=2>"
            "<hr/>"
-           "<p><b>" + tr("Copyright:") + "</b> " + tr("&copy;2011-2014") +
+           "<p><b>" + tr("Copyright:") + "</b> " + tr("&copy;2011-2016") +
            " <a href=\"http://jedimark64.blogspot.com\">Mark Watkins</a> (jedimark)</p>"
            "<p><b>" + tr("License:") + "</b> " +
            tr("This software is released freely under the <a href=\"qrc:/COPYING\">GNU Public License</a>.") +
