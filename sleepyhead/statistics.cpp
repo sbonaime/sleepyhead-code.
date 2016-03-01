@@ -147,29 +147,38 @@ void Statistics::updateRXChanges()
 
 
     quint64 tmp;
+
+    // Scan through each profile day in ascending date order
     for (it = p_profile->daylist.begin(); it != it_end; ++it) {
         const QDate & date = it.key();
         Day * day = it.value();
+
         Machine * mach = day->machine(MT_CPAP);
-        if (mach == nullptr) continue;
+        if (mach == nullptr)
+            continue;
 
         bool fnd = false;
 
+
+        // Scan through pre-existing rxitems list
         ri_end = rxitems.end();
         for (ri = rxitems.begin(); ri != ri_end; ++ri) {
             RXItem & rx = ri.value();
 
+            // Is it date between this rxitems entry date range?
             if ((date >= rx.start) && (date <= rx.end)) {
-                // Fits in date range
+
                 if (rx.dates.contains(date)) {
+                    // Already there, abort.
                     fnd = true;
                     break;
                 }
 
                 // First up, check if fits in date range, but isn't loaded for some reason
 
-                // Need summaries for this
+                // Need summaries for this, so load them if not present.
                 day->OpenSummary();
+
                 QList<ChannelID> flags = day->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
                 QString relief = day->getPressureRelief();
@@ -302,7 +311,9 @@ void Statistics::updateRXChanges()
         for (ri = rxitems.begin(); ri != ri_end; ++ri) {
             RXItem & rx = ri.value();
 
-            if (rx.end.daysTo(date) == 1) {
+
+            // This miffs me why I did this... Commenting it out will probably backfire on me.
+            //if (rx.end.daysTo(date) == 1) {
 
                 if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == day->machine(MT_CPAP)) ) {
 
@@ -324,7 +335,7 @@ void Statistics::updateRXChanges()
                     fnd = true;
                     break;
                 }
-            }
+           // }
         }
 
         if (!fnd) {
