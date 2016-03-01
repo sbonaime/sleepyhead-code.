@@ -206,7 +206,8 @@ QString PRS1Loader::checkDir(const QString & path)
         QDir dir(newpath);
         QStringList dirs = dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
         if (dirs.size() > 0) {
-            machpath = dirs[0];
+            machpath = dir.cleanPath(newpath+"/"+dirs[0]);
+
         }
     }
 
@@ -356,7 +357,9 @@ MachineInfo PRS1Loader::PeekInfo(const QString & path)
     MachineInfo info = newInfo();
     info.serial = newpath.section("/", -1);
 
-    PeekProperties(info, newpath+"/properties.txt");
+    if (!PeekProperties(info, newpath+"/properties.txt")) {
+        PeekProperties(info, newpath+"/PROP.TXT");
+    }
     return info;
 }
 
