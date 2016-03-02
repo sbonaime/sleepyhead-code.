@@ -136,6 +136,8 @@ bool rxAHILessThan(const RXItem * rx1, const RXItem * rx2)
 void Statistics::updateRXChanges()
 {
     rxitems.clear();
+
+    // Read the cache from disk
     loadRXChanges();
     QMap<QDate, Day *>::iterator di;
 
@@ -148,7 +150,7 @@ void Statistics::updateRXChanges()
 
     quint64 tmp;
 
-    // Scan through each profile day in ascending date order
+    // Scan through each daylist in ascending date order
     for (it = p_profile->daylist.begin(); it != it_end; ++it) {
         const QDate & date = it.key();
         Day * day = it.value();
@@ -160,7 +162,7 @@ void Statistics::updateRXChanges()
         bool fnd = false;
 
 
-        // Scan through pre-existing rxitems list
+        // Scan through pre-existing rxitems list and see if this day is already there.
         ri_end = rxitems.end();
         for (ri = rxitems.begin(); ri != ri_end; ++ri) {
             RXItem & rx = ri.value();
@@ -179,62 +181,87 @@ void Statistics::updateRXChanges()
                 // Need summaries for this, so load them if not present.
                 day->OpenSummary();
 
+                // Get list of Event Flags used in this day
                 QList<ChannelID> flags = day->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
+                // Generate the pressure/mode/relief strings
                 QString relief = day->getPressureRelief();
                 QString mode = day->getCPAPMode();
                 QString pressure = day->getPressureSettings();
 
+                // Do this days settings match this rx cache entry?
                 if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == mach)) {
+
+                    // Update rx cache summaries for each event flag
                     for (int i=0; i < flags.size(); i++) {
                         ChannelID code  = flags.at(i);
                         rx.s_count[code] += day->count(code);
                         rx.s_sum[code] += day->sum(code);
                     }
 
+                    // Update AHI/RDI/Time counts
                     tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
                     rx.ahi += tmp;
                     rx.rdi += tmp + day->count(CPAP_RERA);
                     rx.hours += day->hours(MT_CPAP);
 
+                    // Add this date to RX cache
                     rx.dates[date] = day;
                     rx.days = rx.dates.size();
+
+                    // and we are done
                     fnd = true;
                     break;
                 } else {
-                    // Bleh.... split the day record!
+                    // In this case, the day is within the rx date range, but settings doesn't match the others
+                    // So we need to split the rx cache record and insert the new record as it's own.
 
                     RXItem rx1, rx2;
 
-                    // First create the new day..
+                    // So first create the new cache entry for current day we are looking at.
                     rx1.start = date;
                     rx1.end = date;
                     rx1.days = 1;
 
+                    // Only this days AHI/RDI counts
                     tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
                     rx1.ahi = tmp;
                     rx1.rdi = tmp + day->count(CPAP_RERA);
+
+                    // Sum and count event flags for this day
                     for (int i=0; i < flags.size(); i++) {
                         ChannelID code  = flags.at(i);
                         rx1.s_count[code] = day->count(code);
                         rx1.s_sum[code] = day->sum(code);
                     }
 
+                    //The rest of this cache record for this day
                     rx1.hours = day->hours(MT_CPAP);
                     rx1.relief = relief;
                     rx1.mode = mode;
                     rx1.pressure = pressure;
                     rx1.machine = day->machine(MT_CPAP);
                     rx1.dates[date] = day;
+
+                    // Insert new entry into rx cache
                     rxitems.insert(date, rx1);
 
+                    // now zonk it so we can reuse the variable later
+                    //rx1 = RXItem();
+
+                    // Now that's out of the way, we need to splitting the old rx into two,
+                    // and recalculate everything before and after today
+
+                    // Copy the old rx.dates, which contains the list of Day records
                     QMap<QDate, Day *> datecopy = rx.dates;
 
+                    // now zap it so we can start fresh
                     rx.dates.clear();
 
+                    rx2.end = rx2.start = rx.end;
                     rx.end = rx.start;
-                    rx2.start = rx.end;
-                    rx2.end = rx.start;
+
+                    // Zonk the summary data, as it needs redoing
                     rx2.ahi = 0;
                     rx2.rdi = 0;
                     rx2.hours = 0;
@@ -245,127 +272,192 @@ void Statistics::updateRXChanges()
                     rx2.s_count.clear();
                     rx.s_sum.clear();
                     rx2.s_sum.clear();
+
+                    // Now go through day list and recalculate according to split
                     for (di = datecopy.begin(); di != datecopy.end(); ++di) {
-                        // Split everything before
+
+                        // Split everything before date
                         if (di.key() < date) {
+                            // Get the day record for this date
                             Day * dy = rx.dates[di.key()] = p_profile->GetDay(di.key(), MT_CPAP);
+
+                            // Update AHI/RDI counts
                             tmp = dy->count(CPAP_Hypopnea) + dy->count(CPAP_Obstructive) + dy->count(CPAP_Apnea) + dy->count(CPAP_ClearAirway);;
                             rx.ahi += tmp;
                             rx.rdi += tmp + dy->count(CPAP_RERA);
+
+                            // Get Event Flags list
                             QList<ChannelID> flags2 = dy->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
+                            // Update flags counts and sums
                             for (int i=0; i < flags2.size(); i++) {
                                 ChannelID code  = flags2.at(i);
                                 rx.s_count[code] += dy->count(code);
                                 rx.s_sum[code] += dy->sum(code);
                             }
 
+                            // Update time sum
                             rx.hours += dy->hours(MT_CPAP);
-                            //rx.days++;
-                            rx.end = qMax(di.key(), rx.end);
+
+                            // Update the last date of this cache entry
+                            // (Max here should be unnessary, this should be sequential because we are processing a QMap.)
+                            rx.end = di.key(); //qMax(di.key(), rx.end);
                         }
-                        // Split everything after
+
+                        // Split everything after date
                         if (di.key() > date) {
+                            // Get the day record for this date
                             Day * dy = rx2.dates[di.key()] = p_profile->GetDay(di.key(), MT_CPAP);
+
+                            // Update AHI/RDI counts
                             tmp = dy->count(CPAP_Hypopnea) + dy->count(CPAP_Obstructive) + dy->count(CPAP_Apnea) + dy->count(CPAP_ClearAirway);;
                             rx2.ahi += tmp;
                             rx2.rdi += tmp + dy->count(CPAP_RERA);
+
+                            // Get Event Flags list
                             QList<ChannelID> flags2 = dy->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
+                            // Update flags counts and sums
                             for (int i=0; i < flags2.size(); i++) {
                                 ChannelID code  = flags2.at(i);
                                 rx2.s_count[code] += dy->count(code);
                                 rx2.s_sum[code] += dy->sum(code);
                             }
 
+                            // Update time sum
                             rx2.hours += dy->hours(MT_CPAP);
-                            rx2.end = qMax(di.key(), rx2.end);
+
+                            // Update start and end
+                            //rx2.end = qMax(di.key(), rx2.end); // don't need to do this, the end won't change from what the old one was.
+
+                            // technically only need to capture the first??
                             rx2.start = qMin(di.key(), rx2.start);
                         }
                     }
-                    rx.days = rx.dates.size();
 
+                    // Set rx records day counts
+                    rx.days = rx.dates.size();
+                    rx2.days = rx2.dates.size();
+
+                    // Copy the pressure/mode/etc settings, because they haven't changed.
                     rx2.pressure = rx.pressure;
                     rx2.mode = rx.mode;
                     rx2.relief = rx.relief;
                     rx2.machine = rx.machine;
-                    rx2.days = rx2.dates.size();
 
-                    rxitems.insert(rx2.end, rx2);
+                    // Insert the newly split rx record
+                    rxitems.insert(rx2.start, rx2);  // hmmm. this was previously set to the end date.. that was a silly plan.
                     fnd = true;
 
                     break;
                 }
             }
         }
-        if (fnd) continue;
 
+
+        if (fnd) continue; // already in rx list, move onto the next daylist entry
+
+        // So in this condition, daylist isn't in rx cache, and doesn't match date range of any previous rx cache entry.
+
+
+        // Need to bring in summaries for this
         day->OpenSummary();
+
+        // Get Event flags list
         QList<ChannelID> flags3 = day->getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
-
+        // Generate pressure/mode/relief strings
         QString relief = day->getPressureRelief();
         QString mode = day->getCPAPMode();
         QString pressure = day->getPressureSettings();
 
+        // Now scan the rxcache to find the most previous entry, and the right place to insert
+
+        QMap<QDate, RXItem>::iterator lastri = rxitems.end();
+
         for (ri = rxitems.begin(); ri != ri_end; ++ri) {
-            RXItem & rx = ri.value();
+//            RXItem & rx = ri.value();
 
+            // break after any date newer
+            if (ri.key() > date)
+                break;
 
-            // This miffs me why I did this... Commenting it out will probably backfire on me.
-            //if (rx.end.daysTo(date) == 1) {
+            // Keep this.. we need the last one.
+            lastri = ri;
+        }
 
-                if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == day->machine(MT_CPAP)) ) {
+        // lastri should no be the last entry before this date, or the end
+        if (lastri != rxitems.end()) {
+            RXItem & rx = lastri.value();
 
-                    tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
-                    rx.ahi += tmp;
-                    rx.rdi += tmp + day->count(CPAP_RERA);
+            // Does it match here?
+            if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == day->machine(MT_CPAP)) ) {
 
-                    for (int i=0; i < flags3.size(); i++) {
-                        ChannelID code  = flags3.at(i);
-                        rx.s_count[code] += day->count(code);
-                        rx.s_sum[code] += day->sum(code);
-                    }
+                // Update AHI/RDI
+                tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
+                rx.ahi += tmp;
+                rx.rdi += tmp + day->count(CPAP_RERA);
 
-                    rx.hours += day->hours(MT_CPAP);
-
-                    rx.dates[date] = day;
-                    rx.days = rx.dates.size();
-                    rx.end = date;
-                    fnd = true;
-                    break;
+                // Update event flags
+                for (int i=0; i < flags3.size(); i++) {
+                    ChannelID code  = flags3.at(i);
+                    rx.s_count[code] += day->count(code);
+                    rx.s_sum[code] += day->sum(code);
                 }
-           // }
+
+                // Update hours
+                rx.hours += day->hours(MT_CPAP);
+
+                // Add day to this RX Cache
+                rx.dates[date] = day;
+                rx.end = date;
+                rx.days = rx.dates.size();
+
+                fnd = true;
+            }
         }
 
         if (!fnd) {
+            // Okay, couldn't find a match, create a new rx cache record for this day.
+
             RXItem rx;
             rx.start = date;
             rx.end = date;
             rx.days = 1;
+
+            // Set AHI/RDI for just this day
             tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
             rx.ahi = tmp;
             rx.rdi = tmp + day->count(CPAP_RERA);
+
+            // Set counts and sums for this day
             for (int i=0; i < flags3.size(); i++) {
                 ChannelID code  = flags3.at(i);
                 rx.s_count[code] = day->count(code);
                 rx.s_sum[code] = day->sum(code);
             }
+
             rx.hours = day->hours();
+
+            // Store settings, etc..
             rx.relief = relief;
             rx.mode = mode;
             rx.pressure = pressure;
             rx.machine = day->machine(MT_CPAP);
+
+            // add this day to this rx record
             rx.dates.insert(date, day);
 
+            // And insert into rx record into the rx cache
             rxitems.insert(date, rx);
-
         }
 
     }
+    // Store RX cache to disk
     saveRXChanges();
 
 
+    // Now do the setup for the best worst highlighting
     QList<RXItem *> list;
     ri_end = rxitems.end();
 
@@ -934,6 +1026,7 @@ QString Statistics::GenerateMachineList()
 }
 QString Statistics::GenerateRXChanges()
 {
+    // do the actual data sorting...
     updateRXChanges();
 
     QString ahitxt;
@@ -951,9 +1044,9 @@ QString Statistics::GenerateRXChanges()
     html += "<thead>";
     html += "<tr bgcolor='"+heading_color+"'><th colspan=10 align=center><font size=+2>" + tr("Changes to Prescription Settings") + "</font></th></tr>";
 
-    QString extratxt;
+//    QString extratxt;
 
-    QString tooltip;
+//    QString tooltip;
     QStringList hdrlist;
     hdrlist.push_back(STR_TR_First);
     hdrlist.push_back(STR_TR_Last);
