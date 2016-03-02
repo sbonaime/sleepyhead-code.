@@ -1067,15 +1067,15 @@ bool PRS1Import::ParseF5Events()
     session->m_cnt.clear();
     session->m_cph.clear();
 
-    EventDataType minEpap = session->Min(CPAP_EPAP);
-    EventDataType minIpapLo = session->Min(CPAP_IPAPLo);
-    EventDataType maxIpapHi = session->Max(CPAP_IPAPHi);
+//    EventDataType minEpap = session->Min(CPAP_EPAP);
+//    EventDataType minIpapLo = session->Min(CPAP_IPAPLo);
+//    EventDataType maxIpapHi = session->Max(CPAP_IPAPHi);
 
-    session->settings[CPAP_IPAPLo] = minIpapLo;
-    session->settings[CPAP_IPAPHi] = maxIpapHi;
+//    session->settings[CPAP_IPAPLo] = minIpapLo;
+//    session->settings[CPAP_IPAPHi] = maxIpapHi;
 
-    session->settings[CPAP_PSMax] = maxIpapHi - minEpap;
-    session->settings[CPAP_PSMin] = minIpapLo - minEpap;
+//    session->settings[CPAP_PSMax] = maxIpapHi - minEpap;
+//    session->settings[CPAP_PSMin] = minIpapLo - minEpap;
 
     session->m_valuesummary[CPAP_Pressure].clear();
     session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
@@ -2159,10 +2159,10 @@ bool PRS1Import::ParseSummary()
 
     switch (summary->family) {
     case 0:
-        if (summary->familyVersion == 4) {
-            return ParseSummaryF0V4();
-        } else if (summary->familyVersion == 6) {
+        if (summary->familyVersion == 6) {
             return ParseSummaryF0V6();
+        } else if (summary->familyVersion == 4) {
+            return ParseSummaryF0V4();
         } else {
             return ParseSummaryF0();
         }
@@ -2170,10 +2170,10 @@ bool PRS1Import::ParseSummary()
         return ParseSummaryF3();
         break;
     case 5:
-        if (summary->familyVersion == 0) {
-            return ParseSummaryF5V0();
-        } else {
+        if (summary->familyVersion == 1) {
             return ParseSummaryF5V1();
+        } else if (summary->familyVersion == 0) {
+            return ParseSummaryF5V0();
         }
     default:
         ;
@@ -2185,8 +2185,6 @@ bool PRS1Import::ParseSummary()
     }
     this->loader->saveMutex.unlock();
     return false;
-
-    const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // ASV Codes (Family 5) Recheck 17/10/2013
@@ -2219,114 +2217,6 @@ bool PRS1Import::ParseSummary()
     //avgminvent=EventDataType(data[0x38]);     // Average Minute Ventilation
     //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
     //////////////////////////////////////////////////////////////////////////////////////////
-
-
-    //quint8 rectype = data[0x00];
-
-
-
-    EventDataType max, min;
-
-    min = float(data[0x03]) / 10.0; // Min EPAP
-    max = float(data[0x04]) / 10.0; // Max EPAP
-    int offset = 0;
-    int duration = 0;
-
-    // This is a time value for ASV stuff
-    if (summary->family == 5) {
-        offset = 4; // non zero adds 4 extra fields..
-
-        if (summary->familyVersion == 0) {
-            duration = data[0x1B] | data[0x1C] << 8;
-        }
-    } else if (summary->family == 0) {
-
-        if (summary->familyVersion == 2) {
-            duration = data[0x14] | data[0x15] << 8;
-        }
-        if (summary->familyVersion >= 4) {
-            offset = 2;
-        }
-
-    }
-
-    if (duration > 0) {
-        session->set_last(qint64(summary->timestamp + duration) * 1000L);
-    }
-    if (!event) {
-        session->setSummaryOnly(true);
-    }
-
-    // Minutes. Convert to seconds/hours here?
-    session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
-    session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;
-
-    if (max > 0) { // Ignoring bipap until we see some more data during import
-        session->settings[CPAP_Mode] = (summary->family == 5) ? (int)MODE_ASV : (int)MODE_APAP;
-
-        session->settings[CPAP_PressureMin] = (EventDataType)min;
-        session->settings[CPAP_PressureMax] = (EventDataType)max;
-    } else {
-        session->settings[CPAP_Mode] = (int)MODE_CPAP;
-        session->settings[CPAP_Pressure] = (EventDataType)min;
-    }
-
-
-    if (data[offset + 0x08] & 0x80) { // Flex Setting
-        if (data[offset + 0x08] & 0x08) {
-            if (max > 0) {
-                if (summary->family == 5) {
-                    session->settings[PRS1_FlexMode] = (int)PR_BIFLEX;
-                } else {
-                    session->settings[PRS1_FlexMode] = (int)PR_AFLEX;
-                }
-            } else { session->settings[PRS1_FlexMode] = (int)PR_CFLEXPLUS; }
-        } else { session->settings[PRS1_FlexMode] = (int)PR_CFLEX; }
-    } else { session->settings[PRS1_FlexMode] = (int)PR_NONE; }
-
-    // Map the channels
-
-    session->settings[PRS1_FlexLevel] = (int)(data[offset + 0x08] & 7);
-
-    session->settings[PRS1_SysLock] = (data[offset + 0x0a] & 0x80) == 0x80;
-    session->settings[PRS1_HoseDiam] = ((data[offset + 0x0a] & 0x08) ? "15mm" : "22mm");
-    session->settings[PRS1_AutoOff] = (data[offset + 0x0c] & 0x10) == 0x10;
-    session->settings[PRS1_MaskAlert] = (data[offset + 0x0c] & 0x08) == 0x08;
-    session->settings[PRS1_ShowAHI] = (data[offset + 0x0c] & 0x04) == 0x04;
-
-    if (summary->family == 0 && summary->familyVersion >= 4) {
-        if ((data[offset + 0x0a] & 0x04) == 0x04) { // heated tubing off
-            session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
-        } else {
-            session->settings[CPAP_HumidSetting] = (int)(data[offset + 0x09] & 0x30) >> 4;
-        }
-
-        session->settings[PRS1_SysOneResistSet] = (int)(data[offset + 0x0b] & 0x38) >> 3;
-        /* These should be added to channels, if they are correct(?) */
-        /* for now, leave commented out                              */
-        /*
-        session->settings[PRS1_HeatedTubing]=(data[offset+0x0a]&0x04)!=0x04;
-        session->settings[PRS1_HeatedTubingConnected]=(data[offset+0x0b]&0x01)==0x01;
-        session->settings[PRS1_HeatedTubingTemp]=(int)(data[offset+0x09]&0x80)>>5
-            + (data[offset+0x0a]&0x03);
-        */
-    } else {
-        session->settings[CPAP_HumidSetting] = (int)data[offset + 0x09] & 0x0f;
-        session->settings[PRS1_HumidStatus] = (data[offset + 0x09] & 0x80) == 0x80;
-        session->settings[PRS1_SysOneResistStat] = (data[offset + 0x0a] & 0x40) == 0x40;
-        session->settings[PRS1_SysOneResistSet] = (int)data[offset + 0x0a] & 7;
-    }
-
-
-
-    // Set recommended Graph values..
-
-
-
-    if (summary->family == 0 && summary->familyVersion == 0) {
-    }
-
-    return true;
 }
 
 bool PRS1Import::ParseEvents()
@@ -2341,7 +2231,7 @@ bool PRS1Import::ParseEvents()
         res = ParseF3Events();
         break;
     case 5:
-        res= ParseF5Events();
+        res = ParseF5Events();
         break;
     default:
         qDebug() << "Unknown PRS1 familyVersion" << event->familyVersion;

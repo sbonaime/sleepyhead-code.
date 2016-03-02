@@ -1024,8 +1024,11 @@ QString Daily::getMachineSettings(Day * day) {
             } else if (chan.datatype() == schema::BOOL) {
                 data = (it.value().toBool() ? STR_TR_Yes : STR_TR_No);
             } else if (chan.datatype() == schema::DOUBLE) {
-                data = QString().number(it.value().toDouble(),'f',1) + " "+chan.units();
+                data = QString().number(it.value().toDouble(),'f',2) + " "+chan.units();
+            } else if (chan.datatype() == schema::DEFAULT) {
+                data = QString().number(it.value().toDouble(),'f',2) + " "+chan.units();
             } else {
+
                 data = it.value().toString() + " "+ chan.units();
             }
             QString tmp = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
