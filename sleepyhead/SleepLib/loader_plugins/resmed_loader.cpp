@@ -35,6 +35,7 @@ const QString STR_UnknownModel = "Resmed S9 ???";
 ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode;
 
 const QString STR_ResMed_AirSense10 = "AirSense 10";
+const QString STR_ResMed_AirCurve10= "AirCurve 10";
 const QString STR_ResMed_S9 = "S9";
 
 
@@ -983,12 +984,14 @@ ResmedLoader::ResmedLoader()
 {
     const QString RMS9_ICON = ":/icons/rms9.png";
     const QString RM10_ICON = ":/icons/airsense10.png";
+    const QString RM10C_ICON = ":/icons/airsense10.png";
 
     m_pixmaps[STR_ResMed_S9] = QPixmap(RMS9_ICON);
-    m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);
     m_pixmap_paths[STR_ResMed_S9] = RMS9_ICON;
+    m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);
     m_pixmap_paths[STR_ResMed_AirSense10] = RM10_ICON;
-
+    m_pixmaps[STR_ResMed_AirCurve10] = QPixmap(RM10_ICON);
+    m_pixmap_paths[STR_ResMed_AirCurve10] = RM10_ICON;
     m_type = MT_CPAP;
 }
 ResmedLoader::~ResmedLoader()
@@ -1198,6 +1201,9 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
                 } else if (value.contains(STR_ResMed_AirSense10)) {
                     value.replace(STR_ResMed_AirSense10, "");
                     info.series = STR_ResMed_AirSense10;
+                } else if (value.contains(STR_ResMed_AirCurve10)) {
+                    value.replace(STR_ResMed_AirCurve10, "");
+                    info.series = STR_ResMed_AirCurve10;
                 }
                 value.replace("(","");
                 value.replace(")","");
@@ -1922,12 +1928,15 @@ int ResmedLoader::Open(QString path)
 
             } else if (key == "PNA") {  // Product Name
                 value.replace("_"," ");
-                if (value.contains("S9")) {
-                    value.replace("S9", "");
-                    info.series = "S9";
-                } else if (value.contains("AirSense 10")) {
-                    value.replace("AirSense 10", "");
-                    info.series = "AirSense 10";
+                if (value.contains(STR_ResMed_S9)) {
+                    value.replace(STR_ResMed_S9, "");
+                    info.series = STR_ResMed_S9;
+                } else if (value.contains(STR_ResMed_AirSense10)) {
+                    value.replace(STR_ResMed_AirSense10, "");
+                    info.series = STR_ResMed_AirSense10;
+                } else if (value.contains(STR_ResMed_AirCurve10)) {
+                    value.replace(STR_ResMed_AirCurve10, "");
+                    info.series = STR_ResMed_AirCurve10;
                 }
                 value.replace("(","");
                 value.replace(")","");

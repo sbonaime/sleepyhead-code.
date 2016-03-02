@@ -121,7 +121,7 @@ void init()
     // Pressure Related Settings
     schema::channel.add(GRP_CPAP, new Channel(CPAP_Pressure      = 0x110C, WAVEFORM,    MT_CPAP, SESSION, "Pressure",
                         STR_TR_Pressure,                QObject::tr("Therapy Pressure"),              STR_TR_Pressure,
-                        STR_UNIT_CMH2O,         DEFAULT,    QColor("dark green")));
+                        STR_UNIT_CMH2O,         DEFAULT,    QColor("red")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_IPAP          = 0x110D, WAVEFORM,    MT_CPAP, SESSION, "IPAP",
                         STR_TR_IPAP,                    QObject::tr("Inspiratory Pressure"),          STR_TR_IPAP,

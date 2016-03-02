@@ -50,6 +50,8 @@ struct PRS1Waveform {
 };
 
 
+/*! \class PRS1DataChunk
+ *  \brief Representing a chunk of event/summary/waveform data after the header is parsed. */
 class PRS1DataChunk
 {
     friend class PRS1DataGroup;
@@ -87,7 +89,8 @@ public:
 
 class PRS1Loader;
 
-
+/*! \class PRS1Import
+ *  \brief Contains the functions to parse a single session... multithreaded */
 class PRS1Import:public ImportTask
 {
 public:
@@ -101,9 +104,10 @@ public:
         delete compliance;
         delete summary;
         delete event;
-        for (int i=0;i < waveforms.size(); ++i) {delete waveforms.at(i); }
+        for (int i=0;i < waveforms.size(); ++i) { delete waveforms.at(i); }
     }
 
+    //! \brief PRS1Import thread starts execution here.
     virtual void run();
 
     PRS1DataChunk * compliance;
@@ -115,27 +119,39 @@ public:
     QString wavefile;
     QString oxifile;
 
+    //! \brief As it says on the tin.. Parses .001 files for bricks.
     bool ParseCompliance();
+
+    //! \brief Figures out which Summary Parser to call, based on machine family/version and calls it.
     bool ParseSummary();
+
+    //! \brief Figures out which Event Parser to call, based on machine family/version and calls it.
     bool ParseEvents();
+
+    //! \brief Takes the parsed list of Flow/MaskPressure waveform chunks and adds them to the database
     bool ParseWaveforms();
+
+    //! \brief Takes the parsed list of oximeter waveform chunks and adds them to the database.
     bool ParseOximetery();
 
 
+    //! \brief Summary parser for 50 series Family 0 CPAP/APAP models
     bool ParseSummaryF0();
+    //! \brief Summary parser for 60 series Family 0 CPAP/APAP models
     bool ParseSummaryF0V4();
+    //! \brief Summary parser for 1060 series AVAPS models
     bool ParseSummaryF3();
+    //! \brief Summary parser for 50 series Family 0 BiPAP/AutoSV models
     bool ParseSummaryF5V0();
+    //! \brief Summary parser for 60 series Family 0 BiPAP/AutoSV models
     bool ParseSummaryF5V1();
+    //! \brief Summary parser for DreamStation series CPAP/APAP models
     bool ParseSummaryF0V6();
-
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
     bool ParseF0Events();
-
     //! \brief Parse a single data chunk from a .002 file containing event data for a AVAPS 1060P machine
     bool ParseF3Events();
-
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool ParseF5Events();
 
@@ -157,13 +173,16 @@ class PRS1Loader : public CPAPLoader
     PRS1Loader();
     virtual ~PRS1Loader();
 
+    //! \brief Examine path and return it back if it contains what looks to be a valid PRS1 SD card structure
     QString checkDir(const QString & path);
-    bool PeekProperties(MachineInfo & info, QString path, Machine * mach = nullptr);
 
+    //! \brief Peek into PROP.TXT or properties.txt at given path, and use it to fill MachineInfo structure
+    bool PeekProperties(MachineInfo & info, QString path, Machine * mach = nullptr);
 
     //! \brief Detect if the given path contains a valid Folder structure
     virtual bool Detect(const QString & path);
 
+    //! \brief Wrapper for PeekProperties that creates the MachineInfo structure.
     virtual MachineInfo PeekInfo(const QString & path);
 
     //! \brief Scans directory path for valid PRS1 signature
@@ -175,23 +194,30 @@ class PRS1Loader : public CPAPLoader
     //! \brief Return the loaderName, in this case "PRS1"
     virtual const QString &loaderName() { return prs1_class_name; }
 
+    //! \brief Parse a PRS1 summary/event/waveform file and break into invidivual session or waveform chunks
     QList<PRS1DataChunk *> ParseFile(QString path);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
 
+    //! \brief Generate a generic MachineInfo structure, with basic PRS1 info to be expanded upon.
     virtual MachineInfo newInfo() {
         return MachineInfo(MT_CPAP, 0, prs1_class_name, QObject::tr("Philips Respironics"), QString(), QString(), QString(), QObject::tr("System One"), QDateTime::currentDateTime(), prs1_data_version);
     }
 
 
     virtual QString PresReliefLabel() { return QObject::tr(""); }
+    //! \brief Returns the PRS1 specific code for Pressure Relief Mode
     virtual ChannelID PresReliefMode() { return PRS1_FlexMode; }
+    //! \brief Returns the PRS1 specific code for Pressure Relief Setting
     virtual ChannelID PresReliefLevel() { return PRS1_FlexLevel; }
 
+    //! \brief Returns the PRS1 specific code for Humidifier Connected
     virtual ChannelID HumidifierConnected() { return PRS1_HumidStatus; }
+    //! \brief Returns the PRS1 specific code for Humidifier Level
     virtual ChannelID HumidifierLevel() { return PRS1_HumidLevel; }
 
+    //! \brief Called at application init, to set up any custom PRS1 Channels
     void initChannels();
 
 

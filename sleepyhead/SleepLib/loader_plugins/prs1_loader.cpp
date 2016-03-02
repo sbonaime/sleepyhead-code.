@@ -1066,10 +1066,16 @@ bool PRS1Import::ParseF5Events()
     session->updateLast(t);
     session->m_cnt.clear();
     session->m_cph.clear();
-    session->settings[CPAP_IPAPLo] = session->Min(CPAP_IPAPLo);
-    session->settings[CPAP_IPAPHi] = session->Max(CPAP_IPAPHi);
-    session->settings[CPAP_PSMax] = session->Max(CPAP_IPAPHi) - session->Min(CPAP_EPAP);
-    session->settings[CPAP_PSMin] = session->Min(CPAP_IPAPLo) - session->Min(CPAP_EPAP);
+
+    EventDataType minEpap = session->Min(CPAP_EPAP);
+    EventDataType minIpapLo = session->Min(CPAP_IPAPLo);
+    EventDataType maxIpapHi = session->Max(CPAP_IPAPHi);
+
+    session->settings[CPAP_IPAPLo] = minIpapLo;
+    session->settings[CPAP_IPAPHi] = maxIpapHi;
+
+    session->settings[CPAP_PSMax] = maxIpapHi - minEpap;
+    session->settings[CPAP_PSMin] = minIpapLo - minEpap;
 
     session->m_valuesummary[CPAP_Pressure].clear();
     session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
@@ -1164,7 +1170,6 @@ bool PRS1Import::ParseF0Events()
     EventDataType data[10];
     int cnt = 0;
     short delta;
-    int tdata;
     int pos;
     qint64 t = qint64(event->timestamp) * 1000L, tt;
 
@@ -1193,17 +1198,12 @@ bool PRS1Import::ParseF0Events()
     EventList *IPAP = nullptr;
     EventList *PS = nullptr;
 
-    EventList *Code15 = nullptr;
-
-    //session->AddEventList(CPAP_VSnore, EVL_Event);
-    //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
     unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0;
     int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
 
     int size = event->m_data.size();
 
     bool FV3 = (event->fileVersion == 3);
-   // if (FV3) size -= 2;
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
     CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
@@ -1322,7 +1322,6 @@ bool PRS1Import::ParseF0Events()
 
         case 0x04: // Pressure Pulse
             data[0] = buffer[pos++];
-            //tt = t - (qint64(data[0]) * 1000L);
 
             PP->AddEvent(t, data[0]);
             break;
@@ -1369,16 +1368,13 @@ bool PRS1Import::ParseF0Events()
             break;
 
         case 0x0d: // Vibratory Snore
-//            if (event->fileVersion == 3) {
-//            } else {
-                VS->AddEvent(t, 0);
-//            }
+            VS->AddEvent(t, 0);
             break;
 
         case 0x0e: // Unknown
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
             if (event->familyVersion >= 4) {
-                 // might not doublerize on older machines
+                 // might not doublerize on older machines?
                 data[0] *= 2;
             }
 
@@ -1386,23 +1382,8 @@ bool PRS1Import::ParseF0Events()
             data[1] = buffer[pos++];
 
             tt = t - qint64(data[1]) * 1000L;
-            //LL->AddEvent(tt, data[0]);
             Code[17]->AddEvent(t, data[0]);
 
-
-
-//            data[0] = ((char *)buffer)[pos++];
-//            data[1] = buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
-//            //data[0]/=10.0;
-//            //pos+=2;
-//            data[2] = buffer[pos++];
-
-//            tdata = unsigned(data[1]) << 8 | unsigned(data[0]);
-//            Code[17]->AddEvent(t, tdata);
-            //qDebug() << hex << data[0] << data[1] << data[2];
-            //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
-            //tt-=data[1]*1000;
-            //session->AddEvent(new Event(t,CPAP_PB, data, 2));
             break;
 
         case 0x0f: // Cheyne Stokes Respiration
@@ -1416,6 +1397,7 @@ bool PRS1Import::ParseF0Events()
             tt = t - qint64(data[1]) * 1000L;
             PB->AddEvent(tt, data[0]);
             break;
+
         case 0x10: // Large Leak
             data[0] = buffer[pos + 1] << 8 | buffer[pos];
             if (event->familyVersion >= 4) {
@@ -1440,11 +1422,16 @@ bool PRS1Import::ParseF0Events()
                 VS2->AddEvent(t, data[1]);
             }
 
-            if (((event->family == 0) && (event->familyVersion >= 4)) || (event->fileVersion == 3)) {
+            if ((event->family == 0) && (event->familyVersion >= 4))  {
                 // EPAP / Flex Pressure
                 data[0] = buffer[pos++];
-                //if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-                //EPAP->AddEvent(t, data[0]);
+
+                // Perhaps this check is not necessary, as it will theoretically add extra resolution to pressure chart
+                // for bipap models and above???
+                if (mode <= MODE_BILEVEL_FIXED) {
+                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+                    EPAP->AddEvent(t, data[0]);
+                }
             }
 
             break;
@@ -1455,11 +1442,8 @@ bool PRS1Import::ParseF0Events()
             data[2] = buffer[pos + 1] << 8 | buffer[pos];
             pos += 2;
 
-//            if (!Code[24]) {
-//                if (!(Code[24] = session->AddEventList(PRS1_12, EVL_Event))) { return false; }
-//            }
+            // Could end here, but I've seen data sets valid data after!!!
 
-//            Code[24]->AddEvent(t, data[0]);
             break;
 
         case 0x14:  // DreamStation Hypopnea
@@ -1468,20 +1452,10 @@ bool PRS1Import::ParseF0Events()
             HY->AddEvent(tt, data[0]);
             break;
 
-        case 0x15:  // DreamStation Hypopnea // Also a hypopnea.. Hmmm. grouped together by encore.
+        case 0x15:  // DreamStation Hypopnea
             data[0] = buffer[pos++];
             tt = t - (qint64(data[0]) * 1000L);
             HY->AddEvent(tt, data[0]);
-
-
-            // This will create an ugly overlay... :/
-//            if (!Code15) {
-//                Code15 = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
-
-//                if (!Code15) { return false; }
-//            }
-//            Code15->AddEvent(t, data[0]);
-
             break;
 
         default:
@@ -2552,6 +2526,7 @@ void PRS1Import::run()
             session->Store(mach->getDataPath());
             loader->saveMutex.unlock();
 
+            // Unload them from memory
             session->TrashEvents();
         }
 
@@ -2787,7 +2762,8 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
 #endif
         }
 
-        if ((chunk->ext == 5) || (chunk->ext == 6)){
+
+        if ((chunk->ext == 5) || (chunk->ext == 6)) {  // if Flow/MaskPressure Waveform or OXI Waveform file
             if (lastchunk != nullptr) {
 
                 Q_ASSERT(lastchunk->sessionid == chunk->sessionid);
