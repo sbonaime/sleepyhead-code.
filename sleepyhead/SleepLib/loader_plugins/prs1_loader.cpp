@@ -2514,8 +2514,11 @@ void PRS1Import::run()
                 session->setSummaryOnly(true);
                 session->really_set_last(session->first()+(qint64(summary_duration) * 1000L));
             }
+
+            // Make sure it's saved
             session->SetChanged(true);
 
+            // Add the session to the database
             loader->addSession(session);
 
             // Update indexes, process waveform and perform flagging
