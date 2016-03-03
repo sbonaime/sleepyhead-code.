@@ -385,6 +385,19 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                         epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                         epr += 1;
                     }
+                    int epr_on=0, clin_epr_on=0;
+                    if ((sig = str.lookupLabel("S.EPR.EPREnable"))) { // first check machines opinion
+                        epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if (epr_on && (sig = str.lookupLabel("S.EPR.ClinEnable"))) {
+                        clin_epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if (!(epr_on && clin_epr_on)) {
+                        epr = 0;
+                        epr_level = 0;
+                    }
+
+
                 }
 
 
