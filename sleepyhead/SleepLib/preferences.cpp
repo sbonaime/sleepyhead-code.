@@ -72,7 +72,6 @@ QString GetAppRoot()
     if (HomeAppRoot.isEmpty()) {
         HomeAppRoot = desktopFolder + "/" + getDefaultAppRoot();
 
-        BREAK....
         const QString testing = "-Testing";
         QDir dir(HomeAppRoot+testing);
         if (dir.exists()) {
