@@ -1502,6 +1502,7 @@ void zMaskProfile::updatePressureMin()
     }
 }
 
+// Returns what the nominal leak SHOULD be at the given pressure
 EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
 {
 
@@ -1529,7 +1530,6 @@ EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
         } else {
             leak = (pressure - minP) * (m_factor) + minL;
         }
-
 //        leak = (pressure/10.0 - 4.0) * 1.76 + 20.167;
     }
     // Generic Average of Masks from a SpreadSheet... will add two sliders to tweak this between the ranges later
@@ -1542,6 +1542,13 @@ void zMaskProfile::updateProfile(Session *session)
 {
     scanPressure(session);
     scanLeaks(session);
+
+    if (p_profile->cpap->customMaskProfile()) {
+        // new method doesn't require any of this, so bail here.
+        return;
+    }
+
+    // Do it the old way
     updatePressureMin();
 
     // PressureMin contains the baseline for each Pressure
