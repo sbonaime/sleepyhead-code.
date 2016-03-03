@@ -96,13 +96,15 @@ int compareVersion(QString version);
 
 void MigrateSettings()
 {
+    QSettings settings(getDeveloperName(), getAppName());
+    if (settings.contains("Version")) { return; } // done, we are new
+
     QSettings oldcopy(getDeveloperName(), getAppName()+"-Testing");
     if (oldcopy.contains("Migrated")) { return; }
 
     //QString oldfile = oldcopy.fileName();
     QStringList keys = oldcopy.allKeys();
 
-    QSettings settings(getDeveloperName(), getAppName());
 
     for (int i=0; i<keys.size(); ++i) {
         const QString & key = keys[i];
@@ -110,6 +112,7 @@ void MigrateSettings()
     }
 
     oldcopy.setValue("Migrated", true);
+    settings.setValue("Version", FullVersionString);
 
     qDebug() << keys;
 
