@@ -275,6 +275,8 @@ QString STR_TR_PrRelief; // Pressure Relief
 QString STR_TR_Bookmarks;
 QString STR_TR_SleepyHead;
 
+QString STR_TR_Default;
+
 QString STR_TR_Mode;
 QString STR_TR_Model;
 QString STR_TR_Brand;
@@ -377,6 +379,9 @@ void initializeStrings()
 
     STR_TR_Oximeter = QObject::tr("Oximeter");
     STR_TR_EventFlags = QObject::tr("Event Flags");
+
+
+    STR_TR_Default = QObject::tr("Default");
 
     // Machine type names.
     STR_TR_CPAP = QObject::tr("CPAP");    // Constant Positive Airway Pressure

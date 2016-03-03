@@ -190,6 +190,7 @@ extern QString STR_Empty_Brick;
 extern QString STR_Empty_NoGraphs;
 extern QString STR_Empty_SummaryOnly;
 
+extern QString STR_TR_Default;
 
 
 extern QString STR_TR_BMI;         // Short form of Body Mass Index

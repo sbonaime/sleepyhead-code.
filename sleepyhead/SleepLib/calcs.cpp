@@ -1504,10 +1504,6 @@ void zMaskProfile::updatePressureMin()
 
 EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
 {
-//    if (maxP == minP) {
-//        return pressuremin[pressure];
-//    }
-//    EventDataType leak = (pressure - minP) * (m_factor) + minL;
 
     // Average mask leak minimum at pressure 4 = 20.167
     // Average mask slope = 1.76
@@ -1515,9 +1511,29 @@ EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
     // Min/max leak at pressure 4 = 18 - 22
     // Min/max leak at pressure 20 = 42 - 54
 
+    float leak = 0.0;
 
+    if (p_profile->cpap->customMaskProfile()) {
+        float lpm4 = p_profile->cpap->custom4cmH2OLeaks();
+        float lpm20 = p_profile->cpap->custom20cmH2OLeaks();
+
+        float lpm = lpm20 - lpm4;
+        float ppm = lpm / 16.0;
+
+        float p = (pressure/10.0f) - 4.0;
+
+        leak = p * ppm + lpm4;
+    } else {
+        if (maxP == minP) {
+            leak = pressuremin[pressure];
+        } else {
+            leak = (pressure - minP) * (m_factor) + minL;
+        }
+
+//        leak = (pressure/10.0 - 4.0) * 1.76 + 20.167;
+    }
     // Generic Average of Masks from a SpreadSheet... will add two sliders to tweak this between the ranges later
-    EventDataType leak = (pressure/10.0 - 4.0) * 1.76 + 20.167;
+//    EventDataType
 
     return leak;
 }

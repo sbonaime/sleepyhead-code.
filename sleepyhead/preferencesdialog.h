@@ -87,6 +87,16 @@ class PreferencesDialog : public QDialog
 
     void on_waveView_doubleClicked(const QModelIndex &index);
 
+    void on_maskLeaks4Slider_sliderMoved(int position);
+
+    void on_customMaskProfileGroupbox_toggled(bool arg1);
+
+    void on_maskLeaks20Slider_sliderMoved(int position);
+
+    void on_maskLeaks4Slider_valueChanged(int value);
+
+    void on_maskLeaks20Slider_valueChanged(int value);
+
 private:
     void InitChanInfo();
     void InitWaveInfo();

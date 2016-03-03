@@ -134,7 +134,7 @@ void ProfileSelect::editProfile()
 
     if (!profile) { return; }
     if (!profile->isOpen()) {
-        profile->Open();
+        profile->Load();
     }
 
     bool reallyEdit = false;
@@ -212,7 +212,7 @@ void ProfileSelect::deleteProfile()
 
     Profile * profile = Profiles::profiles[name];
     p_profile = profile;
-    if (!profile->Open()) {
+    if (!profile->Load()) {
         QMessageBox::warning(this, STR_MessageBox_Error,
             QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
             "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + profile->user->userName())), QMessageBox::Ok);
@@ -338,7 +338,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
         }
 
         p_profile = profile;
-        profile->Open();
+        profile->Load();
         // Do this in case user renames the directory (otherwise it won't load)
         // Essentially makes the folder name the user name, but whatever..
         // TODO: Change the profile editor one day to make it rename the actual folder

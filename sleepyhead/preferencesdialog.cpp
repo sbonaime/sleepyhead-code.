@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <QCalendarWidget>
 #include <QMenuBar>
+#include <cmath>
 
 #include "preferencesdialog.h"
 #include "common_gui.h"
@@ -216,6 +217,21 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->userEventDuplicates->setVisible(false);
 
     ui->showUserFlagsInPie->setChecked(profile->cpap->userEventPieChart());
+
+
+    bool b;
+    ui->customMaskProfileGroupbox->setChecked(b=profile->cpap->customMaskProfile());
+
+    ui->maskLeaks4Slider->setValue(profile->cpap->custom4cmH2OLeaks()*10.0);
+    ui->maskLeaks20Slider->setValue(profile->cpap->custom20cmH2OLeaks()*10.0);
+
+//    if (b) {
+//        ui->maskLeaks4Label->setText(tr("%1 %2").arg(profile->cpap->custom4cmH2OLeaks(), 5, 'f', 1).arg(STR_UNIT_LPM));
+//        ui->maskLeaks20Label->setText(tr("%1 %2").arg(profile->cpap->custom20cmH2OLeaks(), 5, 'f', 1).arg(STR_UNIT_LPM));
+//    } else {
+//        ui->maskLeaks4Label->setText(STR_TR_Default);
+//        ui->maskLeaks20Label->setText(STR_TR_Default);
+//    }
 
     /*    QLocale locale=QLocale::system();
         QString shortformat=locale.dateFormat(QLocale::ShortFormat);
@@ -776,6 +792,17 @@ bool PreferencesDialog::Save()
 
     profile->cpap->setUserEventDuplicates(ui->userEventDuplicates->isChecked());
 
+
+    if ((ui->customMaskProfileGroupbox->isChecked() != profile->cpap->customMaskProfile())
+      || (fabs((ui->maskLeaks4Slider->value()/10.0)-profile->cpap->custom4cmH2OLeaks())>.1)
+      || (fabs((ui->maskLeaks20Slider->value()/10.0)-profile->cpap->custom20cmH2OLeaks())>.1)) {
+           recalc_events = true;
+    }
+
+    profile->cpap->setCustomMaskProfile(ui->customMaskProfileGroupbox->isChecked());
+    profile->cpap->setCustom4cmH2OLeaks(double(ui->maskLeaks4Slider->value()) / 10.0f);
+    profile->cpap->setCustom20cmH2OLeaks(double(ui->maskLeaks20Slider->value()) / 10.0f);
+
     PREF[STR_GEN_SkipLogin] = ui->skipLoginScreen->isChecked();
 
     PREF[STR_GEN_UpdatesAutoCheck] = ui->automaticallyCheckUpdates->isChecked();
@@ -1133,4 +1160,29 @@ void PreferencesDialog::on_waveView_doubleClicked(const QModelIndex &index)
         }
 
     }
+}
+
+void PreferencesDialog::on_maskLeaks4Slider_sliderMoved(int position)
+{
+}
+
+void PreferencesDialog::on_customMaskProfileGroupbox_toggled(bool arg1)
+{
+    if (arg1) {
+    } else {
+    }
+}
+
+void PreferencesDialog::on_maskLeaks20Slider_sliderMoved(int position)
+{
+}
+
+void PreferencesDialog::on_maskLeaks4Slider_valueChanged(int value)
+{
+    ui->maskLeaks4Label->setText(tr("%1 %2").arg(value/10.0f, 5,'f',1).arg(STR_UNIT_LPM));
+}
+
+void PreferencesDialog::on_maskLeaks20Slider_valueChanged(int value)
+{
+    ui->maskLeaks20Label->setText(tr("%1 %2").arg(value/10.0f, 5,'f',1).arg(STR_UNIT_LPM));
 }

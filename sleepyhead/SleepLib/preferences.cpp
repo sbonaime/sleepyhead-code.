@@ -185,8 +185,12 @@ bool Preferences::Open(QString filename)
         return false;
     }
 
-    if (!doc.setContent(&file)) {
+    QString errorMsg;
+    int errorLine;
+    int errorColumn;
+    if (!doc.setContent(&file,false, &errorMsg, &errorLine, &errorColumn)) {
         qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(p_filename);
+        qWarning() << "Error:" << errorMsg << "in line" << errorLine << ":" << errorColumn;
         return false;
     }
 

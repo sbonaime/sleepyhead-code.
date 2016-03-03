@@ -2411,6 +2411,8 @@ void MainWindow::doReprocessEvents()
 
                 if (sess->machine()->loaderName() != STR_MACH_PRS1) {
                     sess->destroyEvent(CPAP_LargeLeak);
+                } else {
+                    sess->destroyEvent(CPAP_Leak);
                 }
 
                 sess->SetChanged(true);

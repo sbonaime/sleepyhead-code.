@@ -48,7 +48,7 @@ class Profile : public Preferences
     virtual ~Profile();
 
     //! \brief Open profile, parse profile.xml file, and initialize helper classes
-    virtual bool Open(QString filename = "");
+    virtual bool Load(QString filename = "");
 
     //! \brief Parse machines.xml
     bool OpenMachines();
@@ -304,6 +304,10 @@ const QString STR_CS_AHIReset = "AHIReset";
 const QString STR_CS_ClockDrift = "ClockDrift";
 const QString STR_CS_LeakRedline = "LeakRedline";
 const QString STR_CS_ShowLeakRedline = "ShowLeakRedline";
+
+const QString STR_CS_CustomMaskProfile = "CustomMaskProfile";
+const QString STR_CS_4cmH2OLeaks = "Custom4cmH2OLeaks";
+const QString STR_CS_20cmH2OLeaks = "Custom20cmH2OLeaks";
 
 // ImportSettings Strings
 const QString STR_IS_DaySplitTime = "DaySplitTime";
@@ -566,6 +570,10 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_AutoImport, false);
         initPref(STR_CS_BrickWarning, true);
 
+        initPref(STR_CS_CustomMaskProfile, false);
+        initPref(STR_CS_4cmH2OLeaks, 20.167);
+        initPref(STR_CS_20cmH2OLeaks, 48.333);
+
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
     }
@@ -599,6 +607,10 @@ class CPAPSettings : public ProfileSettings
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
 
+    bool customMaskProfile() const { return getPref(STR_CS_CustomMaskProfile).toBool(); }
+    double custom4cmH2OLeaks() const { return getPref(STR_CS_4cmH2OLeaks).toDouble(); }
+    double custom20cmH2OLeaks() const { return getPref(STR_CS_20cmH2OLeaks).toDouble(); }
+
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
     void setMinPressure(double pressure) { setPref(STR_CS_PrescribedMinPressure, pressure); }
@@ -631,6 +643,10 @@ class CPAPSettings : public ProfileSettings
     void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
     void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
+
+    void setCustomMaskProfile(bool b) { setPref(STR_CS_CustomMaskProfile, b); }
+    void setCustom4cmH2OLeaks(double val) { setPref(STR_CS_4cmH2OLeaks, val); }
+    void setCustom20cmH2OLeaks(double val) { setPref(STR_CS_20cmH2OLeaks, val); }
 
   public:
     int m_clock_drift;

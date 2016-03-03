@@ -120,7 +120,7 @@ QString Profile::checkLock()
     return lockhost;
 }
 
-bool Profile::Open(QString filename)
+bool Profile::Load(QString filename)
 {
     p_profile = this;
 
@@ -131,9 +131,9 @@ bool Profile::Open(QString filename)
         qDebug() << "Profile" << filename << "all ready open";
         return true;
     }
-    bool b = Preferences::Open(filename);
 
-    m_opened=true;
+    bool b = Open(filename);
+
     doctor = new DoctorInfo(this);
     user = new UserInfo(this);
     cpap = new CPAPSettings(this);
@@ -141,6 +141,8 @@ bool Profile::Open(QString filename)
     appearance = new AppearanceSettings(this);
     session = new SessionSettings(this);
     general = new UserSettings(this);
+
+    m_opened=true;
     return b;
 }
 
@@ -906,7 +908,7 @@ Profile *Create(QString name)
 
     //path+="/"+name;
     p_profile = new Profile(path);
-    p_profile->Open();
+    p_profile->Load();
     profiles[name] = p_profile;
     p_profile->user->setUserName(name);
     //p_profile->Set("Realname",realname);
