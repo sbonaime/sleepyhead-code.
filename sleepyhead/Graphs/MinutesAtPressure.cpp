@@ -286,8 +286,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         row++;
     }
 
-
-
+#ifdef UGLYLINES
     float maxmins = float(maxtime) / 60.0;
     float ymult = height / maxmins;
 
@@ -371,6 +370,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
         }
     }
+
+#endif
 //    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
 //    graph.renderText(txt, rect.left(), rect.top()-10);
 
