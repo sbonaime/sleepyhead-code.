@@ -94,6 +94,28 @@ void sDelay(int s)
 int compareVersion(QString version);
 
 
+void MigrateSettings()
+{
+    QSettings oldcopy(getDeveloperName(), getAppName()+"-Testing");
+    if (oldcopy.contains("Migrated")) { return; }
+
+    //QString oldfile = oldcopy.fileName();
+    QStringList keys = oldcopy.allKeys();
+
+    QSettings settings(getDeveloperName(), getAppName());
+
+    for (int i=0; i<keys.size(); ++i) {
+        const QString & key = keys[i];
+        settings.setValue(key, oldcopy.value(key));
+    }
+
+    oldcopy.setValue("Migrated", true);
+
+    qDebug() << keys;
+
+}
+
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
@@ -110,6 +132,9 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
+
+    // Ok, first things first... Migrate the -Testing QSettings over
+    MigrateSettings();
 
     QSettings settings(getDeveloperName(), getAppName());
 

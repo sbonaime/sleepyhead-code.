@@ -1160,7 +1160,7 @@ bool PRS1Import::ParseF3Events()
         h += 0x10;
         t += block_duration;
     }
-
+    return true;
 }
 
 bool PRS1Import::ParseF0Events()
@@ -1206,7 +1206,7 @@ bool PRS1Import::ParseF0Events()
     bool FV3 = (event->fileVersion == 3);
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
-    CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
+    //CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
 
     for (pos = 0; pos < size;) {
         lastcode3 = lastcode2;
@@ -1991,10 +1991,10 @@ bool PRS1Import::ParseSummaryF0V6()
     CPAPMode cpapmode = MODE_UNKNOWN;
 
     int imin_epap = 0;
-    int imax_epap = 0;
+    //int imax_epap = 0;
     int imin_ps   = 0;
     int imax_ps   = 0;
-    int imax_pressure = 0;
+    //int imax_pressure = 0;
     int min_pressure = 0;
     int max_pressure = 0;
     int duration  = 0;
@@ -2009,7 +2009,7 @@ bool PRS1Import::ParseSummaryF0V6()
         qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad datablock length";
     }
     int dataBlockSize = summary->m_headerblock[1 * 2 + 1];
-    int zero = 0;
+    //int zero = 0;
     const unsigned char *dataPtr;
 
     //      start at 3rd byte ; did we go past the end? ; increment for dataSize + varNumberByte + dataSizeByte
