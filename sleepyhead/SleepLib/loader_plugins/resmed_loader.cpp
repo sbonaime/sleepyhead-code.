@@ -1004,7 +1004,7 @@ ResmedLoader::ResmedLoader()
     m_pixmaps[STR_ResMed_AirSense10] = QPixmap(RM10_ICON);
     m_pixmap_paths[STR_ResMed_AirSense10] = RM10_ICON;
     m_pixmaps[STR_ResMed_AirCurve10] = QPixmap(RM10C_ICON);
-    m_pixmap_paths[STR_ResMed_AirCurve10] = RM10_ICON;
+    m_pixmap_paths[STR_ResMed_AirCurve10] = RM10C_ICON;
     m_type = MT_CPAP;
 }
 ResmedLoader::~ResmedLoader()
