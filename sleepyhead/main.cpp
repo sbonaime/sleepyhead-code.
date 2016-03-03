@@ -230,8 +230,10 @@ int main(int argc, char *argv[])
 
     if (!havefolder && !force_data_dir) {
         if (QMessageBox::question(nullptr, STR_MessageBox_Question,
-                                  QObject::tr("No SleepyHead data folder was found.")+"\n\n"+QObject::tr("Would you like SleepyHead to use the default location for storing its data?")+"\n\n"+
-                                  QDir::toNativeSeparators(GetAppRoot()), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+                QObject::tr("Would you like SleepyHead to use this location for storing its data?")+"\n\n"+
+                QDir::toNativeSeparators(GetAppRoot())+"\n\n"+
+                QObject::tr("If you are upgrading, don't panic, you just need to make sure this is pointed at your old SleepyHead data folder.")+"\n\n"+
+                QObject::tr("(If you have no idea what to do here, just click yes.)"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
             settings.setValue("Settings/AppRoot", GetAppRoot());
             change_data_dir = false;
         }

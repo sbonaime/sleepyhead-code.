@@ -23,21 +23,14 @@ const QString getDeveloperName()
 const QString getAppName()
 {
     QString name = STR_AppName;
-#ifdef TEST_BUILD
-    name += STR_TestBuild;
-#endif
     return name;
 }
 
 const QString getDefaultAppRoot()
 {
     QString approot = STR_AppRoot;
-#ifdef TEST_BUILD
-    approot += STR_TestBuild;
-#endif
     return approot;
 }
-
 
 qint64 timezoneOffset()
 {

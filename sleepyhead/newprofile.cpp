@@ -129,7 +129,7 @@ QString NewProfile::getIntroHTML()
            "<p><b><font size=+1>" + tr("Use of this software is entirely at your own risk.") +
            "</font></b></p>"
 
-           "<p><i>" + tr("SleepyHead is copyright &copy;2011-2014 Mark Watkins") + "<i></p>"
+           "<p><i>" + tr("SleepyHead is copyright &copy;2011-2016 Mark Watkins") + "<i></p>"
            "</div>"
            "</body>"
            "</html>";

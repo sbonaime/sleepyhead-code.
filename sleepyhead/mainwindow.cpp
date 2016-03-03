@@ -143,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     }
 
-    QString version = VersionString + "-" + QString(GIT_REVISION) + "-" + getGraphicsEngine();
+    QString version = FullVersionString +"-" +QString(GIT_REVISION) +"-" +getGraphicsEngine();
 
 #ifndef TEST_BUILD
     ui->warningLabel->hide();
@@ -1397,7 +1397,7 @@ void MainWindow::on_action_About_triggered()
                 tr("Graphics Engine: %1").arg(getGraphicsEngine())+
                 "<br/>" +
                 (tr("Data Folder Location: <a href=\"file://%1\">%2</a>").arg(GetAppRoot()).arg(QDir::toNativeSeparators(GetAppRoot())) +
-                "<hr/>"+tr("Copyright") + " &copy;2011-2014 Mark Watkins (jedimark) <br/> \n" +
+                "<hr/>"+tr("Copyright") + " &copy;2011-2016 Mark Watkins (jedimark) <br/> \n" +
                 tr("This software is released under the GNU Public License v3.0<br/>") +
                 "<hr>"
 

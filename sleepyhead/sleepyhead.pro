@@ -66,7 +66,7 @@ exists(../.git):{
 }
 
 #Comment out for official builds
-DEFINES += TEST_BUILD
+DEFINES += BETA_BUILD
 
 
 unix:!macx:!haiku {

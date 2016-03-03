@@ -218,17 +218,7 @@ int compareVersion(QString version)
     }
 
     QStringList patchver = parts[2].split("-");
-
-    short revision = patchver[0].toInt(&ok);
-    if (!ok) return -1;
-
-    if (revision > revision_number) {
-        return 1;
-    } else if (revision < revision_number) {
-        return -1;
-    }
-
-    short build = patchver[1].toInt(&ok);
+    short build = patchver[0].toInt(&ok);
     if (!ok) return -1;
 
     if (build > build_number) {
@@ -236,6 +226,24 @@ int compareVersion(QString version)
     } else if (build < build_number) {
         return -1;
     }
+
+    if ((patchver[1]=="beta") && (ReleaseStatus!="beta")) {
+        return 1;
+    } else if (patchver[1] == ReleaseStatus) {
+        return 0;
+    } else {
+        return -1;
+    }
+
+//    short revision = patchver[0].toInt(&ok);
+//    if (!ok) return -1;
+
+//    if (revision > revision_number) {
+//        return 1;
+//    } else if (revision < revision_number) {
+//        return -1;
+//    }
+
 
     // patchver[1] = tag..
 
