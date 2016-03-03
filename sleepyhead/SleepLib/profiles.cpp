@@ -134,6 +134,8 @@ bool Profile::Load(QString filename)
 
     bool b = Open(filename);
 
+    this->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{UserName}"));
+
     doctor = new DoctorInfo(this);
     user = new UserInfo(this);
     cpap = new CPAPSettings(this);
