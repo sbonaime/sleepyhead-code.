@@ -1504,13 +1504,21 @@ void zMaskProfile::updatePressureMin()
 
 EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
 {
-//    return pressuremin[pressure];
+//    if (maxP == minP) {
+//        return pressuremin[pressure];
+//    }
+//    EventDataType leak = (pressure - minP) * (m_factor) + minL;
 
-    if (maxP == minP) {
-        return pressuremin[pressure];
-    }
+    // Average mask leak minimum at pressure 4 = 20.167
+    // Average mask slope = 1.76
+    // Min/max Slope = 1.313 - 2.188
+    // Min/max leak at pressure 4 = 18 - 22
+    // Min/max leak at pressure 20 = 42 - 54
 
-    EventDataType leak = (pressure - minP) * (m_factor) + minL;
+
+    // Generic Average of Masks from a SpreadSheet... will add two sliders to tweak this between the ranges later
+    EventDataType leak = (pressure/10.0 - 4.0) * 1.76 + 20.167;
+
     return leak;
 }
 
@@ -1722,6 +1730,7 @@ int calcLeaks(Session *session)
     pstr = maskProfile->Pressure.data();
     pend = maskProfile->Pressure.data()+(mppressize-1);
 
+    // For each sessions Total Leaks list
     for (int i = 0; i < evlsize; ++i) {
         EventList &el = *EVL[i];
         EventDataType gain = el.gain(), tmp, val;
@@ -1736,12 +1745,14 @@ int calcLeaks(Session *session)
 
         bool found;
 
-        // For each Total Leak value...
+        // Scan through this Total Leak list's data
         for (; dptr < eptr; ++dptr) {
             tmp = EventDataType(*dptr) * gain;
             ti = start + *tptr++;
 
             found = false;
+
+            // Find the current pressure at this moment in time
             pressure = pstr->value;
 
             for (TimeValue *p1 = pstr; p1 != pend; ++p1) {
@@ -1756,21 +1767,6 @@ int calcLeaks(Session *session)
                     break;
                 }
             }
-
-//            for (int i = 0; i < mppressize - 1; ++i) {
-//                const TimeValue &p1 = &maskProfile->Pressure[i];
-//                const TimeValue &p2 = maskProfile->Pressure[i + 1];
-
-//                if ((p2.time > ti) && (p1.time <= ti)) {
-//                    pressure = p1.value;
-//                    found = true;
-//                    break;
-//                } else if (p2.time == ti) {
-//                    pressure = p2.value;
-//                    found = true;
-//                    break;
-//                }
-//            }
 
             if (found) {
                 // lookup and subtract the calculated leak baseline for this pressure

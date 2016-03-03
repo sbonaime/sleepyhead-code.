@@ -1099,12 +1099,17 @@ void Session::updateCountSummary(ChannelID code)
 void Session::UpdateSummaries()
 {
     ChannelID id;
+
+    // Generate that AHI per hour graph in daily view.
     calcAHIGraph(this);
 
     // Calculates RespRate and related waveforms (Tv, MV, Te, Ti) if missing
     calcRespRate(this);
 
+    // Generate unintentional leaks if not present
     calcLeaks(this);
+
+    // Flag the Large Leaks if unintentional leaks is available, and no LargeLeaks weren't flagged by the machine already.
     flagLargeLeaks(this);
 
     calcSPO2Drop(this);
