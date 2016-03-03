@@ -286,7 +286,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         row++;
     }
 
-#ifdef UGLYLINES
     float maxmins = float(maxtime) / 60.0;
     float ymult = height / maxmins;
 
@@ -308,7 +307,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             float minutes = float(it.value()) / 60.0;
             y2 = minutes * ymult;
 
-            painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
+         //   painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
             y1 = y2;
             xpos += pix;
         }
@@ -349,7 +348,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             schema::ChanType type = chan.type();
             if (type == schema::SPAN)
                 continue;
-            painter.setPen(QPen(QColor(chan.defaultColor()), 2));
+            //painter.setPen(QPen(QColor(chan.defaultColor()), 2));
             eit = events.find(code);
             xpos = left;//+pix/2;
 
@@ -362,7 +361,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 y2 = value * emult;
                 //painter.drawPoint(xpos, bottom-y1);
 
-                painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
+               // painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
 
                 xpos += pix;
                 y1 = y2;
@@ -371,7 +370,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         }
     }
 
-#endif
 //    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
 //    graph.renderText(txt, rect.left(), rect.top()-10);
 

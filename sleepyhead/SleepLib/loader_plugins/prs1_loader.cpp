@@ -1428,10 +1428,10 @@ bool PRS1Import::ParseF0Events()
 
                 // Perhaps this check is not necessary, as it will theoretically add extra resolution to pressure chart
                 // for bipap models and above???
-                if (mode <= MODE_BILEVEL_FIXED) {
-                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-                    EPAP->AddEvent(t, data[0]);
-                }
+//                if (mode <= MODE_BILEVEL_FIXED) {
+//                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+//                    EPAP->AddEvent(t, data[0]);
+//                }
             }
 
             break;
