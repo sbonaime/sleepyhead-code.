@@ -235,7 +235,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     R.rms9_mode = mod;
 
                     if (mod == 11) {
-                        mode = MODE_APAP;
+                        mode = MODE_APAP; // For her
                     } else if (mod >= 8) {       // mod 8 == vpap adapt variable epap
                         mode = MODE_ASV_VARIABLE_EPAP;
                     } else if (mod >= 7) {       // mod 7 == vpap adapt
@@ -305,17 +305,43 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                         R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     }
 
-//                } else if (R.mode == MODE_ASV) {
-//                    if ((sig = str.lookupLabel("S.VA.MinEPAP"))) {
-//                        R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-//                    }
-//                    if ((sig = str.lookupLabel("S.VA.MaxIPAP"))) {
-//                        R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-//                    }
-//                    if ((sig = str.lookupLabel("S.VA.PS"))) {
-//                        R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-//                    }
-//                } else {
+
+                if (R.mode == MODE_ASV) {
+                    if ((sig = str.lookupLabel("S.AV.StartPress"))) {
+                        //EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AV.EPAP"))) {
+                        R.min_epap = R.max_epap = R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+
+                    }
+                    if ((sig = str.lookupLabel("S.AV.MinPS"))) {
+                        R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AV.MaxPS"))) {
+                        R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        R.max_ipap = R.epap + R.max_ps;
+                        R.min_ipap = R.epap + R.min_ps;
+                    }
+                }
+                if (R.mode == MODE_ASV_VARIABLE_EPAP) {
+                    if ((sig = str.lookupLabel("S.AA.StartPress"))) {
+                        //EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AA.MinEPAP"))) {
+                        R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AA.MaxEPAP"))) {
+                        R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AA.MinPS"))) {
+                        R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    }
+                    if ((sig = str.lookupLabel("S.AA.MaxPS"))) {
+                        R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        R.max_ipap = R.max_epap + R.max_ps;
+                        R.min_ipap = R.min_epap + R.min_ps;
+                    }
+                }
 
                     if ((sig = str.lookupSignal(CPAP_PressureMax))) {
                         R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -3146,6 +3172,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_Te].push_back("B5ETime.2s");
 
     resmed_codes[CPAP_TgMV].push_back("TgMV");
+    resmed_codes[CPAP_TgMV].push_back("TgtVent.2s");
     resmed_codes[OXI_Pulse].push_back("Pulse");
     resmed_codes[OXI_Pulse].push_back("Puls");
     resmed_codes[OXI_Pulse].push_back("Pouls");
