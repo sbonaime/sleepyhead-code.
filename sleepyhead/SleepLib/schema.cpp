@@ -407,7 +407,7 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_TgMV              = 0x1114, WAVEFORM,  MT_CPAP,   SESSION,
                         "TgMV",              QObject::tr("Target Minute Ventilation"),
                         QObject::tr("Target Minute Ventilation?"),                   QObject::tr("Target Vent."),
-                        STR_UNIT_LPM,       DEFAULT,    QColor("dark cyan")));
+                        STR_UNIT_LPM,       DEFAULT,    QColor("dark red")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_MaxLeak           = 0x1115, WAVEFORM,   MT_CPAP,  SESSION,
                         "MaxLeak",           QObject::tr("Maximum Leak"),
