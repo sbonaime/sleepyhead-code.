@@ -1173,7 +1173,7 @@ QString Daily::getStatisticsInfo(Day * day)
     float percentile=p_profile->general->prefCalcPercentile()/100.0;
 
     SummaryType ST_max=p_profile->general->prefCalcMax() ? ST_PERC : ST_MAX;
-    const EventDataType maxperc=0.99F;
+    const EventDataType maxperc=0.995F;
 
     QString midname;
     if (ST_mid==ST_WAVG) midname=STR_TR_WAvg;
