@@ -1006,6 +1006,18 @@ void ResmedImport::run()
             return;
         }
     }
+    CPAPMode mode = (CPAPMode)sess->settings[CPAP_Mode].toInt();
+
+    if ((mode >= MODE_BILEVEL_FIXED) && (!sess->eventlist.contains(CPAP_IPAP))) {
+        QVector<EventList *> & evl = sess->eventlist[CPAP_Pressure];
+
+        for (int i=0; i<evl.size(); ++i) {
+            EventList * el = evl[i];
+            sess->eventlist[CPAP_IPAP].push_back(el);
+        }
+
+        sess->eventlist.remove(CPAP_Pressure);
+    }
 
     // Update indexes, process waveform and perform flagging
     sess->UpdateSummaries();
@@ -3131,6 +3143,7 @@ void ResInitModelMap()
     resmed_codes[CPAP_IPAP].push_back("IPAP");
     resmed_codes[CPAP_IPAP].push_back("S.BL.IPAP");
     resmed_codes[CPAP_EPAP].push_back("Exp Pres");
+    resmed_codes[CPAP_EPAP].push_back("EprPress.2s");
     resmed_codes[CPAP_EPAP].push_back("EPAP");
     resmed_codes[CPAP_EPAP].push_back("S.BL.EPAP");
     resmed_codes[CPAP_EPAPHi].push_back("Max EPAP");
@@ -3230,7 +3243,7 @@ void ResInitModelMap()
 
     // PLD file
     resmed_codes[CPAP_MaskPressure].push_back("MaskPress.2s");
-    resmed_codes[CPAP_Pressure].push_back("Press.2s");
+    resmed_codes[CPAP_Pressure].push_back("Press.2s");   // Un problemo... IPAP also uses this.. :/
     resmed_codes[CPAP_EPAP].push_back("EPRPress.2s");
     resmed_codes[CPAP_Leak].push_back("Leak.2s");
     resmed_codes[CPAP_RespRate].push_back("RespRate.2s");

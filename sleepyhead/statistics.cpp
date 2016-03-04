@@ -240,7 +240,7 @@ void Statistics::updateRXChanges()
                     rx1.relief = relief;
                     rx1.mode = mode;
                     rx1.pressure = pressure;
-                    rx1.machine = day->machine(MT_CPAP);
+                    rx1.machine = mach;
                     rx1.dates[date] = day;
 
                     // Insert new entry into rx cache
@@ -391,7 +391,7 @@ void Statistics::updateRXChanges()
             RXItem & rx = lastri.value();
 
             // Does it match here?
-            if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == day->machine(MT_CPAP)) ) {
+            if ((rx.relief == relief) && (rx.mode == mode) && (rx.pressure == pressure) && (rx.machine == mach) ) {
 
                 // Update AHI/RDI
                 tmp = day->count(CPAP_Hypopnea) + day->count(CPAP_Obstructive) + day->count(CPAP_Apnea) + day->count(CPAP_ClearAirway);
@@ -443,7 +443,7 @@ void Statistics::updateRXChanges()
             rx.relief = relief;
             rx.mode = mode;
             rx.pressure = pressure;
-            rx.machine = day->machine(MT_CPAP);
+            rx.machine = mach;
 
             // add this day to this rx record
             rx.dates.insert(date, day);
