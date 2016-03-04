@@ -783,6 +783,9 @@ If you use a few different masks, pick average values instead. It should still b
               <property name="text">
                <string notr="true">48 l/m</string>
               </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -852,6 +855,9 @@ If you use a few different masks, pick average values instead. It should still b
               </property>
               <property name="text">
                <string notr="true">20 l/m</string>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
