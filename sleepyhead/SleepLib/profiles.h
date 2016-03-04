@@ -305,7 +305,7 @@ const QString STR_CS_ClockDrift = "ClockDrift";
 const QString STR_CS_LeakRedline = "LeakRedline";
 const QString STR_CS_ShowLeakRedline = "ShowLeakRedline";
 
-const QString STR_CS_CustomMaskProfile = "CustomMaskProfile";
+const QString STR_CS_CalculateUnintentionalLeaks = "CalculateUnintentionalLeaks";
 const QString STR_CS_4cmH2OLeaks = "Custom4cmH2OLeaks";
 const QString STR_CS_20cmH2OLeaks = "Custom20cmH2OLeaks";
 
@@ -570,7 +570,7 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_AutoImport, false);
         initPref(STR_CS_BrickWarning, true);
 
-        initPref(STR_CS_CustomMaskProfile, false);
+        initPref(STR_CS_CalculateUnintentionalLeaks, true);
         initPref(STR_CS_4cmH2OLeaks, 20.167);
         initPref(STR_CS_20cmH2OLeaks, 48.333);
 
@@ -607,7 +607,7 @@ class CPAPSettings : public ProfileSettings
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
 
-    bool customMaskProfile() const { return getPref(STR_CS_CustomMaskProfile).toBool(); }
+    bool calculateUnintentionalLeaks() const { return getPref(STR_CS_CalculateUnintentionalLeaks).toBool(); }
     double custom4cmH2OLeaks() const { return getPref(STR_CS_4cmH2OLeaks).toDouble(); }
     double custom20cmH2OLeaks() const { return getPref(STR_CS_20cmH2OLeaks).toDouble(); }
 
@@ -644,7 +644,7 @@ class CPAPSettings : public ProfileSettings
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
     void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
 
-    void setCustomMaskProfile(bool b) { setPref(STR_CS_CustomMaskProfile, b); }
+    void setCalculateUnintentionalLeaks(bool b) { setPref(STR_CS_CalculateUnintentionalLeaks, b); }
     void setCustom4cmH2OLeaks(double val) { setPref(STR_CS_4cmH2OLeaks, val); }
     void setCustom20cmH2OLeaks(double val) { setPref(STR_CS_20cmH2OLeaks, val); }
 

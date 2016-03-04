@@ -1512,9 +1512,9 @@ EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
     // Min/max leak at pressure 4 = 18 - 22
     // Min/max leak at pressure 20 = 42 - 54
 
-    float leak = 0.0;
+    float leak; // = 0.0;
 
-    if (p_profile->cpap->customMaskProfile()) {
+//    if (p_profile->cpap->calculateUnintentionalLeaks()) {
         float lpm4 = p_profile->cpap->custom4cmH2OLeaks();
         float lpm20 = p_profile->cpap->custom20cmH2OLeaks();
 
@@ -1524,14 +1524,15 @@ EventDataType zMaskProfile::calcLeak(EventStoreType pressure)
         float p = (pressure/10.0f) - 4.0;
 
         leak = p * ppm + lpm4;
-    } else {
-        if (maxP == minP) {
-            leak = pressuremin[pressure];
-        } else {
-            leak = (pressure - minP) * (m_factor) + minL;
-        }
-//        leak = (pressure/10.0 - 4.0) * 1.76 + 20.167;
-    }
+//    } else {
+        // the old way sucks!
+
+//        if (maxP == minP) {
+//            leak = pressuremin[pressure];
+//        } else {
+//            leak = (pressure - minP) * (m_factor) + minL;
+//        }
+//    }
     // Generic Average of Masks from a SpreadSheet... will add two sliders to tweak this between the ranges later
 //    EventDataType
 
@@ -1543,13 +1544,11 @@ void zMaskProfile::updateProfile(Session *session)
     scanPressure(session);
     scanLeaks(session);
 
-    if (p_profile->cpap->customMaskProfile()) {
-        // new method doesn't require any of this, so bail here.
-        return;
-    }
+    // new method doesn't require any of this, so bail here.
+    return;
 
     // Do it the old way
-    updatePressureMin();
+/*    updatePressureMin();
 
     // PressureMin contains the baseline for each Pressure
 
@@ -1711,7 +1710,7 @@ void zMaskProfile::updateProfile(Session *session)
     //            }
     //        }
     //        f.close();
-    //    }
+    //    }*/
 }
 
 QMutex zMaskmutex;
@@ -1720,6 +1719,7 @@ bool mmaskFirst = true;
 
 int calcLeaks(Session *session)
 {
+    if (!p_profile->cpap->calculateUnintentionalLeaks()) { return 0; }
 
     if (session->type() != MT_CPAP) { return 0; }
 

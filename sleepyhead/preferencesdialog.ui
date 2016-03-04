@@ -714,15 +714,22 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="customMaskProfileGroupbox">
+          <widget class="QGroupBox" name="calculateUnintentionalLeaks">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>This calculation requires Total Leaks data to be provided by the CPAP machine. (Eg, PRS1, but not ResMed, which has these already)
+
+The Unintentional Leak calculations used here are linear, they don't model the mask vent curve.
+
+If you use a few different masks, pick average values instead. It should still be close enough.</string>
+           </property>
            <property name="title">
-            <string>Use Custom Mask Profile for Unintentional Leaks</string>
+            <string>Calculate Unintentional Leaks When Not Present</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -730,6 +737,9 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="2" column="1">
              <widget class="QSlider" name="maskLeaks20Slider">
+              <property name="toolTip">
+               <string>Your masks vent rate at 20cmH2O pressure</string>
+              </property>
               <property name="minimum">
                <number>400</number>
               </property>
@@ -780,6 +790,9 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
             </item>
             <item row="1" column="1">
              <widget class="QSlider" name="maskLeaks4Slider">
+              <property name="toolTip">
+               <string>Your masks vent rate at 4cmH2O pressure</string>
+              </property>
               <property name="minimum">
                <number>170</number>
               </property>
@@ -848,7 +861,7 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
             <item row="0" column="0" colspan="3">
              <widget class="QLabel" name="label_39">
               <property name="text">
-               <string>Note: This is linear, so doesn't model the mask leak curve, but it should be close enough.</string>
+               <string>Note: A linear calculation method is used. Changing these values requires a recalculation.</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -1078,51 +1091,7 @@ A value of 20% works well for detecting apneas. </string>
             <string>General CPAP and Related Settings</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="1" column="2">
-             <widget class="QDoubleSpinBox" name="complianceHours">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</string>
-              </property>
-              <property name="suffix">
-               <string> hours</string>
-              </property>
-              <property name="decimals">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <double>8.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>4.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QDoubleSpinBox" name="leakRedlineSpinbox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>User definable threshold considered large leak</string>
-              </property>
-              <property name="suffix">
-               <string> L/min</string>
-              </property>
-              <property name="decimals">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
+            <item row="3" column="0">
              <widget class="QCheckBox" name="showUnknownFlags">
               <property name="toolTip">
                <string>Show flags for machine detected events that haven't been identified yet.</string>
@@ -1132,37 +1101,10 @@ A value of 20% works well for detecting apneas. </string>
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <widget class="QComboBox" name="eventIndexCombo">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <item>
-               <property name="text">
-                <string extracomment="Apnea Hypopnea Index">AHI</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string extracomment="Respiratory Disturbance Index">RDI</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="5" column="0" colspan="2">
+            <item row="6" column="0" colspan="2">
              <widget class="QLabel" name="label_27">
               <property name="text">
                <string>AHI/Hour Graph Time Window</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_28">
-              <property name="text">
-               <string>Preferred major event index</string>
               </property>
              </widget>
             </item>
@@ -1173,7 +1115,7 @@ A value of 20% works well for detecting apneas. </string>
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
+            <item row="6" column="2">
              <widget class="QSpinBox" name="ahiGraphWindowSize">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -1215,7 +1157,14 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_28">
+              <property name="text">
+               <string>Preferred major event index</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="3">
              <widget class="QCheckBox" name="ahiGraphZeroReset">
               <property name="toolTip">
                <string>Reset the counter to zero at beginning of each (time) window.</string>
@@ -1223,6 +1172,70 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
               <property name="text">
                <string>Zero Reset</string>
               </property>
+             </widget>
+            </item>
+            <item row="2" column="2" colspan="2">
+             <widget class="QDoubleSpinBox" name="leakRedlineSpinbox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>User definable threshold considered large leak</string>
+              </property>
+              <property name="suffix">
+               <string> L/min</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" colspan="2">
+             <widget class="QDoubleSpinBox" name="complianceHours">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</string>
+              </property>
+              <property name="suffix">
+               <string> hours</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <double>8.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>4.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" colspan="2">
+             <widget class="QComboBox" name="eventIndexCombo">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <item>
+               <property name="text">
+                <string extracomment="Apnea Hypopnea Index">AHI</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string extracomment="Respiratory Disturbance Index">RDI</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -1268,6 +1281,9 @@ as this is the only value available on summary-only days.</string>
               </property>
               <property name="minimum">
                <number>1</number>
+              </property>
+              <property name="value">
+               <number>99</number>
               </property>
              </widget>
             </item>
