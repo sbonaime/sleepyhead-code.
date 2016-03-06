@@ -2379,6 +2379,10 @@ bool PRS1Import::ParseWaveforms()
     int size = waveforms.size();
     quint64 s1, s2;
 
+
+    qint64 lastti;
+    EventList * bnd = nullptr; // Breathing Not Detected
+
     for (int i=0; i < size; ++i) {
         PRS1DataChunk * waveform = waveforms.at(i);
         int num = waveform->waveformInfo.size();
@@ -2389,6 +2393,14 @@ bool PRS1Import::ParseWaveforms()
         }
         quint64 ti = quint64(waveform->timestamp) * 1000L;
         quint64 dur = qint64(waveform->duration) * 1000L;
+
+        quint64 diff = ti - lastti;
+        if (diff > 200) {
+            if (!bnd) {
+                bnd = session->AddEventList(PRS1_BND, EVL_Event);
+            }
+            bnd->AddEvent(ti, double(diff)/1000.0);
+        }
 
         if (num > 1) {
             // Process interleaved samples
@@ -2422,7 +2434,9 @@ bool PRS1Import::ParseWaveforms()
             EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(dur) / double(waveform->m_data.size()));
             flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), dur);
         }
+        lastti = dur+ti;
     }
+
     return true;
 }
 
@@ -2958,13 +2972,14 @@ void PRS1Loader::initChannels()
         QString(unknownshort).arg(0xe,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-//    channel.add(GRP_CPAP, new Channel(PRS1_12 = 0x1159, UNKNOWN,  MT_CPAP,   SESSION,
-//        "PRS1_12",
-//        QString(unknownname).arg(0x12,2,16,QChar('0')),
-//        QString(unknowndesc).arg(0x12,2,16,QChar('0')),
-//        QString(unknownshort).arg(0x12,2,16,QChar('0')),
-//        STR_UNIT_Unknown,
-//        DEFAULT,    QColor("black")));
+    channel.add(GRP_CPAP, new Channel(PRS1_BND = 0x1159, SPAN,  MT_CPAP,   SESSION,
+        "PRS1_BND",
+        QString("Breathing Not Detected").arg(0x12,2,16,QChar('0')),
+        QString("A period during a session where the machine could not detect flow.").arg(0x12,2,16,QChar('0')),
+        QString("BND").arg(0x12,2,16,QChar('0')),
+        STR_UNIT_Unknown,
+        DEFAULT,    QColor("light purple")));
+
     channel.add(GRP_CPAP, new Channel(PRS1_15 = 0x115A, UNKNOWN,  MT_CPAP,   SESSION,
         "PRS1_15",
         QString(unknownname).arg(0x15,2,16,QChar('0')),
