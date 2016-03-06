@@ -187,10 +187,65 @@ void UpdaterWindow::requestFile()
             qint64)));
 }
 
+int checkVersionStatus(QString statusstr)
+{
+    if (statusstr.compare("testing", Qt::CaseInsensitive) == 0) return 0;
+    else if (statusstr.compare("beta", Qt::CaseInsensitive) == 0) return 1;
+    else if (statusstr.compare("rc", Qt::CaseInsensitive) == 0) return 2;
+    else if (statusstr.compare("r", Qt::CaseInsensitive) == 0) return 3;
+
+    return 0;
+}
+struct VersionStruct {
+    short major;
+    short minor;
+    short revision;
+    short status;
+    short build;
+};
+
+VersionStruct parseVersion(QString versionstring)
+{
+    static VersionStruct version;
+
+    QStringList parts = versionstring.split(".");
+    bool ok, dodgy = false;
+
+    if (parts.size() < 3) dodgy = true;
+
+    short major = parts[0].toInt(&ok);
+    if (!ok) dodgy = true;
+
+    short minor = parts[1].toInt(&ok);
+    if (!ok) dodgy = true;
+
+    QStringList patchver = parts[2].split("-");
+    if (patchver.size() < 3) dodgy = true;
+
+    short rev = patchver[0].toInt(&ok);
+    if (!ok) dodgy = true;
+
+    short build = patchver[2].toInt(&ok);
+    if (!ok) dodgy = true;
+
+    int status = checkVersionStatus(patchver[1]);
+
+    if (!dodgy) {
+        version.major = major;
+        version.minor = minor;
+        version.revision = rev;
+        version.status = status;
+        version.build = build;
+    }
+    return version;
+}
+
+
 // Compare supplied version string with current version
 // < 0 = this one is newer or version supplied is dodgy, 0 = same, and > 0 there is a newer version
 int compareVersion(QString version)
 {
+    // v1.0.0-beta-2
     QStringList parts = version.split(".");
     bool ok;
 
@@ -218,34 +273,36 @@ int compareVersion(QString version)
     }
 
     QStringList patchver = parts[2].split("-");
-    short build = patchver[0].toInt(&ok);
+    if (patchver.size() < 3) {
+        // dodgy version string supplied.
+        return -1;
+    }
+
+    short rev = patchver[0].toInt(&ok);
     if (!ok) return -1;
+    if (rev > revision_number) {
+        return 1;
+    } else if (rev < revision_number) {
+        return -1;
+    }
+
+    short build = patchver[2].toInt(&ok);
+    if (!ok) return -1;
+
+    int status = checkVersionStatus(patchver[1]);
+    int rstatus = checkVersionStatus(ReleaseStatus);
+
+    if (status > rstatus) {
+        return 1;
+    } else if (status < rstatus) {
+        return -1;
+    }
 
     if (build > build_number) {
         return 1;
     } else if (build < build_number) {
         return -1;
     }
-
-    if ((patchver[1]=="beta") && (ReleaseStatus!="beta")) {
-        return 1;
-    } else if (patchver[1] == ReleaseStatus) {
-        return 0;
-    } else {
-        return -1;
-    }
-
-//    short revision = patchver[0].toInt(&ok);
-//    if (!ok) return -1;
-
-//    if (revision > revision_number) {
-//        return 1;
-//    } else if (revision < revision_number) {
-//        return -1;
-//    }
-
-
-    // patchver[1] = tag..
 
     // Versions match
     return 0;
@@ -337,7 +394,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
             updates.push_back(upq);
         }
 
-        if (upd && upd->version > FullVersionString) {
+        if (upd && upd->version > VersionString) {
             updates.push_back(upd);
         }
 
@@ -353,12 +410,12 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
             if (compareVersion(release->version)) {
                 ui->Title->setText("<font size=+1>" + tr("A new version of SleepyHead is available!") + "</font>");
                 info = tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").
-                        arg(latestapp).arg(FullVersionString);
+                        arg(latestapp).arg(VersionString);
                 ui->notesTabWidget->setCurrentIndex(0);
             } else {
                 ui->Title->setText("<font size=+1>" + tr("An update for SleepyHead is available.") + "</font>");
                 info = tr("Version <b>%1</b> is available. You're currently running v%1").
-                        arg(latestapp).arg(FullVersionString);
+                        arg(latestapp).arg(VersionString);
                 ui->notesTabWidget->setCurrentIndex(1);
             }
 
@@ -369,7 +426,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
             for (int i = 0; i < release->updates[platform].size(); i++) {
                 update = &release->updates[platform][i];
 
-                if ((update->type == "application") && (update->version > FullVersionString)) {
+                if ((update->type == "application") && (update->version > VersionString)) {
                     notes += "<b>" + tr("SleepyHead v%1 build notes").arg(update->version) + "</b><br/>" +
                              update->notes.trimmed() + "<br/><br/>";
                 } else if ((update->type == "qtlibs") && (update->version > QT_VERSION_STR)) {

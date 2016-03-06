@@ -1,22 +1,12 @@
-<html>
-<head><meta charset="UTF-8"></head>
-<body>
-<h1><image src="qrc:/docs/sheep.png" width=64 height=64>SleepyHead v1.0.0 beta Release Notes</b></h2></p>
-<h2><p>Greetings!</p></h2>
-<p><h3>After four years in the making, this build brings SleepyHead into the final beta phase.</h3></p>
-<p><h3>Things are not perfect yet, but the focus from now is putting on the finishing touches.</h3></p>
-<p><h3>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P AVAPS models.</h3></p>
-<p><h3><font color='red'><b>Important:</b></font> <i>Back up your data folder manually, by making a copy the SleepyHeadData folder, as attempting to roll back later may break things.</i></h3></p>
-<p><b>Sleep Well, and good luck!</b></p>
-<p><b><i>JediMark</i></b></p>
-
-<br/>
+<!DOCTYPE ChangeLog>
 <b>Changes and fixes in v1.0.0 beta</b>
+<version number="1.0.0-beta-0">
 <list>
+<li>Make Release Notes welcome message translate-able (should the changelog be too?)</li>
 <li>Tons of other bug fixes</li>
 <li>Fix dodgy PRS1 ASV pressure settings</li>
 <li>Resolve duplicate RX changes issue</li>
-<li>PRS1 1060P AVAPS support... (No flow waveform on these, but still pretty good)
+<li>PRS1 1060P support... (No flow waveform on these, but still pretty good)
 <li>Philips Respironics DreamStation support (Thanks for your assistance JediBob and PaleRider, and everyone who shared their data!)
 <li>AirCurve pressure reporting glitches</li>
 <li>Fix F&P Import hang</li>
@@ -24,9 +14,11 @@
 <li>Timezone/UTC fixes (Thanks Reznet!)
 <li>Various ResMed region specific fixes</li>
 </list>
+</version>
 <br/>
 
 <b>Bug fixes in v0.9.8-1</b>
+<version number="0.9.8-1">
 <list>
 <li>Made daily view left panel, and the right sidebar size changes persitent</li>
 <li>Windows build related fixes</li>
@@ -39,8 +31,10 @@
 <li>Fix PRS1 4x0P models accidentally being called Plus instead of Pro</li>
 <li>Fix Profile delete not removing row properly</li>
 </list>
+</version>
 <br/>
 <b>New features & bug fixes in v0.9.8-0</b><br/>
+<version number="0.9.8-0">
 <list>
 <li>Rework of Records box</li>
 <li>Initial support for Philips Respironics System One Oximetery attachment</li>
@@ -49,8 +43,10 @@
 <li>Prescription changes now caches to disk to save having to reload all data every time</li>
 <li>Implemented Demand loading for SleepyHead Summary data files</li>
 </list>
+</version>
 <br/>
 <b>New features & bug fixes in v0.9.7</b><br/>
+<version number="0.9.7">
 <list>
 <li>Experimental ResMed AirSense S10 import support</li>
 <li>F&P Icon timestamp fix, thanks to Roy Stone for the patch!</li>
@@ -106,8 +102,10 @@
 <li>Fixed a SleepyHead summary error that prevented count indexes from being stored properly</li>
 <li>Some other minor fixed and stuff</li>
 </list>
+</version>
 <br/>
 <b>New features & bugs fixes in v0.9.6</b><br/>
+<version number="0.9.6">
 <list>
 <li>Threadsafety improvements to debug/logger</li>
 <li>Multithreaded PRS1 and ResMed loader improvements</li>
@@ -127,8 +125,10 @@
 <li>Added timeout dialog to CPAP card autoscanner</li>
 <li>Microsoft compiler fixes</li>
 </list>
+</version>
 <br/>
 <b>New features & bugs fixes since v0.9.5</b><br/>
+<version number="0.9.5">
 <list>
 <li>Added ability to pin graphs to keep them on screen</li>
 <li>Fixed tranlation loading on Mac</li>
@@ -140,9 +140,11 @@
 <li>Datacard autodetection ability</li>
 <li>Philips Respironics 60 series fixes</li>
 </list>
+</version>
 
 <br/>
 <b>New features & bugs fixes since v0.9.3</b><br/>
+<version number="0.9.3">
 <list>
 <li>Retina display fixes for Mac platform</li>
 <li>Introduced yAxis Scaling modes</li>
@@ -160,6 +162,4 @@
 <li>Some 64-bit fixes, and some other bugfixes mainly useful to those building from source, especially on linux.</li>
 <li>Fixed some issues with the prescription changes table with certain machines.</li>
 </list>
-
-</body>
-</html>
+</version>

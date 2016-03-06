@@ -43,7 +43,12 @@ IntellipapLoader::~IntellipapLoader()
 
 bool IntellipapLoader::Detect(const QString & givenpath)
 {
-    QDir dir(givenpath);
+    QString path = givenpath;
+    if (path.endsWith("/SL")) {
+        path.chop(3);
+    }
+
+    QDir dir(path);
 
     if (!dir.exists()) {
         return false;
@@ -51,6 +56,7 @@ bool IntellipapLoader::Detect(const QString & givenpath)
 
     // Intellipap has a folder called SL in the root directory
     if (!dir.cd("SL")) {
+
         return false;
     }
 
@@ -66,9 +72,12 @@ int IntellipapLoader::Open(QString path)
 {
     // Check for SL directory
     // Check for DV5MFirm.bin?
-    QString newpath;
-
     path = path.replace("\\", "/");
+    if (path.endsWith("/SL")) {
+        path.chop(3);
+    }
+    QString newpath = path;
+
 
     QString dirtag = "SL";
 
@@ -87,7 +96,9 @@ int IntellipapLoader::Open(QString path)
     filename = newpath + "/SET1";
     QFile f(filename);
 
-    if (!f.exists()) { return -1; }
+    if (!f.exists()) {
+        return -1;
+    }
 
     f.open(QFile::ReadOnly);
     QTextStream tstream(&f);

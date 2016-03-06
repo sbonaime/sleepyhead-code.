@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QDesktopServices>
 
 #include "Graphs/gYAxis.h"
 #include "Graphs/gXAxis.h"
@@ -1090,13 +1091,14 @@ void OximeterImport::setInformation()
             +tr("If you are trying to sync oximetery and CPAP data, please make sure you imported your CPAP sessions first before proceeding!")+"</span></p>"
     "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
             "<span style=\" font-weight:600;\">"+tr("Important Notes:")+" </span>"
-            +tr("For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, %1click here%2.").arg("<a href=\"http://sleepyhead.sf.net/\"><span style=\" text-decoration: underline; color:#0000ff;\">").arg("</span></a>")+"</p>"
+            +tr("For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, %1click here%2.").arg("<a href=\"http://www.silabs.com/products/mcu/pages/usbtouartbridgevcpdrivers.aspx\"><span style=\" text-decoration: underline; color:#0000ff;\">").arg("</span></a>")+"</p>"
     "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
             +tr("Contec CMS50D+ devices do not have an internal clock, and do not record a starting time. If you do not have a CPAP session to link a recording to, you will have to enter the start time manually after the import process is completed.")+"</p>"
     "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
             +tr("Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.")+"</p></body></html>";
     ui->textBrowser->setHtml(html);
     ui->textBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->textBrowser->setOpenExternalLinks(true);
 }
 
 void OximeterImport::on_oximeterType_currentIndexChanged(int index)
@@ -1144,4 +1146,9 @@ void OximeterImport::on_cms50SyncTime_clicked(bool checked)
 void OximeterImport::on_cms50DeviceName_textEdited(const QString &arg1)
 {
     p_profile->oxi->setDefaultDevice(arg1);
+}
+
+void OximeterImport::on_textBrowser_anchorClicked(const QUrl &arg1)
+{
+    QDesktopServices::openUrl(arg1);
 }

@@ -100,7 +100,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     popupMenu->addAction(tr("Delete Profile"), this, SLOT(deleteProfile()));
 
     ui->labelAppName->setText(STR_TR_SleepyHead);
-    ui->labelVersion->setText("v" + VersionString + " " + ReleaseStatus);
+    ui->labelVersion->setText(STR_TR_AppVersion);
     //    if (GIT_BRANCH!="master")
     //        ui->labelBuild->setText(GIT_BRANCH);
     //    else ui->labelBuild->setText(QString());

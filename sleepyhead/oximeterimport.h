@@ -85,6 +85,8 @@ private slots:
 
     void on_cms50DeviceName_textEdited(const QString &arg1);
 
+    void on_textBrowser_anchorClicked(const QUrl &arg1);
+
 protected slots:
     void on_updatePlethy(QByteArray plethy);
     void finishedRecording();

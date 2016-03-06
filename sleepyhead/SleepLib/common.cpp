@@ -267,6 +267,7 @@ QString STR_TR_PrRelief; // Pressure Relief
 
 QString STR_TR_Bookmarks;
 QString STR_TR_SleepyHead;
+QString STR_TR_AppVersion;
 
 QString STR_TR_Default;
 
@@ -461,6 +462,7 @@ void initializeStrings()
 
     STR_TR_Bookmarks = QObject::tr("Bookmarks");
     STR_TR_SleepyHead = QObject::tr("SleepyHead");
+    STR_TR_AppVersion = QObject::tr("v%1").arg(VersionString);
 
     STR_TR_Mode = QObject::tr("Mode");
     STR_TR_Model = QObject::tr("Model");

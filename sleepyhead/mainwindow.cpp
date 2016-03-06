@@ -71,6 +71,7 @@ QStatusBar *qstatusbar;
 
 extern Profile *profile;
 
+
 QString getOpenGLVersionString()
 {
     static QString glversion;
@@ -143,16 +144,23 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     }
 
-    QString version = FullVersionString +"-" +QString(GIT_REVISION) +"-" +getGraphicsEngine();
+    QString version = STR_TR_AppVersion;
 
 #ifndef TEST_BUILD
     ui->warningLabel->hide();
 #endif
 
-    if (QString(GIT_BRANCH) != "master") { version += " [" + QString(GIT_BRANCH)+" branch]"; }
+    version += " [";
+#ifdef GIT_REVISION
+    if (QString(GIT_BRANCH) != "master") {
+        version += QString(GIT_BRANCH)+"-";
+    }
 
+    version += QString(GIT_REVISION) +" ";
+#endif
+    version += getGraphicsEngine()+"]";
 
-    this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+    this->setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
 
     qDebug() << STR_TR_SleepyHead << VersionString << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
 
@@ -542,7 +550,7 @@ void MainWindow::log(QString text)
 void MainWindow::Notify(QString s, QString title, int ms)
 {
     if (title.isEmpty()) {
-        title = "SleepyHead v" + VersionString;
+        title = tr("%1 %2").arg(STR_TR_SleepyHead).arg(STR_TR_AppVersion);
     }
     if (systray) {
         // GNOME3's systray hides the last line of the displayed Qt message.
@@ -1391,7 +1399,7 @@ void MainWindow::on_action_About_triggered()
                 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
                 "<table width=100%><tr><td>"
                 "<p><h1>" + STR_TR_SleepyHead +
-                QString(" v%1 (%2)</h1></p><font color=black><p>").arg(VersionString).arg(ReleaseStatus) +
+                QString(" %1</h1></p><font color=black><p>").arg(STR_TR_AppVersion) +
                 tr("Build Date: %1 %2").arg(__DATE__).arg(__TIME__) +
                 QString("<br/>%1<br/>").arg(gitrev) +
                 tr("Graphics Engine: %1").arg(getGraphicsEngine())+

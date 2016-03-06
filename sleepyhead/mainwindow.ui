@@ -1482,7 +1482,7 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>98</width>
+          <width>95</width>
           <height>606</height>
          </rect>
         </property>
@@ -1896,8 +1896,8 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>100</width>
-          <height>30</height>
+          <width>77</width>
+          <height>236</height>
          </rect>
         </property>
         <property name="palette">
@@ -3175,6 +3175,7 @@ border-radius: 10px;
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
     <addaction name="actionHelp_Support_SleepyHead_Development"/>
+    <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
    <widget class="QMenu" name="menu_Data">

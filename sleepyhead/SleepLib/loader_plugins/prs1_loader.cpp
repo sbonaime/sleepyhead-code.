@@ -1394,14 +1394,14 @@ bool PRS1Import::ParseF0Events()
             }
 //            data1 = buffer[pos++];
 
-            tt = t + qint64((data0+data1)*2) * 1000L;
+            //tt = t - qint64((data0+data1)*2) * 1000L;
 
             if (!Code[12]) {
                 Code[12] = session->AddEventList(PRS1_0B, EVL_Event);
             }
 
             // FIXME
-            Code[12]->AddEvent(tt, data0);
+            Code[12]->AddEvent(t, data0);
             break;
 
         case 0x0d: // Vibratory Snore
@@ -2937,7 +2937,7 @@ void PRS1Loader::initChannels()
         QString(unknownshort).arg(0xa,2,16,QChar('0')),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("black")));
-    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, SPAN,  MT_CPAP,   SESSION,
+    channel.add(GRP_CPAP, new Channel(PRS1_0B = 0x1155, UNKNOWN,  MT_CPAP,   SESSION,
         "PRS1_0B",
         QString(unknownname).arg(0xb,2,16,QChar('0')),
         QString(unknowndesc).arg(0xb,2,16,QChar('0')),

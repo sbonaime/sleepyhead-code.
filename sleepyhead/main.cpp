@@ -22,6 +22,7 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QSysInfo>
+#include <QXmlSimpleReader>
 
 #include "version.h"
 #include "logger.h"
@@ -61,21 +62,75 @@ void initialize()
 
 void release_notes()
 {
+    QString str = QObject::tr("SleepyHead Release Notes");
     QDialog relnotes;
-    relnotes.setWindowTitle(STR_TR_SleepyHead + " " + QObject::tr("Release Notes") +" "+FullVersionString);
-    QVBoxLayout layout(&relnotes);
-    QWebView web(&relnotes);
+    relnotes.setWindowTitle(str);
+    relnotes.setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+    relnotes.setStyleSheet("QDialog { background:white; }");
+    relnotes.setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
-    // Language???
+    QHBoxLayout * hlayout = new QHBoxLayout();
+    QLabel * title = new QLabel("<html><body><div align=top>"
+    "<font size=+4>"+STR_TR_SleepyHead+"</font> &nbsp; "
+    "<font size=+1>"+STR_TR_AppVersion+"</font> &nbsp; "
+    "<font size=+2><i>"+QObject::tr("Release Notes")+"</i></font>"
+    "<hr/>"
+    "</div></body></html>", &relnotes);
+    QPixmap img=QPixmap(":/docs/sheep.png").scaled(100,100);
+    QLabel * logo= new QLabel(&relnotes);//, * logo2 = new QLabel();
+    logo->setPixmap(img);
+    hlayout->insertWidget(0, title, 1);
+    hlayout->insertWidget(1, logo, 0);
 
-    web.load(QUrl("qrc:/docs/release_notes.html"));
+    QVBoxLayout * layout = new QVBoxLayout(&relnotes);
+    QWebView * web = new QWebView(&relnotes);
+
+    QString welcomeMessage = "<font size=+1>"+
+            QObject::tr("<p>After four years in the making, this build brings SleepyHead into the final beta phase.</p>")+
+            QObject::tr("<p>Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
+            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</p>")+
+            "</font>";
+
+    QFile clfile(":/docs/release_notes.html");
+    QString changeLog = QObject::tr("Sorry, could not locate changelog.");
+    if (clfile.open(QIODevice::ReadOnly)) {
+        QTextStream ts(&clfile);
+        changeLog = ts.readAll();
+    }
+
+    QString html = "<html>"
+    "<head><meta charset=\"UTF-8\"></head>"
+    "<body>"
+    "<h2><p>"+QObject::tr("Greetings!")+"</p></h2>";
+
+    html += welcomeMessage;
+
+
+    if (ReleaseStatus != "r") {
+        html += "<p><font color='red' size=+1><b>"+QObject::tr("Important:")+"</b></font> "
+        "<font size=+1><i>"+QObject::tr("As this is a pre-release version, it is recommended that you back up your data folder manually before proceding, because attempting to roll back later may break things.")+"</i></font></p>";
+    }
+
+    html += "<p><b>"+QObject::tr("Sleep Well, and good luck!")+"</b></p>"
+            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>Change log</i></b><hr/><br/><br/>";
+
+    html += changeLog;
+    html += "</body></html>";
+
+
+
+    //QUrl("qrc:/docs/release_notes.html")
+
+    // Should read these from online!!! with language code
+    web->setHtml(html);
 
     //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
-    relnotes.setLayout(&layout);
-    layout.insertWidget(0, &web, 1);
-    QPushButton okbtn(QObject::tr("&Ok, get on with it.."), &relnotes);
-    relnotes.connect(&okbtn, SIGNAL(clicked()), SLOT(accept()));
-    layout.insertWidget(1, &okbtn, 1);
+    relnotes.setLayout(layout);
+    layout->insertLayout(0, hlayout, 0);
+    layout->insertWidget(1, web, 1);
+    QPushButton * okbtn = new QPushButton(QObject::tr("&Ok, get on with it.."), &relnotes);
+    relnotes.connect(okbtn, SIGNAL(clicked()), SLOT(accept()));
+    layout->insertWidget(2, okbtn, 0);
     QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
 
     relnotes.exec();
@@ -112,7 +167,7 @@ void MigrateSettings()
     }
 
     oldcopy.setValue("Migrated", true);
-    settings.setValue("Version", FullVersionString);
+    settings.setValue("Version", VersionString);
 
     qDebug() << keys;
 
@@ -349,10 +404,10 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
     ////////////////////////////////////////////////////////////////////////////////////////////
-    //bool check_updates = false;
+    bool check_updates = false;
 
     if (PREF[STR_GEN_UpdatesAutoCheck].toBool()) {
-        //int update_frequency = PREF[STR_GEN_UpdateCheckFrequency].toInt();
+        int update_frequency = PREF[STR_GEN_UpdateCheckFrequency].toInt();
         int days = 1000;
         lastchecked = PREF[STR_GEN_UpdatesLastChecked].toDateTime();
 
@@ -361,9 +416,9 @@ retry_directory:
             days /= 86400;
         };
 
-//        if (days > update_frequency) {
-//            check_updates = true;
-//        }
+        if (days > update_frequency) {
+            check_updates = true;
+        }
     }
 
     if (!Profiles::profiles.size()) {
@@ -382,7 +437,7 @@ retry_directory:
             if (vc < 0) {
                 release_notes();
 
-                //check_updates = false;
+                check_updates = false;
             } else if (vc > 0) {
                 if (QMessageBox::warning(nullptr, STR_MessageBox_Error, QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
                                          QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
@@ -412,7 +467,7 @@ retry_directory:
         }
     }
 
-    PREF[STR_PREF_VersionString] = FullVersionString;
+    PREF[STR_PREF_VersionString] = VersionString;
 
     p_profile = Profiles::Get(PREF[STR_GEN_Profile].toString());
 
@@ -452,7 +507,7 @@ retry_directory:
     }
 
 
-  //  if (check_updates) { mainwin->CheckForUpdates(); }
+    //if (check_updates) { mainwin->CheckForUpdates(); }
 
     w.show();
 

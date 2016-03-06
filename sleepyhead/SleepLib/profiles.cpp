@@ -490,7 +490,7 @@ void Profile::DataFormatError(Machine *m)
     QString msg;
 
     msg = "<font size=+1>"+QObject::tr("SleepyHead (%1) needs to upgrade its database for %2 %3 %4").
-            arg(FullVersionString).
+            arg(VersionString).
             arg(m->brand()).arg(m->model()).arg(m->serial())
             + "</font><br/><br/>";
 
