@@ -428,7 +428,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     double time = start;
 
     int bs, be, bm;
-    double st, et, mt;
+    double st, et=0, mt;
 
     /////////////////////////////////////////////////////////////////////////////////
     // Respiratory Rate setup
@@ -1833,8 +1833,8 @@ void flagLargeLeaks(Session *session)
 
     EventList * LL = nullptr;
     qint64 time = 0;
-    EventDataType lastvalue;
-    qint64 leaktime;
+    EventDataType lastvalue=-1;
+    qint64 leaktime=0;
     for (int ec = 0; ec < evlsize; ++ec) {
         EventList &el = *EVL[ec];
         int count = el.count();
