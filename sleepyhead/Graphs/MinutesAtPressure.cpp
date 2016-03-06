@@ -321,7 +321,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             float v = float(it.value()) / 60.0;
             P[p] = v;
         }
-        tap.append(P[0]);
+        for (int i=0;i<10;++i) {
+            tap.append(0);
+        }
         for (int i=1; i<24; ++i) {
 
             float p0 = P[i-1];
@@ -347,11 +349,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         painter.setPen(QPen(QColor(Qt::gray), 2));
 
-        float minutes = tap[0];
+        float minutes = tap[35];
         y1 = minutes * ymult;
 
         int tapsize = tap.size();
-        for (int i=0; i<tapsize; ++i) {
+        //xpos += pix / 10;
+        for (int i=36; i<tapsize; ++i) {
             minutes = tap[i];
             y2 = minutes * ymult;
             painter.drawLine(xpos, bottom-y1, xpos+pix/10.0, bottom-y2);
