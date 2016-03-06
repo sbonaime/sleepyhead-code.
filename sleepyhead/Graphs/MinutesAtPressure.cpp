@@ -119,6 +119,17 @@ bool MinutesAtPressure::isEmpty()
     return m_empty;
 }
 
+// Calculate Catmull-Rom Spline of given 4 samples, with t between 0-1;
+float CatmullRomSpline(float p0, float p1, float p2, float p3, float t = 0.5)
+{
+    float t2 = t*t;
+    float t3 = t2 * t;
+
+    return (float)0.5 * ((2 * p1) +
+    (-p0 + p2) * t +
+    (2*p0 - 5*p1 + 4*p2 - p3) * t2 +
+    (-p0 + 3*p1- 3*p2 + p3) * t3);
+}
 
 void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
@@ -297,20 +308,70 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     float y1, y2;
     it = times.begin();
     float bottom = top+height;
+
     if (it != times_end) {
-        float minutes = float(it.value()) / 60.0;
-        y1 = minutes * ymult;
+        QVector<float> P;
+        QVector<float> tap;
+        P.resize(26);
+        tap.reserve(260);
+
+        for (;  it != times_end; ++it) {
+            int p = it.key();
+            Q_ASSERT(p < 255);
+            float v = float(it.value()) / 60.0;
+            P[p] = v;
+        }
+        tap.append(P[0]);
+        for (int i=1; i<24; ++i) {
+
+            float p0 = P[i-1];
+            float p1 = P[i];
+            float p2 = P[i+1];
+            float p3 = P[i+2];
+
+            // Calculate Catmull-Rom Splines in between samples
+            tap.append(P[i]);
+
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.1)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.2)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.3)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.4)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.5)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.6)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.7)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.8)));
+            tap.append(qMax(0.0f,CatmullRomSpline(p0,p1,p2,p3,0.9)));
+        }
+        tap.append(P[24]);
+        tap.append(P[25]);
 
         painter.setPen(QPen(QColor(Qt::gray), 2));
+
+        float minutes = tap[0];
+        y1 = minutes * ymult;
+
+        int tapsize = tap.size();
+        for (int i=0; i<tapsize; ++i) {
+            minutes = tap[i];
+            y2 = minutes * ymult;
+            painter.drawLine(xpos, bottom-y1, xpos+pix/10.0, bottom-y2);
+            y1 = y2;
+            xpos += pix / 10.0;
+        }
+
+      /*  float minutes = float(it.value()) / 60.0;
+        y1 = minutes * ymult;
+
+        it=times.begin();
         it++;
         for (;  it != times_end; ++it) {
             float minutes = float(it.value()) / 60.0;
             y2 = minutes * ymult;
 
-         //   painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
+            painter.drawLine(xpos, bottom-y1, xpos+pix, bottom-y2);
             y1 = y2;
             xpos += pix;
-        }
+        }*/
 
 
         float maxev = 0;
@@ -348,7 +409,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             schema::ChanType type = chan.type();
             if (type == schema::SPAN)
                 continue;
-            //painter.setPen(QPen(QColor(chan.defaultColor()), 2));
+            painter.setPen(QPen(QColor(chan.defaultColor()), 2));
             eit = events.find(code);
             xpos = left;//+pix/2;
 
