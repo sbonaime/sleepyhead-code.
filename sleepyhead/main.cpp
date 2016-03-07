@@ -85,11 +85,11 @@ void release_notes()
     QVBoxLayout * layout = new QVBoxLayout(&relnotes);
     QWebView * web = new QWebView(&relnotes);
 
-    QString welcomeMessage = "<font size=+1>"+
-            QObject::tr("<p>After four years in the making, this build brings SleepyHead into the final beta phase.</p>")+
-            QObject::tr("<p>Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
-            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</p>")+
-            "</font>";
+    QString welcomeMessage = "<font size=+1>"
+            "<p>"+QObject::tr("After four years in the making, this build brings SleepyHead into the final beta phase.")+"</p>"
+            "<p>"+QObject::tr("Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
+            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.")+
+            "</p></font>";
 
     QFile clfile(":/docs/release_notes.html");
     QString changeLog = QObject::tr("Sorry, could not locate changelog.");
@@ -112,7 +112,7 @@ void release_notes()
     }
 
     html += "<p><b>"+QObject::tr("Sleep Well, and good luck!")+"</b></p>"
-            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>Change log</i></b><hr/><br/><br/>";
+            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>"+QObject::tr("Change log")+"</i></b><hr/><br/><br/>";
 
     html += changeLog;
     html += "</body></html>";

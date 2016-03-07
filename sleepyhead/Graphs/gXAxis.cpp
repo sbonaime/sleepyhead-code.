@@ -453,3 +453,35 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     painter.drawLines(lines);
 
 }
+
+
+gXAxisPressure::gXAxisPressure(QColor col)
+    :Layer(NoChannel)
+{
+    m_line_color = col;
+    m_text_color = col;
+    m_major_color = Qt::darkGray;
+    m_minor_color = Qt::lightGray;
+    m_show_major_lines = false;
+    m_show_minor_lines = false;
+    m_show_minor_ticks = true;
+    m_show_major_ticks = true;
+}
+gXAxisPressure::~gXAxisPressure()
+{
+}
+
+int gXAxisPressure::minimumHeight()
+{
+    QFontMetrics fm(*defaultfont);
+    int h = fm.height();
+#if defined(Q_OS_MAC)
+    return 9+h;
+#else
+    return 11+h;
+#endif
+}
+
+void gXAxisPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
+{
+}
