@@ -363,6 +363,9 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Register Importer Modules for autoscanner
     ////////////////////////////////////////////////////////////////////////////////////////////
+    p_pref = new Preferences("Preferences");
+    PREF.Open();
+
     initialize();
     PRS1Loader::Register();
     ResmedLoader::Register();
@@ -376,10 +379,8 @@ retry_directory:
 
     schema::setOrders();
 
-    p_pref = new Preferences("Preferences");
     p_layout = new Preferences("Layout");
 
-    PREF.Open();
     LAYOUT.Open();
 
     // Scan for user profiles
@@ -400,6 +401,8 @@ retry_directory:
     PREF.init(STR_GEN_UpdatesAutoCheck, true);
     PREF.init(STR_GEN_UpdateCheckFrequency, 7);    // days
     PREF.init(STR_PREF_AllowEarlyUpdates, false);
+
+    PREF.init(STR_PREF_AllowEventRenaming, true);
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..

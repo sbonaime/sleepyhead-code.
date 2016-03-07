@@ -196,10 +196,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->updateCheckEvery->setValue(PREF[STR_GEN_UpdateCheckFrequency].toInt());
 
+
     if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
         RefreshLastChecked();
     } else { ui->updateLastChecked->setText("Never"); }
 
+    ui->allowEventRenaming->setChecked(PREF[STR_PREF_AllowEventRenaming].toBool());
 
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
@@ -217,7 +219,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->userEventDuplicates->setVisible(false);
 
     ui->showUserFlagsInPie->setChecked(profile->cpap->userEventPieChart());
-
 
     bool b;
     ui->calculateUnintentionalLeaks->setChecked(b=profile->cpap->calculateUnintentionalLeaks());
@@ -788,6 +789,7 @@ bool PreferencesDialog::Save()
     profile->cpap->setUserEventDuplicates(ui->userEventDuplicates->isChecked());
 
 
+
     if ((ui->calculateUnintentionalLeaks->isChecked() != profile->cpap->calculateUnintentionalLeaks())
       || (fabs((ui->maskLeaks4Slider->value()/10.0)-profile->cpap->custom4cmH2OLeaks())>.1)
       || (fabs((ui->maskLeaks20Slider->value()/10.0)-profile->cpap->custom20cmH2OLeaks())>.1)) {
@@ -803,6 +805,8 @@ bool PreferencesDialog::Save()
     PREF[STR_GEN_UpdatesAutoCheck] = ui->automaticallyCheckUpdates->isChecked();
     PREF[STR_GEN_UpdateCheckFrequency] = ui->updateCheckEvery->value();
     PREF[STR_PREF_AllowEarlyUpdates] = ui->allowEarlyUpdates->isChecked();
+    PREF[STR_PREF_AllowEventRenaming] = ui->allowEventRenaming->isChecked();
+
 
     PREF["Fonts_Application_Name"] = ui->applicationFont->currentText();
     PREF["Fonts_Application_Size"] = ui->applicationFontSize->value();

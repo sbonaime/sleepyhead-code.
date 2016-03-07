@@ -476,9 +476,13 @@ void loadChannels()
         }
         chan->setEnabled(enabled);
         chan->setDefaultColor(color);
-        chan->setFullname(fullname);
-        chan->setLabel(label);
-        chan->setDescription(description);
+
+        if (PREF[STR_PREF_AllowEventRenaming].toBool()) {
+            chan->setFullname(fullname);
+            chan->setLabel(label);
+            chan->setDescription(description);
+        }
+
         chan->setLowerThreshold(lowerThreshold);
         chan->setLowerThresholdColor(lowerThresholdColor);
         chan->setUpperThreshold(upperThreshold);

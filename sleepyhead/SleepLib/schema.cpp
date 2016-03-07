@@ -752,14 +752,17 @@ bool ChannelList::Load(QString filename)
             }
 
             scope = Scopes[scopestr];
-            name = e.attribute("name", "");
-            details = e.attribute("details", "");
-            label = e.attribute("label", "");
 
-            if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
-                qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;
-                continue;
-            }
+//            if (PREF[STR_PREF_AllowEventRenaming].toBool()) {
+                name = e.attribute("name", "");
+                details = e.attribute("details", "");
+                label = e.attribute("label", "");
+
+                if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
+                    qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;
+                    continue;
+                }
+  //          }
 
             unit = e.attribute("unit");
 
