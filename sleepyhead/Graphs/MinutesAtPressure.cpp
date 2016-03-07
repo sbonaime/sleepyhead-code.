@@ -179,7 +179,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     int tot = max - min;
     float xstep = float(width) / float(tot);
     height -= 2;
-    float peak = float(qMax(ipap.peaktime, epap.peaktime));
+    float peak = ceil((float(qMax(ipap.peaktime, epap.peaktime))/600.0))*600.0;
 
     m_miny = m_physminy = 0;
     m_maxy = m_physmaxy = peak;
@@ -187,7 +187,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     float ystep = float(height) / peak;
 
     int p0, p1, p2, p3;
-
+    QString label;
     if (ipap.min_pressure > 0) {
         float xp,yp;
 
@@ -196,13 +196,33 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         xp = left;// /2.0;
         int w, h;
         for (int i = 0; i<=20; ++i) {
-            yp = bottom;
+            yp = bottom+1;
             painter.drawLine(xp, yp, xp, yp+6);
+            if (i>0) { // skip the first mid tick
+                painter.drawLine(xp-pstep/2, yp, xp-pstep/2, yp+4);
+            }
 
-            QString label = QString("%1").arg(i+4);
+            label = QString("%1").arg(i+4);
             GetTextExtent(label, w, h);
             graph.renderText(label, xp-w/2, yp+h+4);
             xp+= pstep;
+        }
+
+        double bot = bottom+1;
+        double r = double(height+3) / (peak/600.0);
+        yp = bot;
+        for (float f=0.0; f<=peak/60.0; f+=10.0) {
+            painter.setPen(Qt::black);
+
+            painter.drawLine(left, bot, left-4, bot);
+            painter.setPen(QColor(128,128,128,64));
+            painter.drawLine(left, bot, left+width, bot);
+
+
+            label = QString("%1").arg(f);
+            GetTextExtent(label, w, h);
+            graph.renderText(label, left-8-w,  bot+h/2-2 );
+            bot -= r;
         }
 
         xstep /= 5.0;

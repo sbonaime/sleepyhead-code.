@@ -272,7 +272,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("Time at Pressure"), QObject::tr("Time at Pressure"), default_height);
     MinutesAtPressure * map;
     TAP2->AddLayer(map = new MinutesAtPressure());
-    TAP2->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    TAP2->AddLayer(new gLabelArea(map),LayerLeft,gYAxis::Margin);
     TAP2->AddLayer(new gXAxisPressure(),LayerBottom,gXAxisPressure::Margin);
     TAP2->setBlockSelect(true);
 
