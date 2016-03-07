@@ -119,6 +119,7 @@ bool MinutesAtPressure::isEmpty()
     return m_empty;
 }
 
+float pressureMult = 5;
 
 void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
@@ -173,8 +174,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     painter.drawRect(rect.left(),rect.top(), rect.width(), height+1);
 
 
-    int min = 4*5;
-    int max = 24*5;
+    int min = 4 * pressureMult;
+    int max = 24 * pressureMult;
     int tot = max - min;
     float xstep = float(width) / float(tot);
     height -= 2;
@@ -190,7 +191,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     if (ipap.min_pressure > 0) {
         float xp,yp;
 
-        float pstep = xstep * 5;
+        float pstep = xstep * pressureMult;
 
         xp = left;// /2.0;
         int w, h;
@@ -247,7 +248,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         }
 
         if (epap.min_pressure) {
-            xp=left, yp, lastyp = bottom - (float(epap.times[min]) * ystep);
+            xp=left, lastyp = bottom - (float(epap.times[min]) * ystep);
             painter.setPen(Qt::blue);
 
             for (int i=min; i<max; ++i) {
@@ -261,22 +262,27 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
                 lastyp = yp;
                 xp += xstep;
-                float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.25),0.0f);
-                yp = qMax(bottom - height, (bottom - (s2 * ystep)));
+                float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                 lastyp = yp;
                 xp += xstep;
-                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.5),0.0f);
-                yp = qMax(bottom - height, (bottom - (s2 * ystep)));
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 lastyp = yp;
                 xp += xstep;
 
-                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.75),0.0f);
-                yp = qMax(bottom - height, (bottom - (s2 * ystep)));
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
+                xp+=xstep;
+                lastyp = yp;
 
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+                painter.drawLine(xp, lastyp, xp+xstep, yp);
                 xp+=xstep;
                 lastyp = yp;
             }
@@ -586,6 +592,7 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
     const QVector<EventList *> & evec = ei.value();
     int esize = evec.size();
 
+    pressureMult = (sess->machine()->loaderName() == "PRS1") ? 2 : 5;
     // Loop through event lists
     for (int ei = 0; ei < esize; ++ei) {
         const EventList *EL = evec.at(ei);
@@ -613,7 +620,7 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
             }
 
             time = EL->time(e);
-            data = floor(float(EL->raw(e)) * gain * 5.0);  // pressure times ten, so can look at .1 intervals in an integer
+            data = floor(float(EL->raw(e)) * gain * pressureMult);  // pressure times ten, so can look at .1 intervals in an integer
 
             Q_ASSERT(data < 300);
 
