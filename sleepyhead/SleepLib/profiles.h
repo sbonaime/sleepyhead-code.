@@ -304,6 +304,7 @@ const QString STR_CS_AHIReset = "AHIReset";
 const QString STR_CS_ClockDrift = "ClockDrift";
 const QString STR_CS_LeakRedline = "LeakRedline";
 const QString STR_CS_ShowLeakRedline = "ShowLeakRedline";
+const QString STR_CS_AllowEventRenaming = "AllowEventRenaming";
 
 const QString STR_CS_CalculateUnintentionalLeaks = "CalculateUnintentionalLeaks";
 const QString STR_CS_4cmH2OLeaks = "Custom4cmH2OLeaks";
@@ -574,6 +575,8 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_4cmH2OLeaks, 20.167);
         initPref(STR_CS_20cmH2OLeaks, 48.333);
 
+        initPref(STR_CS_AllowEventRenaming, false);
+
         initPref(STR_CS_ClockDrift, (int)0);
         m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
     }
@@ -606,6 +609,7 @@ class CPAPSettings : public ProfileSettings
     bool resyncFromUserFlagging() const { return getPref(STR_CS_ResyncFromUserFlagging).toBool(); }
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
+    bool allowEventRenaming() const { return getPref(STR_CS_AllowEventRenaming).toBool(); }
 
     bool calculateUnintentionalLeaks() const { return getPref(STR_CS_CalculateUnintentionalLeaks).toBool(); }
     double custom4cmH2OLeaks() const { return getPref(STR_CS_4cmH2OLeaks).toDouble(); }
@@ -643,6 +647,7 @@ class CPAPSettings : public ProfileSettings
     void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
     void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
+    void setAllowEventRenaming(bool b) { setPref(STR_CS_AllowEventRenaming, b); }
 
     void setCalculateUnintentionalLeaks(bool b) { setPref(STR_CS_CalculateUnintentionalLeaks, b); }
     void setCustom4cmH2OLeaks(double val) { setPref(STR_CS_4cmH2OLeaks, val); }

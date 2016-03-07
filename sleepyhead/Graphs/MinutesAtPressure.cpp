@@ -215,6 +215,10 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         if (r < h+4) {
             r = double(height+3) / (peak/1200.0);
             g = 20.0;
+            if (r < h+4) {
+                r = double(height+3) / (peak/2400.0);
+                g = 40.0;
+            }
         }
         yp = bot;
         for (float f=0.0; f<=peak/60.0+0.01; f+=g) {
