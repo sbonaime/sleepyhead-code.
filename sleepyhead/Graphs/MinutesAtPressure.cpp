@@ -209,9 +209,15 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         }
 
         double bot = bottom+1;
+        double g = 10.0;
         double r = double(height+3) / (peak/600.0);
+
+        if (r < h+4) {
+            r = double(height+3) / (peak/1200.0);
+            g = 20.0;
+        }
         yp = bot;
-        for (float f=0.0; f<=peak/60.0; f+=10.0) {
+        for (float f=0.0; f<=peak/60.0+0.01; f+=g) {
             painter.setPen(Qt::black);
 
             painter.drawLine(left, bot, left-4, bot);
@@ -224,6 +230,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             graph.renderText(label, left-8-w,  bot+h/2-2 );
             bot -= r;
         }
+        label = QString("Peak %1").arg(qMax(ipap.peaktime, epap.peaktime)/60.0);
+        graph.renderText(label, left,  top+5 );
 
         xstep /= 5.0;
         painter.setPen(Qt::red);
