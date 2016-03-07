@@ -31,6 +31,19 @@ static bool globalsInitialized = false;
 // Graph constants.
 static const double zoom_hard_limit = 500.0;
 
+
+// Calculate Catmull-Rom Spline of given 4 samples, with t between 0-1;
+float CatmullRomSpline(float p0, float p1, float p2, float p3, float t)
+{
+    float t2 = t*t;
+    float t3 = t2 * t;
+
+    return (float)0.5 * ((2 * p1) +
+    (-p0 + p2) * t +
+    (2*p0 - 5*p1 + 4*p2 - p3) * t2 +
+    (-p0 + 3*p1- 3*p2 + p3) * t3);
+}
+
  // Must be called from a thread inside the application.
 bool InitGraphGlobals()
 {

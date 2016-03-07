@@ -1177,6 +1177,71 @@ bool PRS1Import::ParseF3Events()
     return true;
 }
 
+extern float CatmullRomSpline(float p0, float p1, float p2, float p3, float t = 0.5);
+
+void SmoothEventList(Session * session, EventList * ev, ChannelID code)
+{
+    if (!ev) return;
+    int cnt = ev->count();
+    if (cnt > 4) {
+        EventList * smooth = new EventList(EVL_Event, ev->gain());
+
+        smooth->setFirst(ev->first());
+        smooth->AddEvent(ev->time(0), ev->raw(0));
+
+        float p0, p1, p2, p3, v;
+        for (int i=1; i<cnt-2; ++i) {
+            qint64 time = ev->time(i);
+            qint64 time2 = ev->time(i+1);
+            qint64 diff = time2 - time;
+
+            // these aren't evenly spaced... spline won't work here.
+            p0 = ev->raw(i-1);
+            p1 = ev->raw(i);
+            p2 = ev->raw(i+1);
+            p3 = ev->raw(i+2);
+
+            smooth->AddEvent(time, p1);
+
+//            int df = p2-p1;
+//            if (df > 0) {
+//                qint64 inter = diff/(df+1);
+//                qint64 t = time+inter;
+//                for (int j=0; j<df; ++j) {
+//                    smooth->AddEvent(t, p1+j);
+//                    t+=inter;
+//                }
+//            } else if (df<0) {
+//                df = abs(df);
+//                qint64 inter = diff/(df+1);
+//                qint64 t = time+inter;
+//                for (int j=0; j<df; ++j) {
+//                    smooth->AddEvent(t, p1-j);
+//                    t+=inter;
+//                }
+//            }
+            // don't want to use Catmull here...
+
+
+            v = CatmullRomSpline(p0, p1, p2, p3, 0.25);
+            smooth->AddEvent(time+diff*0.25, v);
+            v = CatmullRomSpline(p0, p1, p2, p3, 0.5);
+            smooth->AddEvent(time+diff*0.5, v);
+            v = CatmullRomSpline(p0, p1, p2, p3, 0.75);
+            smooth->AddEvent(time+diff*0.75, v);
+
+        }
+        smooth->AddEvent(ev->time(cnt-2), ev->raw(cnt-2));
+        smooth->AddEvent(ev->time(cnt-1), ev->raw(cnt-1));
+
+
+        session->eventlist[code].removeAll(ev);
+        delete ev;
+        session->eventlist[code].append(smooth);
+    }
+
+}
+
 bool PRS1Import::ParseF0Events()
 {
     unsigned char code=0;
@@ -1230,7 +1295,7 @@ bool PRS1Import::ParseF0Events()
     float lpm = lpm20 - lpm4;
     float ppm = lpm / 16.0;
 
-    //CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
+    CPAPMode mode = (CPAPMode) session->settings[CPAP_Mode].toInt();
 
     for (pos = 0; pos < size;) {
         lastcode3 = lastcode2;
@@ -1472,10 +1537,12 @@ bool PRS1Import::ParseF0Events()
 
                 // Perhaps this check is not necessary, as it will theoretically add extra resolution to pressure chart
                 // for bipap models and above???
-//                if (mode <= MODE_BILEVEL_FIXED) {
-//                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-//                    EPAP->AddEvent(t, data0);
-//                }
+                if (mode <= MODE_BILEVEL_FIXED) {
+                    if (!EPAP) {
+                        if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
+                    }
+                    EPAP->AddEvent(t, data0);
+                }
             }
 
             break;
@@ -1509,6 +1576,11 @@ bool PRS1Import::ParseF0Events()
             return false;
         }
     }
+
+//    SmoothEventList(session, PRESSURE, CPAP_Pressure);
+//    SmoothEventList(session, IPAP, CPAP_IPAP);
+//    SmoothEventList(session, EPAP, CPAP_EPAP);
+
 
     session->updateLast(t);
     session->m_cnt.clear();

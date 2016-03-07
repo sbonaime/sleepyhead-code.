@@ -34,6 +34,8 @@ void DestroyGraphGlobals();
 
 const int mouse_movement_threshold = 6;
 
+float CatmullRomSpline(float p0, float p1, float p2, float p3, float t = 0.5);
+
 inline void GetTextExtent(QString text, int &width, int &height, QFont *font)
 {
     QFontMetrics fm(*font);

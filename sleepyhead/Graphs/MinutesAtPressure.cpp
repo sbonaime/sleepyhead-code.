@@ -20,18 +20,6 @@
 #include "Graphs/gYAxis.h"
 
 
-// Calculate Catmull-Rom Spline of given 4 samples, with t between 0-1;
-float CatmullRomSpline(float p0, float p1, float p2, float p3, float t = 0.5)
-{
-    float t2 = t*t;
-    float t3 = t2 * t;
-
-    return (float)0.5 * ((2 * p1) +
-    (-p0 + p2) * t +
-    (2*p0 - 5*p1 + 4*p2 - p3) * t2 +
-    (-p0 + 3*p1- 3*p2 + p3) * t3);
-}
-
 MinutesAtPressure::MinutesAtPressure() :Layer(NoChannel)
 {
     m_remap = nullptr;
@@ -145,7 +133,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     float height = rect.height();
     float left = rect.left();
     float pix = width / float(cells);
-    float bottom = rect.bottom();
+    float bottom = rect.bottom()+1;
 
 
     int numchans = chans.size();
@@ -182,16 +170,19 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
-    painter.drawRect(rect.left(),rect.top(), rect.width(), height);
+    painter.drawRect(rect.left(),rect.top(), rect.width(), height+1);
 
 
-
-    int min = 40;
-    int max = 240;
+    int min = 4*5;
+    int max = 24*5;
     int tot = max - min;
     float xstep = float(width) / float(tot);
     height -= 2;
     float peak = float(qMax(ipap.peaktime, epap.peaktime));
+
+    m_miny = m_physminy = 0;
+    m_maxy = m_physmaxy = peak;
+
     float ystep = float(height) / peak;
 
     int p0, p1, p2, p3;
@@ -199,9 +190,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     if (ipap.min_pressure > 0) {
         float xp,yp;
 
-        float pstep = xstep*10.0;
+        float pstep = xstep * 5;
 
-        xp = left + pstep/2.0;
+        xp = left;// /2.0;
         int w, h;
         for (int i = 0; i<=20; ++i) {
             yp = bottom;
@@ -213,7 +204,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             xp+= pstep;
         }
 
-        xstep /= 4.0;
+        xstep /= 5.0;
         painter.setPen(Qt::red);
 
         xp=left;
@@ -229,24 +220,30 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
             lastyp = yp;
             xp += xstep;
-            float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.25),0.0f);
+            float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
             yp = qMax(bottom-height, (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
 
             lastyp = yp;
             xp += xstep;
-            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.5),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
             yp = qMax(bottom-height, (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             lastyp = yp;
             xp += xstep;
 
-            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.75),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
             yp = qMax(bottom-height, (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
-
             xp+=xstep;
             lastyp = yp;
+
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+            yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+            painter.drawLine(xp, lastyp, xp+xstep, yp);
+            xp+=xstep;
+            lastyp = yp;
+
         }
 
         if (epap.min_pressure) {
@@ -579,7 +576,6 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
 
     if (code == 0) return;
 
-
     // Find pressure channel
     QHash<ChannelID, QVector<EventList *> >::iterator ei = sess->eventlist.find(code);
 
@@ -617,7 +613,7 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
             }
 
             time = EL->time(e);
-            data = floor(float(EL->raw(e)) * gain * 10.0);  // pressure times ten, so can look at .1 intervals in an integer
+            data = floor(float(EL->raw(e)) * gain * 5.0);  // pressure times ten, so can look at .1 intervals in an integer
 
             Q_ASSERT(data < 300);
 
@@ -634,11 +630,11 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
                 d2 = qMin(maxx, time);
 
                 duration = (d2 - d1) / 1000L;
-                info.times[lastdata] += duration;
-
                 key = lastdata;
+                info.times[key] += duration;
 
                 int cs = info.chans.size();
+
                 for (int c = 0; c < cs; ++c) {
                     ChannelID cod = info.chans.at(c);
                     schema::Channel & chan = schema::channel[cod];
@@ -662,9 +658,10 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
             d2 = qMin(maxx, EL->last());
 
             duration = (d2 - d1) / 1000L;
-            info.times[lastdata] += duration;
             key = lastdata;
+            info.times[key] += duration;
             int cs = info.chans.size();
+
             for (int c = 0; c < cs; ++c) {
                 ChannelID cod = info.chans.at(c);
                 schema::Channel & chan = schema::channel[cod];

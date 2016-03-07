@@ -95,7 +95,6 @@ public:
     //! Draw filled rectangles behind Event Flag's, and an outlines around them all, Calls the individual paint for each gFlagLine
     virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
-
     bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
     bool mousePressEvent(QMouseEvent *event, gGraph *graph);
     bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph);
