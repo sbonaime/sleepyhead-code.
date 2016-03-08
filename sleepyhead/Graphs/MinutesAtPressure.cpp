@@ -218,6 +218,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     double p0, p1, p2, p3;
     QString label;
     int widest_YAxis = 0;
+
+    int mouseOverKey = 0;
     if (ipap.min_pressure > 0) {
         double xp,yp;
 
@@ -239,6 +241,44 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             graph.renderText(label, xp-w/2, yp+h+4);
             xp+= pstep;
         }
+
+        schema::Channel & ichan = schema::channel[ipap.code];
+        schema::Channel & echan = schema::channel[epap.code];
+
+        QPoint mouse=graph.graphView()->currentMousePos();
+        if (region.contains(mouse)) {
+            float p = 4.0 + (mouse.x() - left) / pstep;
+            mouseOverKey = floor(p*pressureMult);
+
+            float ipap_minutes = ipap.times[mouseOverKey] / 60.0;
+            float epap_minutes = epap.times[mouseOverKey] / 60.0;
+            QString str = QString("%1%2").arg(mouseOverKey / pressureMult,3,'f',1).arg(STR_UNIT_CMH2O)+"\n";
+            bool good = false;
+
+            if (ipap_minutes > 0) {
+                good = true;
+                str += ichan.label()+": "+QString("%1 %2").arg(ipap_minutes,3,'f',1).arg(STR_UNIT_Minutes)+"\n";
+            }
+            if (epap_minutes > 0) {
+                good = true;
+                str += echan.label()+": "+QString("%1 %2").arg(epap_minutes,3,'f',1).arg(STR_UNIT_Minutes)+"\n";
+            }
+            if (good) {
+                str+="\n";
+                int nc = ipap.chans.size();
+                for (int i=0;i<nc;++i) {
+                    ChannelID ch = ipap.chans.at(i);
+                    schema::Channel & chan = schema::channel[ch];
+                    int cnt = ipap.events[ch].at(mouseOverKey);
+                        str += QString("%1: %2").arg(chan.fullname()).arg(cnt);
+                        if (i<nc-1) str+="\n";
+                }
+            } else {
+                str+=QObject::tr("No Data Here");
+            }
+            graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignLeft);
+        }
+
 
         ////////////////////////////////////////////////////////////////////
         // Draw Y Axis labels
@@ -263,7 +303,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         graph.renderText(label, left,  top+5 );
 
         xstep /= 5.0;
-        schema::Channel & ichan = schema::channel[ipap.code];
         painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
 
 
@@ -279,8 +318,14 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             p3 = ipap.times[i+2]/ 60.0;
 
             yp = bottom - (double(p1) * ystep);
-            painter.drawLine(xp, lastyp, xp+xstep, yp);
 
+            if (i == mouseOverKey) {
+                painter.setPen(QPen(Qt::black));
+                painter.drawRect(xp, yp-4, 8, 8);
+                painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
+            }
+
+            painter.drawLine(xp, lastyp, xp+xstep, yp);
             lastyp = yp;
             xp += xstep;
             double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
@@ -333,6 +378,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             evpeak = ceil(evpeak/g)*g;
             r = double(height+3) / (evpeak / g);
 
+
             yp = bot;
             widest_YAxis+=2;
             for (double f=0.0; f<=evpeak; f+=g) {
@@ -356,7 +402,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 //if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
                 schema::Channel & chan = schema::channel[ch];
                 QColor col = chan.defaultColor();
-                col.setAlpha(50);
+                col.setAlpha(40);
                 painter.setPen(col);
                 painter.setPen(QPen(col, p_profile->appearance->lineThickness()));
 
@@ -458,17 +504,20 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
         if (epap.min_pressure) {
-            schema::Channel & echan = schema::channel[epap.code];
             painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
 
             xp=left, lastyp = bottom - (double(epap.times[min]) * ystep);
-            painter.setPen(Qt::blue);
-
             for (int i=min; i<max; ++i) {
                 p0 = epap.times[i-1]/60.0;
                 p1 = epap.times[i]/60.0;
                 p2 = epap.times[i+1]/60.0;
                 p3 = epap.times[i+2]/60.0;
+
+                if (i == mouseOverKey) {
+                    painter.setPen(QPen(Qt::black));
+                    painter.drawRect(xp, yp-4, 8, 8);
+                    painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
+                }
 
                 yp = bottom - (double(p1) * ystep);
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
