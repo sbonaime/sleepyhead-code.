@@ -238,9 +238,11 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         graph.renderText(label, left,  top+5 );
 
         xstep /= 5.0;
-        painter.setPen(Qt::red);
+        schema::Channel & ichan = schema::channel[ipap.code];
+        painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
 
         xp=left;
+
         float lastyp = bottom - (float(ipap.times[min-1]) * ystep);
         for (int i=min; i<max; ++i) {
             p0 = ipap.times[i-1];
@@ -290,8 +292,10 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
                 schema::Channel & chan = schema::channel[ch];
                 QColor col = chan.defaultColor();
-                col.setAlpha(48);
+                col.setAlpha(50);
                 painter.setPen(col);
+                painter.setPen(QPen(col, p_profile->appearance->lineThickness()));
+
 
                 xp = left;
                 lastyp = bottom - (float(ipap.events[ch][min-1]) * estep);
@@ -336,6 +340,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
         if (epap.min_pressure) {
+            schema::Channel & echan = schema::channel[epap.code];
+            painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
+
             xp=left, lastyp = bottom - (float(epap.times[min]) * ystep);
             painter.setPen(Qt::blue);
 
