@@ -32,7 +32,9 @@ QHash<QString, QList<quint16> > Resmed_Model_Map;
 
 const QString STR_UnknownModel = "Resmed S9 ???";
 
-ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode;
+ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode, RMS9_SmartStart, RMS9_HumidStatus, RMS9_HumidLevel,
+         RMS9_PtAccess, RMS9_Mask, RMS9_ABFilter, RMS9_ClimateControl, RMS9_TubeType,
+         RMS9_Temp, RMS9_TempEnable, RMS9_RampEnable;
 
 const QString STR_ResMed_AirSense10 = "AirSense 10";
 const QString STR_ResMed_AirCurve10= "AirCurve 10";
@@ -308,7 +310,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
                 if (R.mode == MODE_ASV) {
                     if ((sig = str.lookupLabel("S.AV.StartPress"))) {
-                        //EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        R.ramp_pressure = sp;
                     }
                     if ((sig = str.lookupLabel("S.AV.EPAP"))) {
                         R.min_epap = R.max_epap = R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -325,7 +328,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 }
                 if (R.mode == MODE_ASV_VARIABLE_EPAP) {
                     if ((sig = str.lookupLabel("S.AA.StartPress"))) {
-                        //EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                        R.ramp_pressure = sp;
                     }
                     if ((sig = str.lookupLabel("S.AA.MinEPAP"))) {
                         R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -994,7 +998,48 @@ void ResmedImport::run()
                     sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
                 }
             }
+        }
 
+        if (R.s_RampEnable >= 0) {
+            sess->settings[RMS9_RampEnable] = R.s_RampEnable;
+
+            if (R.s_RampEnable >= 1) {
+                if (R.s_RampTime >= 0) {
+                    sess->settings[CPAP_RampTime] = R.s_RampTime;
+                }
+                if (R.ramp_pressure >= 0) {
+                    sess->settings[CPAP_RampPressure] = R.ramp_pressure;
+                }
+            }
+        }
+
+        if (R.s_SmartStart >= 0) {
+            sess->settings[RMS9_SmartStart] = R.s_SmartStart;
+        }
+        if (R.s_ABFilter >= 0) {
+            sess->settings[RMS9_ABFilter] = R.s_ABFilter;
+        }
+        if (R.s_ClimateControl >= 0) {
+            sess->settings[RMS9_ClimateControl] = R.s_ClimateControl;
+        }
+        if (R.s_Mask >= 0) {
+            sess->settings[RMS9_Mask] = R.s_Mask;
+        }
+        if (R.s_PtAccess >= 0) {
+            sess->settings[RMS9_PtAccess] = R.s_PtAccess;
+        }
+
+        if (R.s_HumEnable >= 0) {
+            sess->settings[RMS9_HumidStatus] = (short)R.s_HumEnable;
+            if ((R.s_HumEnable >= 1) && (R.s_HumLevel >= 0)) {
+                sess->settings[RMS9_HumidLevel] = (short)R.s_HumLevel;
+            }
+        }
+        if (R.s_TempEnable >= 0) {
+            sess->settings[RMS9_TempEnable] = (short)R.s_TempEnable;
+            if ((R.s_TempEnable >= 0) && (R.s_Temp >= 0)){
+                sess->settings[RMS9_Temp] = (short)R.s_Temp;
+            }
         }
 
         // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
@@ -3319,6 +3364,109 @@ void ResmedLoader::initChannels()
     chan->addOption(1, QObject::tr("1cmH2O"));
     chan->addOption(2, QObject::tr("2cmH2O"));
     chan->addOption(3, QObject::tr("3cmH2O"));
+
+//    RMS9_SmartStart, RMS9_HumidStatus, RMS9_HumidLevel,
+//             RMS9_PtAccess, RMS9_Mask, RMS9_ABFilter, RMS9_ClimateControl, RMS9_TubeType,
+//             RMS9_Temp, RMS9_TempEnable;
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_SmartStart = 0xe204, SETTING, MT_CPAP, SESSION,
+        "RMS9_SmartStart", QObject::tr("SmartStart"),
+        QObject::tr("Machine auto starts by breathing"),
+        QObject::tr("Smart Start"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_HumidStatus = 0xe205, SETTING, MT_CPAP, SESSION,
+        "RMS9_HumidStat", QObject::tr("Humid. Status"),
+        QObject::tr("Humidifier Enabled Status"),
+        QObject::tr("Humidifier Status"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_HumidLevel = 0xe206, SETTING, MT_CPAP, SESSION,
+        "RMS9_HumidLevel", QObject::tr("Humid. Level"),
+        QObject::tr("Humidity Level"),
+        QObject::tr("Humidity Level"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, "1");
+    chan->addOption(2, "2");
+    chan->addOption(3, "3");
+    chan->addOption(4, "4");
+    chan->addOption(5, "5");
+    chan->addOption(6, "6");
+    chan->addOption(7, "7");
+    chan->addOption(8, "8");
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_Temp = 0xe207, SETTING, MT_CPAP, SESSION,
+        "RMS9_Temp", QObject::tr("Temperature"),
+        QObject::tr("ClimateLine Temperature"),
+        QObject::tr("Temperature"),
+        "ºC", INTEGER, Qt::black));
+
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_TempEnable = 0xe208, SETTING, MT_CPAP, SESSION,
+        "RMS9_TempEnable", QObject::tr("Temp. Enable"),
+        QObject::tr("ClimateLine Temperature Enable"),
+        QObject::tr("Temperature Enable"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, "1");
+    chan->addOption(2, "2");
+    chan->addOption(3, "3");
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_ABFilter= 0xe209, SETTING, MT_CPAP, SESSION,
+        "RMS9_ABFilter", QObject::tr("AB Filter"),
+        QObject::tr("Antibacterial Filter"),
+        QObject::tr("Antibacterial Filter"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_No);
+    chan->addOption(1, STR_TR_Yes);
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_PtAccess= 0xe20A, SETTING, MT_CPAP, SESSION,
+        "RMS9_PTAccess", QObject::tr("Pt. Access"),
+        QObject::tr("Patient Access"),
+        QObject::tr("Patient Access"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_No);
+    chan->addOption(1, STR_TR_Yes);
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_ClimateControl= 0xe20B, SETTING, MT_CPAP, SESSION,
+        "RMS9_ClimateControl", QObject::tr("Climate Control"),
+        QObject::tr("Climate Control"),
+        QObject::tr("Climate Control"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, QObject::tr("Manual"));
+    chan->addOption(1, QObject::tr("Auto"));
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_Mask= 0xe20C, SETTING, MT_CPAP, SESSION,
+        "RMS9_Mask", QObject::tr("Mask"),
+        QObject::tr("ResMed Mask Setting"),
+        QObject::tr("Mask"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, QObject::tr("Pillows"));
+    chan->addOption(1, QObject::tr("Full Face"));
+    chan->addOption(2, QObject::tr("Nasal"));
+
+    channel.add(GRP_CPAP, chan = new Channel(RMS9_RampEnable = 0xe20D, SETTING, MT_CPAP, SESSION,
+        "RMS9_RampEnable", QObject::tr("Ramp"),
+        QObject::tr("Ramp Enable"),
+        QObject::tr("Ramp"),
+        "", LOOKUP, Qt::black));
+
+    chan->addOption(0, STR_TR_Off);
+    chan->addOption(1, STR_TR_On);
+
 
     // Modelmap needs channels initalized above!!!
     ResInitModelMap();
