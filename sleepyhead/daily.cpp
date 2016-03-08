@@ -669,7 +669,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                         t -= float(ev.raw(o) / 2.0) * 1000.0;
                     }
                     QStringList a;
-                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t, Qt::UTC);
+                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t); // Localtime
                     QString s=QString("#%1: %2 (%3)").arg((int)(++mccnt[code]),(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
                     QTreeWidgetItem *item=new QTreeWidgetItem(a);
@@ -691,8 +691,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
         tree->insertTopLevelItem(cnt++ , start);
         tree->insertTopLevelItem(cnt++ , end);
         for (QList<Session *>::iterator s=day->begin(); s!=day->end(); ++s) {
-            QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first(), Qt::UTC);
-            QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last(), Qt::UTC);
+            QDateTime st = QDateTime::fromMSecsSinceEpoch((*s)->first()); // Localtime
+            QDateTime et = QDateTime::fromMSecsSinceEpoch((*s)->last()); // Localtime
 
             QTreeWidgetItem * item = new QTreeWidgetItem(QStringList(st.toString("HH:mm:ss")));
             item->setData(0,Qt::UserRole, (*s)->first());
