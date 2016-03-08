@@ -282,10 +282,11 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         }
 
-        double estep =  float(height) / ipap.peakevents;
+        double estep;
 
 
         if (ipap.peakevents>0) {
+            estep =  float(height) / ipap.peakevents;
             for (int k=0; k<ipap.chans.size(); ++k) {
                 ChannelID ch = ipap.chans.at(k);
                 //(ch != CPAP_AHI) &&
@@ -304,6 +305,60 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                     p1 = ipap.events[ch][i];
                     p2 = ipap.events[ch][i+1];
                     p3 = ipap.events[ch][i+1];
+                    yp = bottom - (float(p1) * estep);
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    lastyp = yp;
+                    xp += xstep;
+
+                    float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+
+                    lastyp = yp;
+                    xp += xstep;
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    lastyp = yp;
+                    xp += xstep;
+
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    xp+=xstep;
+                    lastyp = yp;
+
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    xp+=xstep;
+                    lastyp = yp;
+
+
+                }
+            }
+        }
+
+        if (0 && epap.peakevents>0) {
+            estep =  float(height) / epap.peakevents;
+            for (int k=0; k<epap.chans.size(); ++k) {
+                ChannelID ch = epap.chans.at(k);
+                //(ch != CPAP_AHI) &&
+                if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
+                schema::Channel & chan = schema::channel[ch];
+                QColor col = chan.defaultColor();
+                col.setAlpha(50);
+                painter.setPen(col);
+                painter.setPen(QPen(col, p_profile->appearance->lineThickness()));
+
+
+                xp = left;
+                lastyp = bottom - (float(epap.events[ch][min-1]) * estep);
+                for (int i=min; i<max; ++i) {
+                    p0 = epap.events[ch][i-1];
+                    p1 = epap.events[ch][i];
+                    p2 = epap.events[ch][i+1];
+                    p3 = epap.events[ch][i+1];
                     yp = bottom - (float(p1) * estep);
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;

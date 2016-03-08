@@ -860,6 +860,11 @@ QStringList getDriveList()
     return drivelist;
 }
 
+void ImportDialogScan::cancelbutton()
+{
+    mainwin->importScanCancelled = true;
+    hide();
+}
 
 QList<ImportPath> MainWindow::detectCPAPCards()
 {
@@ -872,7 +877,7 @@ QList<ImportPath> MainWindow::detectCPAPCards()
     time.start();
 
     // Create dialog
-    QDialog popup(this, Qt::SplashScreen);
+    ImportDialogScan popup(this) ;//, Qt::SplashScreen);
     QLabel waitmsg(tr("Please insert your CPAP data card..."));
     QProgressBar progress;
     QVBoxLayout waitlayout;
@@ -881,15 +886,20 @@ QList<ImportPath> MainWindow::detectCPAPCards()
     QHBoxLayout layout2;
     QIcon icon("://icons/sdcard.png");
     QPushButton skipbtn(icon, tr("Choose a folder"));
+    QPushButton cancelbtn(STR_MessageBox_Cancel);
     skipbtn.setMinimumHeight(40);
+    cancelbtn.setMinimumHeight(40);
     waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
     waitlayout.addWidget(&progress,1);
     waitlayout.addLayout(&layout2,1);
     layout2.addWidget(&skipbtn);
+    layout2.addWidget(&cancelbtn);
     popup.connect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
+    popup.connect(&cancelbtn, SIGNAL(clicked()), &popup, SLOT(cancelbutton()));
     progress.setValue(0);
     progress.setMaximum(timeout);
     progress.setVisible(true);
+    importScanCancelled = false;
     popup.show();
     QApplication::processEvents();
     QString lastpath = (*p_profile)[STR_PREF_LastCPAPPath].toString();
@@ -911,19 +921,23 @@ QList<ImportPath> MainWindow::detectCPAPCards()
 
                     qDebug() << "Found" << loader->loaderName() << "datacard at" << path;
                 }
+                QApplication::processEvents();
             }
         }
         int el=time.elapsed();
         progress.setValue(el);
-        QApplication::processEvents();
         if (el > timeout) break;
         if (!popup.isVisible()) break;
         // needs a slight delay here
-        QThread::msleep(200);
+        for (int i=0; i<5; ++i) {
+            QThread::msleep(50);
+            QApplication::processEvents();
+        }
     } while (detectedCards.size() == 0);
 
     popup.hide();
     popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
+    popup.disconnect(&cancelbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
 
     return detectedCards;
 }
@@ -943,6 +957,8 @@ void MainWindow::on_action_Import_Data_triggered()
     in_import=true;
 
     QList<ImportPath> datacards = detectCPAPCards();
+
+    if (importScanCancelled) return;
 
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 

@@ -144,6 +144,8 @@ class MainWindow : public QMainWindow
 
     void log(QString text);
 
+    bool importScanCancelled;
+
   public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();
@@ -367,5 +369,20 @@ private:
     QStringList warnmsg;
     QTimer wtimer;
 };
+
+class ImportDialogScan:public QDialog
+{
+    Q_OBJECT
+public:
+    ImportDialogScan(QWidget * parent) :QDialog(parent, Qt::SplashScreen)
+    {
+    }
+    virtual ~ImportDialogScan()
+    {
+    }
+public slots:
+    virtual void cancelbutton();
+};
+
 
 #endif // MAINWINDOW_H
