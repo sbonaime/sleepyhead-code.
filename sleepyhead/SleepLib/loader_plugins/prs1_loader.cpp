@@ -2452,7 +2452,7 @@ bool PRS1Import::ParseWaveforms()
     quint64 s1, s2;
 
 
-    qint64 lastti;
+    qint64 lastti=0;
     EventList * bnd = nullptr; // Breathing Not Detected
 
     for (int i=0; i < size; ++i) {
@@ -2467,7 +2467,7 @@ bool PRS1Import::ParseWaveforms()
         quint64 dur = qint64(waveform->duration) * 1000L;
 
         quint64 diff = ti - lastti;
-        if (diff > 200) {
+        if ((diff > 500) && (lastti != 0)) {
             if (!bnd) {
                 bnd = session->AddEventList(PRS1_BND, EVL_Event);
             }
