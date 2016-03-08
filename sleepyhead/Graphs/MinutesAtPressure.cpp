@@ -94,8 +94,8 @@ void MinutesAtPressure::SetDay(Day *day)
         }
         QFontMetrics FM(*defaultfont);
         quint32 chantype = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
-        QList<ChannelID> chans = day->getSortedMachineChannels(chantype);
-        m_minimum_height = (chans.size()+3) * FM.height() - 5;
+     //   QList<ChannelID> chans = day->getSortedMachineChannels(chantype);
+       // m_minimum_height = (chans.size()+3) * FM.height() - 5;
     }
 
 
@@ -174,8 +174,11 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     painter.drawRect(rect.left(),rect.top(), rect.width(), height+1);
 
 
-    int min = 4 * pressureMult;
-    int max = 24 * pressureMult;
+    int min = qMin((EventStoreType)4, m_minpressure);
+    int max = qMax((EventStoreType)16, m_maxpressure);
+
+    min *= pressureMult;
+    max *= pressureMult;
     int tot = max - min;
     double xstep = double(width) / double(tot);
     height -= 2;
@@ -229,7 +232,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         double pstep = xstep * pressureMult;
 
         xp = left;// /2.0;
-        for (int i = 0; i<=20; ++i) {
+        for (int i = 0; i<=max-min; ++i) {
             yp = bottom+1;
             painter.drawLine(xp, yp, xp, yp+6);
             if (i>0) { // skip the first mid tick
@@ -274,7 +277,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                         if (i<nc-1) str+="\n";
                 }
             } else {
-                str+=QObject::tr("No Data Here");
+                str.chop(1);// +=QObject::tr("No Data Here");
             }
             graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignLeft);
         }
