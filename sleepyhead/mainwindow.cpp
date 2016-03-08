@@ -477,6 +477,7 @@ void loadChannels()
         chan->setEnabled(enabled);
         chan->setDefaultColor(color);
 
+        // Don't import channel descriptions if event renaming is turned off. (helps pick up new translations)
         if (PREF[STR_PREF_AllowEventRenaming].toBool()) {
             chan->setFullname(fullname);
             chan->setLabel(label);

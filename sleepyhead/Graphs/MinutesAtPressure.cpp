@@ -277,7 +277,63 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             xp+=xstep;
             lastyp = yp;
 
+
         }
+
+        double estep =  float(height) / ipap.peakevents;
+
+
+        if (ipap.peakevents>0) {
+            for (int k=0; k<ipap.chans.size(); ++k) {
+                ChannelID ch = ipap.chans.at(k);
+                //(ch != CPAP_AHI) &&
+                if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
+                schema::Channel & chan = schema::channel[ch];
+                QColor col = chan.defaultColor();
+                col.setAlpha(48);
+                painter.setPen(col);
+
+                xp = left;
+                lastyp = bottom - (float(ipap.events[ch][min-1]) * estep);
+                for (int i=min; i<max; ++i) {
+                    p0 = ipap.events[ch][i-1];
+                    p1 = ipap.events[ch][i];
+                    p2 = ipap.events[ch][i+1];
+                    p3 = ipap.events[ch][i+1];
+                    yp = bottom - (float(p1) * estep);
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    lastyp = yp;
+                    xp += xstep;
+
+                    float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+
+                    lastyp = yp;
+                    xp += xstep;
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    lastyp = yp;
+                    xp += xstep;
+
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    xp+=xstep;
+                    lastyp = yp;
+
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    painter.drawLine(xp, lastyp, xp+xstep, yp);
+                    xp+=xstep;
+                    lastyp = yp;
+
+
+                }
+            }
+        }
+
 
         if (epap.min_pressure) {
             xp=left, lastyp = bottom - (float(epap.times[min]) * ystep);
@@ -686,13 +742,13 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
 
                 lasttime = time;
                 lastdata = data;
-
             }
             if (time > maxx) {
                 break;
             }
+
         }
-        if (lasttime < maxx) {
+        if ((lasttime < maxx) || (lastdata == data)) {
             d1 = qMax(lasttime, minx);
             d2 = qMin(maxx, EL->last());
 
