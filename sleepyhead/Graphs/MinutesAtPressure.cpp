@@ -177,24 +177,56 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     int min = 4 * pressureMult;
     int max = 24 * pressureMult;
     int tot = max - min;
-    float xstep = float(width) / float(tot);
+    double xstep = double(width) / double(tot);
     height -= 2;
-    float peak = ceil((float(qMax(ipap.peaktime, epap.peaktime))/600.0))*600.0;
+    double peak = double(qMax(ipap.peaktime, epap.peaktime))/60.0;
+
+    int w, h;
+
+    GetTextExtent("9", w, h);
+
+    double peakstep = 1.0;
+    double peakmult = double(height+2) / (peak);
+    if (peakmult < h+4) {
+        peakstep = 5.0;
+        peakmult = double(height+2) / (peak/peakstep);
+        if (peakmult < h+4) {
+            peakstep = 10.0;
+            peakmult = double(height+2) / (peak/peakstep);
+            if (peakmult < h+4) {
+                peakstep = 20.0;
+                peakmult = double(height+2) / (peak/peakstep);
+                if (peakmult < h+4) {
+                    peakstep = 40.0;
+                    peakmult = double(height+2) / (peak/peakstep);
+                }
+            }
+        }
+    }
+    // Now round peak up
+    peak = ceil(peak/peakstep)*peakstep;
+
+    // recalculate peakmult using rounded up figure
+    peakmult = double(height+2)/ (peak / peakstep);
+
 
     m_miny = m_physminy = 0;
     m_maxy = m_physmaxy = peak;
 
-    float ystep = float(height) / peak;
+    double ystep = double(height) / peak;
 
-    int p0, p1, p2, p3;
+    double p0, p1, p2, p3;
     QString label;
+    int widest_YAxis = 0;
     if (ipap.min_pressure > 0) {
-        float xp,yp;
+        double xp,yp;
 
-        float pstep = xstep * pressureMult;
+        ////////////////////////////////////////////////////////////////////
+        // Draw X Axis labels
+        ////////////////////////////////////////////////////////////////////
+        double pstep = xstep * pressureMult;
 
         xp = left;// /2.0;
-        int w, h;
         for (int i = 0; i<=20; ++i) {
             yp = bottom+1;
             painter.drawLine(xp, yp, xp, yp+6);
@@ -208,20 +240,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             xp+= pstep;
         }
 
+        ////////////////////////////////////////////////////////////////////
+        // Draw Y Axis labels
+        ////////////////////////////////////////////////////////////////////
         double bot = bottom+1;
-        double g = 10.0;
-        double r = double(height+3) / (peak/600.0);
-
-        if (r < h+4) {
-            r = double(height+3) / (peak/1200.0);
-            g = 20.0;
-            if (r < h+4) {
-                r = double(height+3) / (peak/2400.0);
-                g = 40.0;
-            }
-        }
         yp = bot;
-        for (float f=0.0; f<=peak/60.0+0.01; f+=g) {
+        for (double f=0.0; f<=peak; f+=peakstep) {
             painter.setPen(Qt::black);
 
             painter.drawLine(left, bot, left-4, bot);
@@ -231,8 +255,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
             label = QString("%1").arg(f);
             GetTextExtent(label, w, h);
+            widest_YAxis = qMax(widest_YAxis, w+8);
             graph.renderText(label, left-8-w,  bot+h/2-2 );
-            bot -= r;
+            bot -= peakmult;
         }
         label = QString("Peak %1").arg(qMax(ipap.peaktime, epap.peaktime)/60.0);
         graph.renderText(label, left,  top+5 );
@@ -241,40 +266,43 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         schema::Channel & ichan = schema::channel[ipap.code];
         painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
 
+
+        ////////////////////////////////////////////////////////////////////
+        // Plot IPAP Time at Pressure
+        ////////////////////////////////////////////////////////////////////
         xp=left;
-
-        float lastyp = bottom - (float(ipap.times[min-1]) * ystep);
+        double lastyp = bottom - (double(ipap.times[min-1]) * ystep);
         for (int i=min; i<max; ++i) {
-            p0 = ipap.times[i-1];
-            p1 = ipap.times[i];
-            p2 = ipap.times[i+1];
-            p3 = ipap.times[i+2];
+            p0 = ipap.times[i-1] / 60.0;
+            p1 = ipap.times[i]/ 60.0;
+            p2 = ipap.times[i+1]/ 60.0;
+            p3 = ipap.times[i+2]/ 60.0;
 
-            yp = bottom - (float(p1) * ystep);
+            yp = bottom - (double(p1) * ystep);
             painter.drawLine(xp, lastyp, xp+xstep, yp);
 
             lastyp = yp;
             xp += xstep;
-            float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
-            yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+            double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+            yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
 
             lastyp = yp;
             xp += xstep;
             s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
-            yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+            yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             lastyp = yp;
             xp += xstep;
 
             s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
-            yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+            yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             xp+=xstep;
             lastyp = yp;
 
             s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
-            yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+            yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             xp+=xstep;
             lastyp = yp;
@@ -286,7 +314,42 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
         if (ipap.peakevents>0) {
-            estep =  float(height) / ipap.peakevents;
+            double evpeak = ipap.peakevents;
+            double bot = bottom+1;
+            double g = 1.0;
+            double r = double(height+3) / (evpeak);
+            if (r < h+4) {
+                g = 2.0;
+                r = double(height+3) / (evpeak/g);
+                if (r < h+4) {
+                    g = 5.0;
+                    r = double(height+3) / (evpeak/g);
+                    if (r < h+4) {
+                        g = 20.0;
+                        r = double(height+3) / (evpeak/g);
+                    }
+                }
+            }
+            evpeak = ceil(evpeak/g)*g;
+            r = double(height+3) / (evpeak / g);
+
+            yp = bot;
+            widest_YAxis+=2;
+            for (double f=0.0; f<=evpeak; f+=g) {
+                painter.setPen(Qt::black);
+
+                painter.drawLine(left-widest_YAxis, bot, left-widest_YAxis-4, bot);
+                painter.setPen(QColor(128,128,128,64));
+              //  painter.drawLine(left, bot, left+width, bot);
+
+
+                label = QString("%1").arg(f);
+                GetTextExtent(label, w, h);
+                graph.renderText(label, left-widest_YAxis-w-8,  bot+h/2-2 );
+                bot -= r;
+            }
+
+            estep =  double(height) / ipap.peakevents;
             for (int k=0; k<ipap.chans.size(); ++k) {
                 ChannelID ch = ipap.chans.at(k);
                 //(ch != CPAP_AHI) &&
@@ -299,37 +362,37 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
                 xp = left;
-                lastyp = bottom - (float(ipap.events[ch][min-1]) * estep);
+                lastyp = bottom - (double(ipap.events[ch][min-1]) * estep);
                 for (int i=min; i<max; ++i) {
                     p0 = ipap.events[ch][i-1];
                     p1 = ipap.events[ch][i];
                     p2 = ipap.events[ch][i+1];
                     p3 = ipap.events[ch][i+1];
-                    yp = bottom - (float(p1) * estep);
+                    yp = bottom - (double(p1) * estep);
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
-                    float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                     lastyp = yp;
                     xp += xstep;
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
 
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
@@ -340,7 +403,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         }
 
         if (0 && epap.peakevents>0) {
-            estep =  float(height) / epap.peakevents;
+            estep =  double(height) / epap.peakevents;
             for (int k=0; k<epap.chans.size(); ++k) {
                 ChannelID ch = epap.chans.at(k);
                 //(ch != CPAP_AHI) &&
@@ -353,37 +416,37 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
                 xp = left;
-                lastyp = bottom - (float(epap.events[ch][min-1]) * estep);
+                lastyp = bottom - (double(epap.events[ch][min-1]) * estep);
                 for (int i=min; i<max; ++i) {
                     p0 = epap.events[ch][i-1];
                     p1 = epap.events[ch][i];
                     p2 = epap.events[ch][i+1];
                     p3 = epap.events[ch][i+1];
-                    yp = bottom - (float(p1) * estep);
+                    yp = bottom - (double(p1) * estep);
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
-                    float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                     lastyp = yp;
                     xp += xstep;
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
 
                     s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
-                    yp = qMax(bottom-height, float(bottom - (s2 * estep)));
+                    yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
@@ -398,40 +461,40 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             schema::Channel & echan = schema::channel[epap.code];
             painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
 
-            xp=left, lastyp = bottom - (float(epap.times[min]) * ystep);
+            xp=left, lastyp = bottom - (double(epap.times[min]) * ystep);
             painter.setPen(Qt::blue);
 
             for (int i=min; i<max; ++i) {
-                p0 = epap.times[i-1];
-                p1 = epap.times[i];
-                p2 = epap.times[i+1];
-                p3 = epap.times[i+2];
+                p0 = epap.times[i-1]/60.0;
+                p1 = epap.times[i]/60.0;
+                p2 = epap.times[i+1]/60.0;
+                p3 = epap.times[i+2]/60.0;
 
-                yp = bottom - (float(p1) * ystep);
+                yp = bottom - (double(p1) * ystep);
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                 lastyp = yp;
                 xp += xstep;
-                float s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
-                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+                double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                 lastyp = yp;
                 xp += xstep;
                 s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
-                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+                yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 lastyp = yp;
                 xp += xstep;
 
                 s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
-                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+                yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 xp+=xstep;
                 lastyp = yp;
 
                 s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
-                yp = qMax(bottom-height, (bottom - (s2 * ystep)));
+                yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 xp+=xstep;
                 lastyp = yp;
