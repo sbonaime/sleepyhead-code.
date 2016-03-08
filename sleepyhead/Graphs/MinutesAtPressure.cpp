@@ -51,7 +51,7 @@ void MinutesAtPressure::SetDay(Day *day)
     if (day) cpap = day->machine(MT_CPAP);
     if (cpap) {
         QList<Session *>::iterator sit;
-        EventDataType minpressure = 40;
+        EventDataType minpressure = 20;
         EventDataType maxpressure = 0;
 
         QMap<QDate, Day *>::iterator it;
@@ -78,10 +78,10 @@ void MinutesAtPressure::SetDay(Day *day)
             }
         }
 
-        m_minpressure = qMax(float(4), floor(minpressure));
+        m_minpressure = floor(minpressure)-1;
         m_maxpressure = ceil(maxpressure);
 
-        const int minimum_cells = 12;
+       /* const int minimum_cells = 12;
         int c = m_maxpressure - m_minpressure;
 
 
@@ -91,9 +91,9 @@ void MinutesAtPressure::SetDay(Day *day)
             m_minpressure = qMax((EventStoreType)4, m_minpressure);
 
             m_maxpressure = m_minpressure + minimum_cells;
-        }
-        QFontMetrics FM(*defaultfont);
-        quint32 chantype = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
+        } */
+    //    QFontMetrics FM(*defaultfont);
+    //    quint32 chantype = schema::SPAN | schema::FLAG | schema::MINOR_FLAG;
      //   QList<ChannelID> chans = day->getSortedMachineChannels(chantype);
        // m_minimum_height = (chans.size()+3) * FM.height() - 5;
     }
@@ -174,11 +174,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     painter.drawRect(rect.left(),rect.top(), rect.width(), height+1);
 
 
-    int min = qMin((EventStoreType)4, m_minpressure);
-    int max = qMax((EventStoreType)16, m_maxpressure);
+    int minpressure = qMin((EventStoreType)4, m_minpressure);
+    int maxpressure = qMax((EventStoreType)16, m_maxpressure);
 
-    min *= pressureMult;
-    max *= pressureMult;
+    int min = minpressure * pressureMult;
+    int max = maxpressure * pressureMult;
+
     int tot = max - min;
     double xstep = double(width) / double(tot);
     height -= 2;
@@ -239,7 +240,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 painter.drawLine(xp-pstep/2, yp, xp-pstep/2, yp+4);
             }
 
-            label = QString("%1").arg(i+4);
+            label = QString("%1").arg(i+minpressure);
             GetTextExtent(label, w, h);
             graph.renderText(label, xp-w/2, yp+h+4);
             xp+= pstep;
@@ -250,7 +251,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         QPoint mouse=graph.graphView()->currentMousePos();
         if (region.contains(mouse)) {
-            float p = 4.0 + (mouse.x() - left) / pstep;
+            float p =  minpressure + (mouse.x() - left) / pstep;
             mouseOverKey = floor(p*pressureMult);
 
             float ipap_minutes = ipap.times[mouseOverKey] / 60.0;
@@ -451,7 +452,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
         }
 
-        if (0 && epap.peakevents>0) {
+ /*       if (0 && epap.peakevents>0) {
             estep =  double(height) / epap.peakevents;
             for (int k=0; k<epap.chans.size(); ++k) {
                 ChannelID ch = epap.chans.at(k);
@@ -504,7 +505,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 }
             }
         }
-
+*/
 
         if (epap.min_pressure) {
             painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
