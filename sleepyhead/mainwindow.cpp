@@ -958,7 +958,10 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QList<ImportPath> datacards = detectCPAPCards();
 
-    if (importScanCancelled) return;
+    if (importScanCancelled) {
+        in_import = false;
+        return;
+    }
 
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
