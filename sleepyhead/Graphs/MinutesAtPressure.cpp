@@ -290,7 +290,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             for (int k=0; k<ipap.chans.size(); ++k) {
                 ChannelID ch = ipap.chans.at(k);
                 //(ch != CPAP_AHI) &&
-                if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
+                //if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
                 schema::Channel & chan = schema::channel[ch];
                 QColor col = chan.defaultColor();
                 col.setAlpha(50);
@@ -855,11 +855,11 @@ void PressureInfo::finishCalcs()
     }
 
     ChannelID cod;
-    chans.push_front(CPAP_AHI);
+    //chans.push_front(CPAP_AHI);
 
     int size = events[CPAP_Obstructive].size();
 
-    events[CPAP_AHI].resize(size);
+/*   events[CPAP_AHI].resize(size);
 
 
     QHash<unsigned int, QVector<int> >::iterator OB = events.find(CPAP_Obstructive);
@@ -882,7 +882,7 @@ void PressureInfo::finishCalcs()
             val += CA.value()[i];
 
         events[CPAP_AHI][i] = val;
-    }
+    } */
 
     for (int i = 0; i < size; i++) {
 
@@ -912,7 +912,16 @@ void RecalcMAP::run()
     QHash<ChannelID, QMap<EventStoreType, EventDataType> > events;
 
     // Get the channels for specified Channel types
-    QList<ChannelID> chans = day->getSortedMachineChannels(schema::SPAN | schema::FLAG | schema::MINOR_FLAG);
+    QList<ChannelID> chans = day->getSortedMachineChannels(schema::FLAG);
+
+    chans.removeAll(CPAP_VSnore);
+    chans.removeAll(CPAP_VSnore2);
+    chans.removeAll(CPAP_FlowLimit);
+    chans.removeAll(CPAP_RERA);
+//    for (int i=0;i<chans.size();i++) {
+//        schema::Channel &chan = schema::channel[chans.at(i)];
+//        qDebug() << chan.fullname();
+//    }
 
     ChannelID ipapcode = (day->channelExists(CPAP_IPAP)) ? CPAP_IPAP : CPAP_Pressure;
     ChannelID epapcode = (day->channelExists(CPAP_EPAP)) ? CPAP_EPAP : 0;
