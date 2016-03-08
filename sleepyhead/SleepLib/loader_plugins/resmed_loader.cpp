@@ -1037,7 +1037,7 @@ void ResmedImport::run()
         }
         if (R.s_TempEnable >= 0) {
             sess->settings[RMS9_TempEnable] = (short)R.s_TempEnable;
-            if ((R.s_TempEnable >= 0) && (R.s_Temp >= 0)){
+            if ((R.s_TempEnable >= 1) && (R.s_Temp >= 0)){
                 sess->settings[RMS9_Temp] = (short)R.s_Temp;
             }
         }
