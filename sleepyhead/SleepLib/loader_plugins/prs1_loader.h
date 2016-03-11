@@ -141,10 +141,13 @@ public:
     bool ParseSummaryF0V4();
     //! \brief Summary parser for 1060 series AVAPS models
     bool ParseSummaryF3();
-    //! \brief Summary parser for 50 series Family 0 BiPAP/AutoSV models
+    //! \brief Summary parser for 50 series Family 5-0 BiPAP/AutoSV models
     bool ParseSummaryF5V0();
-    //! \brief Summary parser for 60 series Family 0 BiPAP/AutoSV models
+    //! \brief Summary parser for 60 series Family 5-1 BiPAP/AutoSV models
     bool ParseSummaryF5V1();
+    //! \brief Summary parser for 60 series Family 5-2 BiPAP/AutoSV models
+    bool ParseSummaryF5V2();
+
     //! \brief Summary parser for DreamStation series CPAP/APAP models
     bool ParseSummaryF0V6();
 

@@ -2090,6 +2090,20 @@ bool PRS1Import::ParseSummaryF5V1()
     return true;
 }
 
+bool PRS1Import::ParseSummaryF5V2()
+{
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+    CPAPMode cpapmode = MODE_UNKNOWN;
+    summary_duration = data[0x18] | data[0x19] << 8;
+}
+
 bool PRS1Import::ParseSummaryF0V6()
 {
     // DreamStation machines...
@@ -2290,6 +2304,8 @@ bool PRS1Import::ParseSummary()
             return ParseSummaryF5V1();
         } else if (summary->familyVersion == 0) {
             return ParseSummaryF5V0();
+        } else if (summary->familyVersion == 2) {
+            return ParseSummaryF5V1();
         }
     default:
         ;
