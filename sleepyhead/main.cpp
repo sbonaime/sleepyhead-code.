@@ -510,7 +510,7 @@ retry_directory:
     }
 
 
-    //if (check_updates) { mainwin->CheckForUpdates(); }
+ //   if (check_updates) { mainwin->CheckForUpdates(); }
 
     w.show();
 

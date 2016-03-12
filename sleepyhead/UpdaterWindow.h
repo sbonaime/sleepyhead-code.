@@ -51,6 +51,7 @@ class UpdaterWindow : public QMainWindow
         \brief Parses the update.xml from either QFile or QNetworkReply source
         */
     void ParseUpdateXML(QIODevice *dev);
+    void ParseUpdatesXML(QIODevice *dev);
 
   protected slots:
     //! \brief Network reply completed
@@ -85,6 +86,9 @@ class UpdaterWindow : public QMainWindow
 
     //! \brief Holds the results of parsing the update.xml file
     UpdateParser updateparser;
+
+    // new parser
+    UpdatesParser updatesparser;
 
     Ui::UpdaterWindow *ui;
 

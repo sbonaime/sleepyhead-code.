@@ -19,6 +19,7 @@
 #include <QXmlSimpleReader>
 #include <QCryptographicHash>
 #include <QDesktopWidget>
+#include <QProcess>
 
 #include "SleepLib/profiles.h"
 #include <quazip/quazip.h>
@@ -74,7 +75,7 @@ UpdaterWindow::~UpdaterWindow()
 
 void UpdaterWindow::checkForUpdates()
 {
-    QString filename = QApplication::applicationDirPath() + "/update.xml";
+    QString filename = QApplication::applicationDirPath() + "/Updates.xml";
 
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
@@ -82,7 +83,7 @@ void UpdaterWindow::checkForUpdates()
         QDateTime created = fi.created();
         int age = created.secsTo(QDateTime::currentDateTime());
 
-        if (age < 7200) {
+        if (age < 0) { // 7200) {
             QFile file(filename);
             file.open(QFile::ReadOnly);
             ParseUpdateXML(&file);
@@ -94,7 +95,7 @@ void UpdaterWindow::checkForUpdates()
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
     // language code?
-    update_url = QUrl("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/update.xml/download");
+    update_url = QUrl(QString("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/%1/Updates.xml/download").arg(PlatformString));
     downloadUpdateXML();
 }
 
@@ -189,6 +190,14 @@ void UpdaterWindow::requestFile()
 
 int checkVersionStatus(QString statusstr)
 {
+    bool ok;
+    // because Qt Install Framework is dumb and doesn't handle beta/release strings in version numbers,
+    // so we store them numerically instead
+    int v =statusstr.toInt(&ok);
+    if (ok) {
+        return v;
+    }
+
     if (statusstr.compare("testing", Qt::CaseInsensitive) == 0) return 0;
     else if (statusstr.compare("beta", Qt::CaseInsensitive) == 0) return 1;
     else if (statusstr.compare("rc", Qt::CaseInsensitive) == 0) return 2;
@@ -254,10 +263,10 @@ int compareVersion(QString version)
         return -1;
     }
 
-    short major = parts[0].toInt(&ok);
+    int major = parts[0].toInt(&ok);
     if (!ok) return -1;
 
-    short minor = parts[1].toInt(&ok);
+    int minor = parts[1].toInt(&ok);
     if (!ok) return -1;
 
     if (major > major_version) {
@@ -272,13 +281,20 @@ int compareVersion(QString version)
         return -1;
     }
 
+    int build_index = 1;
+    int build = 0;
+    int status = 0;
     QStringList patchver = parts[2].split("-");
-    if (patchver.size() < 3) {
-        // dodgy version string supplied.
+    if (patchver.size() >= 3) {
+        build_index = 2;
+        status = checkVersionStatus(patchver[1]);
+
+    } else if (patchver.size() < 2) {
         return -1;
+        // dodgy version string supplied.
     }
 
-    short rev = patchver[0].toInt(&ok);
+    int rev = patchver[0].toInt(&ok);
     if (!ok) return -1;
     if (rev > revision_number) {
         return 1;
@@ -286,11 +302,15 @@ int compareVersion(QString version)
         return -1;
     }
 
-    short build = patchver[2].toInt(&ok);
+
+    build = patchver[build_index].toInt(&ok);
     if (!ok) return -1;
 
-    int status = checkVersionStatus(patchver[1]);
     int rstatus = checkVersionStatus(ReleaseStatus);
+
+    if (patchver.size() == 3) {
+        // read it if it's actually present.
+    }
 
     if (status > rstatus) {
         return 1;
@@ -308,6 +328,61 @@ int compareVersion(QString version)
     return 0;
 }
 
+const QString UPDATE_SleepyHead = "com.jedimark.sleepyhead";
+const QString UPDATE_QT = "com.jedimark.sleepyhead.qtlibraries";
+const QString UPDATE_Translations = "com.jedimark.sleepyhead.translations";
+
+bool SpawnApp(QString apppath, QStringList args)
+{
+#ifdef Q_OS_MAC
+    // In Mac OS the full path of aplication binary is:
+    //    <base-path>/myApp.app/Contents/MacOS/myApp
+
+    QStringList arglist;
+    arglist << "-n";
+    arglist << apppath;
+    arglist.append(args);
+
+    return QProcess::startDetached("/usr/bin/open", arglist);
+#else
+    return QProcess::startDetached(apppath, args);
+#endif
+}
+
+void StartMaintenanceTool()
+{
+
+}
+
+//New, Qt Installer framework version
+void UpdaterWindow::ParseUpdatesXML(QIODevice *dev)
+{
+    if (updatesparser.read(dev)) {
+        ui->plainTextEdit->appendPlainText(tr("XML update structure parsed cleanly"));
+        if (updatesparser.packages.contains(UPDATE_SleepyHead)) {
+            PackageUpdate & update = updatesparser.packages[UPDATE_SleepyHead];
+            if (compareVersion(update.versionString) <= 0) {
+                mainwin->Notify(tr("No updates were found for your platform."), tr("SleepyHead Updates"), 5000);
+                PREF[STR_GEN_UpdatesLastChecked] = QDateTime::currentDateTime();
+                close();
+                return;
+            } else {
+                if (QMessageBox::question(mainwin, tr("SleepyHead Updates"),
+                    tr("New SleepyHead version %1 was detected.").arg(update.versionString)+"\n\n"+
+                    tr("Would you like to download and install it now?"),
+                    QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+
+                    StartMaintenanceTool();
+                    QApplication::instance()->quit();
+                }
+            }
+        }
+    } else {
+        qDebug() << "Couldn't parse Updates.xml file";
+    }
+}
+
+// Old
 void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 {
     QXmlInputSource src(dev);
@@ -462,7 +537,7 @@ void UpdaterWindow::replyFinished(QNetworkReply *reply)
             }
 
             ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
-            QString filename = QApplication::applicationDirPath() + "/update.xml";
+            QString filename = QApplication::applicationDirPath() + "/Updates.xml";
             qDebug() << filename;
             QFile file(filename);
             file.open(QFile::WriteOnly);
@@ -470,7 +545,7 @@ void UpdaterWindow::replyFinished(QNetworkReply *reply)
             file.close();
             file.open(QFile::ReadOnly);
             //QTextStream ts(&file);
-            ParseUpdateXML(&file);
+            ParseUpdatesXML(&file);
             file.close();
             reply->deleteLater();
         } else if (requestmode == RM_GetFile) {

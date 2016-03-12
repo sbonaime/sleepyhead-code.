@@ -10,6 +10,7 @@
 #define UPDATEPARSER_H
 
 #include <QXmlDefaultHandler>
+#include <QXmlStreamReader>
 #include <QMetaType>
 #include <QDate>
 
@@ -90,6 +91,68 @@ class UpdateParser: public QXmlDefaultHandler
     bool inUpdateNotes;
 };
 
+class PackageUpdate {
+public:
+    PackageUpdate() {}
+    PackageUpdate(const PackageUpdate & copy) {
+        // Seriously, why do I still have to do this crud by hand
+        // Where is the shortcut to save time here in the latest C++ extensions?
+        name = copy.name;
+        displayName = copy.displayName;
+        description = copy.description;
+        versionString = copy.versionString;
+        releaseDate = copy.releaseDate;
+        defaultInstall = copy.defaultInstall;
+        installScript = copy.installScript;
+        dependencies = copy.dependencies;
+        script = copy.script;
+        forcedInstall = copy.forcedInstall;
+        downloadArchives = copy.downloadArchives;
+        license = copy.license;
+        sha1 = copy.sha1;
+        compressedSize = copy.compressedSize;
+        uncompressedSize = copy.uncompressedSize;
+        os = copy.os;
+    }
+
+    QString name;
+    QString displayName;
+    QString description;
+    QString versionString;
+    QDate releaseDate;
+    bool defaultInstall;
+    QString installScript;
+    QStringList dependencies;
+    QString script;
+    bool forcedInstall;
+    QStringList downloadArchives;
+    QHash<QString, QString> license;
+    QString sha1;
+    unsigned int compressedSize;
+    unsigned int uncompressedSize;
+    QString os;
+};
+
+
+/*! \class UpdatesParser
+    \brief New SAX XML parser for QT Installer Frameworks Updates.xml
+  */
+class UpdatesParser
+{
+  public:
+    UpdatesParser();
+    bool read(QIODevice *device);
+    QString errorString() const;
+    QHash<QString, PackageUpdate> packages;
+
+  private:
+    void readUpdates();
+    void readPackageUpdate();
+
+    QXmlStreamReader xml;
+    PackageUpdate package;
+    QString currentTag;
+};
 
 
 #endif // UPDATEPARSER_H

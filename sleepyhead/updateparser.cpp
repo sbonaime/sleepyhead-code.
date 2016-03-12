@@ -7,6 +7,7 @@
  * distribution for more details. */
 
 #include <QDebug>
+#include <QXmlStreamAttribute>
 
 #include "updateparser.h"
 
@@ -215,3 +216,116 @@ bool UpdateParser::endDocument()
     return true;
 }
 
+/////////////////////////////////////////////////////////////////////
+// Updates Parser implementation
+/////////////////////////////////////////////////////////////////////
+UpdatesParser::UpdatesParser()
+{
+}
+
+QString UpdatesParser::errorString() const
+{
+    return QObject::tr("%1\nLine %2, column %3")
+            .arg(xml.errorString())
+            .arg(xml.lineNumber())
+            .arg(xml.columnNumber());
+}
+bool UpdatesParser::read(QIODevice *device)
+{
+    xml.setDevice(device);
+
+    if (xml.readNextStartElement()) {
+        if (xml.name() == "Updates") { // && xml.attributes().value("version") == "1.0")
+            readUpdates();
+        } else {
+            xml.raiseError(QObject::tr("Could not parse Updates.xml file."));
+        }
+    }
+
+    return !xml.error();
+}
+
+void UpdatesParser::readUpdates()
+{
+    Q_ASSERT(xml.isStartElement() && xml.name() == "Updates");
+
+    while (xml.readNextStartElement()) {
+        if (xml.name().compare("PackageUpdate",Qt::CaseInsensitive)==0) {
+            readPackageUpdate();
+        } else {
+            qDebug() << "Skipping Updates.xml tag" << xml.name();
+            xml.skipCurrentElement();
+        }
+    }
+
+}
+
+void UpdatesParser::readPackageUpdate()
+{
+    Q_ASSERT(xml.isStartElement() && (xml.name().compare("PackageUpdate",Qt::CaseInsensitive)==0));
+    package = PackageUpdate();
+
+    while (xml.readNextStartElement()) {
+        if (xml.name().compare("Name",Qt::CaseInsensitive)==0) {
+            package.name = xml.readElementText().toLower();
+        } else if (xml.name().compare("DisplayName",Qt::CaseInsensitive)==0) {
+            package.displayName = xml.readElementText();
+        } else if (xml.name().compare("Description",Qt::CaseInsensitive)==0) {
+            package.description = xml.readElementText();
+        } else if (xml.name().compare("Version",Qt::CaseInsensitive)==0) {
+            package.versionString = xml.readElementText();
+        } else if (xml.name().compare("ReleaseDate",Qt::CaseInsensitive)==0) {
+            package.releaseDate = QDate().fromString(xml.readElementText(), "yyyy-MM-dd");
+        } else if (xml.name().compare("Default",Qt::CaseInsensitive)==0) {
+            package.defaultInstall = xml.readElementText().compare("true") == 0;
+        } else if (xml.name().compare("ForcedInstallation",Qt::CaseInsensitive)==0) {
+            package.forcedInstall = xml.readElementText().compare("true") == 0;
+        } else if (xml.name().compare("Script",Qt::CaseInsensitive)==0) {
+            package.script = xml.readElementText();
+        } else if (xml.name().compare("Dependencies",Qt::CaseInsensitive)==0) {
+            package.dependencies = xml.readElementText().split(",");
+        } else if (xml.name().compare("UpdateFile",Qt::CaseInsensitive)==0) {
+            for (int i=0; i<xml.attributes().size(); ++i) {
+                const QXmlStreamAttribute & at = xml.attributes().at(i);
+                if (at.name().compare("CompressedSize", Qt::CaseInsensitive)==0) {
+                    package.compressedSize = at.value().toLong();
+                } else if (at.name().compare("UncompressedSize",Qt::CaseInsensitive)==0) {
+                    package.uncompressedSize = at.value().toLong();
+                } else if (at.name().compare("OS",Qt::CaseInsensitive)==0) {
+                    package.os = at.value().toString();
+                }
+            }
+            xml.skipCurrentElement();
+        } else if (xml.name().compare("DownloadableArchives")==0) {
+            package.downloadArchives = xml.readElementText().split(",");
+        } else if (xml.name().compare("Licenses",Qt::CaseInsensitive)==0) {
+           while (xml.readNextStartElement()) {
+                if (xml.name().compare("License",Qt::CaseInsensitive)==0) {
+                    QString name;
+                    QString file;
+                    for (int i=0; i<xml.attributes().size(); ++i) {
+                        const QXmlStreamAttribute & at = xml.attributes().at(i);
+                        if (at.name().compare("name", Qt::CaseInsensitive)==0) {
+                            name = at.value().toString();
+                        } else if (at.name().compare("file",Qt::CaseInsensitive)==0) {
+                            file = at.value().toString();
+                        }
+                    }
+                    package.license[name]=file;
+                    xml.skipCurrentElement();
+                } else {
+                    qDebug() << "Lic Skipping Updates.xml tag" << xml.name();
+
+                     xml.skipCurrentElement();
+                }
+            }
+        } else if (xml.name().compare("SHA1",Qt::CaseInsensitive)==0) {
+            package.sha1 = xml.readElementText();
+        } else {
+            qDebug() << "UP Skipping Updates.xml tag" << xml.name();
+
+            xml.skipCurrentElement();
+        }
+    };
+    packages[package.name] = package;
+}
