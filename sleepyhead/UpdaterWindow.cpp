@@ -60,7 +60,6 @@ UpdaterWindow::UpdaterWindow(QWidget *parent) :
 
     requestmode = RM_None;
     netmanager = new QNetworkAccessManager(this);
-    connect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
     update = nullptr;
     ui->stackedWidget->setCurrentIndex(0);
 }
@@ -107,9 +106,50 @@ void UpdaterWindow::downloadUpdateXML()
     req.setRawHeader("User-Agent", "Wget/1.12 (linux-gnu)");
     reply = netmanager->get(req);
     ui->plainTextEdit->appendPlainText(tr("Requesting ") + update_url.toString());
-    netmanager->connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this,
-                        SLOT(downloadProgress(qint64, qint64)));
+  //  netmanager->connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this,SLOT(downloadProgress(qint64, qint64)));
+
+    connect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
+
     dltime.start();
+}
+
+void UpdaterWindow::updateFinished(QNetworkReply *reply)
+{
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "Update Check Error: "+reply->errorString();
+//        netmanager->disconnect(reply,
+//                               SIGNAL(downloadProgress(qint64, qint64)), this,
+//                               SLOT(downloadProgress(qint64, qint64)));
+        disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
+        mainwin->Notify(tr("SleepyHead Updates are currently unvailable for this platform"),tr("SleepyHead Updates"));
+    } else {
+        QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+
+        if (!redirectUrl.isEmpty() && (redirectUrl != reply->url())) {
+            update_url = redirectUrl;
+            reply->deleteLater();
+            QTimer::singleShot(100, this, SLOT(downloadUpdateXML()));
+            return;
+        }
+//        netmanager->disconnect(reply,
+//                               SIGNAL(downloadProgress(qint64, qint64)), this,
+//                               SLOT(downloadProgress(qint64, qint64)));
+        disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
+
+
+        ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
+        QString filename = QApplication::applicationDirPath() + "/Updates.xml";
+        qDebug() << filename;
+        QFile file(filename);
+        file.open(QFile::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
+        file.open(QFile::ReadOnly);
+        //QTextStream ts(&file);
+        ParseUpdatesXML(&file);
+        file.close();
+        reply->deleteLater();
+    }
 }
 
 void UpdaterWindow::dataReceived()
@@ -332,7 +372,7 @@ const QString UPDATE_SleepyHead = "com.jedimark.sleepyhead";
 const QString UPDATE_QT = "com.jedimark.sleepyhead.qtlibraries";
 const QString UPDATE_Translations = "com.jedimark.sleepyhead.translations";
 
-bool SpawnApp(QString apppath, QStringList args)
+bool SpawnApp(QString apppath, QStringList args = QStringList())
 {
 #ifdef Q_OS_MAC
     // In Mac OS the full path of aplication binary is:
@@ -351,30 +391,64 @@ bool SpawnApp(QString apppath, QStringList args)
 
 void StartMaintenanceTool()
 {
+    QString mt_path = QApplication::applicationDirPath()+"/MaintenanceTool.exe";
+    SpawnApp(mt_path);
+#ifdef Q_OS_WINDOWS
 
+#endif
 }
 
 //New, Qt Installer framework version
 void UpdaterWindow::ParseUpdatesXML(QIODevice *dev)
 {
     if (updatesparser.read(dev)) {
-        ui->plainTextEdit->appendPlainText(tr("XML update structure parsed cleanly"));
-        if (updatesparser.packages.contains(UPDATE_SleepyHead)) {
-            PackageUpdate & update = updatesparser.packages[UPDATE_SleepyHead];
-            if (compareVersion(update.versionString) <= 0) {
-                mainwin->Notify(tr("No updates were found for your platform."), tr("SleepyHead Updates"), 5000);
-                PREF[STR_GEN_UpdatesLastChecked] = QDateTime::currentDateTime();
-                close();
-                return;
-            } else {
-                if (QMessageBox::question(mainwin, tr("SleepyHead Updates"),
-                    tr("New SleepyHead version %1 was detected.").arg(update.versionString)+"\n\n"+
-                    tr("Would you like to download and install it now?"),
-                    QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+        qDebug() << " XML update structure parsed cleanly";
+        QHash<QString, QString> CurrentVersion;
 
-                    StartMaintenanceTool();
-                    QApplication::instance()->quit();
+        CurrentVersion[UPDATE_SleepyHead] = VersionString;
+        CurrentVersion[UPDATE_QT] = QT_VERSION_STR;
+        CurrentVersion[UPDATE_Translations] = VersionString;
+
+        QList<PackageUpdate> updateList;
+
+        QHash<QString, PackageUpdate>::iterator it;
+
+        for (it = updatesparser.packages.begin(); it!=updatesparser.packages.end(); ++it) {
+            const PackageUpdate & update = it.value();
+            if (it.key() == UPDATE_SleepyHead) {
+                if (compareVersion(update.versionString)>0) {
+                    updateList.push_back(update);
                 }
+            } else if (it.key() == UPDATE_QT) {
+                bool ok;
+                QStringList chunks = update.versionString.split(".");
+                int major = chunks[0].toInt(&ok);
+                int minor = chunks[1].toInt(&ok);
+                int patch = chunks[2].toInt(&ok);
+                if (QT_VERSION_CHECK(major, minor, patch) > QT_VERSION) {
+                    updateList.push_back(update);
+                }
+            } else if (it.key() == UPDATE_Translations) {
+                if (compareVersion(update.versionString)>0) {
+                    updateList.push_back(update);
+                }
+            }
+        }
+
+        if (updateList.size()==0) {
+            mainwin->Notify(tr("No updates were found for your platform."), tr("SleepyHead Updates"), 5000);
+            PREF[STR_GEN_UpdatesLastChecked] = QDateTime::currentDateTime();
+            close();
+            return;
+        } else {
+
+            if (QMessageBox::question(mainwin, tr("SleepyHead Updates"),
+                tr("New SleepyHead Updates are avilable:")+"\n\n"+
+                tr("Would you like t download and install them now?"),
+                QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+
+                StartMaintenanceTool();
+                QApplication::instance()->quit();
             }
         }
     } else {
