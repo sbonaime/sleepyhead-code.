@@ -1,13 +1,16 @@
-SleepyHead QT port v0.9 branch
+SleepyHead v1.0 branch
 
 SleepyHead is cross platform, opensource sleep tracking program for reviewing CPAP and Oximetry data, 
 which are devices used in the treatment of Sleep Disorders like Obstructive Sleep Apnea.
 
 Requirements:
 -------------
-Qt5 SDK with webkit (opengl stuff recommended)
+Qt5 SDK with webkit (Qt5.5 from http://qt.io/download-open-source recommended)
 Linux needs libudev-dev for qserialport to compile
 
+OSX needs Xcode and commandline tools from AppStore
+
+Windows needs MinGW (in Qt5 SDK) or VC++2013 Express (and matching Qt libraries)
 
 Building:
 --------
@@ -24,8 +27,8 @@ You may need to add a -spec option to qmake to suit your platform.
 Adding -j3 speeds up the make command on a dual core or greater system.
 
 
-Author: Mark Watkins <jedimark@users.sourceforge.net>
-Copyright (C)2011-2014 Mark Watkins
+Author: Mark Watkins <mark@jedimark.net>
+Copyright (C)2011-2016 Mark Watkins
 
 Licence Stuff
 -------------
