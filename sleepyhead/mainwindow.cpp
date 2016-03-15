@@ -2013,8 +2013,9 @@ void MainWindow::RestartApplication(bool force_login, QString cmdline)
     //if (change_datafolder) { args << "-d"; }
 
     if (QProcess::startDetached(apppath, args)) {
-        ::exit(0);
-        //QApplication::instance()->exit();
+        QApplication::instance()->exit();
+
+//        ::exit(0);
     } else { QMessageBox::warning(nullptr, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
 
 #endif
