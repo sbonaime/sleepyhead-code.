@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de_DE">
+<TS version="2.1" language="de_DE">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -1438,7 +1438,7 @@
     </message>
     <message>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
-        <translation>Arie Klerk (Coordinator für die Übersetzungen, Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and Plamen Tonev (Bulgarian).</translation>
+        <translation type="vanished">Arie Klerk (Coordinator für die Übersetzungen, Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and Plamen Tonev (Bulgarian).</translation>
     </message>
     <message>
         <source>%1 %2</source>
@@ -3293,7 +3293,7 @@ werden Sie sehen, dass es nicht sehr oft zu Problemen kommt.&lt;/p&gt;&lt;/body&
     </message>
     <message>
         <source>Use Custom Mask Profile for Unintentional Leaks</source>
-        <translation>Verwenden von benutzerdefinierten Masken Profil für unbeabsichtigte Lecks</translation>
+        <translation type="vanished">Verwenden von benutzerdefinierten Masken Profil für unbeabsichtigte Lecks</translation>
     </message>
     <message>
         <source>4 cmH2O</source>
@@ -3305,7 +3305,7 @@ werden Sie sehen, dass es nicht sehr oft zu Problemen kommt.&lt;/p&gt;&lt;/body&
     </message>
     <message>
         <source>Note: This is linear, so doesn&apos;t model the mask leak curve, but it should be close enough.</source>
-        <translation>Anmerkung: Dies ist linear, so ist die Maske nicht Leck-Kurvenmodell, aber es sollte dicht genug sein.</translation>
+        <translation type="vanished">Anmerkung: Dies ist linear, so ist die Maske nicht Leck-Kurvenmodell, aber es sollte dicht genug sein.</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -3366,6 +3366,10 @@ Wenn Sie ein verschiedene Masken verwenden, wählen Sie die Mittelwerte . Es sol
     <message>
         <source>Note: A linear calculation method is used. Changing these values requires a recalculation.</source>
         <translation>Hinweis:Hier wird ein lineares Berechnungsverfahren verwendet. Ändern dieser Werte erfordert eine Neuberechnung.</translation>
+    </message>
+    <message>
+        <source>Allow Event Renaming</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4955,7 +4959,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>Statistics at Pressure</source>
-        <translation>Statistiken des Drucks</translation>
+        <translation type="vanished">Statistiken des Drucks</translation>
     </message>
     <message>
         <source>Are you ready to upgrade, so you can run the new version of SleepyHead?</source>
@@ -5092,7 +5096,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>(% of time)</source>
-        <translation>(% der Zeit)</translation>
+        <translation type="vanished">(% der Zeit)</translation>
     </message>
     <message>
         <source> (%3 sec)</source>
@@ -5116,7 +5120,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>By Pressure</source>
-        <translation>durch Druck</translation>
+        <translation type="vanished">durch Druck</translation>
     </message>
     <message>
         <source>Perfusion Index</source>
@@ -6214,15 +6218,15 @@ Stunden: %1</translation>
     </message>
     <message>
         <source>&lt;p&gt;After four years in the making, this build brings SleepyHead into the final beta phase.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Nach vier Jahren in der Entwicklung, geht dieses Build Sleepyhead in die letzte Beta-Phase.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Nach vier Jahren in der Entwicklung, geht dieses Build Sleepyhead in die letzte Beta-Phase.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation>&lt;p&gt;Die Dinge sind noch nicht perfekt, aber der Fokus liegt von nun an am letzten Schliff.</translation>
+        <translation type="vanished">&lt;p&gt;Die Dinge sind noch nicht perfekt, aber der Fokus liegt von nun an am letzten Schliff.</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.&lt;/p&gt;</source>
-        <translation>Diese Version bringt Unterstützung für die neue Philips Respironics Dream und ältere PRS1 1060P Modelle.&lt;/p&gt;</translation>
+        <translation type="vanished">Diese Version bringt Unterstützung für die neue Philips Respironics Dream und ältere PRS1 1060P Modelle.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Sorry, could not locate changelog.</source>
@@ -6239,6 +6243,135 @@ Stunden: %1</translation>
     <message>
         <source>Sleep Well, and good luck!</source>
         <translation>Schlaf gut, und viel Glück!</translation>
+    </message>
+    <message>
+        <source>SmartStart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machine auto starts by breathing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smart Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humid. Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidifier Enabled Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humid. Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidity Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ClimateLine Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temp. Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ClimateLine Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AB Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Antibacterial Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pt. Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Patient Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Climate Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ResMed Mask Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pillows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full Face</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nasal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ramp Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time at Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1
+Line %2, column %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not parse Updates.xml file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6622,6 +6755,18 @@ Stunden: %1</translation>
     <message>
         <source>Release Notes</source>
         <translation>Versionshinweise</translation>
+    </message>
+    <message>
+        <source>SleepyHead Updates are currently unvailable for this platform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New SleepyHead Updates are avilable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Would you like t download and install them now?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

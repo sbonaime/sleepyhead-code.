@@ -1463,67 +1463,67 @@ AK: Waar staat dat Welkomst-/Startscherm???
         <translation>Een speciaal woord van dank voor Pugsy en RobySue van &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; voor hun hulp bij de documentatie en handleidingen, en voor iedereen die heeft meegewerkt door te testen en hun CPAP gegevens met elkaar te delen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2134"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2135"/>
         <source>Are you sure you want to rebuild all CPAP data for the following machine:</source>
         <translation>Weet je zeker dat je alle CPAP gegevens voor het volgende apparaat wilt herstellen:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2137"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2138"/>
         <source>Please note, that this could result in loss of graph data if SleepyHead&apos;s internal backups have been disabled or interfered with in any way.</source>
         <translation>Houd er rekening mee, dat dit kan leiden tot verlies van grafische gegevens indien de interne back-ups van SleepyHead op enige manier zijn uitgeschakeld of verstoord.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2145"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2146"/>
         <source>For some reason, SleepyHead does not have internal backups for the following machine:</source>
         <translation>Om een ​​of andere reden heeft SleepyHead geen interne back-ups voor de volgende machine:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2148"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2149"/>
         <source>Provided you have made &lt;i&gt;your &lt;b&gt;own&lt;/b&gt; backups for ALL of your CPAP data&lt;/i&gt;, you can still complete this operation, but you will have to restore from your backups manually.</source>
         <translation>Mits je &lt;i&gt;je&lt;b&gt; zelf &lt;/b&gt; backups gemaakt hebt van AL JE CPAP gegevens &lt;/i&gt;, kun je dit nog steeds afronden, maar je zal deze back-ups handmatig moeten terugzetten.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2149"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2150"/>
         <source>Are you really sure you want to do this?</source>
         <translation>Weet je echt zeker dat je dit wilt?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2195"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2196"/>
         <source>You are about to &lt;font size=+2&gt;obliterate&lt;/font&gt; SleepyHead&apos;s machine database for the following machine:</source>
         <translation>Je staat op het punt om alle gegevens te &lt;font size=+2&gt;vernietigen&lt;/font&gt; van het volgende apparaat:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2198"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2199"/>
         <source>Note as a precaution, the backup folder will be left in place.</source>
         <translation>Ter geruststelling: de backup map blijft intakt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2199"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2200"/>
         <source>Are you &lt;b&gt;absolutely sure&lt;/b&gt; you want to proceed?</source>
         <translation>Weet je &lt;b&gt;absoluut zeker&lt;/b&gt; dat je wilt doorgaan?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2222"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2223"/>
         <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
         <translation>Het samenstellen is mislukt, je moet zelf de volgende map wissen:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2758"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2759"/>
         <source>%1&apos;s Journal</source>
         <translation>%1&apos;s dagboek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2760"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>Choose where to save journal</source>
         <translation>Kies waar het dagboek moet worden opgeslagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2760"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>XML Files (*.xml)</source>
         <translation>XML bestanden (*.xml)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2162"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2163"/>
         <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
         <translation>Aangezien er geen interne backups zijn om uit te herstellen, moet je dat uit je eigen backups doen.</translation>
     </message>
@@ -1553,22 +1553,22 @@ AK: Waar staat dat Welkomst-/Startscherm???
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2163"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2164"/>
         <source>Would you like to import from your own backups now? (you will have no data visible for this machine until you do)</source>
         <translation>Wil je nu importeren vanuit je eigen back-ups? (je hebt geen zichtbare gegevens voor dit apparaat totdat je dit doet)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2696"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2697"/>
         <source>Are you sure you want to delete oximetry data for %1</source>
         <translation>Weet je zeker dat je de oxymetrie-gegevens van %1 wilt wissen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2698"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2699"/>
         <source>&lt;b&gt;Please be aware you can not undo this operation!&lt;/b&gt;</source>
         <translation>&lt;b&gt;Dit kan niet ongedaan worden gemaakt!&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2718"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2719"/>
         <source>Select the day with valid oximetry data in daily view first.</source>
         <translation>Selecteer eerst de dag met geldige oxymetrie-gegevens in het dagoverzicht.</translation>
     </message>
@@ -1593,12 +1593,12 @@ AK: Waar staat dat Welkomst-/Startscherm???
         <translation>SleepyHead Wiki</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2601"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2602"/>
         <source>There was a problem opening Somnopose Data File: </source>
         <translation>Er was een probleem met het openen van het SomnoPose gegevensbestand: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2605"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2606"/>
         <source>Somnopause Data Import complete</source>
         <translation>Import van SomnoPose gegevens voltooid</translation>
     </message>
@@ -1689,7 +1689,7 @@ AK: Waar staat dat Welkomst-/Startscherm???
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="780"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2159"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2160"/>
         <source>Please wait, importing from backup folder(s)...</source>
         <translation>Even wachten, importeren vanuit de backup-map(pen)...</translation>
     </message>
@@ -1810,74 +1810,74 @@ AK: Waar staat dat Welkomst-/Startscherm???
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1995"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2018"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2019"/>
         <source>Gah!</source>
         <translation>Bah!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1995"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2018"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2019"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation>Als je dit kunt lezen, heeft het herstartcommando niet gewerkt. Je zult het handmatig moeten doen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2395"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2396"/>
         <source>Performance will be degraded during these recalculations.</source>
         <translation>Tijdens herberekening gaan de prestaties van de PC achteruit.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2396"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2397"/>
         <source>Recalculating Indices</source>
         <translation>Herberekening van de indexen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2408"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2409"/>
         <source>Loading Event Data</source>
         <translation>Incident gegevens laden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2410"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2472"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2411"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2473"/>
         <source>Recalculating Summaries</source>
         <translation>Overzichten opnieuw berekenen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2484"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2485"/>
         <source>Restart Required</source>
         <translation>Herstart vereist</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2485"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2486"/>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation>Herberekening voltooid, de applicatie moet nu herstarten om de wijzigingen zichtbaar te maken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2490"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2491"/>
         <source>Recalculations are now complete.</source>
         <translation>Herberekening voltooid.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2490"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2491"/>
         <source>Task Completed</source>
         <translation>Taak voltooid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2514"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2515"/>
         <source>There was a problem opening ZEO File: </source>
         <translation>Er was een probleem met het openen van het ZEO gegevensbestand: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2518"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2519"/>
         <source>Zeo CSV Import complete</source>
         <translation>Import van het ZEO .csv bestand voltooid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2540"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2541"/>
         <source>There was a problem opening MSeries block File: </source>
         <translation>Er was een probleem bij het openen van het M-Series blokbestand: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2544"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2545"/>
         <source>MSeries Import complete</source>
         <translation>Import M-Series voltooid</translation>
     </message>
@@ -4808,7 +4808,7 @@ TTIA: %1</source>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="500"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2892"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2908"/>
         <source>Yes</source>
         <translation>Ja</translation>
     </message>
@@ -4862,7 +4862,7 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="381"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2825"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2841"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3330"/>
         <source>CPAP</source>
         <translation>CPAP</translation>
@@ -4981,7 +4981,7 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="409"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2846"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2862"/>
         <source>PP</source>
         <translation>PP</translation>
     </message>
@@ -5409,7 +5409,7 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="501"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2893"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2909"/>
         <source>No</source>
         <translation>Nee</translation>
     </message>
@@ -5814,37 +5814,37 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="247"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2817"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2833"/>
         <source>RemStar Pro with C-Flex+</source>
         <translation>RemStar Pro met C-Flex+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="250"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2818"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2834"/>
         <source>RemStar Auto with A-Flex</source>
         <translation>RemStar Auto met A-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="253"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2819"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2835"/>
         <source>RemStar BiPAP Pro with Bi-Flex</source>
         <translation>RemStar BiPAP Pro met Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="256"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2820"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2836"/>
         <source>RemStar BiPAP Auto with Bi-Flex</source>
         <translation>RemStar BiPAP Auto met Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="259"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2822"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2838"/>
         <source>BiPAP autoSV Advanced</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="262"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2824"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2840"/>
         <source>BiPAP AVAPS</source>
         <translation></translation>
     </message>
@@ -5901,299 +5901,299 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1749"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2937"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2953"/>
         <source>15mm</source>
         <translation>15mm</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1749"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2936"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2952"/>
         <source>22mm</source>
         <translation>22mm</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2821"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2837"/>
         <source>RemStar Plus</source>
         <translation>RemStar Plus</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2823"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2839"/>
         <source>BiPAP autoSV Advanced 60 Series</source>
         <translation>BiPAP autoSV Advanced 60 Series</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2826"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2842"/>
         <source>CPAP Pro</source>
         <translation>CPAP Pro</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2827"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2843"/>
         <source>Auto CPAP</source>
         <translation>Auto CPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2828"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2844"/>
         <source>BiPAP Pro</source>
         <translation>BiPAP Pro</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2829"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2845"/>
         <source>Auto BiPAP</source>
         <translation>Auto BiPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2850"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2852"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2866"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2868"/>
         <source>Flex Mode</source>
         <translation>Flex modus</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2851"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2867"/>
         <source>PRS1 pressure relief mode.</source>
         <translation>PRS1 drukhulp modus.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2857"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2873"/>
         <source>C-Flex</source>
         <translation>C-flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2858"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2874"/>
         <source>C-Flex+</source>
         <translation>C-flex+</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2859"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2875"/>
         <source>A-Flex</source>
         <translation>A-flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2860"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2876"/>
         <source>Rise Time</source>
         <translation>Stijgtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2861"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2877"/>
         <source>Bi-Flex</source>
         <translation>Bi-flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2865"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2867"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2881"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2883"/>
         <source>Flex Level</source>
         <translation>Flex instelling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2866"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2882"/>
         <source>PRS1 pressure relief setting.</source>
         <translation>PRS1 drukhulp instelling.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2871"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2902"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2924"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2887"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2918"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2940"/>
         <source>x1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2872"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2903"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2925"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2888"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2919"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2941"/>
         <source>x2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2873"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2904"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2926"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2889"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2920"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2942"/>
         <source>x3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2874"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2905"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2927"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2890"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2921"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2943"/>
         <source>x4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2875"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2906"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2928"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2891"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2922"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2944"/>
         <source>x5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2879"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2881"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2895"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2897"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3384"/>
         <source>Humidifier Status</source>
         <translation>Status bevochtiger</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2880"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2896"/>
         <source>PRS1 humidifier connected?</source>
         <translation>Is de bevochtiger aan de PRS1 aangesloten?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2883"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2899"/>
         <source>Disconnected</source>
         <translation>Losgekoppeld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2884"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2900"/>
         <source>Connected</source>
         <translation>Aangekoppeld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2888"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2904"/>
         <source>Heated Tubing</source>
         <translation>Verwarmde slang</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2889"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2905"/>
         <source>Heated Tubing Connected</source>
         <translation>Verwarmde slang aangesloten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2890"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2906"/>
         <source>Headed Tubing</source>
         <translation>Verwarmde slang</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2897"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2913"/>
         <source>Humidification Level</source>
         <translation>Instelling bevochtiger</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2898"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2914"/>
         <source>PRS1 Humidification level</source>
         <translation>Instelling bevochtiger PRS1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2899"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2915"/>
         <source>Humid. Lvl.</source>
         <translation>Bevocht.inst.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2910"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2911"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2926"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2927"/>
         <source>System One Resistance Status</source>
         <translation>Status System One weerstand</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2912"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2928"/>
         <source>Sys1 Resist. Status</source>
         <translation>Sys1 weerst. status</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2919"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2935"/>
         <source>System One Resistance Setting</source>
         <translation>Instelling System One weerstand</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2920"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2936"/>
         <source>System One Mask Resistance Setting</source>
         <translation>Instelling maskerweerstand</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2921"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2937"/>
         <source>Sys1 Resist. Set</source>
         <translation>Inst.weerstand</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2932"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2934"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2948"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2950"/>
         <source>Hose Diameter</source>
         <translation>Slangdiameter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2933"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2949"/>
         <source>Diameter of primary CPAP hose</source>
         <translation>Diameter van de belangrijkste slang</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2941"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2957"/>
         <source>System One Resistance Lock</source>
         <translation>Weerstand vergrendeling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2942"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2958"/>
         <source>Whether System One resistance settings are available to you.</source>
         <translation>Of de instellingen beschikbaar zijn.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2943"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2959"/>
         <source>Sys1 Resist. Lock</source>
         <translation>Weerst. vergrendeld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2950"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2952"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2966"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2968"/>
         <source>Auto On</source>
         <translation>Automatische start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2951"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2967"/>
         <source>A few breaths automatically starts machine</source>
         <translation>Het apparaat start na enkele ademhalingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2959"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2961"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2975"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2977"/>
         <source>Auto Off</source>
         <translation>Automatisch uit</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2960"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2976"/>
         <source>Machine automatically switches off</source>
         <translation>Het apparaat schakelt automatisch uit</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2968"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2970"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2984"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2986"/>
         <source>Mask Alert</source>
         <translation>Masker waarschuwing</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2969"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2985"/>
         <source>Whether or not machine allows Mask checking.</source>
         <translation>Of controle van het masker is ingeschakeld.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2977"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2979"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2993"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2995"/>
         <source>Show AHI</source>
         <translation>Toon AHI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2978"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2994"/>
         <source>Whether or not machine shows AHI via LCD panel.</source>
         <translation>Of het apparaat de AHI op het scherm toont.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2991"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3007"/>
         <source>Unknown PRS1 Code %1</source>
         <translation>Onbekende PRS1 code %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2992"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2993"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3008"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3009"/>
         <source>PRS1_%1</source>
         <translation>PRS1_%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3066"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3082"/>
         <source>Timed Breath</source>
         <translation>Geprogrammeerde ademhaling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3067"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3083"/>
         <source>Machine Initiated Breath</source>
         <translation>Door apparaat getriggerde ademhaling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3068"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3084"/>
         <source>TB</source>
         <translation>TB</translation>
     </message>
@@ -6223,12 +6223,12 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
         <translation>&amp;Doneren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2379"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2380"/>
         <source>Sorry, your %1 %2 machine is not currently supported.</source>
         <translation>Sorry, je %1 %2 apparaat wordt nog niet ondersteund.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2780"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2781"/>
         <source>Sorry, this feature is not implemented yet</source>
         <translation>Sorry, dit is NOG niet mogelijk</translation>
     </message>
@@ -6752,12 +6752,12 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
         <translation>System One detecteert vibrerend snurken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2844"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2860"/>
         <source>Pressure Pulse</source>
         <translation>Drukpuls</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2845"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2861"/>
         <source>A pulse of pressure &apos;pinged&apos; to detect a closed airway.</source>
         <translation>Een kleine drukgolf waarmee een afgesloten luchtweg wordt gedetecteerd.</translation>
     </message>
@@ -7735,13 +7735,13 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
         <translation>M-series</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="205"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="208"/>
         <source>Philips Respironics</source>
         <translation>Philips Respironics</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="270"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="205"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="208"/>
         <source>System One</source>
         <translation>System One</translation>
     </message>
@@ -8236,6 +8236,17 @@ Gaarne gegevens opnieuw inlezen</translation>
         <source>CMS50E/F</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="../sleepyhead/updateparser.cpp" line="228"/>
+        <source>%1
+Line %2, column %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/updateparser.cpp" line="241"/>
+        <source>Could not parse Updates.xml file.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QuaZipFilePrivate</name>
@@ -8555,128 +8566,148 @@ Gaarne gegevens opnieuw inlezen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="108"/>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="170"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="211"/>
         <source>Requesting </source>
         <translation>Aanvragen </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="177"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="218"/>
         <source>Saving as </source>
         <translation>Opslaan als </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="320"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="469"/>
         <source>XML update structure parsed cleanly</source>
         <translation>XML updatestructuur werd juist ontleed</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="347"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="439"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="496"/>
         <source>No updates were found for your platform.</source>
         <translation>Er zijn geen updates gevonden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="347"/>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="386"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="439"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="445"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="496"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="535"/>
         <source>SleepyHead Updates</source>
         <translation>SleepyHead Updates</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="385"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="534"/>
         <source>No new updates were found for your platform.</source>
         <translation>Er zijn geen nieuwe updates gevonden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="403"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="552"/>
         <source>SleepyHead v%1, codename &quot;%2&quot;</source>
         <translation>SleepyHead versie %1, codename &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="406"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="555"/>
         <source>platform notes</source>
         <translation>Opmerkingen over het platform</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="411"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="560"/>
         <source>A new version of SleepyHead is available!</source>
         <translation>Er is een nieuwe versie van SleepyHead beschikbaar!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="412"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="561"/>
         <source>Shiny new &lt;b&gt;v%1&lt;/b&gt; is available. You&apos;re running old and busted v%2</source>
         <translation>Er is een splinternieuwe &lt;b&gt;versie %1&lt;/b&gt; beschikbaar. Jij werkt nog met de oude en versleten versie %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="416"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="565"/>
         <source>An update for SleepyHead is available.</source>
         <translation>Er is een update voor SleepyHead.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="417"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="566"/>
         <source>Version &lt;b&gt;%1&lt;/b&gt; is available. You&apos;re currently running v%1</source>
         <translation>Versie &lt;b&gt;%1&lt;/b&gt; is beschikbaar. Je gebruikt nu versie %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="430"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="579"/>
         <source>SleepyHead v%1 build notes</source>
         <translation>Opmerkingen over SleepyHead versie %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="433"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="582"/>
         <source>Update to QtLibs (v%1)</source>
         <translation>Update naar QTlibs (versie %1)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="443"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="592"/>
         <source>There was an error parsing the XML Update file.</source>
         <translation>Er is een fout opgetreden tijdens het ontleden van het bijgewerkte XML-bestand.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="464"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="140"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="613"/>
         <source>%1 bytes received</source>
         <translation>%1 bytes ontvangen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="494"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
+        <source>SleepyHead Updates are currently unvailable for this platform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
+        <source>New SleepyHead Updates are avilable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
+        <source>Would you like t download and install them now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
         <source>Redirected to </source>
         <translation>Doorgestuurd naar </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="508"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="657"/>
         <source>File size mismatch for %1</source>
         <translation>Bestandsgrootte van %1 klopt niet</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="519"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="668"/>
         <source>File integrity check failed for %1</source>
         <translation>Fout in bestandsintegriteit van %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="549"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="698"/>
         <source>Extracting </source>
         <translation>Uitpakken </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="610"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="759"/>
         <source>You might need to reinstall manually. Sorry :(</source>
         <translation>Wellicht opnieuw installeren?! Sorry ;-((</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="611"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="760"/>
         <source>Ugh.. Something went wrong with unzipping.</source>
         <translation>Oef! Er ging iets fout bij het uitpakken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="624"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="773"/>
         <source>Failed</source>
         <translation>Mislukt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="644"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="793"/>
         <source>Download Complete</source>
         <translation>Download klaar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="648"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="797"/>
         <source>There was an error completing a network request:
 
 (</source>
@@ -8685,32 +8716,32 @@ Gaarne gegevens opnieuw inlezen</translation>
 :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="693"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="842"/>
         <source>Update Complete!</source>
         <translation>Update klaar!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="696"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="845"/>
         <source>Updates Complete. SleepyHead needs to restart now, click Finished to do so.</source>
         <translation>Klaar met updaten. SleepyHead moet opnieuw worden opgestart, klik op Afsluiten.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="699"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="848"/>
         <source>Update Failed :(</source>
         <translation>Update mislukt :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="701"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="850"/>
         <source>Download Error. Sorry, try again later.</source>
         <translation>Fout met downloaden. Probeer het later nog eens.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="718"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="867"/>
         <source>Downloading &amp; Installing Updates...</source>
         <translation>Updates downloaden &amp; installeren...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="719"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="868"/>
         <source>Please wait while downloading and installing updates.</source>
         <translation>Wacht even terwijl we downloaden en installeren.</translation>
     </message>
