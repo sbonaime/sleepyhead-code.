@@ -106,6 +106,7 @@ void init()
     DataTypes["datetime"] = DATETIME;
     DataTypes["time"] = TIME;
 
+    // Note: Old channel names stored in channels.xml are not translatable.. they need to be moved to be defined AFTER here instead
     if (!schema::channel.Load(":/docs/channels.xml")) {
         QMessageBox::critical(0, STR_MessageBox_Error,
                               QObject::tr("Couldn't parse Channels.xml, this build is seriously borked, no choice but to abort!!"),
@@ -753,7 +754,7 @@ bool ChannelList::Load(QString filename)
 
             scope = Scopes[scopestr];
 
-//            if (PREF[STR_PREF_AllowEventRenaming].toBool()) {
+//            if (PREF[STR_PREF_ResetEventNames].toBool()) {
                 name = e.attribute("name", "");
                 details = e.attribute("details", "");
                 label = e.attribute("label", "");

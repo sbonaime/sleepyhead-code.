@@ -57,7 +57,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1242,13 +1242,6 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
                 <string extracomment="Respiratory Disturbance Index">RDI</string>
                </property>
               </item>
-             </widget>
-            </item>
-            <item row="3" column="2" colspan="2">
-             <widget class="QCheckBox" name="allowEventRenaming">
-              <property name="text">
-               <string>Allow Event Renaming</string>
-              </property>
              </widget>
             </item>
            </layout>

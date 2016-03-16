@@ -201,8 +201,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         RefreshLastChecked();
     } else { ui->updateLastChecked->setText("Never"); }
 
-    ui->allowEventRenaming->setChecked(PREF[STR_PREF_AllowEventRenaming].toBool());
-
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
     ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
@@ -805,7 +803,6 @@ bool PreferencesDialog::Save()
     PREF[STR_GEN_UpdatesAutoCheck] = ui->automaticallyCheckUpdates->isChecked();
     PREF[STR_GEN_UpdateCheckFrequency] = ui->updateCheckEvery->value();
     PREF[STR_PREF_AllowEarlyUpdates] = ui->allowEarlyUpdates->isChecked();
-    PREF[STR_PREF_AllowEventRenaming] = ui->allowEventRenaming->isChecked();
 
 
     PREF["Fonts_Application_Name"] = ui->applicationFont->currentText();

@@ -402,7 +402,7 @@ retry_directory:
     PREF.init(STR_GEN_UpdateCheckFrequency, 7);    // days
     PREF.init(STR_PREF_AllowEarlyUpdates, false);
 
-    PREF.init(STR_PREF_AllowEventRenaming, true);
+    PREF.init(STR_PREF_ResetChannelNames, false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
