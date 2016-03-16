@@ -193,22 +193,22 @@
         <translation>събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="548"/>
+        <location filename="../sleepyhead/daily.cpp" line="549"/>
         <source>No %1 events are recorded this day</source>
         <translation>Няма %1 събития записани за този ден</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="650"/>
+        <location filename="../sleepyhead/daily.cpp" line="651"/>
         <source>%1 event</source>
         <translation>%1 събитие</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="651"/>
+        <location filename="../sleepyhead/daily.cpp" line="652"/>
         <source>%1 events</source>
         <translation>%1 събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1144"/>
+        <location filename="../sleepyhead/daily.cpp" line="1145"/>
         <source>PAP Mode: %1&lt;br/&gt;</source>
         <translation>PAP режим: %1&lt;br/&gt;</translation>
     </message>
@@ -223,222 +223,222 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="688"/>
+        <location filename="../sleepyhead/daily.cpp" line="689"/>
         <source>Session Start Times</source>
         <translation>Начала на сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="689"/>
+        <location filename="../sleepyhead/daily.cpp" line="690"/>
         <source>Session End Times</source>
         <translation>Край на сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="928"/>
+        <location filename="../sleepyhead/daily.cpp" line="929"/>
         <source>Duration</source>
         <translation>Продължителност</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="908"/>
+        <location filename="../sleepyhead/daily.cpp" line="909"/>
         <source>Oximetery Sessions</source>
         <translation>Оксиметрични сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="914"/>
+        <location filename="../sleepyhead/daily.cpp" line="915"/>
         <source>Position Sensor Sessions</source>
         <translation>Позиционен сензор сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="919"/>
+        <location filename="../sleepyhead/daily.cpp" line="920"/>
         <source>Unknown Session</source>
         <translation>Непознати сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="988"/>
+        <location filename="../sleepyhead/daily.cpp" line="989"/>
         <source>Machine Settings Unavailable</source>
         <translation>Няма информация за настройките на апарата</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1149"/>
+        <location filename="../sleepyhead/daily.cpp" line="1150"/>
         <source>This day has missing pressure, mode and settings data.</source>
         <translation>Този ден има липсваща информация за налягане, режим и настройки.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1191"/>
+        <location filename="../sleepyhead/daily.cpp" line="1192"/>
         <source>%1%2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1257"/>
+        <location filename="../sleepyhead/daily.cpp" line="1258"/>
         <source>This day just contains summary data, only limited information is available .</source>
         <translation>Този ден съдържа само общи дани, налична е само ограничена информация.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1267"/>
+        <location filename="../sleepyhead/daily.cpp" line="1268"/>
         <source>Total time in apnea</source>
         <translation>Общо време в апнея</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1277"/>
+        <location filename="../sleepyhead/daily.cpp" line="1278"/>
         <source>Time over leak redline</source>
         <translation>Общо време с теч на въздух над граница</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1328"/>
+        <location filename="../sleepyhead/daily.cpp" line="1329"/>
         <source>Sleep</source>
         <translation>Заспиване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1328"/>
+        <location filename="../sleepyhead/daily.cpp" line="1329"/>
         <source>Wake</source>
         <translation>Събуждане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1521"/>
+        <location filename="../sleepyhead/daily.cpp" line="1522"/>
         <source>BRICK! :(</source>
         <translation>Греда! :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1578"/>
+        <location filename="../sleepyhead/daily.cpp" line="1579"/>
         <source>Event Breakdown</source>
         <translation>Класифициране на събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1613"/>
+        <location filename="../sleepyhead/daily.cpp" line="1614"/>
         <source>Sessions all off!</source>
         <translation>Всички сесии са изключени!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1615"/>
+        <location filename="../sleepyhead/daily.cpp" line="1616"/>
         <source>Sessions exist for this day but are switched off.</source>
         <translation>Съществуват сесии за този ден, но са изключени.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1618"/>
+        <location filename="../sleepyhead/daily.cpp" line="1619"/>
         <source>Impossibly short session</source>
         <translation>Невъзможно къса сесия</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1619"/>
+        <location filename="../sleepyhead/daily.cpp" line="1620"/>
         <source>Zero hours??</source>
         <translation>Нула часа??</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1622"/>
+        <location filename="../sleepyhead/daily.cpp" line="1623"/>
         <source>BRICK :(</source>
         <translation>Тухла :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1624"/>
+        <location filename="../sleepyhead/daily.cpp" line="1625"/>
         <source>Complain to your Equipment Provider!</source>
         <translation>Оплачете се на този който ви го е препоръчал/продал!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1186"/>
+        <location filename="../sleepyhead/daily.cpp" line="1187"/>
         <source>Statistics</source>
         <translation>Статистики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1108"/>
+        <location filename="../sleepyhead/daily.cpp" line="1109"/>
         <source>Oximeter Information</source>
         <translation>Информация за оксиметър</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1112"/>
+        <location filename="../sleepyhead/daily.cpp" line="1113"/>
         <source>SpO2 Desaturations</source>
         <translation>SpO2 десатурации</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1113"/>
+        <location filename="../sleepyhead/daily.cpp" line="1114"/>
         <source>Pulse Change events</source>
         <translation>Събития промяна на пулс</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1114"/>
+        <location filename="../sleepyhead/daily.cpp" line="1115"/>
         <source>SpO2 Baseline Used</source>
         <translation>Изплзвана базова линия SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="984"/>
+        <location filename="../sleepyhead/daily.cpp" line="985"/>
         <source>Machine Settings</source>
         <translation>Настройки на апарата</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="873"/>
+        <location filename="../sleepyhead/daily.cpp" line="874"/>
         <source>Session Information</source>
         <translation>Информация за сесия</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="905"/>
+        <location filename="../sleepyhead/daily.cpp" line="906"/>
         <source>CPAP Sessions</source>
         <translation>CPAP сесии</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="911"/>
+        <location filename="../sleepyhead/daily.cpp" line="912"/>
         <source>Sleep Stage Sessions</source>
         <translation>Сесии фази на сън</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="972"/>
+        <location filename="../sleepyhead/daily.cpp" line="973"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
         <translation>Един или повече записи за формата на вълната за тази сесия идват от повредени данни. Поради тази причина е възможно някои от слоевете със запис да не са подравнени коректно. </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1283"/>
+        <location filename="../sleepyhead/daily.cpp" line="1284"/>
         <source>Total ramp time</source>
         <translation>Общо рампинг време</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1287"/>
+        <location filename="../sleepyhead/daily.cpp" line="1288"/>
         <source>Time outside of ramp</source>
         <translation>Време извън рампинг</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1623"/>
+        <location filename="../sleepyhead/daily.cpp" line="1624"/>
         <source>Sorry, your machine only provides compliance data.</source>
         <translation>Съжалявам, вашият апарат предоставя само данни за спазване.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1642"/>
+        <location filename="../sleepyhead/daily.cpp" line="1643"/>
         <source>&quot;Nothing&apos;s here!&quot;</source>
         <translation>&quot;Няма нищо тук!&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1645"/>
+        <location filename="../sleepyhead/daily.cpp" line="1646"/>
         <source>Bob is bored with this days lack of data.</source>
         <translation>Боб отегчен от тези дни, за които няма данни.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1924"/>
+        <location filename="../sleepyhead/daily.cpp" line="1925"/>
         <source>Pick a Colour</source>
         <translation>Избери цвят</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2209"/>
+        <location filename="../sleepyhead/daily.cpp" line="2210"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation>Тази отметка е в област, която в момента не е активна..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2252"/>
+        <location filename="../sleepyhead/daily.cpp" line="2253"/>
         <source>Bookmark at %1</source>
         <translation>Отметка в %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2446"/>
+        <location filename="../sleepyhead/daily.cpp" line="2447"/>
         <source>Show all graphs</source>
         <translation>Показване на всички графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2540"/>
+        <location filename="../sleepyhead/daily.cpp" line="2541"/>
         <source>Hide all events</source>
         <translation>Скриване на всички събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2540"/>
+        <location filename="../sleepyhead/daily.cpp" line="2541"/>
         <source>Show all events</source>
         <translation>Показване на всички събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2468"/>
+        <location filename="../sleepyhead/daily.cpp" line="2469"/>
         <source>Hide all graphs</source>
         <translation>Скриване на всички графики</translation>
     </message>
@@ -759,7 +759,7 @@
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1756"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1172"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1196"/>
         <source>Oximetry</source>
         <translation>Оксиметрия</translation>
     </message>
@@ -1122,28 +1122,28 @@
         <translation>&amp;Относно</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="650"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="655"/>
         <source>Loading Data</source>
         <translation>Зареждане данни</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="931"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="950"/>
         <source>Access to Import has been blocked while recalculations are in progress.</source>
         <translation>Достъп до импорт функцията е блокиран докато се извършват преизчисления.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1091"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1115"/>
         <source>Importing Data</source>
         <translation>Импорт на данни</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="775"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2135"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="780"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2160"/>
         <source>Please wait, importing from backup folder(s)...</source>
         <translation>Моля изчакайте, извършва се импорт от архивната папка...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="948"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="972"/>
         <source>Please wait, scanning for CPAP data cards...</source>
         <translation>Моля изчакайте, сканирам за карти с CPAP данни...</translation>
     </message>
@@ -1163,12 +1163,12 @@
         <translation>Убедете се че имате желание и възможност да предоставите .zip архив на вашата папка със CPAP данни или краш репорт преди да попълните репорт за открит проблем с програмата.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="736"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="741"/>
         <source>Import Problem</source>
         <translation>Импорт проблем</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="736"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="741"/>
         <source>Couldn&apos;t find any valid Machine Data at
 
 %1</source>
@@ -1177,212 +1177,212 @@
 %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="871"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="881"/>
         <source>Please insert your CPAP data card...</source>
         <translation>Моля поставете вашата карта със CPAP данни...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="969"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="993"/>
         <source>CPAP Data Located</source>
         <translation>Данни за CPAP са открити</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="989"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1013"/>
         <source>Please wait, launching file dialog...</source>
         <translation>Моля изчакайте, стартира се файловият прозорец...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="995"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1019"/>
         <source>No CPAP data card detected, launching file dialog...</source>
         <translation>Не е открита карта със CPAP данни, стартира се файловият прозорец...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1001"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1025"/>
         <source>Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.</source>
         <translation>Моля не забравяйте да посочите главната папка (не поддиректория) или буква на устройство, в която се намират вашите CPAP данни.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1002"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1026"/>
         <source>Import Reminder</source>
         <translation>Напомнянe при импорт</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1155"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1179"/>
         <source>Welcome to SleepyHead</source>
         <translation>Добре дошли в SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1158"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1182"/>
         <source>About SleepyHead</source>
         <translation>Относно SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1159"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1183"/>
         <source>This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.</source>
         <translation>Този софтуер е създаден с цел да асистира-за преглед на данните от CPAP апарати, използвани за терапия при различни разстройства по време на сън.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1161"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1185"/>
         <source>SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.</source>
         <translation>SleepyHead е проектиран от софтуерен разработчик с личен опит с разстройство по време на сън и е оформен от предложения и отзиви на много други доброволци тестери с подобни състояния.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1163"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1187"/>
         <source>This is a beta release, some features may not yet behave as expected.</source>
         <translation>Това е бета версия, възможно е някои функции все още да не работят както се очаква от тях.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1164"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1188"/>
         <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
         <translation>Моля съобщавайте за всякакви открити грешки на страницата на SleepyHead в SourceForge.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1166"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1190"/>
         <source>Currenly supported machines:</source>
         <translation>Поддържани апарати за момента:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1167"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1191"/>
         <source>CPAP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1169"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1193"/>
         <source>ResMed S9 models (CPAP, Auto, VPAP)</source>
         <translation>ResMed S9 модели (CPAP, Auto, VPAP)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1170"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1194"/>
         <source>DeVilbiss Intellipap (Auto)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1171"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1195"/>
         <source>Fisher &amp; Paykel ICON (CPAP, Auto)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1173"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1197"/>
         <source>Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters</source>
         <translation>Contec CMS50D+, CMS50E и CMS50F (но не 50FW) оксиметри</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1174"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1198"/>
         <source>ResMed S9 Oximeter Attachment</source>
         <translation>ResMed S9 оксиметър приставка</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1175"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1199"/>
         <source>Online Help Resources</source>
         <translation>Онлайн помощни ресурси</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1176"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1200"/>
         <source>Note:</source>
         <translation>Бележка:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1177"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1201"/>
         <source>I don&apos;t recommend using this built in web browser to do any major surfing in, it will work, but it&apos;s mainly meant as a help browser.</source>
         <translation>Не се препоръчва използването на този вграден уеб браузър за сериозно сърфиране в уеб, ще работи, но е основно предназначен за разглеждане на материали за помощ.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1179"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1203"/>
         <source>(It doesn&apos;t support SSL encryption, so it&apos;s not a good idea to type your passwords or personal details anywhere.)</source>
         <translation>(не поддържа SSL криптиране, следвателно не е изобщо добра идея да се въвеждат пароли или лична информация където и да е било в него)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1190"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1214"/>
         <source>SleepyHead&apos;s &lt;a href=&apos;http://www.sourceforge.net/projects/sleepyhead&apos;&gt;Project Website&lt;/a&gt; on SourceForge&lt;br/&gt;</source>
         <translation>Сайт на проекта &lt;a href=&apos;http://www.sourceforge.net/projects/sleepyhead&apos;&gt;SleepyHead&lt;/a&gt; в SourceForge&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1192"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1216"/>
         <source>Further Information</source>
         <translation>За повече информация</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1194"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1218"/>
         <source>Here are the &lt;a href=&apos;qrc:/docs/release_notes.html&apos;&gt;release notes&lt;/a&gt; for this version.</source>
         <translation>Бележките по това издание се намират &lt;a href=&apos;qrc:/docs/release_notes.html&apos;&gt;тук&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1196"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1220"/>
         <source>Plus a few &lt;a href=&apos;qrc:/docs/usage.html&apos;&gt;usage notes&lt;/a&gt;, and some important information for Mac users.</source>
         <translation>Също така има някои &lt;a href=&apos;qrc:/docs/usage.html&apos;&gt;допълнителни бележки&lt;/a&gt;, както и важна информация за потребители на Mac.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1198"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1222"/>
         <source>About &lt;a href=&apos;http://en.wikipedia.org/wiki/Sleep_apnea&apos;&gt;Sleep Apnea&lt;/a&gt; on Wikipedia</source>
         <translation>Повече за &lt;a href=&apos;http://en.wikipedia.org/wiki/Sleep_apnea&apos;&gt;Сънна апнея&lt;/a&gt; в Wikipedia</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1201"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1225"/>
         <source>Friendly forums to talk and learn about Sleep Apnea:</source>
         <translation>Приятелски форуми за обсъждане и информация относно сънна апнея:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1202"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1226"/>
         <source>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</source>
         <translation>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk форум&lt;/a&gt;,</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1211"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1235"/>
         <source>Copyright:</source>
         <translation>Запазени права:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1213"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1237"/>
         <source>License:</source>
         <translation>Лиценз:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1214"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1238"/>
         <source>This software is released freely under the &lt;a href=&quot;qrc:/COPYING&quot;&gt;GNU Public License&lt;/a&gt;.</source>
         <translation>Този софтуер свободен и лицензиран под &lt;a href=&quot;qrc:/COPYING&quot;&gt;Общ публичен лиценз GNU&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1217"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1241"/>
         <source>DISCLAIMER:</source>
         <translation>Изключване на отговорност:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1219"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1243"/>
         <source>This is &lt;font color=&apos;red&apos;&gt;&lt;u&gt;NOT&lt;/u&gt;&lt;/font&gt; medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.</source>
         <translation>Това &lt;font color=&apos;red&apos;&gt;&lt;u&gt;НЕ Е&lt;/u&gt;&lt;/font&gt; медицински софтуер. Тази програма е просто визуализатор на данни, и няма гаранции относно акуратност и коректност на изчисленията или визуализацията на показаните данни.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1221"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1245"/>
         <source>The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.</source>
         <translation>Не може да бъде търсена отговорност от автора ако някой нарани себе си или друг при използването или неизползването на този софтуер.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1223"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1247"/>
         <source>Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.</source>
         <translation>Вашият лекар винаги трябва да бъде първи и най-добър източник за напътствия относно важната информация за вашето здраве.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1225"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1249"/>
         <source>*** &lt;u&gt;Use at your own risk&lt;/u&gt; ***</source>
         <translation>*** &lt;u&gt;Използвайте на своя отговорност&lt;/u&gt; ***</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1369"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1393"/>
         <source>Loading</source>
         <translation>Зареждане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1389"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1413"/>
         <source>Revision:</source>
         <translation>Ревизия:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1389"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1413"/>
         <source>branch</source>
         <translation>branch</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1407"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1431"/>
         <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
         <translation>Местоположение на папката с данни:&lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
     </message>
@@ -1391,97 +1391,97 @@
         <translation type="vanished">Arie Klerk (Нидерландски), Steffen Reitz и Marc Stephan (Немски), Chen Hao (Китайски), Lars-Erik Söderström (Шведски), Damien Vigneron (Френски), António Jorge Costa (Португалски), Judith Guzmán (Испански), Plamen Tonev (Български) както и други, които ще бъдат добавяни в бъдеще.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1442"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1466"/>
         <source>Special thanks to Pugsy and Robysue from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
         <translation>Специални благодарности на Pugsy и Robysue от &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; за тяхната помощ с документацията и материалите за обучение, както и на всички, които помагат чрез тестване и споделяне на CPAP данните си.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2110"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2135"/>
         <source>Are you sure you want to rebuild all CPAP data for the following machine:</source>
         <translation>Сигурни ли сте че желаете да презапишете всички CPAP данни за следния апарат: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2113"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2138"/>
         <source>Please note, that this could result in loss of graph data if SleepyHead&apos;s internal backups have been disabled or interfered with in any way.</source>
         <translation>Моля имайте предвид, че това би могло да доведе до загуба на графики, при положение, че вътрешният бекъп е бил изключен или е бил модифициран по някакъв начин.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2121"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2146"/>
         <source>For some reason, SleepyHead does not have internal backups for the following machine:</source>
         <translation>По някакви причини SleepyHead не разполага с вътрешни резервни копия за следния апарат:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2124"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2149"/>
         <source>Provided you have made &lt;i&gt;your &lt;b&gt;own&lt;/b&gt; backups for ALL of your CPAP data&lt;/i&gt;, you can still complete this operation, but you will have to restore from your backups manually.</source>
         <translation>Ако сте правили &lt;i&gt;свой &lt;b&gt;собствен&lt;/b&gt; бекъп на абсолютно всички CPAP данни досега&lt;/i&gt; ще можете да завършите тази операция, но ще е необходимо да извършите възстановяването от бекъп ръчно.  </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2125"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2150"/>
         <source>Are you really sure you want to do this?</source>
         <translation>Сигурни ли сте че желаете да направите това?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2171"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2196"/>
         <source>You are about to &lt;font size=+2&gt;obliterate&lt;/font&gt; SleepyHead&apos;s machine database for the following machine:</source>
         <translation>Ще &lt;font size=+2&gt;унищожите&lt;/font&gt; данните на SleepyHead за следния ваш апарат:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2174"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2199"/>
         <source>Note as a precaution, the backup folder will be left in place.</source>
         <translation>За всеки случай бекъп папката ще бъде оставена.  </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2175"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2200"/>
         <source>Are you &lt;b&gt;absolutely sure&lt;/b&gt; you want to proceed?</source>
         <translation>&lt;b&gt;Абсолютно ли сте сигурни&lt;/b&gt; че желаете да продължите?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2198"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2223"/>
         <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
         <translation>Вероятно недостатъчни права за достъп пречат на процеса по изчистване, налага се да изтриете ръчно следната папка:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2734"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2759"/>
         <source>%1&apos;s Journal</source>
         <translation>Журналът на %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2736"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>Choose where to save journal</source>
         <translation>Изберете къде да запишете журналът</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2736"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>XML Files (*.xml)</source>
         <translation>XML файлове (*.xml)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2138"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2163"/>
         <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
         <translation>Не е открит наличен вътрешен бекъп от който да се извърши възстановяването, ще трябва да възстановите от собствен бекъп.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2139"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2164"/>
         <source>Would you like to import from your own backups now? (you will have no data visible for this machine until you do)</source>
         <translation>Желаете ли да извършите импорт от свой собствен бекъп? (няма да виждате никакви данни за този апарат докато не го направите)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2672"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2697"/>
         <source>Are you sure you want to delete oximetry data for %1</source>
         <translation>Сигурни ли сте че желаете да изтриете оксиметричните данни за %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2674"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2699"/>
         <source>&lt;b&gt;Please be aware you can not undo this operation!&lt;/b&gt;</source>
         <translation>&lt;b&gt;Моля имайте предвид, че тази операция не може да бъде отменена по-късно!&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2694"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2719"/>
         <source>Select the day with valid oximetry data in daily view first.</source>
         <translation>Първо изберете ден с валидни оксметрични дани в дневния изглед.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1408"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1432"/>
         <source>Copyright</source>
         <translation>Запазени права</translation>
     </message>
@@ -1511,12 +1511,12 @@
         <translation>Това червено съобщение е умишлено и няма да бъде част от финалната версия...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="553"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="558"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="732"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="737"/>
         <source>Imported %1 CPAP session(s) from
 
 %2</source>
@@ -1525,12 +1525,12 @@
 %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="732"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="737"/>
         <source>Import Success</source>
         <translation>Успешен импорт</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="734"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="739"/>
         <source>Already up to date with CPAP data at
 
 %1</source>
@@ -1539,295 +1539,295 @@
 %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="734"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="739"/>
         <source>Up to date</source>
         <translation>Актуален</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="878"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="888"/>
         <source>Choose a folder</source>
         <translation>Избери папка</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="935"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="954"/>
         <source>Import is already running in the background.</source>
         <translation>Импортирането вече работи във фонов режим.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="962"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="986"/>
         <source>A %1 file structure for a %2 was located at:</source>
         <translation>Файловата структура %1 за %2 беше открита тук:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="964"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="988"/>
         <source>A %1 file structure was located at:</source>
         <translation>Файловата структура %1 беше открита тук:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="971"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="995"/>
         <source>Would you like to import from this location?</source>
         <translation>Желаете ли да извършите импорт от това място?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="975"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="999"/>
         <source>Specify</source>
         <translation>Посочи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1182"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1206"/>
         <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
         <translation>Онлайн &lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide&quot;&gt;Ръководство за употреба&lt;/a&gt; на SleepyHead&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1184"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1208"/>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions&quot;&gt;Frequently Asked Questions&lt;/a&gt;&lt;br/&gt;</source>
         <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions&quot;&gt;Често задавани въпроси&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1186"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1210"/>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
         <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary&quot;&gt;Речник на термините при разстройства на съня&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1188"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1212"/>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Main_Page&quot;&gt;SleepyHead Wiki&lt;/a&gt;&lt;br/&gt;</source>
         <translation>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Main_Page&quot;&gt;SleepyHead Уики&lt;/a&gt;&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1203"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1227"/>
         <source>&lt;a href=&apos;http://www.apneaboard.com/forums/&apos;&gt;Apnea Board&lt;/a&gt;</source>
         <translation>&lt;a href=&apos;http://www.apneaboard.com/forums/&apos;&gt;Apnea Board&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1211"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1235"/>
         <source>&amp;copy;2011-2016</source>
         <translation>&amp;copy;2011-2016</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1409"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1433"/>
         <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
         <translation>Този софтуер e свободен и лицензиран под Общ публичен лиценз GNU v3.0&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1413"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1437"/>
         <source>SleepyHead Project Page</source>
         <translation>Страница на проекта SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1416"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1440"/>
         <source>SleepyHead Wiki</source>
         <translation>SleepyHead Wiki</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1420"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1444"/>
         <source>Don&apos;t forget to Like/+1 SleepyHead on &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; or &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</source>
         <translation>Не забравяйте да харесате/+1 SleepyHead на &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; или &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1425"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1449"/>
         <source>SleepyHead, brought to you by Jedimark</source>
         <translation>SleepyHead е при вас благодарение на JediMark</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1429"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1453"/>
         <source>Kudos &amp; Credits</source>
         <translation>Благодарности и заслуги</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1430"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1454"/>
         <source>Bugfixes, Patches and Platform Help:</source>
         <translation>Корекция на грешки, кръпки и платформена помощ:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1431"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1455"/>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.</source>
         <translation>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1434"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1458"/>
         <source>Translators:</source>
         <translation>Преводачи:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1434"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1458"/>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
         <translation>Arie Klerk (координатор по транслацията, Нидерландски), Steffen Reitz (Немски), Chen Hao (Китайски), Lars-Erik Söderström (Шведски), Damien Vigneron (Френски), António Jorge Costa (Португалски), Judith Guzmán (Испански), Plamen Tonev (Български) и други, които ще се добавят тук.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1437"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1461"/>
         <source>3rd Party Libaries:</source>
         <translation>Външни библиотеки:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1438"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1462"/>
         <source>SleepyHead is built using the &lt;a href=&quot;http://qt-project.org&quot;&gt;Qt Application Framework&lt;/a&gt;.</source>
         <translation>За написването на SleepyHeadis е използван &lt;a href=&quot;http://qt-project.org&quot;&gt;Qt Application Framework&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1440"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1464"/>
         <source>In the updater code, SleepyHead uses &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant&apos;s ZIP/UNZIP package.</source>
         <translation>В кода за ъпдейт SleepyHead използва &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; от Sergey A. Tachenov, който е C++ обвивка за пакета ZIP/UNZIP на Gilles Vollant.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1447"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1471"/>
         <source>Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.</source>
         <translation>Благодаря Ви че използвате SleepyHead. Ако Ви върши добра работа моля обмислете дали не бихте искали да окуражите бъдещата му разработка чрез дарение през PayPal. </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1452"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1476"/>
         <source>This software comes with absolutely no warranty, either express of implied.</source>
         <translation>Този софтуер не предоставя никакви гаранции.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1453"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1477"/>
         <source>It comes with no guarantee of fitness for any particular purpose.</source>
         <translation>Не се дава гаранция за съотвествие с конкретна употреба.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1454"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1478"/>
         <source>No guarantees are made regarding the accuracy of any data this program displays.</source>
         <translation>Не се предоставят гаранции за точност на данни и визуализации, които този софтуер предоставя.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1456"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1480"/>
         <source>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.</source>
         <translation>Това НЕ Е медицински софтуер, той е предназначен за визуална интерпретация на данни записани от поддържани апарати.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1458"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1482"/>
         <source>This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.</source>
         <translation>Този софтуер НЕ Е подходящ за медицинска диагностика, за съответствие със CPAP терапия или каквито и да е друга медицинска употреба.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1461"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1485"/>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
         <translation>Авторът и всички асоциирани с него не поемат НИКАКВА отговорност за щети, проблеми произтичащи от използването или неизползвнето на този софтуер.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1463"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1487"/>
         <source>Use this software entirely at your own risk.</source>
         <translation>Използвайте на своя отговорност.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1532"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1556"/>
         <source>Access to Preferences has been blocked until recalculation completes.</source>
         <translation>Достъпът до конфигурацията е блокиран, докато приключат преизчисленията.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1168"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1192"/>
         <source>Philips Respironics System One (CPAP Pro, Auto, BiPAP &amp; ASV models)</source>
         <translation>Philips Respironics System One (CPAP Pro, Auto, BiPAP &amp; ASV модели)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1403"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1427"/>
         <source>Build Date: %1 %2</source>
         <translation>Дата на версията: %1 %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1405"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1429"/>
         <source>Graphics Engine: %1</source>
         <translation>Графичен енджин: %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1621"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1645"/>
         <source>There was an error saving screenshot to file &quot;%1&quot;</source>
         <translation>Има проблем със запазването на снимка на екрана във файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1623"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1647"/>
         <source>Screenshot saved to file &quot;%1&quot;</source>
         <translation>Снимката на екрана е записана във файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1643"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1667"/>
         <source>Printing Disabled</source>
         <translation>Печатът е изключен</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1644"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1668"/>
         <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
         <translation>Моля прекомпилирайте SleepyHead с Qt версия 4.8.5 или по-висока, тъй има проблеми със стабилността на тази версия на Qt при печатане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1971"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1994"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1995"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2019"/>
         <source>Gah!</source>
         <translation>Ох!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1971"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1994"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1995"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2019"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation>Ако четете това значи командата за рестарт не е извършена успешно. Ще се наложи да рестартирате ръчно.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2371"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2396"/>
         <source>Performance will be degraded during these recalculations.</source>
         <translation>Производителноста ще бъде намалена докато се извършват преизчисления.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2372"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2397"/>
         <source>Recalculating Indices</source>
         <translation>Преизчисляват се индекси</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2384"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2409"/>
         <source>Loading Event Data</source>
         <translation>Зареждане на данни за събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2386"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2448"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2411"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2473"/>
         <source>Recalculating Summaries</source>
         <translation>Преизчисляване на обща информация </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2460"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2485"/>
         <source>Restart Required</source>
         <translation>Необходим е рестарт</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2461"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2486"/>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation>Преизчисленията завършиха, необходимо е приложението да бъде рестартирано за да се видят промените.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2466"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2491"/>
         <source>Recalculations are now complete.</source>
         <translation>Преизчисленията завършиха.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2466"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2491"/>
         <source>Task Completed</source>
         <translation>Задачата приключи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2490"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2515"/>
         <source>There was a problem opening ZEO File: </source>
         <translation>Има проблем с отварянето на файл от ZEO:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2494"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2519"/>
         <source>Zeo CSV Import complete</source>
         <translation>Импорта на данни от Zeo CSV приключи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2516"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2541"/>
         <source>There was a problem opening MSeries block File: </source>
         <translation>Има проблем с отварянето на файл с данни от MSeries:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2520"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2545"/>
         <source>MSeries Import complete</source>
         <translation>Импорта от MSeries приключи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2577"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2602"/>
         <source>There was a problem opening Somnopose Data File: </source>
         <translation>Има проблем с отварянето на файл с данни от Somnopose:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2581"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2606"/>
         <source>Somnopause Data Import complete</source>
         <translation>Импорта на данни от Somnopose приключи</translation>
     </message>
@@ -3126,8 +3126,8 @@ A value of 20% works well for detecting apneas. </source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="931"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1012"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1457"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1617"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1464"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1624"/>
         <source>%</source>
         <translation>%</translation>
     </message>
@@ -3152,9 +3152,9 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="921"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1032"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1474"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1562"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1591"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1481"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1569"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1598"/>
         <source>s</source>
         <translation>сек</translation>
     </message>
@@ -3251,87 +3251,87 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
         <translation>Да се показва ли червена линия в графиката с течове</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1704"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1776"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1711"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1783"/>
         <source>Search</source>
         <translation>Търсене</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1400"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1407"/>
         <source>&amp;Oximetry</source>
         <translation>&amp;Оксиметрия</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1552"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1559"/>
         <source>SPO2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1614"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1621"/>
         <source>Percentage drop in oxygen saturation</source>
         <translation>Процентен спад в кислородна сатурация</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1607"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1614"/>
         <source>Pulse</source>
         <translation>Пулс</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1572"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1579"/>
         <source>Sudden change in Pulse Rate of at least this amount</source>
         <translation>Внезапна промяна в честотата на пулс поне от поне такъв порядък</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1464"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1494"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1575"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1471"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1501"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1582"/>
         <source> bpm</source>
         <translation> удара в минута</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1559"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1566"/>
         <source>Minimum duration of drop in oxygen saturation</source>
         <translation>Минимална продължителност на спад в кислородната сатурация</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1588"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1595"/>
         <source>Minimum duration of pulse change event.</source>
         <translation>Минимална продължителност на събитието промяна в пулс.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1471"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1478"/>
         <source>Small chunks of oximetry data under this amount will be discarded.</source>
         <translation>Малки откъси оксиметрични данни под тази бройка ще бъдат игнорирани.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1832"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1839"/>
         <source>&amp;General</source>
         <translation>&amp;Основно</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1861"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1868"/>
         <source>General Settings</source>
         <translation>Основни настройки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2512"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2519"/>
         <source>Daily view navigation buttons will skip over days without data records</source>
         <translation>Навигационните бутони за дневен преглед ще прескачат дните, за които няма данни</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2515"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2522"/>
         <source>Skip over Empty Days</source>
         <translation>Прескачане на празни дни</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1882"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1889"/>
         <source>Allow use of multiple CPU cores where available to improve performance. 
 Mainly affects the importer.</source>
         <translation>Позволяване използването на многоядрени процесори, когато е възможно за да се подобри производителността. 
 Предимно се усеща при импортиране.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1886"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1893"/>
         <source>Enable Multithreading</source>
         <translation>Включване на многонишковост</translation>
     </message>
@@ -3341,74 +3341,74 @@ Mainly affects the importer.</source>
         <translation>Прескачане на екрана за вход и зареждане на последния използван потребителски профил</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2502"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2509"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These features have recently been pruned. They will come back later. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тези функции бяха отстранени наскоро. Ще се появят обратно по-късно. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1259"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1266"/>
         <source>Changes to the following settings needs a restart, but not a recalc.</source>
         <translation>Промени в следните настройки ще изискват рестарт, а не преизчисления.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1421"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1428"/>
         <source>Oximetery Settings</source>
         <translation>Оксиметрични настройки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1262"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1269"/>
         <source>Preferred Calculation Methods</source>
         <translation>Предпочитан метод за калкулация</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1305"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1312"/>
         <source>Middle Calculations</source>
         <translation>Средни изчисления</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1268"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1275"/>
         <source>Upper Percentile</source>
         <translation>Горни проценти</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1282"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1289"/>
         <source>For consistancy, ResMed users should use 95% here,
 as this is the only value available on summary-only days.</source>
         <translation>За консистенция потребителите на ResMed апарати трябва да използват 95% тук, тъй като това е единствената налична стойност за дните само с обща информация.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1312"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1319"/>
         <source>Median is recommended for ResMed users.</source>
         <translation>Използването на &apos;средно&apos; е подходящо за ResMed апарати.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1316"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1379"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1323"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1386"/>
         <source>Median</source>
         <translation>Средно</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1321"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1328"/>
         <source>Weighted Average</source>
         <translation>Средно по тежест</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1326"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1333"/>
         <source>Normal Average</source>
         <translation>Нормално средно</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1350"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1357"/>
         <source>True Maximum</source>
         <translation>Реален максимум</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1355"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1362"/>
         <source>99% Percentile</source>
         <translation>99% процента</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1275"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1282"/>
         <source>Maximum Calcs</source>
         <translation>Максимум изчисления</translation>
     </message>
@@ -3532,27 +3532,27 @@ as this is the only value available on summary-only days.</source>
         <translation>Часове</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1346"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1353"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;True maximum is the maximum of the data set.&lt;/p&gt;&lt;p&gt;99th percentile filters out the rarest outliers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Реалният максимум е максималният от данните.&lt;/p&gt;&lt;p&gt;99ти перцентил изчиства редките отклонения.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1364"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1371"/>
         <source>Combined Count divided by Total Hours</source>
         <translation>Комбиниран брой разделен на общия брой часове</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1369"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1376"/>
         <source>Time Weighted average of Indice</source>
         <translation>Усреднена тежест на индекс</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1374"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1381"/>
         <source>Standard average of indice</source>
         <translation>Стандартна тежест на индекс</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1387"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1394"/>
         <source>Culminative Indices</source>
         <translation>Кулминативни индекси</translation>
     </message>
@@ -3562,42 +3562,42 @@ as this is the only value available on summary-only days.</source>
         <translation>Персонален избор за маркиране на CPAP събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1918"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1925"/>
         <source>Automatically Check For Updates</source>
         <translation>Автоматична проверка за обновления</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1935"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1942"/>
         <source>Check for new version every</source>
         <translation>Проверка за нова версия всеки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1942"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1949"/>
         <source>Sourceforge hosts this project for free.. Please be considerate of their resources..</source>
         <translation>Sourceforge хоства този проект безплатно..Моля не ангажирайте излишно техните ресурси.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1958"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1965"/>
         <source>days.</source>
         <translation>дни.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2023"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2030"/>
         <source>&amp;Check for Updates now</source>
         <translation>&amp;Провери за обновления сега</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2046"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2053"/>
         <source>Last Checked For Updates: </source>
         <translation>Последна проверка за обновления:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2059"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2066"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2081"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2088"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -3614,98 +3614,98 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2090"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2097"/>
         <source>I want to try experimental and test builds (Advanced users only please.)</source>
         <translation>Желая да използвам експериментални и тестови версии (Само за напреднали потребители)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2114"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2121"/>
         <source>&amp;Appearance</source>
         <translation>&amp;Изглед</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2146"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2153"/>
         <source>Graph Settings</source>
         <translation>Графични настройки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2153"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2160"/>
         <source>Bar Tops</source>
         <translation>Връх на стълб</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2158"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2165"/>
         <source>Line Chart</source>
         <translation>Линейна графика</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2166"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2173"/>
         <source>Overview Linecharts</source>
         <translation>Общ изглед линейни графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2191"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2198"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This makes scrolling when zoomed in easier on sensitive bidirectional TouchPads&lt;/p&gt;&lt;p&gt;50ms is recommended value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Това прави по-лесно скролирането при увеличение когато се използва чувствителен двупосочен TouchPad&lt;/p&gt;&lt;p&gt;50мс е препоръчителната стойност.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2219"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2226"/>
         <source>milliseconds</source>
         <translation>милисекунди</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2285"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2292"/>
         <source>Scroll Dampening</source>
         <translation>Плавност на скролиране</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2377"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2384"/>
         <source>Overlay Flags</source>
         <translation>Overlay маркери</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2387"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2394"/>
         <source>Line Thickness</source>
         <translation>Дебелина на линия</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2399"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2406"/>
         <source>The pixel thickness of line plots</source>
         <translation>Дебелина на пиксела в линейни графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2492"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2499"/>
         <source>Pixmap caching is an graphics acceleration technique. May cause problems with font drawing in graph display area on your platform.</source>
         <translation>Pixmap кеширането е техника за графично ускорение. Може да причини проблеми с изрисуването на шрифтове в графиките.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2544"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2551"/>
         <source>Fonts (Application wide settings)</source>
         <translation>Шрифтове (за тази програма)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2343"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2350"/>
         <source>The visual method of displaying waveform overlay flags.
 </source>
         <translation>Визуален метод за показване на overlay вълни на маркери.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2348"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2355"/>
         <source>Standard Bars</source>
         <translation>Стандартни стълбове</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2361"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2368"/>
         <source>Graph Height</source>
         <translation>Височина на графика</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2311"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2318"/>
         <source>Default display height of graphs in pixels</source>
         <translation>Стандартна височина на графиките в пиксели</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2239"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2246"/>
         <source>How long you want the tooltips to stay visible.</source>
         <translation>Колко дълго желаете да седят показани подсказките.</translation>
     </message>
@@ -3738,54 +3738,54 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;При импортиране от сериен порт се използва времето на стартиране на първата CPAP сесия от последната нощ. (Не забравяйте да направите импорт първо на CPAP данните си!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1681"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1688"/>
         <source>Events</source>
         <translation>Събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1727"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1806"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1734"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1813"/>
         <source>Reset &amp;Defaults</source>
         <translation>&amp;Възстановяване на настройки по подразбиране</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1740"/>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1819"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1747"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1826"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it&apos;s good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Внимание: &lt;/span&gt;Това че можете да го направите не означава че е добра практика.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1753"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1760"/>
         <source>Waveforms</source>
         <translation>Вълни</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1540"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1547"/>
         <source>Flag rapid changes in oximetry stats</source>
         <translation>Маркиране на рязки промени в данните от оксиметър</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1451"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1458"/>
         <source>Other oximetry options</source>
         <translation>Други оксиметрични настройки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1501"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1508"/>
         <source>Flag SPO2 Desaturations Below</source>
         <translation>Маркиране на SpO2 десатурации под</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1484"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1491"/>
         <source>Discard segments under</source>
         <translation>Игнорирай сегменти под</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1521"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1528"/>
         <source>Flag Pulse Rate Above</source>
         <translation>Маркиране при пулс над</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1511"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1518"/>
         <source>Flag Pulse Rate Below</source>
         <translation>Маркиране при пулс под</translation>
     </message>
@@ -3838,7 +3838,12 @@ If you use a few different masks, pick average values instead. It should still b
         <translation>Показване на флагове за събития, открити от апарата, които не са идентифицирани засега.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1661"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1250"/>
+        <source>Allow Event Renaming</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1668"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -3867,27 +3872,27 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Процесът по импортиране през сериен порт приема за начало началното време на старт на първата CPAP сесия от предишната нощ. (Не забравяйте че е необходимо първо да импортирате вашите CPAP данни!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2295"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2302"/>
         <source>Tooltip Timeout</source>
         <translation>Време на показване на подсказка</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2330"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2337"/>
         <source>Graph Tooltips</source>
         <translation>Подсказки в графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2353"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2360"/>
         <source>Top Markers</source>
         <translation>Топ маркери</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2448"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2455"/>
         <source>Other Visual Settings</source>
         <translation>Други визауални настройки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2454"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2461"/>
         <source>Anti-Aliasing applies smoothing to graph plots.. 
 Certain plots look more attractive with this on. 
 This also affects printed reports.
@@ -3900,22 +3905,22 @@ Try it and see if you like it.</source>
 Опитайте опцията за да прецените дали Ви допада.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2461"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2468"/>
         <source>Use Anti-Aliasing</source>
         <translation>Използване на заглаждане на ръбове</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2468"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2475"/>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
         <translation>Прави някои графики да изглеждат с по &quot;квадратни вълни&quot;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2471"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2478"/>
         <source>Square Wave Plots</source>
         <translation>Графики с &quot;квадратни вълни&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2478"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2485"/>
         <source>Allows graphs to be &quot;screenshotted&quot; for display purposes.
 The Event Breakdown PIE chart uses this method, as does
 the printing code.
@@ -3928,239 +3933,239 @@ this application to be unstable with this feature enabled.</source>
 на тази програма, когато е включена тази опция.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2485"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2492"/>
         <source>Show event breakdown pie chart</source>
         <translation>Показване на графична разбивка на събитията</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2495"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2502"/>
         <source>Use Pixmap Caching</source>
         <translation>Използване на Pixmap кеширане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2505"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2512"/>
         <source>Animations &amp;&amp; Fancy Stuff</source>
         <translation>Анимации &amp;&amp; красоти</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2522"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2529"/>
         <source>Whether to allow changing yAxis scales by double clicking on yAxis labels</source>
         <translation>Да се позволи ли смяна на мащаба по абциса/ордината чрез двойно кликане върху етикетите</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2525"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2532"/>
         <source>Allow YAxis Scaling</source>
         <translation>Позволяване на мащабиране по ос/абциса</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2579"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2586"/>
         <source>Font</source>
         <translation>Шрифт</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2598"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2605"/>
         <source>Size</source>
         <translation>Размер</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2617"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2624"/>
         <source>Bold  </source>
         <translation>Удебелен</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2639"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2646"/>
         <source>Italic</source>
         <translation>Курсив</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2652"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2659"/>
         <source>Application</source>
         <translation>Приложение</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2716"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2723"/>
         <source>Graph Text</source>
         <translation>Текст към графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2777"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2784"/>
         <source>Graph Titles</source>
         <translation>Заглавие към графики</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2838"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2845"/>
         <source>Big  Text</source>
         <translation>Голям текст</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2899"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="373"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="505"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2906"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="374"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="506"/>
         <source>Details</source>
         <translation>Детайли</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2943"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2950"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отказ</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2950"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2957"/>
         <source>&amp;Ok</source>
         <translation>O&amp;K</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="368"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="499"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="369"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="500"/>
         <source>Name</source>
         <translation>Име</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="369"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="500"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="370"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="501"/>
         <source>Color</source>
         <translation>Цвят</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="371"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="372"/>
         <source>Flag Type</source>
         <translation>Тип маркер</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="372"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="504"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="373"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="505"/>
         <source>Label</source>
         <translation>Етикет</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="389"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="390"/>
         <source>CPAP Events</source>
         <translation>CPAP събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="390"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="391"/>
         <source>Oximeter Events</source>
         <translation>Оксиметрични събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="391"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="392"/>
         <source>Positional Events</source>
         <translation>Позиционни събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="392"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="393"/>
         <source>Sleep Stage Events</source>
         <translation>Събития относно фази на сън</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="393"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="394"/>
         <source>Unknown Events</source>
         <translation>Непознати събития</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="565"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="566"/>
         <source>Double click to change the descriptive name this channel.</source>
         <translation>Направете двойно кликане с мишката за да смените описателното име на този канал.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="443"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="572"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="444"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="573"/>
         <source>Double click to change the default color for this channel plot/flag/data.</source>
         <translation>Направете двойно кликане с мишката за да смените цвят за графика/маркер/данни в този канал.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="228"/>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="229"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1162"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1167"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="230"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1166"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1171"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="370"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="501"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="371"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="502"/>
         <source>Overview</source>
         <translation>Общ преглед</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="435"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="436"/>
         <source>Double click to change the descriptive name the &apos;%1&apos; channel.</source>
         <translation>Направете двойно кликане с мишката за да смените описателното име за канал &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="448"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="449"/>
         <source>Whether this flag has a dedicated overview chart.</source>
         <translation>Дали този флаг да има собствена графика.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="458"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="459"/>
         <source>Here you can change the type of flag shown for this event</source>
         <translation>От тук можете да промените какъв тип маркер да се показва за това събитие</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="463"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="596"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="464"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="597"/>
         <source>This is the short-form label to indicate this channel on screen.</source>
         <translation>Това е кратък етикет, който ще се показва за този канал на екрана.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="469"/>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="602"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="470"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="603"/>
         <source>This is a description of what this channel does.</source>
         <translation>Това е описание какво прави този канал.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="502"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="503"/>
         <source>Lower</source>
         <translation>Долна</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="503"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="504"/>
         <source>Upper</source>
         <translation>Горна</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="522"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="523"/>
         <source>CPAP Waveforms</source>
         <translation>CPAP вълна</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="523"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="524"/>
         <source>Oximeter Waveforms</source>
         <translation>Оксиметрична вълна</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="524"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="525"/>
         <source>Positional Waveforms</source>
         <translation>Позиционна вълна</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="525"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="526"/>
         <source>Sleep Stage Waveforms</source>
         <translation>Вълна за фази на съня</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="581"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="582"/>
         <source>Whether a breakdown of this waveform displays in overview.</source>
         <translation>Дали разбивката на тази вълна да се показва в преглед.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="586"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="587"/>
         <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
         <translation>Тук можете да укажете &lt;b&gt;долна&lt;/b&gt; граница, която да се използва за калкулация на %1 вълната</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="591"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="592"/>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
         <translation>Тук можете да укажете &lt;b&gt;горна&lt;b&gt; граница, която да се използва за калкулация на %1 вълната</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="694"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="695"/>
         <source>Data Reindex Required</source>
         <translation>Необходимо е реиндексиране на данните</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="695"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="696"/>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
@@ -4169,12 +4174,12 @@ Are you sure you want to make these changes?</source>
 Желаете ли да се извършат тези промени?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="701"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="702"/>
         <source>Restart Required</source>
         <translation>Необходим е рестарт</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="702"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="703"/>
         <source>One or more of the changes you have made will require this application to be restarted,
 in order for these changes to come into effect.
 
@@ -4185,12 +4190,12 @@ Would you like do this now?</source>
 Желаете ли да се рестартира програмата сега?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1091"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1095"/>
         <source>Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.</source>
         <translation>Изкючването на автоматично архивиране не е добра идея, защото SleepyHead се нуждае от тях за презареждане на базата, в случай че се открият грешки.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1092"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1096"/>
         <source>Are you really sure you want to do this?</source>
         <translation>Сигурни ли сте че желаете да направите това?</translation>
     </message>
@@ -4215,27 +4220,27 @@ Would you like do this now?</source>
         <translation>Постоянен маркер</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1044"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1048"/>
         <source>This may not be a good idea</source>
         <translation>Това може би не е добра идея</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1045"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1049"/>
         <source>ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution).</source>
         <translation>Апаратите ResMed S9 рутинно изтриват някои данни от SD картата (по-стари от 7 и 30 дни, в зависимост от резолюцията).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1046"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1050"/>
         <source>If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won&apos;t come back.</source>
         <translation>Ако някога имате нужда да реимпортирате тези данни отново (независимо дали в SleepyHead или ResScan) тези данни няма да се възстановят.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1047"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1051"/>
         <source>If you need to conserve disk space, please remember to carry out manual backups.</source>
         <translation>Ако желаете да спестите дисково пространство моля не забравяйте да си правите собствени ръчни архивни копия.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1048"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1052"/>
         <source>Are you sure you want to disable these backups?</source>
         <translation>Сигурни ли сте че желаете да изключите архивните копия?</translation>
     </message>
@@ -4747,8 +4752,8 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="381"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2753"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3285"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2841"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3330"/>
         <source>CPAP</source>
         <translation></translation>
     </message>
@@ -4784,13 +4789,13 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="390"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3286"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3331"/>
         <source>APAP</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="391"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3292"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3337"/>
         <source>ASV</source>
         <translation></translation>
     </message>
@@ -4870,7 +4875,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="409"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2774"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2862"/>
         <source>PP</source>
         <translation>PP</translation>
     </message>
@@ -5213,8 +5218,8 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="467"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3280"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3282"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3325"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3327"/>
         <source>Mode</source>
         <translation>Режим</translation>
     </message>
@@ -5341,13 +5346,13 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="500"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2820"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2908"/>
         <source>Yes</source>
         <translation>Да</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="501"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2821"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2909"/>
         <source>No</source>
         <translation>Не</translation>
     </message>
@@ -5405,37 +5410,37 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="247"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2745"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2833"/>
         <source>RemStar Pro with C-Flex+</source>
         <translation>RemStar Pro with C-Flex+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="250"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2746"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2834"/>
         <source>RemStar Auto with A-Flex</source>
         <translation>RemStar Auto with A-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="253"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2747"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2835"/>
         <source>RemStar BiPAP Pro with Bi-Flex</source>
         <translation>RemStar BiPAP Pro with Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="256"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2748"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2836"/>
         <source>RemStar BiPAP Auto with Bi-Flex</source>
         <translation>RemStar BiPAP Auto with Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="259"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2750"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2838"/>
         <source>BiPAP autoSV Advanced</source>
         <translation>BiPAP autoSV Advanced</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="262"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2752"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2840"/>
         <source>BiPAP AVAPS</source>
         <translation>BiPAP AVAPS</translation>
     </message>
@@ -5481,299 +5486,300 @@ TTIA: %1</translation>
         <translation>Моля изпратете на JediMark .zip архив със съдържанието на SD картата с памет за този апарат както и съответни Encore .pdf репорти за да може този софтуер да поддържа и вашия модел в следващите си версии.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1677"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2865"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1749"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2953"/>
         <source>15mm</source>
         <translation>15мм</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1677"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2864"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1749"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2952"/>
         <source>22mm</source>
         <translation>22мм</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2749"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2837"/>
         <source>RemStar Plus</source>
         <translation>RemStar Plus</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2751"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2839"/>
         <source>BiPAP autoSV Advanced 60 Series</source>
         <translation>BiPAP autoSV Advanced 60 Series</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2754"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2842"/>
         <source>CPAP Pro</source>
         <translation>CPAP Pro</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2755"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2843"/>
         <source>Auto CPAP</source>
         <translation>Auto CPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2756"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2844"/>
         <source>BiPAP Pro</source>
         <translation>BiPAP Pro</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2757"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2845"/>
         <source>Auto BiPAP</source>
         <translation>Auto BiPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2778"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2780"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2866"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2868"/>
         <source>Flex Mode</source>
         <translation>Flex режим</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2779"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2867"/>
         <source>PRS1 pressure relief mode.</source>
         <translation>Режим облекчение на налягането на PRS1.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2785"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2873"/>
         <source>C-Flex</source>
         <translation>C-Flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2786"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2874"/>
         <source>C-Flex+</source>
         <translation>C-Flex+</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2787"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2875"/>
         <source>A-Flex</source>
         <translation>A-Flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2788"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2876"/>
         <source>Rise Time</source>
         <translation>Време на събуждане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2789"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2877"/>
         <source>Bi-Flex</source>
         <translation>Bi-Flex</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2793"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2795"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2881"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2883"/>
         <source>Flex Level</source>
         <translation>Степен на гъвкавост</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2794"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2882"/>
         <source>PRS1 pressure relief setting.</source>
         <translation>Настройка на облекчение на налягането на PRS1.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2799"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2830"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2852"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2887"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2918"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2940"/>
         <source>x1</source>
         <translation>x1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2800"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2831"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2853"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2888"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2919"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2941"/>
         <source>x2</source>
         <translation>x2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2801"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2832"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2854"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2889"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2920"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2942"/>
         <source>x3</source>
         <translation>x3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2802"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2833"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2855"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2890"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2921"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2943"/>
         <source>x4</source>
         <translation>x4</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2803"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2834"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2856"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2891"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2922"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2944"/>
         <source>x5</source>
         <translation>x5</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2807"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2809"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2895"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2897"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3384"/>
         <source>Humidifier Status</source>
         <translation>Статус овлажнител</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2808"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2896"/>
         <source>PRS1 humidifier connected?</source>
         <translation>Свързан ли е овлажнителят на PRS1?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2811"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2899"/>
         <source>Disconnected</source>
         <translation>Несвързан</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2812"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2900"/>
         <source>Connected</source>
         <translation>Свързан</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2816"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2904"/>
         <source>Heated Tubing</source>
         <translation>Нагреваем маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2817"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2905"/>
         <source>Heated Tubing Connected</source>
         <translation>Свързан нагреваем маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2818"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2906"/>
         <source>Headed Tubing</source>
         <translation>Нагреваем маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2825"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2913"/>
         <source>Humidification Level</source>
         <translation>Степен на овлажняване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2826"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2914"/>
         <source>PRS1 Humidification level</source>
         <translation>PRS1 степен на овлажняване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2827"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2915"/>
         <source>Humid. Lvl.</source>
         <translation>Степ. овлажн.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2838"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2839"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2926"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2927"/>
         <source>System One Resistance Status</source>
         <translation>System One статус съпротивление</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2840"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2928"/>
         <source>Sys1 Resist. Status</source>
         <translation>Sys1 съпрот. статус</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2847"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2935"/>
         <source>System One Resistance Setting</source>
         <translation>System One настройка съпротивление</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2848"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2936"/>
         <source>System One Mask Resistance Setting</source>
         <translation>System One настройка съпротивление на маска</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2849"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2937"/>
         <source>Sys1 Resist. Set</source>
         <translation>Sys1 съпрот. настройка</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2860"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2862"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2948"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2950"/>
         <source>Hose Diameter</source>
         <translation>Диаметър на маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2861"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2949"/>
         <source>Diameter of primary CPAP hose</source>
         <translation>Диаметър на основния CPAP маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2869"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2957"/>
         <source>System One Resistance Lock</source>
         <translation>System One заключване съпротивление</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2870"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2958"/>
         <source>Whether System One resistance settings are available to you.</source>
         <translation>Дали System One настройките за съпротивление са налични за Вас.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2871"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2959"/>
         <source>Sys1 Resist. Lock</source>
         <translation>Sys1 съпрот. заключване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2878"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2880"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2966"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2968"/>
         <source>Auto On</source>
         <translation>Автоматично включване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2879"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2967"/>
         <source>A few breaths automatically starts machine</source>
         <translation>Няколко вдишвания автоматично включват апарата</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2887"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2889"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2975"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2977"/>
         <source>Auto Off</source>
         <translation>Автоматично изключване</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2888"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2976"/>
         <source>Machine automatically switches off</source>
         <translation>Апаратът автоматично се изключва</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2896"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2898"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2984"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2986"/>
         <source>Mask Alert</source>
         <translation>Предупреждение за маска</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2897"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2985"/>
         <source>Whether or not machine allows Mask checking.</source>
         <translation>Дали апарата позволява проверка за маска.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2905"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2907"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2993"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2995"/>
         <source>Show AHI</source>
         <translation>Покажи AHI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2906"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2994"/>
         <source>Whether or not machine shows AHI via LCD panel.</source>
         <translation>Дали апарата показва AHI на LCD дисплея си.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2919"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3007"/>
         <source>Unknown PRS1 Code %1</source>
         <translation>Непознат PRS1 код %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2920"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2921"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3008"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3009"/>
         <source>PRS1_%1</source>
         <translation>PRS1_%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2994"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3082"/>
         <source>Timed Breath</source>
         <translation>Периодично дишане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2995"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3083"/>
         <source>Machine Initiated Breath</source>
         <translation>Дишане инициирано от апарата</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2996"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3084"/>
         <source>TB</source>
         <translation>TB</translation>
     </message>
@@ -5894,19 +5900,31 @@ TTIA: %1</translation>
         <translation>Бележки по изданието</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/main.cpp" line="89"/>
         <source>&lt;p&gt;After four years in the making, this build brings SleepyHead into the final beta phase.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;След четири години разработка тази версия довежда SleepyHead до финална бета фаза.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;След четири години разработка тази версия довежда SleepyHead до финална бета фаза.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
+        <translation type="vanished">&lt;p&gt;Все още не е перфектна, но от тук нататък фокусът ще е предимно върху окончателното оформление.</translation>
+    </message>
+    <message>
+        <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.&lt;/p&gt;</source>
+        <translation type="vanished">Тази нова версия поддържа вече и новият апарат на Philips Respironics DreamStation, както и старите модели PRS1 1060P.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/main.cpp" line="89"/>
+        <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="90"/>
-        <source>&lt;p&gt;Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation>&lt;p&gt;Все още не е перфектна, но от тук нататък фокусът ще е предимно върху окончателното оформление.</translation>
+        <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="91"/>
-        <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.&lt;/p&gt;</source>
-        <translation>Тази нова версия поддържа вече и новият апарат на Philips Respironics DreamStation, както и старите модели PRS1 1060P.&lt;/p&gt;</translation>
+        <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="95"/>
@@ -5927,6 +5945,11 @@ TTIA: %1</translation>
         <location filename="../sleepyhead/main.cpp" line="114"/>
         <source>Sleep Well, and good luck!</source>
         <translation>Приятни сънища и късмет!</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/main.cpp" line="115"/>
+        <source>Change log</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="131"/>
@@ -6032,12 +6055,12 @@ TTIA: %1</translation>
         <translation>SleepyHead ще стартира със старата.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/main.cpp" line="442"/>
+        <location filename="../sleepyhead/main.cpp" line="445"/>
         <source>The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).</source>
         <translation>Версията на SleepyHead, която сте стартирали е ПО–СТАРА от версията, която е използвана за създаване на тези данни (%1).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/main.cpp" line="443"/>
+        <location filename="../sleepyhead/main.cpp" line="446"/>
         <source>It is likely that doing this will cause data corruption, are you sure you want to do this?</source>
         <translation>Много е вероятно това да причини повреда на данни, сигурни ли сте че искате да продължите?</translation>
     </message>
@@ -6067,47 +6090,47 @@ TTIA: %1</translation>
         <translation>Сигурни ли сте, че желаете да използвате тази папка?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="496"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="501"/>
         <source>Don&apos;t forget to place your datacard back in your CPAP machine</source>
         <translation>Не забравяйте да поставите обратно вашата SD карта в CPAP апарата</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="496"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="501"/>
         <source>SleepyHead Reminder</source>
         <translation>Напомняне на SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1469"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1493"/>
         <source>About SleepyHead</source>
         <translation>Относно SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1485"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1509"/>
         <source>&amp;Close</source>
         <translation>&amp;Затваряне</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1489"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1513"/>
         <source>&amp;Donate</source>
         <translation>&amp;Дарения</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2355"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2380"/>
         <source>Sorry, your %1 %2 machine is not currently supported.</source>
         <translation>Съжаляваме, вашият %1 %2 апарат не се поддържа за момента.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="2756"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="2781"/>
         <source>Sorry, this feature is not implemented yet</source>
         <translation>Съжаляваме, тази функция все още не работи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1081"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1085"/>
         <source>Are you sure you want to reset all your channel colors and settings to defaults?</source>
         <translation>Сигурни ли сте че желаете да възстановите всички цветове на канали и настройки към стойностите им по подразбиране?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="1132"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="1136"/>
         <source>Are you sure you want to reset all your waveform channel colors and settings to defaults?</source>
         <translation>Сигурни ли сте че желаете да възстановите фабричните настройки за цветовете на каналите на вълните?</translation>
     </message>
@@ -6415,6 +6438,8 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation>Рампинг събитие</translation>
     </message>
     <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3462"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3464"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="181"/>
         <source>Ramp</source>
         <translation>Рампинг</translation>
@@ -6502,12 +6527,12 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation>Вибраторно хъркане открито от апарат System One</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2772"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2860"/>
         <source>Pressure Pulse</source>
         <translation>Пулсиращо налягане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2773"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2861"/>
         <source>A pulse of pressure &apos;pinged&apos; to detect a closed airway.</source>
         <translation>Пулсиращо налягане, което &apos;ping-ва&apos; за да засече обструкция в дихателния път.</translation>
     </message>
@@ -6942,17 +6967,17 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation>ASV (променлив EPAP)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="976"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="979"/>
         <source>Zero</source>
         <translation>Нула</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="979"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="982"/>
         <source>Upper Threshold</source>
         <translation>Горна граница</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="982"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="985"/>
         <source>Lower Threshold</source>
         <translation>Долна граница</translation>
     </message>
@@ -7603,13 +7628,13 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation>M-Series</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="205"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="208"/>
         <source>Philips Respironics</source>
         <translation>Philips Respironics</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="270"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="205"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="208"/>
         <source>System One</source>
         <translation>System One</translation>
     </message>
@@ -7649,108 +7674,239 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation>Personal Sleep Coach</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1263"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1997"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1308"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2042"/>
         <source>VPAP Adapt</source>
         <translation>VPAP Adapt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3281"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3326"/>
         <source>CPAP Mode</source>
         <translation>CPAP режим</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3287"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3332"/>
         <source>VPAP-T</source>
         <translation>VPAP-T</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3288"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3333"/>
         <source>VPAP-S</source>
         <translation>VPAP-S</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3289"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3334"/>
         <source>VPAP-S/T</source>
         <translation>VPAP-S/T</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3290"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3335"/>
         <source>??</source>
         <translation>??</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3291"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3336"/>
         <source>VPAPauto</source>
         <translation>VPAPauto</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3293"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3338"/>
         <source>ASVAuto</source>
         <translation>ASVAuto</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3294"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3295"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3339"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3340"/>
         <source>???</source>
         <translation>???</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3296"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3341"/>
         <source>Auto for Her</source>
         <translation>Auto for Her</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3301"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3303"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3346"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3348"/>
         <source>EPR</source>
         <translation>EPR</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3302"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3347"/>
         <source>ResMed Exhale Pressure Relief</source>
         <translation>ResMed облекчение на налягането при издишане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3310"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3355"/>
         <source>Patient???</source>
         <translation>Пациент???</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3313"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3315"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3358"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3360"/>
         <source>EPR Level</source>
         <translation>EPR степен</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3314"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3359"/>
         <source>Exhale Pressure Relief Level</source>
         <translation>Степен на облекчение на налягането при издишане</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3318"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3363"/>
         <source>0cmH2O</source>
         <translation>0cmH2O</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3319"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3364"/>
         <source>1cmH2O</source>
         <translation>1cmH2O</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3320"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3365"/>
         <source>2cmH2O</source>
         <translation>2cmH2O</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3321"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3366"/>
         <source>3cmH2O</source>
         <translation>3cmH2O</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/MinutesAtPressure.cpp" line="260"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3373"/>
+        <source>SmartStart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3374"/>
+        <source>Machine auto starts by breathing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3375"/>
+        <source>Smart Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3382"/>
+        <source>Humid. Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3383"/>
+        <source>Humidifier Enabled Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3391"/>
+        <source>Humid. Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3392"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3393"/>
+        <source>Humidity Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3407"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3409"/>
+        <source>Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3408"/>
+        <source>ClimateLine Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3414"/>
+        <source>Temp. Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3415"/>
+        <source>ClimateLine Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3416"/>
+        <source>Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3425"/>
+        <source>AB Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3426"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3427"/>
+        <source>Antibacterial Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3434"/>
+        <source>Pt. Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3435"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3436"/>
+        <source>Patient Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3443"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3444"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3445"/>
+        <source>Climate Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3448"/>
+        <source>Manual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3449"/>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3452"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3454"/>
+        <source>Mask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3453"/>
+        <source>ResMed Mask Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3457"/>
+        <source>Pillows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3458"/>
+        <source>Full Face</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3459"/>
+        <source>Nasal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3463"/>
+        <source>Ramp Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>(% of time)</source>
-        <translation>(% от времето)</translation>
+        <translation type="vanished">(% от времето)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gFlagsLine.cpp" line="206"/>
@@ -7900,13 +8056,13 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="611"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3308"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3353"/>
         <source>Ramp Only</source>
         <translation>Само по време на рампинг</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="612"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3309"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3354"/>
         <source>Full Time</source>
         <translation>През цялото време</translation>
     </message>
@@ -7942,37 +8098,40 @@ Please Rebuild CPAP Data</source>
         <translation>Моля изчакайте...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>By Pressure</source>
-        <translation>По налягане</translation>
+        <translation type="vanished">По налягане</translation>
+    </message>
+    <message>
+        <source>Statistics at Pressure</source>
+        <translation type="vanished">Статистики за налягане</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="272"/>
-        <source>Statistics at Pressure</source>
-        <translation>Статистики за налягане</translation>
+        <source>Time at Pressure</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
+        <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>Click to %1 this session.</source>
         <translation>Натисни за да се  %1 тази сесия.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
+        <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>disable</source>
         <translation>изключи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
+        <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>enable</source>
         <translation>включи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="957"/>
+        <location filename="../sleepyhead/daily.cpp" line="958"/>
         <source>%1 Session #%2</source>
         <translation>%1 Сесия #%2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraph.cpp" line="337"/>
+        <location filename="../sleepyhead/Graphs/gGraph.cpp" line="350"/>
         <source>Snapshot %1</source>
         <translation>Снимка %1</translation>
     </message>
@@ -7985,6 +8144,17 @@ Please Rebuild CPAP Data</source>
         <location filename="../sleepyhead/SleepLib/loader_plugins/cms50_loader.cpp" line="266"/>
         <source>CMS50E/F</source>
         <translation>CMS50E/F</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/updateparser.cpp" line="228"/>
+        <source>%1
+Line %2, column %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/updateparser.cpp" line="241"/>
+        <source>Could not parse Updates.xml file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8304,128 +8474,148 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="108"/>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="170"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="211"/>
         <source>Requesting </source>
         <translation>Поискване </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="177"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="218"/>
         <source>Saving as </source>
         <translation>Запис като </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="320"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="469"/>
         <source>XML update structure parsed cleanly</source>
         <translation>XML файлът е обработен успешно</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="347"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="439"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="496"/>
         <source>No updates were found for your platform.</source>
         <translation>Не е открита нова версия за вашата платформа.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="347"/>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="386"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="439"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="445"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="496"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="535"/>
         <source>SleepyHead Updates</source>
         <translation>Обновления за SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="385"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="534"/>
         <source>No new updates were found for your platform.</source>
         <translation>Не е открита нова версия за вашата платформа.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="403"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="552"/>
         <source>SleepyHead v%1, codename &quot;%2&quot;</source>
         <translation>SleepyHead v%1, кодово име &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="406"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="555"/>
         <source>platform notes</source>
         <translation>платформени бележки</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="411"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="560"/>
         <source>A new version of SleepyHead is available!</source>
         <translation>Има нова версия на SleepyHead!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="412"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="561"/>
         <source>Shiny new &lt;b&gt;v%1&lt;/b&gt; is available. You&apos;re running old and busted v%2</source>
         <translation>Чисто нова версия &lt;b&gt;v%1&lt;/b&gt; е налична. Вие работите със стара и изтъркана v%2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="416"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="565"/>
         <source>An update for SleepyHead is available.</source>
         <translation>Налична е нова версия на SleepyHead.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="417"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="566"/>
         <source>Version &lt;b&gt;%1&lt;/b&gt; is available. You&apos;re currently running v%1</source>
         <translation>Версия &lt;b&gt;%1&lt;/b&gt; е налична. В момента работите с v%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="430"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="579"/>
         <source>SleepyHead v%1 build notes</source>
         <translation>Бележки по версия v%1 на SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="433"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="582"/>
         <source>Update to QtLibs (v%1)</source>
         <translation>Обновление на QtLibs (v%1)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="443"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="592"/>
         <source>There was an error parsing the XML Update file.</source>
         <translation>Грешка при обработката на XML файла за обновяване.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="464"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="140"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="613"/>
         <source>%1 bytes received</source>
         <translation>%1 байта получени</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="494"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
+        <source>SleepyHead Updates are currently unvailable for this platform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
+        <source>New SleepyHead Updates are avilable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
+        <source>Would you like t download and install them now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
         <source>Redirected to </source>
         <translation>Пренасочен към </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="508"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="657"/>
         <source>File size mismatch for %1</source>
         <translation>Разлика в големината на %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="519"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="668"/>
         <source>File integrity check failed for %1</source>
         <translation>Проверката за непокътнатост на %1 се провали</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="549"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="698"/>
         <source>Extracting </source>
         <translation>Извличане </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="610"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="759"/>
         <source>You might need to reinstall manually. Sorry :(</source>
         <translation>Вероятно ще се наложи да преинсталирате ръчно. Съжаляваме :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="611"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="760"/>
         <source>Ugh.. Something went wrong with unzipping.</source>
         <translation>Упс.. Има проблем с разархивирането.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="624"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="773"/>
         <source>Failed</source>
         <translation>Неуспех</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="644"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="793"/>
         <source>Download Complete</source>
         <translation>Свалянето приключи</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="648"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="797"/>
         <source>There was an error completing a network request:
 
 (</source>
@@ -8434,32 +8624,32 @@ Please Rebuild CPAP Data</source>
 (</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="693"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="842"/>
         <source>Update Complete!</source>
         <translation>Обновяването приключи!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="696"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="845"/>
         <source>Updates Complete. SleepyHead needs to restart now, click Finished to do so.</source>
         <translation>Обновяването приключи. SleepyHead сега има нужда от рестарт, изберете Край за да се изпълни това.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="699"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="848"/>
         <source>Update Failed :(</source>
         <translation>Обновяването се провали :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="701"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="850"/>
         <source>Download Error. Sorry, try again later.</source>
         <translation>Грешка при свалянето. Съжаляваме, опитайте отново по-късно.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="718"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="867"/>
         <source>Downloading &amp; Installing Updates...</source>
         <translation>Сваляне и инсталиране на обновления...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/UpdaterWindow.cpp" line="719"/>
+        <location filename="../sleepyhead/UpdaterWindow.cpp" line="868"/>
         <source>Please wait while downloading and installing updates.</source>
         <translation>Моля изчакайте докато се свали и инсталира новата версия.</translation>
     </message>

@@ -14,4 +14,6 @@ TRANSLATIONS += \
     Translations/Espaniol.es.ts \
     Translations/Bulgarian.bg.ts \
     Translations/English.en_UK.ts \
-    Translations/Portugues.pt.ts
+    Translations/Portugues.pt.ts \
+    Translations/Arabic.ar.ts \
+    Translations/Greek.el.ts
