@@ -540,7 +540,6 @@ void init()
                         QObject::tr("Journal"),  QString(),
                         RICHTEXT,  Qt::black));
 
-
 //    <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" unit="1=Awake 2=REM 3=Light Sleep 4=Deep Sleep" color="dark grey"/>
     schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_SleepStage = 0x2000, WAVEFORM,   MT_SLEEPSTAGE,  SESSION,
                         "SleepStage",      QObject::tr("Sleep Stage"),
@@ -600,8 +599,9 @@ void init()
     schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_ZQ=0x2009, DATA,   MT_SLEEPSTAGE,  SESSION,
                         "ZeoZQ",      QObject::tr("Zeo ZQ"),
                         QObject::tr("Zeo sleep quality measurement"),
-                        QObject::tr("ZEO Zq"),  QString(),
+                        QObject::tr("ZEO ZQ"),  QString(),
                         INTEGER,  Qt::black));
+
 
 
 //    <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
@@ -612,6 +612,25 @@ void init()
 //     <option id="4" value="ASV"/>
 //     <option id="5" value="ASV Auto EPAP"/>
 //    </channel>
+
+    //    <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
+    //      <Option id="0" value=""/>
+    //      <Option id="1" value="None"/>
+    //      <Option id="2" value="C-Flex"/>
+    //      <Option id="3" value="C-Flex+"/>
+    //      <Option id="4" value="A-Flex"/>
+    //      <Option id="5" value="Bi-Flex"/>
+    //      <Option id="6" value="EPR"/>
+    //      <Option id="7" value="SmartFlex"/>
+    //      <Option id="8" value="Easy-Breathe"/>
+    //    </channel>
+    //    <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
+    //      <Option id="0" value=""/>
+    //      <Option id="1" value="Ramp"/>
+    //      <Option id="2" value="Full Time"/>
+    //    </channel>
+    //    <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pressure Relief" type="integer"/>
+
 
 
     NoChannel = 0;

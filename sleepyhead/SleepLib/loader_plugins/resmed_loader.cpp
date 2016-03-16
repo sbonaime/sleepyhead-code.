@@ -3340,8 +3340,6 @@ void ResmedLoader::initChannels()
     chan->addOption(10, QObject::tr("???"));
     chan->addOption(11, QObject::tr("Auto for Her"));
 
-
-
     channel.add(GRP_CPAP, chan = new Channel(RMS9_EPR = 0xe201, SETTING, MT_CPAP,   SESSION,
         "EPR", QObject::tr("EPR"),
         QObject::tr("ResMed Exhale Pressure Relief"),

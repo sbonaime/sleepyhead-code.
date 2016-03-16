@@ -24,23 +24,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1167" class="data" name="IntUnk1" details="Unknown 1" label="Unknown 1" unit="?" color="dark green"/>
   <channel id="0x1168" class="data" name="IntUnk2" details="Unknown 2" label="Unknown 2" unit="?" color="dark green"/>
 
-  <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
-    <Option id="0" value=""/>
-    <Option id="1" value="None"/>
-    <Option id="2" value="C-Flex"/>
-    <Option id="3" value="C-Flex+"/>
-    <Option id="4" value="A-Flex"/>
-    <Option id="5" value="Bi-Flex"/>
-    <Option id="6" value="EPR"/>
-    <Option id="7" value="SmartFlex"/>
-    <Option id="8" value="Easy-Breathe"/>
-  </channel>
-  <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
-    <Option id="0" value=""/>
-    <Option id="1" value="Ramp"/>
-    <Option id="2" value="Full Time"/>
-  </channel>
-  <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pressure Relief" type="integer"/>
 
  </group>
  <group name="OXI">
