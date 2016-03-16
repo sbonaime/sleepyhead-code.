@@ -3385,6 +3385,10 @@ p, li { white-space: pre-wrap; }
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
+    <message>
+        <source>Allow Event Renaming</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProfileSelect</name>
@@ -5567,7 +5571,7 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>(% of time)</source>
-        <translation>(% of time)</translation>
+        <translation type="vanished">(% of time)</translation>
     </message>
     <message>
         <source>Duration %1:%2:%3</source>
@@ -5599,11 +5603,11 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>By Pressure</source>
-        <translation>压力</translation>
+        <translation type="vanished">压力</translation>
     </message>
     <message>
         <source>Statistics at Pressure</source>
-        <translation>压力统计</translation>
+        <translation type="vanished">压力统计</translation>
     </message>
     <message>
         <source>SleepyHead is proudly brought to you by JediMark.</source>
@@ -6217,15 +6221,15 @@ TTIA: %1</source>
     </message>
     <message>
         <source>&lt;p&gt;After four years in the making, this build brings SleepyHead into the final beta phase.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;经过四年的努力，迎来了终测版.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;经过四年的努力，迎来了终测版.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation>&lt;p&gt;现在还不算完美，但是从现在开始已经专注于后期收尾工作了.</translation>
+        <translation type="vanished">&lt;p&gt;现在还不算完美，但是从现在开始已经专注于后期收尾工作了.</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.&lt;/p&gt;</source>
-        <translation>这一版本支持伟康的新产品DreamStation和较老的PRS1 1060P.&lt;/p&gt;</translation>
+        <translation type="vanished">这一版本支持伟康的新产品DreamStation和较老的PRS1 1060P.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Sorry, could not locate changelog.</source>
@@ -6270,6 +6274,135 @@ TTIA: %1</source>
     <message>
         <source>No PB on record</source>
         <translation>无周期性呼吸数据</translation>
+    </message>
+    <message>
+        <source>SmartStart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machine auto starts by breathing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smart Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humid. Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidifier Enabled Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humid. Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Humidity Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ClimateLine Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temp. Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ClimateLine Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AB Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Antibacterial Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pt. Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Patient Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Climate Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ResMed Mask Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pillows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full Face</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nasal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ramp Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time at Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1
+Line %2, column %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not parse Updates.xml file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6653,6 +6786,18 @@ TTIA: %1</source>
     <message>
         <source>Release Notes</source>
         <translation>版本注释</translation>
+    </message>
+    <message>
+        <source>SleepyHead Updates are currently unvailable for this platform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New SleepyHead Updates are avilable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Would you like t download and install them now?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
