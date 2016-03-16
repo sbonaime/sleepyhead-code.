@@ -174,6 +174,8 @@ extern ChannelID POS_Orientation, POS_Inclination;
 const QString GRP_CPAP = "CPAP";
 const QString GRP_POS = "POS";
 const QString GRP_OXI = "OXI";
+const QString GRP_JOURNAL = "JOURNAL";
+const QString GRP_SLEEP = "SLEEP";
 
 
 #endif // MACHINE_COMMON_H
