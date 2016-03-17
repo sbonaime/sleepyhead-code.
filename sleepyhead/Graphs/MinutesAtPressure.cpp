@@ -281,7 +281,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             } else {
                 str.chop(1);// +=QObject::tr("No Data Here");
             }
-            graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignLeft);
+            graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignRight);
         }
 
 
