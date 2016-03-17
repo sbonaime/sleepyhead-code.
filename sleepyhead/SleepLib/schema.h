@@ -129,11 +129,6 @@ class Channel
     void setOrder(short order) { m_order = order; }
 
     void setShowInOverview(bool b) { m_showInOverview = b; }
-    void resetStrings() {
-        m_fullname = default_fullname;
-        m_label = default_label;
-        m_description = default_description;
-    }
 
     QString option(int i) {
         if (m_options.contains(i)) {
@@ -225,8 +220,6 @@ class ChannelList
             return EmptyChannel;
         }
     }
-
-    void resetStrings();
 
     //! \brief Channel List indexed by integer ID
     QHash<ChannelID, Channel *> channels;

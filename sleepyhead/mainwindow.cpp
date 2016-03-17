@@ -403,7 +403,7 @@ void saveChannels()
 }
 
 
-void loadChannels()
+void loadChannels(bool changing_language)
 {
     QString filename = p_profile->Get("{DataFolder}/") + "channels.dat";
     QFile f(filename);
@@ -478,12 +478,13 @@ void loadChannels()
         chan->setDefaultColor(color);
 
         // Don't import channel descriptions if event renaming is turned off. (helps pick up new translations)
-        if (!PREF[STR_PREF_ResetChannelNames].toBool()) {
+        if (changing_language) {
+            // Nothing
+        } else {
             chan->setFullname(fullname);
             chan->setLabel(label);
             chan->setDescription(description);
         }
-        PREF[STR_PREF_ResetChannelNames]=false;
 
         chan->setLowerThreshold(lowerThreshold);
         chan->setLowerThresholdColor(lowerThresholdColor);
@@ -2573,7 +2574,6 @@ void MainWindow::on_actionChange_Language_triggered()
     if (QMessageBox::question(this,STR_MessageBox_Warning,tr("Changing the language will reset custom Event and Waveform names/labels/descriptions.")+"\n\n"+tr("Are you sure you want to do this?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
         return;
     }
-    PREF[STR_PREF_ResetChannelNames]=true;
 
     p_profile->Save();
     PREF.Save();

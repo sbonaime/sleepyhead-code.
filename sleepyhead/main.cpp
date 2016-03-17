@@ -224,10 +224,12 @@ int main(int argc, char *argv[])
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
 
-    if (settings.value(LangSetting, "").toString() == lastlanguage) {
-        // don't reset if they selected the same language again
-        changing_language = false;
-    }
+
+    // Do reset strings if they selected the same langauge again..
+//    if (settings.value(LangSetting, "").toString() == lastlanguage) {
+//        // don't reset if they selected the same language again
+//        changing_language = false;
+//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection
@@ -402,8 +404,6 @@ retry_directory:
     PREF.init(STR_GEN_UpdateCheckFrequency, 7);    // days
     PREF.init(STR_PREF_AllowEarlyUpdates, false);
 
-    PREF.init(STR_PREF_ResetChannelNames, false);
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,13 +502,7 @@ retry_directory:
     MainWindow w;
     mainwin = &w;
 
-    loadChannels();
-
-    if (changing_language) {
-        qDebug() << "Resetting Channel strings to defaults for language change";
-        schema::channel.resetStrings();
-    }
-
+    loadChannels(changing_language);
 
  //   if (check_updates) { mainwin->CheckForUpdates(); }
 

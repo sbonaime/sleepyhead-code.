@@ -482,6 +482,6 @@ int gXAxisPressure::minimumHeight()
 #endif
 }
 
-void gXAxisPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
+void gXAxisPressure::paint(QPainter & /*painter*/, gGraph &/*graph*/, const QRegion &/*region*/)
 {
 }

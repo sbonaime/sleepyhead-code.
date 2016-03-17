@@ -993,17 +993,6 @@ bool ChannelList::Load(QString filename)
     return true;
 }
 
-void ChannelList::resetStrings()
-{
-    QHash<ChannelID, Channel *>::iterator it;
-    QHash<ChannelID, Channel *>::iterator it_end = channels.end();
-    for (it = channels.begin(); it != it_end; ++it) {
-        Channel * chan = it.value();
-        chan->resetStrings();
-    }
-}
-
-
 void ChannelList::add(QString group, Channel *chan)
 {
     Q_ASSERT(chan != nullptr);
