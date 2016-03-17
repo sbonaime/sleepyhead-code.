@@ -2102,6 +2102,8 @@ bool PRS1Import::ParseSummaryF5V2()
 
     CPAPMode cpapmode = MODE_UNKNOWN;
     summary_duration = data[0x18] | data[0x19] << 8;
+
+    return true;
 }
 
 bool PRS1Import::ParseSummaryF0V6()

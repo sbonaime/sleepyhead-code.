@@ -173,14 +173,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     float f = profile->general->prefCalcPercentile();
     ui->prefCalcPercentile->setValue(f);
 
-    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout() / 50);
-    ui->tooltipMS->display(profile->general->tooltipTimeout());
+    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout());
+    on_tooltipTimeoutSlider_valueChanged(ui->tooltipTimeoutSlider->value());
+    //ui->tooltipMS->display(profile->general->tooltipTimeout());
 
     ui->scrollDampeningSlider->setValue(profile->general->scrollDampening() / 10);
-
-    if (profile->general->scrollDampening() > 0) {
-        ui->scrollDampDisplay->display(profile->general->scrollDampening());
-    } else { ui->scrollDampDisplay->display(STR_TR_Off); }
+    on_scrollDampeningSlider_valueChanged(ui->scrollDampeningSlider->value());
 
     bool bcd = profile->session->backupCardData();
     ui->createSDBackups->setChecked(bcd);
@@ -723,7 +721,7 @@ bool PreferencesDialog::Save()
 
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
 
-    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value() * 50);
+    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value());
     profile->general->setScrollDampening(ui->scrollDampeningSlider->value() * 10);
 
     profile->general->setShowUnknownFlags(ui->showUnknownFlags->isChecked());
@@ -1068,13 +1066,13 @@ void PreferencesDialog::on_okButton_clicked()
 void PreferencesDialog::on_scrollDampeningSlider_valueChanged(int value)
 {
     if (value > 0) {
-        ui->scrollDampDisplay->display(value * 10);
-    } else { ui->scrollDampDisplay->display(STR_TR_Off); }
+        ui->scrollDampDisplay->setText(QString("%1%2").arg(value * 10).arg(STR_UNIT_ms));
+    } else { ui->scrollDampDisplay->setText(STR_TR_Off); }
 }
 
 void PreferencesDialog::on_tooltipTimeoutSlider_valueChanged(int value)
 {
-    ui->tooltipMS->display(value * 50);
+    ui->tooltipTimeoutDisplay->setText(QString("%1%2").arg(double(value)/1000.0,0,'f',1).arg(STR_UNIT_s));
 }
 
 void PreferencesDialog::on_resetChannelDefaults_clicked()
