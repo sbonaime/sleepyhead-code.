@@ -158,6 +158,10 @@ extern QString STR_UNIT_CMH2O;
 extern QString STR_UNIT_Hours;
 extern QString STR_UNIT_Minutes;
 extern QString STR_UNIT_Seconds;
+extern QString STR_UNIT_h; // (h)ours, (m)inutes, (s)econds
+extern QString STR_UNIT_m;
+extern QString STR_UNIT_s;
+extern QString STR_UNIT_ms;
 extern QString STR_UNIT_BPM;       // Beats per Minute
 extern QString STR_UNIT_LPM;       // Litres per Minute
 extern QString STR_UNIT_ml;        // millilitres

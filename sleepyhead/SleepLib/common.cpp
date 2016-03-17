@@ -129,6 +129,10 @@ QString STR_UNIT_CMH2O;
 QString STR_UNIT_Hours;
 QString STR_UNIT_Minutes;
 QString STR_UNIT_Seconds;
+QString STR_UNIT_h;
+QString STR_UNIT_m;
+QString STR_UNIT_s;
+QString STR_UNIT_ms;
 QString STR_UNIT_BPM;       // Beats per Minute
 QString STR_UNIT_LPM;       // Litres per Minute
 QString STR_UNIT_ml;        // MilliLitres
@@ -325,6 +329,10 @@ void initializeStrings()
     STR_UNIT_Hours = QObject::tr("Hours");
     STR_UNIT_Minutes = QObject::tr("Minutes");
     STR_UNIT_Seconds = QObject::tr("Seconds");
+    STR_UNIT_h = QObject::tr("h"); // hours shortform
+    STR_UNIT_m = QObject::tr("m"); // minutes shortform
+    STR_UNIT_s = QObject::tr("s"); // seconds shortform
+    STR_UNIT_ms = QObject::tr("ms"); // milliseconds
     STR_UNIT_EventsPerHour = QObject::tr("Events/hr"); // Events per hour
     STR_UNIT_Percentage = QObject::tr("%");
     STR_UNIT_Hz = QObject::tr("Hz");          // Hertz
