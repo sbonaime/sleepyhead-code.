@@ -6724,7 +6724,7 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="214"/>
         <source>Unclassified Apnea</source>
-        <translation>Onbekende apneu (A)</translation>
+        <translation>Onbekende apneu (UA)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="216"/>
@@ -8240,12 +8240,13 @@ Gaarne gegevens opnieuw inlezen</translation>
         <location filename="../sleepyhead/updateparser.cpp" line="228"/>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Regel %2, kolom %3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/updateparser.cpp" line="241"/>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kon het bestand Updates.xml niet lezen.</translation>
     </message>
 </context>
 <context>
@@ -8654,17 +8655,17 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Voor dit platform zijn de updates van SleepyHead momenteel niet beschikbaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Er zijn nieuwe updates voor SleepyHead beschikbaar:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wil je ze nu downloaden en installeren?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
@@ -8694,7 +8695,7 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="760"/>
         <source>Ugh.. Something went wrong with unzipping.</source>
-        <translation>Oef! Er ging iets fout bij het uitpakken.</translation>
+        <translation>Oei! Er ging iets fout bij het uitpakken.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="773"/>

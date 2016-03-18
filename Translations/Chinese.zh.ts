@@ -3387,7 +3387,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Allow Event Renaming</source>
-        <translation type="unfinished"></translation>
+        <translation>允许重命名</translation>
     </message>
 </context>
 <context>
@@ -6277,132 +6277,133 @@ TTIA: %1</source>
     </message>
     <message>
         <source>SmartStart</source>
-        <translation type="unfinished"></translation>
+        <translation>自启动</translation>
     </message>
     <message>
         <source>Machine auto starts by breathing</source>
-        <translation type="unfinished"></translation>
+        <translation>呼吸触发启动</translation>
     </message>
     <message>
         <source>Smart Start</source>
-        <translation type="unfinished"></translation>
+        <translation>自启动</translation>
     </message>
     <message>
         <source>Humid. Status</source>
-        <translation type="unfinished"></translation>
+        <translation>湿化器状态</translation>
     </message>
     <message>
         <source>Humidifier Enabled Status</source>
-        <translation type="unfinished"></translation>
+        <translation>湿化器已启用</translation>
     </message>
     <message>
         <source>Humid. Level</source>
-        <translation type="unfinished"></translation>
+        <translation>湿度</translation>
     </message>
     <message>
         <source>Humidity Level</source>
-        <translation type="unfinished"></translation>
+        <translation>湿度</translation>
     </message>
     <message>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>温度</translation>
     </message>
     <message>
         <source>ClimateLine Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>加热管路温度</translation>
     </message>
     <message>
         <source>Temp. Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>温度启用</translation>
     </message>
     <message>
         <source>ClimateLine Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>加热管路温度启用</translation>
     </message>
     <message>
         <source>Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>温度测量启用</translation>
     </message>
     <message>
         <source>AB Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>抗菌过滤棉</translation>
     </message>
     <message>
         <source>Antibacterial Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>抗菌过滤棉</translation>
     </message>
     <message>
         <source>Pt. Access</source>
-        <translation type="unfinished"></translation>
+        <translation>患者通道</translation>
     </message>
     <message>
         <source>Patient Access</source>
-        <translation type="unfinished"></translation>
+        <translation>患者通道</translation>
     </message>
     <message>
         <source>Climate Control</source>
-        <translation type="unfinished"></translation>
+        <translation>恒温控制</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>手动</translation>
     </message>
     <message>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>自动</translation>
     </message>
     <message>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>面罩</translation>
     </message>
     <message>
         <source>ResMed Mask Setting</source>
-        <translation type="unfinished"></translation>
+        <translation>瑞思迈面罩设置</translation>
     </message>
     <message>
         <source>Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation>鼻枕</translation>
     </message>
     <message>
         <source>Full Face</source>
-        <translation type="unfinished"></translation>
+        <translation>全脸</translation>
     </message>
     <message>
         <source>Nasal</source>
-        <translation type="unfinished"></translation>
+        <translation>鼻罩</translation>
     </message>
     <message>
         <source>Ramp Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>斜坡升压启动</translation>
     </message>
     <message>
         <source>Time at Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>time at pressure</translation>
     </message>
     <message>
         <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
-        <translation type="unfinished"></translation>
+        <translation>经过四年的努力，SleepyHead拟发布终测版.</translation>
     </message>
     <message>
         <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation type="unfinished"></translation>
+        <translation>尽管并不尽完美，但是已进入收尾阶段.</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
-        <translation type="unfinished"></translation>
+        <translation>此版本支持微信最新的DreamStation和较老的PRS1 1060P.</translation>
     </message>
     <message>
         <source>Change log</source>
-        <translation type="unfinished"></translation>
+        <translation>更改日志</translation>
     </message>
     <message>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+行 %2, 列 %3</translation>
     </message>
     <message>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法解析 Updates.xml.</translation>
     </message>
 </context>
 <context>
@@ -6789,15 +6790,15 @@ Line %2, column %3</source>
     </message>
     <message>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead更新暂不支持此平台</translation>
     </message>
     <message>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead有更新:</translation>
     </message>
     <message>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>希望现在下载并安装吗?</translation>
     </message>
 </context>
 <context>
