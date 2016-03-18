@@ -6724,7 +6724,7 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="214"/>
         <source>Unclassified Apnea</source>
-        <translation>Onbekende apneu (A)</translation>
+        <translation>Onbekende apneu (UA)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="216"/>
