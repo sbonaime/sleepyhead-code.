@@ -105,7 +105,7 @@
     <message>
         <location filename="../sleepyhead/daily.ui" line="1079"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Colour</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.ui" line="1099"/>
@@ -1175,12 +1175,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1013"/>
         <source>Please wait, launching file dialog...</source>
-        <translation type="unfinished"></translation>
+        <translation>Please wait, launching file dialogue...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1019"/>
         <source>No CPAP data card detected, launching file dialog...</source>
-        <translation type="unfinished"></translation>
+        <translation>No CPAP data card detected, launching file dialogue...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1025"/>
@@ -2349,7 +2349,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialogue</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="61"/>
@@ -2998,7 +2998,13 @@ and graph data older than 30 days..
 
 SleepyHead can keep a copy of this data if you ever need to reinstall. 
 (Highly recomended, unless your short on disk space or don&apos;t care about the graph data)</source>
-        <translation type="unfinished"></translation>
+        <translation>This maintains a backup of SD-card data for ResMed machines, 
+
+ResMed machines delete high resolution data older than 7 days, 
+and graph data older than 30 days..
+
+SleepyHead can keep a copy of this data if you ever need to reinstall. 
+(Highly recomended, unless your short on disc space or don&apos;t care about the graph data)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="425"/>
@@ -3020,7 +3026,12 @@ which is common on Mac &amp; Linux platforms..
 
 SleepyHead can import from this compressed backup directory natively.. 
 To use with ResScan will require the .gz files to be uncompressed first..</source>
-        <translation type="unfinished"></translation>
+        <translation>Compress ResMed (EDF) backups to save disc space.
+Backed up EDF files are stored in the .gz format, 
+which is common on Mac &amp; Linux platforms.. 
+
+SleepyHead can import from this compressed backup directory natively.. 
+To use with ResScan will require the .gz files to be uncompressed first..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="403"/>
@@ -3030,7 +3041,7 @@ To use with ResScan will require the .gz files to be uncompressed first..</sourc
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="415"/>
         <source>The following options affect the amount of disk space SleepyHead uses, and all have an effect on how long import takes.</source>
-        <translation type="unfinished"></translation>
+        <translation>The following options affect the amount of disc space SleepyHead uses, and all have an effect on how long import takes.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="381"/>
@@ -3328,7 +3339,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="557"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogs during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogues during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="560"/>
@@ -3915,7 +3926,7 @@ this application to be unstable with this feature enabled.</source>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="370"/>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="501"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Colour</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="372"/>
@@ -3962,7 +3973,7 @@ this application to be unstable with this feature enabled.</source>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="444"/>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="573"/>
         <source>Double click to change the default color for this channel plot/flag/data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Double click to change the default colour for this channel plot/flag/data.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="371"/>
@@ -4123,7 +4134,7 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1051"/>
         <source>If you need to conserve disk space, please remember to carry out manual backups.</source>
-        <translation type="unfinished"></translation>
+        <translation>If you need to conserve disc space, please remember to carry out manual backups.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1052"/>
@@ -6752,7 +6763,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1085"/>
         <source>Are you sure you want to reset all your channel colors and settings to defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation>Are you sure you want to reset all your channel colours and settings to defaults?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1136"/>
