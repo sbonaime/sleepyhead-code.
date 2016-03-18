@@ -3840,7 +3840,7 @@ If you use a few different masks, pick average values instead. It should still b
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1250"/>
         <source>Allow Event Renaming</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволи преименуване на събития</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1668"/>
@@ -5914,17 +5914,17 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/main.cpp" line="89"/>
         <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
-        <translation type="unfinished"></translation>
+        <translation>След четири години разработка тази версия довежда SleepyHead до финална бета фаза.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="90"/>
         <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation type="unfinished"></translation>
+        <translation>Все още не е перфектна, но от тук нататък фокусът ще е предимно върху окончателното оформление.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="91"/>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
-        <translation type="unfinished"></translation>
+        <translation>Тази нова версия поддържа вече и новият апарат на Philips Respironics DreamStation, както и старите модели PRS1 1060P.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="95"/>
@@ -5949,7 +5949,7 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/main.cpp" line="115"/>
         <source>Change log</source>
-        <translation type="unfinished"></translation>
+        <translation>Списък с промени</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="131"/>
@@ -7775,134 +7775,134 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3373"/>
         <source>SmartStart</source>
-        <translation type="unfinished"></translation>
+        <translation>SmartStart</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3374"/>
         <source>Machine auto starts by breathing</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматичен старт на апарата чрез дишане</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3375"/>
         <source>Smart Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Умен старт</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3382"/>
         <source>Humid. Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Статус овлажнител</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3383"/>
         <source>Humidifier Enabled Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Вкл/изкл. статус на овлажнител</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3391"/>
         <source>Humid. Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Степен на овлажн.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3392"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3393"/>
         <source>Humidity Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Степен на овлажняване</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3407"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3409"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Температура</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3408"/>
         <source>ClimateLine Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Темпеартура на ClimateLine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3414"/>
         <source>Temp. Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Вкл. температура</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3415"/>
         <source>ClimateLine Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Включена температура на ClimateLine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3416"/>
         <source>Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Включена температура</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3425"/>
         <source>AB Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>AB филтър</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3426"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3427"/>
         <source>Antibacterial Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Антибактериален филтър</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3434"/>
         <source>Pt. Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Пац. достъп</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3435"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3436"/>
         <source>Patient Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Пациентски достъп</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3443"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3444"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3445"/>
         <source>Climate Control</source>
-        <translation type="unfinished"></translation>
+        <translation>Климат контрол</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3448"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Ръчен</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3449"/>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматичен</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3452"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3454"/>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>Маска</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3453"/>
         <source>ResMed Mask Setting</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки маска ResMed</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3457"/>
         <source>Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation>Възглавнички</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3458"/>
         <source>Full Face</source>
-        <translation type="unfinished"></translation>
+        <translation>Фул фейс</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3459"/>
         <source>Nasal</source>
-        <translation type="unfinished"></translation>
+        <translation>Назална</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3463"/>
         <source>Ramp Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Включен рампинг</translation>
     </message>
     <message>
         <source>(% of time)</source>
@@ -8108,7 +8108,7 @@ Please Rebuild CPAP Data</source>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>Time at Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Време с налягане</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="947"/>
@@ -8149,12 +8149,13 @@ Please Rebuild CPAP Data</source>
         <location filename="../sleepyhead/updateparser.cpp" line="228"/>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Линия %2, колона %3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/updateparser.cpp" line="241"/>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не може да се прочете файла Updates.xml.</translation>
     </message>
 </context>
 <context>
@@ -8562,17 +8563,17 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>За момента, за тази платформа не са налични нови версии на SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Налична е обновена версия на SleepyHead:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Желаете ли да я свалите и инсталирате сега?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
