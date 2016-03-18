@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr_FR" sourcelanguage="en">
+<TS version="2.0" language="fr_FR" sourcelanguage="en">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -1328,7 +1328,7 @@
     </message>
     <message>
         <source>&amp;copy;2011-2014</source>
-        <translation type="vanished">&amp;copy;2011-2014</translation>
+        <translation>&amp;copy;2011-2014</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1237"/>
@@ -1382,11 +1382,11 @@
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
-        <translation type="vanished">James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</translation>
+        <translation>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</translation>
     </message>
     <message>
         <source>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
-        <translation type="vanished">Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) et d&apos;autre a ajouter.</translation>
+        <translation>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) et d&apos;autre a ajouter.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1466"/>
@@ -2172,7 +2172,7 @@
     </message>
     <message>
         <source>SleepyHead is copyright &amp;copy;2011-2014 Mark Watkins</source>
-        <translation type="vanished">SleepyHeads (c) 2011-2014 par Mark Watkins</translation>
+        <translation>SleepyHeads (c) 2011-2014 par Mark Watkins</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="157"/>
@@ -3837,7 +3837,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;If you start your Oximeters recording mode at &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-style:italic;&quot;&gt;exactly &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;the same time you start your CPAP machine, you can now also achieve sync. &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;The serial import process takes the starting time from last nights first CPAP session. (Remember to import your CPAP data first!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Lucida Grande UI&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -5629,11 +5629,11 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>No SleepyHead data folder was found.</source>
-        <translation type="vanished">Pas de répertoire de donnée SleepyHead de trouvé.</translation>
+        <translation>Pas de répertoire de donnée SleepyHead de trouvé.</translation>
     </message>
     <message>
         <source>Would you like SleepyHead to use the default location for storing its data?</source>
-        <translation type="vanished">Voulez-vous que SleepyHead utilise le répertoire par défaut pour stocker ses données ?</translation>
+        <translation>Voulez-vous que SleepyHead utilise le répertoire par défaut pour stocker ses données ?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="335"/>
@@ -6458,7 +6458,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>An abnormal period of Periodic Breathing/Cheyne Stokes Respiration</source>
-        <translation type="vanished">Période anomale de respiration périodique/Cheyene Stoke</translation>
+        <translation>Période anomale de respiration périodique/Cheyene Stoke</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="187"/>
@@ -7019,7 +7019,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     </message>
     <message>
         <source>This report was generated by a pre-release version of SleepyHead (%1), &lt;b&gt;and has not been approved in any way for compliance or medical diagnostic purposes&lt;/b&gt;.</source>
-        <translation type="vanished">Ce rapport a été généré par une préversion de SleepyHead (%1),&lt;b&gt;et n&apos;a pas été approuvé en aucune façons conforme ou permettant un diagnotique médical&lt;b&gt;.</translation>
+        <translation>Ce rapport a été généré par une préversion de SleepyHead (%1),&lt;b&gt;et n&apos;a pas été approuvé en aucune façons conforme ou permettant un diagnotique médical&lt;b&gt;.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="642"/>
@@ -7964,15 +7964,15 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>(% of time)</source>
-        <translation type="vanished">(% du temps)</translation>
+        <translation>(% du temps)</translation>
     </message>
     <message>
         <source>By Pressure</source>
-        <translation type="vanished">Par Pression</translation>
+        <translation>Par Pression</translation>
     </message>
     <message>
         <source>Statistics at Pressure</source>
-        <translation type="vanished">Statistique a la Pression</translation>
+        <translation>Statistique a la Pression</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="272"/>
@@ -8131,12 +8131,13 @@ Merci de reconstruire les données de PPC</translation>
         <location filename="../sleepyhead/updateparser.cpp" line="228"/>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Ligne %2, colonne %3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/updateparser.cpp" line="241"/>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de traiter le fichier Updates.xml</translation>
     </message>
 </context>
 <context>
@@ -8544,17 +8545,17 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas de mise a jour de SleepyHead disponible pour cette plateforme</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Une mise à jour de SleepyHead est disponible.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez vous les télécharger et les installer maintenant ?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
