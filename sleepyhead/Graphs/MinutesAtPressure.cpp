@@ -221,6 +221,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     double p0, p1, p2, p3;
     QString label;
+    double s2;
     int widest_YAxis = 0;
 
     int mouseOverKey = 0;
@@ -280,7 +281,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             } else {
                 str.chop(1);// +=QObject::tr("No Data Here");
             }
-            graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignLeft);
+            graph.ToolTip(str, mouse.x(), mouse.y(), TT_AlignRight);
         }
 
 
@@ -314,14 +315,17 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         // Plot IPAP Time at Pressure
         ////////////////////////////////////////////////////////////////////
         xp=left;
-        double lastyp = bottom - (double(ipap.times[min-1]) * ystep);
+        s2 = double(ipap.times[qMax(0, min-1)]/60.0);
+        if (s2 < 0) s2=0;
+
+        double lastyp = bottom - (s2 * ystep);
         for (int i=min; i<max; ++i) {
             p0 = ipap.times[i-1] / 60.0;
             p1 = ipap.times[i]/ 60.0;
             p2 = ipap.times[i+1]/ 60.0;
             p3 = ipap.times[i+2]/ 60.0;
 
-            yp = bottom - (double(p1) * ystep);
+            yp = bottom - qMax((double(p1) * ystep),0.0);
 
             if (i == mouseOverKey) {
                 painter.setPen(QPen(Qt::black));
@@ -332,25 +336,26 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             lastyp = yp;
             xp += xstep;
-            double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2), 0.0f);
             yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
 
             lastyp = yp;
             xp += xstep;
-            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4), 0.0f);
             yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             lastyp = yp;
             xp += xstep;
 
-            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6), 0.0f);
             yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             xp+=xstep;
             lastyp = yp;
 
-            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+            s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8), 0.0f);
+            if (s2 < 0) s2=0;
             yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             xp+=xstep;
@@ -412,36 +417,37 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
 
                 xp = left;
-                lastyp = bottom - (double(ipap.events[ch][min-1]) * estep);
+                s2 = ipap.events[ch][qMax(min-1,0)];
+                lastyp = bottom - (s2 * estep);
                 for (int i=min; i<max; ++i) {
                     p0 = ipap.events[ch][i-1];
                     p1 = ipap.events[ch][i];
                     p2 = ipap.events[ch][i+1];
                     p3 = ipap.events[ch][i+1];
-                    yp = bottom - (double(p1) * estep);
+                    yp = bottom - qMax((double(p1) * estep),0.0);
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
-                    double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2), 0.0f);
                     yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                     lastyp = yp;
                     xp += xstep;
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4), 0.0f);
                     yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6), 0.0f);
                     yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
 
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8), 0.0f);
                     yp = qMax(double(bottom-height), double(bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
@@ -477,25 +483,25 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                     lastyp = yp;
                     xp += xstep;
 
-                    double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2), 0.0f);
                     yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                     lastyp = yp;
                     xp += xstep;
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4), 0.0f);
                     yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
                     xp += xstep;
 
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6), 0.0f);
                     yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
                     lastyp = yp;
 
-                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                    s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8), 0.0f);
                     yp = qMax(double(bottom-height), (bottom - (s2 * estep)));
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     xp+=xstep;
@@ -510,7 +516,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         if (epap.min_pressure) {
             painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
 
-            xp=left, lastyp = bottom - (double(epap.times[min]) * ystep);
+            s2 = double(epap.times[qMax(min,0)]/60.0);
+            xp=left, lastyp = bottom - (s2 * ystep);
             for (int i=min; i<max; ++i) {
                 p0 = epap.times[i-1]/60.0;
                 p1 = epap.times[i]/60.0;
@@ -523,30 +530,30 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                     painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
                 }
 
-                yp = bottom - (double(p1) * ystep);
+                yp = bottom - qMax((double(p1) * ystep), 0.0);
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                 lastyp = yp;
                 xp += xstep;
-                double s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2),0.0f);
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.2), 0.0f);
                 yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
 
                 lastyp = yp;
                 xp += xstep;
-                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4),0.0f);
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.4), 0.0f);
                 yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 lastyp = yp;
                 xp += xstep;
 
-                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6),0.0f);
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.6), 0.0f);
                 yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 xp+=xstep;
                 lastyp = yp;
 
-                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8),0.0f);
+                s2 = qMax(CatmullRomSpline(p0, p1, p2, p3, 0.8), 0.0f);
                 yp = qMax(double(bottom-height), (bottom - (s2 * ystep)));
                 painter.drawLine(xp, lastyp, xp+xstep, yp);
                 xp+=xstep;

@@ -106,6 +106,7 @@ void init()
     DataTypes["datetime"] = DATETIME;
     DataTypes["time"] = TIME;
 
+    // Note: Old channel names stored in channels.xml are not translatable.. they need to be moved to be defined AFTER here instead
     if (!schema::channel.Load(":/docs/channels.xml")) {
         QMessageBox::critical(0, STR_MessageBox_Error,
                               QObject::tr("Couldn't parse Channels.xml, this build is seriously borked, no choice but to abort!!"),
@@ -472,6 +473,136 @@ void init()
     ch->addOption(7, QObject::tr("ASV (Variable EPAP)"));
     ch->addOption(8, QObject::tr("AVAPS"));
 
+//    <channel id="0x0800" class="data" name="BPSys" details="Blood Pressure Systolic" label="BPS" unit="mmHg" color="red"/>
+//    <channel id="0x0801" class="data" name="BPDia" details="Blood Pressure Diastolic" label="BPD" unit="mmHg" color="blue"/>
+//    <channel id="0x0802" class="data" name="Glucose" details="Blood Glucose" label="BGL" unit="mmol/L" color="black"/>
+
+
+    //    <channel id="0x0803" class="data" scope="!day" name="Weight" details="Weight" label="Weight" unit="Kg" color="black"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Journal_Weight = 0x0803, DATA,   MT_JOURNAL,  DAY,
+                        "Weight",      QObject::tr("Weight"),
+                        QObject::tr("Weight"),
+                        QObject::tr("Weight"),  STR_UNIT_KG,
+                        DOUBLE,  Qt::black));
+
+// Kids grow... but that adds a whole nother layer of complexity.
+    //    <channel id="0x0804" class="data" scope="!day" name="Height" details="Height" label="Height" unit="cm" color="blue"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0804, DATA,   MT_JOURNAL,  DAY,
+                        "Height",      QObject::tr("Height"),
+                        QObject::tr("Physical Height"),
+                        QObject::tr("Height"),  STR_UNIT_CM,
+                        DOUBLE,  Qt::black));
+
+//    <channel id="0x0805" class="data" name="BookmarkNotes" details="Session Bookmark Notes" label="Bookmark Notes" unit="text" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0805, DATA,   MT_JOURNAL,  DAY,
+                        "BookmarkNotes",      QObject::tr("Notes"),
+                        QObject::tr("Bookmark Notes"),
+                        QObject::tr("Notes"),  QString(),
+                        STRING,  Qt::black));
+
+//    <channel id="0x0806" class="data" name="BMI" details="Body Mass Index" label="BMI" unit="kg/m2" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Journal_BMI = 0x0806, DATA,   MT_JOURNAL,  DAY,
+                        "BMI",      QObject::tr("BMI"),
+                        QObject::tr("Body Mass Index"),
+                        QObject::tr("BMI"),  QString(),
+                        DOUBLE,  Qt::black));
+
+
+//    <channel id="0x0807" class="data" name="ZombieMeter" details="How good you feel." label="Alive" unit="0-10" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Journal_ZombieMeter = 0x0807, DATA,   MT_JOURNAL,  DAY,
+                        "ZombieMeter",      QObject::tr("Zombie"),
+                        QObject::tr("How you feel (0 = like crap, 10 = unstoppable)"),
+                        QObject::tr("Zombie"),  QString(),
+                        DOUBLE,  Qt::black));
+
+//    <channel id="0x0808" class="data" name="BookmarkStart" details="Session Bookmark Start" label="Bookmark Start" unit="duration" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0808, DATA,   MT_JOURNAL,  DAY,
+                        "BookmarkStart",      QObject::tr("Start"),
+                        QObject::tr("Bookmark Start"),
+                        QObject::tr("Start"),  QString(),
+                        INTEGER,  Qt::black));
+//    <channel id="0x0809" class="data" name="BookmarkEnd" details="Session Bookmark End" label="Bookmark End" unit="duration" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0809, DATA,   MT_JOURNAL,  DAY,
+                        "BookmarkEnd",      QObject::tr("End"),
+                        QObject::tr("Bookmark End"),
+                        QObject::tr("End"),  QString(),
+                        DOUBLE,  Qt::black));
+//    <channel id="0x080a" class="data" scope="!day" name="LastUpdated" details="Last Updated" label="Last Updated" unit="timestamp" color="orange"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x080a, DATA,   MT_JOURNAL,  DAY,
+                        "LastUpdated",      QObject::tr("Last Updated"),
+                        QObject::tr("Last Updated"),
+                        QObject::tr("Last Updated"),  QString(),
+                        DATETIME,  Qt::black));
+//    <channel id="0xd000" class="data" scope="!day" unique="true" name="Journal" details="Journal Notes" label="Journal" type="richtext"/>
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Journal_Notes = 0xd000, DATA,   MT_JOURNAL,  DAY,
+                        "Journal",      QObject::tr("Journal Notes"),
+                        QObject::tr("Journal Notes"),
+                        QObject::tr("Journal"),  QString(),
+                        RICHTEXT,  Qt::black));
+
+//    <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" unit="1=Awake 2=REM 3=Light Sleep 4=Deep Sleep" color="dark grey"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_SleepStage = 0x2000, WAVEFORM,   MT_SLEEPSTAGE,  SESSION,
+                        "SleepStage",      QObject::tr("Sleep Stage"),
+                        QObject::tr("1=Awake 2=REM 3=Light Sleep 4=Deep Sleep"),
+                        QObject::tr("Sleep Stage"),  QString(),
+                        INTEGER,  Qt::darkGray));
+//    <channel id="0x2001" class="data" name="ZeoBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(0x2001, WAVEFORM,   MT_SLEEPSTAGE,  SESSION,
+                        "ZeoBW",      QObject::tr("Brain Wave"),
+                        QObject::tr("Brain Wave"),
+                        QObject::tr("BrainWave"),  QString(),
+                        INTEGER,  Qt::black));
+//    <channel id="0x2002" class="data" name="Awakenings" details="Awakenings" label="Awakenings" color="black"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_Awakenings = 0x2002, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "Awakenings",      QObject::tr("Awakenings"),
+                        QObject::tr("Number of Awakenings"),
+                        QObject::tr("Awakenings"),  QString(),
+                        INTEGER,  Qt::black));
+//    <channel id="0x2003" class="data" name="MorningFeel" details="ZEO Morning Feel" label="Morning Feel" color="black"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_MorningFeel= 0x2003, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "MorningFeel",      QObject::tr("Morning Feel"),
+                        QObject::tr("How you felt in the morning"),
+                        QObject::tr("Morning Feel"),  QString(),
+                        INTEGER,  Qt::black));
+//    <channel id="0x2004" class="data" name="TimeInWake" details="Time In Wake" label="Time In Wake" color="red"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_TimeInWake = 0x2004, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "TimeInWake",      QObject::tr("Time Awake"),
+                        QObject::tr("Time spent awake"),
+                        QObject::tr("Time Awake"),  STR_UNIT_Minutes,
+                        INTEGER,  Qt::black));
+
+//    <channel id="0x2005" class="data" name="TimeInREM" details="Time In REM Sleep" label="Time In REM" color="green"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_TimeInREM = 0x2005, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "TimeInREM",      QObject::tr("Time In REM Sleep"),
+                        QObject::tr("Time spent in REM Sleep"),
+                        QObject::tr("Time in REM Sleep"),  STR_UNIT_Minutes,
+                        INTEGER,  Qt::black));
+//    <channel id="0x2006" class="data" name="TimeInLight" details="Time In Light Sleep" label="Time In Light" color="blue"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_TimeInLight = 0x2006, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "TimeInLight",      QObject::tr("Time In Light Sleep"),
+                        QObject::tr("Time spent in light sleep"),
+                        QObject::tr("Time in Light Sleep"),  STR_UNIT_Minutes,
+                        INTEGER,  Qt::black));
+//    <channel id="0x2007" class="data" name="TimeInDeep" details="Time In Deep Sleep" label="Time In Deep" color="magenta"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_TimeInDeep= 0x2007, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "TimeInDeep",      QObject::tr("Time In Deep Sleep"),
+                        QObject::tr("Time spent in deep sleep"),
+                        QObject::tr("Time in Deep Sleep"),  STR_UNIT_Minutes,
+                        INTEGER,  Qt::black));
+//    <channel id="0x2008" class="data" name="TimeToZ" details="Time To Sleep" label="Time To Z" color="magenta"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_TimeInDeep= 0x2008, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "TimeToZ",      QObject::tr("Time to Sleep"),
+                        QObject::tr("Time taken to get to sleep"),
+                        QObject::tr("Time to Sleep"),  STR_UNIT_Minutes,
+                        INTEGER,  Qt::black));
+//    <channel id="0x2009" class="data" name="ZeoZQ" details="ZEO ZQ" label="ZEO ZQ" color="magenta"/>
+    schema::channel.add(GRP_SLEEP, ch = new Channel(ZEO_ZQ=0x2009, DATA,   MT_SLEEPSTAGE,  SESSION,
+                        "ZeoZQ",      QObject::tr("Zeo ZQ"),
+                        QObject::tr("Zeo sleep quality measurement"),
+                        QObject::tr("ZEO ZQ"),  QString(),
+                        INTEGER,  Qt::black));
+
+
 
 //    <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
 //     <option id="0" value="CPAP"/>
@@ -481,6 +612,25 @@ void init()
 //     <option id="4" value="ASV"/>
 //     <option id="5" value="ASV Auto EPAP"/>
 //    </channel>
+
+    //    <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
+    //      <Option id="0" value=""/>
+    //      <Option id="1" value="None"/>
+    //      <Option id="2" value="C-Flex"/>
+    //      <Option id="3" value="C-Flex+"/>
+    //      <Option id="4" value="A-Flex"/>
+    //      <Option id="5" value="Bi-Flex"/>
+    //      <Option id="6" value="EPR"/>
+    //      <Option id="7" value="SmartFlex"/>
+    //      <Option id="8" value="Easy-Breathe"/>
+    //    </channel>
+    //    <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
+    //      <Option id="0" value=""/>
+    //      <Option id="1" value="Ramp"/>
+    //      <Option id="2" value="Full Time"/>
+    //    </channel>
+    //    <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pressure Relief" type="integer"/>
+
 
 
     NoChannel = 0;
@@ -549,24 +699,24 @@ void init()
     //    OXI_Plethy=schema::channel["Plethy"].id();
     //    CPAP_AHI=schema::channel["AHI"].id();
     //    CPAP_RDI=schema::channel["RDI"].id();
-    Journal_Notes = schema::channel["Journal"].id();
-    Journal_Weight = schema::channel["Weight"].id();
-    Journal_BMI = schema::channel["BMI"].id();
-    Journal_ZombieMeter = schema::channel["ZombieMeter"].id();
-    LastUpdated = schema::channel["LastUpdated"].id();
-    Bookmark_Start = schema::channel["BookmarkStart"].id();
-    Bookmark_End = schema::channel["BookmarkEnd"].id();
-    Bookmark_Notes = schema::channel["BookmarkNotes"].id();
+//    Journal_Notes = schema::channel["Journal"].id();
+//    Journal_Weight = schema::channel["Weight"].id();
+//    Journal_BMI = schema::channel["BMI"].id();
+//    Journal_ZombieMeter = schema::channel["ZombieMeter"].id();
+//    LastUpdated = schema::channel["LastUpdated"].id();
+//    Bookmark_Start = schema::channel["BookmarkStart"].id();
+//    Bookmark_End = schema::channel["BookmarkEnd"].id();
+//    Bookmark_Notes = schema::channel["BookmarkNotes"].id();
 
-    ZEO_SleepStage = schema::channel["SleepStage"].id();
-    ZEO_ZQ = schema::channel["ZeoZQ"].id();
-    ZEO_Awakenings = schema::channel["Awakenings"].id();
-    ZEO_MorningFeel = schema::channel["MorningFeel"].id();
-    ZEO_TimeInWake = schema::channel["TimeInWake"].id();
-    ZEO_TimeInREM = schema::channel["TimeInREM"].id();
-    ZEO_TimeInLight = schema::channel["TimeInLight"].id();
-    ZEO_TimeInDeep = schema::channel["TimeInDeep"].id();
-    ZEO_TimeToZ = schema::channel["TimeToZ"].id();
+//    ZEO_SleepStage = schema::channel["SleepStage"].id();
+//    ZEO_ZQ = schema::channel["ZeoZQ"].id();
+//    ZEO_Awakenings = schema::channel["Awakenings"].id();
+//    ZEO_MorningFeel = schema::channel["MorningFeel"].id();
+//    ZEO_TimeInWake = schema::channel["TimeInWake"].id();
+//    ZEO_TimeInREM = schema::channel["TimeInREM"].id();
+//    ZEO_TimeInLight = schema::channel["TimeInLight"].id();
+//    ZEO_TimeInDeep = schema::channel["TimeInDeep"].id();
+//    ZEO_TimeToZ = schema::channel["TimeToZ"].id();
 
     schema::channel[CPAP_Leak].setShowInOverview(true);
     schema::channel[CPAP_RespRate].setShowInOverview(true);
@@ -753,7 +903,7 @@ bool ChannelList::Load(QString filename)
 
             scope = Scopes[scopestr];
 
-//            if (PREF[STR_PREF_AllowEventRenaming].toBool()) {
+//            if (PREF[STR_PREF_ResetEventNames].toBool()) {
                 name = e.attribute("name", "");
                 details = e.attribute("details", "");
                 label = e.attribute("label", "");
@@ -842,17 +992,6 @@ bool ChannelList::Load(QString filename)
 
     return true;
 }
-
-void ChannelList::resetStrings()
-{
-    QHash<ChannelID, Channel *>::iterator it;
-    QHash<ChannelID, Channel *>::iterator it_end = channels.end();
-    for (it = channels.begin(); it != it_end; ++it) {
-        Channel * chan = it.value();
-        chan->resetStrings();
-    }
-}
-
 
 void ChannelList::add(QString group, Channel *chan)
 {

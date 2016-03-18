@@ -66,7 +66,7 @@ class Daily;
 class Report;
 class Overview;
 
-void loadChannels();
+void loadChannels(bool changing_language=false);
 void saveChannels();
 
 

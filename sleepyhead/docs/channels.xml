@@ -24,52 +24,13 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1167" class="data" name="IntUnk1" details="Unknown 1" label="Unknown 1" unit="?" color="dark green"/>
   <channel id="0x1168" class="data" name="IntUnk2" details="Unknown 2" label="Unknown 2" unit="?" color="dark green"/>
 
-  <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief" label="Pres. Relief" type="integer">
-    <Option id="0" value=""/>
-    <Option id="1" value="None"/>
-    <Option id="2" value="C-Flex"/>
-    <Option id="3" value="C-Flex+"/>
-    <Option id="4" value="A-Flex"/>
-    <Option id="5" value="Bi-Flex"/>
-    <Option id="6" value="EPR"/>
-    <Option id="7" value="SmartFlex"/>
-    <Option id="8" value="Easy-Breathe"/>
-  </channel>
-  <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
-    <Option id="0" value=""/>
-    <Option id="1" value="Ramp"/>
-    <Option id="2" value="Full Time"/>
-  </channel>
-  <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pressure Relief" type="integer"/>
 
  </group>
  <group name="OXI">
   </group>
  <group name="SLEEP">
-  <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" unit="1=Awake 2=REM 3=Light Sleep 4=Deep Sleep" color="dark grey"/>
-  <channel id="0x2001" class="data" name="ZeoBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
-  <channel id="0x2002" class="data" name="Awakenings" details="Awakenings" label="Awakenings" color="black"/>
-  <channel id="0x2003" class="data" name="MorningFeel" details="ZEO Morning Feel" label="Morning Feel" color="black"/>
-  <channel id="0x2004" class="data" name="TimeInWake" details="Time In Wake" label="Time In Wake" color="red"/>
-  <channel id="0x2005" class="data" name="TimeInREM" details="Time In REM Sleep" label="Time In REM" color="green"/>
-  <channel id="0x2006" class="data" name="TimeInLight" details="Time In Light Sleep" label="Time In Light" color="blue"/>
-  <channel id="0x2007" class="data" name="TimeInDeep" details="Time In Deep Sleep" label="Time In Deep" color="magenta"/>
-  <channel id="0x2008" class="data" name="TimeToZ" details="Time To Sleep" label="Time To Z" color="magenta"/>
-  <channel id="0x2009" class="data" name="ZeoZQ" details="ZEO ZQ" label="ZEO ZQ" color="magenta"/>
  </group>
  <group name="GENERAL">
-  <channel id="0x0800" class="data" name="BPSys" details="Blood Pressure Systolic" label="BPS" unit="mmHg" color="red"/>
-  <channel id="0x0801" class="data" name="BPDia" details="Blood Pressure Diastolic" label="BPD" unit="mmHg" color="blue"/>
-  <channel id="0x0802" class="data" name="Glucose" details="Blood Glucose" label="BGL" unit="mmol/L" color="black"/>
-  <channel id="0x0803" class="data" scope="!day" name="Weight" details="Weight" label="Weight" unit="Kg" color="black"/>
-  <channel id="0x0804" class="data" scope="!day" name="Height" details="Height" label="Height" unit="cm" color="blue"/>
-  <channel id="0x0805" class="data" name="BookmarkNotes" details="Session Bookmark Notes" label="Bookmark Notes" unit="text" color="orange"/>
-  <channel id="0x0806" class="data" name="BMI" details="Body Mass Index" label="BMI" unit="kg/m2" color="orange"/>
-  <channel id="0x0807" class="data" name="ZombieMeter" details="How good you feel." label="Alive" unit="0-10" color="orange"/>
-  <channel id="0x0808" class="data" name="BookmarkStart" details="Session Bookmark Start" label="Bookmark Start" unit="duration" color="orange"/>
-  <channel id="0x0809" class="data" name="BookmarkEnd" details="Session Bookmark End" label="Bookmark End" unit="duration" color="orange"/>
-  <channel id="0x080a" class="data" scope="!day" name="LastUpdated" details="Last Updated" label="Last Updated" unit="timestamp" color="orange"/>
-  <channel id="0xd000" class="data" scope="!day" unique="true" name="Journal" details="Journal Notes" label="Journal" type="richtext"/>
  </group>
  <group name="PRS1">
   <!-- PRS1 Settings -->
