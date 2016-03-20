@@ -432,7 +432,7 @@ Oh, dat is een smiley   ;-)</translatorcomment>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="912"/>
         <source>Sleep Stage Sessions</source>
-        <translation>Slaapfasesessies</translation>
+        <translation>Slaapfase sessies</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="973"/>
@@ -1550,7 +1550,7 @@ AK: Waar staat dat Welkomst-/Startscherm???
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="337"/>
         <source>This red message line is intentional, and will not be a feature in the final version...</source>
-        <translation></translation>
+        <translation>Deze rode boodschap geeft aan dat dit een beta versie is...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2164"/>
@@ -2907,7 +2907,7 @@ Index
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1082"/>
         <source>SleepyHead is currently compatible with Contec CMS50D+, CMS50E, CMS50F and CMS50I serial oximeters.&lt;br/&gt;(Note: Direct importing from bluetooth models is &lt;span style=&quot; font-weight:600;&quot;&gt;probaby not&lt;/span&gt; possible yet)</source>
-        <translation>SeleepyHead is momenteel compatibel met oxymeters van Contec, type CMS50D+, CMS50E, CMS50F en CMS50I&lt;br/&gt;(Let op: Importeren vanuit bluetooth modellen is &lt;span style=&quot; font-weight:600;&quot;&gt;waarschijnlijk nog niet&lt;/span&gt; mogelijk)</translation>
+        <translation>SleepyHead is momenteel compatibel met oxymeters van Contec, type CMS50D+, CMS50E, CMS50F en CMS50I&lt;br/&gt;(Let op: Importeren vanuit bluetooth modellen is &lt;span style=&quot; font-weight:600;&quot;&gt;waarschijnlijk nog niet&lt;/span&gt; mogelijk)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1084"/>
