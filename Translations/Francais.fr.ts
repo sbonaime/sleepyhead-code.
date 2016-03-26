@@ -230,7 +230,7 @@
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1579"/>
         <source>Event Breakdown</source>
-        <translation></translation>
+        <translation>Répartiotn de l&apos;évènement</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1614"/>
@@ -1378,7 +1378,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1431"/>
         <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
-        <translation></translation>
+        <translation>Emplacement des données: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
@@ -1386,7 +1386,7 @@
     </message>
     <message>
         <source>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
-        <translation>Arie Klerk (Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) et d&apos;autre a ajouter.</translation>
+        <translation>Arie Klerk (Neerlandais), Steffen Reitz and Marc Stephan (Allemand), Chen Hao (Chinois), Lars-Erik Söderström (Suedois), Damien Vigneron (Francais), António Jorge Costa (Portugais), Judith Guzmán (Espanol) et d&apos;autre a ajouter.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1466"/>
@@ -1441,7 +1441,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2759"/>
         <source>%1&apos;s Journal</source>
-        <translation></translation>
+        <translation>%1&apos;s Journal</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
@@ -1451,7 +1451,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>XML Files (*.xml)</source>
-        <translation></translation>
+        <translation>Fichiers XML (*.xml)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2163"/>
@@ -1659,7 +1659,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1458"/>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
-        <translation>Arie Klerk (Coordinateur des traducteurs, aussi Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) et d&apos;autre a ajouter.</translation>
+        <translation>Arie Klerk (Coordinateur des traducteurs, aussi Neerlandais), Steffen Reitz (Allemand), Chen Hao (Chinois), Lars-Erik Söderström (Suedois), Damien Vigneron (Français), António Jorge Costa (Portugais), Judith Guzmán (Espanol) et d&apos;autre à ajouter.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1461"/>
@@ -1709,7 +1709,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1485"/>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
-        <translation>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</translation>
+        <translation>L&apos;auteur et ses associés récusent toute responsabilité pour les dommages ou autres problèmes découlant de l&apos;utilisation correcte ou non de ce logiciel.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1487"/>
@@ -2583,7 +2583,7 @@ Corporel</translation>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1017"/>
         <source>Set device identifier</source>
-        <translation></translation>
+        <translation>Ajouter l&apos;identifiant de l&apos;appareil</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1036"/>
@@ -2693,12 +2693,12 @@ Corporel</translation>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="322"/>
         <source>Waiting for %1 to start</source>
-        <translation></translation>
+        <translation>Attente de %1 pour démarrer</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="323"/>
         <source>Waiting for the device to start the upload process...</source>
-        <translation></translation>
+        <translation>En attente du matériel pour démmarer le téléversement </translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="325"/>
@@ -3549,7 +3549,7 @@ Si vous utilisez des masques différents, utilisez plutôt la valeur moyenne, ce
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="828"/>
         <source>4 cmH2O</source>
-        <translation>4cmH2O</translation>
+        <translation>4 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="838"/>
@@ -4978,7 +4978,7 @@ TTIA: %1</translation>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="354"/>
         <source>Tidal Volume</source>
         <translatorcomment>Volume courant</translatorcomment>
-        <translation>Tidal Volume</translation>
+        <translation>Volume courant</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="448"/>
@@ -5653,7 +5653,7 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/main.cpp" line="339"/>
         <source>SleepyHead will now start with your old one.</source>
-        <translation></translation>
+        <translation>SleepyHead va démarer avec l&apos;ancien</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="445"/>
@@ -5879,7 +5879,7 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="577"/>
         <source>Sorry, your Philips Respironics CPAP machine (Model %1) is not supported yet.</source>
-        <translation></translation>
+        <translation>Désolé votre machine Philips Respironics (Model %1) n&apos;est pas pris en charge pour le moment.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="578"/>
@@ -6498,7 +6498,7 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="225"/>
         <source>Respiratory Effort Related Arousal: An restriction in breathing that causes an either an awakening or sleep disturbance.</source>
-        <translation></translation>
+        <translation>Effort Respiratoire Eveillant: Une gène respiratoire qui cause un réveil ou un trouble du sommeil.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="239"/>
@@ -7977,7 +7977,7 @@ Merci de reconstruire les données de PPC</translation>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>Time at Pressure</source>
-        <translation></translation>
+        <translation>Durée à cette pression</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="947"/>
@@ -8115,7 +8115,7 @@ Merci de reconstruire les données de PPC</translation>
     <message>
         <location filename="../sleepyhead/Graphs/gGraph.cpp" line="350"/>
         <source>Snapshot %1</source>
-        <translation></translation>
+        <translation>instantané %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/cms50_loader.cpp" line="266"/>
