@@ -1447,6 +1447,14 @@
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
         <translation>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</translation>
     </message>
+    <message>
+        <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to do this?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MinMaxWidget</name>
@@ -1716,7 +1724,7 @@
     </message>
     <message>
         <source>TextLabel</source>
-        <translation>文本标签</translation>
+        <translation type="vanished">文本标签</translation>
     </message>
     <message>
         <source>Accept and save this information?</source>
@@ -2939,7 +2947,7 @@ Are you sure you want to make these changes?</source>
     </message>
     <message>
         <source>milliseconds</source>
-        <translation>毫秒</translation>
+        <translation type="vanished">毫秒</translation>
     </message>
     <message>
         <source>&amp;Oximetry</source>
@@ -3387,7 +3395,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Allow Event Renaming</source>
-        <translation>允许重命名</translation>
+        <translation type="vanished">允许重命名</translation>
     </message>
 </context>
 <context>
@@ -6404,6 +6412,158 @@ Line %2, column %3</source>
     <message>
         <source>Could not parse Updates.xml file.</source>
         <translation>无法解析 Updates.xml.</translation>
+    </message>
+    <message>
+        <source>h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>s</source>
+        <translation type="unfinished">s</translation>
+    </message>
+    <message>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Height</source>
+        <translation type="unfinished">身高</translation>
+    </message>
+    <message>
+        <source>Physical Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation type="unfinished">备注</translation>
+    </message>
+    <message>
+        <source>Bookmark Notes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Body Mass Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>How you feel (0 = like crap, 10 = unstoppable)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bookmark Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bookmark End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Journal Notes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Journal</source>
+        <translation type="unfinished">日记</translation>
+    </message>
+    <message>
+        <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brain Wave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BrainWave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Awakenings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of Awakenings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Morning Feel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>How you felt in the morning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time Awake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time spent awake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time In REM Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time spent in REM Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time in REM Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time In Light Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time spent in light sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time in Light Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time In Deep Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time spent in deep sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time in Deep Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time to Sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time taken to get to sleep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zeo ZQ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zeo sleep quality measurement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZEO ZQ</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
