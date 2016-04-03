@@ -403,6 +403,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                 }
 
                 EventDataType epr = -1, epr_level = -1;
+                bool a10 = false;
                 if ((mode == MODE_CPAP) || (mode == MODE_APAP)) {
                     if ((sig = str.lookupSignal(RMS9_EPR))) {
                         epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
@@ -412,17 +413,20 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                     }
 
                     if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
+                        a10 = true;
                         epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                         epr += 1;
                     }
                     int epr_on=0, clin_epr_on=0;
                     if ((sig = str.lookupLabel("S.EPR.EPREnable"))) { // first check machines opinion
+                        a10 = true;
                         epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     }
                     if (epr_on && (sig = str.lookupLabel("S.EPR.ClinEnable"))) {
+                        a10 = true;
                         clin_epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
                     }
-                    if (!(epr_on && clin_epr_on)) {
+                    if (a10 && !(epr_on && clin_epr_on)) {
                         epr = 0;
                         epr_level = 0;
                     }
