@@ -1510,12 +1510,12 @@ AK: Waar staat dat Welkomst-/Startscherm???
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wijzigingen in de namen, labels en beschrijvingen van grafieken gaan verloren als de taal wordt gewijzigd.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Weet je het zeker?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2764"/>
@@ -4832,22 +4832,22 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="332"/>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation>h</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="333"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="334"/>
         <source>s</source>
-        <translation type="unfinished"> s</translation>
+        <translation>s s</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="335"/>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>ms</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="372"/>
@@ -6644,7 +6644,7 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="491"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="493"/>
         <source>Height</source>
-        <translation type="unfinished">Lengte</translation>
+        <translation>Lengte</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="492"/>
@@ -6655,61 +6655,61 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="498"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="500"/>
         <source>Notes</source>
-        <translation type="unfinished">Notities</translation>
+        <translation>Notities</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="499"/>
         <source>Bookmark Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Bladwijzer notities</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="506"/>
         <source>Body Mass Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Body Mass Index</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="514"/>
         <source>How you feel (0 = like crap, 10 = unstoppable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoe voel je je (0=waardeloos, 10=fantastisch)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="521"/>
         <source>Bookmark Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Bladwijzer begin</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="527"/>
         <source>Bookmark End</source>
-        <translation type="unfinished"></translation>
+        <translation>Bladwijzer eind</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="532"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="533"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="534"/>
         <source>Last Updated</source>
-        <translation type="unfinished"></translation>
+        <translation>Laatst bijgewerkt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="538"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="539"/>
         <source>Journal Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Dagboek notities</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="540"/>
         <source>Journal</source>
-        <translation type="unfinished">Dagboek</translation>
+        <translation>Dagboek</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="546"/>
         <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>1=Wakker 2=REM 3=Lichte slaap 4=Diepe slaap</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="551"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="552"/>
         <source>Brain Wave</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hersengolf</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="553"/>
