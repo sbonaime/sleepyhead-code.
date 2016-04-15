@@ -1456,6 +1456,10 @@
         <source>Are you sure you want to do this?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Report a Bug</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MinMaxWidget</name>
