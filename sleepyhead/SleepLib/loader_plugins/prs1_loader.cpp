@@ -2958,7 +2958,7 @@ void PRS1Loader::initChannels()
         "PRS1HeatedTubing",
         QObject::tr("Heated Tubing"),
         QObject::tr("Heated Tubing Connected"),
-        QObject::tr("Headed Tubing"),
+        QObject::tr("Heated Tubing"),
         "", LOOKUP, Qt::green));
     chan->addOption(0, QObject::tr("Yes"));
     chan->addOption(1, QObject::tr("No"));

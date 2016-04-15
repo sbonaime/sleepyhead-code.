@@ -331,3 +331,6 @@ DEPENDPATH += $$PWD/../3rdparty/quazip
 #    }
 #    LIBS += -lquazip
 #}
+
+DISTFILES += \
+    ../README

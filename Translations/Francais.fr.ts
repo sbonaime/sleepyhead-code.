@@ -1229,7 +1229,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1187"/>
         <source>This is a beta release, some features may not yet behave as expected.</source>
-        <translation>e logiciel est une version Beta (de test) et certaines fonctions peuvent se comporter de façons inattendues.</translation>
+        <translation>Ce logiciel est une version Beta (de test) et certaines fonctions peuvent se comporter de façons inattendues.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1188"/>
@@ -1446,7 +1446,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
         <source>Choose where to save journal</source>
-        <translation></translation>
+        <translation>Choisissez ou sauvegarder le journal</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2761"/>
@@ -1516,7 +1516,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="337"/>
         <source>This red message line is intentional, and will not be a feature in the final version...</source>
-        <translation></translation>
+        <translation>Ce message rouge est intentinel et sera absent de la version finale...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="558"/>
@@ -2303,7 +2303,7 @@
         <source>Apnea
 Hypopnea
 Index</source>
-        <translation>Index des Apnée etHypopnée</translation>
+        <translation>Index des Apnée et Hypopnée</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="338"/>
@@ -4532,7 +4532,8 @@ Voulez-vous le faire maintenant ?</translation>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="660"/>
         <source>
 Hours: %1</source>
-        <translation>Heures: %1</translation>
+        <translation>
+Heures: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="726"/>
@@ -7803,12 +7804,12 @@ Merci de reconstruire les données de PPC</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3363"/>
         <source>0cmH2O</source>
-        <translation></translation>
+        <translation>0cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3364"/>
         <source>1cmH2O</source>
-        <translation></translation>
+        <translation>1cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3365"/>

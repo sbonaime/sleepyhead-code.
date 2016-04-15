@@ -339,6 +339,8 @@ class MainWindow : public QMainWindow
 
     void on_mainsplitter_splitterMoved(int pos, int index);
 
+    void on_actionReport_a_Bug_triggered();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();
