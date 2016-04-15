@@ -858,7 +858,6 @@ QStringList getDriveList()
     }
 
 #endif
-
     return drivelist;
 }
 

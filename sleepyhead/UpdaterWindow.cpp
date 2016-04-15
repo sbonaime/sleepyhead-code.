@@ -444,7 +444,7 @@ void UpdaterWindow::ParseUpdatesXML(QIODevice *dev)
 
             if (QMessageBox::question(mainwin, tr("SleepyHead Updates"),
                 tr("New SleepyHead Updates are avilable:")+"\n\n"+
-                tr("Would you like t download and install them now?"),
+                tr("Would you like to download and install them now?"),
                 QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
 
                 StartMaintenanceTool();
