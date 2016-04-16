@@ -866,6 +866,16 @@ bool PRS1Import::ParseF5Events()
             //            }
             //            Code[2]->AddEvent(t,data0);
             break;
+        case 0x03: // BIPAP Pressure
+            qDebug() << "0x03 Observed in ASV data!!????";
+
+            data0 = buffer[pos++];
+            data1 = buffer[pos++];
+            //            data0/=10.0;
+            //            data1/=10.0;
+            //            session->AddEvent(new Event(t,CPAP_EAP, 0, data, 1));
+            //            session->AddEvent(new Event(t,CPAP_IAP, 0, &data1, 1));
+            break;
 
         case 0x04: // Timed Breath
             data0 = buffer[pos++];
@@ -898,16 +908,20 @@ bool PRS1Import::ParseF5Events()
         case 0x08: // ???
             data0 = buffer[pos++];
             tt -= qint64(data0) * 1000L; // Subtract Time Offset
-            qDebug() << "Code 8 found at " << hex << pos - 1 << " " << tt;
+            //qDebug() << "Code 8 found at " << hex << pos - 1 << " " << tt;
 
-            if (!Code[10]) {
-                if (!(Code[10] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+            if (event->familyVersion>=2) {
+                HY->AddEvent(tt, data0);
+            } else {
+                if (!Code[10]) {
+                    if (!(Code[10] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+                }
+
+                //????
+                //data1=buffer[pos++]; // ???
+                Code[10]->AddEvent(tt, data0);
+                //pos++;
             }
-
-            //????
-            //data1=buffer[pos++]; // ???
-            Code[10]->AddEvent(tt, data0);
-            pos++;
             break;
 
         case 0x09: // ASV Codes
@@ -922,12 +936,15 @@ bool PRS1Import::ParseF5Events()
         case 0x0a:
             data0 = buffer[pos++];
             tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            if (event->familyVersion>=2) {
+                FL->AddEvent(tt, data0);
+            } else {
+                if (!Code[7]) {
+                    if (!(Code[7] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+                }
 
-            if (!Code[7]) {
-                if (!(Code[7] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+                Code[7]->AddEvent(tt, data0);
             }
-
-            Code[7]->AddEvent(tt, data0);
             break;
 
 
@@ -951,16 +968,36 @@ bool PRS1Import::ParseF5Events()
             break;
 
         case 0x0c:
-            data0 = buffer[pos++];
-            tt -= qint64(data0) * 1000L; // Subtract Time Offset
-            qDebug() << "Code 12 found at " << hex << pos - 1 << " " << tt;
 
-            if (!Code[8]) {
-                if (!(Code[8] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+            if (event->familyVersion>=2) {
+                data0 = (buffer[pos + 1] << 8 | buffer[pos]);
+                data0 *= 2;
+                pos += 2;
+                data1 = buffer[pos++];
+                tt = t - qint64(data1) * 1000L;
+
+                if (!PB) {
+                    if (!(PB = session->AddEventList(cpapcode, EVL_Event))) {
+                        qDebug() << "!PB addeventlist exit";
+                        return false;
+                    }
+                }
+
+                PB->AddEvent(tt, data0);
+
+            } else {
+                data0 = buffer[pos++];
+                tt -= qint64(data0) * 1000L; // Subtract Time Offset
+                qDebug() << "Code 12 found at " << hex << pos - 1 << " " << tt;
+
+
+                if (!Code[8]) {
+                    if (!(Code[8] = session->AddEventList(cpapcode, EVL_Event))) { return false; }
+                }
+
+                Code[8]->AddEvent(tt, data0);
+                pos += 2;
             }
-
-            Code[8]->AddEvent(tt, data0);
-            pos += 2;
             break;
 
         case 0x0d: // All the other ASV graph stuff.
@@ -1002,33 +1039,52 @@ bool PRS1Import::ParseF5Events()
             PS->AddEvent(t, data2);           // Pressure Support
             if (event->familyVersion >= 1) {
                 data0 = buffer[pos++];
-
             }
             break;
 
-        case 0x03: // BIPAP Pressure
-            qDebug() << "0x03 Observed in ASV data!!????";
-
-            data0 = buffer[pos++];
-            data1 = buffer[pos++];
-            //            data0/=10.0;
-            //            data1/=10.0;
-            //            session->AddEvent(new Event(t,CPAP_EAP, 0, data, 1));
-            //            session->AddEvent(new Event(t,CPAP_IAP, 0, &data1, 1));
-            break;
-
-        case 0x11: // Not Leak Rate
-            qDebug() << "0x11 Observed in ASV data!!????";
-            //if (!Code[24]) {
-            //   Code[24]=new EventList(cpapcode,EVL_Event);
-            //}
-            //Code[24]->AddEvent(t,buffer[pos++]);
-            break;
-
         case 0x0e: // Unknown
-            qDebug() << "0x0E Observed in ASV data!!????";
-            data0 = buffer[pos++]; // << 8) | buffer[pos];
+            // Family 5.2 has this code
+            if (event->familyVersion>=2) {
+                EPAP->AddEvent(t, data0=buffer[pos+9]); // 9
+                IPAP->AddEvent(t, data1=buffer[pos+0]); // 0
+                IPAPLo->AddEvent(t, buffer[pos+1]); // 1
+                IPAPHi->AddEvent(t, buffer[pos+2]); // 2
+                LEAK->AddEvent(t, buffer[pos+3]); // 3
+                TV->AddEvent(t, buffer[pos+7]); // 7
+                RR->AddEvent(t, buffer[pos+4]); // 4
+                PTB->AddEvent(t, buffer[pos+5]);  // 5
+                MV->AddEvent(t,  buffer[pos+6]); //6
+                SNORE->AddEvent(t, data2 = buffer[pos+8]); //??
+
+                if (data2 > 0) {
+                    if (!VS) {
+                        if (!(VS = session->AddEventList(CPAP_VSnore, EVL_Event))) {
+                            qDebug() << "!VS eventlist exit";
+                            return false;
+                        }
+                    }
+
+                    VS->AddEvent(t, 0); //data2); // VSnore
+                }
+                data2 = data1 - data0;
+                PS->AddEvent(t, data2);           // Pressure Support
+                pos+=11;
+            } else {
+                qDebug() << "0x0E Observed in ASV data!!????";
+                data0 = buffer[pos++]; // << 8) | buffer[pos];
+
+            }
             //session->AddEvent(new Event(t,cpapcode, 0, data, 1));
+            break;
+        case 0x0f:
+            qDebug() << "0x0f Observed in ASV data!!????";
+
+            data0 = buffer[pos + 1] << 8 | buffer[pos];
+            pos += 2;
+            data1 = buffer[pos]; //|buffer[pos+1] << 8
+            pos += 1;
+            tt -= qint64(data1) * 1000L;
+            //session->AddEvent(new Event(tt,cpapcode, 0, data, 2));
             break;
 
         case 0x10: // Unknown
@@ -1045,17 +1101,14 @@ bool PRS1Import::ParseF5Events()
 //            data2 = buffer[pos++];
             //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
             break;
-
-        case 0x0f:
-            qDebug() << "0x0f Observed in ASV data!!????";
-
-            data0 = buffer[pos + 1] << 8 | buffer[pos];
-            pos += 2;
-            data1 = buffer[pos]; //|buffer[pos+1] << 8
-            pos += 1;
-            tt -= qint64(data1) * 1000L;
-            //session->AddEvent(new Event(tt,cpapcode, 0, data, 2));
+        case 0x11: // Not Leak Rate
+            qDebug() << "0x11 Observed in ASV data!!????";
+            //if (!Code[24]) {
+            //   Code[24]=new EventList(cpapcode,EVL_Event);
+            //}
+            //Code[24]->AddEvent(t,buffer[pos++]);
             break;
+
 
         case 0x12: // Summary
             qDebug() << "0x12 Observed in ASV data!!????";

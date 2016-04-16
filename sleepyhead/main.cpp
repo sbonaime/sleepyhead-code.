@@ -85,25 +85,27 @@ void release_notes()
     QVBoxLayout * layout = new QVBoxLayout(&relnotes);
     QWebView * web = new QWebView(&relnotes);
 
-    QString welcomeMessage = "<font size=+1>"
-            "<p>"+QObject::tr("After four years in the making, this build brings SleepyHead into the final beta phase.")+"</p>"
-            "<p>"+QObject::tr("Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
-            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.")+
-            "</p></font>";
-
+//    QString welcomeMessage = "<font size=+1>"
+//            "<p>"+QObject::tr("After four years in the making, this build brings SleepyHead into the final beta phase.")+"</p>"
+//            "<p>"+QObject::tr("Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
+//            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.")+
+//            "</p></font>";
+;
     QFile clfile(":/docs/release_notes.html");
     QString changeLog = QObject::tr("Sorry, could not locate changelog.");
     if (clfile.open(QIODevice::ReadOnly)) {
         QTextStream ts(&clfile);
+        //Todo, write XML parser and only show the latest..
         changeLog = ts.readAll();
     }
 
+
     QString html = "<html>"
     "<head><meta charset=\"UTF-8\"></head>"
-    "<body>"
-    "<h2><p>"+QObject::tr("Greetings!")+"</p></h2>";
+    "<body>";
+    //"<h2><p>"+QObject::tr("Greetings!")+"</p></h2>";
 
-    html += welcomeMessage;
+//    html += welcomeMessage;
 
 
     if (ReleaseStatus != "r") {
@@ -111,8 +113,8 @@ void release_notes()
         "<font size=+1><i>"+QObject::tr("As this is a pre-release version, it is recommended that you back up your data folder manually before proceding, because attempting to roll back later may break things.")+"</i></font></p>";
     }
 
-    html += "<p><b>"+QObject::tr("Sleep Well, and good luck!")+"</b></p>"
-            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>"+QObject::tr("Change log")+"</i></b><hr/><br/><br/>";
+//    html += "<p><b>"+QObject::tr("Sleep Well, and good luck!")+"</b></p>"
+//            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>"+QObject::tr("Change log")+"</i></b><hr/><br/><br/>";
 
     html += changeLog;
     html += "</body></html>";
