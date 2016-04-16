@@ -506,7 +506,7 @@ retry_directory:
 
     loadChannels(changing_language);
 
- //   if (check_updates) { mainwin->CheckForUpdates(); }
+    if (check_updates) { mainwin->CheckForUpdates(); }
 
     w.show();
 

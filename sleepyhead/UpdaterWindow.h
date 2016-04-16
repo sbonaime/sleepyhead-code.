@@ -52,6 +52,7 @@ class UpdaterWindow : public QMainWindow
         */
     void ParseUpdateXML(QIODevice *dev);
     void ParseUpdatesXML(QIODevice *dev);
+    void ParseLatestVersion(QIODevice *dev);
 
   protected slots:
     void updateFinished(QNetworkReply *reply);
