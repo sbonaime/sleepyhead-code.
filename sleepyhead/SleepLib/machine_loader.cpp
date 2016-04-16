@@ -231,7 +231,7 @@ bool compressFile(QString inpath, QString outpath)
     char *buf = new char [size];
 
     if (!f.read(buf, size)) {
-        delete buf;
+        delete [] buf;
         qDebug() << "compressFile() Couldn't read all of" << inpath;
         return false;
     }
@@ -242,13 +242,13 @@ bool compressFile(QString inpath, QString outpath)
     //gzbuffer(gz,65536*2);
     if (!gz) {
         qDebug() << "compressFile() Couldn't open" << outpath << "for writing";
-        delete buf;
+        delete [] buf;
         return false;
     }
 
     gzwrite(gz, buf, size);
     gzclose(gz);
-    delete buf;
+    delete [] buf;
     return true;
 }
 

@@ -111,7 +111,7 @@ void HighPass(char * data, int samples, float cutoff, float dt)
     for (int i=0; i< samples; ++i) {
         data[i] = Y[i];
     }
-    delete Y;
+    delete [] Y;
 }
 
 int WeinmannLoader::Open(QString path)
