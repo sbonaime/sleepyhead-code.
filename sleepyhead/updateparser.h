@@ -154,5 +154,4 @@ class UpdatesParser
     QString currentTag;
 };
 
-
 #endif // UPDATEPARSER_H

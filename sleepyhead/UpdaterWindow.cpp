@@ -9,6 +9,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QMessageBox>
+#include <QDesktopServices>
 #include <QResource>
 #include <QProgressBar>
 #include <QTimer>
@@ -71,21 +72,46 @@ UpdaterWindow::~UpdaterWindow()
     delete ui;
 }
 
+QString platformStr()
+{
+    static QString platform;
+
+#if defined(Q_OS_WIN)
+    platform="win32";
+#elif defined(Q_OS_MAC)
+    platform="mac";
+#elif defined(Q_OS_LINUX)
+    platform="ubuntu";
+#else
+    platform="unknown";
+#endif
+
+    return platform;
+}
 
 void UpdaterWindow::checkForUpdates()
 {
-    QString filename = QApplication::applicationDirPath() + "/Updates.xml";
+    QString platform=platformStr();
 
+#ifdef Q_OS_WINDOWS
+    QString filename = QApplication::applicationDirPath() + "/Updates.xml";
+#else
+    QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platform);
+#endif
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
         QFileInfo fi(filename);
         QDateTime created = fi.created();
         int age = created.secsTo(QDateTime::currentDateTime());
 
-        if (age < 0) { // 7200) {
+        if (age < 900) {
             QFile file(filename);
             file.open(QFile::ReadOnly);
-            ParseUpdateXML(&file);
+#ifdef Q_OS_WINDOWS
+            ParseUpdatesXML(&file);
+#else
+            ParseLatestVersion(&file);
+#endif
             file.close();
             return;
         }
@@ -93,14 +119,12 @@ void UpdaterWindow::checkForUpdates()
 
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
-#if defined(Q_OS_WIN)
-    // language code?
-    update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/win32/Updates.xml");
-    downloadUpdateXML();
-#elif defined(Q_OS_MAC)
-    update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/mac/Updates.xml"));
-
+#ifdef Q_OS_WINDOWS
+    update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/%1/Updates.xml").arg(platform));
+#else
+    update_url = QUrl(QString("http://sleepyhead.jedimark.net/releases/LatestVersion-%1").arg(platform));
 #endif
+    downloadUpdateXML();
 }
 
 void UpdaterWindow::downloadUpdateXML()
@@ -143,15 +167,25 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
 
 
         ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
+
+#ifdef Q_OS_WINDOWS
         QString filename = QApplication::applicationDirPath() + "/Updates.xml";
+#else
+        QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platformStr());
+#endif
+
         qDebug() << filename;
         QFile file(filename);
         file.open(QFile::WriteOnly);
         file.write(reply->readAll());
         file.close();
         file.open(QFile::ReadOnly);
-        //QTextStream ts(&file);
+
+#ifdef Q_OS_WINDOWS
         ParseUpdatesXML(&file);
+#else
+        ParseLatestVersion(&file);
+#endif
         file.close();
         reply->deleteLater();
     }
@@ -401,6 +435,22 @@ void StartMaintenanceTool()
 #ifdef Q_OS_WINDOWS
 
 #endif
+}
+
+void UpdaterWindow::ParseLatestVersion(QIODevice *file)
+{
+    // Temporary Cheat.. for linux & mac, just check the latest version number
+    QTextStream text(file);
+
+    QString version=text.readAll().trimmed();
+    qDebug() << "Latest version is" << version;
+    int i=compareVersion(version);
+    if (i>0) {
+        mainwin->Notify(tr("Version %1 of SleepyHead is available, opening link to download site.").arg(version), STR_TR_SleepyHead);
+        QDesktopServices::openUrl(QUrl(QString("http://sleepyhead.jedimark.net")));
+    } else {
+        mainwin->Notify(tr("You are already running the latest version."), STR_TR_SleepyHead);
+    }
 }
 
 //New, Qt Installer framework version
