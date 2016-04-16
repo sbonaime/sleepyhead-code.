@@ -811,7 +811,7 @@ bool PRS1Import::ParseF5Events()
         code = buffer[pos++];
 
         if (code >= ncodes) {
-            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
+            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos << "in" << event->sessionid;;
             qDebug() << "1: (" << int(lastcode) << hex << lastpos << ")";
             qDebug() << "2: (" << int(lastcode2) << hex << lastpos2 << ")";
             qDebug() << "3: (" << int(lastcode3) << hex << lastpos3 << ")";
@@ -925,11 +925,16 @@ bool PRS1Import::ParseF5Events()
             break;
 
         case 0x09: // ASV Codes
-            //code=CPAP_FlowLimit;
-            data0 = buffer[pos++];
-            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            if (event->familyVersion<2) {
+                //code=CPAP_FlowLimit;
+                data0 = buffer[pos++];
+                tt -= qint64(data0) * 1000L; // Subtract Time Offset
 
-            FL->AddEvent(tt, data0);
+                FL->AddEvent(tt, data0);
+            } else {
+                data0 = buffer[pos++];
+                data1 = buffer[pos++];
+            }
 
             break;
 
@@ -1001,44 +1006,53 @@ bool PRS1Import::ParseF5Events()
             break;
 
         case 0x0d: // All the other ASV graph stuff.
-            IPAP->AddEvent(t, currentPressure = data0 = buffer[pos++]); // 00=IAP
-            data4 = buffer[pos++];
-            IPAPLo->AddEvent(t, data4);               // 01=IAP Low
-            data5 = buffer[pos++];
-            IPAPHi->AddEvent(t, data5);               // 02=IAP High
 
-            TOTLEAK->AddEvent(t, leak=buffer[pos++]);           // 03=LEAK
-            if (calcLeaks) { // Much Quicker doing this here than the recalc method.
-                leak -= (((currentPressure/10.0f) - 4.0) * ppm + lpm4);
-                if (leak < 0) leak = 0;
+            if (event->familyVersion>=2) {
+                data0 = (buffer[pos + 1] << 8 | buffer[pos]);
+                data0 *= 2;
+                pos += 2;
+                data1 = buffer[pos++];
+                tt = t - qint64(data1) * 1000L;
+            } else {
+                IPAP->AddEvent(t, currentPressure = data0 = buffer[pos++]); // 00=IAP
+                data4 = buffer[pos++];
+                IPAPLo->AddEvent(t, data4);               // 01=IAP Low
+                data5 = buffer[pos++];
+                IPAPHi->AddEvent(t, data5);               // 02=IAP High
 
-                LEAK->AddEvent(t, leak);
-            }
+                TOTLEAK->AddEvent(t, leak=buffer[pos++]);           // 03=LEAK
+                if (calcLeaks) { // Much Quicker doing this here than the recalc method.
+                    leak -= (((currentPressure/10.0f) - 4.0) * ppm + lpm4);
+                    if (leak < 0) leak = 0;
 
-
-            RR->AddEvent(t, buffer[pos++]);             // 04=Breaths Per Minute
-            PTB->AddEvent(t, buffer[pos++]);            // 05=Patient Triggered Breaths
-            MV->AddEvent(t, buffer[pos++]);             // 06=Minute Ventilation
-            //tmp=buffer[pos++] * 10.0;
-            TV->AddEvent(t, buffer[pos++]);             // 07=Tidal Volume
-            SNORE->AddEvent(t, data2 = buffer[pos++]); // 08=Snore
-
-            if (data2 > 0) {
-                if (!VS) {
-                    if (!(VS = session->AddEventList(CPAP_VSnore, EVL_Event))) {
-                        qDebug() << "!VS eventlist exit";
-                        return false;
-                    }
+                    LEAK->AddEvent(t, leak);
                 }
 
-                VS->AddEvent(t, 0); //data2); // VSnore
-            }
 
-            EPAP->AddEvent(t, data1 = buffer[pos++]); // 09=EPAP
-            data2 = data0 - data1;
-            PS->AddEvent(t, data2);           // Pressure Support
-            if (event->familyVersion >= 1) {
-                data0 = buffer[pos++];
+                RR->AddEvent(t, buffer[pos++]);             // 04=Breaths Per Minute
+                PTB->AddEvent(t, buffer[pos++]);            // 05=Patient Triggered Breaths
+                MV->AddEvent(t, buffer[pos++]);             // 06=Minute Ventilation
+                //tmp=buffer[pos++] * 10.0;
+                TV->AddEvent(t, buffer[pos++]);             // 07=Tidal Volume
+                SNORE->AddEvent(t, data2 = buffer[pos++]); // 08=Snore
+
+                if (data2 > 0) {
+                    if (!VS) {
+                        if (!(VS = session->AddEventList(CPAP_VSnore, EVL_Event))) {
+                            qDebug() << "!VS eventlist exit";
+                            return false;
+                        }
+                    }
+
+                    VS->AddEvent(t, 0); //data2); // VSnore
+                }
+
+                EPAP->AddEvent(t, data1 = buffer[pos++]); // 09=EPAP
+                data2 = data0 - data1;
+                PS->AddEvent(t, data2);           // Pressure Support
+                if (event->familyVersion >= 1) {
+                    data0 = buffer[pos++];
+                }
             }
             break;
 
@@ -1361,7 +1375,7 @@ bool PRS1Import::ParseF0Events()
         code = buffer[pos++];
 
         if (code > 0x15) {
-            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
+            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos << "in" << event->sessionid;
             qDebug() << "1: (" << hex << int(lastcode) << hex << lastpos << ")";
             qDebug() << "2: (" << hex << int(lastcode2) << hex << lastpos2 << ")";
             qDebug() << "3: (" << hex << int(lastcode3) << hex << lastpos3 << ")";

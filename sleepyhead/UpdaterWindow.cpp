@@ -93,9 +93,14 @@ void UpdaterWindow::checkForUpdates()
 
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
+#if defined(Q_OS_WIN)
     // language code?
-    update_url = QUrl(QString("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/%1/Updates.xml/download").arg(PlatformString));
+    update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/win32/Updates.xml");
     downloadUpdateXML();
+#elif defined(Q_OS_MAC)
+    update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/mac/Updates.xml"));
+
+#endif
 }
 
 void UpdaterWindow::downloadUpdateXML()
