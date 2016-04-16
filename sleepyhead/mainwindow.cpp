@@ -1520,7 +1520,7 @@ void MainWindow::on_action_About_triggered()
 
 
     if (aboutbox.exec() == QDialog::Accepted) {
-        QDesktopServices::openUrl(QUrl("http://sourceforge.net/p/sleepyhead/donate"));
+        QDesktopServices::openUrl(QUrl("http://sleepyhead.jedimark.net/donate.php"));
         //spawn browser with paypal site.
     }
 
@@ -2559,8 +2559,7 @@ void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
 
 void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
-    QUrl url =
-        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Support_SleepyHead_Development");
+    QUrl url = QUrl("https://sleepyhead.jedimark.net/donate.php");
     QDesktopServices().openUrl(url);
     //    ui->webView->load(url);
     //    ui->tabWidget->setCurrentWidget(ui->helpTab);
@@ -2795,5 +2794,5 @@ void MainWindow::on_actionReport_a_Bug_triggered()
 {
     QSettings settings(getDeveloperName(), getAppName());
     QString language = settings.value(LangSetting).toString();
-    QDesktopServices::openUrl(QUrl(QString("http://sleepyhead.jedimark.net/report_bugs.php?lang=%1&version=%2&platform=%3").arg(language).arg(VersionString).arg(PlatformString)));
+    QDesktopServices::openUrl(QUrl(QString("https://www.jedimark.net/tiki-index.php?page=Reporting+SleepyHead+Bugs&lang=%1&version=%2&platform=%3").arg(language).arg(VersionString).arg(PlatformString)));
 }
