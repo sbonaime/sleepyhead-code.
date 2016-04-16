@@ -186,6 +186,8 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
 #else
         ParseLatestVersion(&file);
 #endif
+        PREF[STR_GEN_UpdatesLastChecked] = QDateTime::currentDateTime();
+
         file.close();
         reply->deleteLater();
     }
@@ -445,6 +447,7 @@ void UpdaterWindow::ParseLatestVersion(QIODevice *file)
     QString version=text.readAll().trimmed();
     qDebug() << "Latest version is" << version;
     int i=compareVersion(version);
+
     if (i>0) {
         mainwin->Notify(tr("Version %1 of SleepyHead is available, opening link to download site.").arg(version), STR_TR_SleepyHead);
         QDesktopServices::openUrl(QUrl(QString("http://sleepyhead.jedimark.net")));
