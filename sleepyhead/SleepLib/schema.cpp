@@ -494,7 +494,7 @@ void init()
                         DOUBLE,  Qt::black));
 
 //    <channel id="0x0805" class="data" name="BookmarkNotes" details="Session Bookmark Notes" label="Bookmark Notes" unit="text" color="orange"/>
-    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0805, DATA,   MT_JOURNAL,  DAY,
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Bookmark_Notes=0x0805, DATA,   MT_JOURNAL,  DAY,
                         "BookmarkNotes",      QObject::tr("Notes"),
                         QObject::tr("Bookmark Notes"),
                         QObject::tr("Notes"),  QString(),
@@ -516,19 +516,19 @@ void init()
                         DOUBLE,  Qt::black));
 
 //    <channel id="0x0808" class="data" name="BookmarkStart" details="Session Bookmark Start" label="Bookmark Start" unit="duration" color="orange"/>
-    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0808, DATA,   MT_JOURNAL,  DAY,
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Bookmark_Start=0x0808, DATA,   MT_JOURNAL,  DAY,
                         "BookmarkStart",      QObject::tr("Start"),
                         QObject::tr("Bookmark Start"),
                         QObject::tr("Start"),  QString(),
                         INTEGER,  Qt::black));
 //    <channel id="0x0809" class="data" name="BookmarkEnd" details="Session Bookmark End" label="Bookmark End" unit="duration" color="orange"/>
-    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x0809, DATA,   MT_JOURNAL,  DAY,
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(Bookmark_End=0x0809, DATA,   MT_JOURNAL,  DAY,
                         "BookmarkEnd",      QObject::tr("End"),
                         QObject::tr("Bookmark End"),
                         QObject::tr("End"),  QString(),
                         DOUBLE,  Qt::black));
 //    <channel id="0x080a" class="data" scope="!day" name="LastUpdated" details="Last Updated" label="Last Updated" unit="timestamp" color="orange"/>
-    schema::channel.add(GRP_JOURNAL, ch = new Channel(0x080a, DATA,   MT_JOURNAL,  DAY,
+    schema::channel.add(GRP_JOURNAL, ch = new Channel(LastUpdated=0x080a, DATA,   MT_JOURNAL,  DAY,
                         "LastUpdated",      QObject::tr("Last Updated"),
                         QObject::tr("Last Updated"),
                         QObject::tr("Last Updated"),  QString(),
@@ -699,14 +699,6 @@ void init()
     //    OXI_Plethy=schema::channel["Plethy"].id();
     //    CPAP_AHI=schema::channel["AHI"].id();
     //    CPAP_RDI=schema::channel["RDI"].id();
-//    Journal_Notes = schema::channel["Journal"].id();
-//    Journal_Weight = schema::channel["Weight"].id();
-//    Journal_BMI = schema::channel["BMI"].id();
-//    Journal_ZombieMeter = schema::channel["ZombieMeter"].id();
-//    LastUpdated = schema::channel["LastUpdated"].id();
-//    Bookmark_Start = schema::channel["BookmarkStart"].id();
-//    Bookmark_End = schema::channel["BookmarkEnd"].id();
-//    Bookmark_Notes = schema::channel["BookmarkNotes"].id();
 
 //    ZEO_SleepStage = schema::channel["SleepStage"].id();
 //    ZEO_ZQ = schema::channel["ZeoZQ"].id();
