@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -1449,15 +1449,15 @@
     </message>
     <message>
         <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
-        <translation type="unfinished"></translation>
+        <translation>修改语言将会重置自动以事件和波形的名称/标签/描述.</translation>
     </message>
     <message>
         <source>Are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation>确定?</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
+        <translation>报告错误</translation>
     </message>
 </context>
 <context>
@@ -5611,7 +5611,7 @@ Please Rebuild CPAP Data</source>
     </message>
     <message>
         <source>Headed Tubing</source>
-        <translation>加热管路</translation>
+        <translation type="vanished">加热管路</translation>
     </message>
     <message>
         <source>By Pressure</source>
@@ -6419,155 +6419,155 @@ Line %2, column %3</source>
     </message>
     <message>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation>小时</translation>
     </message>
     <message>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>分钟</translation>
     </message>
     <message>
         <source>s</source>
-        <translation type="unfinished">s</translation>
+        <translation>秒s</translation>
     </message>
     <message>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>毫秒</translation>
     </message>
     <message>
         <source>Height</source>
-        <translation type="unfinished">身高</translation>
+        <translation>身高</translation>
     </message>
     <message>
         <source>Physical Height</source>
-        <translation type="unfinished"></translation>
+        <translation>身高</translation>
     </message>
     <message>
         <source>Notes</source>
-        <translation type="unfinished">备注</translation>
+        <translation>备注</translation>
     </message>
     <message>
         <source>Bookmark Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>标记备注</translation>
     </message>
     <message>
         <source>Body Mass Index</source>
-        <translation type="unfinished"></translation>
+        <translation>体重指数</translation>
     </message>
     <message>
         <source>How you feel (0 = like crap, 10 = unstoppable)</source>
-        <translation type="unfinished"></translation>
+        <translation>体感(0-无效，10=喜欢到停不下来)</translation>
     </message>
     <message>
         <source>Bookmark Start</source>
-        <translation type="unfinished"></translation>
+        <translation>标记开始</translation>
     </message>
     <message>
         <source>Bookmark End</source>
-        <translation type="unfinished"></translation>
+        <translation>标记结束</translation>
     </message>
     <message>
         <source>Last Updated</source>
-        <translation type="unfinished"></translation>
+        <translation>最后更新</translation>
     </message>
     <message>
         <source>Journal Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>日志备注</translation>
     </message>
     <message>
         <source>Journal</source>
-        <translation type="unfinished">日记</translation>
+        <translation>日志日记</translation>
     </message>
     <message>
         <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>1=醒 2=动眼睡眠 3=浅睡眠 4=深睡眠</translation>
     </message>
     <message>
         <source>Brain Wave</source>
-        <translation type="unfinished"></translation>
+        <translation>脑波</translation>
     </message>
     <message>
         <source>BrainWave</source>
-        <translation type="unfinished"></translation>
+        <translation>脑波</translation>
     </message>
     <message>
         <source>Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>觉醒</translation>
     </message>
     <message>
         <source>Number of Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>觉醒次数</translation>
     </message>
     <message>
         <source>Morning Feel</source>
-        <translation type="unfinished"></translation>
+        <translation>晨起感觉</translation>
     </message>
     <message>
         <source>How you felt in the morning</source>
-        <translation type="unfinished"></translation>
+        <translation>早上醒来的感觉</translation>
     </message>
     <message>
         <source>Time Awake</source>
-        <translation type="unfinished"></translation>
+        <translation>清醒时间</translation>
     </message>
     <message>
         <source>Time spent awake</source>
-        <translation type="unfinished"></translation>
+        <translation>清醒时长</translation>
     </message>
     <message>
         <source>Time In REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>动眼睡眠时长</translation>
     </message>
     <message>
         <source>Time spent in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>动眼睡眠时长</translation>
     </message>
     <message>
         <source>Time in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>动眼睡眠时长</translation>
     </message>
     <message>
         <source>Time In Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>浅睡眠时长</translation>
     </message>
     <message>
         <source>Time spent in light sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>浅睡眠时长</translation>
     </message>
     <message>
         <source>Time in Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>浅睡眠时长</translation>
     </message>
     <message>
         <source>Time In Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>深睡眠时长</translation>
     </message>
     <message>
         <source>Time spent in deep sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>深睡眠时长</translation>
     </message>
     <message>
         <source>Time in Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>深睡眠时长</translation>
     </message>
     <message>
         <source>Time to Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>睡眠时长</translation>
     </message>
     <message>
         <source>Time taken to get to sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>入睡时长</translation>
     </message>
     <message>
         <source>Zeo ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>ZEO 睡商</translation>
     </message>
     <message>
         <source>Zeo sleep quality measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>ZEO睡眠质量监测</translation>
     </message>
     <message>
         <source>ZEO ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>ZEP睡商</translation>
     </message>
 </context>
 <context>

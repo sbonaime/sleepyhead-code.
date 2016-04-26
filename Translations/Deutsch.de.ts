@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.1" language="de_DE" sourcelanguage="en_US">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -1438,7 +1438,7 @@
     </message>
     <message>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz and Marc Stephan (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and others I&apos;ve still to add here.</source>
-        <translation type="vanished">Arie Klerk (Coordinator für die Übersetzungen, Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish) and Plamen Tonev (Bulgarian).</translation>
+        <translation>Arie Klerk (Koordination der Übersetzung, auch Niederländisch), Steffen Reitz (Deutsch), Chen Hao (Chinesisch), Lars-Erik Söderström (Swedisch), Damien Vigneron (Fransösisch), António Jorge Costa (Portugesisch), Judith Guzmán (Spanisch), Plamen Tonev (Bulgarisch) und andere, die ich hier noch hinzufügen werde.</translation>
     </message>
     <message>
         <source>%1 %2</source>
@@ -1446,19 +1446,19 @@
     </message>
     <message>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
-        <translation>Arie Klerk (Koordination der Übersetzung Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) und andere, die ich hier noch hinzufügen werde.</translation>
+        <translation>Arie Klerk (Koordination der Übersetzung, auch Niederländisch), Steffen Reitz (Deutsch), Chen Hao (Chinesisch), Lars-Erik Söderström (Swedisch), Damien Vigneron (Fransösisch), António Jorge Costa (Portugesisch), Judith Guzmán (Spanisch), Plamen Tonev (Bulgarisch) und andere, die ich hier noch hinzufügen werde.</translation>
     </message>
     <message>
         <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurücksetzen der benutzerdefinierten Event-und Kurvennamen / Labels / Beschreibungen und der Sprache.</translation>
     </message>
     <message>
         <source>Are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sind Sie sicher, dass Sie dies tun wollen?</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
+        <translation>Melde einen technischen Fehler</translation>
     </message>
 </context>
 <context>
@@ -1732,7 +1732,7 @@
     </message>
     <message>
         <source>TextLabel</source>
-        <translation type="vanished">Textlabel</translation>
+        <translation>Textlabel</translation>
     </message>
     <message>
         <source>Accept and save this information?</source>
@@ -3262,7 +3262,7 @@ Sind Sie sicher, dass Sie diese Änderungen vornehmen wollen?</translation>
     </message>
     <message>
         <source>milliseconds</source>
-        <translation type="vanished">millisekunden</translation>
+        <translation>millisekunden</translation>
     </message>
     <message>
         <source>&amp;Oximetry</source>
@@ -3305,7 +3305,7 @@ werden Sie sehen, dass es nicht sehr oft zu Problemen kommt.&lt;/p&gt;&lt;/body&
     </message>
     <message>
         <source>Use Custom Mask Profile for Unintentional Leaks</source>
-        <translation type="vanished">Verwenden von benutzerdefinierten Masken Profil für unbeabsichtigte Lecks</translation>
+        <translation>Verwenden von benutzerdefinierten Masken Profil für unbeabsichtigte Lecks</translation>
     </message>
     <message>
         <source>4 cmH2O</source>
@@ -3317,7 +3317,7 @@ werden Sie sehen, dass es nicht sehr oft zu Problemen kommt.&lt;/p&gt;&lt;/body&
     </message>
     <message>
         <source>Note: This is linear, so doesn&apos;t model the mask leak curve, but it should be close enough.</source>
-        <translation type="vanished">Anmerkung: Dies ist linear, so ist die Maske nicht Leck-Kurvenmodell, aber es sollte dicht genug sein.</translation>
+        <translation>Anmerkung: Dies ist linear, so ist die Maske nicht Leck-Kurvenmodell, aber es sollte dicht genug sein.</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -4967,7 +4967,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>Statistics at Pressure</source>
-        <translation type="vanished">Statistiken des Drucks</translation>
+        <translation>Statistiken des Drucks</translation>
     </message>
     <message>
         <source>Are you ready to upgrade, so you can run the new version of SleepyHead?</source>
@@ -5104,7 +5104,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>(% of time)</source>
-        <translation type="vanished">(% der Zeit)</translation>
+        <translation>(% der Zeit)</translation>
     </message>
     <message>
         <source> (%3 sec)</source>
@@ -5128,7 +5128,7 @@ Start: %2</translation>
     </message>
     <message>
         <source>By Pressure</source>
-        <translation type="vanished">durch Druck</translation>
+        <translation>durch Druck</translation>
     </message>
     <message>
         <source>Perfusion Index</source>
@@ -6226,15 +6226,15 @@ Stunden: %1</translation>
     </message>
     <message>
         <source>&lt;p&gt;After four years in the making, this build brings SleepyHead into the final beta phase.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;p&gt;Nach vier Jahren in der Entwicklung, geht dieses Build Sleepyhead in die letzte Beta-Phase.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Nach vier Jahren in der Entwicklung, geht dieses Build Sleepyhead in die letzte Beta-Phase.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation type="vanished">&lt;p&gt;Die Dinge sind noch nicht perfekt, aber der Fokus liegt von nun an am letzten Schliff.</translation>
+        <translation>&lt;p&gt;Die Dinge sind noch nicht perfekt, aber der Fokus liegt von nun an am letzten Schliff.</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.&lt;/p&gt;</source>
-        <translation type="vanished">Diese Version bringt Unterstützung für die neue Philips Respironics Dream und ältere PRS1 1060P Modelle.&lt;/p&gt;</translation>
+        <translation>Diese Version bringt Unterstützung für die neue Philips Respironics Dream und ältere PRS1 1060P Modelle.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Sorry, could not locate changelog.</source>
@@ -6254,284 +6254,287 @@ Stunden: %1</translation>
     </message>
     <message>
         <source>SmartStart</source>
-        <translation type="unfinished"></translation>
+        <translation>Schneller Start</translation>
     </message>
     <message>
         <source>Machine auto starts by breathing</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn Sie atmen beginnt das Gerät zu arbeiten</translation>
     </message>
     <message>
         <source>Smart Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Schneller Start</translation>
     </message>
     <message>
         <source>Humid. Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Feucht. Status</translation>
     </message>
     <message>
         <source>Humidifier Enabled Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Befeuchtungsstatus aktiviert</translation>
     </message>
     <message>
         <source>Humid. Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Befeuchtungsebene</translation>
     </message>
     <message>
         <source>Humidity Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Feuchtigkeitsgrad</translation>
     </message>
     <message>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur</translation>
     </message>
     <message>
         <source>ClimateLine Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlauchtemeratur</translation>
     </message>
     <message>
         <source>Temp. Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Temp. aktivieren</translation>
     </message>
     <message>
         <source>ClimateLine Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlauchtemeratur ausschalten</translation>
     </message>
     <message>
         <source>Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur aktivieren</translation>
     </message>
     <message>
         <source>AB Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>AB Filter</translation>
     </message>
     <message>
         <source>Antibacterial Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Antibakterienfilter</translation>
     </message>
     <message>
         <source>Pt. Access</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Pt. Zugriff</translation>
     </message>
     <message>
         <source>Patient Access</source>
-        <translation type="unfinished"></translation>
+        <translation>Patientenzugriff</translation>
     </message>
     <message>
         <source>Climate Control</source>
-        <translation type="unfinished"></translation>
+        <translation>Klimakontrolle</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Handbuch</translation>
     </message>
     <message>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>Maske</translation>
     </message>
     <message>
         <source>ResMed Mask Setting</source>
-        <translation type="unfinished"></translation>
+        <translation>ResMed Maskeneinstellungen</translation>
     </message>
     <message>
         <source>Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation>Kissen</translation>
     </message>
     <message>
         <source>Full Face</source>
-        <translation type="unfinished"></translation>
+        <translation>Mund-Nase-Maske</translation>
     </message>
     <message>
         <source>Nasal</source>
-        <translation type="unfinished"></translation>
+        <translation>Nase</translation>
     </message>
     <message>
         <source>Ramp Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Rampe aktivieren</translation>
     </message>
     <message>
         <source>Time at Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit in Druck</translation>
     </message>
     <message>
         <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach vier Jahren in der Entwicklung, bringt diese Build SleepyHead in die letzte Beta-Phase.</translation>
     </message>
     <message>
         <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation type="unfinished"></translation>
+        <translation>Die Dinge sind noch nicht perfekt, aber der Fokus liegt von nun an darin, den letzten Schliff zu realisieren.</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Version bringt Unterstützung für die neue Philips Respironics Dream und ältere PRS1 1060P Modelle.</translation>
     </message>
     <message>
         <source>Change log</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderungsprotokoll</translation>
     </message>
     <message>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Linie %2, Spalte %3</translation>
     </message>
     <message>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte die Updates.xml Datei nicht analysieren.</translation>
     </message>
     <message>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation>h</translation>
     </message>
     <message>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <source>s</source>
-        <translation type="unfinished">s</translation>
+        <translation>s</translation>
     </message>
     <message>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>ms</translation>
     </message>
     <message>
         <source>Height</source>
-        <translation type="unfinished">Größe</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <source>Physical Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Physikalische Größe</translation>
     </message>
     <message>
         <source>Notes</source>
-        <translation type="unfinished">Aufzeichnungen</translation>
+        <translation>Aufzeichnungen</translation>
     </message>
     <message>
         <source>Bookmark Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesezeichen Hinweise</translation>
     </message>
     <message>
         <source>Body Mass Index</source>
-        <translation type="unfinished"></translation>
+        <translation>BMI</translation>
     </message>
     <message>
         <source>How you feel (0 = like crap, 10 = unstoppable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wie fühlen Sie sich (0 = nicht gut, 10 = hervorragend)</translation>
     </message>
     <message>
         <source>Bookmark Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesezeichen Start</translation>
     </message>
     <message>
         <source>Bookmark End</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesezeichen Ende</translation>
     </message>
     <message>
         <source>Last Updated</source>
-        <translation type="unfinished"></translation>
+        <translation>Letzte Aktualisierung</translation>
     </message>
     <message>
         <source>Journal Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Journal Notizen</translation>
     </message>
     <message>
         <source>Journal</source>
-        <translation type="unfinished">Journal</translation>
+        <translation>Journal</translation>
     </message>
     <message>
         <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>1 = Wach 2 = Traum 3 = Leichte Schlaf 4 = Tiefschlaf</translation>
     </message>
     <message>
         <source>Brain Wave</source>
-        <translation type="unfinished"></translation>
+        <translation>Gehirn Wellen</translation>
     </message>
     <message>
         <source>BrainWave</source>
-        <translation type="unfinished"></translation>
+        <translation>Gehirnwellen</translation>
     </message>
     <message>
         <source>Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>Erwachen</translation>
     </message>
     <message>
         <source>Number of Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl des Erwachens</translation>
     </message>
     <message>
         <source>Morning Feel</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Morgen erwartet Sie</translation>
     </message>
     <message>
         <source>How you felt in the morning</source>
-        <translation type="unfinished"></translation>
+        <translation>Wie fühlten Sie sich am Morgen</translation>
     </message>
     <message>
         <source>Time Awake</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufwachzeit</translation>
     </message>
     <message>
         <source>Time spent awake</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Wachliegen</translation>
     </message>
     <message>
         <source>Time In REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Traum/REM-Schlaf</translation>
     </message>
     <message>
         <source>Time spent in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Zeit, in der REM-Schlafphase</translation>
     </message>
     <message>
         <source>Time in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Traum/REM-Schlaf</translation>
     </message>
     <message>
         <source>Time In Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit in der Leichtschlafphase</translation>
     </message>
     <message>
         <source>Time spent in light sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit in der Leichtschlafphase</translation>
     </message>
     <message>
         <source>Time in Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit in der Leichtschlafphase</translation>
     </message>
     <message>
         <source>Time In Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Tiefschlaf</translation>
     </message>
     <message>
         <source>Time spent in deep sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Tiefschlaf</translation>
     </message>
     <message>
         <source>Time in Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit im Tiefschlaf</translation>
     </message>
     <message>
         <source>Time to Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Einschlafzeit</translation>
     </message>
     <message>
         <source>Time taken to get to sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Einschlafzeit</translation>
     </message>
     <message>
         <source>Zeo ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlafqualitätsmessung</translation>
     </message>
     <message>
         <source>Zeo sleep quality measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlafqualitätsmessung</translation>
     </message>
     <message>
         <source>ZEO ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlafqualitätsmessung</translation>
     </message>
 </context>
 <context>
@@ -6711,7 +6714,7 @@ Line %2, column %3</source>
     </message>
     <message>
         <source>Therapy Efficacy</source>
-        <translation>Wirksamkeit der Therapie</translation>
+        <translation>Therapie Effizienz</translation>
     </message>
 </context>
 <context>
@@ -6918,15 +6921,15 @@ Line %2, column %3</source>
     </message>
     <message>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Für diese Plattform sind derzeit keine SleepyHead-Updates verfügbar</translation>
     </message>
     <message>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Neue SleepyHead-Updats stehen zur Verfügung</translation>
     </message>
     <message>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Möchten Sie sie jetzt herunterladen und installieren?</translation>
     </message>
 </context>
 <context>
