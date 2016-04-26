@@ -776,7 +776,7 @@ bool PRS1Import::ParseF5Events()
 
     EventDataType data0, data1, data2, data4, data5;
 
-    EventDataType currentPressure=0, leak, p;
+    EventDataType currentPressure=0, leak; //, p;
 
     bool calcLeaks = p_profile->cpap->calculateUnintentionalLeaks();
     float lpm4 = p_profile->cpap->custom4cmH2OLeaks();
@@ -1353,7 +1353,7 @@ bool PRS1Import::ParseF0Events()
     bool FV3 = (event->fileVersion == 3);
     unsigned char * buffer = (unsigned char *)event->m_data.data();
 
-    EventDataType currentPressure=0, leak, p;
+    EventDataType currentPressure=0, leak; //, p;
 
     bool calcLeaks = p_profile->cpap->calculateUnintentionalLeaks();
     float lpm4 = p_profile->cpap->custom4cmH2OLeaks();
@@ -2167,7 +2167,7 @@ bool PRS1Import::ParseSummaryF5V2()
 
     session->set_first(qint64(summary->timestamp) * 1000L);
 
-    CPAPMode cpapmode = MODE_UNKNOWN;
+    //CPAPMode cpapmode = MODE_UNKNOWN;
     summary_duration = data[0x18] | data[0x19] << 8;
 
     return true;
@@ -3131,9 +3131,9 @@ void PRS1Loader::initChannels()
         DEFAULT,    QColor("black")));
     channel.add(GRP_CPAP, new Channel(PRS1_BND = 0x1159, SPAN,  MT_CPAP,   SESSION,
         "PRS1_BND",
-        QString("Breathing Not Detected").arg(0x12,2,16,QChar('0')),
-        QString("A period during a session where the machine could not detect flow.").arg(0x12,2,16,QChar('0')),
-        QString("BND").arg(0x12,2,16,QChar('0')),
+        QObject::tr("Breathing Not Detected"),
+        QObject::tr("A period during a session where the machine could not detect flow."),
+        QObject::tr("BND"),
         STR_UNIT_Unknown,
         DEFAULT,    QColor("light purple")));
 

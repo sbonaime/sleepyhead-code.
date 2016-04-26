@@ -126,23 +126,23 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     QRect rect = region.boundingRect();
 
 
-    int cells = m_maxpressure-m_minpressure+1;
+    //int cells = m_maxpressure-m_minpressure+1;
 
 
     int top = rect.top()-10;
     float width = rect.width();
     float height = rect.height();
     float left = rect.left();
-    float pix = width / float(cells);
+    //float pix = width / float(cells);
     float bottom = rect.bottom()+1;
 
 
-    int numchans = chans.size();
+    //int numchans = chans.size();
 
-    int cells_high = numchans + 2;
+    //int cells_high = numchans + 2;
 
     //height += 10;
-    float hix = height / cells_high;
+    //float hix = height / cells_high;
 
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
@@ -1056,7 +1056,7 @@ void RecalcMAP::run()
     IPAP.AddChannels(chans);
     EPAP.AddChannels(chans);
 
-    ChannelID code;
+    //ChannelID code;
 
 //    QList<ChannelID> badchans;
 //    for (int i=0 ; i < chans.size(); ++i) {

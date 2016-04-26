@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml printsupport
+QT += core gui network xml printsupport serialport
+
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets
@@ -55,7 +56,6 @@ exists(../.git):{
 
     GIT_BRANCH=$$system(git rev-parse --abbrev-ref HEAD)
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-#    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
     DEFINES += GIT_REVISION="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
 
 #    contains(GIT_BRANCH,"testing"):
@@ -70,7 +70,7 @@ DEFINES += BETA_BUILD
 
 
 unix:!macx:!haiku {
-    LIBS        += -lX11 -lz -lGLU
+    LIBS            += -lX11 -lz -lGLU
     DEFINES         += _TTY_POSIX_
 }
 
@@ -82,7 +82,7 @@ macx {
 }
 
 haiku {
-    LIBS        += -lz -lGLU
+    LIBS            += -lz -lGLU
     DEFINES         += _TTY_POSIX_
 }
 
@@ -102,10 +102,6 @@ win32 {
         LIBS += -lz
     }
 }
-
-#include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
-
-#include(SleepLib2/sleeplib.pri)
 
 SOURCES += \
     common_gui.cpp \
@@ -292,45 +288,9 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-#!win32 {
-#    include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
-#    INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-#    DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-#} else {
-    QT += serialport
-#}
-
 include(../3rdparty/quazip/quazip/quazip.pri)
 INCLUDEPATH += $$PWD/../3rdparty/quazip
 DEPENDPATH += $$PWD/../3rdparty/quazip
-
-#bundlelibs = $$cat($$PWD/../Bundle3rdParty)
-
-#contains(bundlelibs, true) {
-#    include(../3rdparty/quazip/quazip/quazip.pri)
-#    INCLUDEPATH += $$PWD/../3rdparty/quazip
-#    DEPENDPATH += $$PWD/../3rdparty/quazip
-
-# !win32 {
-#    include(../3rdparty/qtserialport/src/serialport/serialport-lib.pri)
-#    INCLUDEPATH += $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-#    DEPENDPATH +=  $$PWD/../3rdparty/qtserialport/include/QtSerialPort/5.3.1/QtSerialPort
-# #   DEPENDPATH += $$PWD/../3rdparty/qtserialport/src/serialport/include/QtSerialPort/5.3.1
-#    }
-#} else {
-#    unix {
-#        message("Attempting to build with system quazip.");
-#        QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
-#        INCLUDEPATH += /usr/local/include
-#        INCLUDEPATH += /usr/include
-#        DEPENDPATH += /usr/local/include/quazip
-#        DEPENDPATH += /usr/include/quazip
-#    } else {
-#        #Configure it if you need it...
-#        warning("Building with externally linked quazip is unsupported on this platform");
-#    }
-#    LIBS += -lquazip
-#}
 
 DISTFILES += \
     ../README
