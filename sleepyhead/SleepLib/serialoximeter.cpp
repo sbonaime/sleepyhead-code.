@@ -30,7 +30,7 @@ bool SerialOximeter::scanDevice(QString keyword, quint16 vendor_id, quint16 prod
     static bool dumponce = true;
     QStringList ports;
 
-    //qDebug() << "Scanning for USB Serial devices";
+    qDebug() << "Scanning for USB Serial devices";
     QList<QSerialPortInfo> list=QSerialPortInfo::availablePorts();
 
     // How does the mac detect this as a SPO2 device?

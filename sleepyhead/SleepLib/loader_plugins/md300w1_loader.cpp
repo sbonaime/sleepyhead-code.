@@ -65,6 +65,7 @@ int MD300W1Loader::Open(QString path)
 {
     // Only one active Oximeter module at a time, set in preferences
 
+	qDebug() << "MD300W1 Loader opening " << path;
     m_itemCnt = 0;
     m_itemTotal = 0;
 
@@ -158,10 +159,12 @@ bool MD300W1Loader::readDATFile(QString path)
 {
     QFile file(path);
     if (!file.exists()) {
+    	qDebug() << "File does not exist: " << path;
         return false;
     }
 
     if (!file.open(QFile::ReadOnly)) {
+    	qDebug() << "Can't open file R/O: " << path;
         return false;
     }
 
@@ -201,8 +204,11 @@ bool MD300W1Loader::readDATFile(QString path)
                 }
             } else {
                 // Create a new session
+                qDebug() << "Create session for " << datestr;
+                qDebug() << "Create session for " << datetime.toString("yyyy.MM.dd HH:mm:ss");
                 oxirec = new QVector<OxiRecord>;
                 oxisessions[datetime] = oxirec;
+                m_startTime = datetime; // works for single session files... 
             }
         }
 

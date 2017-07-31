@@ -1,11 +1,11 @@
 <!DOCTYPE Schema>
 <!-- Schema List Notes: -->
 <Schema language="en" version="1.0">
- <enum name="class"/>
+ <enum name="class">
   <item id="0" value="event"/>
   <item id="1" value="waveform"/>
   <item id="2" value="setting"/>
-  <default id="0">
+  <default id="0"/>
  </enum>
  <enum name="function">
   <item id="0" value="data"/>
@@ -20,14 +20,14 @@
   <item id="9" value="sph"/>
   <item id="10" value="hours"/>
   <item id="11" value="set"/>
-  <default id="0">
+  <default id="0"/>
  </enum>
  <enum name="scope">
-  <item id="0" value="preference">
-  <item id="1" value="machine">
-  <item id="2" value="day">
-  <item id="3" value="session">
-  <default id="3">
+  <item id="0" value="preference"/>
+  <item id="1" value="machine"/>
+  <item id="2" value="day"/>
+  <item id="3" value="session"/>
+  <default id="3"/>
  </enum>
  <enum name="datatype">
   <item id="0" value=""/>
@@ -42,7 +42,7 @@
   <item id="9" value=""/>
   <item id="10" value=""/>
   <item id="11" value=""/>
-  <default id="0">
+  <default id="0"/>
  </enum>
  <object name="color">
   <property name="func" type="function"/>
