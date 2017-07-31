@@ -36,24 +36,24 @@ OximeterImport::OximeterImport(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle(tr("Oximeter Import Wizard"));
     ui->stackedWidget->setCurrentIndex(0);
-    oximodule = nullptr;
-    liveView = new gGraphView(this);
-    liveView->setVisible(false);
-    liveView->setShowAuthorMessage(false);
     ui->retryButton->setVisible(false);
     ui->stopButton->setVisible(false);
     ui->saveButton->setVisible(false);
     ui->syncButton->setVisible(false);
     ui->chooseSessionButton->setVisible(false);
 
+    oximodule = nullptr;
     importMode = IM_UNDEFINED;
 
+    liveView = new gGraphView(this);
+    liveView->setVisible(false);
+    liveView->setShowAuthorMessage(false);
     QVBoxLayout * lvlayout = new QVBoxLayout;
     lvlayout->setMargin(0);
-    ui->liveViewFrame->setLayout(lvlayout);
     lvlayout->addWidget(liveView);
-    plethyGraph = new gGraph("Plethy", liveView, STR_TR_Plethy, STR_UNIT_Hz);
+    ui->liveViewFrame->setLayout(lvlayout);
 
+    plethyGraph = new gGraph("Plethy", liveView, STR_TR_Plethy, STR_UNIT_Hz);
     plethyGraph->AddLayer(new gYAxis(), LayerLeft, gYAxis::Margin);
     plethyGraph->AddLayer(new gXAxis(), LayerBottom, 0, 20);
     plethyGraph->AddLayer(plethyChart = new gLineChart(OXI_Plethy));
@@ -155,6 +155,7 @@ void OximeterImport::on_nextButton_clicked()
 
 void OximeterImport::updateStatus(QString msg)
 {
+	qDebug() << "updateStatus to " << msg;
     ui->logBox->appendPlainText(msg);
     ui->directImportStatus->setText(msg);
     ui->liveStatusLabel->setText(msg);
@@ -166,7 +167,7 @@ SerialOximeter * OximeterImport::detectOximeter()
     const int PORTSCAN_TIMEOUT=30000;
     const int delay=100;
 
-
+	qDebug() << "Attempt to detect Oximeter";
     ui->retryButton->setVisible(false);
 
     QList<SerialOximeter *> loaders; //= GetOxiLoaders();
@@ -235,6 +236,7 @@ void OximeterImport::on_directImportButton_clicked()
     ui->informationButton->setVisible(false);
     ui->stackedWidget->setCurrentWidget(ui->directImportPage);
 
+	qDebug() << "Direct Import button clicked" ;
     oximodule = detectOximeter();
     if (!oximodule)
         return;
@@ -311,6 +313,8 @@ void OximeterImport::on_directImportButton_clicked()
 
 void OximeterImport::doImport()
 {
+	qDebug() << "Starting doImport";
+	
     if (oximodule->commandDriven()) {
         if (chosen_sessions.size() == 0) {
             ui->connectLabel->setText("<h2>"+tr("Nothing to import")+"</h2>");
@@ -371,6 +375,8 @@ void OximeterImport::finishedImport(SerialOximeter * oxi)
 {
     Q_UNUSED(oxi);
 
+	qDebug() << "finished Import ";
+	
     connect(oximodule, SIGNAL(importComplete(SerialOximeter*)), this, SLOT(finishedImport(SerialOximeter*)));
     ui->cancelButton->setVisible(true);
     disconnect(oximodule, SIGNAL(updateProgress(int,int)), this, SLOT(doUpdateProgress(int,int)));
@@ -400,7 +406,8 @@ void OximeterImport::on_fileImportButton_clicked()
         const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #endif
 
-
+	qDebug() << "File Import button clicked";
+	
     QString filename = QFileDialog::getOpenFileName(nullptr , tr("Select a valid oximetry data file"), documentsFolder, tr("Oximetry Files (*.spo *.spor *.spo2 *.dat)"));
 
     if (filename.isEmpty())
@@ -411,6 +418,7 @@ void OximeterImport::on_fileImportButton_clicked()
     // Make sure filename dialog had time to close properly..
     QApplication::processEvents();
 
+	qDebug() << "Chosen filename is " << filename;
     QList<SerialOximeter *> loaders = GetOxiLoaders();
 
     bool success = false;
@@ -427,6 +435,8 @@ void OximeterImport::on_fileImportButton_clicked()
         QMessageBox::warning(this, STR_MessageBox_Warning, tr("No Oximetery module could parse the given file:")+QString("\n\n%1").arg(filename), QMessageBox::Ok);
         return;
     }
+    qDebug() << "Using loader " << oximodule->loaderName();
+    
     ui->informationButton->setVisible(false);
     importMode = IM_FILE;
 
@@ -434,14 +444,17 @@ void OximeterImport::on_fileImportButton_clicked()
     if (oximodule->oxisessions.size() > 1) {
         chooseSession();
     } else {
+    //	oximodule->setStartTime( ??? );  Nope, it was set in the loader module by the file import routime
         on_syncButton_clicked();
     }
+    qDebug() << "Oximodule startTime is " << oximodule->startTime().toString("yyyy.MM.dd HH:mm:ss");
 }
 
 void OximeterImport::on_liveImportButton_clicked()
 {
     ui->informationButton->setVisible(false);
 
+	qDebug() << "Live Import button clicked";
     ui->stackedWidget->setCurrentWidget(ui->liveImportPage);
     ui->liveImportPage->layout()->addWidget(ui->progressBar);
     QApplication::processEvents();
@@ -507,6 +520,8 @@ void OximeterImport::on_liveImportButton_clicked()
 
 void OximeterImport::finishedRecording()
 {
+	qDebug() << "Finished Recording";
+	
     updateTimer.stop();
     oximodule->closeDevice();
     disconnect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateLiveDisplay()));
@@ -529,6 +544,7 @@ void OximeterImport::finishedRecording()
 
 void OximeterImport::on_retryButton_clicked()
 {
+	qDebug() << "Retry button clicked";
     if (ui->stackedWidget->currentWidget() == ui->directImportPage) {
         on_directImportButton_clicked();
     } else if (ui->stackedWidget->currentWidget() == ui->liveImportPage) {
@@ -538,6 +554,7 @@ void OximeterImport::on_retryButton_clicked()
 
 void OximeterImport::on_stopButton_clicked()
 {
+	qDebug() << "Stop button clicked";
     if (oximodule) {
         oximodule->abort();
     }
@@ -545,6 +562,7 @@ void OximeterImport::on_stopButton_clicked()
 
 void OximeterImport::on_calendarWidget_clicked(const QDate &date)
 {
+	qDebug() << "Calendar widget clicked " << date.toString("yyyy.MM.dd");
     if (ui->radioSyncCPAP->isChecked()) {
         Day * day = p_profile->GetGoodDay(date, MT_CPAP);
 
@@ -581,6 +599,7 @@ void OximeterImport::on_calendarWidget_selectionChanged()
 {
     on_calendarWidget_clicked(ui->calendarWidget->selectedDate());
 }
+
 void OximeterImport::onSessionSelected(Session * session)
 {
     QDateTime time=QDateTime::fromMSecsSinceEpoch(session->first(), Qt::UTC);
@@ -589,6 +608,7 @@ void OximeterImport::onSessionSelected(Session * session)
 
 void OximeterImport::on_sessionBackButton_clicked()
 {
+	qDebug() << "Session Back button clicked";
     int idx = (sessbar->selected()-1);
     if (idx >= 0) {
         sessbar->setSelected(idx);
@@ -600,6 +620,7 @@ void OximeterImport::on_sessionBackButton_clicked()
 
 void OximeterImport::on_sessionForwardButton_clicked()
 {
+	qDebug() << "Session Forward button clicked";
     int idx = (sessbar->selected()+1);
     if (idx < sessbar->count()) {
         sessbar->setSelected(idx);
@@ -619,10 +640,15 @@ void OximeterImport::on_radioSyncCPAP_clicked()
 
 void OximeterImport::on_radioSyncOximeter_clicked()
 {
+	qDebug() << "Use OximeterTime button clicked";
     ui->syncCPAPGroup->setVisible(false);
-    if (oximodule && oximodule->isStartTimeValid()) {
-        ui->calendarWidget->setSelectedDate(oximodule->startTime().date());
-        ui->dateTimeEdit->setDateTime(oximodule->startTime());
+    if ( oximodule ) {
+    	if (oximodule->isStartTimeValid()) {
+    		qDebug() << "Oximeter time is valid " << oximodule->startTime().toString();
+        	ui->calendarWidget->setSelectedDate(oximodule->startTime().date());
+        	ui->dateTimeEdit->setDateTime(oximodule->startTime());
+        } else
+        	qDebug() << "Oximeter time is not valid";
     }
 }
 
@@ -721,6 +747,7 @@ void OximeterImport::updateLiveDisplay()
 
 void OximeterImport::on_cancelButton_clicked()
 {
+	qDebug() << "Cancel button clicked";
     if (oximodule && oximodule->isStreaming()) {
         oximodule->closeDevice();
         oximodule->trashRecords();
@@ -754,7 +781,9 @@ void OximeterImport::on_informationButton_clicked()
 
 void OximeterImport::on_syncButton_clicked()
 {
+	qDebug() << "Sync button clicked";
     Q_ASSERT(oximodule != nullptr);
+	qDebug() << "Oximodule Start Time is " << oximodule->startTime().toString("yyyy.MM.dd HH.mm.ss") << "Duration: " << oximodule->getDuration(/* dummy */ 0 );
 
     ui->stackedWidget->setCurrentWidget(ui->syncPage);
 
@@ -765,6 +794,7 @@ void OximeterImport::on_syncButton_clicked()
     QDate last = p_profile->LastDay();
 
     QDate oxidate = oximodule->startTime().date();
+    qDebug() << "Oximodule start date is " << oximodule->startTime().date().toString("yyyy.MM.dd");
 
 
     if ((oxidate >= first) && (oxidate <= last)) {
@@ -795,6 +825,7 @@ void OximeterImport::on_syncButton_clicked()
 
 void OximeterImport::on_saveButton_clicked()
 {
+	qDebug() << "Oximeter Save button clicked";
     if (!oximodule) return;
 
     QVector<OxiRecord> * oxirec = nullptr;
@@ -1008,6 +1039,7 @@ void OximeterImport::on_saveButton_clicked()
 
 void OximeterImport::chooseSession()
 {
+	qDebug() << "Oximeter Choose Session called";
     selecting_session = false;
 
     ui->stackedWidget->setCurrentWidget(ui->chooseSessionPage);
@@ -1034,7 +1066,7 @@ void OximeterImport::chooseSession()
         ui->tableOxiSessions->setItem(row, 1, item);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-        item = new QTableWidgetItem(tr("CMS50 Session %1").arg(row+1, 0));
+        item = new QTableWidgetItem(tr("Oximeter Session %1").arg(row+1, 0));
         ui->tableOxiSessions->setItem(row, 2, item);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
@@ -1046,18 +1078,20 @@ void OximeterImport::chooseSession()
 
 void OximeterImport::on_chooseSessionButton_clicked()
 {
+	qDebug() << "Chosen session clicked";
     ui->chooseSessionButton->setVisible(false);
 
-    QTableWidgetItem * item = ui->tableOxiSessions->item(ui->tableOxiSessions->currentRow(),0);
+    QTableWidgetItem * item_0 = ui->tableOxiSessions->item(ui->tableOxiSessions->currentRow(),0);
+    QTableWidgetItem * item_1 = ui->tableOxiSessions->item(ui->tableOxiSessions->currentRow(),1);
 
-    if (!item) return;
-    QDateTime datetime = item->data(Qt::UserRole+1).toDateTime();
+    if (!item_0 || !item_1) return;
+    QDateTime datetime = item_0->data(Qt::DisplayRole).toDateTime();
     oximodule->setStartTime(datetime);
-    oximodule->setDuration(item->data(Qt::UserRole+2).toInt());
+    oximodule->setDuration(item_1->data(Qt::DisplayRole).toInt());
 
     if (selecting_session) {
         ui->stackedWidget->setCurrentWidget(ui->directImportPage);
-        chosen_sessions.push_back(item->data(Qt::UserRole).toInt());
+        chosen_sessions.push_back(ui->tableOxiSessions->currentRow());
 
         // go back and start import
         doImport();
@@ -1118,7 +1152,7 @@ void OximeterImport::on_oximeterType_currentIndexChanged(int index)
         ui->oldCMS50specific->setVisible(true);
         ui->newCMS50settingsPanel->setVisible(false);
         break;
-    default:
+    default: // ChoiceMMed oximeters, and others?
         ui->directImportButton->setEnabled(false);
         ui->liveImportButton->setEnabled(false);
         ui->fileImportButton->setEnabled(true);
