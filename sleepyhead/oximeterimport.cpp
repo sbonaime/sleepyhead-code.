@@ -286,9 +286,9 @@ void OximeterImport::on_directImportButton_clicked()
 
             item = new QTableWidgetItem(datetime.date().toString(Qt::SystemLocaleShortDate)+" "+datetime.time().toString("HH:mm:ss"));
             ui->tableOxiSessions->setItem(i, 0, item);
-            item->setData(Qt::UserRole+1, datetime);
-            item->setData(Qt::UserRole, i);
-            item->setData(Qt::UserRole+2, duration);
+       //   item->setData(Qt::UserRole+1, datetime);
+       //   item->setData(Qt::UserRole, i);
+       //   item->setData(Qt::UserRole+2, duration);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
             item = new QTableWidgetItem(QString(). sprintf("%02i:%02i:%02i", h,m,s));
@@ -447,7 +447,7 @@ void OximeterImport::on_fileImportButton_clicked()
     //	oximodule->setStartTime( ??? );  Nope, it was set in the loader module by the file import routime
         on_syncButton_clicked();
     }
-    qDebug() << "Oximodule startTime is " << oximodule->startTime().toString("yyyy.MM.dd HH:mm:ss");
+    qDebug() << "Finished file import: Oximodule startTime is " << oximodule->startTime().toString("yyyy.MM.dd HH:mm:ss");
 }
 
 void OximeterImport::on_liveImportButton_clicked()
@@ -1062,7 +1062,12 @@ void OximeterImport::chooseSession()
         ui->tableOxiSessions->setItem(row, 0, item);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-        item = new QTableWidgetItem(QString(). sprintf("%lli", oxirec->size() * oximodule->importResolution() / 1000L));
+		long int duration = oxirec->size() * oximodule->importResolution() / 1000L;
+        int  h = duration / 3600;
+        int  m = (duration / 60) % 60;
+        int  s = duration % 60;
+ 
+        item = new QTableWidgetItem(QString(). sprintf("%02i:%02i:%02i", h,m,s));
         ui->tableOxiSessions->setItem(row, 1, item);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
