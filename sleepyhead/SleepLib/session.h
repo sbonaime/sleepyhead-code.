@@ -346,6 +346,11 @@ class Session
     //! \brief Returns the amount of time (in decimal minutes) the Channel spent below the threshold
     EventDataType timeBelowThreshold(ChannelID id, EventDataType threshold);
 
+    //! \brief According to preferences..
+    EventDataType calcMiddle(ChannelID code);
+    EventDataType calcMax(ChannelID code);
+    EventDataType calcPercentile(ChannelID code);
+    
     //! \brief Returns true if the channel has events loaded, or a record of a count for when they are not
     bool channelExists(ChannelID name);
 
