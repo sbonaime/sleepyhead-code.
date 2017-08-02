@@ -2197,6 +2197,31 @@ EventDataType Session::wavg(ChannelID id)
     return val;
 }
 
+EventDataType Session::calcMiddle(ChannelID code)
+{
+    int c = p_profile->general->prefCalcMiddle();
+
+    if (c == 0) {
+        return percentile(code, 0.5); // Median
+    } else if (c == 1 ) {
+        return wavg(code); // Weighted Average
+    } else {
+        return avg(code); // Average
+    }
+}
+
+EventDataType Session::calcMax(ChannelID code)
+{
+    return p_profile->general->prefCalcMax() ? percentile(code, 0.995f) : Max(code);
+}
+
+EventDataType Session::calcPercentile(ChannelID code)
+{
+    double p = p_profile->general->prefCalcPercentile() / 100.0;
+    return percentile(code, p);
+}
+
+
 EventList *Session::AddEventList(ChannelID code, EventListType et, EventDataType gain,
                                  EventDataType offset, EventDataType min, EventDataType max, EventDataType rate, bool second_field)
 {

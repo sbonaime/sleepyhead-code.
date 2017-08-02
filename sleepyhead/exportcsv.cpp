@@ -163,7 +163,7 @@ void ExportCSV::on_exportButton_clicked()
     //    fields.append(DumpField(NoChannel,MT_CPAP,ST_SESSIONS));
 
 
-    QList<ChannelID> countlist, avglist, p90list;
+    QList<ChannelID> countlist, avglist, p90list, maxlist;
     countlist.append(CPAP_Hypopnea);
     countlist.append(CPAP_Obstructive);
     countlist.append(CPAP_Apnea);
@@ -180,16 +180,23 @@ void ExportCSV::on_exportButton_clicked()
     countlist.append(CPAP_UserFlag2);
     countlist.append(CPAP_PressurePulse);
 
-
-
     avglist.append(CPAP_Pressure);
     avglist.append(CPAP_IPAP);
     avglist.append(CPAP_EPAP);
+    avglist.append(CPAP_FLG);        // Pholynyk, 25Aug2015, add ResMed Flow Limitation
 
     p90list.append(CPAP_Pressure);
     p90list.append(CPAP_IPAP);
     p90list.append(CPAP_EPAP);
-    EventDataType percent = 0.90F;
+    p90list.append(CPAP_FLG);
+       
+    float percentile=p_profile->general->prefCalcPercentile()/100.0;                   // Pholynyk, 18Aug2015
+    EventDataType percent = percentile;                                                // was 0.90F
+
+    maxlist.append(CPAP_Pressure);    // Pholynyk, 18Aug2015, add maximums
+    maxlist.append(CPAP_IPAP);
+    maxlist.append(CPAP_EPAP);
+    maxlist.append(CPAP_FLG);
 
     // Not sure this section should be translateable.. :-/
     if (ui->rb1_details->isChecked()) {
@@ -208,11 +215,15 @@ void ExportCSV::on_exportButton_clicked()
         }
 
         for (int i = 0; i < avglist.size(); i++) {
-            header += sep + schema::channel[avglist[i]].label() + " " + tr(" Avg");
+            header += sep + Day::calcMiddleLabel(avglist[i]);        // Pholynyk, 18Aug2015
         }
 
         for (int i = 0; i < p90list.size(); i++) {
-            header += sep + schema::channel[p90list[i]].label() + tr(" %1%").arg(percent*100.0, 0, 'f', 0);
+            header += sep + tr(" %1%").arg(percent*100.0, 0, 'f', 0) + schema::channel[p90list[i]].label();
+        }
+
+        for (int i = 0; i < maxlist.size(); i++) {
+            header += sep + Day::calcMaxLabel(maxlist[i]);                                     // added -- Pholynyk, 18Aug2015
         }
     }
 
@@ -256,11 +267,18 @@ void ExportCSV::on_exportButton_clicked()
                 }
 
                 for (int i = 0; i < avglist.size(); i++) {
-                    data += sep + QString::number(day->wavg(avglist.at(i)));
+                    float avg = day->calcMiddle(avglist.at(i));
+                    data += sep + QString::number(avg);                // Pholynyk, 11Aug2015
                 }
 
                 for (int i = 0; i < p90list.size(); i++) {
-                    data += sep + QString::number(day->p90(p90list.at(i)));
+                    float p90 = day->percentile(p90list.at(i), percent);
+                    data += sep + QString::number(p90);                // Pholynyk, 11Aug2015
+                }
+
+                for (int i = 0; i < maxlist.size(); i++) {
+                    float max = day->calcMax(maxlist.at(i));
+                    data += sep + QString::number(max);                // added -- Pholynyk, 18Aug2015
                 }
 
                 data += newline;
@@ -292,11 +310,15 @@ void ExportCSV::on_exportButton_clicked()
                     }
 
                     for (int j = 0; j < avglist.size(); j++) {
-                        data += sep + QString::number(day->wavg(avglist.at(j)));
+                        data += sep + QString::number(sess->calcMiddle(avglist.at(j)));                // Pholynyk, 11Aug2015
                     }
 
                     for (int j = 0; j < p90list.size(); j++) {
-                        data += sep + QString::number(day->p90(p90list.at(j)));
+                        data += sep + QString::number(sess->percentile(p90list.at(j), percent));               // Pholynyk, 11Aug2015
+                    }
+
+                    for (int i = 0; i < maxlist.size(); i++) {
+                        data += sep + QString::number(sess->calcMax(maxlist.at(i)));                // Pholynyk, 11Aug2015
                     }
 
                     data += newline;
