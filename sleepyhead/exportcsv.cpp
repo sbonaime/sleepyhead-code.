@@ -212,7 +212,7 @@ void ExportCSV::on_exportButton_clicked()
         }
 
         for (int i = 0; i < p90list.size(); i++) {
-            header += sep + schema::channel[p90list[i]].label() + tr(" %1%").arg(percent, 0, 'f', 0);
+            header += sep + schema::channel[p90list[i]].label() + tr(" %1%").arg(percent*100.0, 0, 'f', 0);
         }
     }
 
