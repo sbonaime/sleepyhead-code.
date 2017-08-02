@@ -541,11 +541,14 @@ Statistics::Statistics(QObject *parent) :
     rows.push_back(StatisticsRow("PulseChange",   SC_CPH,     MT_OXIMETER));
 
     // These are for formatting the headers for the first column
+    int percentile=trunc(p_profile->general->prefCalcPercentile());                    // Pholynyk, 10Mar2016
+    char perCentStr[20];
+    snprintf(perCentStr, 20, "%d%% %%1", percentile);          // 
     calcnames[SC_UNDEFINED] = "";
     calcnames[SC_MEDIAN] = tr("%1 Median");
     calcnames[SC_AVG] = tr("Average %1");
     calcnames[SC_WAVG] = tr("Average %1");
-    calcnames[SC_90P] = tr("90% %1"); // this gets converted to whatever the upper percentile is set to
+    calcnames[SC_90P] = tr(perCentStr); // this gets converted to whatever the upper percentile is set to
     calcnames[SC_MIN] = tr("Min %1");
     calcnames[SC_MAX] = tr("Max %1");
     calcnames[SC_CPH] = tr("%1 Index");
@@ -2157,6 +2160,9 @@ QString StatisticsRow::value(QDate start, QDate end)
     QString value;
     float days = p_profile->countDays(type, start, end);
 
+    float percentile=p_profile->general->prefCalcPercentile()/100.0;    // Pholynyk, 10Mar2016
+    EventDataType percent = percentile;                                 // was 0.90F
+
     // Handle special data sources first
     if (calc == SC_AHI) {
         value = QString("%1").arg(calcAHI(start, end), 0, 'f', decimals);
@@ -2187,7 +2193,7 @@ QString StatisticsRow::value(QDate start, QDate end)
                 val = p_profile->calcPercentile(code, 0.5F, type, start, end);
                 break;
             case SC_90P:
-                val = p_profile->calcPercentile(code, 0.9F, type, start, end);
+                val = p_profile->calcPercentile(code, percent, type, start, end);
                 break;
             case SC_MIN:
                 val = p_profile->calcMin(code, type, start, end);
