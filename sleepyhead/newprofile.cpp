@@ -23,11 +23,13 @@
 extern MainWindow *mainwin;
 
 
-NewProfile::NewProfile(QWidget *parent) :
+NewProfile::NewProfile(QWidget *parent, const QString *user) :
     QDialog(parent),
     ui(new Ui::NewProfile)
 {
     ui->setupUi(this);
+    if (user)
+      ui->userNameEdit->setText(*user);
 //    ui->userNameEdit->setText(getUserName());
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);

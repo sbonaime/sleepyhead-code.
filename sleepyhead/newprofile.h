@@ -25,7 +25,7 @@ class NewProfile : public QDialog
     Q_OBJECT
 
   public:
-    explicit NewProfile(QWidget *parent = 0);
+    explicit NewProfile(QWidget *parent = 0, const QString *user = 0);
     ~NewProfile();
 
     //! \brief When used in edit mode, this skips the first page

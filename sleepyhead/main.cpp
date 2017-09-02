@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
     bool force_login_screen = false;
     bool force_data_dir = false;
     bool changing_language = false;
+    QString load_profile = "";
 
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
@@ -212,6 +213,13 @@ int main(int argc, char *argv[])
             settings.setValue(LangSetting,"");
         } else if (args[i] == "-p") {
             sDelay(1);
+        } else if (args[i] == "--profile") {
+            if ((i+1) < args.size()) {
+                load_profile = args[++i];
+            } else {
+                fprintf(stderr, "Missing argument to --profile\n");
+                exit(1);
+            }
         }
     }
 
@@ -455,7 +463,18 @@ retry_directory:
 
         ProfileSelect profsel(0);
 
-        if (skip_login) {
+        if (load_profile.size()) {
+            profsel.QuickLogin();
+
+            p_profile = Profiles::Get(load_profile);
+            if (!p_profile) {
+                NewProfile newprof(0, &load_profile);
+
+                if (newprof.exec() == NewProfile::Rejected) {
+                    return 0;
+                }
+            }
+        } else if (skip_login) {
             profsel.QuickLogin();
 
             if (profsel.result() == ProfileSelect::Rejected) {
