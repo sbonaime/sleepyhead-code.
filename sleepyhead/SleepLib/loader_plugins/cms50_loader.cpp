@@ -599,8 +599,11 @@ bool CMS50Loader::readSpoRFile(QString path)
 
         in >> year >> month >> day;
         in >> hour >> minute >> second;
-
-        m_startTime = QDateTime(QDate(year, month, day), QTime(hour, minute, second));
+        
+        if ( year == 0 )    // typically from a CMS50D+
+            m_startTime = QDateTime(QDate::currentDate(), QTime(hour, minute, second));
+        else
+            m_startTime = QDateTime(QDate(year, month, day), QTime(hour, minute, second));
 
         // ignoring it for now
         pos += 0x1c + 200;
@@ -612,7 +615,7 @@ bool CMS50Loader::readSpoRFile(QString path)
         bytes_per_record = remainder / samples;
         qDebug() << samples << "samples of" << bytes_per_record << "bytes each";
 
-        // CMS50I .spo2 data have 4 digits, a 16bit, followed by spo2 then pulse
+        // CMS50I .spo2 data have 4 bytes: a 16bit, followed by spo2 then pulse
 
     }
 
