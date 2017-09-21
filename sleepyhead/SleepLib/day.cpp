@@ -150,9 +150,9 @@ QString Day::calcMiddleLabel(ChannelID code)
     if (c == 0) {
         return QObject::tr("%1 %2").arg(STR_TR_Median).arg(schema::channel[code].label());
     } else if (c == 1) {
-        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].label());
+        return QObject::tr("%1 %2").arg(STR_TR_WAvg).arg(schema::channel[code].label());
     } else {
-        return QObject::tr("%1 %2").arg(STR_TR_Average).arg(schema::channel[code].label());
+        return QObject::tr("%1 %2").arg(STR_TR_Avg).arg(schema::channel[code].label());
     }
 }
 QString Day::calcMaxLabel(ChannelID code)
