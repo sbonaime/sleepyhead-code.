@@ -95,7 +95,7 @@ int MD300W1Loader::Open(QString path)
         setStatus(LIVE);
         return 1;
     }
-    QString ext = path.section(".",1);
+    QString ext = path.section(".", -1);	// find the last '.'
     if (ext.compare("dat", Qt::CaseInsensitive)==0) {
         // try to read and process SpoR file..
         return readDATFile(path) ? 1 : 0;

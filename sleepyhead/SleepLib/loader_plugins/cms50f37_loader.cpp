@@ -72,7 +72,7 @@ bool CMS50F37Loader::openDevice()
             b = scanDevice("rfcomm", 0, 0); // Linux
         }
         if (!b) {
-        	qDebug() << "No oximeter found";
+        	qWarning() << "No oximeter found";
             return false;
         }
     }
@@ -154,7 +154,7 @@ int CMS50F37Loader::Open(QString path)
     } else if (path.compare("live") == 0) {
         return 0;
     }
-    QString ext = path.section(".",1);
+    QString ext = path.section(".", -1);	// find the LAST '.'
     if ((ext.compare("spo2", Qt::CaseInsensitive)==0) || (ext.compare("spo", Qt::CaseInsensitive)==0) || (ext.compare("spor", Qt::CaseInsensitive)==0)) {
         // try to read and process SpoR file..
         return readSpoRFile(path) ? 1 : 0;
@@ -815,7 +815,7 @@ void CMS50F37Loader::resetImportTimeout()
         qDebug() << "Oximeter device stopped transmitting.. Transfer complete";
         // We were importing, but now are done
         if (!finished_import && (started_import && started_reading)) {
-            qDebug() << "Switching CMS50 back to live mode and finalizing import";
+            qDebug() << "Switching CMS50F37 back to live mode and finalizing import";
             // Turn back on live streaming so the end of capture can be dealt with
 
 
@@ -835,7 +835,7 @@ void CMS50F37Loader::resetImportTimeout()
 
             return;
         }
-        qDebug() << "Should CMS50 resetImportTimeout reach here?";
+        qDebug() << "Should CMS50F37 resetImportTimeout reach here?";
         // else what???
     }
     cb_reset = imp_callbacks;
@@ -853,17 +853,21 @@ bool CMS50F37Loader::readSpoRFile(QString path)
 {
     QFile file(path);
     if (!file.exists()) {
+    	qWarning() << "Can't find the oximeter file: " << path;
         return false;
     }
 
     if (!file.open(QFile::ReadOnly)) {
+    	qWarning() << "Can't open the oximeter file: " << path;
         return false;
     }
 
     bool spo2header = false;
     QString ext = path.section('.', -1);
+    qDebug() << "Oximeter file extention is " << ext;
     if (ext.compare("spo2",Qt::CaseInsensitive) == 0) {
         spo2header = true;
+        qDebug() << "Oximeter file looks like an SpO2 type" ;
     }
 
     QByteArray data;
@@ -897,7 +901,7 @@ bool CMS50F37Loader::readSpoRFile(QString path)
             QString dstr(dchr);
             m_startTime = QDateTime::fromString(dstr, "MM/dd/yy HH:mm:ss");
             if (m_startTime.date().year() < 2000) { m_startTime = m_startTime.addYears(100); }
-        } else {
+        } else {  // this should probaly find the most recent SH data day
             m_startTime = QDateTime(QDate::currentDate(), QTime(0,0,0));
         }
     } else { // !spo2header
