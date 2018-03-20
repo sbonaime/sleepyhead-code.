@@ -1431,9 +1431,11 @@ bool PRS1Import::ParseF0Events()
             if ((event->family == 0) && (event->familyVersion >= 4)) {  // BiPAP Pressure
                 if (!EPAP) {
                     if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-
+                }
+                if(!IPAP) {
                     if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
-
+                }
+                if(!PS) {
                     if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
                 }
 
@@ -1464,9 +1466,11 @@ bool PRS1Import::ParseF0Events()
             } else {
                 if (!EPAP) {
                     if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
-
+                }
+                if(!IPAP) {
                     if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
-
+                }
+                if(!PS) {
                     if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
                 }
 
