@@ -147,6 +147,8 @@ public:
     bool ParseSummaryF5V1();
     //! \brief Summary parser for 60 series Family 5-2 BiPAP/AutoSV models
     bool ParseSummaryF5V2();
+    //! \brief Summary parser for 60 series Family 5-2 BiPAP/AutoSV models
+    bool ParseSummaryF5V3();
 
     //! \brief Summary parser for DreamStation series CPAP/APAP models
     bool ParseSummaryF0V6();
@@ -157,6 +159,9 @@ public:
     bool ParseF3Events();
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool ParseF5Events();
+    //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV file version 3 machine (which has a different format again)
+    bool ParseF5EventsFV3();
+
 
 protected:
     Session * session;
@@ -199,6 +204,7 @@ class PRS1Loader : public CPAPLoader
 
     //! \brief Parse a PRS1 summary/event/waveform file and break into invidivual session or waveform chunks
     QList<PRS1DataChunk *> ParseFile(QString path);
+    QList<PRS1DataChunk *> ParseFile2(QString path);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();

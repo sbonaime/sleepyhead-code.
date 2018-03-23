@@ -673,7 +673,7 @@ int PRS1Loader::OpenMachine(QString path)
             }
 
             // Parse the data chunks and read the files..
-            QList<PRS1DataChunk *> Chunks = ParseFile(fi.canonicalFilePath());
+            QList<PRS1DataChunk *> Chunks = ParseFile2(fi.canonicalFilePath());
 
             for (int i=0; i < Chunks.size(); ++i) {
                 PRS1DataChunk * chunk = Chunks.at(i);
@@ -731,6 +731,216 @@ int PRS1Loader::OpenMachine(QString path)
 
     return m->unsupported() ? -1 : tasks;
 }
+
+bool PRS1Import::ParseF5EventsFV3()
+{
+    EventDataType data0, data1, data2, data3, data4, data5;
+
+    EventDataType currentPressure=0, leak; //, p;
+
+    bool calcLeaks = p_profile->cpap->calculateUnintentionalLeaks();
+    float lpm4 = p_profile->cpap->custom4cmH2OLeaks();
+    float lpm20 = p_profile->cpap->custom20cmH2OLeaks();
+
+    float lpm = lpm20 - lpm4;
+    float ppm = lpm / 16.0;
+
+
+    //qint64 start=timestamp;
+    qint64 t = qint64(event->timestamp) * 1000L;
+    session->updateFirst(t);
+    qint64 tt = 0;
+    int pos = 0;
+    int cnt = 0;
+    short delta;//,duration;
+    bool badcode = false;
+    unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0, code = 0;
+    int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
+
+    int size = event->m_data.size();
+    unsigned char * buffer = (unsigned char *)event->m_data.data();
+    EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
+    EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
+
+    EventList *PB = session->AddEventList(CPAP_PB, EVL_Event);
+    EventList *TOTLEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
+    EventList *LEAK = session->AddEventList(CPAP_Leak, EVL_Event);
+    EventList *LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
+    EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
+    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F);
+    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F);
+    EventList *PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F);
+    EventList *IPAPLo = session->AddEventList(CPAP_IPAPLo, EVL_Event, 0.1F);
+    EventList *IPAPHi = session->AddEventList(CPAP_IPAPHi, EVL_Event, 0.1F);
+    EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
+    EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
+    EventList *TB = session->AddEventList(PRS1_TimedBreath, EVL_Event);
+
+    EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
+    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10.0F);
+
+
+    EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *FL = session->AddEventList(CPAP_FlowLimit, EVL_Event);
+    EventList *VS = session->AddEventList(CPAP_VSnore, EVL_Event);
+
+    while (pos < size) {
+        lastcode3 = lastcode2;
+        lastcode2 = lastcode;
+        lastcode = code;
+        lastpos3 = lastpos2;
+        lastpos2 = lastpos;
+        lastpos = startpos;
+        startpos = pos;
+        code = buffer[pos++];
+
+        if (code >= 0x12) {
+            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos << "in" << event->sessionid;;
+            qDebug() << "1: (" << int(lastcode) << hex << lastpos << ")";
+            qDebug() << "2: (" << int(lastcode2) << hex << lastpos2 << ")";
+            qDebug() << "3: (" << int(lastcode3) << hex << lastpos3 << ")";
+            return false;
+        }
+        delta = buffer[pos];
+        //delta=buffer[pos+1] << 8 | buffer[pos];
+        pos += 2;
+        t += qint64(delta) * 1000L;
+        tt=t;
+
+        switch(code) {
+        case 0x01: // Leak ???
+            data0 = buffer[pos++];
+
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            break;
+        case 0x02: // Meh??? Timed Breath??
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            TB->AddEvent(tt, data0);
+
+
+            break;
+        case 0x03: // Graph Data
+            IPAP->AddEvent(t, currentPressure = data0 = buffer[pos++]); // 00=IAP
+            data4 = buffer[pos++];
+            IPAPLo->AddEvent(t, data4);               // 01=IAP Low
+            data5 = buffer[pos++];
+            IPAPHi->AddEvent(t, data5);               // 02=IAP High
+
+            TOTLEAK->AddEvent(t, leak=buffer[pos++]);           // 03=LEAK
+            if (calcLeaks) { // Much Quicker doing this here than the recalc method.
+                leak -= (((currentPressure/10.0f) - 4.0) * ppm + lpm4);
+                if (leak < 0) leak = 0;
+
+                LEAK->AddEvent(t, leak);
+            }
+
+
+            RR->AddEvent(t, buffer[pos++]);             // 04=Breaths Per Minute
+            PTB->AddEvent(t, buffer[pos++]);            // 05=Patient Triggered Breaths
+            MV->AddEvent(t, buffer[pos++]);             // 06=Minute Ventilation
+            //tmp=buffer[pos++] * 10.0;
+            TV->AddEvent(t, buffer[pos++]);             // 07=Tidal Volume
+            SNORE->AddEvent(t, data2 = buffer[pos++]); // 08=Snore
+
+            if (data2 > 0) {
+                VS->AddEvent(t, 0); //data2); // VSnore
+            }
+
+            EPAP->AddEvent(t, data1 = buffer[pos++]); // 09=EPAP
+            data2 = data0 - data1;
+            PS->AddEvent(t, data2);           // Pressure Support
+            data0 = buffer[pos++];
+
+
+            break;
+        case 0x05:
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            OA->AddEvent(tt, data0);
+
+//            PS->AddEvent(tt, data0);
+            break;
+        case 0x06: // Clear Airway
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+
+            CA->AddEvent(tt, data0);
+
+//            PTB->AddEvent(tt, data0);
+            break;
+        case 0x07:
+            data0 = buffer[pos++];
+            data1 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+
+
+            break;
+        case 0x08: // Flow Limitation
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+
+            FL->AddEvent(tt, data0);
+            break;
+        case 0x09:
+            data0 = buffer[pos++];
+            data1 = buffer[pos++];
+            data2 = buffer[pos++];
+            data3 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+
+
+          //  TB->AddEvent(tt, data0);
+            break;
+        case 0x0a: // Periodic Breathing?
+            data0 = (buffer[pos + 1] << 8 | buffer[pos]);
+            data0 *= 2;
+            pos += 2;
+            data1 = buffer[pos++];
+            tt = t - qint64(data1) * 1000L;
+            PB->AddEvent(tt, data0);
+
+            break;
+        case 0x0b: // Large Leak
+            data0 = (buffer[pos + 1] << 8 | buffer[pos]);
+            data0 *= 2;
+            pos += 2;
+            data1 = buffer[pos++];
+            tt = t - qint64(data1) * 1000L;
+            LL->AddEvent(tt, data0);
+
+            break;
+        case 0x0d: // flag ??
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            HY->AddEvent(tt, data0);
+
+
+            break;
+        case 0x0e:
+            data0 = buffer[pos++];
+            tt -= qint64(data0) * 1000L; // Subtract Time Offset
+            HY->AddEvent(tt, data0);
+
+            break;
+        default:
+            qDebug() << "Unknown code:" << hex << code << "in" << event->sessionid << "at" << pos;
+
+
+        }
+
+    }
+
+    session->updateLast(t);
+    session->m_cnt.clear();
+    session->m_cph.clear();
+
+    session->m_valuesummary[CPAP_Pressure].clear();
+    session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
+
+    return true;
+}
+
 
 bool PRS1Import::ParseF5Events()
 {
@@ -2177,6 +2387,23 @@ bool PRS1Import::ParseSummaryF5V2()
     return true;
 }
 
+bool PRS1Import::ParseSummaryF5V3()
+{
+    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+
+    if (data[0x00] > 0) {
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+    //CPAPMode cpapmode = MODE_UNKNOWN;
+    summary_duration = data[0x48] | data[0x49] << 8;
+
+    return true;
+}
+
+
 bool PRS1Import::ParseSummaryF0V6()
 {
     // DreamStation machines...
@@ -2379,6 +2606,8 @@ bool PRS1Import::ParseSummary()
             return ParseSummaryF5V0();
         } else if (summary->familyVersion == 2) {
             return ParseSummaryF5V1();
+        } else if (summary->familyVersion == 3) {
+            return ParseSummaryF5V3();
         }
     default:
         ;
@@ -2436,7 +2665,11 @@ bool PRS1Import::ParseEvents()
         res = ParseF3Events();
         break;
     case 5:
-        res = ParseF5Events();
+        if (event->fileVersion==3) {
+            res = ParseF5EventsFV3();
+        } else {
+            res = ParseF5Events();
+        }
         break;
     default:
         qDebug() << "Unknown PRS1 familyVersion" << event->familyVersion;
@@ -2610,10 +2843,10 @@ void PRS1Import::run()
     if ((compliance && ParseCompliance()) || (summary && ParseSummary())) {
         if (event && !ParseEvents()) {
         }
-        waveforms = loader->ParseFile(wavefile);
+        waveforms = loader->ParseFile2(wavefile);
         ParseWaveforms();
 
-        oximetery = loader->ParseFile(oxifile);
+        oximetery = loader->ParseFile2(oxifile);
         ParseOximetery();
 
         if (session->first() > 0) {
@@ -2643,6 +2876,293 @@ void PRS1Import::run()
         }
 
     }
+}
+
+
+QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
+{
+    QList<PRS1DataChunk *> CHUNKS;
+
+    if (path.isEmpty())
+        return CHUNKS;
+
+    QFile f(path);
+
+    if (!f.exists()) {
+        return CHUNKS;
+    }
+
+    if (!f.open(QIODevice::ReadOnly)) {
+        return CHUNKS;
+    }
+
+    PRS1DataChunk *chunk = nullptr, *lastchunk = nullptr;
+
+    quint8 fileVersion;
+    quint16 blocksize;
+    quint16 wvfm_signals=0;
+
+    unsigned char * header;
+    int cnt = 0;
+
+    //int lastheadersize = 0;
+    int lastblocksize = 0;
+
+    int cruft = 0;
+    int firstsession = 0;
+    int extra_bytes = 0;
+    int htype,family,familyVersion,ext,header_size = 0;
+    quint8 achk=0;
+    quint32 sessionid=0, timestamp=0;
+
+    int duration=0;
+
+    QByteArray headerBA, extra;
+
+    QList<PRS1Waveform> waveformInfo;
+
+    do {
+        headerBA = f.read(15);
+        if (headerBA.size() != 15) {
+            break;
+        }
+
+        header = (unsigned char *)headerBA.data();
+
+        fileVersion = header[0];    // Correlates to DataFileVersion in PROP[erties].TXT, only 2 or 3 has ever been observed
+        blocksize = (header[2] << 8) | header[1];
+        htype = header[3];      // 00 = normal, 01=waveform
+        family = header[4];
+        familyVersion = header[5];
+        ext = header[6];
+        sessionid = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
+        timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+
+
+        if (blocksize == 0)
+            break;
+
+        if (fileVersion < 2) {
+            qDebug() << "Never seen PRS1 header version < 2 before";
+            break;
+        }
+
+        header_size = 16; // most common header size, newer familyVersion 3 models are larger.
+
+        int diff = 0;
+
+        waveformInfo.clear();
+
+        if (ext < 5) { // Not a waveform chunk
+            // Figure out header sizes based on version and file type
+
+            if (ext == 1) { // Summary Chunk
+                if ((family == 5) && (familyVersion == 3)) {
+                    header_size = 37;
+                }
+            } else if (ext == 2) { // Event Chunk
+                if (familyVersion == 3) {
+                    if (family == 3) {
+                        header_size = 62;
+                    } else if (family == 5) { // ASV
+                        header_size = 49;
+                    }
+                }
+
+           }
+           extra_bytes = header_size - 15; // remainder of the header bytes to read, including the 8bit additive checksum.
+
+           // Read the extra header bytes
+           extra = f.read(extra_bytes);
+           if (extra.size() != extra_bytes) {
+               break;
+           }
+           headerBA.append(extra);
+           header = (unsigned char *)headerBA.data(); // important because it's memory location could move
+
+       } else { // Waveform Chunk
+            extra = f.read(5);
+            if (extra.size() != 5) {
+                break;
+            }
+            header_size += 5;
+            headerBA.append(extra);
+            // Get the header address again to be safe
+            header = (unsigned char *)headerBA.data();
+
+            duration = header[0x0f] | header[0x10] << 8;
+            wvfm_signals = header[0x12] | header[0x13] << 8;
+
+            int ws_size = (fileVersion == 3) ? 4 : 3;
+            int sbsize = wvfm_signals * ws_size + 1;
+
+            extra = f.read(sbsize);
+            if (extra.size() != sbsize) {
+                break;
+            }
+            headerBA.append(extra);
+            header = (unsigned char *)headerBA.data();
+            header_size += sbsize-1;
+
+            // Read the waveform information in reverse.
+            int pos = 0x14 + (wvfm_signals - 1) * ws_size;
+            for (int i = 0; i < wvfm_signals; ++i) {
+                quint16 interleave = header[pos] | header[pos + 1] << 8; // samples per block (Usually 05 00)
+
+                if (fileVersion == 2) {
+                    quint8 sample_format = header[pos + 2];
+                    waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
+                    pos -= 3;
+                } else if (fileVersion == 3) {
+                    //quint16 sample_size = header[pos + 2] | header[pos + 3] << 8; // size in bits?? (08 00)
+                    // Possibly this is size in bits, and sign bit for the other byte?
+                    waveformInfo.push_back(PRS1Waveform(interleave, 0));
+                    pos -= 4;
+                }
+            }
+            if (lastchunk != nullptr) {
+                diff = (timestamp - lastchunk->timestamp) - lastchunk->duration;
+            }
+       }
+
+       // Calculate 8bit additive header checksum
+       achk=0;
+       for (int i=0; i < (header_size-1); i++) achk += header[i];
+
+       if (achk != header[header_size-1]) { // Header checksum mismatch?
+           break;
+       }
+
+
+       if (lastchunk != nullptr) {
+           // If there's any mismatch between header information, try and skip the block
+           // This probably isn't the best approach for dealing with block corruption :/
+           if ((lastchunk->fileVersion != fileVersion)
+               || (lastchunk->ext != ext)
+               || (lastchunk->family != family)
+               || (lastchunk->familyVersion != familyVersion)
+               || (lastchunk->htype != htype)) {
+                   QByteArray junk = f.read(lastblocksize - header_size);
+
+                   Q_UNUSED(junk)
+                   if (lastchunk->ext == 5) {
+                       // The data is random crap
+                       // lastchunk->m_data.append(junk.mid(lastheadersize-16));
+                   }
+                   ++cruft;
+                   // quit after 3 attempts
+                   if (cruft > 3)
+                       break;
+
+                   continue;
+                   // Corrupt header.. skip it.
+            }
+        }
+
+        chunk = new PRS1DataChunk();
+
+        chunk->sessionid = sessionid;
+
+        if (!firstsession) {
+            firstsession = chunk->sessionid;
+        }
+        chunk->fileVersion = fileVersion;
+        chunk->htype = htype;
+        chunk->family = family;
+        chunk->familyVersion = familyVersion;
+        chunk->ext = ext;
+        chunk->timestamp = timestamp;
+
+        lastblocksize = blocksize;
+        blocksize -= header_size;
+
+        if (ext >= 5) {
+            chunk->duration = duration;
+
+            // I don't trust deep copy, just being safe...
+            for (int i=0;i<waveformInfo.size(); ++i) {
+                chunk->waveformInfo.push_back(waveformInfo.at(i));
+            }
+        }
+
+        // Read data block
+        chunk->m_data = f.read(blocksize);
+
+        if (chunk->m_data.size() < blocksize) {
+            delete chunk;
+            break;
+        }
+
+        if (chunk->fileVersion==3) {
+            //int ds = chunk->m_data.size();
+            //quint32 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
+            chunk->m_data.chop(4);
+        } else {
+            // last two bytes contain crc16 checksum.
+            int ds = chunk->m_data.size();
+            quint16 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
+            chunk->m_data.chop(2);
+#ifdef PRS1_CRC_CHECK
+            // This fails.. it needs to include the header!
+            quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
+            if (calc16 != crc16) {
+                // corrupt data block.. bleh..
+            //   qDebug() << "CRC16 doesn't match for chunk" << chunk->sessionid << "for" << path;
+            }
+#endif
+        }
+
+        if ((chunk->ext == 5) || (chunk->ext == 6)) {  // if Flow/MaskPressure Waveform or OXI Waveform file
+            if (lastchunk != nullptr) {
+
+                Q_ASSERT(lastchunk->sessionid == chunk->sessionid);
+
+                if (diff == 0) {
+                    // In sync, so append waveform data to previous chunk
+                    lastchunk->m_data.append(chunk->m_data);
+                    lastchunk->duration += chunk->duration;
+                    delete chunk;
+                    cnt++;
+                    chunk = lastchunk;
+                    continue;
+                }
+                // else start a new chunk to resync
+            }
+        }
+
+        CHUNKS.append(chunk);
+
+        lastchunk = chunk;
+        cnt++;
+
+       // FamilyVersion, Family
+
+       // FV2,F0 .001 16 byte header (550P)
+       // FV2,F0 .002 16 byte header (550P)
+
+       // FV4,F0 .001 16 byte header (560)
+       // FV4,F0 .002 16 byte header (560)
+
+       // FV0,F5 .001 16 byte header (950)
+       // FV0,F5 .002 16 byte header (950)
+
+       // FV2,F5 .001 16 byte header (960)
+       // FV2,F5 .002 16 byte header (960)
+
+       // FV3,F3 .001 16 byte header (1160)
+       // FV3,F3 .002 62 byte header (1160)
+
+       // FV3,F5 .001 have a 24 byte header (ASV)
+       // FV3,F5 .002 have a 48 byte header (ASV)
+
+
+
+
+
+
+    } while (!f.atEnd());
+
+    return CHUNKS;
 }
 
 QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)

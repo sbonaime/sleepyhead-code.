@@ -259,6 +259,9 @@ void MachineLoader::queTask(ImportTask * task)
 
 void MachineLoader::runTasks(bool threaded)
 {
+    //debug
+    threaded=false;
+
     m_totaltasks=m_tasklist.size();
     m_currenttask=0;
 
