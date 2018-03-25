@@ -41,11 +41,22 @@ IntellipapLoader::~IntellipapLoader()
 {
 }
 
+const QString SET_BIN = "SET.BIN";
+const QString SET1 = "SET1";
+const QString DV6 = "DV6";
+const QString SL = "SL";
+
+const QString DV6_DIR = "/" + DV6;
+const QString SL_DIR = "/" + SL;
+
 bool IntellipapLoader::Detect(const QString & givenpath)
 {
     QString path = givenpath;
-    if (path.endsWith("/SL")) {
+    if (path.endsWith(SL_DIR)) {
         path.chop(3);
+    }
+    if (path.endsWith(DV6_DIR)) {
+        path.chop(4);
     }
 
     QDir dir(path);
@@ -54,46 +65,31 @@ bool IntellipapLoader::Detect(const QString & givenpath)
         return false;
     }
 
-    // Intellipap has a folder called SL in the root directory
-    if (!dir.cd("SL")) {
-
-        return false;
+    // Intellipap DV54 has a folder called SL in the root directory, DV64 has DV6
+    if (dir.cd(SL)) {
+        // Test for presence of settings file
+        return dir.exists(SET1) ? true : false;
     }
 
-    // Check for the settings file inside the SL folder
-    if (!dir.exists("SET1")) {
-        return false;
+    if (dir.cd(DV6)) { // DV64
+        return dir.exists(SET_BIN) ? true : false;
     }
-
-    return true;
+    return false;
 }
 
-int IntellipapLoader::Open(QString path)
+enum INTPAP_Type { INTPAP_Unknown, INTPAP_DV5, INTPAP_DV6 };
+
+
+int IntellipapLoader::OpenDV5(QString path)
 {
-    // Check for SL directory
-    // Check for DV5MFirm.bin?
-    path = path.replace("\\", "/");
-    if (path.endsWith("/SL")) {
-        path.chop(3);
-    }
-    QString newpath = path;
-
-
-    QString dirtag = "SL";
-
-    if (path.endsWith("/" + dirtag)) {
-        return -1;
-        //newpath=path;
-    } else {
-        newpath = path + "/" + dirtag;
-    }
-
+    QString newpath = path + SL_DIR;
     QString filename;
+
 
     //////////////////////////
     // Parse the Settings File
     //////////////////////////
-    filename = newpath + "/SET1";
+    filename = newpath + "/" + SET1;
     QFile f(filename);
 
     if (!f.exists()) {
@@ -594,6 +590,498 @@ int IntellipapLoader::Open(QString path)
 
     int c = Sessions.size();
     return c;
+}
+
+struct DV6_S_Record
+{
+    Session * sess;
+    unsigned char u1;            //00 (position)
+    unsigned int start_time;     //01
+    unsigned int stop_time;      //05
+    unsigned int atpressure_time;//09
+    EventDataType hours;         //13
+    EventDataType meh;           //14
+    EventDataType pressureAvg;   //15
+    EventDataType pressureMax;   //16
+    EventDataType pressure50;    //17 50th percentile
+    EventDataType pressure90;    //18 90th percentile
+    EventDataType pressure95;    //19 95th percentile
+    EventDataType pressureStdDev;//20 std deviation
+    EventDataType u2;            //21
+    EventDataType leakAvg;       //22
+    EventDataType leakMax;       //23
+    EventDataType leak50;        //24 50th percentile
+    EventDataType leak90;        //25 90th percentile
+    EventDataType leak95;        //26 95th percentile
+    EventDataType leakStdDev;    //27 std deviation
+    EventDataType tidalVolume;   //28 & 0x29
+    EventDataType avgBreathRate; //30
+    EventDataType u3;
+    EventDataType u4;            //32 snores / hypopnea per minute
+    EventDataType timeInExPuf;   //33 Time in Expiratory Puff
+    EventDataType timeInFL;      //34 Time in Flow Limitation
+    EventDataType timeInPB;      //35 Time in Periodic Breathing
+    EventDataType maskFit;       //36 mask fit (or rather, not fit) percentage
+    EventDataType indexOA;       //37 Obstructive
+    EventDataType indexCA;       //38 Central index
+    EventDataType indexHyp;      //39 Hypopnea Index
+    EventDataType r0;            //40 Reserved?
+    EventDataType r1;            //41 Reserved?
+                                 //42-48 unknown
+    EventDataType pressureSetMin;   //49
+    EventDataType pressureSetMax;   //50
+
+
+
+
+
+
+};
+
+int IntellipapLoader::OpenDV6(QString path)
+{
+    QString newpath = path + DV6_DIR;
+
+    // Prime the machine database's info field with stuff relevant to this machine
+    MachineInfo info = newInfo();
+    info.series = "DV6";
+
+
+    int vmin=0, vmaj=0;
+    EventDataType max_pressure, min_pressure; //, starting_pressure;
+
+    QByteArray str, dataBA;
+    unsigned char *data = NULL;
+    /////////////////////////////////////////////////////////////////////////////////
+    // Parse SET.BIN settings file
+    /////////////////////////////////////////////////////////////////////////////////
+    QFile f(newpath+"/"+SET_BIN);
+    if (f.open(QIODevice::ReadOnly)) {
+        // Guessing settings is just a binary packed 0 terminated string list
+        // as in this is a continuation of the old string SET1 settings file, just the value fields.
+        // Each field is zero terminated
+        int cnt = 0;
+
+        // Read and parse entire SET.BIN file
+        dataBA = f.readAll();
+        f.close();
+
+        // Parse it as we go...
+        for (int i=0; i< dataBA.size(); ++i) { // deliberately going one further to catch end condition
+            if ((dataBA.at(i) == 0) || (i >= dataBA.size()-1)) { // if null terminated or last byte
+
+                switch(cnt) {
+                    case 1: // Serial Number
+                        info.serial = QString(str);
+                        break;
+                    case 2: // Firmware version?
+                        vmaj = (unsigned char)str.at(0);
+                        vmin = (unsigned char)str.at(1);
+                        break;
+                    case 3: // ??? 0x64 100 // Starting Pressure?
+                        //starting_pressure = (unsigned char)str.at(0);
+                        // or is it 64, as in BCD coded model number?
+                        break;
+                    case 4: // Max Pressure
+                        max_pressure = (unsigned char)str.at(0);
+                        break;
+                    case 5: // Min Pressure
+                        min_pressure = (unsigned char)str.at(0);
+                        break;
+                    case 6: // The settings that were used to flag OA's and Hyp's...
+                        //OA_min = (unsigned char)str.at(0);    // minimum OA duration
+                        //OA_thresh = (unsigned char)str.at(1); // OA flow restriction threshold
+                        //HY_min = (unsigned char)str.at(2);    // minimum Hyp duration
+                        //HY_thresh = (unsigned char)str.at(3); // Hyp flow restriction threshold
+                        break;
+                    case 7:
+                        //ramp_time = (unsigned char)str.at(0);
+                        // ??? 250 = (unsigned char)str.at(1);  // 25.0 (div 10) is maximum CPAP pressure
+                        break;
+                    case 8: // 0
+                        break;
+                    case 9: // 01
+                        break;
+                    case 10:
+                        //SFFRI = (unsigned char)str.at(0); //Smartflex flow rounding inhalation setting
+                        //SFFRE = (unsigned char)str.at(1); //Smartflex flow rounding exhalation setting
+                        //??? = (unsigned char)str.at(2);   // 0x04
+                        break;
+                    case 11:    // 0
+                        break;
+                    case 12:
+
+                    default:
+                        break;
+                }
+                // Clear and start a new data record
+                str.clear();
+                cnt++;
+            } else {
+                // Add the character to the current string
+                str.append(dataBA[i]);
+            }
+        }
+
+    } else { // if f.open settings file
+        // Settings file open failed, return
+        return -1;
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Creates Machine database record if it doesn't exist already
+    ////////////////////////////////////////////////////////////////////////////////////////
+    Machine *mach = CreateMachine(info);
+    if (!mach) {
+        return -1;
+    }
+    qDebug() << "Opening DV6 (" << info.serial << ")" << "v" << vmaj << "." << vmin << "Min:" << min_pressure << "Max:" << max_pressure;
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Open and parse session list and create a list of sessions to import
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+
+    const int DV6_L_RecLength = 0;
+    const int DV6_E_RecLength = 0x18;
+    const int DV6_S_RecLength = 55;
+    unsigned int ts1,ts2;
+
+    QMap<quint32, DV6_S_Record> summaryList;  // QHash is faster, but QMap keeps order
+
+    QDateTime epoch(QDate(2002, 1, 1), QTime(0, 0, 0), Qt::UTC); // Intellipap Epoch
+    int ep = epoch.toTime_t();
+
+    f.setFileName(newpath+"/S.BIN");
+    if (f.open(QIODevice::ReadOnly)) {
+        // Settings is just a binary packed 0 terminated string list
+        dataBA = f.readAll();
+        f.close();
+
+        data = (unsigned char *)dataBA.data();
+
+        int records = dataBA.size() / DV6_S_RecLength;
+
+        data[0x11]; // Start of data block
+        data[0x12]; // Record count
+        // First record is block header
+        for (int r=1; r<records-1; r++) {
+            data += DV6_S_RecLength; // just so happen the headers the same length, though we probably should parse it to get it's version
+            DV6_S_Record R;
+
+            ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // session start time
+            ts2 = ((data[8] << 24) | (data[7] << 16) | (data[6] << 8) | data[5])+ep; // session end
+
+            if (!mach->sessionlist.contains(ts1)) { // Check if already imported
+                qDebug() << "Detected new Session" << ts1;
+                R.sess = new Session(mach, ts1);
+                R.sess->SetChanged(true);
+
+                R.sess->really_set_first(qint64(ts1) * 1000L);
+                R.sess->really_set_last(qint64(ts2) * 1000L);
+
+                R.start_time = ts1;
+                R.stop_time = ts2;
+
+                R.atpressure_time = ((data[12] << 24) | (data[11] << 16) | (data[10] << 8) | data[9])+ep;
+                R.hours = float(data[13]) / 10.0F;
+                R.pressureSetMin = float(data[49]) / 10.0F;
+                R.pressureSetMax = float(data[50]) / 10.0F;
+
+                // The following stuff is not necessary to decode, but can be used to verify we are on the right track
+                //data[14]... unknown
+                R.pressureAvg = float(data[15]) / 10.0F;
+                R.pressureMax = float(data[16]) / 10.0F;
+                R.pressure50 = float(data[17]) / 10.0F;
+                R.pressure90 = float(data[18]) / 10.0F;
+                R.pressure95 = float(data[19]) / 10.0F;
+                R.pressureStdDev = float(data[20]) / 10.0F;
+                //data[21]... unknown
+                R.leakAvg = float(data[22]) / 10.0F;
+                R.leakMax = float(data[23]) / 10.0F;
+                R.leak50= float(data[24]) / 10.0F;
+                R.leak90 = float(data[25]) / 10.0F;
+                R.leak95 = float(data[26]) / 10.0F;
+                R.leakStdDev = float(data[27]) / 10.0F;
+
+                R.tidalVolume = float(data[28] | data[29] << 8);
+                R.avgBreathRate = float(data[30] | data[31] << 8);
+
+                R.sess->settings[CPAP_PressureMin] = R.pressureSetMin;
+                R.sess->settings[CPAP_PressureMax] = R.pressureSetMax;
+                R.sess->settings[CPAP_Mode] = MODE_APAP;
+
+                summaryList[ts1] = R;
+            }
+        }
+
+    } else { // if (f.open(...)
+        // S.BIN open failed
+        return -1;
+    }
+
+
+    const int DV6_R_RecLength = 117;
+    const int DV6_R_HeaderSize = 55;
+    f.setFileName(newpath+"/R.BIN");
+    int numRrecs = (f.size()-DV6_R_HeaderSize) / DV6_R_RecLength;
+
+    if (f.open(QIODevice::ReadOnly)) {
+        // Let's not parse R all at once, it's huge
+        dataBA = f.read(DV6_R_HeaderSize);
+        if (dataBA.size() < DV6_R_HeaderSize) {
+            // bit mean aborting on corrupt R file... but oh well
+            return -1;
+        }
+
+        Session * sess = NULL;
+        EventList * flow = NULL;
+        EventList * OA  = NULL;
+        EventList * HY  = NULL;
+        EventList * NOA = NULL;
+        EventList * EXP = NULL;
+        EventList * FL  = NULL;
+        EventList * PB  = NULL;
+        EventList * VS  = NULL;
+        EventList * LL  = NULL;
+        EventList * RE  = NULL;
+        bool inOA = false;
+        bool inH = false;
+        qint64 OAstart = 0;
+        qint64 Hstart = 0;
+
+        QMap<quint32, DV6_S_Record>::iterator SR = summaryList.begin();
+        for (int r=0; r<numRrecs; ++r) {
+            dataBA=f.read(DV6_R_RecLength);
+            data = (unsigned char *)dataBA.data();
+            if (dataBA.size() < DV6_R_RecLength) {
+                break;
+            }
+
+            DV6_S_Record *R = &SR.value();
+
+            ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1]) + ep;
+
+            while (ts1 > R->stop_time) {
+                if (flow && sess) {
+                    // update min and max
+                    // then add to machine
+                    EventDataType min = flow->Min();
+                    EventDataType max = flow->Max();
+
+                    sess->setMin(CPAP_FlowRate, min);
+                    sess->setMax(CPAP_FlowRate, max);
+
+                    sess->setPhysMax(CPAP_FlowRate, min);
+                    sess->setPhysMin(CPAP_FlowRate, max);
+
+                    sess = NULL;
+                    flow = NULL;
+                }
+                SR++;
+                if (SR == summaryList.end()) break;
+                R = &SR.value();
+            }
+            if (SR == summaryList.end())
+                break;
+
+            if (ts1 >= R->start_time) {
+                if (!flow && R->sess) {
+                    flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(50));
+                    OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
+                    NOA = R->sess->AddEventList(CPAP_NRI, EVL_Event);
+                    RE = R->sess->AddEventList(CPAP_RERA, EVL_Event);
+                    VS = R->sess->AddEventList(CPAP_VSnore, EVL_Event);
+                    HY = R->sess->AddEventList(CPAP_Hypopnea, EVL_Event);
+                    EXP = R->sess->AddEventList(CPAP_ExP, EVL_Event);
+                    FL = R->sess->AddEventList(CPAP_FlowLimit, EVL_Event);
+                    PB = R->sess->AddEventList(CPAP_PB, EVL_Event);
+                    LL = R->sess->AddEventList(CPAP_LargeLeak, EVL_Event);
+                }
+                if (flow) {
+                    sess = R->sess;
+                    qint16 *wavedata = (qint16 *)(&data[5]);
+                    qint64 ti = qint64(ts1) * 1000;
+
+                    flow->AddWaveform(ti+48000,wavedata,50,2000);
+
+                    if (data[110] & 4) {
+                        if (!inOA) {
+                            OAstart = ti;
+                            inOA = true;
+                        }
+                    } else {
+                        if (inOA) {
+                            inOA = false;
+                            OA->AddEvent(OAstart,(ti-OAstart) / 1000L);
+                            OAstart = 0;
+                        }
+                    }
+                    /*if (data[110] & 8) {
+                        if (!inOA) {
+                            OAstart = ti+1000L;
+                            inOA = true;
+                        }
+                    } else {
+                        if (inOA) {
+                            inOA = false;
+                            OA->AddEvent(OAstart,((ti+1000L)-OAstart) / 1000L);
+                            OAstart = 0;
+                        }
+                    }*/
+                    if (data[110] & 64) {
+                        if (!inH) {
+                            Hstart = ti;
+                            inH = true;
+                        }
+                    } else {
+                        if (inH) {
+                            inH = false;
+                            HY->AddEvent(Hstart,(ti-Hstart) / 1000L);
+                            Hstart = 0;
+                        }
+                    }
+
+/*                    if (data[110] & 128) {
+                        if (!inH) {
+                            Hstart = ti+1000L;
+                            inH = true;
+                        }
+                    } else {
+                        if (inH) {
+                            inH = false;
+                            HY->AddEvent(Hstart,((ti+1000L)-Hstart) / 1000L);
+                            Hstart = 0;
+                        }
+                    } */
+
+/*                    if (data[109] & 1) VS->AddEvent(ti,10);
+                    if (data[109] & 2) VS->AddEvent(ti+1000,10);
+                    if (data[109] & 4) EXP->AddEvent(ti,10);
+                    if (data[109] & 8) EXP->AddEvent(ti+1000,10);
+                    if (data[109] & 16) FL->AddEvent(ti,10);
+                    if (data[109] & 32) FL->AddEvent(ti+1000,10);
+
+                    if (data[110] & 64) HY->AddEvent(ti,10);
+                    if (data[110] & 128) HY->AddEvent(ti+1000,10);
+                    if (data[110] & 4) OA->AddEvent(ti,10);
+                    if (data[110] & 8) OA->AddEvent(ti+1000,10);
+                    if (data[110] & 4) NOA->AddEvent(ti,10);
+                    if (data[110] & 8) NOA->AddEvent(ti+1000,10);
+
+                    if (data[111] & 16) RE->AddEvent(ti+1000,10);
+                    if (data[111] & 32) RE->AddEvent(ti+1000,10); */
+                }
+            }
+            // next 100 bytes, 16bit 25hz samples
+
+
+            data += DV6_R_RecLength;
+        }
+        if (flow && sess) {
+            // update min and max
+            // then add to machine
+            EventDataType min = flow->Min();
+            EventDataType max = flow->Max();
+            sess->setMin(CPAP_FlowRate, min);
+            sess->setMax(CPAP_FlowRate, max);
+
+            sess->setPhysMax(CPAP_FlowRate, min); // not sure :/
+            sess->setPhysMin(CPAP_FlowRate, max);
+            sess->really_set_last(flow->last());
+
+            sess = NULL;
+            flow = NULL;
+        }
+
+        f.close();
+        data = (unsigned char *)dataBA.data();
+    } else { // if (f.open(...)
+        // L.BIN open failed
+        return -1;
+    }
+
+
+    // Need to parse L.bin minute table to get graphs
+    f.setFileName(newpath+"/L.BIN");
+    if (f.open(QIODevice::ReadOnly)) {
+        dataBA = f.readAll();
+        if (dataBA.size() == 0) {
+            return -1;
+        }
+        f.close();
+        data = (unsigned char *)dataBA.data();
+    } else { // if (f.open(...)
+        // L.BIN open failed
+        return -1;
+    }
+
+
+    // Now sessionList is populated with summary data, lets parse the Events list in E.BIN
+
+
+    f.setFileName(newpath+"/E.BIN");
+    if (f.open(QIODevice::ReadOnly)) {
+        dataBA = f.readAll();
+        if (dataBA.size() == 0) {
+            return -1;
+        }
+        f.close();
+        data = (unsigned char *)dataBA.data();
+
+
+
+
+    } else { // if (f.open(...)
+        // E.BIN open failed
+        return -1;
+    }
+
+    QMap<quint32, DV6_S_Record>::iterator it;
+
+    for (it=summaryList.begin(); it!= summaryList.end(); ++it) {
+        Session * sess = it.value().sess;
+
+        mach->AddSession(sess);
+
+        // Update indexes, process waveform and perform flagging
+        sess->UpdateSummaries();
+
+        // Save is not threadsafe
+        sess->Store(mach->getDataPath());
+
+        // Unload them from memory
+        sess->TrashEvents();
+
+    }
+
+
+    return 1;
+}
+
+int IntellipapLoader::Open(QString path)
+{
+    // Check for SL directory
+    // Check for DV5MFirm.bin?
+    path = path.replace("\\", "/");
+
+    if (path.endsWith(SL_DIR)) {
+        path.chop(3);
+    } else if (path.endsWith(DV6_DIR)) {
+        path.chop(4);
+    }
+
+    QDir dir;
+
+    if (dir.exists(path + SL_DIR))
+        return OpenDV5(path);
+
+    if (dir.exists(path + DV6_DIR))
+        return OpenDV6(path);
+
+    return -1;
 }
 
 void IntellipapLoader::initChannels()

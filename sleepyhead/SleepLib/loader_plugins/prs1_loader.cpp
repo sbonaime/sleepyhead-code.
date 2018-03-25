@@ -2957,7 +2957,9 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
             // Figure out header sizes based on version and file type
 
             if (ext == 1) { // Summary Chunk
-                if ((family == 5) && (familyVersion == 3)) {
+                if ((family == 0) && (familyVersion == 6)) {
+                    header_size = 43;
+                } else if ((family == 5) && (familyVersion == 3)) {
                     header_size = 37;
                 }
             } else if (ext == 2) { // Event Chunk
@@ -2967,6 +2969,8 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
                     } else if (family == 5) { // ASV
                         header_size = 49;
                     }
+                } else if ((familyVersion==6) && (family==0)) {
+                    header_size=61;
                 }
 
            }
