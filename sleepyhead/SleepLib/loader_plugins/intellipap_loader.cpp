@@ -764,8 +764,8 @@ int IntellipapLoader::OpenDV6(QString path)
 
         int records = dataBA.size() / DV6_S_RecLength;
 
-        data[0x11]; // Start of data block
-        data[0x12]; // Record count
+        //data[0x11]; // Start of data block
+        //data[0x12]; // Record count
         // First record is block header
         for (int r=1; r<records-1; r++) {
             data += DV6_S_RecLength; // just so happen the headers the same length, though we probably should parse it to get it's version
@@ -847,10 +847,16 @@ int IntellipapLoader::OpenDV6(QString path)
         EventList * VS  = NULL;
         EventList * LL  = NULL;
         EventList * RE  = NULL;
-        bool inOA = false;
-        bool inH = false;
-        qint64 OAstart = 0;
-        qint64 Hstart = 0;
+        bool inOA = false, inH = false, inCA = false, inExP = false, inVS = false, inFL = false, inPB = false, inRE = false, inLL = false;
+        qint64 OAstart = 0, OAend = 0;
+        qint64 Hstart = 0, Hend = 0;
+        qint64 CAstart = 0, CAend = 0;
+        qint64 ExPstart = 0, ExPend = 0;
+        qint64 VSstart = 0, VSend = 0;
+        qint64 FLstart = 0, FLend = 0;
+        qint64 PBstart = 0, PBend = 0;
+        qint64 REstart =0, REend = 0;
+        qint64 LLstart =0, LLend = 0;
 
         QMap<quint32, DV6_S_Record>::iterator SR = summaryList.begin();
         for (int r=0; r<numRrecs; ++r) {
@@ -905,74 +911,294 @@ int IntellipapLoader::OpenDV6(QString path)
                     qint16 *wavedata = (qint16 *)(&data[5]);
                     qint64 ti = qint64(ts1) * 1000;
 
-                    flow->AddWaveform(ti+48000,wavedata,50,2000);
+                    flow->AddWaveform(ti+40000,wavedata,50,2000);
 
-                    if (data[110] & 4) {
+
+                    // Needs to track state to pull events out cleanly..
+
+                    //////////////////////////////////////////////////////////////////
+                    // High Leak
+                    //////////////////////////////////////////////////////////////////
+
+                    if (data[110] & 3) {  // LL state 1st second
+                        if (!inLL) {
+                            LLstart = ti;
+                            inLL = true;
+                        }
+                        LLend = ti+1000L;
+                    } else {
+                        if (inLL) {
+                            inLL = false;
+                            LL->AddEvent(LLstart,(LLend-LLstart) / 1000L);
+                            LLstart = 0;
+                        }
+                    }
+                    if (data[114] & 3) {
+                        if (!inLL) {
+                            LLstart = ti+1000L;
+                            inLL = true;
+                        }
+                        LLend = ti+2000L;
+
+                    } else {
+                        if (inLL) {
+                            inLL = false;
+                            LL->AddEvent(LLstart,(LLend-LLstart) / 1000L);
+                            LLstart = 0;
+                        }
+                    }
+
+
+                    //////////////////////////////////////////////////////////////////
+                    // Obstructive Apnea
+                    //////////////////////////////////////////////////////////////////
+
+                    if (data[110] & 12) {  // OA state 1st second
                         if (!inOA) {
                             OAstart = ti;
                             inOA = true;
                         }
+                        OAend = ti+1000L;
                     } else {
                         if (inOA) {
                             inOA = false;
-                            OA->AddEvent(OAstart,(ti-OAstart) / 1000L);
+                            OA->AddEvent(OAstart,(OAend-OAstart) / 1000L);
                             OAstart = 0;
                         }
                     }
-                    /*if (data[110] & 8) {
+                    if (data[114] & 12) {
                         if (!inOA) {
                             OAstart = ti+1000L;
                             inOA = true;
                         }
+                        OAend = ti+2000L;
+
                     } else {
                         if (inOA) {
                             inOA = false;
-                            OA->AddEvent(OAstart,((ti+1000L)-OAstart) / 1000L);
+                            OA->AddEvent(OAstart,(OAend-OAstart) / 1000L);
                             OAstart = 0;
                         }
-                    }*/
-                    if (data[110] & 64) {
+                    }
+
+
+                    //////////////////////////////////////////////////////////////////
+                    // Hypopnea
+                    //////////////////////////////////////////////////////////////////
+
+                    if (data[110] & 192) {
                         if (!inH) {
                             Hstart = ti;
                             inH = true;
                         }
+                        Hend = ti + 1000L;
                     } else {
                         if (inH) {
                             inH = false;
-                            HY->AddEvent(Hstart,(ti-Hstart) / 1000L);
+                            HY->AddEvent(Hstart,(Hend-Hstart) / 1000L);
                             Hstart = 0;
                         }
                     }
 
-/*                    if (data[110] & 128) {
+                    if (data[114] & 192) {
                         if (!inH) {
                             Hstart = ti+1000L;
                             inH = true;
                         }
+                        Hend = ti + 2000L;
                     } else {
                         if (inH) {
                             inH = false;
-                            HY->AddEvent(Hstart,((ti+1000L)-Hstart) / 1000L);
+                            HY->AddEvent(Hstart,(Hend-Hstart) / 1000L);
                             Hstart = 0;
                         }
-                    } */
+                    }
 
-/*                    if (data[109] & 1) VS->AddEvent(ti,10);
-                    if (data[109] & 2) VS->AddEvent(ti+1000,10);
-                    if (data[109] & 4) EXP->AddEvent(ti,10);
-                    if (data[109] & 8) EXP->AddEvent(ti+1000,10);
-                    if (data[109] & 16) FL->AddEvent(ti,10);
-                    if (data[109] & 32) FL->AddEvent(ti+1000,10);
+                    //////////////////////////////////////////////////////////////////
+                    // Non Responding Apnea Event (Are these CA's???)
+                    //////////////////////////////////////////////////////////////////
+                    if (data[110] & 48) {  // OA state 1st second
+                        if (!inCA) {
+                            CAstart = ti;
+                            inCA = true;
+                        }
+                        CAend = ti+1000L;
+                    } else {
+                        if (inCA) {
+                            inCA = false;
+                            NOA->AddEvent(CAstart,(CAend-CAstart) / 1000L);
+                            CAstart = 0;
+                        }
+                    }
+                    if (data[114] & 48) {
+                        if (!inCA) {
+                            CAstart = ti+1000L;
+                            inCA = true;
+                        }
+                        CAend = ti+2000L;
 
-                    if (data[110] & 64) HY->AddEvent(ti,10);
-                    if (data[110] & 128) HY->AddEvent(ti+1000,10);
-                    if (data[110] & 4) OA->AddEvent(ti,10);
-                    if (data[110] & 8) OA->AddEvent(ti+1000,10);
-                    if (data[110] & 4) NOA->AddEvent(ti,10);
-                    if (data[110] & 8) NOA->AddEvent(ti+1000,10);
+                    } else {
+                        if (inCA) {
+                            inCA = false;
+                            NOA->AddEvent(CAstart,(CAend-CAstart) / 1000L);
+                            CAstart = 0;
+                        }
+                    }
 
-                    if (data[111] & 16) RE->AddEvent(ti+1000,10);
-                    if (data[111] & 32) RE->AddEvent(ti+1000,10); */
+                    //////////////////////////////////////////////////////////////////
+                    // VSnore Event
+                    //////////////////////////////////////////////////////////////////
+                    if (data[109] & 3) {  // OA state 1st second
+                        if (!inVS) {
+                            VSstart = ti;
+                            inVS = true;
+                        }
+                        VSend = ti+1000L;
+                    } else {
+                        if (inVS) {
+                            inVS = false;
+                            VS->AddEvent(VSstart,(VSend-VSstart) / 1000L);
+                            VSstart = 0;
+                        }
+                    }
+                    if (data[113] & 3) {
+                        if (!inVS) {
+                            VSstart = ti+1000L;
+                            inVS = true;
+                        }
+                        VSend = ti+2000L;
+
+                    } else {
+                        if (inVS) {
+                            inVS = false;
+                            VS->AddEvent(VSstart,(VSend-VSstart) / 1000L);
+                            VSstart = 0;
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////
+                    // Expiratory puff Event
+                    //////////////////////////////////////////////////////////////////
+                    if (data[109] & 12) {  // OA state 1st second
+                        if (!inExP) {
+                            ExPstart = ti;
+                            inExP = true;
+                        }
+                        ExPend = ti+1000L;
+                    } else {
+                        if (inExP) {
+                            inExP = false;
+                            EXP->AddEvent(ExPstart,(ExPend-ExPstart) / 1000L);
+                            ExPstart = 0;
+                        }
+                    }
+                    if (data[113] & 12) {
+                        if (!inExP) {
+                            ExPstart = ti+1000L;
+                            inExP = true;
+                        }
+                        ExPend = ti+2000L;
+
+                    } else {
+                        if (inExP) {
+                            inExP = false;
+                            EXP->AddEvent(ExPstart,(ExPend-ExPstart) / 1000L);
+                            ExPstart = 0;
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////
+                    // Flow Limitation Event
+                    //////////////////////////////////////////////////////////////////
+                    if (data[109] & 48) {  // OA state 1st second
+                        if (!inFL) {
+                            FLstart = ti;
+                            inFL = true;
+                        }
+                        FLend = ti+1000L;
+                    } else {
+                        if (inFL) {
+                            inFL = false;
+                            FL->AddEvent(FLstart,(FLend-FLstart) / 1000L);
+                            FLstart = 0;
+                        }
+                    }
+                    if (data[113] & 48) {
+                        if (!inFL) {
+                            FLstart = ti+1000L;
+                            inFL = true;
+                        }
+                        FLend = ti+2000L;
+
+                    } else {
+                        if (inFL) {
+                            inFL = false;
+                            FL->AddEvent(FLstart,(FLend-FLstart) / 1000L);
+                            FLstart = 0;
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////
+                    // Periodic Breathing Event
+                    //////////////////////////////////////////////////////////////////
+                    if (data[109] & 192) {  // OA state 1st second
+                        if (!inPB) {
+                            PBstart = ti;
+                            inPB = true;
+                        }
+                        PBend = ti+1000L;
+                    } else {
+                        if (inPB) {
+                            inPB = false;
+                            PB->AddEvent(PBstart,(PBend-PBstart) / 1000L);
+                            PBstart = 0;
+                        }
+                    }
+                    if (data[113] & 192) {
+                        if (!inPB) {
+                            PBstart = ti+1000L;
+                            inPB = true;
+                        }
+                        PBend = ti+2000L;
+
+                    } else {
+                        if (inPB) {
+                            inPB = false;
+                            PB->AddEvent(PBstart,(PBend-PBstart) / 1000L);
+                            PBstart = 0;
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////
+                    // Respiratory Effort Related Arousal Event
+                    //////////////////////////////////////////////////////////////////
+                    if (data[111] & 48) {  // OA state 1st second
+                        if (!inRE) {
+                            REstart = ti;
+                            inRE = true;
+                        }
+                        REend = ti+1000L;
+                    } else {
+                        if (inRE) {
+                            inRE = false;
+                            RE->AddEvent(REstart,(REend-REstart) / 1000L);
+                            REstart = 0;
+                        }
+                    }
+                    if (data[115] & 48) {
+                        if (!inRE) {
+                            REstart = ti+1000L;
+                            inRE = true;
+                        }
+                        REend = ti+2000L;
+
+                    } else {
+                        if (inRE) {
+                            inRE = false;
+                            RE->AddEvent(REstart,(REend-REstart) / 1000L);
+                            REstart = 0;
+                        }
+                    }
                 }
             }
             // next 100 bytes, 16bit 25hz samples
@@ -981,6 +1207,17 @@ int IntellipapLoader::OpenDV6(QString path)
             data += DV6_R_RecLength;
         }
         if (flow && sess) {
+            // Close event states if they are still open, and write event.
+            if (inH) HY->AddEvent(Hstart,(Hend-Hstart) / 1000L);
+            if (inOA) OA->AddEvent(OAstart,(OAend-OAstart) / 1000L);
+            if (inCA) NOA->AddEvent(CAstart,(CAend-CAstart) / 1000L);
+            if (inLL) LL->AddEvent(LLstart,(LLend-LLstart) / 1000L);
+            if (inVS) HY->AddEvent(VSstart,(VSend-VSstart) / 1000L);
+            if (inExP) EXP->AddEvent(ExPstart,(ExPend-ExPstart) / 1000L);
+            if (inFL) FL->AddEvent(FLstart,(FLend-FLstart) / 1000L);
+            if (inPB) PB->AddEvent(PBstart,(PBend-PBstart) / 1000L);
+            if (inPB) RE->AddEvent(REstart,(REend-REstart) / 1000L);
+
             // update min and max
             // then add to machine
             EventDataType min = flow->Min();
