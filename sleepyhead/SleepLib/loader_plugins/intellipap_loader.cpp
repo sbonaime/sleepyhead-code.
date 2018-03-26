@@ -728,6 +728,54 @@ int IntellipapLoader::OpenDV6(QString path)
         return -1;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Parser VER.BIN for model number
+    ////////////////////////////////////////////////////////////////////////////////////////
+    f.setFileName(newpath+"/VER.BIN");
+    if (f.open(QIODevice::ReadOnly)) {
+        dataBA = f.readAll();
+        f.close();
+
+        int cnt = 0;
+        data = (unsigned char *)dataBA.data();
+        for (int i=0; i< dataBA.size(); ++i) { // deliberately going one further to catch end condition
+            if ((dataBA.at(i) == 0) || (i >= dataBA.size()-1)) { // if null terminated or last byte
+
+                switch(cnt) {
+                case 1: // serial
+                    break;
+                case 2: // model
+                    info.model = str;
+                    break;
+                case 7: // ??? V025RN20170
+                    break;
+                case 9: // ??? V014BL20150630
+                    break;
+                case 11: // ??? 01 09
+                    break;
+                case 12: // ??? 0C 0C
+                    break;
+                case 14: // ??? BA 0C
+                    break;
+                default:
+                    break;
+
+                }
+
+                // Clear and start a new data record
+                str.clear();
+                cnt++;
+            } else {
+                // Add the character to the current string
+                str.append(dataBA[i]);
+            }
+        }
+
+    } else { // if (f.open(...)
+        // VER.BIN open failed
+        return -1;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Creates Machine database record if it doesn't exist already
@@ -744,7 +792,7 @@ int IntellipapLoader::OpenDV6(QString path)
     ////////////////////////////////////////////////////////////////////////////////////////
 
 
-    const int DV6_L_RecLength = 0;
+    const int DV6_L_RecLength = 45;
     const int DV6_E_RecLength = 0x18;
     const int DV6_S_RecLength = 55;
     unsigned int ts1,ts2;
@@ -753,6 +801,7 @@ int IntellipapLoader::OpenDV6(QString path)
 
     QDateTime epoch(QDate(2002, 1, 1), QTime(0, 0, 0), Qt::UTC); // Intellipap Epoch
     int ep = epoch.toTime_t();
+
 
     f.setFileName(newpath+"/S.BIN");
     if (f.open(QIODevice::ReadOnly)) {
@@ -823,11 +872,12 @@ int IntellipapLoader::OpenDV6(QString path)
     }
 
 
+    QMap<quint32, DV6_S_Record>::iterator SR;
     const int DV6_R_RecLength = 117;
     const int DV6_R_HeaderSize = 55;
     f.setFileName(newpath+"/R.BIN");
     int numRrecs = (f.size()-DV6_R_HeaderSize) / DV6_R_RecLength;
-
+    Session *sess = NULL;
     if (f.open(QIODevice::ReadOnly)) {
         // Let's not parse R all at once, it's huge
         dataBA = f.read(DV6_R_HeaderSize);
@@ -836,10 +886,10 @@ int IntellipapLoader::OpenDV6(QString path)
             return -1;
         }
 
-        Session * sess = NULL;
+        sess = NULL;
         EventList * flow = NULL;
         EventList * pressure = NULL;
-        EventList * leak = NULL;
+//        EventList * leak = NULL;
         EventList * OA  = NULL;
         EventList * HY  = NULL;
         EventList * NOA = NULL;
@@ -860,7 +910,7 @@ int IntellipapLoader::OpenDV6(QString path)
         qint64 REstart =0, REend = 0;
         qint64 LLstart =0, LLend = 0;
 
-        QMap<quint32, DV6_S_Record>::iterator SR = summaryList.begin();
+        SR = summaryList.begin();
         for (int r=0; r<numRrecs; ++r) {
             dataBA=f.read(DV6_R_RecLength);
             data = (unsigned char *)dataBA.data();
@@ -899,7 +949,7 @@ int IntellipapLoader::OpenDV6(QString path)
                 if (!flow && R->sess) {
                     flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0/60.0, 0.0, 0.0, 0.0, double(2000) / double(50));
                     pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, double(2000) / double(2));
-                    leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(1));
+                    //leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(1));
                     OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     NOA = R->sess->AddEventList(CPAP_NRI, EVL_Event);
                     RE = R->sess->AddEventList(CPAP_RERA, EVL_Event);
@@ -912,7 +962,9 @@ int IntellipapLoader::OpenDV6(QString path)
                 }
                 if (flow) {
                     sess = R->sess;
+                    // starting at position 5 is 100 bytes, 16bit LE 25hz samples
                     qint16 *wavedata = (qint16 *)(&data[5]);
+
                     qint64 ti = qint64(ts1) * 1000;
 
                     unsigned char d[2];
@@ -925,7 +977,7 @@ int IntellipapLoader::OpenDV6(QString path)
                     d[0] = data[107];
                     d[1] = data[108];
 
-                    leak->AddWaveform(ti+40000, d, 2, 2000);
+                    //leak->AddWaveform(ti+40000, d, 2, 2000);
 
 
                     // Needs to track state to pull events out cleanly..
@@ -1215,8 +1267,6 @@ int IntellipapLoader::OpenDV6(QString path)
                     }
                 }
             }
-            // next 100 bytes, 16bit 25hz samples
-
 
             data += DV6_R_RecLength;
         }
@@ -1255,15 +1305,105 @@ int IntellipapLoader::OpenDV6(QString path)
     }
 
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /// Parse L.BIN and extract per-minute data.
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    EventList *leak = NULL;
+    EventList *maxleak = NULL;
+    sess = NULL;
+    const int DV6_L_HeaderSize = 55;
     // Need to parse L.bin minute table to get graphs
     f.setFileName(newpath+"/L.BIN");
     if (f.open(QIODevice::ReadOnly)) {
         dataBA = f.readAll();
-        if (dataBA.size() == 0) {
+        if (dataBA.size() <= DV6_L_HeaderSize) {
             return -1;
         }
+
         f.close();
-        data = (unsigned char *)dataBA.data();
+        data = (unsigned char *)dataBA.data()+DV6_L_HeaderSize;
+        int numLrecs = (dataBA.size()-DV6_L_HeaderSize) / DV6_L_RecLength;
+
+        SR = summaryList.begin();
+        DV6_S_Record *R = &SR.value();
+
+        for (int r=0; r<numLrecs; ++r) {
+            ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // session start time
+
+            while (ts1 > R->stop_time) {
+                if (leak && sess) {
+                    // Close the open session and update the min and max
+
+                    EventDataType min = leak->Min();
+                    EventDataType max = leak->Max();
+                    sess->setMin(CPAP_Leak, min);
+                    sess->setMax(CPAP_Leak, max);
+
+                    sess->setPhysMax(CPAP_Leak, min);
+                    sess->setPhysMin(CPAP_Leak, max);
+
+                    min = maxleak->Min();
+                    max = maxleak->Max();
+                    sess->setMin(CPAP_MaxLeak, min);
+                    sess->setMax(CPAP_MaxLeak, max);
+
+                    sess->setPhysMax(CPAP_MaxLeak, min);
+                    sess->setPhysMin(CPAP_MaxLeak, max);
+                    sess->set_last(maxleak->last());
+
+                    sess = NULL;
+                    leak = NULL;
+                }
+                SR++;
+                if (SR == summaryList.end()) break;
+                R = &SR.value();
+            }
+            if (SR == summaryList.end())
+                break;
+
+            if (ts1 >= R->start_time) {
+                if (!leak && R->sess) {
+                    qDebug() << "Adding Leak data for session" << R->sess->session() << "starting at" << ts1;
+                    leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
+                    maxleak = R->sess->AddEventList(CPAP_MaxLeak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
+                }
+            } else {
+                //SR
+            }
+            if (leak) {
+                sess = R->sess;
+
+                qint64 ti = qint64(ts1) * 1000;
+
+                maxleak->AddEvent(ti, data[5]);
+                leak->AddEvent(ti, data[6]);
+
+                if (!sess->channelExists(CPAP_FlowRate)) {
+                    // No flow rate, so lets grab this data...
+                }
+            }
+
+            data += DV6_L_RecLength;
+        } // for
+        if (sess && leak) {
+            EventDataType min = leak->Min();
+            EventDataType max = leak->Max();
+            sess->setMin(CPAP_Leak, min);
+            sess->setMax(CPAP_Leak, max);
+
+            sess->setPhysMax(CPAP_Leak, min);
+            sess->setPhysMin(CPAP_Leak, max);
+            min = maxleak->Min();
+            max = maxleak->Max();
+            sess->setMin(CPAP_MaxLeak, min);
+            sess->setMax(CPAP_MaxLeak, max);
+
+            sess->setPhysMax(CPAP_MaxLeak, min);
+            sess->setPhysMin(CPAP_MaxLeak, max);
+            sess->set_last(maxleak->last());
+        }
+
     } else { // if (f.open(...)
         // L.BIN open failed
         return -1;
@@ -1309,7 +1449,7 @@ int IntellipapLoader::OpenDV6(QString path)
     }
 
 
-    return 1;
+    return summaryList.size();
 }
 
 int IntellipapLoader::Open(QString path)
@@ -1326,13 +1466,15 @@ int IntellipapLoader::Open(QString path)
 
     QDir dir;
 
+    int r = -1;
+    // Sometimes there can be an SL folder because SmartLink dumps an old DV5 firmware in it, so check it first
     if (dir.exists(path + SL_DIR))
-        return OpenDV5(path);
+        r = OpenDV5(path);
 
-    if (dir.exists(path + DV6_DIR))
-        return OpenDV6(path);
+    if ((r<0) && dir.exists(path + DV6_DIR))
+        r = OpenDV6(path);
 
-    return -1;
+    return r;
 }
 
 void IntellipapLoader::initChannels()
