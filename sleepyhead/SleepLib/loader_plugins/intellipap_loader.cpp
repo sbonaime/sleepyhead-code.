@@ -838,6 +838,8 @@ int IntellipapLoader::OpenDV6(QString path)
 
         Session * sess = NULL;
         EventList * flow = NULL;
+        EventList * pressure = NULL;
+        EventList * leak = NULL;
         EventList * OA  = NULL;
         EventList * HY  = NULL;
         EventList * NOA = NULL;
@@ -895,7 +897,9 @@ int IntellipapLoader::OpenDV6(QString path)
 
             if (ts1 >= R->start_time) {
                 if (!flow && R->sess) {
-                    flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(50));
+                    flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0/60.0, 0.0, 0.0, 0.0, double(2000) / double(50));
+                    pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, double(2000) / double(2));
+                    leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(1));
                     OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     NOA = R->sess->AddEventList(CPAP_NRI, EVL_Event);
                     RE = R->sess->AddEventList(CPAP_RERA, EVL_Event);
@@ -911,7 +915,17 @@ int IntellipapLoader::OpenDV6(QString path)
                     qint16 *wavedata = (qint16 *)(&data[5]);
                     qint64 ti = qint64(ts1) * 1000;
 
+                    unsigned char d[2];
+                    d[0] = data[105];
+                    d[1] = data[106];
                     flow->AddWaveform(ti+40000,wavedata,50,2000);
+                    pressure->AddWaveform(ti+40000, d, 2, 2000);
+                    // Fields data[107] && data[108] are bitfields default is 0x90, occasionally 0x98
+
+                    d[0] = data[107];
+                    d[1] = data[108];
+
+                    leak->AddWaveform(ti+40000, d, 2, 2000);
 
 
                     // Needs to track state to pull events out cleanly..
