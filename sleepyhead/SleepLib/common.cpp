@@ -617,6 +617,7 @@ QByteArray gUncompress(const QByteArray &data)
             ret = Z_DATA_ERROR;     // and fall through
         case Z_DATA_ERROR:
         case Z_MEM_ERROR:
+            Q_UNUSED(ret)
             (void)inflateEnd(&strm);
             return QByteArray();
         }

@@ -821,7 +821,8 @@ void SaveTask::run()
 
 void Machine::queTask(ImportTask * task)
 {
-    if (0) { //p_profile->session->multithreading()) {
+    // Okay... what was this turned off???
+    if (p_profile->session->multithreading()) {
         m_tasklist.push_back(task);
         return;
     }

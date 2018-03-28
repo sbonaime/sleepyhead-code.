@@ -1620,6 +1620,8 @@ void MainWindow::DelayedScreenshot()
 #endif
 
 #if defined(Q_OS_WIN32) || defined(Q_OS_LINUX) || defined(Q_OS_HAIKU)
+    Q_UNUSED(w)
+    Q_UNUSED(h)
      //QRect rec = QApplication::desktop()->screenGeometry();
 
      // grab the whole screen
@@ -1804,7 +1806,6 @@ void packEventList(EventList *el, EventDataType minval = 0)
     if (!f) {
         if (t > minval) {
             nel.AddEvent(ti, t);
-            lasttime = ti;
         }
     }
 
@@ -2107,6 +2108,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
 
     }
     day = p_profile->GetDay(date, MT_CPAP);
+    Q_UNUSED(day);
 
     getDaily()->clearLastDay();
     getDaily()->LoadDate(date);

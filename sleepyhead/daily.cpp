@@ -1158,15 +1158,15 @@ QString Daily::getCPAPInformation(Day * day)
 
 QString Daily::getStatisticsInfo(Day * day)
 {
-    if (!day) return QString();
+    if (day == nullptr) return QString();
 
     Machine *cpap = day->machine(MT_CPAP);
 //            *oxi = day->machine(MT_OXIMETER),
 //            *pos = day->machine(MT_POSITION);
 
-
     int mididx=p_profile->general->prefCalcMiddle();
-    SummaryType ST_mid;
+    SummaryType ST_mid = ST_AVG;
+
     if (mididx==0) ST_mid=ST_PERC;
     if (mididx==1) ST_mid=ST_WAVG;
     if (mididx==2) ST_mid=ST_AVG;

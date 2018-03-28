@@ -700,9 +700,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     double ZW = ZR / (width * ZQ);
                     visible_points += ZR * ZQ;
 
-                    if (accel && n > 0) {
-                        sam = 1;
-                    }
+//                    if (accel && n > 0) {
+//                        sam = 1;
+//                    }
 
                     if (ZW < num_averages) {
                         sam = 1;
@@ -921,11 +921,11 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                     siz -= idx;
 
-                    int gs = siz << 1;
+//                    int gs = siz << 1;
 
-                    if (square_plot) {
-                        gs <<= 1;
-                    }
+//                    if (square_plot) {
+//                        gs <<= 1;
+//                    }
 
                     // Unrolling square plot outside of loop to gain a minor speed improvement.
                     EventStoreType *eptr = dptr + siz;

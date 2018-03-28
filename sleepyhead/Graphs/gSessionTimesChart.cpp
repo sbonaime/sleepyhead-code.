@@ -355,7 +355,7 @@ void gSummaryChart::populate(Day * day, int idx)
             value = hours;
             name = QObject::tr("Hours");
             color = COLOR_LightBlue;
-            slices.append(SummaryChartSlice(&item, hours, hours, name, color));
+            slices.append(SummaryChartSlice(&item, value, hours, name, color));
             break;
         case ST_MIN:
             value = day->Min(code);

@@ -202,7 +202,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 peakmult = double(height+2) / (peak/peakstep);
                 if (peakmult < h+4) {
                     peakstep = 40.0;
-                    peakmult = double(height+2) / (peak/peakstep);
+                    //peakmult = double(height+2) / (peak/peakstep);
                 }
             }
         }
@@ -380,7 +380,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                     r = double(height+3) / (evpeak/g);
                     if (r < h+4) {
                         g = 20.0;
-                        r = double(height+3) / (evpeak/g);
+                        //r = double(height+3) / (evpeak/g);
                     }
                 }
             }

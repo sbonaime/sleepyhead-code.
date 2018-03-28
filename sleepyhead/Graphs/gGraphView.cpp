@@ -515,6 +515,8 @@ bool gGraphView::pinchTriggered(QPinchGesture * gesture)
 
     if (!graph) { return true; }
 
+    Q_UNUSED(group)
+
     //qDebug() << gesture << gesture->scaleFactor();
     if (gesture->state() == Qt::GestureStarted) {
         pinch_min = m_minx;
@@ -1051,9 +1053,10 @@ void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
             break;
         }
     }
-
-    st = g->rmin_x;
-    et = g->rmax_x;
+    if (g) {
+        st = g->rmin_x;
+        et = g->rmax_x;
+    }
 }
 
 void gGraphView::ResetBounds(bool refresh) //short group)
@@ -2524,14 +2527,14 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(py); // point at top of graph..
                     this->setCursor(Qt::ClosedHandCursor);
-                    done=true;
+                    //done=true;
                 } else if ((event->button() == Qt::RightButton) && (x < (titleWidth + gYAxis::Margin))) {
                     this->setCursor(Qt::ArrowCursor);
                     pin_action->setText(QObject::tr("Unpin %1 Graph").arg(g->title()));
                     pin_graph = g;
                     populateMenu(g);
                     context_menu->popup(event->globalPos());
-                    done=true;
+                    //done=true;
                 } else if (!g->blockSelect()) {
                     if (m_metaselect) {
                         if (m_selected_graph) {
@@ -2587,7 +2590,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     m_sizer_point.setX(x);
                     m_sizer_point.setY(y);
                     //qDebug() << "Sizer clicked" << i;
-                    done=true;
+                    //done=true;
                 } else if ((y >= py) && (y < py + h)) {
                     //qDebug() << "Clicked" << i;
 
@@ -2599,7 +2602,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         m_sizer_point.setX(x);
                         m_sizer_point.setY(py); // point at top of graph..
                         this->setCursor(Qt::ClosedHandCursor);
-                        done=true;
+                        //done=true;
                     } else if ((event->button() == Qt::RightButton) && (x < (titleWidth + gYAxis::Margin))) {
                         this->setCursor(Qt::ArrowCursor);
                         pin_action->setText(QObject::tr("Pin %1 Graph").arg(g->title()));
@@ -2607,7 +2610,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         populateMenu(g);
 
                         context_menu->popup(event->globalPos());
-                        done=true;
+                        //done=true;
                     } else if (!g->blockSelect()) {
                        if (m_metaselect) {
                             if (m_selected_graph) {

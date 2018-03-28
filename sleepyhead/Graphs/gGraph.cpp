@@ -132,7 +132,9 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
 {
     if (height == 0) {
         height = p_profile->appearance->graphHeight();
+        Q_UNUSED(height)
     }
+
     if (graphview && graphview->contains(name)) {
         qDebug() << "Trying to duplicate " << name << " when a graph with the same name already exists";
         name+="-1";
@@ -753,8 +755,8 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     int w = m_rect.width() - left - right;
 
 
-    double xx = max_x - min_x;
-    double xmult = xx / double(w);
+    double xx; //= max_x - min_x;
+    double xmult;// = xx / double(w);
 
     {
         xmult = (m_blockzoom ? double(rmax_x - rmin_x) : double(max_x - min_x)) / double(w);
@@ -927,7 +929,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
     int h = m_rect.height() - bottom; //+m_marginbottom);
 
     int x2 = m_graphview->pointClicked().x() - m_rect.left();
-    int y2 = m_graphview->pointClicked().y() - m_rect.top();
+    //int y2 = m_graphview->pointClicked().y() - m_rect.top();
 
 
     m_selDurString = QString();
@@ -939,9 +941,9 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
 
         if (m_graphview->horizTravel() > mouse_movement_threshold) {
             x -= left; //+m_marginleft;
-            y -= top; //+m_margintop;
+            //y -= top; //+m_margintop;
             x2 -= left; //+m_marginleft;
-            y2 -= top; //+m_margintop;
+            //y2 -= top; //+m_margintop;
 
             if (x < 0) { x = 0; }
 
@@ -1018,7 +1020,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
             }
         } else {
             x -= left;
-            y -= top;
+            //y -= top;
             //w-=m_marginleft+left;
             double qq = rmax_x - rmin_x;
             double xmult;

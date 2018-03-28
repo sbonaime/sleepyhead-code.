@@ -152,17 +152,21 @@ int SomnoposeLoader::OpenFile(QString filename)
         ev_inclination->AddEvent(time, inclination);
     }
 
-    sess->setMin(POS_Orientation, ev_orientation->Min());
-    sess->setMax(POS_Orientation, ev_orientation->Max());
-    sess->setMin(POS_Inclination, ev_inclination->Min());
-    sess->setMax(POS_Inclination, ev_inclination->Max());
+    if (sess) {
+        if (ev_orientation && ev_inclination) {
+            sess->setMin(POS_Orientation, ev_orientation->Min());
+            sess->setMax(POS_Orientation, ev_orientation->Max());
+            sess->setMin(POS_Inclination, ev_inclination->Min());
+            sess->setMax(POS_Inclination, ev_inclination->Max());
+        }
 
-    sess->really_set_last(time);
-    sess->SetChanged(true);
+        sess->really_set_last(time);
+        sess->SetChanged(true);
 
-    mach->AddSession(sess);
+        mach->AddSession(sess);
 
-    mach->Save();
+        mach->Save();
+    }
 
     return true;
 }

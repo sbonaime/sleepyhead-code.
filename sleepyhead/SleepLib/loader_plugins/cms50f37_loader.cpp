@@ -403,7 +403,7 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             break;
         case 0x6: // 6,80,80,87
-            data = buffer.at(idx+3) ^ 0x80;
+           // data = buffer.at(idx+3) ^ 0x80;
             break;
 
             // COMMAND_GET_SESSION_TIME
@@ -441,12 +441,12 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
             // COMMAND_CMS50_HELLO1 && COMMAND_CMS50_HELLO2
         case 0xc: // a7 & a2  // responds with: c,80
-            data = buffer.at(idx+1);
+            //data = buffer.at(idx+1);
             break;
         case 0x0e: // e,80,81
             break;
         case 0x10: // 10,80,81
-            data = buffer.at(idx+2);
+            //data = buffer.at(idx+2);
             break;
 
             // COMMAND_GET_OXIMETER_INFO

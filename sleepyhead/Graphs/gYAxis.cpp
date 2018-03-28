@@ -187,7 +187,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
 //        GetTextExtent(fd, x, y);
         y=fm.height();
-        x=0;
+        //x=0;
 
 #ifdef DEBUG_LAYOUT
         painter.setPen(Qt::green);

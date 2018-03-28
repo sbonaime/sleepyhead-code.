@@ -645,10 +645,11 @@ int IntellipapLoader::OpenDV6(QString path)
     // Prime the machine database's info field with stuff relevant to this machine
     MachineInfo info = newInfo();
     info.series = "DV6";
+    info.serial = "Unknown";
 
 
     int vmin=0, vmaj=0;
-    EventDataType max_pressure, min_pressure; //, starting_pressure;
+    EventDataType max_pressure=0, min_pressure=0; //, starting_pressure;
 
     QByteArray str, dataBA;
     unsigned char *data = NULL;
@@ -781,7 +782,7 @@ int IntellipapLoader::OpenDV6(QString path)
     // Creates Machine database record if it doesn't exist already
     ////////////////////////////////////////////////////////////////////////////////////////
     Machine *mach = CreateMachine(info);
-    if (!mach) {
+    if (mach == nullptr) {
         return -1;
     }
     qDebug() << "Opening DV6 (" << info.serial << ")" << "v" << vmaj << "." << vmin << "Min:" << min_pressure << "Max:" << max_pressure;

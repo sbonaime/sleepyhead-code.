@@ -21,7 +21,7 @@ const int journal_data_version = 1;
 JournalEntry::JournalEntry(QDate date)
 {
     Machine * jmach = p_profile->GetMachine(MT_JOURNAL);
-    if (!jmach) {
+    if (jmach == nullptr) { // Create Journal machine record if it doesn't already exist
         MachineInfo info(MT_JOURNAL,0, "Journal", QObject::tr("Journal Data"), QString(), QString(), QString(), QObject::tr("SleepyHead"), QDateTime::currentDateTime(), journal_data_version);
 
         // Using machine ID 1 rather than a random number, so in future, if profile.xml gets screwed up they'll get their data back..
@@ -63,7 +63,7 @@ JournalEntry::JournalEntry(QDate date)
     m_date = date;
     session = nullptr;
     day = p_profile->GetDay(date, MT_JOURNAL);
-    if (!day) {
+    if (day != nullptr) {
         session = day->firstSession(MT_JOURNAL);
     } else {
         // Doesn't exist.. create a new one..
@@ -77,6 +77,9 @@ JournalEntry::JournalEntry(QDate date)
 
         // Let it live in memory...but not on disk unless data is changed...
         jmach->AddSession(session);
+
+        // and where does day get set??? does day actually need to be set??
+        day = p_profile->GetDay(date, MT_JOURNAL);
     }
 }
 JournalEntry::~JournalEntry()

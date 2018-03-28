@@ -160,11 +160,11 @@ void SummaryChart::SetDay(Day * nullday)
             // skip any empty or irrelevant day records
             if (!day || (day->machine(m_machinetype) == nullptr)) { continue; }
 
-            int ft = qint64(day->first()) / 1000L;
-            ft += tz_offset; // convert to local time
+            //int ft = qint64(day->first()) / 1000L;
+            //ft += tz_offset; // convert to local time
 
-            int dz2 = ft / 86400;
-            dz2 *= 86400;
+            //int dz2 = ft / 86400;
+            //dz2 *= 86400;
             // ft = first sessions time, rounded back to midnight..
 
             // For each session in this day record
@@ -451,7 +451,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     barw = (float(width) / float(days));
 
    // graph = &w;
-    float px = left;
+    float px;// = left;
     l_left = w.marginLeft() + gYAxis::Margin;
     l_top = w.marginTop();
     l_width = width;
@@ -1068,6 +1068,8 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
     x -= m_rect.left();
     y -= m_rect.top();
+
+    Q_UNUSED(y)
 
     double xx = l_maxx - l_minx;
 

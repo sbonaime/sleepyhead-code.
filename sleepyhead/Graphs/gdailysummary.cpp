@@ -230,7 +230,7 @@ void gDailySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
     float ypos = top + 10;
     double maxwidth = 0 ;
 
-    for (int i=0; i< info.size(); ++i) {
+    for (int i=0; i< size; ++i) {
         rect1 = QRectF(xpos, ypos, 0, 0);
         QString txt = info.at(i);
 

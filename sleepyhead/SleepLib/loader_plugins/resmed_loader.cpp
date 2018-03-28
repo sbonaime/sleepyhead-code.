@@ -2598,7 +2598,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
     QString t;
 
     long recs;
-    double duration;
+    double duration=0;
     char *data;
     char c;
     long pos;
@@ -2626,7 +2626,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
         pos = 0;
         tt = edf.startdate;
     //    sess->updateFirst(tt);
-        duration = 0;
+        //duration = 0;
 
         while (pos < recs) {
             c = data[pos];
@@ -2818,7 +2818,7 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
     double rate = (duration / recs); // milliseconds per record
     double tt = edf.startdate;
 
-    EventStoreType c, last;
+    EventStoreType c=0, last;
 
     int startpos = 0;
 

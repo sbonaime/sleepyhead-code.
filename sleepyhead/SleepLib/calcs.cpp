@@ -298,6 +298,8 @@ void FlowParser::openFlow(Session *session, EventList *flow)
 
     // Apply the rest of the filters chain
     buf = applyFilters(m_filtered, m_samples);
+    Q_UNUSED(buf)
+
 
     // Scan for and create an index of each breath
     calcPeaks(m_filtered, m_samples);
@@ -317,12 +319,13 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
     double rate = m_flow->rate();
 
     double flowstart = m_flow->first();
-    double lasttime, time;
+    double time; //, lasttime;
 
     //double peakmax = flowstart,
     //double peakmin = flowstart;
 
-    time = lasttime = flowstart;
+    // lasttime =
+    time = flowstart;
     breaths.clear();
 
     // Estimate storage space needed using typical average breaths per minute.
@@ -397,7 +400,7 @@ void FlowParser::calcPeaks(EventDataType *input, int samples)
 
         }
 
-        lasttime = time;
+        //lasttime = time;
         time += rate;
         lastc = c;
         //lastk = k;
@@ -618,7 +621,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
                 stmin = start;
             }
 
-            len = et - stmin;
+            //len = et - stmin;
             rr = 0;
             len2 = 0;
 
@@ -1763,8 +1766,6 @@ int calcLeaks(Session *session)
         quint32 *tptr = el.rawTime();
         qint64 start = el.first(), ti;
         EventStoreType pressure;
-        tptr = el.rawTime();
-        start = el.first();
 
         bool found;
 
