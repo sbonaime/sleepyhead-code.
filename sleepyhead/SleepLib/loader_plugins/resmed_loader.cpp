@@ -1,6 +1,6 @@
 /* SleepLib ResMed Loader Implementation
  *
- * Copyright (c) 2011-2016 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -2932,20 +2932,21 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
     }
 
 #ifdef DEBUG_EFFICIENCY
-    qint64 t = time.nsecsElapsed();
-    int cnt = el->count();
-    int bytes = cnt * (sizeof(EventStoreType) + sizeof(quint32));
-    int wvbytes = recs * (sizeof(EventStoreType));
-    QHash<ChannelID, qint64>::iterator it = channel_efficiency.find(code);
+    if (el != nullptr) {
+        qint64 t = time.nsecsElapsed();
+        int cnt = el->count();
+        int bytes = cnt * (sizeof(EventStoreType) + sizeof(quint32));
+        int wvbytes = recs * (sizeof(EventStoreType));
+        QHash<ChannelID, qint64>::iterator it = channel_efficiency.find(code);
 
-    if (it == channel_efficiency.end()) {
-        channel_efficiency[code] = wvbytes - bytes;
-        channel_time[code] = t;
-    } else {
-        it.value() += wvbytes - bytes;
-        channel_time[code] += t;
+        if (it == channel_efficiency.end()) {
+            channel_efficiency[code] = wvbytes - bytes;
+            channel_time[code] = t;
+        } else {
+            it.value() += wvbytes - bytes;
+            channel_time[code] += t;
+        }
     }
-
 #endif
 }
 

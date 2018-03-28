@@ -1,6 +1,6 @@
 /* Welcome Page Implementation
  *
- * Copyright (c) 2011-2016 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -125,13 +125,13 @@ QString GenerateWelcomeHTML()
         QDate date = p_profile->LastDay(MT_CPAP);
         Day *day = p_profile->GetDay(date, MT_CPAP);
 
+        Machine * cpap = nullptr;
         if (havecpapdata && day) {
-            QString cpapimage = "";
+            cpap = day->machine(MT_CPAP);
+        }
+        if (day && (cpap != nullptr)) {
+            QString cpapimage = "qrc"+cpap->getPixmapPath();
 
-            Machine * cpap = day->machine(MT_CPAP);
-            if (cpap) {
-                cpapimage = "qrc"+cpap->getPixmapPath();
-            }
             html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
             html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+

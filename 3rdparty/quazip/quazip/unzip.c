@@ -205,8 +205,8 @@ local int unzlocal_getShort (pzlib_filefunc_def,filestream,pX)
     voidpf filestream;
     uLong *pX;
 {
-    uLong x ;
-    int i;
+    uLong x;
+    int i=0;
     int err;
 
     err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -233,8 +233,8 @@ local int unzlocal_getLong (pzlib_filefunc_def,filestream,pX)
     voidpf filestream;
     uLong *pX;
 {
-    uLong x ;
-    int i;
+    uLong x;
+    int i=0;
     int err;
 
     err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -730,6 +730,7 @@ local int unzlocal_GetCurrentFileInfoInternal (file,
     else
         uSeek+=file_info.size_file_comment;
 
+    (void)uSeek;
     if ((err==UNZ_OK) && (pfile_info!=NULL))
         *pfile_info=file_info;
 
@@ -1117,8 +1118,10 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
     }
 
     if ((s->cur_file_info.compression_method!=0) &&
-        (s->cur_file_info.compression_method!=Z_DEFLATED))
+        (s->cur_file_info.compression_method!=Z_DEFLATED)) {
         err=UNZ_BADZIPFILE;
+        (void)err; //MW: Shuttup warnings
+    }
 
     pfile_in_zip_read_info->crc32_wait=s->cur_file_info.crc;
     pfile_in_zip_read_info->crc32=0;

@@ -379,7 +379,7 @@ local int ziplocal_getShort (pzlib_filefunc_def,filestream,pX)
     uLong *pX;
 {
     uLong x ;
-    int i;
+    int i=0;
     int err;
 
     err = ziplocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -407,7 +407,7 @@ local int ziplocal_getLong (pzlib_filefunc_def,filestream,pX)
     uLong *pX;
 {
     uLong x ;
-    int i;
+    int i=0;
     int err;
 
     err = ziplocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -1077,8 +1077,10 @@ extern int ZEXPORT zipCloseFileInZipRaw (file, uncompressed_size, crc32)
         uLong uTotalOutBefore;
         if (zi->ci.stream.avail_out == 0)
         {
-            if (zipFlushWriteBuffer(zi) == ZIP_ERRNO)
+            if (zipFlushWriteBuffer(zi) == ZIP_ERRNO) {
                 err = ZIP_ERRNO;
+                (void)err; //MW: Shuttup warnings
+            }
             zi->ci.stream.avail_out = (uInt)Z_BUFSIZE;
             zi->ci.stream.next_out = zi->ci.buffered_data;
         }

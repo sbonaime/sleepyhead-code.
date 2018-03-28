@@ -1,6 +1,6 @@
 /* SleepLib RemStar M-Series Loader Implementation
  *
- * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
+ * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
@@ -332,7 +332,7 @@ int MSeriesLoader::Open(QString path)
         } while (cb < endcard && !done);
     } while (cb < endcard && !done);
 
-    done = false;
+   // done = false;
     //bool first=true;
     //quint8 exch;
     cnt = 0;
@@ -341,7 +341,7 @@ int MSeriesLoader::Open(QString path)
         u1 = cb[0] << 8 | cb[1];
 
         if (u1 != 0xfe0b) {
-            done = true;
+           // done = true;
             break;
         }
 
