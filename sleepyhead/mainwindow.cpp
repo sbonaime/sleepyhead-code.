@@ -1233,7 +1233,7 @@ QString MainWindow::getWelcomeHTML()
            "<tr>"
            "<td colspan=2>"
            "<hr/>"
-           "<p><b>" + tr("Copyright:") + "</b> " + tr("&copy;2011-2016") +
+           "<p><b>" + tr("Copyright:") + "</b> " + tr("&copy;2011-2018") +
            " <a href=\"http://jedimark64.blogspot.com\">Mark Watkins</a> (jedimark)</p>"
            "<p><b>" + tr("License:") + "</b> " +
            tr("This software is released freely under the <a href=\"qrc:/COPYING\">GNU Public License</a>.") +
@@ -1430,7 +1430,7 @@ void MainWindow::on_action_About_triggered()
                 tr("Graphics Engine: %1").arg(getGraphicsEngine())+
                 "<br/>" +
                 (tr("Data Folder Location: <a href=\"file://%1\">%2</a>").arg(GetAppRoot()).arg(QDir::toNativeSeparators(GetAppRoot())) +
-                "<hr/>"+tr("Copyright") + " &copy;2011-2016 Mark Watkins (jedimark) <br/> \n" +
+                "<hr/>"+tr("Copyright") + " &copy;2011-2018 Mark Watkins (jedimark) <br/> \n" +
                 tr("This software is released under the GNU Public License v3.0<br/>") +
                 "<hr>"
 
