@@ -16,4 +16,5 @@ TRANSLATIONS += \
     Translations/English.en_UK.ts \
     Translations/Portugues.pt.ts \
     Translations/Arabic.ar.ts \
+    Translations/Afrikaans.af.ts \
     Translations/Greek.el.ts
