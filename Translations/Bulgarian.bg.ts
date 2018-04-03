@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="bg_BG">
+<TS version="2.1" language="bg_BG" sourcelanguage="en_US">
 <context>
     <name>CMS50Loader</name>
     <message>
@@ -846,7 +846,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3530"/>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
+        <translation>Съобщи за грешка</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="289"/>
@@ -1829,12 +1829,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Промяната на езика ще възстанови стандартните настройки за имена/етикети/описание на събитията и вълните.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Сигурни ли сте, че желаете да направите това?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2607"/>
@@ -5015,22 +5015,22 @@ TTIA: %1</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="332"/>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation>ч</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="333"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>м</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="334"/>
         <source>s</source>
-        <translation type="unfinished">сек</translation>
+        <translation>с</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="335"/>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>мс</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="336"/>
@@ -5674,6 +5674,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2906"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2908"/>
         <source>Heated Tubing</source>
         <translation>Нагреваем маркуч</translation>
     </message>
@@ -5683,9 +5684,8 @@ TTIA: %1</translation>
         <translation>Свързан нагреваем маркуч</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2908"/>
         <source>Headed Tubing</source>
-        <translation>Нагреваем маркуч</translation>
+        <translation type="vanished">Нагреваем маркуч</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2915"/>
@@ -7011,181 +7011,181 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="491"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="493"/>
         <source>Height</source>
-        <translation type="unfinished">Височина</translation>
+        <translation>Височина</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="492"/>
         <source>Physical Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Ръст</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="498"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="500"/>
         <source>Notes</source>
-        <translation type="unfinished">Бележки</translation>
+        <translation>Бележки</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="499"/>
         <source>Bookmark Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Бележки за отметки</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="506"/>
         <source>Body Mass Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс на телесната маса</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="514"/>
         <source>How you feel (0 = like crap, 10 = unstoppable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Как се чувствате (0 = отвратително, 10 = прекрасно)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="521"/>
         <source>Bookmark Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Старт отметка</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="527"/>
         <source>Bookmark End</source>
-        <translation type="unfinished"></translation>
+        <translation>Край отметка</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="532"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="533"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="534"/>
         <source>Last Updated</source>
-        <translation type="unfinished"></translation>
+        <translation>Последно обновяване</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="538"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="539"/>
         <source>Journal Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Журнални бележки</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="540"/>
         <source>Journal</source>
-        <translation type="unfinished">Журнал</translation>
+        <translation>Журнал</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="546"/>
         <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>1=Будно 2=РЕМ фаза 3=Лек сън 4=Дълбок сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="551"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="552"/>
         <source>Brain Wave</source>
-        <translation type="unfinished"></translation>
+        <translation>Мозъчна вълна</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="553"/>
         <source>BrainWave</source>
-        <translation type="unfinished"></translation>
+        <translation>Мозъчна вълна</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="557"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="559"/>
         <source>Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>Събуждания</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="558"/>
         <source>Number of Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation>Брой на събуждания</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="563"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="565"/>
         <source>Morning Feel</source>
-        <translation type="unfinished"></translation>
+        <translation>Усещане сутрин</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="564"/>
         <source>How you felt in the morning</source>
-        <translation type="unfinished"></translation>
+        <translation>Как се чувствате на сутринта</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="569"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="571"/>
         <source>Time Awake</source>
-        <translation type="unfinished"></translation>
+        <translation>Будно време</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="570"/>
         <source>Time spent awake</source>
-        <translation type="unfinished"></translation>
+        <translation>Време прекарано в будно състояние</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="576"/>
         <source>Time In REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в РЕМ фаза</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="577"/>
         <source>Time spent in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време прекарано в РЕМ фаза</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="578"/>
         <source>Time in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в РЕМ фаза</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="582"/>
         <source>Time In Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в лек сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="583"/>
         <source>Time spent in light sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време прекарано в лек сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="584"/>
         <source>Time in Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в лек сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="588"/>
         <source>Time In Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в дълбок сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="589"/>
         <source>Time spent in deep sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време прекарано в дълбок сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="590"/>
         <source>Time in Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време в дълбок сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="594"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="596"/>
         <source>Time to Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време за заспиване</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="595"/>
         <source>Time taken to get to sleep</source>
-        <translation type="unfinished"></translation>
+        <translation>Време необходимо за заспиване</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="600"/>
         <source>Zeo ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeo ZQ</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="601"/>
         <source>Zeo sleep quality measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeo измерено качество на сън</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="602"/>
         <source>ZEO ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation>ZEO ZQ</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="1118"/>

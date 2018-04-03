@@ -7755,7 +7755,7 @@ Alsjeblieft niets aanraken tot ik klaar ben.</translation>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="156"/>
         <source>pretty darn good</source>
-        <translation>verduveld goed</translation>
+        <translation>hartstikke goed</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="157"/>

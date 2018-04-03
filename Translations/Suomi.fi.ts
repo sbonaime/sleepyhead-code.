@@ -75,7 +75,7 @@
     <message>
         <location filename="../sleepyhead/daily.ui" line="1013"/>
         <source>Journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivyri</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.ui" line="1038"/>
@@ -90,7 +90,7 @@
     <message>
         <location filename="../sleepyhead/daily.ui" line="1054"/>
         <source>B</source>
-        <translation></translation>
+        <translation type="unfinished">B</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.ui" line="1057"/>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../sleepyhead/daily.ui" line="1168"/>
         <source>Zombie</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zombie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.ui" line="1181"/>
@@ -185,7 +185,7 @@
     <message>
         <location filename="../sleepyhead/daily.cpp" line="201"/>
         <source>Breakdown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Erittely</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="201"/>
@@ -315,7 +315,7 @@
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1113"/>
         <source>SpO2 Desaturations</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Happisaturaatiolaskut</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1114"/>
@@ -325,7 +325,7 @@
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1115"/>
         <source>SpO2 Baseline Used</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Happisaturaation vertailukohta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1145"/>
@@ -375,12 +375,12 @@
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1522"/>
         <source>BRICK! :(</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tiiliskivi! :(</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1579"/>
         <source>Event Breakdown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tapahtumaerittely</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1614"/>
@@ -648,12 +648,12 @@
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="207"/>
         <source> Count</source>
-        <translation>Lukumäärä</translation>
+        <translation type="unfinished"> Lukumäärä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="211"/>
         <source> Avg</source>
-        <translation>Keskiarvo</translation>
+        <translation type="unfinished"> Keskiarvo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="215"/>
@@ -671,7 +671,7 @@
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.cpp" line="142"/>
         <source>This Machine Record cannot be imported in this profile.</source>
-        <translation>Tämän koneen tietuetta ei voida tuoda tähän profiiliin</translation>
+        <translation type="unfinished">Tämän koneen tietuetta ei voida tuoda tähän profiiliin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.cpp" line="142"/>
@@ -727,7 +727,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1141"/>
         <source>&amp;Help Browser</source>
-        <translation>&amp;H Apua</translation>
+        <translation type="unfinished">&amp;Ohjeselain</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1204"/>
@@ -776,17 +776,17 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3121"/>
         <source>&amp;File</source>
-        <translation>&amp;F Tiedostot</translation>
+        <translation type="unfinished">&amp;Tiedostot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3147"/>
         <source>&amp;View</source>
-        <translation>&amp;V Näytä</translation>
+        <translation type="unfinished">&amp;Näytä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3165"/>
         <source>&amp;Help</source>
-        <translation>&amp;H Apua</translation>
+        <translation type="unfinished">&amp;Apua</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3185"/>
@@ -796,7 +796,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3189"/>
         <source>&amp;Advanced</source>
-        <translation>&amp;A Lisää</translation>
+        <translation type="unfinished">&amp;Lisää</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3193"/>
@@ -811,7 +811,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3247"/>
         <source>&amp;Import Data</source>
-        <translation>Tuo t&amp;ietoja</translation>
+        <translation type="unfinished">&amp;Tuo tietoja</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3250"/>
@@ -821,7 +821,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3255"/>
         <source>&amp;Preferences</source>
-        <translation>&amp;P Asetukset</translation>
+        <translation type="unfinished">&amp;Asetukset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3260"/>
@@ -831,27 +831,27 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3515"/>
         <source>Show Performance Information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytä suoritusarvot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3520"/>
         <source>CSV Export Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CSV:n vientivelho</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3525"/>
         <source>Export for Review</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vie katselmoitavaksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3530"/>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ilmoita virhe</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="289"/>
         <source>E&amp;xit</source>
-        <translation>&amp;x Poistu</translation>
+        <translation type="unfinished">&amp;Poistu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3265"/>
@@ -861,7 +861,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3270"/>
         <source>View &amp;Daily</source>
-        <translation>&amp;D Näytä päivittäin</translation>
+        <translation type="unfinished">Näytä &amp;Päivittäin</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3273"/>
@@ -871,7 +871,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3278"/>
         <source>View &amp;Overview</source>
-        <translation>Näytä yhteenvet&amp;o</translation>
+        <translation type="unfinished">Näytä &amp;Yleiskatsaus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3281"/>
@@ -881,7 +881,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3286"/>
         <source>View &amp;Welcome</source>
-        <translation>Näytä ter&amp;wehdys</translation>
+        <translation type="unfinished">Näytä Ter&amp;vetuloa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3289"/>
@@ -902,7 +902,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3305"/>
         <source>Use &amp;AntiAliasing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käytä &amp;reunojen pehmennys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3310"/>
@@ -912,7 +912,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3318"/>
         <source>&amp;Fullscreen Toggle</source>
-        <translation>&amp;F Kokoruutu</translation>
+        <translation type="unfinished">Koko&amp;ruutu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3321"/>
@@ -927,7 +927,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3334"/>
         <source>&amp;Reset Graph Layout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Palauta kaaviot alkutilaan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3339"/>
@@ -938,7 +938,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3344"/>
         <source>Take &amp;Screenshot</source>
-        <translation>Ota kuvaruudunkaappau&amp;s</translation>
+        <translation type="unfinished">&amp;Ota kuvaruudunkaappaus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3347"/>
@@ -948,7 +948,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3352"/>
         <source>O&amp;ximetry Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">O&amp;ksimetrivelho</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3355"/>
@@ -963,7 +963,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3365"/>
         <source>&amp;Edit Profile</source>
-        <translation>&amp;E Muokkaa profiilia</translation>
+        <translation type="unfinished">&amp;Muokkaa profiilia</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3499"/>
@@ -978,37 +978,37 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3507"/>
         <source>Backup &amp;Journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Päivyrin varmuuskopiointi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3370"/>
         <source>Online Users &amp;Guide</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Käyttäjäopas verkossa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3375"/>
         <source>&amp;Frequently Asked Questions</source>
-        <translation>&amp;FAQ</translation>
+        <translation type="unfinished">&amp;UKK</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3380"/>
         <source>&amp;Automatic Oximetry Cleanup</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Automaattinen oksimetrin puhdistus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3466"/>
         <source>Toggle &amp;Line Cursor</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vaihtele &amp;kursori</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3385"/>
         <source>Change &amp;User</source>
-        <translation>&amp;U Vaihda käyttäjä</translation>
+        <translation type="unfinished">Vaihda &amp;käyttäjä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3390"/>
         <source>Purge &amp;Current Selected Day</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tyhjennä &amp;valittu päivä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3401"/>
@@ -1033,7 +1033,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3409"/>
         <source>View S&amp;tatistics</source>
-        <translation>Näytä &amp;tilastot</translation>
+        <translation type="unfinished">Näytä &amp;Tilastot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1591"/>
@@ -1058,7 +1058,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3125"/>
         <source>Exp&amp;ort Data</source>
-        <translation>Vie tiet&amp;oja</translation>
+        <translation type="unfinished">&amp;Vie tietoja</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3404"/>
@@ -1069,7 +1069,7 @@
         <location filename="../sleepyhead/mainwindow.ui" line="3412"/>
         <location filename="../sleepyhead/mainwindow.ui" line="3415"/>
         <source>View Statistics</source>
-        <translation>Näytä tilastot</translation>
+        <translation type="unfinished">Näytä Tilastot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3423"/>
@@ -1089,7 +1089,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3438"/>
         <source>Sleep Disorder Terms &amp;Glossary</source>
-        <translation>&amp;G Unihäiriöiden termistö</translation>
+        <translation type="unfinished">&amp;Unihäiriöiden termistö</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3443"/>
@@ -1099,7 +1099,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3448"/>
         <source>Change &amp;Data Folder</source>
-        <translation>&amp;D Vaihda tietojen kansio</translation>
+        <translation type="unfinished">Va&amp;ihda tietojen kansio</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="3453"/>
@@ -1150,12 +1150,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="332"/>
         <source>Make sure you keep your SleepyHead data folder backed up when trying testing versions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Varmista että SleepyHeadin tiedot on varmuuskopioitu ennen kuin kokeilet testiversioita.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="335"/>
         <source>Make sure you&apos;re willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Varmista että pystyt lähettämään zip-tiedoston CPAP tiedoista tai kaatumisraportin ennen kuin raportoit virheistä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="743"/>
@@ -1399,12 +1399,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2764"/>
         <source>%1&apos;s Journal</source>
-        <translation></translation>
+        <translation type="unfinished">%1n päivyri</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2766"/>
         <source>Choose where to save journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse päivyrin tallennuskohde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2766"/>
@@ -1419,7 +1419,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2140"/>
         <source>Please note, that this could result in loss of graph data if SleepyHead&apos;s internal backups have been disabled or interfered with in any way.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huomaa, että jos Sleepyheadin sisäinen varmistus on pois päältä tai tavalla tai toisella estetty, se saattaa aiheuttaa kaaviotietojen menetystä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2148"/>
@@ -1429,7 +1429,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2151"/>
         <source>Provided you have made &lt;i&gt;your &lt;b&gt;own&lt;/b&gt; backups for ALL of your CPAP data&lt;/i&gt;, you can still complete this operation, but you will have to restore from your backups manually.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jos olet &lt;i&gt;&lt;b&gt;itse&lt;/b&gt; tehnyt CPAP tietojen varmuuskopiot&lt;/i&gt;, voit jatkaa toimenpidettä, mutta joudut palauttamaan varmuuskopiot käsin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2152"/>
@@ -1439,12 +1439,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2225"/>
         <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tiedoston oikeusongelma tai vastaava estää puhdistusta, joudut käsin poistamaan seuraavan hakemiston: </translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2165"/>
         <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sisäistä varmuuskopiota ei löydy, joudut palauttamaan käsin.</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson.</source>
@@ -1492,7 +1492,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2724"/>
         <source>Select the day with valid oximetry data in daily view first.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse päivä joka sisältää oksimetritietoa päivittäisessä näytössä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1434"/>
@@ -1548,7 +1548,9 @@
         <source>Already up to date with CPAP data at
 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seuraavassa kohdassa on jo CPAP-tietoa
+
+%1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="741"/>
@@ -1560,7 +1562,9 @@
         <source>Couldn&apos;t find any valid Machine Data at
 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seuraavassa kohdassa ei löytynyt laitteen tietoa
+
+%1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="890"/>
@@ -1570,17 +1574,17 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="956"/>
         <source>Import is already running in the background.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tietojen tuonti ajaa jo taustalla.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="988"/>
         <source>A %1 file structure for a %2 was located at:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%2 tiedoston struktuuri %1 löytyi kohdasta:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="990"/>
         <source>A %1 file structure was located at:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tiedoston %1 struktuuri löytyi kohdasta:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="997"/>
@@ -1665,7 +1669,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1457"/>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1460"/>
@@ -1675,7 +1679,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1460"/>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Arie Klerk (käännösten koordinaattori, myös Hollanti), Steffen Reitz (Saksa), Chen Hao (Kiina), Lars-Erik Söderström (Ruotsi), Damien Vigneron (Ranska), António Jorge Costa (Portugali), Judith Guzmán (Espanja), Plamen Tonev (Bulgaria) ja muut vielä lisäämättömät.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1463"/>
@@ -1690,7 +1694,7 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1466"/>
         <source>In the updater code, SleepyHead uses &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant&apos;s ZIP/UNZIP package.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivityskoodissa, SleepyHead käyttää Sergey A. Tachenovin tekemä &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; , joka on Gilles Vollantin ZIP/UNZIP paketin C++ wrapperi.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1473"/>
@@ -1772,12 +1776,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2398"/>
         <source>Performance will be degraded during these recalculations.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uudelleenlaskenta heikentää suorituskykyä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2399"/>
         <source>Recalculating Indices</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Indeksien uudelleenlaskenta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2411"/>
@@ -1833,12 +1837,12 @@
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Changing the language will reset custom Event and Waveform names/labels/descriptions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kielen vaihto palauttaa mukautettuja tapahtumien ja aaltomuotojen nimiä/selityksiä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2574"/>
         <source>Are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oletko varma että haluat jatkaa?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2607"/>
@@ -2077,7 +2081,7 @@
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="656"/>
         <source>RX Pressure</source>
-        <translation>RX Paine</translation>
+        <translation type="unfinished">Määrätty paine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="702"/>
@@ -2111,19 +2115,19 @@
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="943"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;C Keskeytä</translation>
+        <translation type="unfinished">&amp;Keskeytä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="959"/>
         <source>&amp;Back</source>
-        <translation>&amp;B Edellinen</translation>
+        <translation type="unfinished">&amp;Edellinen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="975"/>
         <location filename="../sleepyhead/newprofile.cpp" line="275"/>
         <location filename="../sleepyhead/newprofile.cpp" line="284"/>
         <source>&amp;Next</source>
-        <translation>&amp;N seuraava</translation>
+        <translation type="unfinished">&amp;Seuraava</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="59"/>
@@ -2178,7 +2182,7 @@
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="132"/>
         <source>SleepyHead is copyright &amp;copy;2011-2016 Mark Watkins</source>
-        <translation type="unfinished">SleepyHeadin tekijänoikeudet &amp;copy;2011-2014 Mark Watkins {2011-2016 ?}</translation>
+        <translation type="unfinished">SleepyHeadin tekijänoikeudet &amp;copy;2011-2016 Mark Watkins </translation>
     </message>
     <message>
         <source>SleepyHead is copyright &amp;copy;2011-2014 Mark Watkins</source>
@@ -2207,12 +2211,12 @@
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="273"/>
         <source>&amp;Finish</source>
-        <translation>&amp;F Valmis</translation>
+        <translation type="unfinished">&amp;Valmis</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="449"/>
         <source>&amp;Close this window</source>
-        <translation>&amp;C Sulje tämä ikkuna</translation>
+        <translation type="unfinished">&amp;Sulje tämä ikkuna</translation>
     </message>
 </context>
 <context>
@@ -2322,7 +2326,9 @@ Indeksi</translation>
         <source>Apnea
 Hypopnea
 Index</source>
-        <translation></translation>
+        <translation type="unfinished">Apnea
+Hypopnea
+Indeksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="338"/>
@@ -2343,20 +2349,22 @@ Index</source>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="349"/>
         <source>Total Time in Apnea</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kokonaisaika apneassa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="349"/>
         <source>Total Time in Apnea
 (Minutes)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kokonaisaika apneassa
+(minuutteja)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="423"/>
         <source>Body
 Mass
 Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paino-
+indeksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="424"/>
@@ -2402,22 +2410,22 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1106"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import (via cable) from your oximeters internal recordings.&lt;/p&gt;&lt;p&gt;After selecting on this option, some oximeters will require you to do something in the devices menu to initiate the upload.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tämän vaihtoehdon avulla pystyt (kaapelin avulla) tuomaan tietoja oksimetrin tallenteesta.&lt;/p&gt;&lt;p&gt;Kun tämä on valittu, joidenkin oksimetrien menusta täytyy käynnistää tietojen lähetys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1148"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you don&apos;t mind a being attached to a running computer overnight, this option provide a useful plethysomogram graph, which gives an indication of heart rhythm, on top of the normal oximetry readings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Jos sinulle sopii olla kytkettynä tietokoneeseen yli yön, tämä vaihtoehto näyttää plethysmogrammi-kaavion, osoittaen sydämen sykkeen tavallisten oksimetriarvojen lisäksi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1154"/>
         <source>Record attached to computer overnight (provides plethysomogram)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tallenna kytkettynä tietokoneeseen yön yli (näyttää myös sykkeen)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1187"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import from data files created by software that came with your Pulse Oximeter, such as SpO2Review.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tämän vaihtoehdon avulla voit tuoda tiedostoja oksimetrien omista ohjelmista, esimerkiksi SpO2Review.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1193"/>
@@ -2433,17 +2441,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1290"/>
         <source>If you can read this, you likely have your oximeter type set wrong in preferences.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jos tämä teksti on lueattavissa, on mahdollista että oksimetrin tyyppi on asetettu väärin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1345"/>
         <source>Press Start to commence recording</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paina Käynnistä aloittaaksesi tallennuksen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1391"/>
         <source>Show Live Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytä kaaviot livenä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1422"/>
@@ -2464,7 +2472,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1632"/>
         <source>Multiple Sessions Detected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Useampi käyttöjakso havaittu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1648"/>
@@ -2489,7 +2497,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1722"/>
         <source>Day recording (normally would of) started</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivä milloinka tallennus alkoi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1768"/>
@@ -2509,17 +2517,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1825"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead needs a starting time to know where to save this oximetry session to.&lt;/p&gt;&lt;p&gt;Choose one of the following options:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead vaatii käynnistysajan tietääkseen mihin tallentaa oksimetrijakson.&lt;/p&gt;&lt;p&gt;Valitse yksi vaihtoehto:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1857"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note: Syncing to CPAP session starting time will always be more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Huomautus: Synkronointi CPAP-istunnon käynnistyksen ajankohtaan on aina tarkempi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1878"/>
         <source>Choose CPAP session to sync to:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse synkronoitava CPAP-istunto:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1917"/>
@@ -2540,7 +2548,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2116"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;C Keskeytä</translation>
+        <translation type="unfinished">&amp;Keskeytä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2097"/>
@@ -2550,92 +2558,92 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="823"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Please note: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Make sure your correct oximeter type is selected otherwise import will fail.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Huomaa: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Varmista ettö oikea oksimetri-tyyppi on valittu, muuten tuonti epäonnistuu.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="910"/>
         <source>Select Oximeter Type:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse oksimetri-tyyppi:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="921"/>
         <source>CMS50Fv3.7+/H/I, Pulox PO-400/500</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50Fv3.7+/H/I, Pulox PO-400/500</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="926"/>
         <source>CMS50D+/E/F, Pulox PO-200/300</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50D+/E/F, Pulox PO-200/300</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="931"/>
         <source>ChoiceMMed MD300W1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ChoiceMMed MD300W1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="967"/>
         <source>CMS50E/F users, when importing directly, please don&apos;t select upload on your device until SleepyHead prompts you to.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50E/F käyttäjät: kun tietoja tuodaan suoraan laitteesta, älä käynnistä laitteen lähetä-toimintoa ennen kuin SleepyHead antaa luvan.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1004"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, SleepyHead will automatically reset your CMS50&apos;s internal clock using your computers current time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Jos aktivoitu, SleepyHead resetoi CMS50:n sisäistä kelloa käyttäen tietokoneen kellonaikaa.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1007"/>
         <source>Set device date/time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aseta laitteen pvm/aika</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1014"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check to enable updating the device identifier next import, which is useful for those who have multiple oximeters lying around.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Jos asetettu, laitteen tunniste päivittyy seuraavan tuonnin yhteydessä. Tämä helpottaa jos käytössä on useampi oksimetri.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1017"/>
         <source>Set device identifier</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aseta laitteen tunnus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1036"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Here you can enter a 7 character pet name for this oximeter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Oksimetrin 7-kirjaiminen lyhytnimi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1077"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option will erase the imported session from your oximeter after import has completed. &lt;/p&gt;&lt;p&gt;Use with caution,  becauseif something goes wrong before SleepyHead saves your session, you won&apos;t get it back.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tämä vaihtoehto pyyhkii istunnon oksimetristä tuonnnin jälkeen. &lt;/p&gt;&lt;p&gt;Käytä varovasti koska et saa istuntoa takaisin jos jotakin epäonnistuu ennen kuin SleepyHead on tallentanut istuntoa.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1080"/>
         <source>Erase session after successful upload</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Poista istunto onnistuneen tuonnin jälkeen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1112"/>
         <source>Import directly from a recording on a device</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tuo suoraan laitteen tallennuksesta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="1237"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Reminder for CPAP users: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;Did you remember to import your CPAP sessions first?&lt;br/&gt;&lt;/span&gt;If you forget, you won&apos;t have a valid time to sync this oximetry session to.&lt;br/&gt;To a ensure good sync between devices, always try to start both at the same time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Muistutus CPAP-käyttäjille: &lt;/span&gt;&lt;span style=&quot; color:#fb0000;&quot;&gt;Muistitko tuoda CPAP-session ensin?&lt;br/&gt;&lt;/span&gt;Jos unohdit, oksimetri-istunnolle ei löydy ajankohtaa mihin synkronoida.&lt;br/&gt;Hyvän synkronoinnin saavuttamiseksi kannattaa aina käynnistää CPAP- ja oksimetrilaitteet samaan aikaan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2135"/>
         <source>&amp;Retry</source>
-        <translation>Y&amp;ritä uudelleen</translation>
+        <translation type="unfinished">&amp;Yritä uudelleen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2154"/>
         <source>&amp;Choose Session</source>
-        <translation>&amp;C Valitse käyttöjakso</translation>
+        <translation type="unfinished">&amp;Valitse käyttöjakso</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2173"/>
         <source>&amp;End Recording</source>
-        <translation>Lop&amp;eta tallennus</translation>
+        <translation type="unfinished">&amp;Lopeta tallennus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2192"/>
@@ -2645,12 +2653,12 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2211"/>
         <source>&amp;Save and Finish</source>
-        <translation>&amp;S Talleta ja lopeta</translation>
+        <translation type="unfinished">&amp;Talleta ja lopeta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.ui" line="2230"/>
         <source>&amp;Start</source>
-        <translation>&amp;S Aloita</translation>
+        <translation type="unfinished">&amp;Aloita</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="186"/>
@@ -2670,12 +2678,12 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="253"/>
         <source>Renaming this oximeter from &apos;%1&apos; to &apos;%2&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrin edellinen nimi: %1. Uusi nimi: %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="256"/>
         <source>Oximeter name is different.. If you only have one and are sharing it between profiles, set the name to the same on both profiles.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrin nimi on eri. Jos sinulla on vain yksi ja se on jaettu profiilien välillä, aseta sama nimi molempiin profiileihin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="296"/>
@@ -2685,17 +2693,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="316"/>
         <source>Nothing to import</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mikään ei ole tuotavissa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="318"/>
         <source>Your oximeter did not have any valid sessions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrista ei löytynyt istuntoja.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="319"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sulje</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="322"/>
@@ -2710,17 +2718,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="325"/>
         <source>Select upload option on %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse lähetä laitteesta %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="326"/>
         <source>You need to tell your oximeter to begin sending data to the computer.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sinun on kerrottava oksimetrille että tietoja saa nyt lähettää tietokoneelle.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="328"/>
         <source>Please connect your oximeter, enter it&apos;s menu and select upload to commence data transfer...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kytke oksimetri tietokoneeseen ja valitse sen menusta lähetä aloittaaksesi tiedonsiirron...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="359"/>
@@ -2740,7 +2748,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="404"/>
         <source>Select a valid oximetry data file</source>
-        <translation>Valitse oikentyyppinen oksimetrin tietojen tiedosto</translation>
+        <translation type="unfinished">Valitse oikeantyyppinen oksimetrin tietojen tiedosto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="404"/>
@@ -2750,7 +2758,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="427"/>
         <source>No Oximetery module could parse the given file:</source>
-        <translation>Oksimetri-monuuli ei kykene lukemaan oikein annettua tiedostoa:</translation>
+        <translation type="unfinished">Oksimetri-moduuli ei kykene lukemaan oikein annettua tiedostoa:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="449"/>
@@ -2765,7 +2773,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="467"/>
         <source>Live Oximetery Mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrin Live-tila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="470"/>
@@ -2780,17 +2788,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="516"/>
         <source>Live Import Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Live-tuonti pysäytetty</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="517"/>
         <source>Live Oximetery Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrin Live-näyttö pysäytetty</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="518"/>
         <source>Live Oximetery import has been stopped</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetrin Live tuonti on nyt pysäytetty</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="565"/>
@@ -2840,62 +2848,62 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1076"/>
         <source>Welcome to the Oximeter Import Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tervetuloa oksimetrin tuontivelhoon</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1078"/>
         <source>Pulse Oximeters are medical devices used to measure blood oxygen saturation. During extended Apnea events and abnormal breathing patterns, blood oxygen saturation levels can drop significantly, and can indicate issues that need medical attention.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pulssioksimetri on lääketieteellinen veren happisaturaation (happikyllästeisyys - SpO2) mittaamiseen tarkoitettu laite. Veren happisaturaatio voi apnean ja poikkeavan hengityksen aikana laskea huomattavasti mikä voi kertoa hoitotoimenpiteitä vaadittavista ongelmista.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1080"/>
         <source>SleepyHead gives you the ability to track Oximetry data alongside CPAP session data, which can give valuable insight into the effectiveness of CPAP treatment. It will also work standalone with your Pulse Oximeter, allowing you to store, track and review your recorded data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead pystyy näyttämään oksimetritietoja CPAP-istuntojen ohella, mikä voi tehostaa CPAP-hoitoa. Se toimii myös yksin pulssioksimetrin kanssa, antaen mahdollisuudet tallentaa, seurata ja näyttää tallennetut tiedot.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1082"/>
         <source>SleepyHead is currently compatible with Contec CMS50D+, CMS50E, CMS50F and CMS50I serial oximeters.&lt;br/&gt;(Note: Direct importing from bluetooth models is &lt;span style=&quot; font-weight:600;&quot;&gt;probaby not&lt;/span&gt; possible yet)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead on tällä hetkellä yhteensopiva seuraavien oksimetrien kanssa: Contec CMS50D+, CMS50E, CMS50F ja CMS50I. &lt;br/&gt;(Huom.: Suora tuonti &lt;span style=&quot; font-weight:600;&quot;&gt;ei toimi&lt;/span&gt; bluetooth mallien kanssa vielä)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1084"/>
         <source>You may wish to note, other companies, such as Pulox, simply rebadge Contec CMS50&apos;s under new names, such as the Pulox PO-200, PO-300, PO-400. These should also work.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huomaa että muiden valmistajien oksimetrit, esimerkiksi Pulox, on uudelleennimetty Contec CMS50. Toimivat mallit on esimerkiksi Pulox PO-200, PO-300, PO-400.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1087"/>
         <source>It also can read from ChoiceMMed MD300W1 oximeter .dat files.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ChoiceMMed MD300W1 laitteen oksimetritietojen .dat-tiedostot on myös luettavissa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1089"/>
         <source>Please remember:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huomaa myös:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1091"/>
         <source>If you are trying to sync oximetery and CPAP data, please make sure you imported your CPAP sessions first before proceeding!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Synkronoidessasi oksimetri ja CPAP-tietoja, varmista että CPAP-tiedot on tuotu ensin!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1093"/>
         <source>Important Notes:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tärkeää tietoa:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1094"/>
         <source>For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, %1click here%2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Varmista että oikeat laiteajurit (esim. USB-serial UART) on asennettu tietokoneeseen, jotta SleepyHead pystyisi havaitsemaan ja lukemaan tietoja oksimetristä. Lisää tietoa %1löytyy tästä%2.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1096"/>
         <source>Contec CMS50D+ devices do not have an internal clock, and do not record a starting time. If you do not have a CPAP session to link a recording to, you will have to enter the start time manually after the import process is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Contec CMS50D+ laitteista puuttuu sisäinen kello eivätkä tallenna aloitusaikaa. Jos ei löydy CPAP-istuntoa mihin voidaan synkronoida, joudut asettamaan aloitusajan käsin tuonnin jälkeen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximeterimport.cpp" line="1098"/>
         <source>Even for devices with an internal clock, it is still recommended to get into the habit of starting oximeter records at the same time as CPAP sessions, because CPAP internal clocks tend to drift over time, and not all can be reset easily.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Myöskin sisäisellä kellolla omaavilla laitteilla, on suositeltavaa aina aloittaa oksimetri-istuntoa samaan aikaan CPAP-istunnon kanssa, koska CPAP-laitteiden sisäinen kello saattaa ajelehtia ajan myötä eikä voida helposti säätää.</translation>
     </message>
 </context>
 <context>
@@ -2918,7 +2926,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="131"/>
         <source>R&amp;eset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Palauta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="160"/>
@@ -2938,17 +2946,17 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="366"/>
         <source>&amp;Open .spo/R File</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Avaa .spo/R tiedosto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="385"/>
         <source>Serial &amp;Import</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sarja&amp;tuonti</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="398"/>
         <source>&amp;Start Live</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Käynnistä Live</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="421"/>
@@ -2958,7 +2966,7 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="450"/>
         <source>&amp;Rescan Ports</source>
-        <translation>Skannaa po&amp;rtit uudelleen</translation>
+        <translation type="unfinished">&amp;Skannaa portit uudelleen</translation>
     </message>
 </context>
 <context>
@@ -2971,12 +2979,12 @@ Index</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="64"/>
         <source>&amp;Import</source>
-        <translation>Tuont&amp;i</translation>
+        <translation type="unfinished">&amp;Tuonti</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="127"/>
         <source>Combine Close Sessions </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yhdistä lähellä olevat istunnot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="137"/>
@@ -2989,7 +2997,7 @@ Index</source>
         <location filename="../sleepyhead/preferencesdialog.ui" line="157"/>
         <source>Multiple sessions closer together than this value will be kept on the same day.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Useampi kuin yksi istunto tätä arvoa lähempänä toisiaan yhdistetään samana päivänä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="212"/>
@@ -3035,19 +3043,28 @@ and graph data older than 30 days..
 
 SleepyHead can keep a copy of this data if you ever need to reinstall. 
 (Highly recomended, unless your short on disk space or don&apos;t care about the graph data)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ResMed-laitteille tehdään SD-kortin varmistus, 
+
+ResMed-laitteista poistuu 7 päivää vanhemmat tarkkuustiedot, 
+ja 30 päivää vanhemmat kaaviotiedot.
+
+SleepyHead pitää kopion tiedoista uudelleenasenuksen varalta. 
+(Erittäin suositeltavaa, jollei koneen levytila on vähäistä tai jos kaaviotiedot ei kiinnosta)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="425"/>
         <source>This makes SleepyHead&apos;s data take around half as much space.
 But it makes import and day changing take longer.. 
 If you&apos;ve got a new computer with a small solid state disk, this is a good option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Hey! You&apos;ll get 1 TB SSDs today. This statement is too old already. Better to rewrite it as e.g. &quot;If you&apos;ve got a computer with a small disk, ...&quot;.</translatorcomment>
+        <translation type="unfinished">Tämän avulla SleepyHeadin levytilan käyttö puolittuu.
+Mutta tietojen tuonti ja päivän vaihto vie enemmän aikaa.
+Jos sinulla on tietokone pienellä levyllä tämä on hyvä vaihtoehto.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="430"/>
         <source>Compress Session Data (makes SleepyHead data smaller, but day changing slower.)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pakkaa istuntotiedot (vie vähemmän levytilaa, mutta pävien vaihto vie enemmän aikaa)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="395"/>
@@ -3057,7 +3074,12 @@ which is common on Mac &amp; Linux platforms..
 
 SleepyHead can import from this compressed backup directory natively.. 
 To use with ResScan will require the .gz files to be uncompressed first..</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pakkaa ResMed (EDF) varmuuskopiot levytilan säästämiseksi.
+Varmuuskopioidut EDF-tiedostot pakataan .gz-muotoon,
+mikä on yleinen pakkausmuoto Mac ja Linux-alustoilla.
+
+SleepyHead tukee suoraan pakatut varmistushakemistot. 
+Tiedostojen käyttö ResScan ohjelman kanssa vaatii että .gz-tiedostot puretaan ensin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="403"/>
@@ -3090,19 +3112,21 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1211"/>
         <source>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tätä vähäisempi tuntimäärä päivässä pidetään ei-hoitomyöntyvyytenä. Neljä tuntia päivässä pidetään yleisesti hoitomyöntyvyytenä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1214"/>
         <source> hours</source>
-        <translation>tuntia</translation>
+        <translation type="unfinished"> tuntia</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="889"/>
         <source>Enable/disable experimental event flagging enhancements. 
 It allows detecting borderline events, and some the machine missed.
 This option must be enabled before import, otherwise a purge is required.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salli/kiellä kokeelliset tapahtumalippujen parannukset.
+Se sallii rajatapahtumien havaitseminen, myös jotkut koneelta huomaamatta jääneet.
+Tämä vaihtoehto on otettava käyttöön ennen tuontia, muuten puhdistus on tarpeen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="967"/>
@@ -3131,7 +3155,11 @@ Arvo 20% toimii hyvin apnean tunnistamisessa. </translation>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Custom flagging is an experimental method of detecting events missed by the machine. They are &lt;span style=&quot; text-decoration: underline;&quot;&gt;not&lt;/span&gt; included in AHI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Mukautettu liputus on kokeellinen menetelmä laitteen havaitsemattomien tapahtumien havaitsemiseen. Niitä  &lt;span style=&quot; text-decoration: underline;&quot;&gt;ei&lt;/span&gt; lasketa mukaan AHI-arvoon.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1029"/>
@@ -3145,7 +3173,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../sleepyhead/preferencesdialog.ui" line="1562"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1591"/>
         <source>s</source>
-        <translation>s</translation>
+        <translation type="unfinished"> s</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1068"/>
@@ -3155,18 +3183,19 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1055"/>
         <source>Allow duplicates near machine events.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salli kaksoiskappaleet laitetapahtumien lähellä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1133"/>
         <source>Adjusts the amount of data considered for each point in the AHI/Hour graph.
 Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Säädä tiedon määrä jokaisen pisteen kohdalla kaaviossa AHI/tunti.
+Oletusarvo on 60 minuuttia. Suositellaan jättää muuttumattomana.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1137"/>
         <source> minutes</source>
-        <translation>minuuttia</translation>
+        <translation type="unfinished"> minuuttia</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1176"/>
@@ -3202,17 +3231,17 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1192"/>
         <source>User definable threshold considered large leak</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käyttäjän määrittelemä kynnys suurelle vuodolle</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1195"/>
         <source> L/min</source>
-        <translation> L/min</translation>
+        <translation type="unfinished"> l/min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1159"/>
         <source>Whether to show the leak redline in the leak graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytetäänkö vuotokaaviossa punaista vuotoviivaa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1704"/>
@@ -3233,7 +3262,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1022"/>
         <source>Show in Event Breakdown Piechart</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytä ympyräkaaviossa tapahtumaerittelynä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1045"/>
@@ -3248,12 +3277,12 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="941"/>
         <source>This experimental option attempts to use SleepyHead&apos;s event flagging system to improve machine detected event positioning.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä kokeellinen vaihtoehto yrittää käyttää SleepyHeadin tapahtumaliputusjärjestelmää parantaakseen laitteen havaitseman tapahtumien pakannus.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="944"/>
         <source>Resync Machine Detected Events (Experimental)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uudelleensynkronoi laitteen havaitsemat tapahtumat (kok.)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1552"/>
@@ -3285,17 +3314,17 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1559"/>
         <source>Minimum duration of drop in oxygen saturation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Happisaturaation laskun ajan vähimmäiskesto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1588"/>
         <source>Minimum duration of pulse change event.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sykkeen muutostapahtuman vähimmäiskesto.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1471"/>
         <source>Small chunks of oximetry data under this amount will be discarded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tätä pienemmät oksimetritietojen palaset hylätään.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1832"/>
@@ -3315,82 +3344,82 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1305"/>
         <source>Middle Calculations</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keskimääräiskalkyyli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1268"/>
         <source>Upper Percentile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ylin persenttiili</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="91"/>
         <source>Session Splitting Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Istunnon jakamisen asetukset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="112"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention ResMed users:&lt;/span&gt; There are some pitfalls you may want to consider before trying to split sessions away from ResMed&apos;s 12:00 noon day model, click &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;here&lt;/a&gt; for more information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Huomio ResMed-käyttäjät:&lt;/span&gt; Ennen kuin yrität jakaa ResMedin 12:00 keskipäivän mallin istuntoja, lue lisää &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;tästä&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="323"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;This setting should be used with caution...&lt;/span&gt; Switching it off comes with consequences involving accuracy of summary only days, as certain calculations only work properly provided summary only sessions that came from individual day records are kept together. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;ResMed users:&lt;/span&gt; Just because it seems natural to you and I that the 12 noon session restart should be in the previous day, does not mean ResMed&apos;s data agrees with us. The STF.edf summary index format has serious weaknesses that make doing this not a good idea.&lt;/p&gt;&lt;p&gt;This option exists to pacify those who don&apos;t care and want to see this &amp;quot;fixed&amp;quot; no matter the costs, but know it comes with a cost. If you keep your SD card in every night, and import at least once a week, you won&apos;t see problems with this very often.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tämän asetuksen kanssa pitää olla varovainen...&lt;/span&gt; Tiettyjen yhteenvetopäivien tarkkuus voi heikentyä jos sen kääntää pois päältä, koska tietyt laskennat toimii yhdessä oikein vasta kun yksittäisten päivien tallenteista tulevat yhteenlasketut istunnot pidetään yhdessä. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;ResMed-käyttäjät:&lt;/span&gt; Vaikka meille kuulostaa luonnolliselta ettå 12-keskipäiväjakson uudellenkäynnistys tapahtuu edellisenä päivänä, se ei välttämättä tarkoita että ResMedin tiedot ovat samaa mieltä. STF.edf tiivistelmä indeksi-formaatissa on heikkouksia.&lt;/p&gt;&lt;p&gt;Tämä asetus on olemassa heille jotka eivät piittaa ja haluaa &amp;quot;korjata&amp;quot; tätä, kustannuksista riippumatta. Kunhan pidät SD-kortin laitteessa joka yö, ja tuot tiedot vähintään joka viikko, et tule näkemään ongelmia liian usein.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="326"/>
         <source>Don&apos;t Split Summary Days (Warning: read the tooltip!)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Älä jaa yhteenvetopäiviä (Varoitus: Lue vihje!)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="531"/>
         <source>Memory and Startup Options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Muisti- ja käynnistysasetukset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="537"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes starting SleepyHead a bit slower, by pre-loading all the summary data in advance, which speeds up overview browsing and a few other calculations later on. &lt;/p&gt;&lt;p&gt;If you have a large amount of data, it might be worth keeping this switched off, but if you typically like to view &lt;span style=&quot; font-style:italic;&quot;&gt;everything&lt;/span&gt; in overview, all the summary data still has to be loaded anyway. &lt;/p&gt;&lt;p&gt;Note this setting doesn&apos;t affect waveform and event data, which is always demand loaded as needed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SleepyHead käynnistyy hitaammin, lataamalla ennalta kaikki yhteenvetotiedot, mikä nopeuttaa yleiskatsausta ja myöhemmin muutama laskenta. &lt;/p&gt;&lt;p&gt;Jos sinulla on paljon tietoja, kannattaa ehkä pitää pois päältä, mutta jos yleensä haluat nähdä &lt;span style=&quot; font-style:italic;&quot;&gt;kaiken&lt;/span&gt; yleiskatsauksessa, kaikki yhteenvetotiedot pitää kuitenkin ladata. &lt;/p&gt;&lt;p&gt;Huomaa että tämä asetus ei koske aaltomuoto ja tapahtumatietoja, jotka kuitenkin aina ladataan käytön mukaan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="540"/>
         <source>Pre-Load all summary data at startup</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lataa ennalta kaikki yhteenvetotiedot käynnistyksen aikana</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="547"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting keeps waveform and event data in memory after use to speed up revisiting days.&lt;/p&gt;&lt;p&gt;This is not really a necessary option, as your operating system caches previously used files too.&lt;/p&gt;&lt;p&gt;Recommendation is to leave it switched off, unless your computer has a ton of memory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tämä asetus pitää aaltomuodot ja tapahtumat muistissa käytön jälkeen nopeuttaakseen päivien uudelleennäyttämistä.&lt;/p&gt;&lt;p&gt;Tämä ei ole pakollinen asetus koska myös käyttöjärjestelmä pitää välimuistissa käytettyjä tiedostoja.&lt;/p&gt;&lt;p&gt;Suositeltavaa pitää pois päältä, jos ei tietokoneella ole runsaasti muistia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="550"/>
         <source>Keep Waveform/Event data in memory</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pidä aaltomuodot/tapahtumat muistissa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="557"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogs during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vähentää ylimääräisten vahvistusdialogien näyttämistä tuonnin aikana.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="560"/>
         <source>Import without asking for confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tuo kysymättä vahvistusta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="570"/>
         <source>Skip user selection screen</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Älä näytä profiilin valintadialogia</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1097"/>
         <source>General CPAP and Related Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yleiset CPAP- ja siihen kuuluvat asetukset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1106"/>
         <source>Enable Unknown Events Channels</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salli tuntemattomien tapahtumien näytön</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1237"/>
@@ -3407,22 +3436,22 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1113"/>
         <source>AHI/Hour Graph Time Window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AHI/tunti aikaikkunakaavio</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1169"/>
         <source>Preferred major event index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ensisijainen päätapahtumaindeksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1120"/>
         <source>Compliance defined as</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hoitomyöntyvyyden määritys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1162"/>
         <source>Flag leaks over threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liputa ylimenevät vuodot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="709"/>
@@ -3432,7 +3461,7 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="655"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note: This is not intended for timezone corrections! Make sure your operating system clock and timezone is set correctly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Huom: Tätä ei saa käyttää aikavyöhykkeen korjaamiseen! Varmista että käyttöjärjestelmän kello ja aikavyöhyke on asetettu oikein.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="702"/>
@@ -3443,7 +3472,8 @@ Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1282"/>
         <source>For consistancy, ResMed users should use 95% here,
 as this is the only value available on summary-only days.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yhtenäisyyden vuoksi ResMed-käyttäjien on käytettävä 95% tässä,
+koska tämä on ainoa arvo saatavilla yhteenvetopäiville.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1312"/>
@@ -3479,7 +3509,7 @@ as this is the only value available on summary-only days.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1275"/>
         <source>Maximum Calcs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maksimikalkyyli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1861"/>
@@ -3489,7 +3519,7 @@ as this is the only value available on summary-only days.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2533"/>
         <source>Daily view navigation buttons will skip over days without data records</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivittäisen näytön navigointinäppämiet ohittavat päiviä ilman tietoja</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2536"/>
@@ -3521,32 +3551,32 @@ Vaikuttaa eniten tuontitoimintoihin.</translation>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1346"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;True maximum is the maximum of the data set.&lt;/p&gt;&lt;p&gt;99th percentile filters out the rarest outliers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Oikea maksimi on tietojoukon maksimi.&lt;/p&gt;&lt;p&gt;99:s persenttiili suodattaa pois harvinaisimmat poikkeamat.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1364"/>
         <source>Combined Count divided by Total Hours</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yhteenlaskettu määrä jaettuna kokonaistunneilla</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1369"/>
         <source>Time Weighted average of Indice</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aikapainotettu keskiarvo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1374"/>
         <source>Standard average of indice</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keskiarvo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1387"/>
         <source>Culminative Indices</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huipennetut indeksit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="894"/>
         <source>Custom CPAP User Event Flagging</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Räätälöity CPAP tapahtumien liputus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1681"/>
@@ -3557,13 +3587,13 @@ Vaikuttaa eniten tuontitoimintoihin.</translation>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1727"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1806"/>
         <source>Reset &amp;Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">P&amp;alauta oletusarvot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1740"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1819"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;Just because you can, does not mean it&apos;s good practice.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Varoitus: &lt;/span&gt;Vaikka oletusarvoja pystyy palauttamaan, ei tarkoita että se on hyvä tapa.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1753"/>
@@ -3573,7 +3603,7 @@ Vaikuttaa eniten tuontitoimintoihin.</translation>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1540"/>
         <source>Flag rapid changes in oximetry stats</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liputa nopeat muutokset oksimetri-tiedoissa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1451"/>
@@ -3583,22 +3613,22 @@ Vaikuttaa eniten tuontitoimintoihin.</translation>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1501"/>
         <source>Flag SPO2 Desaturations Below</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liputa happisaturaation laskut alle</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1484"/>
         <source>Discard segments under</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hävitä lyhyemmät jaksot kuin </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1521"/>
         <source>Flag Pulse Rate Above</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liputa sykettä yli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1511"/>
         <source>Flag Pulse Rate Below</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liputa sykettä alle</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="725"/>
@@ -3607,42 +3637,46 @@ Vaikuttaa eniten tuontitoimintoihin.</translation>
 The Unintentional Leak calculations used here are linear, they don&apos;t model the mask vent curve.
 
 If you use a few different masks, pick average values instead. It should still be close enough.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laskenta vaatii että kokonaisvuotojen määrä tulee CPAP-laitteesta (m.m. PRS1, mutta ei ResMed, koska se sisältää laskennat jo)
+
+Tahattomien vuotuojen laskennat on tässä lineaarinen, koska maskin ilmanvaihton käyrä ei ole mallinnettu.
+
+Käyttäessäsi eri maskeja, käytä keskiarvoja. Se on tarpeeksi lähellä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="732"/>
         <source>Calculate Unintentional Leaks When Not Present</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laske tahattomia vuotoja kun ne eivät ole läsnä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="741"/>
         <source>Your masks vent rate at 20cmH2O pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maskin ilmanvaihto paineella 20 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="797"/>
         <source>Your masks vent rate at 4cmH2O pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maskin ilmanvaihto paineella 4 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="828"/>
         <source>4 cmH2O</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">4 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="838"/>
         <source>20 cmH2O</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">20 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="870"/>
         <source>Note: A linear calculation method is used. Changing these values requires a recalculation.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huom.: Lineaarinen laskenta käytetty. Tietojen muutto vaatii uudelleenlaskenta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1103"/>
         <source>Show flags for machine detected events that haven&apos;t been identified yet.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytä liputuksia vielä tunnistamattomien laitteen havaitsemien tapahtumien kohdalla.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1661"/>
@@ -3659,7 +3693,19 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;If you start your Oximeters recording mode at &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-style:italic;&quot;&gt;exactly &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;the same time you start your CPAP machine, you can now also achieve sync. &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;The serial import process takes the starting time from last nights first CPAP session. (Remember to import your CPAP data first!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:600;&quot;&gt;Oksimetrin ja CPAP-tietojen synkronointi&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Tietoja CMS50-laitteesta tuotu SpO2Review-ohjelman kautta (.spoR-tiedostot) tai sarjaliitännän kautta &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:600; text-decoration: underline;&quot;&gt;ei&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt; sisällä tarvittavaa aikaleimaa synkronoinnin toteuttamiseksi.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Live näyttömoodi (käyttäen sarjakaapelia) on yksi tapa toteuttaa synkronointi CMS50-oksimetristä, mutta ei ota huomioon CPAP-laitteen mahdollista kellon siirtymää.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Käynnistäessä oksimetrin tallennus &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-style:italic;&quot;&gt;täsmälleen &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;samaan aikaan CPAP-laitteen kanssa, synkronointi on mahdollinen. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Sarjaliitäntätuonti käyttää edellisen yön ensimmäisen CPAP-istunnon aloitusajan. (Muista tuoda CPAP-tietoja ensin!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1918"/>
@@ -3684,7 +3730,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2023"/>
         <source>&amp;Check for Updates now</source>
-        <translation>&amp;C Tarkista uudet päivitykset nyt</translation>
+        <translation type="unfinished">&amp;Tarkista uudet päivitykset nyt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2046"/>
@@ -3705,7 +3751,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If your interested in helping test new features and bugfixes early, click here.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;But please be warned this will sometimes mean breaky code..&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Jos olet kiinnostunut kokeilemaan uudet ominaisuudet ja virheenkorjaukset, klikkaa tästä.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Mutta huomaa että joskus tulee virheellistä koodia.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2090"/>
@@ -3715,7 +3767,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2114"/>
         <source>&amp;Appearance</source>
-        <translation>&amp;A Ulkomuoto</translation>
+        <translation type="unfinished">&amp;Ulkomuoto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2146"/>
@@ -3725,7 +3777,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2408"/>
         <source>Bar Tops</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pylväiden kärjet</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2413"/>
@@ -3735,12 +3787,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2421"/>
         <source>Overview Linecharts</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yleiskatsaus viivakaaviot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2320"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This makes scrolling when zoomed in easier on sensitive bidirectional TouchPads&lt;/p&gt;&lt;p&gt;50ms is recommended value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vieritys helpottuu zoomatessa herkkien kosketuslevyjen kanssa&lt;/p&gt;&lt;p&gt;50ms on suositeltu arvo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>milliseconds</source>
@@ -3764,7 +3816,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2381"/>
         <source>Default display height of graphs in pixels</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kaavioiden näytön oletuskorkeus pikseleissä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2400"/>
@@ -3775,17 +3827,17 @@ p, li { white-space: pre-wrap; }
         <location filename="../sleepyhead/preferencesdialog.ui" line="2194"/>
         <source>The visual method of displaying waveform overlay flags.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Visuaalinen tapa näyttää aaltomuotojen liputukset peittokuvina.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2199"/>
         <source>Standard Bars</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Normaalit pylväät</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2204"/>
         <source>Top Markers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Merkit huipussa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2152"/>
@@ -3795,7 +3847,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2168"/>
         <source>Overlay Flags</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liput peittokuvana</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2178"/>
@@ -3819,22 +3871,26 @@ Certain plots look more attractive with this on.
 This also affects printed reports.
 
 Try it and see if you like it.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Reunojen pehmennys (anti aliasing) pehmentää kaavioita.
+Se antaa joillekin kaaviokuville miellyttävämmän ulkonäön.
+Se myös vaikuttaa tulostuksiin.
+
+Kokeile ja katso miellyttääkö.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2482"/>
         <source>Use Anti-Aliasing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käytä reunojen pehmennys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2489"/>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tietyt käyrät ovat tällä asetuksella enemmän suorakulman muotoisia.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2492"/>
         <source>Square Wave Plots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käyrät kanttiaaltona</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2499"/>
@@ -3843,27 +3899,32 @@ The Event Breakdown PIE chart uses this method, as does
 the printing code.
 Unfortunately some older computers/versions of Qt can cause
 this application to be unstable with this feature enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kaaviosta otetaan &quot;kuvankaappaus&quot; näyttöä varten.
+Ympyräkaaviossa tapahtumaerittely näytetään tällä menettelyllä. 
+Myös tulostuksessa käytetään tätä.
+Valitettavasti jotkin vanhemmat tietokoneet/versiot Qt kirjastosta 
+voi tehdä ohjelmasta epävakaa kun tämä toiminto on päällä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2506"/>
         <source>Show event breakdown pie chart</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näytä ympyräkaaviossa tapahtumaerittelynä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2513"/>
         <source>Pixmap caching is an graphics acceleration technique. May cause problems with font drawing in graph display area on your platform.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pixmap caching (värillisen bittikartan tallennus välimuistiin) on näytönohjaimen kiihdytystekniikka. 
+Se voi aiheuttaa ongelmia fonttien piirtämisen kanssa kaaviokuvissa nyt käytössäsi olevalla tietokonealustalla.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2516"/>
         <source>Use Pixmap Caching</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käytä Pixmap Caching</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2523"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These features have recently been pruned. They will come back later. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nämä ominaisuudet on karsittu nykyisin. Ne tulevat käyttöön muöhemmin. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nämä ominaisuudet on karsittu äsken. Ne tulevat käyttöön myöhemmin. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2526"/>
@@ -3873,17 +3934,17 @@ this application to be unstable with this feature enabled.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2543"/>
         <source>Whether to allow changing yAxis scales by double clicking on yAxis labels</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salli y-akselin muuttamista kaksoisnapsauttamalla y-akselin nimikettä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2546"/>
         <source>Allow YAxis Scaling</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salli y-akselin skaalaus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2565"/>
         <source>Fonts (Application wide settings)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fontit (koko ohjelmaa kattava asetus)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2600"/>
@@ -3935,7 +3996,7 @@ this application to be unstable with this feature enabled.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2964"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;C Peru</translation>
+        <translation type="unfinished">&amp;Peru</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2971"/>
@@ -4018,12 +4079,12 @@ this application to be unstable with this feature enabled.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="432"/>
         <source>Double click to change the descriptive name the &apos;%1&apos; channel.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kaksoisnapsauta muuttaaksesi %1-kanavan nimikettä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="445"/>
         <source>Whether this flag has a dedicated overview chart.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tällä lipulla on oma kaavio yleiskatsauksessa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="455"/>
@@ -4075,17 +4136,17 @@ this application to be unstable with this feature enabled.</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="578"/>
         <source>Whether a breakdown of this waveform displays in overview.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämän aaltomuodon erittely näkyy yleiskatsauksessa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="583"/>
         <source>Here you can set the &lt;b&gt;lower&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tässä voi asettaa %1 aaltomuodon tiettyjen laskentojen &lt;b&gt;alempi&lt;/b&gt; kynnys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="588"/>
         <source>Here you can set the &lt;b&gt;upper&lt;/b&gt; threshold used for certain calculations on the %1 waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tässä voi asettaa %1 aaltomuodon tiettyjen laskentojen &lt;b&gt;ylempi&lt;/b&gt; kynnys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="691"/>
@@ -4097,7 +4158,9 @@ this application to be unstable with this feature enabled.</source>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tietojen uudelleenindeksointi vaaditaan näiden muutosten jälkeen. Tämä voi kestää muutama minuutti.
+
+Oletko varma että haluat jatkaa?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="698"/>
@@ -4110,12 +4173,15 @@ Are you sure you want to make these changes?</source>
 in order for these changes to come into effect.
 
 Would you like do this now?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Yksi tai useampi muutos vaatii että ohjelma käynnistetään uudelleen,
+jotta muutokset otetaan käyttöön.
+
+Haluatko tehdä sen nyt?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1090"/>
         <source>Switching off automatic backups is not a good idea, because SleepyHead needs these to rebuild the database if errors are found.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automaattisten varmistusten kytkeminen pois päältä ei ole hyvä idea, koska SleepyHead tarvitsee näitä tietokannan uudelleenalustukseen virheiden sattuessa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1091"/>
@@ -4130,17 +4196,17 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="48"/>
         <source>Minor Flag</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pieni lippu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="49"/>
         <source>Span</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kattaa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="50"/>
         <source>Always Minor</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aina pieni</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1043"/>
@@ -4188,7 +4254,7 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="191"/>
         <source>&amp;Select User</source>
-        <translation>Valit&amp;se käyttäjä</translation>
+        <translation type="unfinished">&amp;Valitse käyttäjä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="212"/>
@@ -4208,7 +4274,7 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="238"/>
         <source>&amp;Different Folder</source>
-        <translation>&amp;D Eri kansio</translation>
+        <translation type="unfinished">&amp;Eri kansio</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="271"/>
@@ -4228,7 +4294,7 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="310"/>
         <source>&amp;Quit</source>
-        <translation>&amp;Q Poistu</translation>
+        <translation type="unfinished">&amp;Poistu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="367"/>
@@ -4466,17 +4532,17 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="327"/>
         <source>Kg</source>
-        <translation>Kg</translation>
+        <translation type="unfinished">kg</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="328"/>
         <source>cmH2O</source>
-        <translation> cm H2O</translation>
+        <translation type="unfinished"> cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="198"/>
         <source>Med.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Med.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="207"/>
@@ -4486,78 +4552,79 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="216"/>
         <source>Min: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="247"/>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="257"/>
         <source>Min: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min: </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="252"/>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="262"/>
         <source>Max: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maks: </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="266"/>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="270"/>
         <source>%1: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1: </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="274"/>
         <source>???: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">???: </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="281"/>
         <source>Max: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maks: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="287"/>
         <source>%1 (%2 days): </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 (%2 päivää): </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="289"/>
         <source>%1 (%2 day): </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 (%2 päivä): </translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="350"/>
         <source>% in %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">% %1:ssa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="356"/>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="675"/>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="329"/>
         <source>Hours</source>
-        <translation>Tuntia</translation>
+        <translation type="unfinished">Tuntia</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="362"/>
         <source>Min %1</source>
-        <translation type="unfinished">Minimi %1</translation>
+        <translation type="unfinished">Min %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="660"/>
         <source>
 Hours: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">
+Tunnit: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="726"/>
         <source>%1 low usage, %2 no usage, out of %3 days (%4% compliant.) Length: %5 / %6 / %7</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 vähäinen käyttö, %2 ei käyttöä,  %3 päivistä (%4% hoitomyöntyvyys.) Pituus: %5 / %6 / %7</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="809"/>
         <source>Sessions: %1 / %2 / %3 Length: %4 / %5 / %6 Longest: %7 / %8 / %9</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Istunnot: %1 / %2 / %3 Pituus: %4 / %5 / %6 Pisimmät: %7 / %8 / %9</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="917"/>
@@ -4565,40 +4632,46 @@ Hours: %1</source>
 Length: %3
 Start: %2
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1
+Pituus: %3
+Alku: %2
+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="919"/>
         <source>Mask On</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maski päällä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="919"/>
         <source>Mask Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maski pois</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="930"/>
         <source>%1
 Length: %3
 Start: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1
+Pituus: %3
+Alku: %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="1107"/>
         <source>TTIA:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">TTIA:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="1119"/>
         <source>
 TTIA: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">
+TTIA: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="1222"/>
         <source>%1 %2 / %3 / %4</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 %2 / %3 / %4</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="330"/>
@@ -4613,12 +4686,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="332"/>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">h</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="333"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">m</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="334"/>
@@ -4628,7 +4701,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="335"/>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ms</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="336"/>
@@ -4668,7 +4741,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="346"/>
         <source>Severity (0-1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vakavuus (0-1)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="347"/>
@@ -4728,22 +4801,22 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="365"/>
         <source>&amp;No</source>
-        <translation>&amp;N Ei</translation>
+        <translation type="unfinished">&amp;Ei</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="366"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;C Peruuta</translation>
+        <translation type="unfinished">&amp;Peruuta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="367"/>
         <source>&amp;Destroy</source>
-        <translation>&amp;D Tuhoa</translation>
+        <translation type="unfinished">&amp;Tuhoa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="368"/>
         <source>&amp;Save</source>
-        <translation>&amp;S Talleta</translation>
+        <translation type="unfinished">&amp;Talleta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="370"/>
@@ -4765,7 +4838,7 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="513"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="515"/>
         <source>Zombie</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zombie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="373"/>
@@ -4819,7 +4892,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="386"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oletusarvo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="389"/>
@@ -4884,7 +4957,7 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="400"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="474"/>
         <source>AVAPS</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AVAPS</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="401"/>
@@ -5124,18 +5197,18 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="451"/>
         <source>Pat. Trig. Breath</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pot. lauk. hengitys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="452"/>
         <source>Tgt. Min. Vent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min. ilmastointi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="453"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="410"/>
         <source>Target Vent.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ilmastointi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="454"/>
@@ -5228,7 +5301,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="469"/>
         <source>Pr. Relief</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pain. kev.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="356"/>
@@ -5249,14 +5322,14 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="473"/>
         <source>v%1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">v%1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="475"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3329"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3331"/>
         <source>Mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Moodi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="476"/>
@@ -5448,18 +5521,18 @@ TTIA: %1</source>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="202"/>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="517"/>
         <source>Avg</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keskim.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSessionTimesChart.cpp" line="200"/>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="518"/>
         <source>W-Avg</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pain. keskim.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="565"/>
         <source>Non Data Capable Machine</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laite ilman tietojenkäsittelyä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="566"/>
@@ -5469,84 +5542,84 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="244"/>
         <source>RemStar Plus Compliance Only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar Plus hoitohyvyys ainoastaan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="247"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2835"/>
         <source>RemStar Pro with C-Flex+</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar Pro C-Flex+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="250"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2836"/>
         <source>RemStar Auto with A-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar Auto A-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="253"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2837"/>
         <source>RemStar BiPAP Pro with Bi-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar BiPAP Pro Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="256"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2838"/>
         <source>RemStar BiPAP Auto with Bi-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar BiPAP Pro Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="259"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2840"/>
         <source>BiPAP autoSV Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">BiPAP autoSV Advanced</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="262"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2842"/>
         <source>BiPAP AVAPS</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">BiPAP AVAPS</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="265"/>
         <source>Unknown Model</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tuntematon malli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="273"/>
         <source>System One (60 Series)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">System One (60 sarja)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="276"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="343"/>
         <source>DreamStation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">DreamStation</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="279"/>
         <source>unknown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">tuntematon</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="567"/>
         <source>I&apos;m sorry to report that SleepyHead can only track hours of use and very basic settings for this machine.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitettavasti SleepyHead pystyy näyttämään vain käyttötunnit ja perusasetukset tälle laitteelle.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="576"/>
         <source>Machine Unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laittteelle ei löydy tukea</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="577"/>
         <source>Sorry, your Philips Respironics CPAP machine (Model %1) is not supported yet.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitettavasti Philips Respironics CPAP (malli %1) ei ole tuettu vielä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="578"/>
         <source>JediMark needs a .zip copy of this machines&apos; SD card and matching Encore .pdf reports to make it work with SleepyHead.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ohjelman kehittäjät tarvitsee .zip-tiedoston SD-kortin sisällöstä ja vastaavat Encore .pdf raportit pystyäkseen lisäämään tukea laitteelle.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="1749"/>
@@ -5563,79 +5636,79 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2839"/>
         <source>RemStar Plus</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RemStar Plus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2841"/>
         <source>BiPAP autoSV Advanced 60 Series</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">BiPAP autoSV Advanced 60 sarja</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2844"/>
         <source>CPAP Pro</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP Pro</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2845"/>
         <source>Auto CPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auto CPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2846"/>
         <source>BiPAP Pro</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">BiPAP Pro</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2847"/>
         <source>Auto BiPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auto BiPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2868"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2870"/>
         <source>Flex Mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flex Mode</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2869"/>
         <source>PRS1 pressure relief mode.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PRS1 paineenalennustoiminto.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2875"/>
         <source>C-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">C-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2876"/>
         <source>C-Flex+</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">C-Flex+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2877"/>
         <source>A-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">A-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2878"/>
         <source>Rise Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nousuaika</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2879"/>
         <source>Bi-Flex</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bi-Flex</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2883"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2885"/>
         <source>Flex Level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flex taso</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2884"/>
         <source>PRS1 pressure relief setting.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PRS1 paineenalennuksen asetus.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2889"/>
@@ -5728,27 +5801,27 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2928"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2929"/>
         <source>System One Resistance Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">System One vastustuksen tila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2930"/>
         <source>Sys1 Resist. Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sys1 vast. tila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2937"/>
         <source>System One Resistance Setting</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">System One vastustuksen asetus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2938"/>
         <source>System One Mask Resistance Setting</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">System One maskin vastustuksen asetus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2939"/>
         <source>Sys1 Resist. Set</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sys1 vast. aset.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2950"/>
@@ -5759,22 +5832,22 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2951"/>
         <source>Diameter of primary CPAP hose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP ensiöletkun halkaisija</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2959"/>
         <source>System One Resistance Lock</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">System One vastustuslukko</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2960"/>
         <source>Whether System One resistance settings are available to you.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Onko System One vastustuksen asetukset muutettavissa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2961"/>
         <source>Sys1 Resist. Lock</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sys1 vast. lukko</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2968"/>
@@ -5829,7 +5902,7 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3010"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3011"/>
         <source>PRS1_%1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PRS1_%1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="3084"/>
@@ -5864,7 +5937,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="506"/>
         <source>&lt;i&gt;Your old machine data should be regenerated provided this backup feature has not been disabled in preferences during a previous data import.&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;i&gt;Vanhat tiedot täytyy uudelleengeneroida edellyttäen että varmistus ei ole käännetty pois päältä aseuksista aikaisemmin tehdyssä tuonnissa.&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="439"/>
@@ -5879,12 +5952,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="509"/>
         <source>SleepyHead does not yet have any automatic card backups stored for this device.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automaattisia varmistuskopioita SD-kortista ei löydy vielä tälle laitteelle.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="510"/>
         <source>This means you will need to import this machine data again afterwards from your own backups or data card.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä tarkoittaa että joudut itse jälkeenpäin tuomaan tämän laitteen tietoja omasta varmistuksesta tai SD-kortista.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="513"/>
@@ -5935,27 +6008,27 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="542"/>
         <source>Would you like to switch on automatic backups, so next time a new version of SleepyHead needs to do so, it can rebuild from these?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haluatko laittaa päälle automaattisen varmistuksen, että se on käytettävissä seuraavan kerran kun uusi versio SleepyHeadista tarvitsee sen?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="549"/>
         <source>SleepyHead will now start the import wizard so you can reinstall your %1 data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead käynnistää tuontivelhon %1 tietojen uudelleenasentamista varten.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="559"/>
         <source>SleepyHead will now exit, then (attempt to) launch your computers file manager so you can manually back your profile up:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead sulkeutuu nyt ja (yrittää) käynnistää tietokoneen tiedostonhallinnan niin että voit itse varmistaa profiilisi:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="561"/>
         <source>Use your file manager to make a copy of your profile directory, then afterwards, restart Sleepyhead and complete the upgrade process.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käytä tiedostonhallinta tehdäksesi kopion profiilisi hakemistosta. Käynnistä SleepyHead toimenpiteen jälkeen ja jatka päivitysprosessia.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="112"/>
         <source>Couldn&apos;t parse Channels.xml, this build is seriously borked, no choice but to abort!!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tiedostoa Channels.xml ei voitu lukea. Tämä versio on täydellisesti rikki, ei ole muuta vaihtoehtoa kuin keskeyttää!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="124"/>
@@ -5970,12 +6043,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="132"/>
         <source>Lower Inspiratory Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Matalempi sisäänhengityspaine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="136"/>
         <source>Higher Inspiratory Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Korkeampi sisäänhengityspaine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="140"/>
@@ -5985,44 +6058,45 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="144"/>
         <source>Lower Expiratory Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Matalempi uloshengityspaine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="148"/>
         <source>Higher Expiratory Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Korkeampi uloshengityspaine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="152"/>
         <source>Pressure Support</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>PSV = Pressure Support Ventilation, painetukiventilaatio</translatorcomment>
+        <translation type="unfinished">Painetuki (PS)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="156"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="157"/>
         <source>PS Min</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PS min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="156"/>
         <source>Pressure Support Minimum</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Minimi painetuki</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="160"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="161"/>
         <source>PS Max</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PS maks</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="160"/>
         <source>Pressure Support Maximum</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maksimi painetuki</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="164"/>
         <source>Min Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min. paine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="164"/>
@@ -6043,40 +6117,40 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="172"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="173"/>
         <source>Ramp Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp aika</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="172"/>
         <source>Ramp Delay Period</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp viive</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="176"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="177"/>
         <source>Ramp Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp paine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="176"/>
         <source>Starting Ramp Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp aloituspaine</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="181"/>
         <source>Ramp Event</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp tapahtuma</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3464"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3466"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="182"/>
         <source>Ramp</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="234"/>
         <source>Vibratory Snore (VS2) </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Värähtelevä kuorsaus (VS2) </translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="450"/>
@@ -6087,7 +6161,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="451"/>
         <source>Time started according to str.edf</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aloitusaika str.edf:n mukaan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="455"/>
@@ -6133,7 +6207,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="221"/>
         <source>An restriction in breathing from normal, causing a flattening of the flow waveform.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hengityksen rajoitus aiheuttaen virtauksen aaltomuodon litistäminen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="230"/>
@@ -6148,17 +6222,17 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="235"/>
         <source>A vibratory snore as detcted by a System One machine</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Systeme One laitteen havaitsema värähtelevä kuorsaus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2862"/>
         <source>Pressure Pulse</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Painesykäys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="2863"/>
         <source>A pulse of pressure &apos;pinged&apos; to detect a closed airway.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Painesykäys käytetään havaitsemaan tukkeutunutta hengitystietä.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="241"/>
@@ -6169,7 +6243,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="251"/>
         <source>Non Responding Event</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vastaamaton tapahtuma</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="252"/>
@@ -6194,24 +6268,24 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="266"/>
         <source>User Flag #1</source>
-        <translation></translation>
+        <translation type="unfinished">Käyttäjälippu #1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="267"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="272"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="277"/>
         <source>A user definable event detected by SleepyHead&apos;s flow waveform processor.</source>
-        <translation></translation>
+        <translation type="unfinished">Käyttäjän määrittelemä tapahtuma SleepyHeadin aaltomuodon prosessorin havaitsema.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="271"/>
         <source>User Flag #2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käyttäjälippu #2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="276"/>
         <source>User Flag #3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käyttäjälippu #3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="283"/>
@@ -6231,12 +6305,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="296"/>
         <source>Plethysomogram</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plethysmogrammi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="297"/>
         <source>An optical Photo-plethysomogram showing heart rhythm</source>
-        <translation></translation>
+        <translation type="unfinished">Sydämen sykkeen näyttävä optinen kuva-plethysmogrammi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="306"/>
@@ -6266,12 +6340,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="340"/>
         <source>Breathing flow rate waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hengityksen virtauksen aaltomuoto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="340"/>
         <source>L/min</source>
-        <translation>L/min</translation>
+        <translation type="unfinished">l/min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
@@ -6324,12 +6398,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="375"/>
         <source>Percentage of breaths triggered by patient</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Potilaan laukaisemien hengityksien prosentuaalinen osuus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="375"/>
         <source>Pat. Trig. Breaths</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pot. lauk. heng.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="379"/>
@@ -6346,7 +6420,7 @@ TTIA: %1</source>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="386"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="387"/>
         <source>I:E Ratio</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">I:E suhde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="387"/>
@@ -6371,47 +6445,47 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="187"/>
         <source>Cheyne Stokes Respiration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Cheyne Stokes hengitys (CSR)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="188"/>
         <source>An abnormal period of Cheyne Stokes Respiration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Poikkeava jaksoittainen Cheyne Stokes hengitys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="189"/>
         <source>CSR</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CSR</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="192"/>
         <source>Periodic Breathing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jaksoittainen hengitys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="193"/>
         <source>An abnormal period of Periodic Breathing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Poikkeava jaksoittainen hengitys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="198"/>
         <source>Clear Airway</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hengitystiet auki</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="204"/>
         <source>Obstructive</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tukkeutunut</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="216"/>
         <source>an apnea that couldn&apos;t be determined as Central or Obstructive, due to excessive leakage interfering with the classification process.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Määrittelemätön apnea, johtuen liiallisesta vuodosta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="226"/>
         <source>Respiratory Effort Related Arousal: An restriction in breathing that causes an either an awakening or sleep disturbance.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hengitysponnistuksen aiheuttama herääminen: Tukkeutunut hengitys aiheuttaa joko herääminen tai unen häiriö.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="240"/>
@@ -6431,12 +6505,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="302"/>
         <source>A relative assessment of the pulse strength at the monitoring site</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Suhteellinen arvio pulssin voimakkuudesta tarkkailukohdassa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="303"/>
         <source>Perf. Index %</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Perf.indeksi %</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="391"/>
@@ -6476,17 +6550,17 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="405"/>
         <source>Flow Limit.</source>
-        <translation>Virtauksen rajoitus</translation>
+        <translation type="unfinished">Virtauksen rajoite.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="409"/>
         <source>Target Minute Ventilation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ilmamäärä minuutissa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="410"/>
         <source>Target Minute Ventilation?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ilmamäärä minuutissa?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="414"/>
@@ -6506,7 +6580,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="419"/>
         <source>Apnea Hypopnea Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Apnea Hypopnea Indeksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="420"/>
@@ -6526,17 +6600,17 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="429"/>
         <source>Median Leak Rate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mediaani vuotomäärä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="430"/>
         <source>Median rate of detected mask leakage</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mediaani määrä havaitusta maskin vuodosta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="430"/>
         <source>Median Leaks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mediaani vuoto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="434"/>
@@ -6546,7 +6620,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="435"/>
         <source>Graph showing running RDI for the past hour</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jatkuva edellisen tunnin RDI:n kaavio</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="441"/>
@@ -6556,7 +6630,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="446"/>
         <source>Upright angle in degrees</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pystyasennon kulma asteissa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="456"/>
@@ -6598,7 +6672,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="492"/>
         <source>Physical Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Potilaan pituus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="498"/>
@@ -6609,165 +6683,165 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="499"/>
         <source>Bookmark Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kirjanmerkkihuomautus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="506"/>
         <source>Body Mass Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Painoindeksi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="514"/>
         <source>How you feel (0 = like crap, 10 = unstoppable)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tuntuma (0 = huono, 10 = pysäyttämätön)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="521"/>
         <source>Bookmark Start</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kirjanmerkki alku</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="527"/>
         <source>Bookmark End</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kirjanmerkki loppu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="532"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="533"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="534"/>
         <source>Last Updated</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Viimeksi päivitetty</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="538"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="539"/>
         <source>Journal Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivyrin muistiinpano</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="540"/>
         <source>Journal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivyri</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="546"/>
         <source>1=Awake 2=REM 3=Light Sleep 4=Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1=Hereillä 2=REM 3=kevyt uni 4=syvä uni</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="551"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="552"/>
         <source>Brain Wave</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aivo aalto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="553"/>
         <source>BrainWave</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aivoaalto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="557"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="559"/>
         <source>Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Heräämiset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="558"/>
         <source>Number of Awakenings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Heräämisten määrä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="563"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="565"/>
         <source>Morning Feel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mieliala aamulla</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="564"/>
         <source>How you felt in the morning</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mieliala aamulla</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="569"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="571"/>
         <source>Time Awake</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika hereillä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="570"/>
         <source>Time spent awake</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika vietetty hereillä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="576"/>
         <source>Time In REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika REM unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="577"/>
         <source>Time spent in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika vietetty REM unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="578"/>
         <source>Time in REM Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika REM unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="582"/>
         <source>Time In Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika kevyessä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="583"/>
         <source>Time spent in light sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika vietetty kevyessä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="584"/>
         <source>Time in Light Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika kevyessä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="588"/>
         <source>Time In Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika syvässä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="589"/>
         <source>Time spent in deep sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika vietetty syvässä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="590"/>
         <source>Time in Deep Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika syvässä unessa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="594"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="596"/>
         <source>Time to Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika nukahtamiseen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="595"/>
         <source>Time taken to get to sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika nukahtamiseen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="600"/>
         <source>Zeo ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeo ZQ</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="601"/>
         <source>Zeo sleep quality measurement</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeo unen laadun mittaus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="602"/>
         <source>ZEO ZQ</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ZEO ZQ</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="1118"/>
@@ -6787,7 +6861,7 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/main.cpp" line="65"/>
         <source>SleepyHead Release Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead julkaisutiedot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="76"/>
@@ -6797,47 +6871,47 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/main.cpp" line="89"/>
         <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vuosien työn jälkeen, tämä versio tuo SleepyHeadin viimeiseen beta-vaiheeseen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="90"/>
         <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ohjelma ei ole vielä täydellinen, mutta painopiste on tästä lähtien viimeistely. </translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="91"/>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä versio tukee uudet Philips Respironics DreamStation ja vanhemmat PRS1 1060P-mallit.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="95"/>
         <source>Sorry, could not locate changelog.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Olen pahoillani, muutosloki ei löydy.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="104"/>
         <source>Greetings!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tervetuloa!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="111"/>
         <source>As this is a pre-release version, it is recommended that you back up your data folder manually before proceding, because attempting to roll back later may break things.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Koska tämä on esiversio, on suositeltavaa tehdä varmuuskopiot tiedoista ennen päivitystä. Edellisen version palautus myöhemmi voi rikkoa asioita.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="114"/>
         <source>Sleep Well, and good luck!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nuku hyvin ja hyvää onnea!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="115"/>
         <source>Change log</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Muutosloki</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="131"/>
         <source>&amp;Ok, get on with it..</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Ok, anna mennä..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="264"/>
@@ -6847,17 +6921,17 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/main.cpp" line="265"/>
         <source>This build of SleepyHead is a compatability version that also works on computers lacking OpenGL 2.0 support.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä SleepyHeadin käännös on yhteensopiva myös tietokoneiden kanssa joista puuttuu OpenGL 2.0 tuki.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="266"/>
         <source>However it looks like your computer has full support for OpenGL 2.0!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näyttää siltä että tietokoneella on kuitenkin täysi OpenGL 2.0 yhteensopivuus!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="267"/>
         <source>This version will run fine, but a &quot;&lt;b&gt;%1&lt;/b&gt;&quot; tagged build of SleepyHead will likely run a bit faster on your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä versio toimii hyvin, mutta &quot;&lt;b&gt;%1&lt;/b&gt;&quot;-niminen SleepyHeadin käännös tulee toimimaan nopeammin tietokoneessasi.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="268"/>
@@ -6892,22 +6966,22 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/main.cpp" line="293"/>
         <source>There is another build available tagged &quot;&lt;b&gt;-BrokenGL&lt;/b&gt;&quot; that should work on your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">On olemassa toinen &quot;&lt;b&gt;-BrokenGL&lt;/b&gt;&quot;-niminen versio joka toimii koneessasi.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="318"/>
         <source>Would you like SleepyHead to use this location for storing its data?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Onko seuraava paikka hyvä SleepyHeadin tietojen tallentamiseen?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="320"/>
         <source>If you are upgrading, don&apos;t panic, you just need to make sure this is pointed at your old SleepyHead data folder.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jos olet päivittämässä, älä hätäänny. Varmista että tämä osoittaa SleepyHeadin tietojen tallennushakemistoon.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="321"/>
         <source>(If you have no idea what to do here, just click yes.)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">(Jos et tiedä mitä tämä tarkoittaa, napsauta vain kyllä.)</translation>
     </message>
     <message>
         <source>No SleepyHead data folder was found.</source>
@@ -6940,12 +7014,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/main.cpp" line="445"/>
         <source>The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Äsken käynnistämäsi versio SleepyHeadistä on VANHEMPI kuin versio käytetty tietojen luomiseen (%1).</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="446"/>
         <source>It is likely that doing this will cause data corruption, are you sure you want to do this?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Se voi mahdollisesti aiheuttaa tietojen hajoaminen. Oletko varma että haluat jatkaa?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="349"/>
@@ -6975,12 +7049,12 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="503"/>
         <source>Don&apos;t forget to place your datacard back in your CPAP machine</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Älä unohda laittaa SD-kortti takaisin CPAP-laitteeseen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="503"/>
         <source>SleepyHead Reminder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead muistutus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1495"/>
@@ -6990,32 +7064,32 @@ TTIA: %1</source>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1511"/>
         <source>&amp;Close</source>
-        <translation>&amp;C Sulje</translation>
+        <translation type="unfinished">&amp;Sulje</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1515"/>
         <source>&amp;Donate</source>
-        <translation>&amp;D Lahjoita</translation>
+        <translation type="unfinished">&amp;Lahjoita</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2382"/>
         <source>Sorry, your %1 %2 machine is not currently supported.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitettavasti %1 %2 laitteesi ei ole tällä hetkellä tuettu.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="2786"/>
         <source>Sorry, this feature is not implemented yet</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitettavasti tämä toiminto ei ole vielä toteutettu</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1080"/>
         <source>Are you sure you want to reset all your channel colors and settings to defaults?</source>
-        <translation></translation>
+        <translation type="unfinished">Haluatko varmasti palauttaa kaikki kanavien värit ja asetukset oletusasetuksiin?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="1131"/>
         <source>Are you sure you want to reset all your waveform channel colors and settings to defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haluatko varmasti palauttaa kaikki aaltomuodon värit ja asetukset oletusasetuksiin?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="39"/>
@@ -7088,7 +7162,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="351"/>
         <source>Reporting from %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Raportti ajankohdasta %1 ajankohtaan %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="423"/>
@@ -7158,7 +7232,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="642"/>
         <source>This report was generated by SleepyHead (%1), &lt;b&gt;and has not been approved in any way for compliance or medical diagnostic purposes&lt;/b&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tämä raportti on tehty SleepyHeadin versiolla (%1), &lt;b&gt;ja sitä ei ole hyväksytty millään tavalla hoidon sopivuuteen eikä lääketieteellisiin tarkoituksiin&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="644"/>
@@ -7173,147 +7247,147 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1887"/>
         <source>Days Used: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivää käytössä: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1888"/>
         <source>Low Use Days: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vähäinen käyttö, päivää: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1889"/>
         <source>Compliance: %1%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hoitomyöntyvyys: %1%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1913"/>
         <source>Days AHI of 5 or greater: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivää, AHI 5 tai korkeampi: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1920"/>
         <source>Best AHI</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paras AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1924"/>
         <location filename="../sleepyhead/statistics.cpp" line="1936"/>
         <source>Date: %1 AHI: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 AHI: %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1930"/>
         <source>Worst AHI</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huonoin AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1967"/>
         <source>Best Flow Limitation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paras virtauksen rajoite (FL)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1971"/>
         <location filename="../sleepyhead/statistics.cpp" line="1984"/>
         <source>Date: %1 FL: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 FL: %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1977"/>
         <source>Worst Flow Limtation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huonoin virtauksen rajoite</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1989"/>
         <source>No Flow Limitation on record</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Virtauksen rajoite ei löydy tallenteesta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2010"/>
         <source>Worst Large Leaks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huonoimmat suuret vuodot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2018"/>
         <source>Date: %1 Leak: %2%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 Vuoto: %2%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2024"/>
         <source>No Large Leaks on record</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Suuria vuotoja ei löydy tallenteesta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2047"/>
         <source>Worst CSR</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huonoin CSR</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2055"/>
         <source>Date: %1 CSR: %2%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 CSR %2%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2060"/>
         <source>No CSR on record</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CSR ei löydy tallenteesta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2077"/>
         <source>Worst PB</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huonoin PB</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2085"/>
         <source>Date: %1 PB: %2%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 PB: %2%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2090"/>
         <source>No PB on record</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PB ei löydy tallenteesta</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2098"/>
         <source>Want more information?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haluatko enemmän tietoa?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2099"/>
         <source>SleepyHead needs all summary data loaded to calculate best/worst data for individual days.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead tarvitsee kaikki yhteenlasketut tiedot ladattuna laskeakseen parhaat/huonoimmat tiedot yksittäisille päiville.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2100"/>
         <source>Please enable Pre-Load Summaries checkbox in preferences to make sure this data is available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valitse SleepyHeadin asetuksista valintaruudun &quot;Lataa ennalta kaikki yhteenvetotiedot&quot; varmistamaan tietojen saatavuutta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2120"/>
         <source>Best RX Setting</source>
-        <translation type="unfinished">Paras RX-asetus</translation>
+        <translation type="unfinished">Paras paineasetus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2123"/>
         <location filename="../sleepyhead/statistics.cpp" line="2135"/>
         <source>Date: %1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pvm: %1 - %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2126"/>
         <location filename="../sleepyhead/statistics.cpp" line="2138"/>
         <source>Culminative AHI: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huipentunut AHI: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2127"/>
         <location filename="../sleepyhead/statistics.cpp" line="2139"/>
         <source>Culminative Hours: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Huipentuneet tunnit: %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="2132"/>
         <source>Worst RX Setting</source>
-        <translation type="unfinished">Huonoin RX-asetus</translation>
+        <translation type="unfinished">Huonoin paineasetus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSummaryChart.cpp" line="1008"/>
@@ -7328,7 +7402,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/Graphs/gSummaryChart.cpp" line="1013"/>
         <source>(%1% compliant, defined as &gt; %2 hours)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">(%1% myöntyvyys, määritys &gt; %2 tuntia)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gSummaryChart.cpp" line="1127"/>
@@ -7379,7 +7453,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="329"/>
         <source>There is a lockfile already present for this profile &apos;%1&apos;, claimed on &apos;%2&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Profiilille &apos;%1&apos; on asetettu jo aiemmin lukitus, kohde &apos;%2&apos;.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="331"/>
@@ -7605,7 +7679,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="188"/>
         <source>Your CPAP machine blasted you with a constant %1%2 of air</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP-laitteesi puhaltaa jatkuvasti %1%2 ilmaa</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="191"/>
@@ -7615,28 +7689,28 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="195"/>
         <source>Your machine blasted you with a constant %1-%2 %3 of air.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP-laitteesi puhaltaa jatkuvasti %1-%2 %3 ilmaa.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="199"/>
         <source>Your machine was under %1-%2 %3 for %4% of the time.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laitteesi oli alle %1-%2 %3 %4% ajasta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="204"/>
         <source>Your EPAP pressure fixed at %1%2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">EPAP paineesi oli jatkuva %1%2.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="210"/>
         <source>Your EPAP pressure was under %1%2 for %3% of the time.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">EPAP paineesi oli alle %1%2 %3% ajasta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="205"/>
         <location filename="../sleepyhead/welcome.cpp" line="211"/>
         <source>Your IPAP pressure was under %1%2 for %3% of the time.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IPAP paineesi oli alle %1%2 %3% ajasta.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/welcome.cpp" line="162"/>
@@ -7804,12 +7878,12 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/Graphs/gFlagsLine.cpp" line="382"/>
         <source> (%2 min, %3 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> (%2 min, %3 sek)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gFlagsLine.cpp" line="384"/>
         <source> (%3 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> (%3 sek)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1399"/>
@@ -7819,7 +7893,7 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1533"/>
         <source>d MMM [ %1 - %2 ]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">d MMM [ %1 - %2 ]</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2071"/>
@@ -7842,17 +7916,17 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2530"/>
         <source>Unpin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Poista %1 kaavion kiinnitys</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2605"/>
         <source>Pin %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kiinnitä %1 kaavio</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1082"/>
         <source>Plots Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kuviot pois päältä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gLineChart.cpp" line="1161"/>
@@ -7887,12 +7961,12 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="25"/>
         <source>Journal Data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivyritiedot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="43"/>
         <source>SleepyHead found an old Journal folder, but it looks like it&apos;s been renamed:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead löysi vanhan päivyrihakemiston, mutta se näyttää siltä että se on uudelleennimetty:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="45"/>
@@ -7907,7 +7981,7 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="53"/>
         <source>For some reason, sleepyHead couldn&apos;t find a journal object record in your profile, but did find multiple Journal data folders.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jostakin syystä SleepyHead ei löytänyt päivyritietoja profiilistasi, mutta löysi useamman päivyrin kansiot.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="54"/>
@@ -7917,7 +7991,7 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/journal.cpp" line="56"/>
         <source>If your old data is missing, copy the contents of all the other Journal_XXXXXXX folders to this one manually.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Jos vanhat tiedot ei löydy, kopioi kaikkien Journal_XXXXXXX kansioiden sisällön tähän kansioon käsin.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/cms50f37_loader.h" line="41"/>
@@ -7938,7 +8012,7 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="605"/>
         <source>Intellipap pressure relief mode.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Intellipap paineenalennusmoodi.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="611"/>
@@ -7961,13 +8035,13 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/intellipap_loader.cpp" line="616"/>
         <source>Intellipap pressure relief level.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Intellipap paineenalennuksen taso.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="1312"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="2046"/>
         <source>VPAP Adapt</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">VPAP Adapt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3330"/>
@@ -7977,43 +8051,43 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3336"/>
         <source>VPAP-T</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">VPAP-T</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3337"/>
         <source>VPAP-S</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">VPAP-S</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3338"/>
         <source>VPAP-S/T</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">VPAP-S/T</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3339"/>
         <source>??</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">??</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3340"/>
         <source>VPAPauto</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">VPAPauto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3342"/>
         <source>ASVAuto</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ASVAuto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3343"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3344"/>
         <source>???</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">???</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3345"/>
         <source>Auto for Her</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auto for Her</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3348"/>
@@ -8024,7 +8098,7 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3349"/>
         <source>ResMed Exhale Pressure Relief</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ResMed uloshengityksen paineenalennus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3357"/>
@@ -8040,159 +8114,159 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3361"/>
         <source>Exhale Pressure Relief Level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uloshengityksen paineenalennuksen taso</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3365"/>
         <source>0cmH2O</source>
-        <translation>0 cm H2O</translation>
+        <translation type="unfinished">0 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3366"/>
         <source>1cmH2O</source>
-        <translation>1 cm H2O</translation>
+        <translation type="unfinished">1 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3367"/>
         <source>2cmH2O</source>
-        <translation>2 cm H2O</translation>
+        <translation type="unfinished">2 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3368"/>
         <source>3cmH2O</source>
-        <translation>3 cm H2O</translation>
+        <translation type="unfinished">3 cmH2O</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3375"/>
         <source>SmartStart</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SmartStart</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3376"/>
         <source>Machine auto starts by breathing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laite käynnistyy automaattisesti hengittäessä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3377"/>
         <source>Smart Start</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Smart Start</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3384"/>
         <source>Humid. Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kost. tila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3385"/>
         <source>Humidifier Enabled Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kostuttimen tila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3393"/>
         <source>Humid. Level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kost. taso</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3394"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3395"/>
         <source>Humidity Level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kostutuksen taso</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3409"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3411"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lämpötila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3410"/>
         <source>ClimateLine Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ClimateLine lämpötila</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3416"/>
         <source>Temp. Enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lämp. päällä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3417"/>
         <source>ClimateLine Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ClimateLine lämpötila päällä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3418"/>
         <source>Temperature Enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lämpötila päällä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3427"/>
         <source>AB Filter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AB suodatin</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3428"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3429"/>
         <source>Antibacterial Filter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Antibakteerinen suodatin</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3436"/>
         <source>Pt. Access</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pot. pääsy</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3437"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3438"/>
         <source>Patient Access</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Potilaalla pääsy</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3445"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3446"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3447"/>
         <source>Climate Control</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ilmastointi</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3450"/>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Manuaalinen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3451"/>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auto</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3454"/>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3456"/>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maski</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3455"/>
         <source>ResMed Mask Setting</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ResMed maskin asetukset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3459"/>
         <source>Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sierain</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3460"/>
         <source>Full Face</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kokokasvo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3461"/>
         <source>Nasal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nenä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/resmed_loader.cpp" line="3465"/>
         <source>Ramp Enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ramp salli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/weinmann_loader.h" line="116"/>
@@ -8225,22 +8299,22 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="272"/>
         <source>Time at Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aika paineen alla</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>Click to %1 this session.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paina ja %1 istunto.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>disable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">kiellä</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="947"/>
         <source>enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">salli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="958"/>
@@ -8255,23 +8329,24 @@ Ole hyvä ja uudista CPAP tiedot</translation>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/cms50_loader.cpp" line="266"/>
         <source>CMS50D+</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50D+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/cms50_loader.cpp" line="266"/>
         <source>CMS50E/F</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CMS50E/F</translation>
     </message>
     <message>
         <location filename="../sleepyhead/updateparser.cpp" line="228"/>
         <source>%1
 Line %2, column %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1
+viiva %2, kolumni %3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/updateparser.cpp" line="241"/>
         <source>Could not parse Updates.xml file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Updates.xml tiedoston luku epäonnistui.</translation>
     </message>
 </context>
 <context>
@@ -8328,7 +8403,7 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="500"/>
         <source>Therapy Efficacy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Terapian tehokkuus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="510"/>
@@ -8454,7 +8529,7 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1298"/>
         <source>%1 day of %2 Data on %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 päivä %2-tietoa %3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/statistics.cpp" line="1304"/>
@@ -8527,17 +8602,17 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="130"/>
         <source>Build Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Käännöksen muistiinpanot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="174"/>
         <source>Maybe &amp;Later</source>
-        <translation>&amp;L Ehkä myöhemmin</translation>
+        <translation type="unfinished">&amp;Ehkä myöhemmin</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="194"/>
         <source>&amp;Upgrade Now</source>
-        <translation>&amp;U Päivitä nyt</translation>
+        <translation type="unfinished">&amp;Päivitä nyt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="220"/>
@@ -8582,7 +8657,7 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="337"/>
         <source>&amp;Finished</source>
-        <translation>&amp;F Valmis</translation>
+        <translation type="unfinished">&amp;Valmis</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="94"/>
@@ -8679,17 +8754,17 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="124"/>
         <source>SleepyHead Updates are currently unvailable for this platform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Päivityksiä ei ole saatavilla kyseiselle alustalle</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="446"/>
         <source>New SleepyHead Updates are avilable:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uudet päivitykset SleapyHeadille saatavilla:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="447"/>
         <source>Would you like t download and install them now?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haluatko ladata ja päivittää nyt?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="643"/>
@@ -8781,52 +8856,52 @@ Line %2, column %3</source>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="385"/>
         <source>Restore X-axis zoom too 100% to view entire days data.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Näyttääkseen koko päivän tiedot, resetoi x-akselin zoom 100% tasolle.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="387"/>
         <source>Reset Graph Layout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Resetoi kaavion sijoitus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="388"/>
         <source>Resets all graphs to a uniform height and default order.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Resetoi kaikki kaaviot oletuskorkeuteen ja -järjestykseen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="391"/>
         <source>Y-Axis</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Y-akseli</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="392"/>
         <source>Plots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kuviot</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="397"/>
         <source>CPAP Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP peittokuvat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="400"/>
         <source>Oximeter Overlays</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oksimetri peittokuvat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="403"/>
         <source>Dotted Lines</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pisteviivat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1993"/>
         <source>Remove Clone</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Poista klooni</translation>
     </message>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="1997"/>
         <source>Clone %1 Graph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kloonaa %1-kaavio</translation>
     </message>
 </context>
 </TS>
