@@ -66,6 +66,7 @@ int MD300W1Loader::Open(QString path)
     // Only one active Oximeter module at a time, set in preferences
 
 	qDebug() << "MD300W1 Loader opening " << path;
+
     m_itemCnt = 0;
     m_itemTotal = 0;
 
@@ -94,7 +95,7 @@ int MD300W1Loader::Open(QString path)
         setStatus(LIVE);
         return 1;
     }
-    QString ext = path.section(".",1);
+    QString ext = path.section(".", -1);	// find the last '.'
     if (ext.compare("dat", Qt::CaseInsensitive)==0) {
         // try to read and process SpoR file..
         return readDATFile(path) ? 1 : 0;
@@ -158,13 +159,16 @@ void MD300W1Loader::resetImportTimeout()
 bool MD300W1Loader::readDATFile(QString path)
 {
     QFile file(path);
+    
+    qDebug() << "MD300W Loader attempting to read " << path;
+    
     if (!file.exists()) {
-    	qDebug() << "File does not exist: " << path;
+        qDebug() << "File does not exist: " << path;
         return false;
     }
 
     if (!file.open(QFile::ReadOnly)) {
-    	qDebug() << "Can't open file R/O: " << path;
+        qDebug() << "Can't open file R/O: " << path;
         return false;
     }
 
@@ -194,7 +198,7 @@ bool MD300W1Loader::readDATFile(QString path)
         if (datetime.date().year() < 2000) datetime = datetime.addYears(100);
         ts = datetime.toTime_t();
         gap = ts - lasttime;
-        if (gap > 1) {
+        if (gap > 1) {			// always true for first record, b/c time started on 1 Jan 1970
             if (gap < 360) {
                 // Less than 5 minutes? Merge session
                 gap--;
@@ -203,8 +207,7 @@ bool MD300W1Loader::readDATFile(QString path)
                     oxirec->append(OxiRecord(0,0));
                 }
             } else {
-                // Create a new session
-                qDebug() << "Create session for " << datestr;
+                // Create a new session, always for first record
                 qDebug() << "Create session for " << datetime.toString("yyyy.MM.dd HH:mm:ss");
                 oxirec = new QVector<OxiRecord>;
                 oxisessions[datetime] = oxirec;

@@ -412,7 +412,7 @@ public:
 //        layer->total_hours = total_hours;
 //        layer->max_ahi = max_ahi;
 //        layer->min_ahi = min_ahi;
-//        layer->calc_cnt = calc_cnt;
+//        layer->total_days = total_days;
 //        layer->ahi_data = ahi_data;
     }
 
@@ -424,7 +424,7 @@ public:
     float max_ahi;
     float min_ahi;
 
-    int calc_cnt;
+    int total_days;
     QList<float> ahi_data;
 };
 

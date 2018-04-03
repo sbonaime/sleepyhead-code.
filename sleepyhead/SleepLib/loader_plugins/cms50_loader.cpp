@@ -121,7 +121,7 @@ int CMS50Loader::Open(QString path)
         setStatus(LIVE);
         return 1;
     }
-    QString ext = path.section(".",1);
+    QString ext = path.section(".", -1);	// find the last '.'
     if ((ext.compare("spo2", Qt::CaseInsensitive)==0) || (ext.compare("spo", Qt::CaseInsensitive)==0) || (ext.compare("spor", Qt::CaseInsensitive)==0)) {
         // try to read and process SpoR file..
         return readSpoRFile(path) ? 1 : 0;
@@ -536,17 +536,21 @@ bool CMS50Loader::readSpoRFile(QString path)
 {
     QFile file(path);
     if (!file.exists()) {
+    	qWarning() << "Can't find the oximeter file: " << path;
         return false;
     }
 
     if (!file.open(QFile::ReadOnly)) {
+    	qWarning() << "Can't open the oximeter file: " << path;
         return false;
     }
 
     bool spo2header = false;
     QString ext = path.section('.', -1);
+    qDebug() << "Oximeter file extention is " << ext;
     if (ext.compare("spo2",Qt::CaseInsensitive) == 0) {
         spo2header = true;
+        qDebug() << "Oximeter file looks like an SpO2 type" ;
     }
 
     QByteArray data;
@@ -591,7 +595,7 @@ bool CMS50Loader::readSpoRFile(QString path)
         quint32 hour, minute, second;
 
         if (data.at(pos) != 1) {
-            qWarning() << ".spo2 file" << path << "might be a different";
+            qWarning() << "oximeter file" << path << "might be odd format";
         }
 
         // Unknown cruft header...
