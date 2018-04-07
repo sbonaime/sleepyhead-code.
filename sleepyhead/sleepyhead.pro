@@ -75,7 +75,7 @@ unix:!macx:!haiku {
 }
 
 macx {
-  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
   LIBS             += -lz
   ICON              = icons/iconfile.icns

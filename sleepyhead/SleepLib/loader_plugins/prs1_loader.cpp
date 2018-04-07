@@ -2434,11 +2434,13 @@ bool PRS1Import::ParseSummaryF0V6()
     // examples, 0x0d 0x02 0x28 0xC8  , or 0x0a 0x01 0x64,
     // first, verify that this dataSize is where we expect
     //     each var pair in headerblock should be (indexByte, valueByte)
-    if ( 0x01 != summary->m_headerblock[1 * 2] ) {
+
+    // MW: sorry Bob, that LValue/RValue inversion thing while an effective way to force type conversion gave me an anuerism ;)
+    if ((int)summary->m_headerblock[(1 * 2)] != 0x01) {
         return false;  //nope, not here
         qDebug() << "PRS1Loader::ParseSummaryF0V6=" << "Bad datablock length";
     }
-    int dataBlockSize = summary->m_headerblock[1 * 2 + 1];
+    int dataBlockSize = summary->m_headerblock[(1 * 2) + 1];
     //int zero = 0;
     const unsigned char *dataPtr;
 
@@ -2917,13 +2919,13 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
 
     int duration=0;
 
-    QByteArray headerBA, extra;
+    QByteArray headerBA, headerB2, extra;
 
     QList<PRS1Waveform> waveformInfo;
 
     do {
-        headerBA = f.read(15);
-        if (headerBA.size() != 15) {
+        headerBA = f.read(16);
+        if (headerBA.size() != 16) {
             break;
         }
 
@@ -2937,7 +2939,6 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
         ext = header[6];
         sessionid = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
         timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
-
 
         if (blocksize == 0)
             break;
@@ -2954,9 +2955,29 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
         waveformInfo.clear();
 
         if (ext < 5) { // Not a waveform chunk
-            // Figure out header sizes based on version and file type
 
-            if (ext == 1) { // Summary Chunk
+            // Check if this is a newer machine with a header data block
+            bool hasHeaderDataBlock = (fileVersion == 3);
+
+            if (hasHeaderDataBlock) {
+                // This is a new machine, byte 15 is header data block length
+                // followed by variable, data byte pairs
+                // then the 8bit Checksum
+
+                int hdb_len = header[15];
+                int hdb_size = hdb_len * 2;
+
+                headerB2 = f.read(hdb_size+1);  // add extra byte for checksum
+                if (headerB2.size() != hdb_size+1) {
+                    break;
+                }
+                headerBA.append(headerB2);
+                header = (unsigned char *)headerBA.data(); // important because it's memory location could move
+
+                header_size += hdb_size+1;
+            } else headerB2 = QByteArray();
+
+/*            if (ext == 1) { // Summary Chunk
                 if ((family == 0) && (familyVersion == 6)) {
                     header_size = 43;
                 } else if ((family == 5) && (familyVersion == 3)) {
@@ -2974,22 +2995,21 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
                 }
 
            }
-           extra_bytes = header_size - 15; // remainder of the header bytes to read, including the 8bit additive checksum.
+           extra_bytes = header_size - 16; // remainder of the header bytes to read, including the 8bit additive checksum.
 
            // Read the extra header bytes
            extra = f.read(extra_bytes);
            if (extra.size() != extra_bytes) {
                break;
            }
-           headerBA.append(extra);
-           header = (unsigned char *)headerBA.data(); // important because it's memory location could move
+           headerBA.append(extra); */
 
        } else { // Waveform Chunk
-            extra = f.read(5);
-            if (extra.size() != 5) {
+            extra = f.read(4);
+            if (extra.size() != 4) {
                 break;
             }
-            header_size += 5;
+            header_size += 4;
             headerBA.append(extra);
             // Get the header address again to be safe
             header = (unsigned char *)headerBA.data();
@@ -3006,7 +3026,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
             }
             headerBA.append(extra);
             header = (unsigned char *)headerBA.data();
-            header_size += sbsize-1;
+            header_size += sbsize;
 
             // Read the waveform information in reverse.
             int pos = 0x14 + (wvfm_signals - 1) * ws_size;
@@ -3076,6 +3096,7 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
         chunk->familyVersion = familyVersion;
         chunk->ext = ext;
         chunk->timestamp = timestamp;
+        chunk->m_headerblock = headerB2;
 
         lastblocksize = blocksize;
         blocksize -= header_size;
