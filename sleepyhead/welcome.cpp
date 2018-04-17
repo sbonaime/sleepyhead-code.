@@ -13,6 +13,11 @@
 #include "SleepLib/profiles.h"
 
 
+// Pinching a few compounded functions from statistics that may come in useful here
+extern EventDataType calcAHI(QDate start, QDate end);
+extern EventDataType calcFL(QDate start, QDate end);
+
+
 QString GenerateWelcomeHTML()
 {
     QList<Machine *> cpap_machines = p_profile->GetMachines(MT_CPAP);
@@ -147,11 +152,7 @@ QString GenerateWelcomeHTML()
 
             html += QObject::tr("was %1 (on %2)").arg(daystring).arg(date.toString(Qt::SystemLocaleLongDate)) + "<br/>";
 
-
             EventDataType hours = day->hours();
-
-            EventDataType ahi=(day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(CPAP_ClearAirway) + day->count(CPAP_Apnea)) / hours;
-
             html += "<br/>";
 
             int seconds = int(hours * 3600.0) % 60;
@@ -159,18 +160,39 @@ QString GenerateWelcomeHTML()
             int hour = hours;
             QString timestr = QObject::tr("%1 hours, %2 minutes and %3 seconds").arg(hour).arg(minutes).arg(seconds);
 
-            if (hours > 4) html += QObject::tr("You machine was on for %1.").arg(timestr)+"<br/>";
+            const EventDataType compliance_min = 4.0;
+            if (hours > compliance_min) html += QObject::tr("You machine was on for %1.").arg(timestr)+"<br/>";
             else html += QObject::tr("<font color = red>You only had the mask on for %1.</font>").arg(timestr)+"<br/>";
 
-            html += QObject::tr("You had an AHI of %1,").arg(ahi,0,'f',2)+" ";
+
+            int averagedays = 7; // how many days to look back
+
+            QDate starttime = date.addDays(-(averagedays-1));
 
 
-            //EventDataType lat = day->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline())/ 60.0;
-            //EventDataType leaks = 1.0/hours * lat;
-            EventDataType leakmax = day->avg(CPAP_Leak);
+            EventDataType ahi = (day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(CPAP_ClearAirway) + day->count(CPAP_Apnea)) / hours;
+            EventDataType ahidays = calcAHI(starttime, date);
+
+            const QString under = QObject::tr("under");
+            const QString over = QObject::tr("over");
+            const QString onpar = QObject::tr("reasonably close to");
 
 
-            html += QObject::tr("average leaks were %1 %2).").arg(leakmax,0,'f',2).arg(schema::channel[CPAP_Leak].units())+"<br/>";
+            QString comp;
+            if ((ahi < ahidays) && ((ahidays - ahi) >= 0.1)) {
+                comp = under;
+            } else if ((ahi > ahidays) && ((ahi - ahidays) >= 0.1)) {
+                comp = over;
+            } else {
+                comp = onpar;
+            }
+
+            html += QObject::tr("You had an AHI of %1, which is <b>%2</b> your %3 day average of %4.").arg(ahi,0,'f',2).arg(comp).arg(averagedays).arg(ahidays,0,'f',2);
+
+            html += "<br/>";
+
+
+            //html += QObject::tr("You had an AHI of %1,").arg(ahi,0,'f',2)+QObject::tr(" your 7 day average was %1, 30 day average %2").arg(ahi7,0,'f',2).arg(ahi30,0,'f',2)+"<br/>";
 
             CPAPMode cpapmode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
             double perc= p_profile->general->prefCalcPercentile();
@@ -202,9 +224,28 @@ QString GenerateWelcomeHTML()
                 html += QObject::tr("Your EPAP pressure was under %1%2 for %3% of the time.").arg(epap).arg(schema::channel[CPAP_EPAP].units()).arg(perc)+"<br/>";
                 html += QObject::tr("Your IPAP pressure was under %1%2 for %3% of the time.").arg(ipap).arg(schema::channel[CPAP_IPAP].units()).arg(perc);
             }
+            html += "<br/>";
+
+            //EventDataType lat = day->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline())/ 60.0;
+            //EventDataType leaks = 1.0/hours * lat;
+
+            EventDataType leak = day->avg(CPAP_Leak);
+            EventDataType leakdays = p_profile->calcAvg(CPAP_Leak, MT_CPAP, starttime, date);
+
+            if ((leak < leakdays) && ((leakdays - leak) >= 0.1)) {
+                comp = under;
+            } else if ((leak > leakdays) && ((leak - leakdays) >= 0.1)) {
+                comp = over;
+            } else {
+                comp = onpar;
+            }
 
 
-            html+="</td></tr></table></td></tr></table>";
+            html += QObject::tr("Your average leaks were %1 %2, which is <b>%3</b> your %4 day average of %5.").arg(leak,0,'f',2).arg(schema::channel[CPAP_Leak].units()).arg(comp).arg(averagedays).arg(leakdays,0,'f',2);
+
+            html += "<br/>";
+
+            html += "</td></tr></table></td></tr></table>";
 
         } else {
             html += "<p>"+QObject::tr("No CPAP data has been imported yet.")+"</p>";

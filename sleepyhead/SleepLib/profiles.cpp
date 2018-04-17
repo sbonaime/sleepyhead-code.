@@ -1308,7 +1308,7 @@ EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDat
         if (day) {
             if (!day->summaryOnly() || day->hasData(code, ST_AVG)) {
                 val += day->sum(code);
-                cnt++;
+                cnt += day->count(code);
             }
         }
 
