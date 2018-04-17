@@ -132,6 +132,7 @@ QString GenerateWelcomeHTML()
         if (day && (cpap != nullptr)) {
             QString cpapimage = "qrc"+cpap->getPixmapPath();
 
+
             html += "<table cellpadding=4><tr><td><img src='"+cpapimage+"' width=160px><br/>";
 
             html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+
@@ -151,15 +152,7 @@ QString GenerateWelcomeHTML()
 
             EventDataType ahi=(day->count(CPAP_Obstructive) + day->count(CPAP_Hypopnea) + day->count(CPAP_ClearAirway) + day->count(CPAP_Apnea)) / hours;
 
-            QString ahitext;
-            if (ahi < 0.000001) ahitext =  QString("<font color=green>")+QObject::tr("perfect :)")+"</font>";
-            else if (ahi < 1) ahitext = QObject::tr("pretty darn good");
-            else if (ahi < 3) ahitext = QObject::tr("reasonably good");
-            else if (ahi < 5) ahitext = QObject::tr("technically \"treated\"");
-            else if (ahi < 10) ahitext = QString("<font color=red>")+QObject::tr("not very good")+"</font>";
-            else ahitext = QString("<font color=red>")+QObject::tr("horrible, please consult your doctor")+"</font>";
-
-            html += QObject::tr("You had an AHI of %1, which is considered %2").arg(ahi,0,'f',2).arg(ahitext)+"<br/>";
+            html += "<br/>";
 
             int seconds = int(hours * 3600.0) % 60;
             int minutes = int(hours * 60) % 60;
@@ -169,16 +162,15 @@ QString GenerateWelcomeHTML()
             if (hours > 4) html += QObject::tr("You machine was on for %1.").arg(timestr)+"<br/>";
             else html += QObject::tr("<font color = red>You only had the mask on for %1.</font>").arg(timestr)+"<br/>";
 
+            html += QObject::tr("You had an AHI of %1,").arg(ahi,0,'f',2)+" ";
 
-            EventDataType lat = day->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline())/ 60.0;
-            EventDataType leaks = 1.0/hours * lat;
-            EventDataType leakmax = day->Max(CPAP_Leak);
-            QString leaktext;
-            if (leaks < 0.000001) leaktext=QObject::tr("You had no <i>major</i> mask leaks (maximum was %1 %2).").arg(leakmax,0,'f',2).arg(schema::channel[CPAP_Leak].units());
-            else if (leaks < 0.01) leaktext=QObject::tr("You had a small but acceptable amount of <i>major</i> mask leakage.");
-            else if (leaks < 0.10) leaktext=QObject::tr("You had significant periods of <i>major</i> mask leakage.");
-            else leaktext=QObject::tr("Your mask is leaking way too much.. Talk to your CPAP advisor.");
-            html += leaktext + "<br/>";
+
+            //EventDataType lat = day->timeAboveThreshold(CPAP_Leak, p_profile->cpap->leakRedline())/ 60.0;
+            //EventDataType leaks = 1.0/hours * lat;
+            EventDataType leakmax = day->avg(CPAP_Leak);
+
+
+            html += QObject::tr("average leaks were %1 %2).").arg(leakmax,0,'f',2).arg(schema::channel[CPAP_Leak].units())+"<br/>";
 
             CPAPMode cpapmode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
             double perc= p_profile->general->prefCalcPercentile();
