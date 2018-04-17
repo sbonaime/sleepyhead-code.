@@ -100,29 +100,36 @@ QString GenerateWelcomeHTML()
     if (havecpapdata || haveoximeterdata) cols=4;
 
 
-     html+=QString("<tr><td colspan=%1 align=center>").arg(cols)+
-     "<font size=+1>"+((havecpapdata || haveoximeterdata) ? QObject::tr("What would you like to do?") : QObject::tr("Please Import Some Data")) +"</font></td>"
-     "</tr>"
-     "<tr>"
-      "<td align=center>"
-        "<table class=curved cellpadding=4>"
-         "<tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=cpap\");'><font size=+1><img src='qrc:/icons/sdcard.png' width=128px><br/>" + QObject::tr("CPAP<br/>Importer")+"</font></td></tr>"
-        "</table>"
-      "</td>"
-      "<td align=center>"
-       "<table class=curved cellpadding=4>"
-         "<tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=oximeter\");'><font size=+1><img src='qrc:/icons/cms50f.png' width=128px><br/>" + QObject::tr("Oximetery<br/>Wizard")+"</font></td></tr>"
-       "</table>"
-      "</td>";
-      if (havecpapdata || haveoximeterdata) {
-          html += "<td align=center><font size=+2>"+QObject::tr("or")+"</font></td>"
-          "<td align=center>"
-          "<table class=curved cellpadding=4>"
-          "<tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"statistics=1\");'><font size=+1><img src='qrc:/icons/statistics.png' width=128px><br/>" + QObject::tr("View<br/>Statistics")+"</font></td></tr>"
-          "</table>"
-          "</td>";
-      }
-     html += "</tr></table>";
+    html+=QString("<tr><td colspan=%1 align=center>").arg(cols)+
+    "<font size=+1>"+((havecpapdata || haveoximeterdata) ? QObject::tr("What would you like to do?") : QObject::tr("Please Import Some Data")) +"</font></td>"
+    "</tr>"
+    "<tr>"
+    " <td align=center>"
+    "  <table class=curved cellpadding=4>"
+    "   <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=cpap\");'><font size=+1><img src='qrc:/icons/sdcard.png' width=128px><br/>" + QObject::tr("CPAP<br/>Importer")+"</font></td></tr>"
+    "  </table>"
+    " </td>"
+    "<td align=center>"
+    " <table class=curved cellpadding=4>"
+    "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=oximeter\");'><font size=+1><img src='qrc:/icons/cms50f.png' width=128px><br/>" + QObject::tr("Oximetery<br/>Wizard")+"</font></td></tr>"
+    " </table>"
+    "</td>";
+    if (havecpapdata || haveoximeterdata) {
+        html += "<td align=center><font size=+2>"+QObject::tr("or")+"</font></td>"
+        "<td align=center>"
+        " <table class=curved cellpadding=4>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"statistics=1\");'><font size=+1><img src='qrc:/icons/statistics.png' width=128px><br/>" + QObject::tr("View<br/>Statistics")+"</font></td></tr>"
+        " </table>"
+        "</td>"
+        "<td align=center>"
+        " <table class=curved cellpadding=4>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"daily=1\");'><font size=+1><img src='qrc:/icons/daily.png' width=128px><br/>" + QObject::tr("View<br/>Daily")+"</font></td></tr>"
+        " </table>"
+        "</td>";
+    }
+    html += "</tr></table>";
+
+    Machine * cpap = nullptr;
     if (!havecpapdata && !haveoximeterdata) {
         html += "<p>" + QObject::tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")+"</p>"
         "<p>" + QObject::tr("First import can take a few minutes.") + "</p>";
@@ -130,7 +137,6 @@ QString GenerateWelcomeHTML()
         QDate date = p_profile->LastDay(MT_CPAP);
         Day *day = p_profile->GetDay(date, MT_CPAP);
 
-        Machine * cpap = nullptr;
         if (havecpapdata && day) {
             cpap = day->machine(MT_CPAP);
         }
@@ -161,7 +167,7 @@ QString GenerateWelcomeHTML()
             QString timestr = QObject::tr("%1 hours, %2 minutes and %3 seconds").arg(hour).arg(minutes).arg(seconds);
 
             const EventDataType compliance_min = 4.0;
-            if (hours > compliance_min) html += QObject::tr("You machine was on for %1.").arg(timestr)+"<br/>";
+            if (hours > compliance_min) html += QObject::tr("Your machine was on for %1.").arg(timestr)+"<br/>";
             else html += QObject::tr("<font color = red>You only had the mask on for %1.</font>").arg(timestr)+"<br/>";
 
 
@@ -175,7 +181,8 @@ QString GenerateWelcomeHTML()
 
             const QString under = QObject::tr("under");
             const QString over = QObject::tr("over");
-            const QString onpar = QObject::tr("reasonably close to");
+            const QString close = QObject::tr("reasonably close to");
+            const QString equal = QObject::tr("equal to");
 
 
             QString comp;
@@ -183,16 +190,15 @@ QString GenerateWelcomeHTML()
                 comp = under;
             } else if ((ahi > ahidays) && ((ahi - ahidays) >= 0.1)) {
                 comp = over;
+            } else if ((fabs(ahi > ahidays) >= 0.01) ) {
+                comp = close;
             } else {
-                comp = onpar;
+                comp = equal;
             }
 
             html += QObject::tr("You had an AHI of %1, which is <b>%2</b> your %3 day average of %4.").arg(ahi,0,'f',2).arg(comp).arg(averagedays).arg(ahidays,0,'f',2);
 
             html += "<br/>";
-
-
-            //html += QObject::tr("You had an AHI of %1,").arg(ahi,0,'f',2)+QObject::tr(" your 7 day average was %1, 30 day average %2").arg(ahi7,0,'f',2).arg(ahi30,0,'f',2)+"<br/>";
 
             CPAPMode cpapmode = (CPAPMode)(int)day->settings_max(CPAP_Mode);
             double perc= p_profile->general->prefCalcPercentile();
@@ -236,10 +242,11 @@ QString GenerateWelcomeHTML()
                 comp = under;
             } else if ((leak > leakdays) && ((leak - leakdays) >= 0.1)) {
                 comp = over;
+            } else if ((fabs(ahi > ahidays) >= 0.01) ) {
+                comp = close;
             } else {
-                comp = onpar;
+                comp = equal;
             }
-
 
             html += QObject::tr("Your average leaks were %1 %2, which is <b>%3</b> your %4 day average of %5.").arg(leak,0,'f',2).arg(schema::channel[CPAP_Leak].units()).arg(comp).arg(averagedays).arg(leakdays,0,'f',2);
 
@@ -264,19 +271,35 @@ QString GenerateWelcomeHTML()
         }
 
     }
-    html += QString("<div align=center><table class=curved cellpadding=3 width=45%>")+
-    "<tr>"
-    "<td align=center colspan=2><font size=+1><b>"+QObject::tr("Very Important Warning")+"</b></font></td></tr>"
-    "<tr><td align=left>"+
-    QObject::tr("<p>ALWAYS <font size=+1 color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p>"+
-    QObject::tr("<p><span title=\"Mac OSX and Win8.1\"  onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'><font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+"</p>"+
-    QObject::tr("<p>As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!</p>")+
-    "</td>"
-    "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=128px></td>"
-    "</tr>"
-    "</table>"
-    "</td></tr></table></div>"
-    "<script type='text/javascript' language='javascript' src='qrc:/docs/script.js'></script>"
+
+
+    // The SDCard warning does not need to be seen anymore for people who DON'T use ResMed S9's.. show first import and only when S9 is present
+    bool showCardWarning = (cpap == nullptr);
+
+    QList<Machine *> mlist = p_profile->GetMachines(MT_CPAP);
+    for (int i=0; i<mlist.size(); ++i) {
+        Machine *mach = mlist.at(i);
+        if (mach->series().compare("S9") == 0) showCardWarning = true;
+    }
+
+
+    if (showCardWarning) {
+        html += QString("<div align=center><table class=curved cellpadding=3 width=45%>")+
+        "<tr>"
+        "<td align=center colspan=2><font size=+1><b>"+QObject::tr("Very Important Warning For ResMed S9 Users")+"</b></font></td></tr>"
+        "<tr><td align=left>"+
+        QObject::tr("<p>ALWAYS <font size=+1 color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p>"+
+        QObject::tr("<p><span title=\"Mac OSX and Win8.1\"  onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'><font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+"</p>"+
+        QObject::tr("<p>As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!</p>")+
+        "</td>"
+        "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=128px></td>"
+        "</tr>"
+        "</table>"
+        "</td></tr></table></div>";
+    } else {
+    }
+
+    html += "<script type='text/javascript' language='javascript' src='qrc:/docs/script.js'></script>"
     "</body></html>";
     return html;
 }
