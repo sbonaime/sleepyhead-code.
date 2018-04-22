@@ -104,7 +104,7 @@ h+=m_spacer*2; */
 void gToolTip::display(QString text, int x, int y, ToolTipAlignment align, int timeout)
 {
     if (timeout <= 0) {
-        timeout = p_profile->general->tooltipTimeout();
+        timeout = AppSetting->tooltipTimeout();
     }
     m_alignment = align;
 
@@ -355,7 +355,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_limbo = false;
     m_fadedir = false;
     m_blockUpdates = false;
-    use_pixmap_cache = p_profile->appearance->usePixmapCaching();
+    use_pixmap_cache = AppSetting->usePixmapCaching();
 
     pin_graph = nullptr;
    // pixmapcache.setCacheLimit(10240*2);
@@ -633,7 +633,7 @@ void gGraphView::dumpInfo()
 bool gGraphView::usePixmapCache()
 {
     //use_pixmap_cache is an overide setting
-    return p_profile->appearance->usePixmapCaching();
+    return AppSetting->usePixmapCaching();
 }
 
 #define CACHE_DRAWTEXT
@@ -644,7 +644,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
     int w, h;
 
     // not sure if global antialiasing would be better..
-    //painter.setRenderHint(QPainter::TextAntialiasing, p_profile->appearance->antiAliasing());
+    //painter.setRenderHint(QPainter::TextAntialiasing, AppSetting->antiAliasing());
     int items = m_textque.size();
     for (int i = 0; i < items; ++i) {
         TextQue &q = m_textque[i];
@@ -1427,7 +1427,7 @@ void gGraphView::paintGL()
 
         painter.drawText(rec, Qt::AlignHCenter | Qt::AlignBottom, txt);
     }
-    if (p_profile->appearance->lineCursorMode()) {
+    if (AppSetting->lineCursorMode()) {
        emit updateCurrentTime(graphs_drawn ? m_currenttime : 0.0F);
     } else {
        emit updateRange(graphs_drawn ? m_minx : 0.0F, m_maxx);
@@ -1442,7 +1442,7 @@ void gGraphView::paintGL()
     static int rp = 0;
 
     // Show FPS and draw time
-    if (m_showsplitter && p_profile->general->showPerformance()) {
+    if (m_showsplitter && AppSetting->showPerformance()) {
         QString ss;
         qint64 ela = time.nsecsElapsed();
         double ms = double(ela) / 1000000.0;
@@ -1790,7 +1790,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                                                     if (i<count) {
                                                         ChannelID code=fg->visibleLayers()[i]->code();
                                                         QString ttip=schema::channel[code].description();
-                                                        m_tooltip->display(ttip,x,y-20,p_profile->general->tooltipTimeout());
+                                                        m_tooltip->display(ttip,x,y-20,AppSetting->tooltipTimeout());
                                                         redraw();
                                                         //qDebug() << code << ttip;
                                                     }
@@ -1801,7 +1801,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                                         }
                                     } else {
                                         if (!m_graphs[i]->units().isEmpty()) {
-                                            m_tooltip->display(m_graphs[i]->units(),x,y-20,p_profile->general->tooltipTimeout());
+                                            m_tooltip->display(m_graphs[i]->units(),x,y-20,AppSetting->tooltipTimeout());
                                             redraw();
                                         }
                                     }
@@ -2897,7 +2897,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
         return;
 
     if (event->modifiers() == Qt::NoModifier) {
-        int scrollDampening = p_profile->general->scrollDampening();
+        int scrollDampening = AppSetting->scrollDampening();
 
         if (event->orientation() == Qt::Vertical) { // Vertical Scrolling
             if (horizScrollTime.elapsed() < scrollDampening) {
@@ -3116,7 +3116,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_F3) {
-        p_profile->appearance->setLineCursorMode(!p_profile->appearance->lineCursorMode());
+        AppSetting->setLineCursorMode(!AppSetting->lineCursorMode());
         timedRedraw(0);
     }
     if ((event->key() == Qt::Key_F1)) {
@@ -3130,7 +3130,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_PageUp) {
         if (m_scrollbar) {
-            m_offsetY -= p_profile->appearance->graphHeight() * 3 * m_scaleY;
+            m_offsetY -= AppSetting->graphHeight() * 3 * m_scaleY;
             m_scrollbar->setValue(m_offsetY);
             m_offsetY = m_scrollbar->value();
             redraw();
@@ -3138,7 +3138,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         return;
     } else if (event->key() == Qt::Key_PageDown) {
         if (m_scrollbar) {
-            m_offsetY += p_profile->appearance->graphHeight() * 3 * m_scaleY; //p_profile->appearance->graphHeight();
+            m_offsetY += AppSetting->graphHeight() * 3 * m_scaleY;
 
             if (m_offsetY < 0) { m_offsetY = 0; }
 
@@ -3277,7 +3277,7 @@ void gGraphView::timedRedraw(int ms)
 }
 void gGraphView::resetLayout()
 {
-    int default_height = p_profile->appearance->graphHeight();
+    int default_height = AppSetting->graphHeight();
 
     for (int i = 0; i < m_graphs.size(); i++) {
         if (m_graphs[i]) m_graphs[i]->setHeight(default_height);

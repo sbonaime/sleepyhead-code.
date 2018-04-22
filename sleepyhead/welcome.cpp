@@ -1,4 +1,4 @@
-/* Welcome Page Implementation
+﻿/* Welcome Page Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -10,6 +10,7 @@
 #include <QString>
 #include <QApplication>
 #include <QFont>
+#include <cmath>
 #include "SleepLib/profiles.h"
 
 
@@ -89,7 +90,7 @@ QString GenerateWelcomeHTML()
     "<body leftmargin=0 topmargin=5 rightmargin=0>";
 
     html += "<div align=center><table border=0 height=100% width=99%>";
-    html += QString("<tr><td colspan=2 align=center>") +
+    html += QString("<tr><td colspan=4 align=center>") +
     "<img src='qrc:/icons/bob-v3.0.png' height=100px>"
 
     "<h1>" + QObject::tr("Welcome to SleepyHead") + "</h1>" +
@@ -97,7 +98,7 @@ QString GenerateWelcomeHTML()
     "<table cellpadding=4 border=0>";
 
     int cols=2;
-    if (havecpapdata || haveoximeterdata) cols=4;
+    if (havecpapdata || haveoximeterdata) cols=5;
 
 
     html+=QString("<tr><td colspan=%1 align=center>").arg(cols)+
@@ -148,7 +149,7 @@ QString GenerateWelcomeHTML()
 
             html+="</td><td align=center><table cellpadding=4 class=curved2 title=\""+QObject::tr("Click this box to see this in daily view.")+"\"><tr>"+
                     QString("<td align=center  onmouseover='ChangeColor(this, \"#efefa0\");' onmouseout='ChangeColor(this, \"#ffffc0\");' onclick='alert(\"daily=%1\");'>").arg(date.toString(Qt::ISODate))+"<b>"+
-                    QObject::tr("The last time you used your %1...").arg(cpap->brand()+" "+cpap->model())+"</b><br/>";
+                    QObject::tr("The last time you used your %1...").arg(cpap->brand()+" "+cpap->series()+" "+cpap->model())+"</b><br/>";
 
             int daysto = date.daysTo(QDate::currentDate());
             QString daystring;

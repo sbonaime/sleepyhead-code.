@@ -265,7 +265,7 @@ int CMS50Loader::doImportMode()
             MachineInfo info = newInfo();
             info.model = cms50dplus ? QObject::tr("CMS50D+") : QObject::tr("CMS50E/F");
             info.serial = QString();
-            Machine * mach = CreateMachine(info);
+            Machine * mach = p_profile->CreateMachine(info);
 
             Q_UNUSED(mach);
 

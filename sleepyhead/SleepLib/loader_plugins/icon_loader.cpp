@@ -126,7 +126,7 @@ int FPIconLoader::Open(QString path)
     for (int i = 0; i < SerialNumbers.size(); i++) {
         MachineInfo info = newInfo();
         info.serial = SerialNumbers[i];
-        m = CreateMachine(info);
+        m = p_profile->CreateMachine(info);
 
         npath = newpath + "/" + info.serial;
 

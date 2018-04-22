@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>687</width>
-    <height>361</height>
+    <width>1023</width>
+    <height>804</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -958,42 +958,14 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="warningLabel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>14</pointsize>
-              <weight>50</weight>
-              <italic>false</italic>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: red;
-color: yellow;</string>
-            </property>
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;This is pre-release software, some parts of this program may not yet function as intended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignHCenter|Qt::AlignTop</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QWebView" name="welcomeView">
+           <widget class="QWebView" name="welcomeView" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="url">
+            <property name="url" stdset="0">
              <url>
               <string>about:blank</string>
              </url>
@@ -1023,14 +995,14 @@ color: yellow;</string>
            <number>0</number>
           </property>
           <item>
-           <widget class="QWebView" name="statisticsView">
+           <widget class="QWebView" name="statisticsView" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="url">
+            <property name="url" stdset="0">
              <url>
               <string>about:blank</string>
              </url>
@@ -1293,7 +1265,7 @@ color: yellow;</string>
               <number>0</number>
              </property>
              <item>
-              <widget class="QWebView" name="webView">
+              <widget class="QWebView" name="webView" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1312,7 +1284,7 @@ color: yellow;</string>
                  <height>200</height>
                 </size>
                </property>
-               <property name="url">
+               <property name="url" stdset="0">
                 <url>
                  <string>qrc:/docs/index.html</string>
                 </url>
@@ -1472,7 +1444,7 @@ QToolBox::tab:selected  {
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -1482,8 +1454,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>95</width>
-          <height>606</height>
+          <width>175</width>
+          <height>680</height>
          </rect>
         </property>
         <property name="palette">
@@ -1591,6 +1563,50 @@ QToolBox::tab:selected  {
          <string>Navigation</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QToolButton" name="profilesButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QToolButton {
+background: transparent;
+border: 2px solid transparent; border-radius: 30px;
+}
+
+QToolButton:hover {
+border: 2px solid #56789a; border-radius: 30px;
+}
+
+QToolButton:pressed {
+background-color: #8080ff;
+border: 2px solid #56789a; border-radius: 30px;
+}</string>
+           </property>
+           <property name="text">
+            <string>Profiles</string>
+           </property>
+           <property name="icon">
+            <iconset resource="Resources.qrc">
+             <normaloff>:/icons/go-home.png</normaloff>:/icons/go-home.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>64</width>
+             <height>64</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QToolButton" name="statisticsButton">
            <property name="sizePolicy">
@@ -1896,8 +1912,8 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>77</width>
-          <height>236</height>
+          <width>175</width>
+          <height>680</height>
          </rect>
         </property>
         <property name="palette">
@@ -2929,7 +2945,7 @@ border-radius: 10px;
           </widget>
          </item>
          <item>
-          <widget class="QWebView" name="bookmarkView">
+          <widget class="QWebView" name="bookmarkView" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -3030,7 +3046,7 @@ border-radius: 10px;
            <property name="styleSheet">
             <string notr="true">background: rgb(163, 190, 255)</string>
            </property>
-           <property name="url">
+           <property name="url" stdset="0">
             <url>
              <string>about:blank</string>
             </url>
@@ -3044,8 +3060,8 @@ border-radius: 10px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>77</width>
-          <height>236</height>
+          <width>175</width>
+          <height>680</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3078,7 +3094,7 @@ border-radius: 10px;
           <number>0</number>
          </property>
          <item>
-          <widget class="QWebView" name="recordsBox">
+          <widget class="QWebView" name="recordsBox" native="true">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -3087,7 +3103,7 @@ border-radius: 10px;
            <property name="styleSheet">
             <string notr="true">background: rgb(163, 190, 255)</string>
            </property>
-           <property name="url">
+           <property name="url" stdset="0">
             <url>
              <string>about:blank</string>
             </url>
@@ -3106,8 +3122,8 @@ border-radius: 10px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>687</width>
-     <height>22</height>
+     <width>1023</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -3137,7 +3153,6 @@ border-radius: 10px;
     <addaction name="menuExp_ort_CSV_Data"/>
     <addaction name="actionExport_Journal"/>
     <addaction name="separator"/>
-    <addaction name="actionChange_User"/>
     <addaction name="actionChange_Data_Folder"/>
     <addaction name="separator"/>
     <addaction name="action_Exit"/>

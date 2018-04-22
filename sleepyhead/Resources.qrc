@@ -52,5 +52,6 @@
         <file>icons/aircurve.png</file>
         <file>icons/prs1_960.png</file>
         <file>icons/daily.png</file>
+        <file>icons/dv64.png</file>
     </qresource>
 </RCC>

@@ -64,7 +64,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
     QPrinter *printer;
 
-    bool aa_setting = p_profile->appearance->antiAliasing();
+    bool aa_setting = AppSetting->antiAliasing();
 
     bool force_antialiasing = aa_setting;
 
@@ -391,8 +391,8 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     }
     qint64 st = savest, et = saveet;
 
-    bool lineCursorMode = p_profile->appearance->lineCursorMode();
-    p_profile->appearance->setLineCursorMode(false);
+    bool lineCursorMode = AppSetting->lineCursorMode();
+    AppSetting->setLineCursorMode(false);
 
     if (name == STR_TR_Daily) {
         if (!print_bookmarks) {
@@ -587,7 +587,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
             top += bounds.height();
         } else { top += normal_height / 2; }
 
-        p_profile->appearance->setAntiAliasing(force_antialiasing);
+        AppSetting->setAntiAliasing(force_antialiasing);
         int tmb = g->m_marginbottom;
         g->m_marginbottom = 0;
 
@@ -601,7 +601,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         //g->showTitle(true);
         //painter.endNativePainting();
         g->m_marginbottom = tmb;
-        p_profile->appearance->setAntiAliasing(aa_setting);
+        AppSetting->setAntiAliasing(aa_setting);
 
 
         if (!pm.isNull()) {
@@ -629,6 +629,6 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
     painter.end();
     delete printer;
     mainwin->Notify(QObject::tr("SleepyHead has finished sending the job to the printer."));
-    p_profile->appearance->setLineCursorMode(lineCursorMode);
+    AppSetting->setLineCursorMode(lineCursorMode);
 }
 

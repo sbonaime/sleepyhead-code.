@@ -224,6 +224,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     double s2;
     int widest_YAxis = 0;
 
+    float lineThickness = AppSetting->lineThickness();
+
     int mouseOverKey = 0;
     if (ipap.min_pressure > 0) {
         double xp,yp;
@@ -308,7 +310,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         graph.renderText(label, left,  top+5 );
 
         xstep /= 5.0;
-        painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
+        painter.setPen(QPen(ichan.defaultColor(), lineThickness));
 
 
         ////////////////////////////////////////////////////////////////////
@@ -330,7 +332,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             if (i == mouseOverKey) {
                 painter.setPen(QPen(Qt::black));
                 painter.drawRect(xp, yp-4, 8, 8);
-                painter.setPen(QPen(ichan.defaultColor(), p_profile->appearance->lineThickness()));
+                painter.setPen(QPen(ichan.defaultColor(), lineThickness));
             }
 
             painter.drawLine(xp, lastyp, xp+xstep, yp);
@@ -413,7 +415,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 QColor col = chan.defaultColor();
                 col.setAlpha(40);
                 painter.setPen(col);
-                painter.setPen(QPen(col, p_profile->appearance->lineThickness()));
+                painter.setPen(QPen(col, lineThickness));
 
 
                 xp = left;
@@ -468,7 +470,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 QColor col = chan.defaultColor();
                 col.setAlpha(50);
                 painter.setPen(col);
-                painter.setPen(QPen(col, p_profile->appearance->lineThickness()));
+                painter.setPen(QPen(col, lineThickness));
 
 
                 xp = left;
@@ -514,7 +516,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 */
 
         if (epap.min_pressure) {
-            painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
+            painter.setPen(QPen(echan.defaultColor(), lineThickness));
 
             s2 = double(epap.times[qMax(min,0)]/60.0);
             xp=left, lastyp = bottom - (s2 * ystep);
@@ -527,7 +529,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 if (i == mouseOverKey) {
                     painter.setPen(QPen(Qt::black));
                     painter.drawRect(xp, yp-4, 8, 8);
-                    painter.setPen(QPen(echan.defaultColor(), p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(echan.defaultColor(), lineThickness));
                 }
 
                 yp = bottom - qMax((double(p1) * ystep), 0.0);

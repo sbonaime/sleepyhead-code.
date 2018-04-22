@@ -395,7 +395,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     GraphType graphtype = m_graphtype;
 
     if (graphtype == GT_LINE || graphtype == GT_POINTS) {
-        bool pts = p_profile->appearance->overviewLinechartMode() == OLC_Lines;
+        bool pts = AppSetting->overviewLinechartMode() == OLC_Lines;
         graphtype = pts ? GT_POINTS : GT_LINE;
     }
 
@@ -494,7 +494,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     lastdaygood = true;
 
     // Display Line Cursor
-    if (p_profile->appearance->lineCursorMode()) {
+    if (AppSetting->lineCursorMode()) {
         qint64 time = lcursor;
         double xmult = double(width) / xx;
 
@@ -568,6 +568,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setClipping(true);
 
     QColor summaryColor = QColor("dark gray");
+
+    float lineThickness = AppSetting->lineThickness();
 
     for (qint64 Q = minx; Q <= maxx + ms_per_day; Q += ms_per_day) {
         zd = Q / ms_per_day;
@@ -778,14 +780,14 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                         if (lastdaygood) {
                             if (lastY[j] != py2) { // vertical line
-                                painter.setPen(QPen(col2,p_profile->appearance->lineThickness()));
+                                painter.setPen(QPen(col2, lineThickness));
                                 painter.drawLine(lastX[j], lastY[j], px, py2);
                             }
 
-                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.setPen(QPen(col1, lineThickness));
                             painter.drawLine(px, py2, px2, py2);
                         } else {
-                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.setPen(QPen(col1, lineThickness));
                             painter.drawLine(x1, py2, x2, py2);
                         }
 
@@ -808,10 +810,10 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
 
                         if (lastdaygood) {
-                            painter.setPen(QPen(col2,p_profile->appearance->lineThickness()));
+                            painter.setPen(QPen(col2, lineThickness));
                             painter.drawLine(lastX[j] - barw / 2, lastY[j], px2 - barw / 2, py2);
                         } else {
-                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.setPen(QPen(col1, lineThickness));
                             painter.drawLine(px + barw / 2 - 1, py2, px + barw / 2 + 1, py2);
                         }
 

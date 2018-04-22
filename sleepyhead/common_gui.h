@@ -1,4 +1,4 @@
-/* Common GUI Functions Header
+﻿/* Common GUI Functions Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -14,6 +14,10 @@
 
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();
+
+
+QString getBranchVersion();
+
 
 const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";

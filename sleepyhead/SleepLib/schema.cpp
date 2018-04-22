@@ -1018,6 +1018,9 @@ void ChannelList::add(QString group, Channel *chan)
 
 bool ChannelList::Save(QString filename)
 {
+    if (!p_profile)
+        return false;
+
     qDebug() << "Saving Channels.xml";
     if (filename.isEmpty()) {
         filename = p_profile->Get("{DataFolder}/") + "channels.xml";

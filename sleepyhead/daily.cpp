@@ -59,7 +59,8 @@ void Daily::setSidebarVisible(bool visible)
 {
     QList<int> a;
 
-    int panel_width = visible ? p_profile->appearance->dailyPanelWidth() : 0;
+
+    int panel_width = visible ? AppSetting->dailyPanelWidth() : 0;
     a.push_back(panel_width);
     a.push_back(this->width() - panel_width);
     ui->splitter_2->setStretchFactor(1,1);
@@ -147,7 +148,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    int default_height = p_profile->appearance->graphHeight();
+    int default_height = AppSetting->graphHeight();
 
     gGraph *GAHI = nullptr,
 //            *TAP = nullptr,
@@ -208,7 +209,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     evseg->AddSlice(CPAP_NRI,QColor(0x00,0x80,0x40,0xff),STR_TR_NR);
     evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),STR_TR_FL);
     evseg->AddSlice(CPAP_SensAwake,QColor(0x40,0xC0,0x40,0xff),STR_TR_SA);
-    if (p_profile->cpap->userEventPieChart()) {
+    if (AppSetting->userEventPieChart()) {
         evseg->AddSlice(CPAP_UserFlag1,QColor(0xe0,0xe0,0xe0,0xff),tr("UF1"));
         evseg->AddSlice(CPAP_UserFlag2,QColor(0xc0,0xc0,0xe0,0xff),tr("UF2"));
     }
@@ -257,7 +258,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 //    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
 
-    bool square=p_profile->appearance->squareWavePlots();
+    bool square=AppSetting->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, square);
     graphlist[schema::channel[CPAP_Pressure].code()]->AddLayer(pc);
 
@@ -404,8 +405,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     GraphView->setEmptyText(STR_Empty_NoData);
     previous_date=QDate();
 
-    ui->calButton->setChecked(p_profile->appearance->calendarVisible() ? Qt::Checked : Qt::Unchecked);
-    on_calButton_toggled(p_profile->appearance->calendarVisible());
+    ui->calButton->setChecked(AppSetting->calendarVisible() ? Qt::Checked : Qt::Unchecked);
+    on_calButton_toggled(AppSetting->calendarVisible());
 
     GraphView->resetLayout();
     GraphView->LoadSettings("Daily");
@@ -586,13 +587,13 @@ void Daily::ReloadGraphs()
 
 void Daily::hideSpaceHogs()
 {
-    if (p_profile->appearance->calendarVisible()) {
+    if (AppSetting->calendarVisible()) {
         ui->calendarFrame->setVisible(false);
     }
 }
 void Daily::showSpaceHogs()
 {
-    if (p_profile->appearance->calendarVisible()) {
+    if (AppSetting->calendarVisible()) {
         ui->calendarFrame->setVisible(true);
     }
 }
@@ -1365,7 +1366,7 @@ void Daily::Load(QDate date)
         posit = day->machine(MT_POSITION);
     }
 
-    if (!p_profile->session->cacheSessions()) {
+    if (!AppSetting->cacheSessions()) {
         // Getting trashed on purge last day...
 
         // lastcpapday can get purged and be invalid
@@ -1573,7 +1574,7 @@ void Daily::Load(QDate date)
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             // Show Event Breakdown pie chart
-            if ((hours > 0) && p_profile->appearance->graphSnapshots()) {  // AHI Pie Chart
+            if ((hours > 0) && AppSetting->graphSnapshots()) {  // AHI Pie Chart
                 if ((values[CPAP_Obstructive] + values[CPAP_Hypopnea] + values[CPAP_ClearAirway] + values[CPAP_Apnea] + values[CPAP_RERA] + values[CPAP_FlowLimit] + values[CPAP_SensAwake])>0) {
                     html+="<tr><td align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
@@ -2126,7 +2127,7 @@ void Daily::on_calButton_toggled(bool checked)
 {
     bool b=checked;
     ui->calendarFrame->setVisible(b);
-    p_profile->appearance->setCalendarVisible(b);
+    AppSetting->setCalendarVisible(b);
 
     if (!b) {
         ui->calButton->setArrowType(Qt::DownArrow);
@@ -2571,5 +2572,5 @@ void Daily::on_splitter_2_splitterMoved(int, int)
 {
     int size = ui->splitter_2->sizes()[0];
     if (size == 0) return;
-    p_profile->appearance->setDailyPanelWidth(size);
+    AppSetting->setDailyPanelWidth(size);
 }

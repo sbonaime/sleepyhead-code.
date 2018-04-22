@@ -130,7 +130,7 @@ int WeinmannLoader::Open(QString path)
 
     MachineInfo info = newInfo();
     info.serial = "141819";
-    Machine * mach = CreateMachine(info);
+    Machine * mach = p_profile->CreateMachine(info);
 
 
     int WeekComplianceOffset = index["WeekComplianceOffset"];

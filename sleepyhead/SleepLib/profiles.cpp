@@ -1,4 +1,4 @@
-/* SleepLib Profiles Implementation
+﻿/* SleepLib Profiles Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -14,6 +14,8 @@
 #include <QProcess>
 #include <QByteArray>
 #include <QHostInfo>
+#include <QApplication>
+#include <QSettings>
 #include <algorithm>
 #include <cmath>
 
@@ -24,8 +26,8 @@
 
 #include "machine_loader.h"
 
-#include <QApplication>
 #include "mainwindow.h"
+#include "translation.h"
 
 extern MainWindow *mainwin;
 Preferences *p_pref;
@@ -53,37 +55,39 @@ Profile::Profile(QString path)
     }
 
     p_filename = p_path + p_name + STR_ext_XML;
-    machlist.clear();
+    m_machlist.clear();
 
-    doctor = nullptr;
-    user = nullptr;
-    cpap = nullptr;
-    oxi = nullptr;
-    appearance = nullptr;
-    session = nullptr;
-    general = nullptr;
+    Open(p_filename);
+
+    Set(STR_GEN_DataFolder, QString("{home}/Profiles/{UserName}"));
+
+    doctor = new DoctorInfo(this);
+    user = new UserInfo(this);
+    cpap = new CPAPSettings(this);
+    oxi = new OxiSettings(this);
+    appearance = new AppearanceSettings(this);
+    session = new SessionSettings(this);
+    general = new UserSettings(this);
+
+    OpenMachines();
+    m_opened=true;
 }
 
 Profile::~Profile()
 {
-    QString lockfile=p_path+"/lockfile";
-    QFile file(lockfile);
-    file.remove();
+    removeLock();
 
-    if (m_opened) {
-        delete user;
-        delete doctor;
-        delete cpap;
-        delete oxi;
-        delete appearance;
-        delete session;
-        delete general;
+    delete user;
+    delete doctor;
+    delete cpap;
+    delete oxi;
+    delete appearance;
+    delete session;
+    delete general;
 
-
-        for (QHash<MachineID, Machine *>::iterator it = machlist.begin(); it != machlist.end(); it++) {
-            delete it.value();
-        }
-        m_opened=false;
+    // delete machine objects...
+    for (int i=0; i<m_machlist.size(); ++i) {
+        delete m_machlist[i];
     }
 
     for (QMap<QDate, Day *>::iterator d = daylist.begin(); d != daylist.end(); d++) {
@@ -95,7 +99,7 @@ Profile::~Profile()
 bool Profile::Save(QString filename)
 {
     if (m_opened) {
-        return Preferences::Save(filename) && p_profile->StoreMachines();
+        return Preferences::Save(filename) && StoreMachines();
     } else return false;
 }
 
@@ -120,34 +124,6 @@ QString Profile::checkLock()
     return lockhost;
 }
 
-bool Profile::Load(QString filename)
-{
-    p_profile = this;
-
-    if (filename.isEmpty()) {
-        filename=p_filename;
-    }
-    if (m_opened) {
-        qDebug() << "Profile" << filename << "all ready open";
-        return true;
-    }
-
-    bool b = Open(filename);
-
-    this->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{UserName}"));
-
-    doctor = new DoctorInfo(this);
-    user = new UserInfo(this);
-    cpap = new CPAPSettings(this);
-    oxi = new OxiSettings(this);
-    appearance = new AppearanceSettings(this);
-    session = new SessionSettings(this);
-    general = new UserSettings(this);
-
-    m_opened=true;
-    return b;
-}
-
 const QString STR_PROP_Brand = "brand";
 const QString STR_PROP_Model = "model";
 const QString STR_PROP_Series = "series";
@@ -157,20 +133,20 @@ const QString STR_PROP_Serial = "serial";
 const QString STR_PROP_DataVersion = "dataversion";
 const QString STR_PROP_LastImported = "lastimported";
 
-bool Profile::OpenMachines()
+void Profile::addLock()
 {
-    if (m_machopened)
-        return true;
-
-    if (!m_opened) {
-        Open();
-    }
     QFile lockfile(p_path+"lockfile");
     lockfile.open(QFile::WriteOnly);
     QByteArray ba;
     ba.append(QHostInfo::localHostName());
     lockfile.write(ba);
     lockfile.close();
+}
+
+bool Profile::OpenMachines()
+{
+    if (m_machopened)
+        return true;
 
     QString filename = p_path+"machines.xml";
     QFile file(filename);
@@ -198,7 +174,7 @@ bool Profile::OpenMachines()
         QString pKey = elem.tagName();
 
         if (pKey.toLower() != "machine") {
-            qWarning() << "Profile::ExtraLoad() pKey!=\"machine\"";
+            qWarning() << "Profile::OpenMachines() pKey!=\"machine\"";
             elem = elem.nextSiblingElement();
             continue;
         }
@@ -251,33 +227,31 @@ bool Profile::OpenMachines()
             }
         }
 
-
         Machine *m = nullptr;
 
-        m = MachineLoader::CreateMachine(info, m_id);
-        //m->setId(m_id);
+        // Create Machine needs a profile passed to it..
+
+        m = CreateMachine(info, m_id);
+
         if (m) m->properties = prop;
 
         elem = elem.nextSiblingElement();
     }
 
     m_machopened = true;
-
     return true;
-
 }
 
 bool Profile::StoreMachines()
 {
     QDomDocument doc("Machines");
-    QDomElement elem = ExtraSave(doc);
-    doc.appendChild(elem);
 
     QDomElement mach = doc.createElement("machines");
 
-    for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
+    for (int i=0; i<m_machlist.size(); ++i) {
+        Machine *m = m_machlist[i];
+
         QDomElement me = doc.createElement("machine");
-        Machine *m = i.value();
         me.setAttribute("id", (int)m->id());
         me.setAttribute("type", (int)m->type());
         me.setAttribute("class", m->loaderName());
@@ -285,7 +259,7 @@ bool Profile::StoreMachines()
         QDomElement pe = doc.createElement("properties");
         me.appendChild(pe);
 
-        for (QHash<QString, QString>::iterator j = i.value()->properties.begin(); j != i.value()->properties.end(); j++) {
+        for (QHash<QString, QString>::iterator j = m->properties.begin(); j != m->properties.end(); j++) {
             QDomElement pp = doc.createElement(j.key());
             pp.appendChild(doc.createTextNode(j.value()));
             pe.appendChild(pp);
@@ -569,13 +543,28 @@ void Profile::DataFormatError(Machine *m)
     return;
 
 }
+void Profile::UnloadMachineData()
+{
+    Q_ASSERT(m_machopened);
+    QMap<QDate, Day *>::iterator it;
+    for (it = daylist.begin(); it != daylist.end(); ++it) {
+        delete it.value();
+    }
+    daylist.clear();
+
+    for (int i=0; i<m_machlist.size(); ++i) {
+        Machine *m = m_machlist[i];
+        m->sessionlist.clear();
+        m->day.clear();
+    }
+    removeLock();
+}
 void Profile::LoadMachineData()
 {
-    if (!m_machopened) OpenMachines();
-    QHash<MachineID, QMap<QDate, QHash<ChannelID, EventDataType> > > cache;
+    addLock();
 
-    for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
-        Machine *m = i.value();
+    for (int i=0; i<m_machlist.size();++i) {
+        Machine *m = m_machlist[i];
 
         MachineLoader *loader = lookupLoader(m);
 
@@ -594,44 +583,106 @@ void Profile::LoadMachineData()
             m->Load();
         }
     }
+    loadChannels();
 }
 
-
-/**
- * @brief Upgrade Machine XML section from old "profile.xml"
- * @param root
- */
-void Profile::ExtraLoad(QDomElement &root)
+void Profile::removeMachine(Machine * m)
 {
-    if (root.tagName().toLower() != "machines") {
-        // Good!
-        return;
+    m_machlist.removeAll(m);
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(m->loaderName());
+
+    if (mlit != MachineList.end()) {
+        QHash<QString, Machine *>::iterator mit = mlit.value().find(m->serial());
+        if (mit != mlit.value().end()) {
+            mlit.value().erase(mit);
+        }
     }
 
-    // Save this sucker
-    QDomDocument doc("Machines");
-
-    doc.appendChild(root);
-
-    QFile file(p_path+"/machines.xml");
-
-    // Don't do anything if machines.xml already exists.. the user ran the old version!
-    if (file.exists()) return;
-
-    file.open(QFile::WriteOnly);
-
-    file.write(doc.toByteArray());
-
-    file.close();
 }
+
+Machine * Profile::lookupMachine(QString serial, QString loadername)
+{
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loadername);
+    if (mlit != MachineList.end()) {
+        QHash<QString, Machine *>::iterator mit = mlit.value().find(serial);
+        if (mit != mlit.value().end()) {
+            return mit.value();
+        }
+    }
+    return nullptr;
+}
+
+
+Machine * Profile::CreateMachine(MachineInfo info, MachineID id)
+{
+
+    Machine *m = nullptr;
+
+    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(info.loadername);
+
+    if (mlit != MachineList.end()) {
+        QHash<QString, Machine *>::iterator mit = mlit.value().find(info.serial);
+        if (mit != mlit.value().end()) {
+            mit.value()->setInfo(info); // update info
+            return mit.value();
+        }
+    }
+
+    // Before we create, find any lost folder to get the old ID
+    if ((id == 0) && ((info.type == MT_OXIMETER) || (info.type == MT_JOURNAL) || (info.type == MT_POSITION)|| (info.type == MT_SLEEPSTAGE))) {
+        QString dataPath = Get("{" + STR_GEN_DataFolder + "}/");
+        QDir dir(dataPath);
+        QStringList namefilter(QString(info.loadername+"_*"));
+        QStringList files = dir.entryList(namefilter, QDir::Dirs);
+        if (files.size() > 0) {
+            QString idstr = files[0].section("_",-1);
+            bool ok;
+            id = idstr.toInt(&ok, 16);
+        }
+    }
+
+    switch (info.type) {
+    case MT_CPAP:
+        m = new CPAP(id);
+        break;
+    case MT_SLEEPSTAGE:
+        m = new SleepStage(id);
+        break;
+    case MT_OXIMETER:
+        m = new Oximeter(id);
+        break;
+    case MT_POSITION:
+        m = new PositionSensor(id);
+        break;
+    case MT_JOURNAL:
+        m = new Machine(id);
+        m->setType(MT_JOURNAL);
+        break;
+    default:
+        m = new Machine(id);
+
+        break;
+    }
+
+    m->setInfo(info);
+
+    qDebug() << "Added" << info.loadername << "Machine Record" << (info.serial.isEmpty() ? m->hexid() : info.serial);
+
+    MachineList[info.loadername][info.serial] = m;
+    AddMachine(m);
+
+    return m;
+}
+
+
+
 void Profile::AddMachine(Machine *m)
 {
     if (!m) {
         qWarning() << "Empty Machine in Profile::AddMachine()";
         return;
     }
-
-    machlist[m->id()] = m;
+    m_machlist.append(m);
 }
 
 void Profile::DelMachine(Machine *m)
@@ -641,8 +692,7 @@ void Profile::DelMachine(Machine *m)
         return;
     }
 
-    m->loader()->removeMachine(m);
-    machlist.erase(machlist.find(m->id()));
+    removeMachine(m);
 }
 
 Day *Profile::addDay(QDate date)
@@ -788,19 +838,18 @@ MachineLoader *GetLoader(QString name)
 QList<Machine *> Profile::GetMachines(MachineType t)
 {
     QList<Machine *> vec;
-    QHash<MachineID, Machine *>::iterator i;
-    QHash<MachineID, Machine *>::iterator machlist_end=machlist.end();
 
-    for (i = machlist.begin(); i != machlist_end; i++) {
-        if (!i.value()) {
-            qWarning() << "Profile::GetMachines() i->second == nullptr";
+    for (int i=0; i<m_machlist.size(); ++i) {
+        Machine * m = m_machlist[i];
+        if (!m) {
+            qWarning() << "Profile::GetMachines() m == nullptr";
             continue;
         }
 
-        MachineType mt = i.value()->type();
+        MachineType mt = m->type();
 
         if ((t == MT_UNKNOWN) || (mt == t)) {
-            vec.push_back(i.value());
+            vec.push_back(m);
         }
     }
 
@@ -879,14 +928,10 @@ QMap<QString, Profile *> profiles;
 void Done()
 {
     PREF.Save();
-    LAYOUT.Save();
-
-    p_profile->Save();
-    delete p_profile;
 
     profiles.clear();
     delete p_pref;
-    delete p_layout;
+    delete AppSetting;
     DestroyLoaders();
 }
 
@@ -910,7 +955,6 @@ Profile *Create(QString name)
 
     //path+="/"+name;
     p_profile = new Profile(path);
-    p_profile->Load();
     profiles[name] = p_profile;
     p_profile->user->setUserName(name);
     //p_profile->Set("Realname",realname);
@@ -945,6 +989,8 @@ void saveProfileList()
     QDomElement root = doc.createElement("profiles");
     doc.appendChild(root);
 
+    root.appendChild(doc.createComment("This file is created during Profile Scan for cloud access convenience, it's not used by Desktop version of SleepyHead."));
+
     QMap<QString, Profile *>::iterator it;
 
     for (it = profiles.begin(); it != profiles.end(); ++it) {
@@ -963,6 +1009,35 @@ void saveProfileList()
     file.close();
 }
 
+int CleanupProfile(Profile *prof)
+{
+    // Migrate old per Profile settings that should have been put in program main preferences.
+    QStringList migrateList;
+    migrateList << STR_IS_Multithreading << STR_US_ShowPerformance << STR_US_ShowDebug
+                << STR_US_ScrollDampening << STR_AS_CalendarVisible << STR_IS_CacheSessions
+                << STR_AS_LineCursorMode << STR_AS_RightSidebarVisible << STR_AS_DailyPanelWidth
+                << STR_US_ShowPerformance << STR_AS_GraphHeight << STR_AS_GraphSnapshots
+                << STR_AS_AntiAliasing << STR_AS_LineThickness << STR_AS_UsePixmapCaching
+                << STR_AS_SquareWave << STR_AS_RightPanelWidth << STR_US_TooltipTimeout
+                << STR_AS_Animations << STR_AS_AllowYAxisScaling << STR_AS_GraphTooltips
+                << STR_CS_UserEventPieChart << STR_AS_OverlayType << STR_AS_OverviewLinechartMode;
+
+    int cnt = 0;
+    for (int i=0; i<migrateList.length(); ++i) {
+        const QString &prf = migrateList.at(i);
+        if (prof->contains(prf)) {
+            qDebug() << "Migrating profile preference" << prf;
+            PREF[prf] = (*prof)[prf];
+            prof->Erase(prf);
+            cnt++;
+        }
+    }
+    if (cnt > 0) {
+        qDebug() << "Migrated" << cnt << "preferences for profile" << (*prof)[STR_UI_UserName];
+        prof->Save();
+    }
+    return cnt;
+}
 
 /**
  * @brief Scan Profile directory loading user profiles
@@ -986,6 +1061,8 @@ void Scan()
 
     QFileInfoList list = dir.entryInfoList();
 
+    int cleanup = 0;
+
     // Iterate through subdirectories and load profiles..
     for (int i = 0; i < list.size(); i++) {
         QFileInfo fi = list.at(i);
@@ -994,8 +1071,15 @@ void Scan()
         //prof->Open();
 
         profiles[fi.fileName()] = prof;
+
+        // Migrate any old settings
+        cleanup += CleanupProfile(prof);
     }
 
+    if (cleanup > 0) {
+        qDebug() << "Saving preferences after migration";
+        PREF.Save();
+    }
     // Update profiles.xml for mobile version
     saveProfileList();
 }
@@ -1791,11 +1875,8 @@ QDate Profile::LastGoodDay(MachineType mt)
 
 bool Profile::channelAvailable(ChannelID code)
 {
-    QHash<MachineID, Machine *>::iterator it;
-    QHash<MachineID, Machine *>::iterator machlist_end=machlist.end();
-
-    for (it = machlist.begin(); it != machlist_end; it++) {
-        Machine * mach = it.value();
+    for (int i=0; i<m_machlist.size(); ++i) {
+        Machine * mach = m_machlist[i];
         if (mach->hasChannel(code))
             return true;
     }
@@ -1832,4 +1913,146 @@ bool Profile::hasChannel(ChannelID code)
     } while (d >= f);
 
     return found;
+}
+
+const quint16 chandata_version = 1;
+void Profile::saveChannels()
+{
+    QString filename = Get("{DataFolder}/") + "channels.dat";
+    QFile f(filename);
+    qDebug() << "Saving Channel States";
+    f.open(QFile::WriteOnly);
+    QDataStream out(&f);
+    out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << (quint32)magic;
+    out << (quint16)chandata_version;
+
+    QSettings settings(getDeveloperName(), getAppName());
+    (*p_profile)[STR_PREF_Language] = settings.value(LangSetting, "").toString();
+
+    quint16 size = schema::channel.channels.size();
+    out << size;
+
+    QHash<ChannelID, schema::Channel *>::iterator it;
+    QHash<ChannelID, schema::Channel *>::iterator it_end = schema::channel.channels.end();
+
+    for (it = schema::channel.channels.begin(); it != it_end; ++it) {
+        schema::Channel * chan = it.value();
+        out << it.key();
+        out << chan->code();
+        out << chan->enabled();
+        out << chan->defaultColor();
+        out << chan->fullname();
+        out << chan->label();
+        out << chan->description();
+        out << chan->lowerThreshold();
+        out << chan->lowerThresholdColor();
+        out << chan->upperThreshold();
+        out << chan->upperThresholdColor();
+        out << chan->showInOverview();
+    }
+
+    f.close();
+
+}
+
+void Profile::loadChannels()
+{
+    bool changing_language = false;
+
+    QString filename = Get("{DataFolder}/") + "channels.dat";
+    QFile f(filename);
+    if (!f.open(QFile::ReadOnly)) {
+        return;
+    }
+    qDebug() << "Loading channel.dat States";
+
+    QDataStream in(&f);
+    in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 mag;
+    in >> mag;
+
+    if (magic != mag)  {
+        qDebug() << "LoadChannels: Faulty data";
+        return;
+    }
+    quint16 version;
+    in >> version;
+
+    QSettings settings(getDeveloperName(), getAppName());
+    QString language = Get(STR_PREF_Language);
+    if (settings.value(LangSetting, "").toString() != language) {
+        qDebug() << "Language change detected, resetting default channel names";
+        changing_language = true;
+    }
+
+    quint16 size;
+    in >> size;
+
+    QString name;
+    ChannelID code;
+    bool enabled;
+    QColor color;
+    EventDataType lowerThreshold;
+    QColor lowerThresholdColor;
+    EventDataType upperThreshold;
+    QColor upperThresholdColor;
+
+    QString fullname;
+    QString label;
+    QString description;
+    bool showOverview = false;
+
+    for (int i=0; i < size; i++) {
+        in >> code;
+        schema::Channel * chan = &schema::channel[code];
+        in >> name;
+        if (chan->code() != name) {
+            qDebug() << "Looking up channel" << name << "by name, as it's ChannedID must have changed";
+            chan = &schema::channel[name];
+        }
+        in >> enabled;
+        in >> color;
+        in >> fullname;
+        in >> label;
+        in >> description;
+        in >> lowerThreshold;
+        in >> lowerThresholdColor;
+        in >> upperThreshold;
+        in >> upperThresholdColor;
+        if (version >= 1) {
+            in >> showOverview;
+        }
+
+        if (chan->isNull()) {
+            qDebug() << "loadChannels has no idea about channel" << name;
+            if (in.atEnd()) return;
+            continue;
+        }
+        chan->setEnabled(enabled);
+        chan->setDefaultColor(color);
+
+        // Don't import channel descriptions if event renaming is turned off. (helps pick up new translations)
+        if (changing_language) {
+            // Nothing
+        } else {
+            chan->setFullname(fullname);
+            chan->setLabel(label);
+            chan->setDescription(description);
+        }
+
+        chan->setLowerThreshold(lowerThreshold);
+        chan->setLowerThresholdColor(lowerThresholdColor);
+        chan->setUpperThreshold(upperThreshold);
+        chan->setUpperThresholdColor(upperThresholdColor);
+
+        chan->setShowInOverview(showOverview);
+        if (in.atEnd()) return;
+    }
+
+    f.close();
 }

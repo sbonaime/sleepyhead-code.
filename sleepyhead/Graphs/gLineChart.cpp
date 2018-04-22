@@ -227,7 +227,7 @@ skipcheck:
             lob = new gLineOverlayBar(code, chan->defaultColor(), chan->label(), FT_Span);
         }
         if (lob != nullptr) {
-            lob->setOverlayDisplayType(((m_codes[0] == CPAP_FlowRate))? (OverlayDisplayType)p_profile->appearance->overlayType() : ODT_TopAndBottom);
+            lob->setOverlayDisplayType(((m_codes[0] == CPAP_FlowRate))? (OverlayDisplayType)AppSetting->overlayType() : ODT_TopAndBottom);
             lob->SetDay(m_day);
             flags[code] = lob;
         }
@@ -476,7 +476,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
 
-    bool linecursormode = p_profile->appearance->lineCursorMode();
+    bool linecursormode = AppSetting->lineCursorMode();
     ////////////////////////////////////////////////////////////////////////
     // Display Line Cursor
     ////////////////////////////////////////////////////////////////////////
@@ -538,7 +538,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
-    painter.setRenderHint(QPainter::Antialiasing, p_profile->appearance->antiAliasing());
+    painter.setRenderHint(QPainter::Antialiasing, AppSetting->antiAliasing());
 
     painter.setFont(*defaultfont);
     bool showDottedLines = true;
@@ -553,6 +553,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     Session * sess = nullptr;
     ChannelID code;
+
+    float lineThickness = AppSetting->lineThickness()+0.001F;
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         code = m_codes[gi];
@@ -572,7 +574,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 dot.visible = true;
                 QColor color = chan.calc[dot.type].color;
                 color.setAlpha(200);
-                painter.setPen(QPen(QBrush(color), p_profile->appearance->lineThickness(), Qt::DotLine));
+                painter.setPen(QPen(QBrush(color), lineThickness, Qt::DotLine));
                 EventDataType y=top + height + 1 - ((dot.value - miny) * ymult);
                 painter.drawLine(left + 1, y, left + 1 + width, y);
 
@@ -875,7 +877,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
                     }
 
-                    painter.setPen(QPen(chan.defaultColor(), p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(chan.defaultColor(), lineThickness));
                     painter.drawLines(lines);
                     w.graphView()->lines_drawn_this_frame += lines.count();
                     lines.clear();
@@ -999,7 +1001,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             }
                         }
                     }
-                    painter.setPen(QPen(chan.defaultColor(),p_profile->appearance->lineThickness()));
+                    painter.setPen(QPen(chan.defaultColor(), lineThickness));
                     painter.drawLines(lines);
                     w.graphView()->lines_drawn_this_frame+=lines.count();
                     lines.clear();
@@ -1011,7 +1013,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
 
 
-//        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+//        painter.setPen(QPen(m_colors[gi],lineThickness));
 //        painter.drawLines(lines);
 //        w.graphView()->lines_drawn_this_frame+=lines.count();
 //        lines.clear();
@@ -1131,7 +1133,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int cnt = 0;
 
     // Draw the linechart overlays
-    if (m_day && (p_profile->appearance->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
+    if (m_day && (AppSetting->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
         QHash<ChannelID, gLineOverlayBar *>::iterator fit;
         bool blockhover = false;
 

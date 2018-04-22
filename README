@@ -1,4 +1,6 @@
-SleepyHead v1.0 branch
+SleepyHead v1.1 branch
+
+*Warning*, backup your SleepyHeadData directory before using this branch as there will be no going backwards
 
 SleepyHead is cross platform, opensource sleep tracking program for reviewing CPAP and Oximetry data, 
 which are devices used in the treatment of Sleep Disorders like Obstructive Sleep Apnea.

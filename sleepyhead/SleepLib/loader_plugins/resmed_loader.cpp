@@ -1948,7 +1948,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 
     // Run the tasks...
     int c = countTasks();
-    runTasks(p_profile->session->multithreading());
+    runTasks(AppSetting->multithreading());
 
     newSkipFiles.append(skipfiles.keys());
     impfile.remove();
@@ -2083,7 +2083,7 @@ int ResmedLoader::Open(QString path)
     ///////////////////////////////////////////////////////////////////////////////////
     // Create machine object (unless it's already registered)
     ///////////////////////////////////////////////////////////////////////////////////
-    Machine *m = CreateMachine(info);
+    Machine *m = p_profile->CreateMachine(info);
 
     bool create_backups = p_profile->session->backupCardData();
     bool compress_backups = p_profile->session->compressBackupData();

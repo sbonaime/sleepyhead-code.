@@ -279,11 +279,12 @@ int checkVersionStatus(QString statusstr)
         return v;
     }
 
-    if (statusstr.compare("testing", Qt::CaseInsensitive) == 0) return 0;
-    else if (statusstr.compare("beta", Qt::CaseInsensitive) == 0) return 1;
-    else if (statusstr.compare("rc", Qt::CaseInsensitive) == 0) return 2;
-    else if (statusstr.compare("r", Qt::CaseInsensitive) == 0) return 3;
+    if ((statusstr.compare("testing", Qt::CaseInsensitive) == 0) || (statusstr.compare("unstable", Qt::CaseInsensitive) == 0)) return 0;
+    else if ((statusstr.compare("beta", Qt::CaseInsensitive) == 0) || (statusstr.compare("untamed", Qt::CaseInsensitive) == 0)) return 1;
+    else if ((statusstr.compare("rc", Qt::CaseInsensitive) == 0)  || (statusstr.compare("almost", Qt::CaseInsensitive) == 0)) return 2;
+    else if ((statusstr.compare("r", Qt::CaseInsensitive) == 0)  || (statusstr.compare("stable", Qt::CaseInsensitive) == 0)) return 3;
 
+    // anything else is considered a test build
     return 0;
 }
 struct VersionStruct {

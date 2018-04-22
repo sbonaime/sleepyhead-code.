@@ -1,4 +1,4 @@
-/* SleepLib Preferences Implementation
+﻿/* SleepLib Preferences Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -301,7 +301,29 @@ bool Preferences::Open(QString filename)
     }
 
     root = root.nextSiblingElement();
-    ExtraLoad(root);
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // This is a dirty hack to clean up a legacy issue
+    // The old Profile system used to have machines in Profile.xml
+    // We need to clean up this mistake up here, because C++ polymorphism won't otherwise
+    // let us open properly in constructor
+    //////////////////////////////////////////////////////////////////////////////////////
+    if ((p_name == "Profile") && (root.tagName().toLower() == "machines")) {
+
+        // Save this sucker
+        QDomDocument doc("Machines");
+
+        doc.appendChild(root);
+
+        QFile file(p_path+"/machines.xml");
+
+        // Don't do anything if machines.xml already exists.. the user ran the old version!
+        if (!file.exists()) {
+            file.open(QFile::WriteOnly);
+            file.write(doc.toByteArray());
+            file.close();
+        }
+    }
     return true;
 }
 
@@ -338,8 +360,6 @@ bool Preferences::Save(QString filename)
         root.appendChild(cn);
     }
 
-    droot.appendChild(ExtraSave(doc));
-
     QFile file(p_filename);
 
     if (!file.open(QIODevice::WriteOnly)) {
@@ -353,4 +373,6 @@ bool Preferences::Save(QString filename)
     return true;
 }
 
+
+AppWideSetting *AppSetting = nullptr;
 

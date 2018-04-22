@@ -28,8 +28,7 @@ contains(DEFINES, BrokenGL) {
 }
 QT += opengl
 
-#The following forces ResMed session locking.. it *may* not be necessary.. I'm still trying to assess this properly.
-#Blah blah.. this isn't connected anymore.. just leaving it until I have the energy to clean it up
+#ResMed summary data design is SHIT... SleepyHead *MUST* follow ResMed's idiocy.
 DEFINES += LOCK_RESMED_SESSIONS
 
 #CONFIG += c++11
@@ -163,7 +162,8 @@ SOURCES += \
     Graphs/MinutesAtPressure.cpp \
     SleepLib/journal.cpp \
     SleepLib/progressdialog.cpp \
-    SleepLib/loader_plugins/cms50f37_loader.cpp
+    SleepLib/loader_plugins/cms50f37_loader.cpp \
+    profileselector.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -225,7 +225,9 @@ HEADERS  += \
     SleepLib/journal.h \
     SleepLib/progressdialog.h \
     SleepLib/loader_plugins/cms50f37_loader.h \
-    build_number.h
+    build_number.h \
+    profileselector.h \
+    SleepLib/appsettings.h
 
 FORMS += \
     daily.ui \
@@ -238,7 +240,8 @@ FORMS += \
     newprofile.ui \
     exportcsv.ui \
     UpdaterWindow.ui \
-    oximeterimport.ui
+    oximeterimport.ui \
+    profileselector.ui
 
 RESOURCES += \
     Resources.qrc

@@ -1,4 +1,4 @@
-/* SleepyHead MainWindow Headers
+﻿/* SleepyHead MainWindow Headers
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -18,6 +18,7 @@
 
 #include "daily.h"
 #include "overview.h"
+#include "profileselector.h"
 #include "preferencesdialog.h"
 
 extern Profile *profile;
@@ -66,9 +67,6 @@ class Daily;
 class Report;
 class Overview;
 
-void loadChannels(bool changing_language=false);
-void saveChannels();
-
 
 /*! \class MainWindow
     \author Mark Watkins
@@ -95,6 +93,8 @@ class MainWindow : public QMainWindow
     //! \brief Start the automatic update checker process
     void CheckForUpdates();
 
+    void CloseProfile();
+    void OpenProfile(QString name);
 
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
@@ -251,9 +251,6 @@ class MainWindow : public QMainWindow
         */
     void on_action_Rebuild_Oximetry_Index_triggered();
 
-    //! \brief Log out, by effectively forcing a restart
-    void on_actionChange_User_triggered();
-
     //! \brief Destroy the CPAP data for the currently selected day, so it can be freshly imported again
     void on_actionPurge_Current_Day_triggered();
 
@@ -320,8 +317,6 @@ class MainWindow : public QMainWindow
 
     void on_importButton_clicked();
 
-    void on_changeWarningMessage();
-
     void on_actionToggle_Line_Cursor_toggled(bool arg1);
 
     void on_actionLeft_Daily_Sidebar_toggled(bool arg1);
@@ -341,6 +336,8 @@ class MainWindow : public QMainWindow
 
     void on_actionReport_a_Bug_triggered();
 
+    void on_profilesButton_clicked();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();
@@ -352,6 +349,7 @@ private:
     Ui::MainWindow *ui;
     Daily *daily;
     Overview *overview;
+    ProfileSelector *profileSelector;
     bool first_load;
     PreferencesDialog *prefdialog;
     QTime logtime;

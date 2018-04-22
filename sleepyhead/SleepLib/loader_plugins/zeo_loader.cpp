@@ -118,7 +118,7 @@ int ZEOLoader::OpenFile(QString filename)
     QStringList SG, DSG;
 
     MachineInfo info = newInfo();
-    Machine *mach = CreateMachine(info);
+    Machine *mach = p_profile->CreateMachine(info);
 
 
     int idxZQ = header.indexOf("ZQ");

@@ -1,4 +1,4 @@
-/* SleepyHead MainWindow Implementation
+﻿/* SleepyHead MainWindow Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -6,8 +6,7 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <QGLContext>
-
+#include <QHostInfo>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QResource>
@@ -31,12 +30,11 @@
 #include <QTranslator>
 #include <QPushButton>
 #include <QCalendarWidget>
+#include <cmath>
 
 #include "common_gui.h"
 #include "version.h"
 
-
-#include <cmath>
 
 // Custom loaders that don't autoscan..
 #include <SleepLib/loader_plugins/zeo_loader.h>
@@ -69,106 +67,25 @@ QProgressBar *qprogress;
 QLabel *qstatus;
 QStatusBar *qstatusbar;
 
-extern Profile *profile;
-
-
-QString getOpenGLVersionString()
-{
-    static QString glversion;
-
-    if (glversion.isEmpty()) {
-        QGLWidget w;
-        w.makeCurrent();
-
-#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
-        glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-#else
-        QOpenGLFunctions f;
-        f.initializeOpenGLFunctions();
-        glversion = QString(QLatin1String(reinterpret_cast<const char*>(f.glGetString(GL_VERSION))));
-#endif
-        qDebug() << "OpenGL Version:" << glversion;
-    }
-    return glversion;
-}
-
-float getOpenGLVersion()
-{
-    QString glversion = getOpenGLVersionString();
-    glversion = glversion.section(" ",0,0);
-    bool ok;
-    float v = glversion.toFloat(&ok);
-
-    if (!ok) {
-        QString tmp = glversion.section(".",0,1);
-        v = tmp.toFloat(&ok);
-        if (!ok) {
-            // just look at major, we are only interested in whether we have OpenGL 2.0 anyway
-            tmp = glversion.section(".",0,0);
-            v = tmp.toFloat(&ok);
-        }
-    }
-    return v;
-}
-
-QString getGraphicsEngine()
-{
-    QString gfxEngine = QString();
-#ifdef BROKEN_OPENGL_BUILD
-    gfxEngine = CSTR_GFX_BrokenGL;
-#else
-    QString glversion = getOpenGLVersionString();
-    if (glversion.contains(CSTR_GFX_ANGLE)) {
-        gfxEngine = CSTR_GFX_ANGLE;
-    } else {
-        gfxEngine = CSTR_GFX_OpenGL;
-    }
-#endif
-    return gfxEngine;
-}
-
-void MainWindow::logMessage(QString msg)
-{
-    ui->logText->appendPlainText(msg);
-}
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    Q_ASSERT(p_profile != nullptr);
-
     ui->setupUi(this);
 
     if (logger) {
         connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     }
 
-    QString version = STR_TR_AppVersion;
+    QString version = getBranchVersion();
 
-#ifndef TEST_BUILD
-    ui->warningLabel->hide();
-#endif
-
-    version += " [";
-#ifdef GIT_REVISION
-    if (QString(GIT_BRANCH) != "master") {
-        version += QString(GIT_BRANCH)+"-";
-    }
-
-    version += QString(GIT_REVISION) +" ";
-#endif
-    version += getGraphicsEngine()+"]";
-
-    this->setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+    setWindowTitle(STR_TR_SleepyHead + QString(" %1").arg(version));
 
     qDebug() << STR_TR_SleepyHead << VersionString << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
 
 #ifdef BROKEN_OPENGL_BUILD
     qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
 #endif
-
-    //ui->tabWidget->setCurrentIndex(1);
 
 #ifdef Q_OS_MAC
 
@@ -181,27 +98,20 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 #endif
 
-//#ifdef LOCK_RESMED_SESSIONS
-//    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
-//    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-//        QString mclass=(*it)->loaderName();
-//        if (mclass == STR_MACH_ResMed) {
-//            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
-
-//            // Have to sacrifice these features to get access to summary data.
-//            p_profile->session->setCombineCloseSessions(0);
-//            p_profile->session->setDaySplitTime(QTime(12,0,0));
-//            p_profile->session->setIgnoreShortSessions(false);
-//            break;
-//        }
-//    }
-//#endif
-
-    ui->actionToggle_Line_Cursor->setChecked(p_profile->appearance->lineCursorMode());
+    ui->actionToggle_Line_Cursor->setChecked(AppSetting->lineCursorMode());
+    ui->actionDebug->setChecked(AppSetting->showDebug());
+    ui->actionShow_Performance_Counters->setChecked(AppSetting->showPerformance());
 
     overview = nullptr;
     daily = nullptr;
     prefdialog = nullptr;
+    profileSelector = nullptr;
+
+    ui->oximetryButton->setDisabled(true);
+    ui->dailyButton->setDisabled(true);
+    ui->overviewButton->setDisabled(true);
+    ui->statisticsButton->setDisabled(true);
+    ui->importButton->setDisabled(true);
 
     m_inRecalculation = false;
     m_restartRequired = false;
@@ -215,7 +125,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qstatus, 0);
     ui->statusbar->addPermanentWidget(qprogress, 1);
 
-    ui->actionDebug->setChecked(p_profile->general->showDebug());
 
     QTextCharFormat format = ui->statStartDate->calendarWidget()->weekdayTextFormat(Qt::Saturday);
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
@@ -233,7 +142,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statStartDate->setVisible(false);
 
     ui->reportModeRange->setVisible(false);
-    switch(p_profile->general->statReportMode()) {
+    int srm = 0;
+    if (p_profile) {
+        srm = p_profile->general->statReportMode();
+    }
+
+    switch(srm) {
         case 0:
             ui->reportModeStandard->setChecked(true);
             break;
@@ -246,33 +160,36 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statStartDate->setVisible(true);
             break;
         default:
-            p_profile->general->setStatReportMode(0);
+            if (p_profile) {
+                p_profile->general->setStatReportMode(0);
+            }
+            break;
     }
-    if (!p_profile->general->showDebug()) {
+    if (!AppSetting->showDebug()) {
         ui->logText->hide();
     }
 
-    ui->actionShow_Performance_Counters->setChecked(p_profile->general->showPerformance());
-
 #ifdef Q_OS_MAC
-    p_profile->appearance->setAntiAliasing(false);
+    //p_profile->appearance->setAntiAliasing(false);
 #endif
     //ui->action_Link_Graph_Groups->setChecked(p_profile->general->linkGroups());
 
     first_load = true;
 
-    // Using the dirty registry here. :(
+    // Initialise sleepyHead app registry stuff
     QSettings settings(getDeveloperName(), getAppName());
 
     // Load previous Window geometry (this is currently broken on Mac as of Qt5.2.1)
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
-    daily = new Daily(ui->tabWidget, nullptr);
-    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
+    profileSelector = new ProfileSelector(ui->tabWidget);
+    ui->tabWidget->insertTab(0, profileSelector, STR_TR_Profile);
 
+    // Profiles haven't been loaded here...
+    profileSelector->updateProfileList();
 
-    // Start with the Summary Tab
-    ui->tabWidget->setCurrentWidget(ui->statisticsTab); // setting this to daily shows the cube during loading..
+    // Start with the new Profile Tab
+    ui->tabWidget->setCurrentWidget(profileSelector); // setting this to daily shows the cube during loading..
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
@@ -293,15 +210,9 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->toolBox->setCurrentIndex(0);
-    bool b = p_profile->appearance->rightSidebarVisible();
+    bool b = AppSetting->rightSidebarVisible();
     ui->action_Sidebar_Toggle->setChecked(b);
     ui->toolBox->setVisible(b);
-
-    daily->graphView()->redraw();
-
-    if (p_profile->cpap->AHIWindow() < 30.0) {
-        p_profile->cpap->setAHIWindow(60.0);
-    }
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
@@ -325,26 +236,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 
-    // Translators, these are only temporary messages, don't bother unless you really want to..
-
-    warnmsg.push_back(tr("<b>Warning:</b> This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes."));
-    warnmsg.push_back(tr("If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu."));
-    warnmsg.push_back(tr("Make sure you keep your SleepyHead data folder backed up when trying testing versions."));
-    warnmsg.push_back(tr("Please ensure you are running the latest version before reporting any bugs."));
-    warnmsg.push_back(tr("When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model."));
-    warnmsg.push_back(tr("Make sure you're willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report."));
-    warnmsg.push_back(tr("Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!"));
-    warnmsg.push_back(tr("This red message line is intentional, and will not be a feature in the final version..."));
-    warnmsg.push_back(tr(""));
-
-    wtimer.setParent(this);
-    warnidx = 0;
-    wtimer.singleShot(0, this, SLOT(on_changeWarningMessage()));
-
+    // Setup to run a few last minute things before shutdown.
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
 
     QList<int> a;
-    int panel_width = p_profile->appearance->rightPanelWidth();
+
+    int panel_width = AppSetting->rightPanelWidth();
     a.push_back(this->width() - panel_width);
     a.push_back(panel_width);
     ui->mainsplitter->setSizes(a);
@@ -352,173 +249,27 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainsplitter->setStretchFactor(1,0);
 }
 
-void MainWindow::on_changeWarningMessage()
+void MainWindow::logMessage(QString msg)
 {
-    int i=warnidx++ % warnmsg.size();
-    QString warning = "<html><head/><body><p>"+warnmsg[i]+"</p></body></html>";
-    ui->warningLabel->setText(warning);
-    wtimer.singleShot(10000, this, SLOT(on_changeWarningMessage()));
-}
-
-
-quint16 chandata_version = 1;
-
-void saveChannels()
-{
-    QString filename = p_profile->Get("{DataFolder}/") + "channels.dat";
-    QFile f(filename);
-    qDebug() << "Saving Channel States";
-    f.open(QFile::WriteOnly);
-    QDataStream out(&f);
-    out.setVersion(QDataStream::Qt_4_6);
-    out.setByteOrder(QDataStream::LittleEndian);
-
-    out << (quint32)magic;
-    out << (quint16)chandata_version;
-
-    quint16 size = schema::channel.channels.size();
-    out << size;
-
-    QHash<ChannelID, schema::Channel *>::iterator it;
-    QHash<ChannelID, schema::Channel *>::iterator it_end = schema::channel.channels.end();
-
-    for (it = schema::channel.channels.begin(); it != it_end; ++it) {
-        schema::Channel * chan = it.value();
-        out << it.key();
-        out << chan->code();
-        out << chan->enabled();
-        out << chan->defaultColor();
-        out << chan->fullname();
-        out << chan->label();
-        out << chan->description();
-        out << chan->lowerThreshold();
-        out << chan->lowerThresholdColor();
-        out << chan->upperThreshold();
-        out << chan->upperThresholdColor();
-        out << chan->showInOverview();
-    }
-
-    f.close();
-
-}
-
-
-void loadChannels(bool changing_language)
-{
-    QString filename = p_profile->Get("{DataFolder}/") + "channels.dat";
-    QFile f(filename);
-    if (!f.open(QFile::ReadOnly)) {
-        return;
-    }
-    qDebug() << "Loading Channel States";
-
-    QDataStream in(&f);
-    in.setVersion(QDataStream::Qt_4_6);
-    in.setByteOrder(QDataStream::LittleEndian);
-
-    quint32 mag;
-    in >> mag;
-
-    if (magic != mag)  {
-        qDebug() << "LoadChannels: Faulty data";
-        return;
-    }
-    quint16 version;
-    in >> version;
-
-    if (version < chandata_version) {
-        return;
-        //upgrade here..
-    }
-
-    quint16 size;
-    in >> size;
-
-    QString name;
-    ChannelID code;
-    bool enabled;
-    QColor color;
-    EventDataType lowerThreshold;
-    QColor lowerThresholdColor;
-    EventDataType upperThreshold;
-    QColor upperThresholdColor;
-
-    QString fullname;
-    QString label;
-    QString description;
-    bool showOverview = false;
-
-    for (int i=0; i < size; i++) {
-        in >> code;
-        schema::Channel * chan = &schema::channel[code];
-        in >> name;
-        if (chan->code() != name) {
-            qDebug() << "Looking up channel" << name << "by name, as it's ChannedID must have changed";
-            chan = &schema::channel[name];
-        }
-        in >> enabled;
-        in >> color;
-        in >> fullname;
-        in >> label;
-        in >> description;
-        in >> lowerThreshold;
-        in >> lowerThresholdColor;
-        in >> upperThreshold;
-        in >> upperThresholdColor;
-        if (version >= 1) {
-            in >> showOverview;
-        }
-
-        if (chan->isNull()) {
-            qDebug() << "loadChannels has no idea about channel" << name;
-            if (in.atEnd()) return;
-            continue;
-        }
-        chan->setEnabled(enabled);
-        chan->setDefaultColor(color);
-
-        // Don't import channel descriptions if event renaming is turned off. (helps pick up new translations)
-        if (changing_language) {
-            // Nothing
-        } else {
-            chan->setFullname(fullname);
-            chan->setLabel(label);
-            chan->setDescription(description);
-        }
-
-        chan->setLowerThreshold(lowerThreshold);
-        chan->setLowerThresholdColor(lowerThresholdColor);
-        chan->setUpperThreshold(upperThreshold);
-        chan->setUpperThresholdColor(upperThresholdColor);
-
-        chan->setShowInOverview(showOverview);
-        if (in.atEnd()) return;
-    }
-
-    f.close();
+    ui->logText->appendPlainText(msg);
 }
 
 void MainWindow::on_aboutToQuit()
 {
-    Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
-    QApplication::processEvents();
-    QThread::msleep(1000);
+    if (systraymenu) delete systraymenu;
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-
-    saveChannels();
+    if (p_profile) {
+        CloseProfile();
+    }
     schema::channel.Save();
 
-    if (daily) {
-        daily->close();
-        daily->deleteLater();
-    }
-
-    if (overview) {
-        overview->close();
-        overview->deleteLater();
+    if (AppSetting->removeCardReminder()) {
+        Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
+        QApplication::processEvents();
+        QThread::msleep(1000);
     }
 
     // Shutdown and Save the current User profile
@@ -560,12 +311,12 @@ void MainWindow::Notify(QString s, QString title, int ms)
         title = tr("%1 %2").arg(STR_TR_SleepyHead).arg(STR_TR_AppVersion);
     }
     if (systray) {
-        // GNOME3's systray hides the last line of the displayed Qt message.
-        // As a workaround, add an extra line to bump the message back
-        // into the visible area.
         QString msg = s;
 
 #ifdef Q_OS_UNIX
+        // GNOME3's systray hides the last line of the displayed Qt message.
+        // As a workaround, add an extra line to bump the message back
+        // into the visible area.
         char *desktop = getenv("DESKTOP_SESSION");
 
         if (desktop && !strncmp(desktop, "gnome", 5)) {
@@ -652,13 +403,82 @@ void MainWindow::PopulatePurgeMenu()
 
 QString GenerateWelcomeHTML();
 
-void MainWindow::Startup()
+void MainWindow::OpenProfile(QString profileName)
 {
+    Profile * prof = Profiles::profiles[profileName];
+    if (p_profile) {
+        if ((prof != p_profile)) {
+            CloseProfile();
+        } else {
+            // Already open
+            return;
+        }
+    }
+    if (!prof) return;
+
+    // TODO: Check profile password
+
+    // Check Lockfile
+    QString lockhost = prof->checkLock();
+
+    if (!lockhost.isEmpty()) {
+        if (lockhost.compare(QHostInfo::localHostName()) == 0) {
+            // Localhost has it locked..
+            if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
+                                  QObject::tr("There is a lockfile already present for profile '%1'.").arg(prof->user->userName())+"\n\n"+
+                                  QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
+                                  QObject::tr("Please close any other instances of SleepyHead running with this profile before proceeding.")+"\n\n"+
+                                  QObject::tr("If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message."),
+                                  QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
+                return;
+            }
+
+        } else {
+            if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
+                                  QObject::tr("There is a lockfile already present for this profile '%1', claimed on '%2'.").arg(prof->user->userName()).arg(lockhost)+"\n\n"+
+                                  QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
+                                  QObject::tr("If you are using cloud storage, make sure SleepyHead is closed and syncing has completed first on the other computer before proceeding."),
+                                  QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
+                return;
+            }
+        }
+
+        prof->removeLock();
+    }
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
-    //qstatusbar->showMessage(tr("Loading Data"),0);
 
-    // profile is a global variable set in main after login
+    p_profile = prof;
+
+#ifdef LOCK_RESMED_SESSIONS
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
+        QString mclass=(*it)->loaderName();
+        if (mclass == STR_MACH_ResMed) {
+            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
+
+            // Have to sacrifice these features to get access to summary data.
+            p_profile->session->setCombineCloseSessions(0);
+            p_profile->session->setDaySplitTime(QTime(12,0,0));
+            p_profile->session->setIgnoreShortSessions(false);
+            p_profile->session->setLockSummarySessions(true);
+
+            break;
+        }
+    }
+#endif
+
+    // Todo: move this to AHIWIndow check to profile Load function...
+    if (p_profile->cpap->AHIWindow() < 30.0) {
+        p_profile->cpap->setAHIWindow(60.0);
+    }
+
+
+    if (p_profile->p_preferences[STR_PREF_ReimportBackup].toBool()) {
+        importCPAPBackups();
+        p_profile->p_preferences[STR_PREF_ReimportBackup]=false;
+    }
+
     p_profile->LoadMachineData();
 
     QList<MachineLoader *> loaders = GetLoaders();
@@ -666,44 +486,78 @@ void MainWindow::Startup()
         connect(loaders.at(i), SIGNAL(machineUnsupported(Machine*)), this, SLOT(MachineUnsupported(Machine*)));
     }
 
-    PopulatePurgeMenu();
-
-//    SnapshotGraph = new gGraphView(this, daily->graphView());
-
-//    // Snapshot graphs mess up with pixmap cache
-//    SnapshotGraph->setUsePixmapCache(false);
-
-//   // SnapshotGraph->setFormat(daily->graphView()->format());
-//    //SnapshotGraph->setMaximumSize(1024,512);
-//    //SnapshotGraph->setMinimumSize(1024,512);
-//    SnapshotGraph->hide();
-
-    overview = new Overview(ui->tabWidget, daily->graphView());
-    ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
-
-
-//    GenerateStatistics();
 
     ui->statStartDate->setDate(p_profile->FirstDay());
     ui->statEndDate->setDate(p_profile->LastDay());
 
-    if (overview) { overview->ReloadGraphs(); }
+    // Reload everything profile related
+    Q_ASSERT(!daily);
+    daily = new Daily(ui->tabWidget, nullptr);
+    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
+    daily->ReloadGraphs();
+
+    Q_ASSERT(!overview);
+    overview = new Overview(ui->tabWidget, daily->graphView());
+    ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
+    overview->ReloadGraphs();
+
+    // Should really create welcome and statistics here, but they need redoing later anyway to kill off webkit
+    ui->tabWidget->setCurrentWidget(ui->welcomeTab);
+    GenerateStatistics();
+    PopulatePurgeMenu();
+
+    AppSetting->setProfileName(p_profile->user->userName());
+    mainwin->setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(getBranchVersion()).arg(AppSetting->profileName()));
+
+    profileSelector->updateProfileHighlight(profileName);
+
+    ui->oximetryButton->setDisabled(false);
+    ui->dailyButton->setDisabled(false);
+    ui->overviewButton->setDisabled(false);
+    ui->statisticsButton->setDisabled(false);
+    ui->importButton->setDisabled(false);
 
     qprogress->hide();
     qstatus->setText("");
 
-    if (p_profile->p_preferences[STR_PREF_ReimportBackup].toBool()) {
-        importCPAPBackups();
-        p_profile->p_preferences[STR_PREF_ReimportBackup]=false;
-    }
+}
 
-    ui->tabWidget->setCurrentWidget(ui->welcomeTab);
-
+void MainWindow::CloseProfile()
+{
     if (daily) {
-        daily->ReloadGraphs();
-//        daily->populateSessionWidget();
+        daily->Unload();
+        daily->clearLastDay(); // otherwise Daily will crash
+        delete daily;
+        daily = nullptr;
+    }
+    if (overview) {
+        delete overview;
+        overview = nullptr;
     }
 
+    p_profile->StoreMachines();
+    p_profile->UnloadMachineData();
+    p_profile->saveChannels();
+    p_profile->Save();
+    p_profile->removeLock();
+    p_profile = nullptr;
+}
+
+
+void MainWindow::Startup()
+{
+    QString lastProfile = AppSetting->profileName();
+
+    if (Profiles::profiles.contains(lastProfile)) {
+        OpenProfile(lastProfile);
+        ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
+
+        if (AppSetting->autoLaunchImport()) {
+            on_importButton_clicked();
+        }
+    } else {
+        ui->tabWidget->setCurrentWidget(profileSelector);
+    }
 }
 
 int MainWindow::importCPAP(ImportPath import, const QString &message)
@@ -749,9 +603,14 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     qprogress->setVisible(false);
 
     delete popup;
+    if (AppSetting->openTabAfterImport()>0) {
+        ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
+    }
 
+    // Now what was this for???
     disconnect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
+
     return c;
 }
 
@@ -759,12 +618,17 @@ void MainWindow::finishCPAPImport()
 {
     p_profile->StoreMachines();
     GenerateStatistics();
+    profileSelector->updateProfileList();
 
     if (overview) { overview->ReloadGraphs(); }
     if (daily) {
 //        daily->populateSessionWidget();
         daily->ReloadGraphs();
     }
+    if (AppSetting->openTabAfterImport()>0) {
+        ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
+    }
+
 }
 
 void MainWindow::importCPAPBackups()
@@ -1353,8 +1217,10 @@ void MainWindow::on_urlBar_activated(const QString &arg1)
 
 void MainWindow::on_dailyButton_clicked()
 {
-    ui->tabWidget->setCurrentWidget(daily);
-    daily->RedrawGraphs();
+    if (daily) {
+        ui->tabWidget->setCurrentWidget(daily);
+        daily->RedrawGraphs();
+    }
 }
 void MainWindow::JumpDaily()
 {
@@ -1363,7 +1229,9 @@ void MainWindow::JumpDaily()
 
 void MainWindow::on_overviewButton_clicked()
 {
-    ui->tabWidget->setCurrentWidget(overview);
+    if (overview) {
+        ui->tabWidget->setCurrentWidget(overview);
+    }
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)
@@ -1524,13 +1392,12 @@ void MainWindow::on_action_About_triggered()
         //spawn browser with paypal site.
     }
 
-    disconnect(&webview, SIGNAL(linkClicked(const QUrl &)), this,
-               SLOT(aboutBoxLinkClicked(const QUrl &)));
+    disconnect(&webview, SIGNAL(linkClicked(const QUrl &)), this, SLOT(aboutBoxLinkClicked(const QUrl &)));
 }
 
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
-    p_profile->general->setShowDebug(checked);
+    AppSetting->setShowDebug(checked);
 
     logger->strlock.lock();
     if (checked) {
@@ -1552,6 +1419,10 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 void MainWindow::on_action_Preferences_triggered()
 {
     //MW: TODO: This will crash if attempted to enter while still loading..
+    if (!p_profile) {
+        mainwin->Notify(tr("Please open a profile first."));
+        return;
+    }
 
     if (m_inRecalculation) {
         mainwin->Notify(tr("Access to Preferences has been blocked until recalculation completes."));
@@ -1584,8 +1455,10 @@ QDateTime datetimeDialog(QDateTime datetime, QString message);
 
 void MainWindow::on_oximetryButton_clicked()
 {
-    OximeterImport oxiimp(this);
-    oxiimp.exec();
+    if (p_profile) {
+        OximeterImport oxiimp(this);
+        oxiimp.exec();
+    }
 }
 
 void MainWindow::CheckForUpdates()
@@ -1723,7 +1596,7 @@ void MainWindow::on_actionPrint_Report_triggered()
 void MainWindow::on_action_Edit_Profile_triggered()
 {
     NewProfile *newprof = new NewProfile(this);
-    QString name =PREF[STR_GEN_Profile].toString();
+    QString name = AppSetting->profileName();
     newprof->edit(name);
     newprof->setWindowModality(Qt::ApplicationModal);
     newprof->setModal(true);
@@ -2023,14 +1896,6 @@ void MainWindow::RestartApplication(bool force_login, QString cmdline)
 #endif
 }
 
-void MainWindow::on_actionChange_User_triggered()
-{
-    p_profile->Save();
-    PREF.Save();
-
-    RestartApplication(true);
-}
-
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
     QDate date = getDaily()->getDate();
@@ -2259,7 +2124,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 {
     ui->toolBox->setVisible(visible);
-    p_profile->appearance->setRightSidebarVisible(visible);
+    AppSetting->setRightSidebarVisible(visible);
 }
 
 void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
@@ -2282,8 +2147,10 @@ void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
         overview->setRange(d1, d2);
         ui->tabWidget->setCurrentWidget(overview);
     } else if (link == "import") {
-        if (data == "cpap") on_importButton_clicked();
-        if (data == "oximeter") on_oximetryButton_clicked();
+        // Don't run the importer directly from here because it destroys the object that called this function..
+        // Schedule it instead
+        if (data == "cpap") QTimer::singleShot(0, mainwin, SLOT(on_importButton_clicked()));
+        if (data == "oximeter") QTimer::singleShot(0, mainwin, SLOT(on_oximetryButton_clicked()));
     } else if (link == "statistics") {
         ui->tabWidget->setCurrentWidget(ui->statisticsTab);
     }
@@ -2583,9 +2450,11 @@ void MainWindow::on_actionChange_Language_triggered()
 
 void MainWindow::on_actionChange_Data_Folder_triggered()
 {
-    p_profile->Save();
+    if (p_profile) {
+        p_profile->Save();
+        p_profile->removeLock();
+    }
     PREF.Save();
-    p_profile->removeLock();
 
     RestartApplication(false, "-d");
 }
@@ -2651,7 +2520,9 @@ void MainWindow::GenerateStatistics()
 
 void MainWindow::on_statisticsButton_clicked()
 {
-    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+    if (p_profile) {
+        ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+    }
 }
 
 void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
@@ -2733,7 +2604,7 @@ void MainWindow::on_importButton_clicked()
 
 void MainWindow::on_actionToggle_Line_Cursor_toggled(bool b)
 {
-    p_profile->appearance->setLineCursorMode(b);
+    AppSetting->setLineCursorMode(b);
     if (ui->tabWidget->currentWidget() == getDaily()) {
         getDaily()->graphView()->timedRedraw(0);
     } else if (ui->tabWidget->currentWidget() == getOverview()) {
@@ -2770,7 +2641,7 @@ void MainWindow::on_actionExport_Journal_triggered()
 
 void MainWindow::on_actionShow_Performance_Counters_toggled(bool arg1)
 {
-    p_profile->general->setShowPerformance(arg1);
+    AppSetting->setShowPerformance(arg1);
 }
 
 void MainWindow::on_actionExport_CSV_triggered()
@@ -2788,7 +2659,7 @@ void MainWindow::on_actionExport_Review_triggered()
 
 void MainWindow::on_mainsplitter_splitterMoved(int, int)
 {
-    p_profile->appearance->setRightPanelWidth(ui->mainsplitter->sizes()[1]);
+    AppSetting->setRightPanelWidth(ui->mainsplitter->sizes()[1]);
 }
 
 #include "translation.h"
@@ -2797,4 +2668,9 @@ void MainWindow::on_actionReport_a_Bug_triggered()
     QSettings settings(getDeveloperName(), getAppName());
     QString language = settings.value(LangSetting).toString();
     QDesktopServices::openUrl(QUrl(QString("https://sleepyhead.jedimark.net/report_bugs.php?lang=%1&version=%2&platform=%3").arg(language).arg(VersionString).arg(PlatformString)));
+}
+
+void MainWindow::on_profilesButton_clicked()
+{
+    ui->tabWidget->setCurrentWidget(profileSelector);
 }

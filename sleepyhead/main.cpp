@@ -1,4 +1,4 @@
-/* SleepyHead Main
+﻿/* SleepyHead Main
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -101,7 +101,7 @@ void release_notes()
 
 
     QString html = "<html>"
-    "<head><meta charset=\"UTF-8\"></head>"
+    //"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head>"
     "<body>";
     //"<h2><p>"+QObject::tr("Greetings!")+"</p></h2>";
 
@@ -118,8 +118,6 @@ void release_notes()
 
     html += changeLog;
     html += "</body></html>";
-
-
 
     //QUrl("qrc:/docs/release_notes.html")
 
@@ -159,7 +157,6 @@ void MigrateSettings()
     QSettings oldcopy(getDeveloperName(), getAppName()+"-Testing");
     if (oldcopy.contains("Migrated")) { return; }
 
-    //QString oldfile = oldcopy.fileName();
     QStringList keys = oldcopy.allKeys();
 
 
@@ -186,7 +183,7 @@ int main(int argc, char *argv[])
     QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
 #endif
 
-    bool force_login_screen = false;
+    bool dont_load_profile = false;
     bool force_data_dir = false;
     bool changing_language = false;
     QString load_profile = "";
@@ -204,7 +201,7 @@ int main(int argc, char *argv[])
         changing_language = true;
 
     for (int i = 1; i < args.size(); i++) {
-        if (args[i] == "-l") { force_login_screen = true; }
+        if (args[i] == "-l") { dont_load_profile = true; }
         else if (args[i] == "-d") { force_data_dir = true; }
         else if (args[i] == "-language") {
             changing_language = true;
@@ -234,12 +231,6 @@ int main(int argc, char *argv[])
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);
 
-
-    // Do reset strings if they selected the same langauge again..
-//    if (settings.value(LangSetting, "").toString() == lastlanguage) {
-//        // don't reset if they selected the same language again
-//        changing_language = false;
-//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection
@@ -377,6 +368,7 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     p_pref = new Preferences("Preferences");
     PREF.Open();
+    AppSetting = new AppWideSetting(p_pref);
 
     initialize();
     PRS1Loader::Register();
@@ -391,21 +383,14 @@ retry_directory:
 
     schema::setOrders();
 
-    p_layout = new Preferences("Layout");
-
-    LAYOUT.Open();
-
-    // Scan for user profiles
-    Profiles::Scan();
-
-
-    //qRegisterMetaType<Preference>("Preference");
-    PREF["AppName"] = STR_TR_SleepyHead;
-
-    // Skip login screen, unless asked not to on the command line
-    bool skip_login = PREF.ExistsAndTrue(STR_GEN_SkipLogin);
-
-    if (force_login_screen) { skip_login = false; }
+    // Clean up some legacy crap
+    QString layout = PREF.Get("{home}/Layout.xml");
+    QFile lf(layout);
+    if (lf.exists()) {
+        lf.remove();
+    }
+    PREF.Erase(STR_AppName);
+    PREF.Erase(STR_GEN_SkipLogin);
 
     // Todo: Make a wrapper for Preference settings, like Profile settings have..
     QDateTime lastchecked, today = QDateTime::currentDateTime();
@@ -434,68 +419,27 @@ retry_directory:
         }
     }
 
-    if (!Profiles::profiles.size()) {
-        // Show New User wizard..
-        NewProfile newprof(0);
+    if (PREF.contains(STR_PREF_VersionString)) {
 
-        if (newprof.exec() == NewProfile::Rejected) {
-            return 0;
-        }
+        int vc = compareVersion(PREF[STR_PREF_VersionString].toString());
+        if (vc < 0) {
+            release_notes();
 
-        release_notes();
-    } else {
-        if (PREF.contains(STR_PREF_VersionString)) {
+            check_updates = false;
+        } else if (vc > 0) {
+            if (QMessageBox::warning(nullptr, STR_MessageBox_Error,
+                QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").
+                            arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
+                QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
 
-            int vc = compareVersion(PREF[STR_PREF_VersionString].toString());
-            if (vc < 0) {
-                release_notes();
-
-                check_updates = false;
-            } else if (vc > 0) {
-                if (QMessageBox::warning(nullptr, STR_MessageBox_Error, QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
-                                         QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
-
-                    return 0;
-                }
-
-            }
-        }
-
-        ProfileSelect profsel(0);
-
-        if (load_profile.size()) {
-            profsel.QuickLogin();
-
-            p_profile = Profiles::Get(load_profile);
-            if (!p_profile) {
-                NewProfile newprof(0, &load_profile);
-
-                if (newprof.exec() == NewProfile::Rejected) {
-                    return 0;
-                }
-            }
-        } else if (skip_login) {
-            profsel.QuickLogin();
-
-            if (profsel.result() == ProfileSelect::Rejected) {
-                exit(1);
+                return 0;
             }
 
-            p_profile = Profiles::Get(PREF[STR_GEN_Profile].toString());
-        } else { p_profile = nullptr; }
-
-        if (!p_profile) {
-            if (profsel.exec() == ProfileSelect::Rejected) {
-                exit(1);
-            }
         }
     }
 
     PREF[STR_PREF_VersionString] = VersionString;
-
-    p_profile = Profiles::Get(PREF[STR_GEN_Profile].toString());
-
-    qDebug() << "Opened Profile" << p_profile->user->userName();
 
     //    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     //    QFontDatabase fdb;
@@ -504,8 +448,15 @@ retry_directory:
     //        qDebug() << "Loaded Font: " << (*i);
     //    }
 
+
     if (!PREF.contains("Fonts_Application_Name")) {
-        PREF["Fonts_Application_Name"] = "Sans Serif";
+#ifdef Q_OS_WIN
+        // Windows default Sans Serif interpretation sucks
+        // Segoe UI is better, but that requires OS/font detection
+        PREF["Fonts_Application_Name"] = "Arial";
+#else
+        PREF["Fonts_Application_Name"] = QFontDatabase::systemFont(QFontDatabase::GeneralFont).family();
+#endif
         PREF["Fonts_Application_Size"] = 10;
         PREF["Fonts_Application_Bold"] = false;
         PREF["Fonts_Application_Italic"] = false;
@@ -519,11 +470,17 @@ retry_directory:
 
     qDebug() << "Selected Font" << QApplication::font().family();
 
-    // Must be initialized AFTER profile creation
+    // Scan for user profiles
+    Profiles::Scan();
+
+    if (!dont_load_profile) {
+        // TODO: set the don't automatically load profile AppSetting
+    }
+
+    Q_UNUSED(changing_language)
+
     MainWindow w;
     mainwin = &w;
-
-    loadChannels(changing_language);
 
     if (check_updates) { mainwin->CheckForUpdates(); }
 

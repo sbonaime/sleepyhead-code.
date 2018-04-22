@@ -474,7 +474,7 @@ void OximeterImport::on_liveImportButton_clicked()
     }
 
     MachineInfo info = oximodule->newInfo();
-    Machine *mach = oximodule->CreateMachine(info);
+    Machine *mach = p_profile->CreateMachine(info);
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
     ui->liveConnectLabel->setText(tr("Live Oximetery Mode"));
@@ -842,7 +842,7 @@ void OximeterImport::on_saveButton_clicked()
 
     // this can move to SerialOximeter class process function...
     MachineInfo info = oximodule->newInfo();
-    Machine * mach = oximodule->CreateMachine(info);
+    Machine * mach = p_profile->CreateMachine(info);
     SessionID sid = ui->dateTimeEdit->dateTime().toUTC().toTime_t();
     quint64 start = quint64(sid) * 1000L;
 

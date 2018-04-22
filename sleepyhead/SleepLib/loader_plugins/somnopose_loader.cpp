@@ -105,7 +105,7 @@ int SomnoposeLoader::OpenFile(QString filename)
 
     bool first = true;
     MachineInfo info = newInfo();
-    Machine *mach = CreateMachine(info);
+    Machine *mach = p_profile->CreateMachine(info);
     Session *sess = nullptr;
     SessionID sid;
 

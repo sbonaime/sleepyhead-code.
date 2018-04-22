@@ -1188,14 +1188,12 @@ void gAHIChart::customCalc(Day *day, QVector<SummaryChartSlice> &list)
     ahi_avg += ahi_cnt;
     total_hours += hours;
     total_days++;
-    qDebug() << "Leaving gAHIChart::customCalc - ahi_avg: " << ahi_avg << " total_days: " << total_days ;
 }
 void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
 {
     if (totaldays == nousedays) return;
 
     //int size = idx_end - idx_start;
-    qDebug() << "Entering gAHIChart::afterDraw - ahi_avg: " << ahi_avg << " total_days: " << total_days ;
 
     bool skip = true;
     float med = 0;

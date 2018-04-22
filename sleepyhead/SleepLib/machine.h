@@ -88,6 +88,7 @@ class Machine
 
     //! \brief Load all Machine summary data
     bool Load();
+
     bool LoadSummary(QProgressBar * progress);
 
     //! \brief Save all Sessions where changed bit is set.

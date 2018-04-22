@@ -41,7 +41,7 @@ QDataStream & operator>>(QDataStream & in, RXItem & rx)
 
     MachineLoader * loader = GetLoader(loadername);
     if (loader) {
-        rx.machine = loader->lookupMachine(serial);
+        rx.machine = p_profile->lookupMachine(serial, loadername);
     } else {
         qDebug() << "Bad machine object" << loadername << serial;
         rx.machine = nullptr;

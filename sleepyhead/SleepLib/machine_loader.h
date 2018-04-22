@@ -49,9 +49,6 @@ class MachineLoader: public QObject
     //! \brief Override to returns the Version number of this MachineLoader
     virtual int Version() = 0;
 
-    static Machine * CreateMachine(MachineInfo info, MachineID id = 0);
-    Machine * lookupMachine(QString serial);
-
     // !\\brief Used internally by loaders, override to return base MachineInfo record
     virtual MachineInfo newInfo() { return MachineInfo(); }
 
@@ -90,8 +87,6 @@ class MachineLoader: public QObject
     QMutex sessionMutex;
     QMutex saveMutex;
 
-    void removeMachine(Machine * m);
-
     virtual void initChannels() {}
     QPixmap & getPixmap(QString series) {
         QHash<QString, QPixmap>::iterator it = m_pixmaps.find(series);
@@ -113,14 +108,11 @@ signals:
     void machineUnsupported(Machine *);
 
 protected:
-    //! \brief Contains a list of Machine records known by this loader
-    QList<Machine *> m_machlist;
 
     static QPixmap * genericCPAPPixmap;
 
     MachineType m_type;
     QString m_class;
-    Profile *m_profile;
 
     int m_currenttask;
     int m_totaltasks;

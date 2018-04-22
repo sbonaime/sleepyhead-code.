@@ -1,4 +1,4 @@
-/* SleepLib (DeVilbiss) Intellipap Loader Implementation
+﻿/* SleepLib (DeVilbiss) Intellipap Loader Implementation
  *
  * Notes: Intellipap DV54 requires the SmartLink attachment to access this data.
  *
@@ -29,9 +29,13 @@ Intellipap::~Intellipap()
 IntellipapLoader::IntellipapLoader()
 {
     const QString INTELLIPAP_ICON = ":/icons/intellipap.png";
+    const QString DV6_ICON = ":/icons/dv64.png";
+
     QString s = newInfo().series;
     m_pixmap_paths[s] = INTELLIPAP_ICON;
     m_pixmaps[s] = QPixmap(INTELLIPAP_ICON);
+    m_pixmap_paths["DV6"] = DV6_ICON;
+    m_pixmaps["DV6"] = QPixmap(DV6_ICON);
 
     m_buffer = nullptr;
     m_type = MT_CPAP;
@@ -236,7 +240,7 @@ int IntellipapLoader::OpenDV5(QString path)
     }
 
     if (!info.serial.isEmpty()) {
-        mach = CreateMachine(info);
+        mach = p_profile->CreateMachine(info);
     }
 
     if (!mach) {
@@ -781,7 +785,7 @@ int IntellipapLoader::OpenDV6(QString path)
     ////////////////////////////////////////////////////////////////////////////////////////
     // Creates Machine database record if it doesn't exist already
     ////////////////////////////////////////////////////////////////////////////////////////
-    Machine *mach = CreateMachine(info);
+    Machine *mach = p_profile->CreateMachine(info);
     if (mach == nullptr) {
         return -1;
     }

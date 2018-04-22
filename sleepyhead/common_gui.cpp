@@ -1,4 +1,4 @@
-/* Common GUI Functions Implementation
+﻿/* Common GUI Functions Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -6,11 +6,86 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
+#include <QGLWidget>
+#include <QOpenGLFunctions>
+#include <QDebug>
+
+#include "SleepLib/common.h"
 #include "common_gui.h"
 
 #ifndef BUILD_WITH_MSVC
 # include <unistd.h>
 #endif
+
+QString getOpenGLVersionString()
+{
+    static QString glversion;
+
+    if (glversion.isEmpty()) {
+        QGLWidget w;
+        w.makeCurrent();
+
+#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+#else
+        QOpenGLFunctions f;
+        f.initializeOpenGLFunctions();
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(f.glGetString(GL_VERSION))));
+#endif
+        qDebug() << "OpenGL Version:" << glversion;
+    }
+    return glversion;
+}
+
+float getOpenGLVersion()
+{
+    QString glversion = getOpenGLVersionString();
+    glversion = glversion.section(" ",0,0);
+    bool ok;
+    float v = glversion.toFloat(&ok);
+
+    if (!ok) {
+        QString tmp = glversion.section(".",0,1);
+        v = tmp.toFloat(&ok);
+        if (!ok) {
+            // just look at major, we are only interested in whether we have OpenGL 2.0 anyway
+            tmp = glversion.section(".",0,0);
+            v = tmp.toFloat(&ok);
+        }
+    }
+    return v;
+}
+
+QString getGraphicsEngine()
+{
+    QString gfxEngine = QString();
+#ifdef BROKEN_OPENGL_BUILD
+    gfxEngine = CSTR_GFX_BrokenGL;
+#else
+    QString glversion = getOpenGLVersionString();
+    if (glversion.contains(CSTR_GFX_ANGLE)) {
+        gfxEngine = CSTR_GFX_ANGLE;
+    } else {
+        gfxEngine = CSTR_GFX_OpenGL;
+    }
+#endif
+    return gfxEngine;
+}
+QString getBranchVersion()
+{
+    QString version = STR_TR_AppVersion;
+    version += " [";
+#ifdef GIT_REVISION
+    if (QString(GIT_BRANCH) != "master") {
+        version += QString(GIT_BRANCH)+"-";
+    }
+    version += QString(GIT_REVISION) +" ";
+#endif
+    version += getGraphicsEngine()+"]";
+
+    return version;
+}
+
 
 #if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
 // Qt 4.8 makes this a whole lot easier

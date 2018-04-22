@@ -446,7 +446,7 @@ void Overview::closeEvent(QCloseEvent *event)
 
 gGraph *Overview::createGraph(QString code, QString name, QString units, YTickerType yttype)
 {
-    int default_height = p_profile->appearance->graphHeight();
+    int default_height = AppSetting->graphHeight();
     gGraph *g = new gGraph(code, GraphView, name, units, default_height, 0);
 
     gYAxis *yt;

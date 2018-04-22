@@ -295,7 +295,7 @@ const QString gYAxis::Format(EventDataType v, int dp)
 
 bool gYAxis::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 {
-    if (!p_profile->appearance->graphTooltips()) {
+    if (!AppSetting->graphTooltips()) {
         return false;
     }
 

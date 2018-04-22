@@ -60,7 +60,7 @@ bool InitGraphGlobals()
 
     if (!PREF.contains("Fonts_Title_Name")) {
         PREF["Fonts_Title_Name"] = "Sans Serif";
-        PREF["Fonts_Title_Size"] = 14;
+        PREF["Fonts_Title_Size"] = 12;
         PREF["Fonts_Title_Bold"] = true;
         PREF["Fonts_Title_Italic"] = false;
     }
@@ -131,7 +131,7 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
       m_visible(true)
 {
     if (height == 0) {
-        height = p_profile->appearance->graphHeight();
+        height = AppSetting->graphHeight();
         Q_UNUSED(height)
     }
 
@@ -514,9 +514,9 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     QPixmap pm(w,h);
 
 
-    bool pixcaching = p_profile->appearance->usePixmapCaching();
+    bool pixcaching = AppSetting->usePixmapCaching();
     graphView()->setUsePixmapCache(false);
-    p_profile->appearance->setUsePixmapCaching(false);
+    AppSetting->setUsePixmapCaching(false);
     QPainter painter(&pm);
     painter.fillRect(0,0,w,h,QBrush(QColor(Qt::white)));
     QRegion region(0,0,w,h);
@@ -525,7 +525,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     painter.end();
 
     graphView()->setUsePixmapCache(pixcaching);
-    p_profile->appearance->setUsePixmapCaching(pixcaching);
+    AppSetting->setUsePixmapCaching(pixcaching);
     graphView()->setPrintScaleX(1);
     graphView()->setPrintScaleY(1);
 
@@ -567,7 +567,7 @@ void gGraph::ResetBounds()
 void gGraph::ToolTip(QString text, int x, int y, ToolTipAlignment align, int timeout)
 {
     if (timeout <= 0) {
-        timeout = p_profile->general->tooltipTimeout();
+        timeout = AppSetting->tooltipTimeout();
     }
 
     m_graphview->m_tooltip->display(text, x, y, align, timeout);

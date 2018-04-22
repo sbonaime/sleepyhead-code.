@@ -1,4 +1,4 @@
-/* Common code and junk
+﻿/* Common code and junk
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -12,6 +12,7 @@
 #include <QString>
 #include <QColor>
 #include <QObject>
+#include <QThread>
 
 #if QT_VERSION >= QT_VERSION_CHECK(4,8,0)
 
@@ -44,6 +45,8 @@ struct ValueCount {
     qint64 count;
     double p;
 };
+
+extern int idealThreads();
 
 void copyPath(QString src, QString dst);
 
@@ -206,6 +209,7 @@ extern QString STR_TR_Plethy;      // Plethysomogram
 extern QString STR_TR_Pressure;
 
 extern QString STR_TR_Daily;
+extern QString STR_TR_Profile;
 extern QString STR_TR_Overview;
 extern QString STR_TR_Oximetry;
 

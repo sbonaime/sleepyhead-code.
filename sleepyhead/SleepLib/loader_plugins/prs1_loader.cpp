@@ -592,7 +592,7 @@ int PRS1Loader::OpenMachine(QString path)
 
 
     // Which is needed to get the right machine record..
-    Machine *m = CreateMachine(info);
+    Machine *m = p_profile->CreateMachine(info);
 
     // This time supply the machine object so it can populate machine properties..
     PeekProperties(m->info, propertyfile, m);
@@ -726,7 +726,7 @@ int PRS1Loader::OpenMachine(QString path)
 
 
     int tasks = countTasks();
-    runTasks(p_profile->session->multithreading());
+    runTasks(AppSetting->multithreading());
     finishAddingSessions();
 
     return m->unsupported() ? -1 : tasks;

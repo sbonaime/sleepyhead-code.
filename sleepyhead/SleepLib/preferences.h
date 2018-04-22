@@ -1,4 +1,4 @@
-/* SleepLib Preferences Header
+﻿/* SleepLib Preferences Header
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -84,22 +84,15 @@ class Preferences
         }
     }
 
-    //! \brief Derive from this to handle Loading of any custom XML sections
-    virtual void ExtraLoad(QDomElement &root) { root = root; }
-
-    //! \brief Derive from this to handle Saving of any custom XML sections
-    //! \return Must return a QDomElement to be inserted into the generated XML
-    virtual QDomElement ExtraSave(QDomDocument &doc) { doc = doc; QDomElement e; return e; }
-
     //! \brief Opens, processes the XML for this Preferences group, loading all preferences stored therein.
     //! \note If filename is empty, it will use the one specified in the constructor
     //! \returns true if succesful
-    virtual bool Open(QString filename = "");
+    bool Open(QString filename = "");
 
     //! \brief Saves all preferences to XML file.
     //! \note If filename is empty, it will use the one specified in the constructor
     //! \returns true if succesful
-    virtual bool Save(QString filename = "");
+    bool Save(QString filename = "");
 
     //! \note Sets a comment string whici will be stored in the XML
     void SetComment(const QString &str) {
@@ -137,8 +130,34 @@ class Preferences
 //! \brief Main Preferences Object used throughout the application
 extern Preferences PREF;
 
-//! \brief Layout Preferences Object used throughout the application
-extern Preferences LAYOUT;
+// Parent class for subclasses that manipulate the profile.
+class PrefSettings
+{
+  public:
+    PrefSettings(Preferences *pref)
+      : m_pref(pref)
+    { }
+
+    inline void setPref(QString name, QVariant value) {
+        (*m_pref)[name] = value;
+    }
+
+    inline void initPref(QString name, QVariant value) {
+        m_pref->init(name, value);
+    }
+
+    inline QVariant getPref(QString name) const {
+        return (*m_pref)[name];
+    }
+
+    void setPrefObject(Preferences *pref) {
+        m_pref = pref;
+    }
+
+  public:
+    Preferences *m_pref;
+};
+#include "appsettings.h"
 
 #endif // PREFERENCES_H
 

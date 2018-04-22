@@ -8,12 +8,12 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QThread>
 #include <zlib.h>
 
 #include "profiles.h"
 
 // Used by internal settings
-
 
 const QString getDeveloperName()
 {
@@ -31,6 +31,8 @@ const QString getDefaultAppRoot()
     QString approot = STR_AppRoot;
     return approot;
 }
+
+int idealThreads() { return QThread::idealThreadCount(); }
 
 qint64 timezoneOffset()
 {
@@ -174,6 +176,7 @@ QString STR_TR_Plethy;      // Plethysomogram
 QString STR_TR_Pressure;
 
 QString STR_TR_Daily;
+QString STR_TR_Profile;
 QString STR_TR_Overview;
 QString STR_TR_Oximetry;
 
@@ -376,6 +379,7 @@ void initializeStrings()
     STR_TR_Pressure = QObject::tr("Pressure");
 
     STR_TR_Daily = QObject::tr("Daily");
+    STR_TR_Profile = QObject::tr("Profile");
     STR_TR_Overview = QObject::tr("Overview");
     STR_TR_Oximetry = QObject::tr("Oximetry");
 

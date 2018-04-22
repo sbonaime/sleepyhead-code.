@@ -1,4 +1,4 @@
-/* SleepyHead Preferences Dialog Implementation
+﻿/* SleepyHead Preferences Dialog Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -48,19 +48,29 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     channeltype[schema::MINOR_FLAG] = tr("Minor Flag");
     channeltype[schema::SPAN] = tr("Span");
     channeltype[schema::UNKNOWN] = tr("Always Minor");
+    bool haveResMed = false;
+    QList<Machine *> machines = profile->GetMachines(MT_CPAP);
+    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
+        const QString & mclass=(*it)->loaderName();
+        if (mclass == STR_MACH_ResMed) {
+            haveResMed = true;
+            break;
+        }
+    }
 
-//#ifdef LOCK_RESMED_SESSIONS
-//    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
-//    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
-//        const QString & mclass=(*it)->loaderName();
-//        if (mclass == STR_MACH_ResMed) {
-//            ui->combineSlider->setEnabled(false);
-//            ui->IgnoreSlider->setEnabled(false);
-//            ui->timeEdit->setEnabled(false);
-//            break;
-//        }
-//    }
-//#endif
+#ifdef LOCK_RESMED_SESSIONS
+    // Remove access to session splitting options and show ResMed users a notice instead
+    ui->ResMedWarning->setText(tr("<p><b>Please Note:</b> SleepyHead's advanced session splitting capabilities are not possible with <b>ResMed</b> machines due to a limitation in the way their settings and summary data is stored, and therefore they have been disabled for this profile.</p><p>On ResMed machines, days will <b>split at noon</b> like in ResMed's commercial software.</p>"));
+    ui->ResMedWarning->setVisible(haveResMed);
+
+    if (haveResMed) {
+        ui->sessionSplitWidget->setVisible(!haveResMed);
+        profile->session->setDaySplitTime(QTime(12,0,0));
+        profile->session->setIgnoreShortSessions(0);
+        profile->session->setCombineCloseSessions(0);
+        profile->session->setLockSummarySessions(true);
+    }
+#endif
 
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);
@@ -100,6 +110,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     int val = profile->session->combineCloseSessions();
     ui->combineSlider->setValue(val);
 
+    ui->openingTabCombo->setCurrentIndex(AppSetting->openTabAtStart());
+    ui->importTabCombo->setCurrentIndex(AppSetting->openTabAfterImport());
+
+
     if (val > 0) {
         ui->combineLCD->display(val);
     } else { ui->combineLCD->display(STR_TR_Off); }
@@ -137,18 +151,18 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->bigFontBold->setChecked(bigfont->weight() == QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
-    ui->lineThicknessSlider->setValue(profile->appearance->lineThickness()*2);
+    ui->lineThicknessSlider->setValue(AppSetting->lineThickness()*2.0);
 
     ui->resyncMachineDetectedEvents->setChecked(profile->cpap->resyncFromUserFlagging());
 
-    ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
-    ui->usePixmapCaching->setChecked(profile->appearance->usePixmapCaching());
-    ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
-    ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
-    ui->graphTooltips->setChecked(profile->appearance->graphTooltips());
-    ui->allowYAxisScaling->setChecked(profile->appearance->allowYAxisScaling());
+    ui->useAntiAliasing->setChecked(AppSetting->antiAliasing());
+    ui->usePixmapCaching->setChecked(AppSetting->usePixmapCaching());
+    ui->useSquareWavePlots->setChecked(AppSetting->squareWavePlots());
+    ui->enableGraphSnapshots->setChecked(AppSetting->graphSnapshots());
+    ui->graphTooltips->setChecked(AppSetting->graphTooltips());
+    ui->allowYAxisScaling->setChecked(AppSetting->allowYAxisScaling());
 
-    ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
+    ui->autoLaunchImporter->setChecked(AppSetting->autoLaunchImport());
     ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
 
     int s = profile->cpap->clockDrift();
@@ -161,10 +175,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
     ui->showUnknownFlags->setChecked(profile->general->showUnknownFlags());
-    ui->enableMultithreading->setChecked(profile->session->multithreading());
-    ui->cacheSessionData->setChecked(profile->session->cacheSessions());
+    ui->enableMultithreading->setChecked(AppSetting->multithreading());
+    ui->removeCardNotificationCheckbox->setChecked(AppSetting->removeCardReminder());
+    ui->cacheSessionData->setChecked(AppSetting->cacheSessions());
     ui->preloadSummaries->setChecked(profile->session->preloadSummaries());
-    ui->animationsAndTransitionsCheckbox->setChecked(profile->appearance->animations());
+    ui->animationsAndTransitionsCheckbox->setChecked(AppSetting->animations());
     ui->complianceCheckBox->setChecked(profile->cpap->showComplianceInfo());
     ui->complianceHours->setValue(profile->cpap->complianceHours());
 
@@ -173,11 +188,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     float f = profile->general->prefCalcPercentile();
     ui->prefCalcPercentile->setValue(f);
 
-    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout());
+    ui->tooltipTimeoutSlider->setValue(AppSetting->tooltipTimeout());
     on_tooltipTimeoutSlider_valueChanged(ui->tooltipTimeoutSlider->value());
     //ui->tooltipMS->display(profile->general->tooltipTimeout());
 
-    ui->scrollDampeningSlider->setValue(profile->general->scrollDampening() / 10);
+    ui->scrollDampeningSlider->setValue(AppSetting->scrollDampening() / 10);
     on_scrollDampeningSlider_valueChanged(ui->scrollDampeningSlider->value());
 
     bool bcd = profile->session->backupCardData();
@@ -188,7 +203,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->ignoreOlderSessionsCheck->setChecked(profile->session->ignoreOlderSessions());
     ui->ignoreOlderSessionsDate->setDate(profile->session->ignoreOlderSessionsDate().date());
 
-    ui->graphHeight->setValue(profile->appearance->graphHeight());
+    ui->graphHeight->setValue(AppSetting->graphHeight());
 
     ui->automaticallyCheckUpdates->setChecked(PREF[STR_GEN_UpdatesAutoCheck].toBool());
 
@@ -199,8 +214,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         RefreshLastChecked();
     } else { ui->updateLastChecked->setText("Never"); }
 
-    ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
-    ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
+    ui->overlayFlagsCombo->setCurrentIndex(AppSetting->overlayType());
+    ui->overviewLinecharts->setCurrentIndex(AppSetting->overviewLinechartMode());
 
     ui->ahiGraphWindowSize->setEnabled(false);
     ui->ahiGraphWindowSize->setValue(profile->cpap->AHIWindow());
@@ -214,7 +229,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->userEventDuplicates->setChecked(profile->cpap->userEventDuplicates());
     ui->userEventDuplicates->setVisible(false);
 
-    ui->showUserFlagsInPie->setChecked(profile->cpap->userEventPieChart());
+    ui->showUserFlagsInPie->setChecked(AppSetting->userEventPieChart());
 
     bool b;
     ui->calculateUnintentionalLeaks->setChecked(b=profile->cpap->calculateUnintentionalLeaks());
@@ -628,7 +643,7 @@ bool PreferencesDialog::Save()
 
     if (ui->ahiGraphZeroReset->isChecked() != profile->cpap->AHIReset()) { recalc_events = true; }
 
-    if (ui->useSquareWavePlots->isChecked() != profile->appearance->squareWavePlots()) {
+    if (ui->useSquareWavePlots->isChecked() != AppSetting->squareWavePlots()) {
         needs_restart = true;
     }
 
@@ -642,7 +657,7 @@ bool PreferencesDialog::Save()
         needs_restart = true;
     }
 
-    if (profile->cpap->userEventPieChart() != ui->showUserFlagsInPie->isChecked()) {
+    if (AppSetting->userEventPieChart() != ui->showUserFlagsInPie->isChecked()) {
         // lazy.. fix me
         needs_restart = true;
     }
@@ -687,7 +702,7 @@ bool PreferencesDialog::Save()
     }
 
     if (recalc_events) {
-        if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) > 0) {
+        if (profile->countDays(MT_CPAP, profile->FirstDay(), profile->LastDay()) > 0) {
             if (QMessageBox::question(this, tr("Data Reindex Required"),
                                       tr("A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),
                                       QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
@@ -707,28 +722,33 @@ bool PreferencesDialog::Save()
     schema::channel[OXI_Pulse].setUpperThreshold(ui->flagPulseAbove->value());
 
 
-    profile->cpap->setUserEventPieChart(ui->showUserFlagsInPie->isChecked());
+    AppSetting->setUserEventPieChart(ui->showUserFlagsInPie->isChecked());
     profile->session->setLockSummarySessions(ui->LockSummarySessionSplitting->isChecked());
 
-    profile->appearance->setAllowYAxisScaling(ui->allowYAxisScaling->isChecked());
-    profile->appearance->setGraphTooltips(ui->graphTooltips->isChecked());
+    AppSetting->setOpenTabAtStart(ui->openingTabCombo->currentIndex());
+    AppSetting->setOpenTabAfterImport(ui->importTabCombo->currentIndex());
 
-    profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
-    profile->appearance->setUsePixmapCaching(ui->usePixmapCaching->isChecked());
-    profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
-    profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
-    profile->appearance->setLineThickness(float(ui->lineThicknessSlider->value()) / 2.0);
+    AppSetting->setAllowYAxisScaling(ui->allowYAxisScaling->isChecked());
+    AppSetting->setGraphTooltips(ui->graphTooltips->isChecked());
+
+    AppSetting->setAntiAliasing(ui->useAntiAliasing->isChecked());
+    AppSetting->setUsePixmapCaching(ui->usePixmapCaching->isChecked());
+    AppSetting->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
+    AppSetting->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
+    AppSetting->setLineThickness(float(ui->lineThicknessSlider->value()) / 2.0);
 
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
 
-    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value());
-    profile->general->setScrollDampening(ui->scrollDampeningSlider->value() * 10);
+    AppSetting->setTooltipTimeout(ui->tooltipTimeoutSlider->value());
+    AppSetting->setScrollDampening(ui->scrollDampeningSlider->value() * 10);
 
     profile->general->setShowUnknownFlags(ui->showUnknownFlags->isChecked());
-    profile->session->setMultithreading(ui->enableMultithreading->isChecked());
-    profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
+    AppSetting->setMultithreading(ui->enableMultithreading->isChecked());
+    AppSetting->setRemoveCardReminder(ui->removeCardNotificationCheckbox->isChecked());
+
+    AppSetting->setCacheSessions(ui->cacheSessionData->isChecked());
     profile->session->setPreloadSummaries(ui->preloadSummaries->isChecked());
-    profile->appearance->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
+    AppSetting->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
 
     profile->cpap->setShowLeakRedline(ui->showLeakRedline->isChecked());
     profile->cpap->setLeakRedline(ui->leakRedlineSpinbox->value());
@@ -736,8 +756,8 @@ bool PreferencesDialog::Save()
     profile->cpap->setShowComplianceInfo(ui->complianceCheckBox->isChecked());
     profile->cpap->setComplianceHours(ui->complianceHours->value());
 
-    if (ui->graphHeight->value() != profile->appearance->graphHeight()) {
-        profile->appearance->setGraphHeight(ui->graphHeight->value());
+    if (ui->graphHeight->value() != AppSetting->graphHeight()) {
+        AppSetting->setGraphHeight(ui->graphHeight->value());
         mainwin->getDaily()->ResetGraphLayout();
         mainwin->getOverview()->ResetGraphLayout();
     }
@@ -760,8 +780,8 @@ bool PreferencesDialog::Save()
     int s = ui->clockDriftHours->value() * 3600 + ui->clockDriftMinutes->value() * 60 + ui->clockDriftSeconds->value();
     profile->cpap->setClockDrift(s);
 
-    profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
-    profile->appearance->setOverviewLinechartMode((OverviewLinechartModes)ui->overviewLinecharts->currentIndex());
+    AppSetting->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
+    AppSetting->setOverviewLinechartMode((OverviewLinechartModes)ui->overviewLinecharts->currentIndex());
 
     profile->oxi->setSpO2DropPercentage(ui->spo2Drop->value());
     profile->oxi->setSpO2DropDuration(ui->spo2DropTime->value());
@@ -796,7 +816,7 @@ bool PreferencesDialog::Save()
     profile->cpap->setCustom4cmH2OLeaks(double(ui->maskLeaks4Slider->value()) / 10.0f);
     profile->cpap->setCustom20cmH2OLeaks(double(ui->maskLeaks20Slider->value()) / 10.0f);
 
-    PREF[STR_GEN_SkipLogin] = ui->skipLoginScreen->isChecked();
+    AppSetting->setAutoLaunchImport(ui->autoLaunchImporter->isChecked());
 
     PREF[STR_GEN_UpdatesAutoCheck] = ui->automaticallyCheckUpdates->isChecked();
     PREF[STR_GEN_UpdateCheckFrequency] = ui->updateCheckEvery->value();
@@ -852,13 +872,13 @@ bool PreferencesDialog::Save()
     //qDebug() << "TODO: Save channels.xml to update channel data";
 
     PREF.Save();
-    p_profile->Save();
+    profile->Save();
 
     if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
     } else if (needs_restart) {
-        p_profile->removeLock();
+        profile->removeLock();
         mainwin->RestartApplication();
     } else {
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());

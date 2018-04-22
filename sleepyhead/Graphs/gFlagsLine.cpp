@@ -217,7 +217,7 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         graph->timedRedraw(0);
    // }
 
-    if (!p_profile->appearance->graphTooltips()) {
+    if (!AppSetting->graphTooltips()) {
         return false;
     }
 
@@ -306,6 +306,8 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QColor color=schema::channel[m_code].defaultColor();
     QBrush brush(color);
 
+    int tooltipTimeout = AppSetting->tooltipTimeout();
+
     bool hover = false;
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
         if (!(*s)->enabled()) {
@@ -384,7 +386,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             lab += QObject::tr(" (%3 sec)").arg(m).arg(s);
                         }
                         GetTextExtent(lab, x, y);
-                        w.ToolTip(lab, x2 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                        w.ToolTip(lab, x2 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, tooltipTimeout);
 
                     }
                 }
@@ -412,7 +414,7 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(*dptr);
                         GetTextExtent(lab, x, y);
 
-                        w.ToolTip(lab, x1 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                        w.ToolTip(lab, x1 - 10, bartop + (3 * w.printScaleY()), TT_AlignRight, tooltipTimeout);
                     }
 
                     vlines.append(QLine(x1, bartop, x1, bottom));

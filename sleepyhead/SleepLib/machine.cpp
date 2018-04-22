@@ -1,4 +1,4 @@
-/* SleepLib Machine Class Implementation
+﻿/* SleepLib Machine Class Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -49,9 +49,16 @@ Machine::Machine(MachineID id)
         srand(time(nullptr));
         MachineID temp;
 
+        bool found;
+        // Keep trying until we get a unique machineID for this profile
         do {
             temp = rand();
-        } while (p_profile->machlist.find(temp) != p_profile->machlist.end());
+
+            found = false;
+            for (int i=0;i<p_profile->m_machlist.size(); ++i) {
+                if (p_profile->m_machlist.at(i)->id() == temp) found = true;
+            }
+        } while (found);
 
         m_id = temp;
 
@@ -115,12 +122,19 @@ bool Machine::saveSessionInfo()
 
 bool Machine::loadSessionInfo()
 {
+    // SessionInfo basically just contains a list of all sessions and their enabled status,
+    // so the enabling/reenabling doesn't require a summary rewrite every time.
+
     if (info.type == MT_JOURNAL)
         return true;
 
     QHash<SessionID, Session *>::iterator s;
     QFile file(getDataPath() + "Sessions.info");
+
     if (!file.open(QFile::ReadOnly)) {
+        // No session.info file present, so let's create one...
+
+        // But first check for legacy SESSION_ENABLED field in session settings
         for (s = sessionlist.begin(); s!= sessionlist.end(); ++s) {
             Session * sess = s.value();
             QHash<ChannelID, QVariant>::iterator it = sess->settings.find(SESSION_ENABLED);
@@ -131,6 +145,8 @@ bool Machine::loadSessionInfo()
             }
             sess->setEnabled(b);        // Extract from session settings and save..
         }
+
+        // Now write the file
         saveSessionInfo();
         return true;
     }
@@ -146,12 +162,15 @@ bool Machine::loadSessionInfo()
     in >> ft16;
     in >> version;
 
+    // Legacy crud
     if (version == 1) {
         // was available channels
         QHash<ChannelID, bool> crap;
         in >> crap;
     }
 
+
+    // Read in size record, followed by size * [SessionID, bool] pairs containing the enable status.
     int size;
     in >> size;
 
@@ -588,6 +607,7 @@ bool Machine::Load()
             QFile::copy(path+filename, summarypath+filename);
             QFile::remove(path+filename);
         }
+
         // Copy old Event files to folder
         filters.clear();
         filters << "*.001";
@@ -596,7 +616,7 @@ bool Machine::Load()
         size = filelist.size();
         if (size > 0) {
             if (!dir.exists(eventpath)) dir.mkpath(eventpath);
-            for (int i=0; i< filelist.size(); i++) {
+            for (int i=0; i< size; i++) {
                 if ((i % 50) == 0) { // This is slow.. :-/
                     if (progress) { progress->setValue((float(i) / float(size) * 100.0)); }
 
@@ -689,7 +709,7 @@ void Machine::queSaveList(Session * sess)
         sess->UpdateSummaries();
         sess->Store(getDataPath());
 
-        if (!p_profile->session->cacheSessions()) {
+        if (!AppSetting->cacheSessions()) {
             sess->TrashEvents();
         }
 
@@ -719,7 +739,7 @@ Session *Machine::popSaveList()
 void Machine::StartSaveThreads()
 {
     m_savelist.clear();
-    if (!p_profile->session->multithreading()) return;
+    if (!AppSetting->multithreading()) return;
 
     QString path = getDataPath();
 
@@ -822,7 +842,7 @@ void SaveTask::run()
 void Machine::queTask(ImportTask * task)
 {
     // Okay... what was this turned off???
-    if (p_profile->session->multithreading()) {
+    if (AppSetting->multithreading()) {
         m_tasklist.push_back(task);
         return;
     }
@@ -979,7 +999,7 @@ bool Machine::LoadSummary(QProgressBar * progress)
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
         if ((cnt % 100) == 0) {
             progress->setValue(cnt);
-            QApplication::processEvents();
+            //QApplication::processEvents();
         }
         Session * sess = it.value();
         if (!AddSession(sess)) {

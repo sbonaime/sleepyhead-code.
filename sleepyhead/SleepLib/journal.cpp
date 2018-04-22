@@ -57,7 +57,7 @@ JournalEntry::JournalEntry(QDate date)
                 // more then one.. report this.
             }
         }
-        jmach = MachineLoader::CreateMachine(info, machid);
+        jmach = p_profile->CreateMachine(info, machid);
     }
 
     m_date = date;

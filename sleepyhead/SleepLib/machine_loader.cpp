@@ -58,96 +58,8 @@ MachineLoader * lookupLoader(QString loaderName)
     return nullptr;
 }
 
-QHash<QString, QHash<QString, Machine *> > MachineList;
 
 
-void MachineLoader::removeMachine(Machine * m)
-{
-    m_machlist.removeAll(m);
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(m->loaderName());
-
-    if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(m->serial());
-        if (mit != mlit.value().end()) {
-            mlit.value().erase(mit);
-        }
-    }
-
-}
-
-Machine * MachineLoader::lookupMachine(QString serial)
-{
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loaderName());
-    if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(serial);
-        if (mit != mlit.value().end()) {
-            return mit.value();
-        }
-    }
-    return nullptr;
-}
-
-Machine * MachineLoader::CreateMachine(MachineInfo info, MachineID id)
-{
-    Q_ASSERT(p_profile != nullptr);
-
-    Machine *m = nullptr;
-
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(info.loadername);
-
-    if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(info.serial);
-        if (mit != mlit.value().end()) {
-            mit.value()->setInfo(info); // update info
-            return mit.value();
-        }
-    }
-
-    // Before we create, find any lost folder to get the old ID
-    if ((id == 0) && ((info.type == MT_OXIMETER) || (info.type == MT_JOURNAL) || (info.type == MT_POSITION)|| (info.type == MT_SLEEPSTAGE))) {
-        QString dataPath = p_profile->Get("{" + STR_GEN_DataFolder + "}/");
-        QDir dir(dataPath);
-        QStringList namefilter(QString(info.loadername+"_*"));
-        QStringList files = dir.entryList(namefilter, QDir::Dirs);
-        if (files.size() > 0) {
-            QString idstr = files[0].section("_",-1);
-            bool ok;
-            id = idstr.toInt(&ok, 16);
-        }
-    }
-
-    switch (info.type) {
-    case MT_CPAP:
-        m = new CPAP(id);
-        break;
-    case MT_SLEEPSTAGE:
-        m = new SleepStage(id);
-        break;
-    case MT_OXIMETER:
-        m = new Oximeter(id);
-        break;
-    case MT_POSITION:
-        m = new PositionSensor(id);
-        break;
-    case MT_JOURNAL:
-        m = new Machine(id);
-        m->setType(MT_JOURNAL);
-        break;
-    default:
-        m = new Machine(id);
-
-        break;
-    }
-
-    m->setInfo(info);
-
-    qDebug() << "Create" << info.loadername << "Machine" << (info.serial.isEmpty() ? m->hexid() : info.serial);
-
-    MachineList[info.loadername][info.serial] = m;
-    p_profile->AddMachine(m);
-
-    return m;
-}
 
 
 void RegisterLoader(MachineLoader *loader)
@@ -177,9 +89,9 @@ MachineLoader::MachineLoader() :QObject(nullptr)
 
 MachineLoader::~MachineLoader()
 {
-    for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {
-        delete *m;
-    }
+//    for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {
+//        delete *m;
+//    }
 }
 
 void MachineLoader::finishAddingSessions()
@@ -196,13 +108,13 @@ void MachineLoader::finishAddingSessions()
 
     new_sessions.clear();
 
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loaderName());
+/*    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loaderName());
 
     if (mlit != MachineList.end()) {
         for(QHash<QString, Machine *>::iterator mit = mlit.value().begin(); mit!=mlit.value().end(); ++mit) {
             mit.value()->SaveSummary();
         }
-    }
+    } */
 
 }
 

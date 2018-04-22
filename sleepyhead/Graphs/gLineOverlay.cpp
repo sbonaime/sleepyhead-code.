@@ -83,6 +83,8 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
     qint64 drift = 0;
     //bool hover = false;
 
+    int tooltipTimeout = AppSetting->tooltipTimeout();
+
     // For each session, process it's eventlist
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
 
@@ -237,7 +239,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
                             GetTextExtent(lab, x, y);
 
-                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, AppSetting->tooltipTimeout());
 
                             //painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
 //                            painter.setPen(QPen(Qt::gray,1));
@@ -276,7 +278,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
                             GetTextExtent(lab, x, y, defaultfont);
 
-                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, p_profile->general->tooltipTimeout());
+                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, tooltipTimeout);
 
 //                            painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
 //                            painter.setPen(QPen(Qt::gray,1));

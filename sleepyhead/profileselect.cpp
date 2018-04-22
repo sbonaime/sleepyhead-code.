@@ -1,4 +1,4 @@
-/* Profile Select Implementation (Login Screen)
+﻿/* Profile Select Implementation (Login Screen)
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -43,11 +43,11 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     ui->listView->setFont(font);
 
     QFontMetrics fm(font);
-    for (QMap<QString, Profile *>::iterator p = Profiles::profiles.begin();
-            p != Profiles::profiles.end(); p++) {
+    QMap<QString, Profile *>::iterator p;
+    for (p = Profiles::profiles.begin(); p != Profiles::profiles.end(); p++) {
         name = p.key();
 
-        if (PREF.contains(STR_GEN_Profile) && (name == PREF[STR_GEN_Profile].toString())) {
+        if (AppSetting->profileName() == name) {
             sel = i;
         }
 
@@ -86,13 +86,6 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
     m_tries = 0;
 
-    /*PREF["SkipLogin"]=false;
-    if ((i==1) && PREF["SkipLogin"].toBool()) {
-        if (!Profiles::profiles.contains(name))
-            PREF[STR_GEN_Profile]=name;
-        QTimer::singleShot(0,this,SLOT(earlyExit()));
-        hide();
-    } */
     popupMenu = new QMenu(this);
     popupMenu->addAction(tr("Open Profile"), this, SLOT(openProfile()));
     popupMenu->addAction(tr("Edit Profile"), this, SLOT(editProfile()));
@@ -133,9 +126,6 @@ void ProfileSelect::editProfile()
     Profile *profile = Profiles::Get(name);
 
     if (!profile) { return; }
-    if (!profile->isOpen()) {
-        profile->Load();
-    }
 
     bool reallyEdit = false;
 
@@ -212,12 +202,13 @@ void ProfileSelect::deleteProfile()
 
     Profile * profile = Profiles::profiles[name];
     p_profile = profile;
-    if (!profile->Load()) {
-        QMessageBox::warning(this, STR_MessageBox_Error,
-            QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
-            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + profile->user->userName())), QMessageBox::Ok);
-            return;
-    }
+    // Hmmmmm.....
+//    if (!profile->Load()) {
+//        QMessageBox::warning(this, STR_MessageBox_Error,
+//            QString(tr("Could not open profile.. You will need to delete this profile directory manually")+
+//            "\n\n"+tr("You will find it under the following location:")+"\n\n%1").arg(QDir::toNativeSeparators(GetAppRoot() + "/Profiles/" + profile->user->userName())), QMessageBox::Ok);
+//            return;
+//    }
     bool reallydelete = false;
     if (profile->user->hasPassword()) {
         QDialog dialog(this, Qt::Dialog);
@@ -310,35 +301,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
 
     if (!profile) { return; }
     if (!profile->isOpen()) {
-        QString lockhost = profile->checkLock();
-
-        if (!lockhost.isEmpty()) {
-            if (lockhost.compare(QHostInfo::localHostName()) == 0) {
-                // Localhost has it locked..
-                if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
-                                      QObject::tr("There is a lockfile already present for profile '%1'.").arg(name)+"\n\n"+
-                                      QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
-                                      QObject::tr("Please close any other instances of SleepyHead running with this profile before proceeding.")+"\n\n"+
-                                      QObject::tr("If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message."),
-                                      QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
-                    return;
-                }
-
-            } else {
-                if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
-                                      QObject::tr("There is a lockfile already present for this profile '%1', claimed on '%2'.").arg(name).arg(lockhost)+"\n\n"+
-                                      QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
-                                      QObject::tr("If you are using cloud storage, make sure SleepyHead is closed and syncing has completed first on the other computer before proceeding."),
-                                      QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
-                    return;
-                }
-            }
-
-            profile->removeLock();
-        }
-
         p_profile = profile;
-        profile->Load();
         // Do this in case user renames the directory (otherwise it won't load)
         // Essentially makes the folder name the user name, but whatever..
         // TODO: Change the profile editor one day to make it rename the actual folder
@@ -366,7 +329,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
 
             if (profile->user->checkPassword(e->text())) {
                 m_selectedProfile = name;
-                PREF[STR_GEN_Profile] = name;
+                AppSetting->setProfileName(name);
                 accept();
                 return;
             }

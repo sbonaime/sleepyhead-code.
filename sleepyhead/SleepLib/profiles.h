@@ -1,4 +1,4 @@
-/* SleepLib Profiles Header
+﻿/* SleepLib Profiles Header
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -23,7 +23,6 @@ class Machine;
 
 enum Gender { GenderNotSpecified, Male, Female };
 enum MaskType { Mask_Unknown, Mask_NasalPillows, Mask_Hybrid, Mask_StandardNasal, Mask_FullFace };
-enum OverviewLinechartModes { OLC_Bartop, OLC_Lines };
 
 class DoctorInfo;
 class UserInfo;
@@ -32,6 +31,7 @@ class OxiSettings;
 class CPAPSettings;
 class AppearanceSettings;
 class SessionSettings;
+
 
 /*!
   \class Profile
@@ -47,9 +47,6 @@ class Profile : public Preferences
 
     virtual ~Profile();
 
-    //! \brief Open profile, parse profile.xml file, and initialize helper classes
-    virtual bool Load(QString filename = "");
-
     //! \brief Parse machines.xml
     bool OpenMachines();
     bool StoreMachines();
@@ -59,6 +56,8 @@ class Profile : public Preferences
 
     //! \brief Removes a lockfile
     bool removeLock();
+
+    void addLock();
 
     //! \brief Save Profile object (This is an extension to Preference::Save(..))
     virtual bool Save(QString filename = "");
@@ -71,6 +70,9 @@ class Profile : public Preferences
 
     //! \brief Loads all machine (summary) data belonging to this profile
     void LoadMachineData();
+
+    //! \brief Unloads all machine (summary) data for this profile to free up memory;
+    void UnloadMachineData();
 
     //! \brief Barf because data format has changed. This does a purge of CPAP data for machine *m
     void DataFormatError(Machine *m);
@@ -182,8 +184,6 @@ class Profile : public Preferences
 
 
     Day * findSessionDay(Session * session);
-    // XML load components
-    virtual void ExtraLoad(QDomElement &root);
 
     //! \brief Looks for the first date containing a day record matching machinetype
     QDate FirstDay(MachineType mt = MT_UNKNOWN);
@@ -206,8 +206,13 @@ class Profile : public Preferences
     //! \brief QMap of day records (iterates in order).
     QMap<QDate, Day *> daylist;
 
-    //! \brief List of machines, indexed by MachineID.
-    QHash<MachineID, Machine *> machlist;
+    void removeMachine(Machine *);
+    Machine * lookupMachine(QString serial, QString loadername);
+    Machine * CreateMachine(MachineInfo info, MachineID id = 0);
+
+    void loadChannels();
+    void saveChannels();
+
 
     bool is_first_day;
 
@@ -218,6 +223,7 @@ class Profile : public Preferences
     AppearanceSettings *appearance;
     UserSettings *general;
     SessionSettings *session;
+    QList<Machine *> m_machlist;
 
   protected:
     QDate m_first;
@@ -225,18 +231,37 @@ class Profile : public Preferences
 
     bool m_opened;
     bool m_machopened;
+
+    QHash<QString, QHash<QString, Machine *> > MachineList;
+
 };
 
 class MachineLoader;
 extern MachineLoader *GetLoader(QString name);
 
 extern Preferences *p_pref;
-extern Preferences *p_layout;
 extern Profile *p_profile;
 
 // these are bad and must change
 #define PREF (*p_pref)
-#define LAYOUT (*p_layout)
+
+
+//! \brief Returns a count of all files & directories in a supplied folder
+int dirCount(QString path);
+
+
+namespace Profiles {
+
+extern QMap<QString, Profile *> profiles;
+void Scan(); // Initialize and load Profile
+void Done(); // Save all Profile objects and clear list
+int CleanupProfile(Profile *prof);
+
+Profile *Create(QString name);
+Profile *Get(QString name);
+Profile *Get();
+
+}
 
 // DoctorInfo Strings
 const QString STR_DI_Name = "DoctorName";
@@ -288,7 +313,6 @@ const QString STR_CS_UntreatedAHI = "UntreatedAHI";
 const QString STR_CS_Notes = "CPAPNotes";
 const QString STR_CS_DateDiagnosed = "DateDiagnosed";
 const QString STR_CS_UserEventFlagging = "UserEventFlagging";
-const QString STR_CS_UserEventPieChart = "UserEventPieChart";
 const QString STR_CS_AutoImport = "AutoImport";
 const QString STR_CS_BrickWarning = "BrickWarning";
 
@@ -312,10 +336,8 @@ const QString STR_CS_20cmH2OLeaks = "Custom20cmH2OLeaks";
 // ImportSettings Strings
 const QString STR_IS_DaySplitTime = "DaySplitTime";
 const QString STR_IS_PreloadSummaries = "PreloadSummaries";
-const QString STR_IS_CacheSessions = "MemoryHog";
 const QString STR_IS_CombineCloseSessions = "CombineCloserSessions";
 const QString STR_IS_IgnoreShorterSessions = "IgnoreShorterSessions";
-const QString STR_IS_Multithreading = "EnableMultithreading";
 const QString STR_IS_BackupCardData = "BackupCardData";
 const QString STR_IS_CompressBackupData = "CompressBackupData";
 const QString STR_IS_CompressSessionData = "CompressSessionData";
@@ -323,76 +345,26 @@ const QString STR_IS_IgnoreOlderSessions = "IgnoreOlderSessions";
 const QString STR_IS_IgnoreOlderSessionsDate = "IgnoreOlderSessionsDate";
 const QString STR_IS_LockSummarySessions = "LockSummarySessions";
 
-// AppearanceSettings Strings
-const QString STR_AS_GraphHeight = "GraphHeight";
-const QString STR_AS_DailyPanelWidth = "DailyPanelWidth";
-const QString STR_AS_RightPanelWidth = "RightPanelWidth";
-const QString STR_AS_AntiAliasing = "UseAntiAliasing";
-const QString STR_AS_GraphSnapshots = "EnableGraphSnapshots";
-const QString STR_AS_Animations = "AnimationsAndTransitions";
-const QString STR_AS_SquareWave = "SquareWavePlots";
-const QString STR_AS_OverlayType = "OverlayType";
-const QString STR_AS_OverviewLinechartMode = "OverviewLinechartMode";
-const QString STR_AS_UsePixmapCaching = "UsePixmapCaching";
-const QString STR_AS_AllowYAxisScaling = "AllowYAxisScaling";
-const QString STR_AS_GraphTooltips = "GraphTooltips";
-const QString STR_AS_LineThickness = "LineThickness";
-const QString STR_AS_LineCursorMode = "LineCursorMode";
-const QString STR_AS_CalendarVisible = "CalendarVisible";
-const QString STR_AS_RightSidebarVisible = "RightSidebarVisible";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem = "UnitSystem";
 const QString STR_US_EventWindowSize = "EventWindowSize";
 const QString STR_US_SkipEmptyDays = "SkipEmptyDays";
 const QString STR_US_RebuildCache = "RebuildCache";
-const QString STR_US_ShowDebug = "ShowDebug";
-const QString STR_US_ShowPerformance = "ShowPerformance";
 const QString STR_US_LinkGroups = "LinkGroups";
 const QString STR_US_CalculateRDI = "CalculateRDI";
-const QString STR_US_ShowSerialNumbers = "ShowSerialNumbers";
 const QString STR_US_PrefCalcMiddle = "PrefCalcMiddle";
 const QString STR_US_PrefCalcPercentile = "PrefCalcPercentile";
 const QString STR_US_PrefCalcMax = "PrefCalcMax";
-const QString STR_US_TooltipTimeout = "TooltipTimeout";
-const QString STR_US_ScrollDampening = "ScrollDampening";
 const QString STR_US_ShowUnknownFlags = "ShowUnknownFlags";
 const QString STR_US_StatReportMode = "StatReportMode";
 const QString STR_US_LastOverviewRange = "LastOverviewRange";
 
-// Parent class for subclasses that manipulate the profile.
-class ProfileSettings
-{
-  public:
-    ProfileSettings(Profile *profile)
-      : m_profile(profile)
-    { }
-
-    inline void setPref(QString name, QVariant value) {
-        (*m_profile)[name] = value;
-    }
-
-    inline void initPref(QString name, QVariant value) {
-        m_profile->init(name, value);
-    }
-
-    inline QVariant getPref(QString name) const {
-        return (*m_profile)[name];
-    }
-
-    void setProfile(Profile *profile) {
-        m_profile = profile;
-    }
-
-  public:
-    Profile *m_profile;
-};
-
-class DoctorInfo : public ProfileSettings
+class DoctorInfo : public PrefSettings
 {
   public:
     DoctorInfo(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_DI_Name, QString());
         initPref(STR_DI_Phone, QString());
@@ -421,11 +393,11 @@ class DoctorInfo : public ProfileSettings
 /*! \class UserInfo
     \brief Profile Options relating to the User Information
     */
-class UserInfo : public ProfileSettings
+class UserInfo : public PrefSettings
 {
   public:
     UserInfo(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_UI_DOB, QDate(1970, 1, 1));
         initPref(STR_UI_FirstName, QString());
@@ -486,12 +458,12 @@ class UserInfo : public ProfileSettings
 /*! \class OxiSettings
     \brief Profile Options relating to the Oximetry settings
     */
-class OxiSettings : public ProfileSettings
+class OxiSettings : public PrefSettings
 {
   public:
     //! \brief Create OxiSettings object given Profile *p, and initialize the defaults
     OxiSettings(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_OS_EnableOximetry, false);
         initPref(STR_OS_DefaultDevice, QString());
@@ -536,11 +508,11 @@ class OxiSettings : public ProfileSettings
 /*! \class CPAPSettings
     \brief Profile Options relating to the CPAP settings
     */
-class CPAPSettings : public ProfileSettings
+class CPAPSettings : public PrefSettings
 {
   public:
     CPAPSettings(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_CS_ComplianceHours, 4);
         initPref(STR_CS_ShowCompliance, true);
@@ -565,7 +537,6 @@ class CPAPSettings : public ProfileSettings
         initPref(STR_CS_AHIReset, false);
         initPref(STR_CS_LeakRedline, 24.0);
         initPref(STR_CS_ShowLeakRedline, true);
-        initPref(STR_CS_UserEventPieChart, false);
         initPref(STR_CS_ResyncFromUserFlagging, false);
         initPref(STR_CS_AutoImport, false);
         initPref(STR_CS_BrickWarning, true);
@@ -602,7 +573,6 @@ class CPAPSettings : public ProfileSettings
     int clockDrift() const { return m_clock_drift; }
     EventDataType leakRedline() const { return getPref(STR_CS_LeakRedline).toFloat(); }
     bool showLeakRedline() const { return getPref(STR_CS_ShowLeakRedline).toBool(); }
-    bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
     bool resyncFromUserFlagging() const { return getPref(STR_CS_ResyncFromUserFlagging).toBool(); }
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
@@ -639,7 +609,6 @@ class CPAPSettings : public ProfileSettings
     }
     void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, value); }
     void setShowLeakRedline(bool reset) { setPref(STR_CS_ShowLeakRedline, reset); }
-    void setUserEventPieChart(bool b) { setPref(STR_CS_UserEventPieChart, b); }
     void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
     void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
@@ -655,18 +624,16 @@ class CPAPSettings : public ProfileSettings
 /*! \class ImportSettings
     \brief Profile Options relating to the Import process
     */
-class SessionSettings : public ProfileSettings
+class SessionSettings : public PrefSettings
 {
   public:
     SessionSettings(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_IS_DaySplitTime, QTime(12, 0, 0));
-        initPref(STR_IS_CacheSessions, false);
         initPref(STR_IS_PreloadSummaries, false);
         initPref(STR_IS_CombineCloseSessions, 240);
         initPref(STR_IS_IgnoreShorterSessions, 5);
-        initPref(STR_IS_Multithreading, QThread::idealThreadCount() > 1);
         initPref(STR_IS_BackupCardData, true);
         initPref(STR_IS_CompressBackupData, false);
         initPref(STR_IS_CompressSessionData, false);
@@ -677,11 +644,9 @@ class SessionSettings : public ProfileSettings
     }
 
     QTime daySplitTime() const { return getPref(STR_IS_DaySplitTime).toTime(); }
-    bool cacheSessions() const { return getPref(STR_IS_CacheSessions).toBool(); }
     bool preloadSummaries() const { return getPref(STR_IS_PreloadSummaries).toBool(); }
     double combineCloseSessions() const { return getPref(STR_IS_CombineCloseSessions).toDouble(); }
     double ignoreShortSessions() const { return getPref(STR_IS_IgnoreShorterSessions).toDouble(); }
-    bool multithreading() const { return getPref(STR_IS_Multithreading).toBool(); }
     bool compressSessionData() const { return getPref(STR_IS_CompressSessionData).toBool(); }
     bool compressBackupData() const { return getPref(STR_IS_CompressBackupData).toBool(); }
     bool backupCardData() const { return getPref(STR_IS_BackupCardData).toBool(); }
@@ -690,11 +655,9 @@ class SessionSettings : public ProfileSettings
     bool lockSummarySessions() const { return getPref(STR_IS_LockSummarySessions).toBool(); }
 
     void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, time); }
-    void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
     void setPreloadSummaries(bool b) { setPref(STR_IS_PreloadSummaries, b); }
     void setCombineCloseSessions(double val) { setPref(STR_IS_CombineCloseSessions, val); }
     void setIgnoreShortSessions(double val) { setPref(STR_IS_IgnoreShorterSessions, val); }
-    void setMultithreading(bool enabled) { setPref(STR_IS_Multithreading, enabled); }
     void setBackupCardData(bool enabled) { setPref(STR_IS_BackupCardData, enabled); }
     void setCompressBackupData(bool enabled) { setPref(STR_IS_CompressBackupData, enabled); }
     void setCompressSessionData(bool enabled) { setPref(STR_IS_CompressSessionData, enabled); }
@@ -707,128 +670,38 @@ class SessionSettings : public ProfileSettings
 /*! \class AppearanceSettings
     \brief Profile Options relating to Visual Appearance
     */
-class AppearanceSettings : public ProfileSettings
+class AppearanceSettings : public PrefSettings
 {
   public:
     //! \brief Create AppearanceSettings object given Profile *p, and initialize the defaults
     AppearanceSettings(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
-        initPref(STR_AS_GraphHeight, 180.0);
-        initPref(STR_AS_DailyPanelWidth, 350.0);
-        initPref(STR_AS_RightPanelWidth, 230.0);
-        initPref(STR_AS_AntiAliasing, true);
-        initPref(STR_AS_GraphSnapshots, true);
-        initPref(STR_AS_Animations, true);
-        initPref(STR_AS_SquareWave, false);
-        initPref(STR_AS_AllowYAxisScaling, true);
-        initPref(STR_AS_GraphTooltips, true);
-        initPref(STR_AS_UsePixmapCaching, false);
-        initPref(STR_AS_OverlayType, ODT_Bars);
-        initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
-        initPref(STR_AS_LineThickness, 1.0);
-        initPref(STR_AS_LineCursorMode, true);
-        initPref(STR_AS_CalendarVisible, true);
-        initPref(STR_AS_RightSidebarVisible, true);
+
     }
 
-    //! \brief Returns the normal (unscaled) height of a graph
-    int graphHeight() const { return getPref(STR_AS_GraphHeight).toInt(); }
-    //! \brief Returns the normal (unscaled) height of a graph
-    int dailyPanelWidth() const { return getPref(STR_AS_DailyPanelWidth).toInt(); }
-    //! \brief Returns the normal (unscaled) height of a graph
-    int rightPanelWidth() const { return getPref(STR_AS_RightPanelWidth).toInt(); }
-    //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
-    bool antiAliasing() const { return getPref(STR_AS_AntiAliasing).toBool(); }
-    //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
-    bool graphSnapshots() const { return getPref(STR_AS_GraphSnapshots).toBool(); }
-    //! \brief Returns true if Graphical animations & Transitions will be drawn
-    bool animations() const { return getPref(STR_AS_Animations).toBool(); }
-    //! \brief Returns true if PixmapCaching acceleration will be used
-    bool usePixmapCaching() const { return getPref(STR_AS_UsePixmapCaching).toBool(); }
-    //! \brief Returns true if Square Wave plots are preferred (where possible)
-    bool squareWavePlots() const { return getPref(STR_AS_SquareWave).toBool(); }
-    //! \brief Whether to allow double clicking on Y-Axis labels to change vertical scaling mode
-    bool allowYAxisScaling() const { return getPref(STR_AS_AllowYAxisScaling).toBool(); }
-    //! \brief Whether to show graph tooltips
-    bool graphTooltips() const { return getPref(STR_AS_GraphTooltips).toBool(); }
-    //! \brief Pen width of line plots
-    float lineThickness() const { return getPref(STR_AS_LineThickness).toFloat(); }
-    //! \brief Whether to show line cursor
-    bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
-    //! \brief Whether to show the calendar
-    bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
-    //! \brief Whether to show the right sidebar
-    bool rightSidebarVisible() const { return getPref(STR_AS_RightSidebarVisible).toBool(); }
 
 
-    //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
-    OverlayDisplayType overlayType() const {
-        return (OverlayDisplayType)getPref(STR_AS_OverlayType).toInt();
-    }
-    //! \brief Returns the display type of Overview pages linechart
-    OverviewLinechartModes overviewLinechartMode() const {
-        return (OverviewLinechartModes)getPref(STR_AS_OverviewLinechartMode).toInt();
-    }
 
-    //! \brief Set the normal (unscaled) height of a graph.
-    void setGraphHeight(int height) { setPref(STR_AS_GraphHeight, height); }
-    //! \brief Set the normal (unscaled) height of a graph.
-    void setDailyPanelWidth(int width) { setPref(STR_AS_DailyPanelWidth, width); }
-    //! \brief Set the normal (unscaled) height of a graph.
-    void setRightPanelWidth(int width) { setPref(STR_AS_RightPanelWidth, width); }
-    //! \brief Set to true to turn on AntiAliasing (the graphical smoothing method)
-    void setAntiAliasing(bool aa) { setPref(STR_AS_AntiAliasing, aa); }
-    //! \brief Set to true if renderPixmap functions are in use, which takes snapshots of graphs.
-    void setGraphSnapshots(bool gs) { setPref(STR_AS_GraphSnapshots, gs); }
-    //! \brief Set to true if Graphical animations & Transitions will be drawn
-    void setAnimations(bool anim) { setPref(STR_AS_Animations, anim); }
-    //! \brief Set to true to use Pixmap Caching of Text and other graphics caching speedup techniques
-    void setUsePixmapCaching(bool b) { setPref(STR_AS_UsePixmapCaching, b); }
-    //! \brief Set whether or not to useSquare Wave plots (where possible)
-    void setSquareWavePlots(bool sw) { setPref(STR_AS_SquareWave, sw); }
-    //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
-    void setOverlayType(OverlayDisplayType od) { setPref(STR_AS_OverlayType, (int)od); }
-    //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
-    void setAllowYAxisScaling(bool b) { setPref(STR_AS_AllowYAxisScaling, b); }
-    //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
-    void setGraphTooltips(bool b) { setPref(STR_AS_GraphTooltips, b); }
-    //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
-    void setOverviewLinechartMode(OverviewLinechartModes od) {
-        setPref(STR_AS_OverviewLinechartMode, (int)od);
-    }
-    //! \brief Set the pen width of line plots.
-    void setLineThickness(float size) { setPref(STR_AS_LineThickness, size); }
-    //! \brief Sets whether to display Line Cursor
-    void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
-    //! \brief Sets whether to display the (Daily View) Calendar
-    void setCalendarVisible(bool b) { setPref(STR_AS_CalendarVisible, b); }
-    //! \brief Sets whether to display the right sidebar
-    void setRightSidebarVisible(bool b) { setPref(STR_AS_RightSidebarVisible, b); }
 };
 
 /*! \class UserSettings
     \brief Profile Options relating to General User Settings
     */
-class UserSettings : public ProfileSettings
+class UserSettings : public PrefSettings
 {
   public:
     UserSettings(Profile *profile)
-      : ProfileSettings(profile)
+      : PrefSettings(profile)
     {
         initPref(STR_US_UnitSystem, US_Metric);
         initPref(STR_US_EventWindowSize, 4.0);
         initPref(STR_US_SkipEmptyDays, true);
         initPref(STR_US_RebuildCache, false); // FIXME: jedimark: can't remember...
-        initPref(STR_US_ShowDebug, false);
-        initPref(STR_US_ShowPerformance, false);
         initPref(STR_US_CalculateRDI, false);
-        initPref(STR_US_ShowSerialNumbers, false);
         initPref(STR_US_PrefCalcMiddle, (int)0);
         initPref(STR_US_PrefCalcPercentile, (double)95.0);
         initPref(STR_US_PrefCalcMax, (int)0);
-        initPref(STR_US_TooltipTimeout, (int)2500);
-        initPref(STR_US_ScrollDampening, (int)50);
         initPref(STR_US_StatReportMode, 0);
         initPref(STR_US_ShowUnknownFlags, false);
         initPref(STR_US_LastOverviewRange, 4);
@@ -838,15 +711,10 @@ class UserSettings : public ProfileSettings
     double eventWindowSize() const { return getPref(STR_US_EventWindowSize).toDouble(); }
     bool skipEmptyDays() const { return getPref(STR_US_SkipEmptyDays).toBool(); }
     bool rebuildCache() const { return getPref(STR_US_RebuildCache).toBool(); }
-    bool showDebug() const { return getPref(STR_US_ShowDebug).toBool(); }
-    bool showPerformance() const { return getPref(STR_US_ShowPerformance).toBool(); }
     bool calculateRDI() const { return getPref(STR_US_CalculateRDI).toBool(); }
-    bool showSerialNumbers() const { return getPref(STR_US_ShowSerialNumbers).toBool(); }
     int prefCalcMiddle() const { return getPref(STR_US_PrefCalcMiddle).toInt(); }
     double prefCalcPercentile() const { return getPref(STR_US_PrefCalcPercentile).toDouble(); }
     int prefCalcMax() const { return getPref(STR_US_PrefCalcMax).toInt(); }
-    int tooltipTimeout() const { return getPref(STR_US_TooltipTimeout).toInt(); }
-    int scrollDampening() const { return getPref(STR_US_ScrollDampening).toInt(); }
     int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
     bool showUnknownFlags() const { return getPref(STR_US_ShowUnknownFlags).toBool(); }
     int lastOverviewRange() const { return getPref(STR_US_LastOverviewRange).toInt(); }
@@ -855,35 +723,15 @@ class UserSettings : public ProfileSettings
     void setEventWindowSize(double size) { setPref(STR_US_EventWindowSize, size); }
     void setSkipEmptyDays(bool skip) { setPref(STR_US_SkipEmptyDays, skip); }
     void setRebuildCache(bool rebuild) { setPref(STR_US_RebuildCache, rebuild); }
-    void setShowDebug(bool b) { setPref(STR_US_ShowDebug, b); }
-    void setShowPerformance(bool b) { setPref(STR_US_ShowPerformance, b); }
     void setCalculateRDI(bool rdi) { setPref(STR_US_CalculateRDI, rdi); }
-    void setShowSerialNumbers(bool enabled) { setPref(STR_US_ShowSerialNumbers, enabled); }
     void setPrefCalcMiddle(int i) { setPref(STR_US_PrefCalcMiddle, i); }
     void setPrefCalcPercentile(double p) { setPref(STR_US_PrefCalcPercentile, p); }
     void setPrefCalcMax(int i) { setPref(STR_US_PrefCalcMax, i); }
-    void setTooltipTimeout(int i) { setPref(STR_US_TooltipTimeout, i); }
-    void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, i); }
     void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
     void setShowUnknownFlags(bool b) { setPref(STR_US_ShowUnknownFlags, b); }
     void setLastOverviewRange(int i) { setPref(STR_US_LastOverviewRange, i); }
 };
 
-//! \brief Returns a count of all files & directories in a supplied folder
-int dirCount(QString path);
-
-
-namespace Profiles {
-
-extern QMap<QString, Profile *> profiles;
-void Scan(); // Initialize and load Profile
-void Done(); // Save all Profile objects and clear list
-
-Profile *Create(QString name);
-Profile *Get(QString name);
-Profile *Get();
-
-}
 
 #endif // PROFILES_H
 
