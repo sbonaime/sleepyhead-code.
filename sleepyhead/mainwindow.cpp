@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qprogress->setMaximum(100);
     qstatus = new QLabel("", this);
     qprogress->hide();
-    ui->statusbar->setMinimumWidth(200);
+    //ui->statusbar->setMinimumWidth(200);
     ui->statusbar->addPermanentWidget(qstatus, 0);
     ui->statusbar->addPermanentWidget(qprogress, 1);
 
@@ -502,7 +502,7 @@ void MainWindow::OpenProfile(QString profileName)
     overview->ReloadGraphs();
 
     // Should really create welcome and statistics here, but they need redoing later anyway to kill off webkit
-    ui->tabWidget->setCurrentWidget(ui->welcomeTab);
+    ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
     GenerateStatistics();
     PopulatePurgeMenu();
 

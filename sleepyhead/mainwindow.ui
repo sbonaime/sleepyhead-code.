@@ -1454,8 +1454,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>175</width>
-          <height>680</height>
+          <width>158</width>
+          <height>676</height>
          </rect>
         </property>
         <property name="palette">
@@ -1913,7 +1913,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>175</width>
-          <height>680</height>
+          <height>667</height>
          </rect>
         </property>
         <property name="palette">
@@ -3061,7 +3061,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>175</width>
-          <height>680</height>
+          <height>667</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3250,7 +3250,7 @@ border-radius: 10px;
    <property name="maximumSize">
     <size>
      <width>16777215</width>
-     <height>7</height>
+     <height>20</height>
     </size>
    </property>
    <property name="sizeGripEnabled">

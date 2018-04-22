@@ -1,4 +1,4 @@
-/* SleepLib ResMed Loader Implementation
+﻿/* SleepLib ResMed Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -1071,10 +1071,10 @@ void ResmedImport::run()
     // Update indexes, process waveform and perform flagging
     sess->UpdateSummaries();
 
-    // Save is not threadsafe
-    loader->saveMutex.lock();
+    // Save is not threadsafe?
+   // loader->saveMutex.lock();
     sess->Store(mach->getDataPath());
-    loader->saveMutex.unlock();
+   // loader->saveMutex.unlock();
 
     // Free the memory used by this session
     sess->TrashEvents();
@@ -1235,9 +1235,9 @@ void ResmedImportStage2::run()
     }
 
     loader->addSession(sess);
-    loader->saveMutex.lock();
+    //loader->saveMutex.lock();
     sess->Store(mach->getDataPath());
-    loader->saveMutex.unlock();
+    //loader->saveMutex.unlock();
 }
 
 
@@ -3285,8 +3285,6 @@ void ResInitModelMap()
     resmed_codes[CPAP_PressureMin].push_back("Pression min.");
     resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 
-
-
     // SAD file
     resmed_codes[OXI_Pulse].push_back("Pulse.1s");
     resmed_codes[OXI_SPO2].push_back("SpO2.1s");
@@ -3309,12 +3307,6 @@ void ResInitModelMap()
     resmed_codes[RMS9_SetPressure].push_back("S.C.Press");
 
     resmed_codes[RMS9_EPRLevel].push_back("S.EPR.Level");
-
-
-
-
-
-
 }
 
 ChannelID ResmedLoader::CPAPModeChannel() { return RMS9_Mode; }

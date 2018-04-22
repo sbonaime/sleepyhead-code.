@@ -794,14 +794,14 @@ void SaveThread::run()
     while (running) {
         Session *sess = machine->popSaveList();
         if (sess) {
-            if (machine->m_donetasks % 10 == 0) {
+            if (machine->m_donetasks % 20 == 0) {
                 int i = (float(machine->m_donetasks) / float(machine->m_totaltasks) * 100.0);
                 emit UpdateProgress(i);
             }
             sess->UpdateSummaries();
-            machine->saveMutex.lock();
+            //machine->saveMutex.lock();
             sess->Store(path);
-            machine->saveMutex.unlock();
+            //machine->saveMutex.unlock();
 
             sess->TrashEvents();
         } else {
@@ -841,33 +841,33 @@ void SaveTask::run()
 
 void Machine::queTask(ImportTask * task)
 {
-    // Okay... what was this turned off???
     if (AppSetting->multithreading()) {
         m_tasklist.push_back(task);
         return;
     }
 
+    // Not multithreading, run it right now...
     task->run();
     return;
 }
 
 void Machine::runTasks()
 {
-    if (0) { //!p_profile->session->multithreading()) {
+    if (0) { //!AppSetting->multithreading()) {
         Q_ASSERT(m_tasklist.isEmpty());
         return;
     }
     QThreadPool * threadpool = QThreadPool::globalInstance();
-    int m_totaltasks=m_tasklist.size();
+   // int m_totaltasks=m_tasklist.size();
     int m_currenttask=0;
     while (!m_tasklist.isEmpty()) {
         if (threadpool->tryStart(m_tasklist.at(0))) {
             m_tasklist.pop_front();
-            float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
-            qprogress->setValue(f);
+          //  float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
+          //  qprogress->setValue(f);
             m_currenttask++;
         }
-        QApplication::processEvents();
+        //QApplication::processEvents();
     }
     QThreadPool::globalInstance()->waitForDone(-1);
 }
@@ -886,6 +886,23 @@ bool Machine::hasModifiedSessions()
 
 const QString summaryFileName = "Summaries.xml";
 const int summaryxml_version=1;
+
+class LoadTask:public ImportTask
+{
+public:
+    LoadTask(Session * s, Machine * m): sess(s), mach(m) {}
+    virtual ~LoadTask() {}
+    virtual void run();
+
+protected:
+    Session * sess;
+    Machine * mach;
+};
+
+void LoadTask::run()
+{
+    sess->LoadSummary();
+}
 
 bool Machine::LoadSummary(QProgressBar * progress)
 {
@@ -997,17 +1014,21 @@ bool Machine::LoadSummary(QProgressBar * progress)
 
     progress->setMaximum(sess_order.size());
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
-        if ((cnt % 100) == 0) {
+        //
+/*        if ((cnt % 100) == 0) {
             progress->setValue(cnt);
             //QApplication::processEvents();
-        }
+        } */
         Session * sess = it.value();
         if (!AddSession(sess)) {
             delete sess;
         } else {
-            if (loadSummaries) sess->LoadSummary();
+            if (loadSummaries) {
+                queTask(new LoadTask(sess,this));
+            }
         }
     }
+    runTasks();
     progress->setValue(sess_order.size());
     QApplication::processEvents();
 

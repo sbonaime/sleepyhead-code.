@@ -1,4 +1,4 @@
-/* SleepLib Machine Loader Class Implementation
+﻿/* SleepLib Machine Loader Class Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -171,8 +171,7 @@ void MachineLoader::queTask(ImportTask * task)
 
 void MachineLoader::runTasks(bool threaded)
 {
-    //debug
-    threaded=false;
+    threaded=AppSetting->multithreading();
 
     m_totaltasks=m_tasklist.size();
     m_currenttask=0;
@@ -188,6 +187,7 @@ void MachineLoader::runTasks(bool threaded)
         }
     } else {
         QThreadPool * threadpool = QThreadPool::globalInstance();
+
         while (!m_tasklist.isEmpty()) {
             if (threadpool->tryStart(m_tasklist.at(0))) {
                 m_tasklist.pop_front();
@@ -195,7 +195,9 @@ void MachineLoader::runTasks(bool threaded)
                 qprogress->setValue(f);
                 m_currenttask++;
             }
-            QApplication::processEvents();
+            if ((m_currenttask % 50)==0) {
+                QApplication::processEvents();
+            }
         }
         QThreadPool::globalInstance()->waitForDone(-1);
     }
