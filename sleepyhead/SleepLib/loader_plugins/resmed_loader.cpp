@@ -1683,6 +1683,28 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     QHash<EDFType, QList<EDFduration *> > filesbytype;
 
 
+    QTime time;
+    time.start();
+
+    // Calculate number of files for progress bar for this stage
+    int dsiz = dirs.size();
+    int numfiles = 0;
+    for (int d=0; d < dsiz; ++d) {
+        dir.setPath(dirs.at(d));
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+        dir.setSorting(QDir::Name);
+
+        flist = dir.entryInfoList();
+
+        // get number of files in current directory being processed
+        int size = flist.size();
+        numfiles += size;
+    }
+
+    qprogress->setMaximum(numfiles);
+
+
+    int cnt = 0;
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
     for (int d=0; d < dirs.size(); ++d) {
         dir.setPath(dirs.at(d));
@@ -1698,6 +1720,11 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         for (int i = 0; i < size; i++) {
             QFileInfo fi = flist.at(i);
             filename = fi.fileName();
+            cnt++;
+            if (cnt % 50) {
+                qprogress->setValue(cnt);
+                QApplication::processEvents();
+            }
 
             // Forget about it if it can't be read.
             if (!fi.isReadable()) {
@@ -1736,17 +1763,21 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
             dur.filename = filename;
 
             if (dur.start != dur.end) { // make sure empty EVE's are skipped
-                QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, getEDFDuration(fullname));
+                QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, dur); //getEDFDuration(fullname));
                 filesbytype[dur.type].append(&it.value());
             }
         }
     }
+    qDebug() << "ResmedLoader::scanFiles() took" << time.elapsed() << "ms";
 
     QList<EDFType> EDForder;
     EDForder.push_back(EDF_PLD);
     EDForder.push_back(EDF_BRP);
     EDForder.push_back(EDF_SAD);
     QHash<EDFType, QStringList>::iterator gi;
+
+    qprogress->setMaximum(filesbytype[EDF_PLD].size() + filesbytype[EDF_BRP].size() + filesbytype[EDF_SAD].size());
+    cnt = 0;
 
     for (int i=0; i<3; i++) {
         EDFType basetype = EDForder.takeFirst();
@@ -1755,6 +1786,11 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         QList<EDFduration *> & LIST = filesbytype[basetype];
         int base_size = LIST.size();
         for (int f=0; f < base_size; ++f) {
+            if ((cnt % 50) == 0) {
+                qprogress->setValue(cnt);
+                QApplication::processEvents();
+            }
+            cnt++;
             const EDFduration * dur = LIST.at(f);
 
             quint32 start = dur->start;

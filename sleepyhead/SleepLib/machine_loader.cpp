@@ -187,12 +187,12 @@ void MachineLoader::runTasks(bool threaded)
         }
     } else {
         QThreadPool * threadpool = QThreadPool::globalInstance();
-
+        qprogress->setMaximum(m_totaltasks);
         while (!m_tasklist.isEmpty()) {
             if (threadpool->tryStart(m_tasklist.at(0))) {
                 m_tasklist.pop_front();
-                float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
-                qprogress->setValue(f);
+                //float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
+                qprogress->setValue(m_currenttask);
                 m_currenttask++;
             }
             if ((m_currenttask % 50)==0) {
