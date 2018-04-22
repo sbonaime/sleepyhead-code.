@@ -366,10 +366,6 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Register Importer Modules for autoscanner
     ////////////////////////////////////////////////////////////////////////////////////////////
-    p_pref = new Preferences("Preferences");
-    PREF.Open();
-    AppSetting = new AppWideSetting(p_pref);
-
     initialize();
     PRS1Loader::Register();
     ResmedLoader::Register();
@@ -383,63 +379,65 @@ retry_directory:
 
     schema::setOrders();
 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // Initialize preferences system (Don't use PREF before this point)
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    p_pref = new Preferences("Preferences");
+    PREF.Open();
+    AppSetting = new AppWideSetting(p_pref);
+
     // Clean up some legacy crap
-    QString layout = PREF.Get("{home}/Layout.xml");
-    QFile lf(layout);
+    QFile lf(PREF.Get("{home}/Layout.xml"));
     if (lf.exists()) {
         lf.remove();
     }
+
     PREF.Erase(STR_AppName);
     PREF.Erase(STR_GEN_SkipLogin);
 
     // Todo: Make a wrapper for Preference settings, like Profile settings have..
     QDateTime lastchecked, today = QDateTime::currentDateTime();
 
-    PREF.init(STR_GEN_UpdatesAutoCheck, true);
-    PREF.init(STR_GEN_UpdateCheckFrequency, 7);    // days
-    PREF.init(STR_PREF_AllowEarlyUpdates, false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
     ////////////////////////////////////////////////////////////////////////////////////////////
     bool check_updates = false;
 
-    if (PREF[STR_GEN_UpdatesAutoCheck].toBool()) {
-        int update_frequency = PREF[STR_GEN_UpdateCheckFrequency].toInt();
+    if (AppSetting->updatesAutoCheck()) {
+        int update_frequency = AppSetting->updateCheckFrequency();
         int days = 1000;
-        lastchecked = PREF[STR_GEN_UpdatesLastChecked].toDateTime();
+        lastchecked = AppSetting->updatesLastChecked();
 
-        if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
+        if (lastchecked.isValid()) {
             days = lastchecked.secsTo(today);
             days /= 86400;
-        };
+        }
 
         if (days > update_frequency) {
             check_updates = true;
         }
     }
 
-    if (PREF.contains(STR_PREF_VersionString)) {
+    int vc = compareVersion(AppSetting->versionString());
+    if (vc < 0) {
+        release_notes();
 
-        int vc = compareVersion(PREF[STR_PREF_VersionString].toString());
-        if (vc < 0) {
-            release_notes();
+        check_updates = false;
+    } else if (vc > 0) {
+        if (QMessageBox::warning(nullptr, STR_MessageBox_Error,
+            QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").
+                        arg(AppSetting->versionString()) +"\n\n"+
+            QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
 
-            check_updates = false;
-        } else if (vc > 0) {
-            if (QMessageBox::warning(nullptr, STR_MessageBox_Error,
-                QObject::tr("The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).").
-                            arg(PREF[STR_PREF_VersionString].toString()) +"\n\n"+
-                QObject::tr("It is likely that doing this will cause data corruption, are you sure you want to do this?"),
-                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
-
-                return 0;
-            }
-
+            return 0;
         }
+
     }
 
-    PREF[STR_PREF_VersionString] = VersionString;
+    AppSetting->setVersionString(VersionString);
 
     //    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     //    QFontDatabase fdb;

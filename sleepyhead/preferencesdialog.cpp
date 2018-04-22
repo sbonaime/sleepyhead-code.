@@ -163,7 +163,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->allowYAxisScaling->setChecked(AppSetting->allowYAxisScaling());
 
     ui->autoLaunchImporter->setChecked(AppSetting->autoLaunchImport());
-    ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
+    ui->allowEarlyUpdates->setChecked(AppSetting->allowEarlyUpdates());
 
     int s = profile->cpap->clockDrift();
     int m = (s / 60) % 60;
@@ -205,14 +205,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->graphHeight->setValue(AppSetting->graphHeight());
 
-    ui->automaticallyCheckUpdates->setChecked(PREF[STR_GEN_UpdatesAutoCheck].toBool());
+    ui->automaticallyCheckUpdates->setChecked(AppSetting->updatesAutoCheck());
 
-    ui->updateCheckEvery->setValue(PREF[STR_GEN_UpdateCheckFrequency].toInt());
+    ui->updateCheckEvery->setValue(AppSetting->updateCheckFrequency());
 
 
-    if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
+    if (AppSetting->updatesLastChecked().isValid()) {
         RefreshLastChecked();
-    } else { ui->updateLastChecked->setText("Never"); }
+    } else { ui->updateLastChecked->setText(tr("Never")); }
 
     ui->overlayFlagsCombo->setCurrentIndex(AppSetting->overlayType());
     ui->overviewLinecharts->setCurrentIndex(AppSetting->overviewLinechartMode());
@@ -818,9 +818,9 @@ bool PreferencesDialog::Save()
 
     AppSetting->setAutoLaunchImport(ui->autoLaunchImporter->isChecked());
 
-    PREF[STR_GEN_UpdatesAutoCheck] = ui->automaticallyCheckUpdates->isChecked();
-    PREF[STR_GEN_UpdateCheckFrequency] = ui->updateCheckEvery->value();
-    PREF[STR_PREF_AllowEarlyUpdates] = ui->allowEarlyUpdates->isChecked();
+    AppSetting->setUpdatesAutoCheck(ui->automaticallyCheckUpdates->isChecked());
+    AppSetting->setUpdateCheckFrequency(ui->updateCheckEvery->value());
+    AppSetting->setAllowEarlyUpdates(ui->allowEarlyUpdates->isChecked());
 
 
     PREF["Fonts_Application_Name"] = ui->applicationFont->currentText();
@@ -978,7 +978,7 @@ void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
 extern MainWindow *mainwin;
 void PreferencesDialog::RefreshLastChecked()
 {
-    ui->updateLastChecked->setText(PREF[STR_GEN_UpdatesLastChecked].toDateTime().toString(Qt::SystemLocaleLongDate));
+    ui->updateLastChecked->setText(AppSetting->updatesLastChecked().toString(Qt::SystemLocaleLongDate));
 }
 
 void PreferencesDialog::on_checkForUpdatesButton_clicked()

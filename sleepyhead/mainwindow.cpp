@@ -261,10 +261,10 @@ void MainWindow::on_aboutToQuit()
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+    schema::channel.Save();
     if (p_profile) {
         CloseProfile();
     }
-    schema::channel.Save();
 
     if (AppSetting->removeCardReminder()) {
         Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));

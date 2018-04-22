@@ -1918,6 +1918,9 @@ bool Profile::hasChannel(ChannelID code)
 const quint16 chandata_version = 1;
 void Profile::saveChannels()
 {
+    // First save the XML version for Mobile versions
+    schema::channel.Save(Get("{DataFolder}/") + "channels.xml");
+
     QString filename = Get("{DataFolder}/") + "channels.dat";
     QFile f(filename);
     qDebug() << "Saving Channel States";

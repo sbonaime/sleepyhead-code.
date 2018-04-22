@@ -13,6 +13,7 @@
 
 #include "preferences.h"
 #include "common.h"
+#include "version.h"
 
 
 class Preferences;
@@ -50,6 +51,13 @@ const QString STR_US_AutoLaunchImport = "AutoLaunchImport";
 const QString STR_US_RemoveCardReminder = "RemoveCardReminder";
 const QString STR_IS_CacheSessions = "MemoryHog";
 
+const QString STR_GEN_UpdatesLastChecked = "UpdatesLastChecked";
+const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
+const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
+const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
+const QString STR_PREF_VersionString = "VersionString";
+
+
 
 class AppWideSetting: public PrefSettings
 {
@@ -86,7 +94,19 @@ public:
       initPref(STR_IS_CacheSessions, false);
       initPref(STR_US_RemoveCardReminder, true);
       initPref(STR_GEN_Profile, "");
+
+      initPref(STR_GEN_UpdatesAutoCheck, true);
+      initPref(STR_GEN_UpdateCheckFrequency, 7);
+      initPref(STR_PREF_AllowEarlyUpdates, false);
+      initPref(STR_GEN_UpdatesLastChecked, QDateTime());
+      initPref(STR_PREF_VersionString, VersionString);
   }
+
+  QString versionString() const { return getPref(STR_PREF_VersionString).toString(); }
+  bool updatesAutoCheck() const { return getPref(STR_GEN_UpdatesAutoCheck).toBool(); }
+  bool allowEarlyUpdates() const { return getPref(STR_PREF_AllowEarlyUpdates).toBool(); }
+  QDateTime updatesLastChecked() const { return getPref(STR_GEN_UpdatesLastChecked).toDateTime(); }
+  int updateCheckFrequency() const { return getPref(STR_GEN_UpdateCheckFrequency).toInt(); }
 
   QString profileName() const { return getPref(STR_GEN_Profile).toString(); }
   bool autoLaunchImport() const { return getPref(STR_US_AutoLaunchImport).toBool(); }
@@ -138,9 +158,7 @@ public:
   int openTabAfterImport() const { return getPref(STR_US_OpenTabAfterImport).toInt(); }
   bool removeCardReminder() const { return getPref(STR_US_RemoveCardReminder).toBool(); }
 
-
   void setProfileName(QString name) { setPref(STR_GEN_Profile, name); }
-
   void setAutoLaunchImport(bool b) { setPref(STR_US_AutoLaunchImport, b); }
   void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
   void setMultithreading(bool enabled) { setPref(STR_IS_Multithreading, enabled); }
@@ -187,6 +205,13 @@ public:
   void setOpenTabAtStart(int idx) { setPref(STR_US_OpenTabAtStart, idx); }
   void setOpenTabAfterImport(int idx) { setPref(STR_US_OpenTabAfterImport, idx); }
   void setRemoveCardReminder(bool b) { setPref(STR_US_RemoveCardReminder, b); }
+
+  void setVersionString(QString version) { setPref(STR_PREF_VersionString, version); }
+  void setUpdatesAutoCheck(bool b) { setPref(STR_GEN_UpdatesAutoCheck, b); }
+  void setAllowEarlyUpdates(bool b)  { setPref(STR_PREF_AllowEarlyUpdates, b); }
+  void setUpdatesLastChecked(QDateTime datetime) { setPref(STR_GEN_UpdatesLastChecked, datetime); }
+  void setUpdateCheckFrequency(int freq) { setPref(STR_GEN_UpdateCheckFrequency,freq); }
+
 };
 
 

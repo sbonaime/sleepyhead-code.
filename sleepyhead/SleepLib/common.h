@@ -121,12 +121,8 @@ enum OverlayDisplayType { ODT_Bars, ODT_TopAndBottom };
 
 const QString STR_GEN_Profile = "Profile";
 const QString STR_GEN_SkipLogin = "SkipLoginScreen";
-const QString STR_GEN_UpdatesLastChecked = "UpdatesLastChecked";
-const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
-const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
 const QString STR_GEN_DataFolder = "DataFolder";
 
-const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
 const QString STR_PREF_ReimportBackup = "ReimportBackup";
 const QString STR_PREF_LastCPAPPath = "LastCPAPPath";
 
@@ -140,7 +136,6 @@ const QString STR_MACH_MSeries = "MSeries";
 const QString STR_MACH_CMS50 = "CMS50";
 const QString STR_MACH_ZEO = "Zeo";
 
-const QString STR_PREF_VersionString = "VersionString";
 const QString STR_PREF_Language = "Language";
 
 const QString STR_AppName = "SleepyHead";

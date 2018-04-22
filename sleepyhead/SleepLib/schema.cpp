@@ -1,4 +1,4 @@
-/* Channel / Schema Implementation
+﻿/* Channel / Schema Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -895,16 +895,14 @@ bool ChannelList::Load(QString filename)
 
             scope = Scopes[scopestr];
 
-//            if (PREF[STR_PREF_ResetEventNames].toBool()) {
-                name = e.attribute("name", "");
-                details = e.attribute("details", "");
-                label = e.attribute("label", "");
+            name = e.attribute("name", "");
+            details = e.attribute("details", "");
+            label = e.attribute("label", "");
 
-                if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
-                    qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;
-                    continue;
-                }
-  //          }
+            if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
+                qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;
+                continue;
+            }
 
             unit = e.attribute("unit");
 
@@ -1018,13 +1016,10 @@ void ChannelList::add(QString group, Channel *chan)
 
 bool ChannelList::Save(QString filename)
 {
-    if (!p_profile)
+    if (filename.isEmpty())
         return false;
 
-    qDebug() << "Saving Channels.xml";
-    if (filename.isEmpty()) {
-        filename = p_profile->Get("{DataFolder}/") + "channels.xml";
-    }
+    qDebug() << "In ChannelList::Save() saving " << filename;;
 
     QDomDocument doc("channels");
 

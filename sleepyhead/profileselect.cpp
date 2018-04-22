@@ -310,7 +310,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
 
     if (!profile->user->hasPassword()) {
         m_selectedProfile = name;
-        PREF[STR_GEN_Profile] = name;
+        AppSetting->setProfileName(name);
         accept();
         return;
     } else {
