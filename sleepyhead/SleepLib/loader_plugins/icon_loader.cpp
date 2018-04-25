@@ -1,4 +1,4 @@
-/* SleepLib Fisher & Paykel Icon Loader Implementation
+﻿/* SleepLib Fisher & Paykel Icon Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -325,7 +325,7 @@ quint32 convertDate(quint32 timestamp)
 
     QDateTime dt = QDateTime(QDate(year, month, day), QTime(hour, minute, second),Qt::UTC);
 
-//    Q_ASSERT(dt.isValid());
+//    Q NO!!! _ASSERT(dt.isValid());
 //    if ((year == 2013) && (month == 9) && (day == 18)) {
 //        // this is for testing.. set a breakpoint on here and
 //        int i=5;
@@ -359,7 +359,7 @@ quint32 convertFLWDate(quint32 timestamp) // Bit format: hhhhhmmmmmmssssssYYYYYY
     if(!dt.isValid()){
         dt = QDateTime(QDate(2015,1,1), QTime(0,0,1));
     }
-//    Q_ASSERT(dt.isValid());
+//    Q NO!!! _ASSERT(dt.isValid());
 //    if ((year == 2013) && (month == 9) && (day == 18)) {
 //        int i=5;
 //    }

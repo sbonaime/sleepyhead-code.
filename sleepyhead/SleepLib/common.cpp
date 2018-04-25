@@ -1,4 +1,4 @@
-/* SleepLib Common Functions
+﻿/* SleepLib Common Functions
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -614,7 +614,10 @@ QByteArray gUncompress(const QByteArray &data)
         strm.next_out = (Bytef*)(out);
 
         ret = inflate(&strm, Z_NO_FLUSH);
-        Q_ASSERT(ret != Z_STREAM_ERROR);  // state not clobbered
+        if (ret == Z_STREAM_ERROR) {
+            qWarning() << "ret == Z_STREAM_ERROR in gzUncompress in common.cpp";
+            return QByteArray();
+        }
 
         switch (ret) {
         case Z_NEED_DICT:

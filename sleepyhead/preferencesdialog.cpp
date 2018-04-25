@@ -16,6 +16,8 @@
 #include <QTextStream>
 #include <QCalendarWidget>
 #include <QMenuBar>
+#include <QDebug>
+
 #include <cmath>
 
 #include "preferencesdialog.h"
@@ -84,7 +86,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 //    QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
 //    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
 
-    Q_ASSERT(profile != nullptr);
+    if (profile == nullptr) {
+        qCritical() << "Preferences dialog created without legit profile object";
+        return;
+    }
     ui->tabWidget->setCurrentIndex(0);
 
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());

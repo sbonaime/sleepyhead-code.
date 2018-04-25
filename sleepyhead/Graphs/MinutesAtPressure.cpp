@@ -1,4 +1,4 @@
-/* MinutesAtPressure Graph Implementation
+﻿/* MinutesAtPressure Graph Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -702,7 +702,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         for (;  it != times_end; ++it) {
             int p = it.key();
-            Q_ASSERT(p < 255);
+            // No ASSERTS!!!   (p < 255);
             float v = float(it.value()) / 60.0;
             P[p] = v;
         }
@@ -897,7 +897,10 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
             time = EL->time(e);
             data = floor(float(EL->raw(e)) * gain * pressureMult);  // pressure times ten, so can look at .1 intervals in an integer
 
-            Q_ASSERT(data < 300);
+            if (data>=300) {
+                qWarning() << "data >= 300 in RecalcMAP::updateTimes!";
+                return;
+            }
 
             if ((time < minx) || first) {
                 lasttime = time;

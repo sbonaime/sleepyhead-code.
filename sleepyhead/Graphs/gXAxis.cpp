@@ -1,4 +1,4 @@
-/* gXAxis Implementation
+﻿/* gXAxis Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -178,12 +178,10 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
         y = r2.height();
 
         // Not sure when this was a problem...
-        Q_ASSERT(x > 0);
-//        if (x <= 0) {
-//            qWarning() << "gXAxis::Plot() x<=0 font size bug";
-//            return;
-//        }
-
+        if (x<=0) {
+            qWarning() << "gXAxis::Paint called with x<=0";
+            return;
+        }
 
         // Max number of ticks that will fit, with a bit of room for a buffer
         int max_ticks = width / (x + 15);

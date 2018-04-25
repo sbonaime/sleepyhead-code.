@@ -238,12 +238,16 @@ void ProfileSelector::on_buttonNewProfile_clicked()
     newprof->setWindowModality(Qt::ApplicationModal);
     newprof->setModal(true);
     if (newprof->exec() == NewProfile::Accepted) {
-        updateProfileList();
         p_profile = Profiles::Get(AppSetting->profileName());
-        Q_ASSERT(p_profile != nullptr);
-        QString name = p_profile->user->userName();
-        p_profile = nullptr;
-        SelectProfile(name);
+        if (p_profile != nullptr) {
+            QString name = p_profile->user->userName();
+            p_profile = nullptr;
+            SelectProfile(name);
+        } else {
+            qWarning() << AppSetting->profileName() << "yielded a null profile";
+            p_profile=nullptr;
+        }
+        updateProfileList();
     }
     delete newprof;
 }

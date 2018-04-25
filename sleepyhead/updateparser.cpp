@@ -1,4 +1,4 @@
-/* UpdateParser Implementation (Autoupdater component)
+﻿/* UpdateParser Implementation (Autoupdater component)
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -247,7 +247,10 @@ bool UpdatesParser::read(QIODevice *device)
 
 void UpdatesParser::readUpdates()
 {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "Updates");
+    if (!xml.isStartElement() || (xml.name() != "Updates")) {
+        qWarning() << "UpdatesParser::readUpdates() condition check failed";
+    }
+//    Q_ ASSERT(xml.isStartElement() && xml.name() == "Updates");
 
     while (xml.readNextStartElement()) {
         if (xml.name().compare(QLatin1String("PackageUpdate"),Qt::CaseInsensitive)==0) {
@@ -262,7 +265,10 @@ void UpdatesParser::readUpdates()
 
 void UpdatesParser::readPackageUpdate()
 {
-    Q_ASSERT(xml.isStartElement() && (xml.name().compare(QLatin1String("PackageUpdate"),Qt::CaseInsensitive)==0));
+    if (!xml.isStartElement() || (xml.name().compare(QLatin1String("PackageUpdate"),Qt::CaseInsensitive)!=0)) {
+        qWarning() << "UpdatesParser::readPackageUpdate() condition check failed";
+        return;
+    }
     package = PackageUpdate();
 
     while (xml.readNextStartElement()) {

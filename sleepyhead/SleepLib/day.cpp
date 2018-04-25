@@ -1,4 +1,4 @@
-/* SleepLib Day Class Implementation
+﻿/* SleepLib Day Class Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <QDebug>
 
 #include "day.h"
 #include "profiles.h"
@@ -107,8 +108,11 @@ Session *Day::find(SessionID sessid)
 
 void Day::addSession(Session *s)
 {
+    if (s == nullptr) {
+        qDebug() << "addSession called with null session pointer";
+        return;
+    }
     invalidate();
-    Q_ASSERT(s!=nullptr);
     QHash<MachineType, Machine *>::iterator mi = machines.find(s->type());
 
     if (mi != machines.end()) {
@@ -1528,7 +1532,10 @@ QString Day::getPressureRelief()
 
 QString Day::getPressureSettings()
 {
-    Q_ASSERT(machine(MT_CPAP) != nullptr);
+    if (machine(MT_CPAP) == nullptr) {
+        qCritical("getPressureSettings called with no CPAP machine record");
+        return QString();
+    }
 
     CPAPMode mode = (CPAPMode)(int)settings_max(CPAP_Mode);
     QString units = schema::channel[CPAP_Pressure].units();

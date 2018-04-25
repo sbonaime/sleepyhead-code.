@@ -1,4 +1,4 @@
-/* gLineChart Header
+﻿/* gLineChart Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -43,7 +43,10 @@ public:
         code(code), type(type), available(available) {}
 
     EventDataType calc(Day * day) {
-        Q_ASSERT(day != nullptr);
+        if (day == nullptr) {
+            qWarning() << "DottedLine::calc called with null day object";
+            return 0;
+        }
 
         available = day->channelExists(code);
         value = day->calc(code, type);

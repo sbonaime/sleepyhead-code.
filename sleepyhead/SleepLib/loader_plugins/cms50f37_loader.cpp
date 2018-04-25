@@ -1,4 +1,4 @@
-/* SleepLib CMS50X Loader Implementation
+﻿/* SleepLib CMS50X Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -586,7 +586,8 @@ void CMS50F37Loader::processBytes(QByteArray bytes)
 
 //int CMS50F37Loader::doLiveMode()
 //{
-//    Q_ASSERT(oxirec != nullptr);
+//    if (oxirec == nullptr) { // warn
+//}
 
 //    int available = buffer.size();
 //    int idx = 0;

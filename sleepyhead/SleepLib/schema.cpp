@@ -717,6 +717,7 @@ void init()
     schema::channel[CPAP_CSR].setShowInOverview(true);
     schema::channel[CPAP_PB].setShowInOverview(true);
     schema::channel[CPAP_LargeLeak].setShowInOverview(true);
+    schema::channel[CPAP_FLG].setShowInOverview(true);
 }
 
 
@@ -985,17 +986,18 @@ bool ChannelList::Load(QString filename)
 
 void ChannelList::add(QString group, Channel *chan)
 {
-    Q_ASSERT(chan != nullptr);
+    if (chan == nullptr) {
+        qCritical() << "ChannelList::add called with null chan object";
+        return;
+    }
 
     if (channels.contains(chan->id())) {
-        qWarning() << "Channels already contains id" << chan->id() << chan->code();
-        Q_ASSERT(false);
+        qCritical() << "Channels already contains id" << chan->id() << chan->code();
         return;
     }
 
     if (names.contains(chan->code())) {
-        qWarning() << "Channels already contains name" << chan->id() << chan->code();
-        Q_ASSERT(false);
+        qCritical() << "Channels already contains name" << chan->id() << chan->code();
         return;
     }
 

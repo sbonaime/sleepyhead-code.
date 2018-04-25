@@ -1,4 +1,4 @@
-/* SleepLib MachineLoader Base Class Header
+﻿/* SleepLib MachineLoader Base Class Header
  *
  * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
  *
@@ -57,7 +57,11 @@ class MachineLoader: public QObject
     inline MachineType type() { return m_type; }
 
     void unsupported(Machine * m) {
-        Q_ASSERT(m != nullptr);
+        if (m == nullptr) {
+            qCritical("MachineLoader::unsupported(Machine *) called with null machine object");
+            return;
+        }
+
         m->setUnsupported(true);
         emit machineUnsupported(m);
     }

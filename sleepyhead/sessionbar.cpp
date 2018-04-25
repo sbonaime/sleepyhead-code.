@@ -1,4 +1,4 @@
-/* SessionBar Graph Implementation
+﻿/* SessionBar Graph Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -70,6 +70,14 @@ void SessionBar::updateTimer()
     }
 
     update();
+}
+Session * SessionBar::session(int idx)
+{
+    if (idx >= segments.size()) {
+        qCritical() << "SessionBar::session called with out of range index";
+        return nullptr;
+    }
+    return segments[idx].session;
 }
 
 SegType SessionBar::min()

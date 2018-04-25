@@ -225,9 +225,14 @@ QDate Machine::pickDate(qint64 first)
 
 bool Machine::AddSession(Session *s)
 {
-    Q_ASSERT(s != nullptr);
-    Q_ASSERT(p_profile);
-    Q_ASSERT(p_profile->isOpen());
+    if (s == nullptr) {
+        qCritical() << "AddSession() called with a null object";
+        return false;
+    }
+    if (p_profile == nullptr) {
+        qCritical() << "AddSession() called without a valid p_profile";
+        return false;
+    }
 
     updateChannels(s);
 
@@ -853,10 +858,9 @@ void Machine::queTask(ImportTask * task)
 
 void Machine::runTasks()
 {
-    if (0) { //!AppSetting->multithreading()) {
-        Q_ASSERT(m_tasklist.isEmpty());
+    if (m_tasklist.isEmpty())
         return;
-    }
+
     QThreadPool * threadpool = QThreadPool::globalInstance();
    // int m_totaltasks=m_tasklist.size();
     int m_currenttask=0;

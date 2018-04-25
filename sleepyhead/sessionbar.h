@@ -1,4 +1,4 @@
-/* SessionBar Graph Header
+﻿/* SessionBar Graph Header
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -46,7 +46,7 @@ class SessionBar : public QWidget
     void setSelectColor(QColor col) { m_selectColor = col; }
     int count() { return segments.size(); }
     int selected() { return m_selectIDX; }
-    Session * session(int idx) { Q_ASSERT(idx < segments.size()); return segments[idx].session; }
+    Session * session(int idx);
     void setSelected(int idx) { m_selectIDX = idx; }
 
   protected slots:

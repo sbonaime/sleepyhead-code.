@@ -545,7 +545,11 @@ void Profile::DataFormatError(Machine *m)
 }
 void Profile::UnloadMachineData()
 {
-    Q_ASSERT(m_machopened);
+    if (!m_machopened) {
+        qCritical() << "Profile::UnloadMachineData() called with m_machopened==false";
+        return;
+    }
+
     QMap<QDate, Day *>::iterator it;
     for (it = daylist.begin(); it != daylist.end(); ++it) {
         delete it.value();

@@ -1,4 +1,4 @@
-/* SleepLib CMS50X Loader Implementation
+﻿/* SleepLib CMS50X Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -183,7 +183,7 @@ void CMS50Loader::processBytes(QByteArray bytes)
 int CMS50Loader::doImportMode()
 {
     int available = buffer.size();
-  //  Q_ASSERT(!finished_import);
+
     int hour,minute;
     int idx = 0;
     while (idx < available) {
@@ -385,7 +385,10 @@ int CMS50Loader::doImportMode()
 
 int CMS50Loader::doLiveMode()
 {
-    Q_ASSERT(oxirec != nullptr);
+    if (oxirec == nullptr) {
+        qWarning() << "CMS50Loader::doLiveMode() called when null oxirec object";
+        return 0;
+    }
 
     int available = buffer.size();
     int idx = 0;
@@ -450,7 +453,10 @@ void CMS50Loader::startImportTimeout()
     if (started_import) {
         return;
     }
-    Q_ASSERT(finished_import == false);
+    if (finished_import != false) {
+        qWarning() << "CMS50Loader::startImportTimeout() called when finished_import != false";
+        return;
+    }
 
     //qDebug() << "Starting oximeter import timeout";
 

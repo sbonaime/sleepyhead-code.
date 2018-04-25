@@ -495,7 +495,10 @@ int PRS1Loader::Open(QString path)
 
 int PRS1Loader::OpenMachine(QString path)
 {
-    Q_ASSERT(p_profile != nullptr);
+    if (p_profile == nullptr) {
+        qWarning() << "PRS1Loader::OpenMachine() called without a valid p_profile object present";
+        return 0;
+    }
 
     qDebug() << "Opening PRS1 " << path;
     QDir dir(path);
@@ -3139,8 +3142,10 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
 
         if ((chunk->ext == 5) || (chunk->ext == 6)) {  // if Flow/MaskPressure Waveform or OXI Waveform file
             if (lastchunk != nullptr) {
-
-                Q_ASSERT(lastchunk->sessionid == chunk->sessionid);
+                if (lastchunk->sessionid != chunk->sessionid) {
+                    qWarning() << "lastchunk->sessionid != chunk->sessionid in PRS1Loader::ParseFile2()";
+                    break;
+                }
 
                 if (diff == 0) {
                     // In sync, so append waveform data to previous chunk
@@ -3423,7 +3428,10 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
         if ((chunk->ext == 5) || (chunk->ext == 6)) {  // if Flow/MaskPressure Waveform or OXI Waveform file
             if (lastchunk != nullptr) {
 
-                Q_ASSERT(lastchunk->sessionid == chunk->sessionid);
+                if (lastchunk->sessionid != chunk->sessionid) {
+                    qWarning() << "lastchunk->sessionid != chunk->sessionid in PRS1Loader::ParseFile()";
+                    break;
+                }
 
                 if (diff == 0) {
                     // In sync, so append waveform data to previous chunk

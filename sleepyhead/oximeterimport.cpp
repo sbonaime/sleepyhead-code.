@@ -1,4 +1,4 @@
-/* Oximeter Import Wizard Implementation
+﻿/* Oximeter Import Wizard Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -782,7 +782,10 @@ void OximeterImport::on_informationButton_clicked()
 void OximeterImport::on_syncButton_clicked()
 {
 	qDebug() << "Sync button clicked";
-    Q_ASSERT(oximodule != nullptr);
+    if (oximodule == nullptr) {
+        qCritical() << "OximeterImport::on_syncButton_clicked called when oximodule is null";
+        return;
+    }
 	qDebug() << "Oximodule Start Time is " << oximodule->startTime().toString("yyyy.MM.dd HH.mm.ss") << "Duration: " << oximodule->getDuration(/* dummy */ 0 );
 
     ui->stackedWidget->setCurrentWidget(ui->syncPage);

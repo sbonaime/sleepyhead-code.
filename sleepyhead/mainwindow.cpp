@@ -491,12 +491,18 @@ void MainWindow::OpenProfile(QString profileName)
     ui->statEndDate->setDate(p_profile->LastDay());
 
     // Reload everything profile related
-    Q_ASSERT(!daily);
+    if (daily) {
+        qCritical() << "OpenProfile called with active Daily object!";
+        return;
+    }
     daily = new Daily(ui->tabWidget, nullptr);
     ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
     daily->ReloadGraphs();
 
-    Q_ASSERT(!overview);
+    if (overview) {
+        qCritical() << "OpenProfile called with active Overview object!";
+        return;
+    }
     overview = new Overview(ui->tabWidget, daily->graphView());
     ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
     overview->ReloadGraphs();
@@ -2246,7 +2252,10 @@ void MainWindow::FreeSessions()
 
 void MainWindow::MachineUnsupported(Machine * m)
 {
-    Q_ASSERT(m != nullptr);
+    if (m == nullptr) {
+        qCritical() << "MainWindow::MachineUnsupported called with null machine object";
+        return;
+    }
     QMessageBox::information(this, STR_MessageBox_Error, QObject::tr("Sorry, your %1 %2 machine is not currently supported.").arg(m->brand()).arg(m->model()), QMessageBox::Ok);
 }
 

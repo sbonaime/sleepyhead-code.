@@ -208,7 +208,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
                                         << QDateTime::fromTime_t(si.value().maskoff).toString()
                                         << "!=" << QDateTime::fromTime_t(offtime).toString();
                             }
-                            //Q_ASSERT(si.value().maskoff == offtime);
+                            //NO ASSERTS!!!! Q   _ASSERT(si.value().maskoff == offtime);
                         }
                     }
                     continue;
@@ -724,7 +724,10 @@ bool EDFParser::Parse()
 }
 bool EDFParser::Open(QString name)
 {
-    Q_ASSERT(buffer == nullptr);
+    if (buffer != nullptr) {
+        qWarning() << "EDFParser::Open() called with buffer already initialized";
+        return false;
+    }
 
     if (name.endsWith(STR_ext_gz)) {
         // Open and decempress file to buffer
@@ -1188,7 +1191,10 @@ void ResmedImportStage2::run()
     QMap<QDate, QList<STRRecord *> >::iterator dtit = loader->strdate.find(R.date);
 
     // should not be possible, but my brain hurts...
-    Q_ASSERT(dtit != loader->strdate.end());
+    if (dtit == loader->strdate.end()) {
+        qWarning() << "ResmedImportStage2::run() ASSERT(dtit != loader->strdate.end()) failed";
+        return;
+    }
 
     if (dtit != loader->strdate.end()) {
         QList<STRRecord *> & dayrecs = dtit.value();
@@ -2351,7 +2357,7 @@ int ResmedLoader::Open(QString path)
             continue;
         }
 
-        //Q_ASSERT(R.sessionid == 0);
+        //noooo ASSERTS!!!! Q _ASSERT(R.sessionid == 0);
 
         // the following should not happen
         if (R.sessionid > 0) {
