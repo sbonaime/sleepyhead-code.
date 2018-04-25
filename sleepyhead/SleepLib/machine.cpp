@@ -874,6 +874,7 @@ void Machine::runTasks()
         //QApplication::processEvents();
     }
     QThreadPool::globalInstance()->waitForDone(-1);
+
 }
 
 bool Machine::hasModifiedSessions()

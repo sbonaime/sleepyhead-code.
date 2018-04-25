@@ -121,6 +121,7 @@ void copyPath(QString src, QString dst)
 }
 
 
+QString STR_UNIT_M;
 QString STR_UNIT_CM;
 QString STR_UNIT_INCH;
 QString STR_UNIT_FOOT;
@@ -322,7 +323,8 @@ QString STR_TR_WAvg;   // Short form of Weighted Average
 
 void initializeStrings()
 {
-    STR_UNIT_CM = QObject::tr("cm");
+    STR_UNIT_M = QObject::tr(" m");
+    STR_UNIT_CM = QObject::tr(" cm");
     STR_UNIT_INCH = QObject::tr("\"");
     STR_UNIT_FOOT = QObject::tr("ft");
     STR_UNIT_POUND = QObject::tr("lb");

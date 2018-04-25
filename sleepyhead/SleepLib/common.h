@@ -146,6 +146,7 @@ const QString STR_AppRoot = "SleepyHeadData";
 // Commonly used translatable text strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
+extern QString STR_UNIT_M;
 extern QString STR_UNIT_CM;
 extern QString STR_UNIT_INCH;
 extern QString STR_UNIT_FOOT;
