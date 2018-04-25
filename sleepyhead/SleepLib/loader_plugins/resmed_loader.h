@@ -93,8 +93,6 @@ struct STRRecord
 
         ramp_pressure = -1;
 
-
-
         date=QDate();
     }
     STRRecord(const STRRecord & copy) {
@@ -268,7 +266,7 @@ class ResmedLoader : public CPAPLoader
     virtual MachineInfo PeekInfo(const QString & path);
 
 
-    //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
+    //! \brief Scans for ResMed SD folder structure signature, and loads any new data if found
     virtual int Open(QString path);
 
     //! \brief Returns the version number of this ResMed loader

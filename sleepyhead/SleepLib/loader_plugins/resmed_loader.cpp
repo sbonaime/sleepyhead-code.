@@ -19,6 +19,7 @@
 #include <cmath>
 
 #include "resmed_loader.h"
+
 #include "SleepLib/session.h"
 #include "SleepLib/calcs.h"
 
@@ -1366,7 +1367,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
             SessionID sid;
             bool ok;
             do {
-                line = impstream.readLine();
+                impstream >> line;
                 file = line.section(',',0,0);
                 str = line.section(',',1);
                 sid = str.toInt(&ok);
@@ -1376,6 +1377,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
         }
     }
     impfile.close();
+
 
     QStringList dirs;
     dirs.push_back(datalog_path);
@@ -1724,7 +1726,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
 
     if (impfile.open(QFile::WriteOnly)) {
         QTextStream out(&impfile);
-        out << mach->serial();
+        out << mach->serial() << "\n";
         QHash<QString, SessionID>::iterator skit;
         QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
         for (skit = skipfiles.begin(); skit != skit_end; ++skit) {
@@ -1880,7 +1882,7 @@ int ResmedLoader::Open(QString path)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
     QFileInfoList flist = dir.entryInfoList();
 
-    {
+
     int size = flist.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fi = flist.at(i);
@@ -1889,7 +1891,7 @@ int ResmedLoader::Open(QString path)
             strfiles.push_back(fi.filePath());
         }
     }
-    }
+
 
     strsess.clear();
     ParseSTR(m, strfiles);
