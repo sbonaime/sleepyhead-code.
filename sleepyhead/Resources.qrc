@@ -53,5 +53,6 @@
         <file>icons/prs1_960.png</file>
         <file>icons/daily.png</file>
         <file>icons/dv64.png</file>
+        <file>icons/overview-page.png</file>
     </qresource>
 </RCC>

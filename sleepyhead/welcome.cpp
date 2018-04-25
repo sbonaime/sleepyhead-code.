@@ -98,7 +98,7 @@ QString GenerateWelcomeHTML()
     "<table cellpadding=4 border=0>";
 
     int cols=2;
-    if (havecpapdata || haveoximeterdata) cols=5;
+    if (havecpapdata || haveoximeterdata) cols=6;
 
 
     html+=QString("<tr><td colspan=%1 align=center>").arg(cols)+
@@ -126,7 +126,13 @@ QString GenerateWelcomeHTML()
         " <table class=curved cellpadding=4>"
         "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"daily=1\");'><font size=+1><img src='qrc:/icons/daily.png' width=128px><br/>" + QObject::tr("View<br/>Daily")+"</font></td></tr>"
         " </table>"
+        "</td>"
+        "<td align=center>"
+        " <table class=curved cellpadding=4>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=1\");'><font size=+1><img src='qrc:/icons/overview-page.png' width=128px><br/>" + QObject::tr("View<br/>Overview")+"</font></td></tr>"
+        " </table>"
         "</td>";
+
     }
     html += "</tr></table>";
 
