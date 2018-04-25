@@ -1,4 +1,4 @@
-/* gSessionTimesChart Header
+﻿/* gSessionTimesChart Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -91,8 +91,8 @@ struct SummaryCalcItem {
         max = qMax(max, value);
     }
 
-    void reset(int reserve) {
-        midcalc = p_profile->general->prefCalcMiddle();
+    void reset(int reserve, short mc) {
+        midcalc = mc;
 
         wavg_sum = 0;
         avg_sum = 0;

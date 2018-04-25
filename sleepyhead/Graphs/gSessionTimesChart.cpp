@@ -1,4 +1,4 @@
-/* gSessionTimesChart Implementation
+﻿/* gSessionTimesChart Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -164,7 +164,7 @@ void gSummaryChart::preCalc()
 
     for (int i=0; i<calcitems.size(); ++i) {
         SummaryCalcItem & calc = calcitems[i];
-        calc.reset(idx_end - idx_start);
+        calc.reset(idx_end - idx_start, midcalc);
     }
 }
 
@@ -403,7 +403,6 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
     m_minx = graph.min_x;
     m_maxx = graph.max_x;
 
-
     QDateTime date2 = QDateTime::fromMSecsSinceEpoch(m_minx, Qt::UTC);
     QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(m_maxx, Qt::UTC);
 
@@ -604,7 +603,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 //                    painter.fillRect(rec, slice.brush);
                     outlines.append(rec);
                 } else {
-                    painter.fillRect(rec, QBrush(brighten(color,1.25)));
+                    painter.fillRect(rec, brighten(color, 1.25));
                     outlines.append(rec);
                 }
 
@@ -683,7 +682,7 @@ void gUsageChart::preCalc()
     incompdays = 0;
 
     SummaryCalcItem & calc = calcitems[0];
-    calc.reset(idx_end - idx_start);
+    calc.reset(idx_end - idx_start, midcalc);
 }
 
 void gUsageChart::customCalc(Day *, QVector<SummaryChartSlice> &list)
@@ -739,14 +738,14 @@ void gSessionTimesChart::preCalc() {
     total_length = 0;
     SummaryCalcItem  & calc = calcitems[0];
 
-    calc.reset((idx_end - idx_start) * 6);
+    calc.reset((idx_end - idx_start) * 6, midcalc);
 
     SummaryCalcItem  & calc1 = calcitems[1];
 
-    calc1.reset(idx_end - idx_start);
+    calc1.reset(idx_end - idx_start, midcalc);
 
     SummaryCalcItem  & calc2 = calcitems[2];
-    calc2.reset(idx_end - idx_start);
+    calc2.reset(idx_end - idx_start, midcalc);
 }
 
 void gSessionTimesChart::customCalc(Day *, QVector<SummaryChartSlice> & slices) {

@@ -403,7 +403,7 @@ void init()
     schema::channel.add(GRP_CPAP, new Channel(CPAP_FLG               = 0x1113, WAVEFORM,   MT_CPAP,  SESSION, "FLG",
                         QObject::tr("Flow Limitation"),
                         QObject::tr("Graph showing severity of flow limitations"),   QObject::tr("Flow Limit."),
-                        STR_UNIT_Severity,      DEFAULT,    QColor("dark gray")));
+                        STR_UNIT_Severity,      DEFAULT,    QColor("#585858")));
 
     schema::channel.add(GRP_CPAP, new Channel(CPAP_TgMV              = 0x1114, WAVEFORM,  MT_CPAP,   SESSION,
                         "TgMV",              QObject::tr("Target Minute Ventilation"),

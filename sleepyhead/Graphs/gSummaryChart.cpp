@@ -1,4 +1,4 @@
-/* gSummaryChart Implementation
+﻿/* gSummaryChart Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -570,6 +570,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     QColor summaryColor = QColor("dark gray");
 
     float lineThickness = AppSetting->lineThickness();
+
 
     for (qint64 Q = minx; Q <= maxx + ms_per_day; Q += ms_per_day) {
         zd = Q / ms_per_day;
