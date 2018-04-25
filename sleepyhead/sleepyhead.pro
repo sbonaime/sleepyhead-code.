@@ -163,7 +163,8 @@ SOURCES += \
     SleepLib/journal.cpp \
     SleepLib/progressdialog.cpp \
     SleepLib/loader_plugins/cms50f37_loader.cpp \
-    profileselector.cpp
+    profileselector.cpp \
+    SleepLib/loader_plugins/edfparser.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -227,7 +228,8 @@ HEADERS  += \
     SleepLib/loader_plugins/cms50f37_loader.h \
     build_number.h \
     profileselector.h \
-    SleepLib/appsettings.h
+    SleepLib/appsettings.h \
+    SleepLib/loader_plugins/edfparser.h
 
 FORMS += \
     daily.ui \

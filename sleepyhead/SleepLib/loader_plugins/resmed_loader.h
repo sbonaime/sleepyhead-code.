@@ -1,4 +1,4 @@
-/* SleepLib RESMED Loader Header
+﻿/* SleepLib RESMED Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -14,6 +14,7 @@
 #include "SleepLib/machine.h" // Base class: MachineLoader
 #include "SleepLib/machine_loader.h"
 #include "SleepLib/profiles.h"
+#include "SleepLib/loader_plugins/edfparser.h"
 
 //********************************************************************************************
 /// IMPORTANT!!!
@@ -30,75 +31,13 @@ EDFType lookupEDFType(QString text);
 
 const QString resmed_class_name = STR_MACH_ResMed;
 
-/*! \struct EDFHeader
-    \brief  Represents the EDF+ header structure, used as a place holder while processing the text data.
-    \note More information on the EDF+ file format can be obtained from http://edfplus.info
-*/
-struct EDFHeader {
-    char version[8];
-    char patientident[80];
-    char recordingident[80];
-    char datetime[16];
-    char num_header_bytes[8];
-    char reserved[44];
-    char num_data_records[8];
-    char dur_data_records[8];
-    char num_signals[4];
-}
-#ifndef BUILD_WITH_MSVC
-__attribute__((packed))
-#endif
-;
+class ResMedEDFParser:public EDFParser
+{
+public:
+    ResMedEDFParser(QString filename = "");
+    ~ResMedEDFParser();
+    EDFSignal *lookupSignal(ChannelID ch);
 
-const int EDFHeaderSize = sizeof(EDFHeader);
-
-/*! \struct EDFSignal
-    \brief Contains information about a single EDF+ Signal
-    \note More information on the EDF+ file format can be obtained from http://edfplus.info
-    */
-struct EDFSignal {
-  public:
-    //! \brief Name of this Signal
-    QString label;
-
-    //! \brief Tranducer Type (source of the data, usually blank)
-    QString transducer_type;
-
-    //! \brief The units of measurements represented by this signal
-    QString physical_dimension;
-
-    //! \brief The minimum limits of the ungained data
-    EventDataType physical_minimum;
-
-    //! \brief The maximum limits of the ungained data
-    EventDataType physical_maximum;
-
-    //! \brief The minimum limits of the data with gain and offset applied
-    EventDataType digital_minimum;
-
-    //! \brief The maximum limits of the data with gain and offset applied
-    EventDataType digital_maximum;
-
-    //! \brief Raw integer data is multiplied by this value
-    EventDataType gain;
-
-    //! \brief This value is added to the raw data
-    EventDataType offset;
-
-    //! \brief Any prefiltering methods used (usually blank)
-    QString prefiltering;
-
-    //! \brief Number of records
-    long nr;
-
-    //! \brief Reserved (usually blank)
-    QString reserved;
-
-    //! \brief Pointer to the signals sample data
-    qint16 *data;
-
-    //! \brief a non-EDF extra used internally to count the signal data
-    int pos;
 };
 
 struct STRRecord
@@ -257,80 +196,6 @@ struct STRRecord
 };
 
 
-/*! \class EDFParser
-    \author Mark Watkins <jedimark64_at_users.sourceforge.net>
-    \brief Parse an EDF+ data file into a list of EDFSignal's
-    \note More information on the EDF+ file format can be obtained from http://edfplus.info
-    */
-class EDFParser
-{
-  public:
-    //! \brief Constructs an EDFParser object, opening the filename if one supplied
-    EDFParser(QString filename = "");
-
-    ~EDFParser();
-
-    //! \brief Open the EDF+ file, and read it's header
-    bool Open(QString name);
-
-    //! \brief Read n bytes of 8 bit data from the EDF+ data stream
-    QString Read(unsigned n);
-
-    //! \brief Read 16 bit word of data from the EDF+ data stream
-    qint16 Read16();
-
-    //! \brief Vector containing the list of EDFSignals contained in this edf file
-    QVector<EDFSignal> edfsignals;
-
-    //! \brief An by-name indexed into the EDFSignal data
-    QStringList signal_labels;
-
-    //! \brief ResMed likes to use the SAME signal name
-    QHash<QString, QList<EDFSignal *> > signalList;
-
-    QList<EDFSignal *> signal;
-
-    //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
-    EDFSignal *lookupSignal(ChannelID);
-    EDFSignal *lookupLabel(QString name, int index=0);
-
-    //! \brief Returns the number of signals contained in this EDF file
-    long GetNumSignals() { return num_signals; }
-
-    //! \brief Returns the number of data records contained per signal.
-    long GetNumDataRecords() { return num_data_records; }
-
-    //! \brief Returns the duration represented by this EDF file (in milliseconds)
-    qint64 GetDuration() { return dur_data_record; }
-
-    //! \brief Returns the patientid field from the EDF header
-    QString GetPatient() { return patientident; }
-
-    //! \brief Parse the EDF+ file into the list of EDFSignals.. Must be call Open(..) first.
-    bool Parse();
-    char *buffer;
-
-    //! \brief  The EDF+ files header structure, used as a place holder while processing the text data.
-    EDFHeader header;
-
-    QString filename;
-    long filesize;
-    long datasize;
-    long pos;
-
-    long version;
-    long num_header_bytes;
-    long num_data_records;
-    qint64 dur_data_record;
-    long num_signals;
-
-    QString patientident;
-    QString recordingident;
-    QString serialnumber;
-    qint64 startdate;
-    qint64 enddate;
-    QString reserved44;
-};
 
 class ResmedLoader;
 
@@ -414,7 +279,7 @@ class ResmedLoader : public CPAPLoader
     virtual const QString &loaderName() { return resmed_class_name; }
 
     //! \brief Converts EDFSignal data to time delta packed EventList, and adds to Session
-    void ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, ChannelID code, long recs,
+    void ToTimeDelta(Session *sess, ResMedEDFParser &edf, EDFSignal &es, ChannelID code, long recs,
                      qint64 duration, EventDataType min = 0, EventDataType max = 0, bool square = false);
 
     //! \brief Register the ResmedLoader with the list of other machine loaders
