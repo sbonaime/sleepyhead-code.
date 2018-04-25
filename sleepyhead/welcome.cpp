@@ -107,29 +107,29 @@ QString GenerateWelcomeHTML()
     "<tr>"
     " <td align=center>"
     "  <table class=curved cellpadding=4>"
-    "   <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=cpap\");'><font size=+1><img src='qrc:/icons/sdcard.png' width=128px><br/>" + QObject::tr("CPAP<br/>Importer")+"</font></td></tr>"
+    "   <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=cpap\");'><font size=+1><img src='qrc:/icons/sdcard.png' width=100px><br/>" + QObject::tr("CPAP<br/>Importer")+"</font></td></tr>"
     "  </table>"
     " </td>"
     "<td align=center>"
     " <table class=curved cellpadding=4>"
-    "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=oximeter\");'><font size=+1><img src='qrc:/icons/cms50f.png' width=128px><br/>" + QObject::tr("Oximetery<br/>Wizard")+"</font></td></tr>"
+    "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"import=oximeter\");'><font size=+1><img src='qrc:/icons/cms50f.png' width=100px><br/>" + QObject::tr("Oximetery<br/>Wizard")+"</font></td></tr>"
     " </table>"
     "</td>";
     if (havecpapdata || haveoximeterdata) {
         html += "<td align=center><font size=+2>"+QObject::tr("or")+"</font></td>"
         "<td align=center>"
         " <table class=curved cellpadding=4>"
-        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"statistics=1\");'><font size=+1><img src='qrc:/icons/statistics.png' width=128px><br/>" + QObject::tr("View<br/>Statistics")+"</font></td></tr>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"statistics=1\");'><font size=+1><img src='qrc:/icons/statistics.png' width=100px><br/>" + QObject::tr("View<br/>Statistics")+"</font></td></tr>"
         " </table>"
         "</td>"
         "<td align=center>"
         " <table class=curved cellpadding=4>"
-        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"daily=1\");'><font size=+1><img src='qrc:/icons/daily.png' width=128px><br/>" + QObject::tr("View<br/>Daily")+"</font></td></tr>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"daily=1\");'><font size=+1><img src='qrc:/icons/daily.png' width=100px><br/>" + QObject::tr("View<br/>Daily")+"</font></td></tr>"
         " </table>"
         "</td>"
         "<td align=center>"
         " <table class=curved cellpadding=4>"
-        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=1\");'><font size=+1><img src='qrc:/icons/overview-page.png' width=128px><br/>" + QObject::tr("View<br/>Overview")+"</font></td></tr>"
+        "  <tr><td align=center onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=1\");'><font size=+1><img src='qrc:/icons/overview-page.png' width=100px><br/>" + QObject::tr("View<br/>Overview")+"</font></td></tr>"
         " </table>"
         "</td>";
 
@@ -291,15 +291,16 @@ QString GenerateWelcomeHTML()
 
 
     if (showCardWarning) {
-        html += QString("<div align=center><table class=curved cellpadding=3 width=45%>")+
+        html += QString("<div align=center><table class=curved cellpadding=3 width=75%>")+
         "<tr>"
-        "<td align=center colspan=2><font size=+1><b>"+QObject::tr("Very Important Warning For ResMed S9 Users")+"</b></font></td></tr>"
-        "<tr><td align=left>"+
-        QObject::tr("<p>ALWAYS <font size=+1 color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p>"+
-        QObject::tr("<p><span title=\"Mac OSX and Win8.1\"  onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'><font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+"</p>"+
-        QObject::tr("<p>As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!</p>")+
+        "<td align=center colspan=2><b>"+QObject::tr("Very Important Warning For ResMed S9 Users")+"</b></font></td></tr>"
+        "<tr><td align=center>"+
+        "<p>"+QObject::tr("ALWAYS <font color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p><p>"+
+        +"<span title=\""+QObject::tr("Mac OSX and Win8.1")+"\" onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'>"+
+        QObject::tr("<font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+ " "+
+        QObject::tr("As a second line of protection, make sure to <font color=red><b>unmount</b></font> the data card properly before removing it!")+"</p>"
         "</td>"
-        "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=128px></td>"
+        "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=64px></td>"
         "</tr>"
         "</table>"
         "</td></tr></table></div>";
