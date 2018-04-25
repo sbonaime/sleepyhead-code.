@@ -236,9 +236,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 
-    // Setup to run a few last minute things before shutdown.
-    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
-
     QList<int> a;
 
     int panel_width = AppSetting->rightPanelWidth();
@@ -254,22 +251,17 @@ void MainWindow::logMessage(QString msg)
     ui->logText->appendPlainText(msg);
 }
 
-void MainWindow::on_aboutToQuit()
-{
-    if (systraymenu) delete systraymenu;
-}
-
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    schema::channel.Save();
-    if (p_profile) {
-        CloseProfile();
-    }
-
     if (AppSetting->removeCardReminder()) {
         Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
         QApplication::processEvents();
         QThread::msleep(1000);
+    }
+
+    schema::channel.Save();
+    if (p_profile) {
+        CloseProfile();
     }
 
     // Shutdown and Save the current User profile
@@ -285,12 +277,10 @@ void MainWindow::closeEvent(QCloseEvent * event)
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-//    if (systraymenu) { delete systraymenu; }
-
-//    if (systray) { delete systray; }
-
     // Trash anything allocated by the Graph objects
     DestroyGraphGlobals();
+
+    if (systraymenu) delete systraymenu;
 
     disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     shutdownLogger();
@@ -612,10 +602,6 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     if (AppSetting->openTabAfterImport()>0) {
         ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
     }
-
-    // Now what was this for???
-    disconnect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
-    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(on_aboutToQuit()));
 
     return c;
 }
