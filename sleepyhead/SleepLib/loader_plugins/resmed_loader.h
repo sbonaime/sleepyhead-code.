@@ -8,8 +8,7 @@
 
 #ifndef RESMED_LOADER_H
 #define RESMED_LOADER_H
-//#include <map>
-//using namespace std;
+
 #include <QVector>
 #include "SleepLib/machine.h" // Base class: MachineLoader
 #include "SleepLib/machine_loader.h"

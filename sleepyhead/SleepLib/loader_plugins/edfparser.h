@@ -92,7 +92,7 @@ struct EDFSignal {
 
 
 /*! \class EDFParser
-    \author Mark Watkins <jedimark64_at_users.sourceforge.net>
+    \author Mark Watkins <mark@jedimark.net>
     \brief Parse an EDF+ data file into a list of EDFSignal's
     \note More information on the EDF+ file format can be obtained from http://edfplus.info
     */
@@ -124,8 +124,6 @@ class EDFParser
 
     QList<EDFSignal *> signal;
 
-    //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
-    //EDFSignal *lookupSignal(ChannelID);
     EDFSignal *lookupLabel(QString name, int index=0);
 
     //! \brief Returns the number of signals contained in this EDF file

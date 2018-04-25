@@ -30,8 +30,6 @@ extern QProgressBar *qprogress;
 
 QHash<QString, QList<quint16> > Resmed_Model_Map;
 
-const QString STR_UnknownModel = "Resmed S9 ???";
-
 ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode, RMS9_SmartStart, RMS9_HumidStatus, RMS9_HumidLevel,
          RMS9_PtAccess, RMS9_Mask, RMS9_ABFilter, RMS9_ClimateControl, RMS9_TubeType,
          RMS9_Temp, RMS9_TempEnable, RMS9_RampEnable;
@@ -39,8 +37,7 @@ ChannelID RMS9_EPR, RMS9_EPRLevel, RMS9_Mode, RMS9_SmartStart, RMS9_HumidStatus,
 const QString STR_ResMed_AirSense10 = "AirSense 10";
 const QString STR_ResMed_AirCurve10= "AirCurve 10";
 const QString STR_ResMed_S9 = "S9";
-
-
+const QString STR_UnknownModel = "Resmed S9 ???";
 
 // Return the model name matching the supplied model number.
 const QString & lookupModel(quint16 model)
@@ -1096,7 +1093,7 @@ EDFType lookupEDFType(QString text)
 // Pretend to parse the EVE file to get the duration out of it.
 int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
 {
-    EDFParser edf(path);
+    ResMedEDFParser edf(path);
     if (!edf.Parse())
         return -1;
 
@@ -1897,7 +1894,7 @@ int ResmedLoader::Open(QString path)
     strsess.clear();
     ParseSTR(m, strfiles);
 
-    EDFParser stredf(strpath);
+    ResMedEDFParser stredf(strpath);
     if (!stredf.Parse()) {
         qDebug() << "Faulty file" << RMS9_STR_strfile;
         return 0;
@@ -2219,7 +2216,7 @@ QString ResmedLoader::backup(QString fullname, QString backup_path)
 
 bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
 {
-    EDFParser edf(path);
+    ResMedEDFParser edf(path);
     if (!edf.Parse())
         return false;
 
@@ -2363,7 +2360,7 @@ bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
 
 bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
 {
-    EDFParser edf(path);
+    ResMedEDFParser edf(path);
     if (!edf.Parse())
         return false;
 
@@ -2516,7 +2513,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
 
 bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
 {
-    EDFParser edf(path);
+    ResMedEDFParser edf(path);
     if (!edf.Parse())
         return false;
 
