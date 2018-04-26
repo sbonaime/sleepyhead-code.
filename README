@@ -36,7 +36,7 @@ Building on OSX:
 ---------------
 Build as above. If qmake fails with the error:
 Project ERROR: Xcode not set up properly. You may need to confirm the license agreement by running /usr/bin/xcodebuild
-Edit the file edit the file: 
+edit the file: 
 QT_INSTALL_DIR/5.5/clang_64/mkspecs/features/mac/default_pre.prf
 
 and replace
