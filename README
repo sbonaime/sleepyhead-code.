@@ -32,6 +32,19 @@ make
 You may need to add a -spec option to qmake to suit your platform. 
 Adding -j3 speeds up the make command on a dual core or greater system.
 
+Building on OSX:
+---------------
+Build as above. If qmake fails with the error:
+Project ERROR: Xcode not set up properly. You may need to confirm the license agreement by running /usr/bin/xcodebuild
+Edit the file edit the file: 
+QT_INSTALL_DIR/5.5/clang_64/mkspecs/features/mac/default_pre.prf
+
+and replace
+/usr/bin/xcrun -find xcrun 2>/dev/null
+
+with
+/usr/bin/xcrun -find xcodebuild 2>/dev/null
+
 
 
 Software Licensing Information
