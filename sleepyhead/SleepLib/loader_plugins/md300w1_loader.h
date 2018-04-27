@@ -1,4 +1,4 @@
-/* SleepLib ChoiceMMed MD300W1 Oximeter Loader Header
+﻿/* SleepLib ChoiceMMed MD300W1 Oximeter Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -26,7 +26,7 @@ Q_OBJECT
     virtual ~MD300W1Loader();
 
     virtual bool Detect(const QString &path);
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
 
     static void Register();
 
@@ -50,7 +50,7 @@ protected slots:
 
 protected:
 
-    bool readDATFile(QString path);
+    bool readDATFile(const QString & path);
     virtual void processBytes(QByteArray bytes);
 
     int doImportMode();

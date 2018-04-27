@@ -1,4 +1,4 @@
-/* SleepLib Weinmann SOMNOsoft/Balance Loader Header
+﻿/* SleepLib Weinmann SOMNOsoft/Balance Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -95,7 +95,7 @@ class WeinmannLoader : public CPAPLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for Weinmann data signature, and Loads any new data
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
 
     //! \brief Returns SleepLib database version of this Weinmann loader
     virtual int Version() { return weinmann_data_version; }

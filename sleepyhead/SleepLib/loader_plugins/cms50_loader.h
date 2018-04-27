@@ -1,4 +1,4 @@
-/* SleepLib CMS50X Loader Header
+﻿/* SleepLib CMS50X Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -28,7 +28,7 @@ Q_OBJECT
     virtual ~CMS50Loader();
 
     virtual bool Detect(const QString &path);
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
 
     static void Register();
 

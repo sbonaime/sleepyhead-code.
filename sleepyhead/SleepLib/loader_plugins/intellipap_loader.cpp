@@ -84,7 +84,7 @@ bool IntellipapLoader::Detect(const QString & givenpath)
 enum INTPAP_Type { INTPAP_Unknown, INTPAP_DV5, INTPAP_DV6 };
 
 
-int IntellipapLoader::OpenDV5(QString path)
+int IntellipapLoader::OpenDV5(const QString & path)
 {
     QString newpath = path + SL_DIR;
     QString filename;
@@ -642,7 +642,7 @@ struct DV6_S_Record
 
 };
 
-int IntellipapLoader::OpenDV6(QString path)
+int IntellipapLoader::OpenDV6(const QString & path)
 {
     QString newpath = path + DV6_DIR;
 
@@ -1457,10 +1457,11 @@ int IntellipapLoader::OpenDV6(QString path)
     return summaryList.size();
 }
 
-int IntellipapLoader::Open(QString path)
+int IntellipapLoader::Open(const QString & dirpath)
 {
     // Check for SL directory
     // Check for DV5MFirm.bin?
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     if (path.endsWith(SL_DIR)) {

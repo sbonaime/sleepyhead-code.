@@ -1,4 +1,4 @@
-/* SleepLib Fisher & Paykel Icon Loader Implementation
+﻿/* SleepLib Fisher & Paykel Icon Loader Implementation
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -55,19 +55,19 @@ class FPIconLoader : public CPAPLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for F&P Icon data signature, and Loads any new data
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
 
-    int OpenMachine(Machine *mach, QString &path);
+    int OpenMachine(Machine *mach, const QString &path);
 
-    bool OpenSummary(Machine *mach, QString path);
-    bool OpenDetail(Machine *mach, QString path);
-    bool OpenFLW(Machine *mach, QString filename);
+    bool OpenSummary(Machine *mach, const QString & path);
+    bool OpenDetail(Machine *mach, const QString & path);
+    bool OpenFLW(Machine *mach, const QString & filename);
 
     //! \brief Returns SleepLib database version of this F&P Icon loader
     virtual int Version() { return fpicon_data_version; }
 
     //! \brief Returns the machine class name of this CPAP machine, "FPIcon"
-    virtual const QString &loaderName() { return fpicon_class_name; }
+    virtual const QString & loaderName() { return fpicon_class_name; }
 
     // ! \brief Creates a machine object, indexed by serial number
     //Machine *CreateMachine(QString serial);

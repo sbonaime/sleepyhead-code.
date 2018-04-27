@@ -26,7 +26,7 @@ const int resmed_data_version = 11;
 
 enum EDFType { EDF_UNKNOWN, EDF_BRP, EDF_PLD, EDF_SAD, EDF_EVE, EDF_CSL };
 
-EDFType lookupEDFType(QString text);
+EDFType lookupEDFType(const QString & text);
 
 const QString resmed_class_name = STR_MACH_ResMed;
 
@@ -193,12 +193,11 @@ struct STRRecord
 };
 
 
-
 class ResmedLoader;
 
 struct EDFGroup {
     EDFGroup() { }
-    EDFGroup(QString brp, QString eve, QString pld, QString sad, QString csl) {
+    EDFGroup(QString &brp, QString &eve, QString &pld, QString &sad, QString &csl) {
         BRP = brp;
         EVE = eve;
         CSL = csl;
@@ -261,13 +260,11 @@ class ResmedLoader : public CPAPLoader
     //! \brief Detect if the given path contains a valid Folder structure
     virtual bool Detect(const QString & path);
 
-
     //! \brief Look up machine model information of ResMed file structure stored at path
     virtual MachineInfo PeekInfo(const QString & path);
 
-
     //! \brief Scans for ResMed SD folder structure signature, and loads any new data if found
-    virtual int Open(QString path);
+    virtual int Open(const QString &);
 
     //! \brief Returns the version number of this ResMed loader
     virtual int Version() { return resmed_data_version; }
@@ -322,12 +319,12 @@ class ResmedLoader : public CPAPLoader
 
 
 protected:
-    void ParseSTR(Machine *mach, QStringList strfiles);
+    void ParseSTR(Machine *mach, const QStringList & strfiles);
 
     //! \brief Scan for new files to import, group into sessions and add to task que
-    int scanFiles(Machine * mach, QString datalog_path);
+    int scanFiles(Machine * mach, const QString & datalog_path);
 
-    QString backup(QString file, QString backup_path);
+    QString backup(const QString & file, const QString & backup_path);
 
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;

@@ -105,7 +105,7 @@ class EDFParser
     ~EDFParser();
 
     //! \brief Open the EDF+ file, and read it's header
-    bool Open(QString name);
+    bool Open(const QString & name);
 
     //! \brief Read n bytes of 8 bit data from the EDF+ data stream
     QString Read(unsigned n);
@@ -124,7 +124,7 @@ class EDFParser
 
     QList<EDFSignal *> signal;
 
-    EDFSignal *lookupLabel(QString name, int index=0);
+    EDFSignal *lookupLabel(const QString & name, int index=0);
 
     //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }

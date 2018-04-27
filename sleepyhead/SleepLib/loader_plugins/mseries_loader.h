@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+﻿/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  *
  * SleepLib RemStar M-Series Loader Header
@@ -51,13 +51,13 @@ class MSeriesLoader : public MachineLoader
     virtual bool Detect(const QString & path) { Q_UNUSED(path); return false; }
 
     //! \brief Opens M-Series block device
-    virtual int Open(QString file);
+    virtual int Open(const QString & file);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return mseries_data_version; }
 
     //! \brief Return the loaderName, in this case "MSeries"
-    virtual const QString &loaderName() { return mseries_class_name; }
+    virtual const QString & loaderName() { return mseries_class_name; }
 
     //! \brief Create a new PRS1 machine record, indexed by Serial number.
    // Machine *CreateMachine(QString serial);

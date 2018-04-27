@@ -215,7 +215,7 @@ QString PRS1Loader::checkDir(const QString & path)
     return machpath;
 }
 
-void parseModel(MachineInfo & info, QString modelnum)
+void parseModel(MachineInfo & info, const QString & modelnum)
 {
     info.modelnumber = modelnum;
 
@@ -290,7 +290,7 @@ void parseModel(MachineInfo & info, QString modelnum)
     }
 }
 
-bool PRS1Loader::PeekProperties(MachineInfo & info, QString filename, Machine * mach)
+bool PRS1Loader::PeekProperties(MachineInfo & info, const QString & filename, Machine * mach)
 {
     QFile f(filename);
     if (!f.open(QFile::ReadOnly)) {
@@ -364,9 +364,10 @@ MachineInfo PRS1Loader::PeekInfo(const QString & path)
 }
 
 
-int PRS1Loader::Open(QString path)
+int PRS1Loader::Open(const QString & dirpath)
 {
     QString newpath;
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     if (path.endsWith("/" + PR_STR_PSeries)) {
@@ -493,7 +494,7 @@ int PRS1Loader::Open(QString path)
     return true;
 }*/
 
-int PRS1Loader::OpenMachine(QString path)
+int PRS1Loader::OpenMachine(const QString & path)
 {
     if (p_profile == nullptr) {
         qWarning() << "PRS1Loader::OpenMachine() called without a valid p_profile object present";
@@ -676,7 +677,7 @@ int PRS1Loader::OpenMachine(QString path)
             }
 
             // Parse the data chunks and read the files..
-            QList<PRS1DataChunk *> Chunks = ParseFile2(fi.canonicalFilePath());
+            QList<PRS1DataChunk *> Chunks = ParseFile(fi.canonicalFilePath());
 
             for (int i=0; i < Chunks.size(); ++i) {
                 PRS1DataChunk * chunk = Chunks.at(i);
@@ -2848,10 +2849,10 @@ void PRS1Import::run()
     if ((compliance && ParseCompliance()) || (summary && ParseSummary())) {
         if (event && !ParseEvents()) {
         }
-        waveforms = loader->ParseFile2(wavefile);
+        waveforms = loader->ParseFile(wavefile);
         ParseWaveforms();
 
-        oximetery = loader->ParseFile2(oxifile);
+        oximetery = loader->ParseFile(oxifile);
         ParseOximetery();
 
         if (session->first() > 0) {
@@ -2884,7 +2885,7 @@ void PRS1Import::run()
 }
 
 
-QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
+QList<PRS1DataChunk *> PRS1Loader::ParseFile(const QString & path)
 {
     QList<PRS1DataChunk *> CHUNKS;
 
@@ -2979,33 +2980,6 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
 
                 header_size += hdb_size+1;
             } else headerB2 = QByteArray();
-
-/*            if (ext == 1) { // Summary Chunk
-                if ((family == 0) && (familyVersion == 6)) {
-                    header_size = 43;
-                } else if ((family == 5) && (familyVersion == 3)) {
-                    header_size = 37;
-                }
-            } else if (ext == 2) { // Event Chunk
-                if (familyVersion == 3) {
-                    if (family == 3) {
-                        header_size = 62;
-                    } else if (family == 5) { // ASV
-                        header_size = 49;
-                    }
-                } else if ((familyVersion==6) && (family==0)) {
-                    header_size=61;
-                }
-
-           }
-           extra_bytes = header_size - 16; // remainder of the header bytes to read, including the 8bit additive checksum.
-
-           // Read the extra header bytes
-           extra = f.read(extra_bytes);
-           if (extra.size() != extra_bytes) {
-               break;
-           }
-           headerBA.append(extra); */
 
        } else { // Waveform Chunk
             extra = f.read(4);
@@ -3192,265 +3166,6 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile2(QString path)
 
     } while (!f.atEnd());
 
-    return CHUNKS;
-}
-
-QList<PRS1DataChunk *> PRS1Loader::ParseFile(QString path)
-{
-    QList<PRS1DataChunk *> CHUNKS;
-
-    if (path.isEmpty())
-        return CHUNKS;
-
-    QFile f(path);
-
-    if (!f.exists()) {
-        return CHUNKS;
-    }
-
-    if (!f.open(QIODevice::ReadOnly)) {
-        return CHUNKS;
-    }
-
-    PRS1DataChunk *chunk = nullptr, *lastchunk = nullptr;
-
-    quint16 blocksize;
-    quint16 wvfm_signals;
-
-    unsigned char * header;
-    int cnt = 0;
-
-    //int lastheadersize = 0;
-    int lastblocksize = 0;
-
-    int cruft = 0;
-    int firstsession = 0;
-
-
-    do {
-        QByteArray headerBA = f.read(16);
-        if (headerBA.size() != 16) {
-            break;
-        }
-        header = (unsigned char *)headerBA.data();
-
-        blocksize = (header[2] << 8) | header[1];
-        if (blocksize == 0) break;
-
-        chunk = new PRS1DataChunk();
-
-        chunk->sessionid = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
-
-        if (!firstsession) {
-            firstsession = chunk->sessionid;
-        }
-        chunk->fileVersion = header[0];
-        chunk->htype = header[3];  // 00 = normal ?? // 01=waveform ?? // could be a bool signifying extra header bytes?
-        chunk->family = header[4];
-        chunk->familyVersion = header[5];
-        chunk->ext = header[6];
-        chunk->timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
-
-        if (lastchunk != nullptr) {
-            if ((lastchunk->fileVersion != chunk->fileVersion)
-                && (lastchunk->ext != chunk->ext)
-                && (lastchunk->family != chunk->family)
-                && (lastchunk->familyVersion != chunk->familyVersion)
-                && (lastchunk->htype != chunk->htype)) {
-                QByteArray junk = f.read(lastblocksize - 16);
-
-                Q_UNUSED(junk)
-                if (lastchunk->ext == 5) {
-                    // The data is random crap
-//                    lastchunk->m_data.append(junk.mid(lastheadersize-16));
-                }
-                delete chunk;
-                ++cruft;
-                if (cruft > 3)
-                    break;
-
-                continue;
-                // Corrupt header.. skip it.
-            }
-        }
-
-        int diff = 0;
-
-        //////////////////////////////////////////////////////////
-        // Family 3 (1060P)
-        //////////////////////////////////////////////////////////
-        if ((chunk->family == 3) && (chunk->ext == 2)) {
-            QByteArray extra = f.read(47);
-            if (extra.size() != 47) {
-                delete chunk;
-                break;
-            }
-            headerBA.append(extra);
-            header = (unsigned char *)headerBA.data();
-            chunk->m_headerblock = headerBA.right(48);
-
-        }
-
-
-        //////////////////////////////////////////////////////////
-        // Waveform Header
-        //////////////////////////////////////////////////////////
-        if ((chunk->ext == 5) || (chunk->ext == 6)) {
-            // Get extra 8 bytes in waveform header.
-            QByteArray extra = f.read(4);
-            if (extra.size() != 4) {
-                delete chunk;
-                break;
-            }
-            headerBA.append(extra);
-            // Get the header address again to be safe
-            header = (unsigned char *)headerBA.data();
-
-            chunk->duration = header[0x0f] | header[0x10] << 8;
-
-            wvfm_signals = header[0x12] | header[0x13] << 8;
-
-            int ws_size = (chunk->fileVersion == 3) ? 4 : 3;
-
-            int sbsize = wvfm_signals * ws_size + 1;
-            QByteArray sbextra = f.read(sbsize);
-            if (sbextra.size() != sbsize) {
-                delete chunk;
-                break;
-            }
-            headerBA.append(sbextra);
-            header = (unsigned char *)headerBA.data();
-
-            // Read the waveform information in reverse.
-            int pos = 0x14 + (wvfm_signals - 1) * ws_size;
-            for (int i = 0; i < wvfm_signals; ++i) {
-                quint16 interleave = header[pos] | header[pos + 1] << 8; // samples per block (Usually 05 00)
-
-                if (chunk->fileVersion == 2) {
-                    quint8 sample_format = header[pos + 2];
-                    chunk->waveformInfo.push_back(PRS1Waveform(interleave, sample_format));
-                    pos -= 3;
-                } else if (chunk->fileVersion == 3) {
-                    //quint16 sample_size = header[pos + 2] | header[pos + 3] << 8; // size in bits?? (08 00)
-                    // Possibly this is size in bits, and sign bit for the other byte?
-                    chunk->waveformInfo.push_back(PRS1Waveform(interleave, 0));
-                    pos -= 4;
-                }
-            }
-            if (lastchunk != nullptr) {
-                diff = (chunk->timestamp - lastchunk->timestamp) - lastchunk->duration;
-
-            }
-        }
-
-        int headersize = headerBA.size();
-
-        lastblocksize = blocksize;
-        blocksize -= headersize;
-        //lastheadersize = headersize;
-
-        // Check header checksum
-
-        quint8 csum = 0;
-        for (int i=0; i < headersize-1; ++i) csum += header[i];
-
-        if ((chunk->fileVersion==2) || (chunk->ext >= 5)) {
-            if (csum != header[headersize-1]) {
-                // header checksum error.
-                delete chunk;
-                return CHUNKS;
-            }
-        } else if ((chunk->fileVersion==3) && (chunk->ext <= 2)) {
-            // DreamStation has an additional block of data following the timestamp, preceded by a length count,
-            // followed by the additive checksum
-
-            char len = header[headersize-1];
-
-            csum += len;
-
-            int h2len = len*2+1;
-
-            blocksize -= h2len;
-
-            // Read the extra data block
-            chunk->m_headerblock = f.read(h2len);
-
-            if (chunk->m_headerblock.size() < h2len) {
-                delete chunk;
-                return CHUNKS;
-            }
-            unsigned char * header2 = (unsigned char*) chunk->m_headerblock.data();
-
-            // Checksum the whole header
-            for (int i=0; i < h2len-1; ++i) csum += header2[i];
-
-            if (csum != header2[h2len-1]) {
-                // header checksum error.
-                delete chunk;
-                return CHUNKS;
-            }
-
-        } else {
-            // uhhhh.. should not of got this far. because this is an unknown or corrupt file format.
-            delete chunk;
-            return CHUNKS;
-        }
-
-
-        // Read data block
-        chunk->m_data = f.read(blocksize);
-
-        if (chunk->m_data.size() < blocksize) {
-            delete chunk;
-            break;
-        }
-
-        if (chunk->fileVersion==3) {
-            //int ds = chunk->m_data.size();
-            //quint32 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
-            chunk->m_data.chop(4);
-        } else {
-            // last two bytes contain crc16 checksum.
-            int ds = chunk->m_data.size();
-            quint16 crc16 = chunk->m_data.at(ds-2) | chunk->m_data.at(ds-1) << 8;
-            chunk->m_data.chop(2);
-#ifdef PRS1_CRC_CHECK
-            // This fails.. it needs to include the header!
-            quint16 calc16 = CRC16((unsigned char *)chunk->m_data.data(), chunk->m_data.size());
-            if (calc16 != crc16) {
-                // corrupt data block.. bleh..
-            //   qDebug() << "CRC16 doesn't match for chunk" << chunk->sessionid << "for" << path;
-            }
-#endif
-        }
-
-
-        if ((chunk->ext == 5) || (chunk->ext == 6)) {  // if Flow/MaskPressure Waveform or OXI Waveform file
-            if (lastchunk != nullptr) {
-
-                if (lastchunk->sessionid != chunk->sessionid) {
-                    qWarning() << "lastchunk->sessionid != chunk->sessionid in PRS1Loader::ParseFile()";
-                    break;
-                }
-
-                if (diff == 0) {
-                    // In sync, so append waveform data to previous chunk
-                    lastchunk->m_data.append(chunk->m_data);
-                    lastchunk->duration += chunk->duration;
-                    delete chunk;
-                    cnt++;
-                    chunk = lastchunk;
-                    continue;
-                }
-                // else start a new chunk to resync
-            }
-        }
-
-        CHUNKS.append(chunk);
-
-        lastchunk = chunk;
-        cnt++;
-    } while (!f.atEnd());
     return CHUNKS;
 }
 

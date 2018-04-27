@@ -73,20 +73,21 @@ bool FPIconLoader::Detect(const QString & givenpath)
 }
 
 
-int FPIconLoader::Open(QString path)
+int FPIconLoader::Open(const QString & path)
 {
-    QString newpath;
+    QString tmp = path;
 
-    path = path.replace("\\", "/");
-
-    if (path.endsWith("/")) {
-        path.chop(1);
+    tmp = tmp.replace("\\", "/");
+    if (tmp.endsWith("/")) {
+        tmp.chop(1);
     }
 
-    if (path.endsWith("/" + FPHCARE)) {
-        newpath = path;
+    QString newpath;
+
+    if (tmp.endsWith("/" + FPHCARE)) {
+        newpath = tmp;
     } else {
-        newpath = path + "/" + FPHCARE;
+        newpath = tmp + "/" + FPHCARE;
     }
 
     newpath += "/ICON/";
@@ -179,7 +180,7 @@ bool operator<(const FPWaveChunk &a, const FPWaveChunk &b)
     return (a.st < b.st);
 }
 
-int FPIconLoader::OpenMachine(Machine *mach, QString &path)
+int FPIconLoader::OpenMachine(Machine *mach, const QString & path)
 {
     qDebug() << "Opening FPIcon " << path;
     QDir dir(path);
@@ -425,7 +426,7 @@ hour=(ts >> 12) & 0x1f; */
 // 0x01ff 8 bit additive sum checksum byte of previous header bytes
 
 // 0x0200-0x0203 32bit timestamp in
-bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
+bool FPIconLoader::OpenFLW(Machine *mach, const QString & filename)
 {
     Q_UNUSED(mach);
 
@@ -621,7 +622,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Open Summary file
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
+bool FPIconLoader::OpenSummary(Machine *mach, const QString & filename)
 {
     qDebug() << filename;
     QByteArray header;
@@ -771,7 +772,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename)
     return true;
 }
 
-bool FPIconLoader::OpenDetail(Machine *mach, QString filename)
+bool FPIconLoader::OpenDetail(Machine *mach, const QString & filename)
 {
     Q_UNUSED(mach);
 

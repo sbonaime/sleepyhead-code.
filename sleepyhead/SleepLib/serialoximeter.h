@@ -1,4 +1,4 @@
-/* SleepLib MachineLoader Base Class Header
+﻿/* SleepLib MachineLoader Base Class Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -41,7 +41,7 @@ public:
     virtual ~SerialOximeter() {}
 
     virtual bool Detect(const QString &path)=0;
-    virtual int Open(QString path)=0;
+    virtual int Open(const QString & path)=0;
 
     static void Register() {}
 
@@ -60,7 +60,7 @@ public:
     virtual void syncClock() {}
 
     virtual QString getDeviceID() { return QString(); }
-    virtual void setDeviceID(QString) {}
+    virtual void setDeviceID(const QString &) {}
 
     virtual void eraseSession(int /*user*/, int /*session*/) {}
 

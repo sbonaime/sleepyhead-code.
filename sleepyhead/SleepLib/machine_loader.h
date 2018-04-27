@@ -44,7 +44,7 @@ class MachineLoader: public QObject
     virtual MachineInfo PeekInfo(const QString & path) { Q_UNUSED(path); return MachineInfo(); }
 
     //! \brief Override this to scan path and detect new machine data
-    virtual int Open(QString path) = 0;
+    virtual int Open(const QString & path) = 0;
 
     //! \brief Override to returns the Version number of this MachineLoader
     virtual int Version() = 0;

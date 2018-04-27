@@ -1,4 +1,4 @@
-/* SleepLib PRS1 Loader Header
+﻿/* SleepLib PRS1 Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -185,7 +185,7 @@ class PRS1Loader : public CPAPLoader
     QString checkDir(const QString & path);
 
     //! \brief Peek into PROP.TXT or properties.txt at given path, and use it to fill MachineInfo structure
-    bool PeekProperties(MachineInfo & info, QString path, Machine * mach = nullptr);
+    bool PeekProperties(MachineInfo & info, const QString & path, Machine * mach = nullptr);
 
     //! \brief Detect if the given path contains a valid Folder structure
     virtual bool Detect(const QString & path);
@@ -194,7 +194,7 @@ class PRS1Loader : public CPAPLoader
     virtual MachineInfo PeekInfo(const QString & path);
 
     //! \brief Scans directory path for valid PRS1 signature
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
 
     //! \brief Returns the database version of this loader
     virtual int Version() { return prs1_data_version; }
@@ -203,8 +203,7 @@ class PRS1Loader : public CPAPLoader
     virtual const QString &loaderName() { return prs1_class_name; }
 
     //! \brief Parse a PRS1 summary/event/waveform file and break into invidivual session or waveform chunks
-    QList<PRS1DataChunk *> ParseFile(QString path);
-    QList<PRS1DataChunk *> ParseFile2(QString path);
+    QList<PRS1DataChunk *> ParseFile(const QString & path);
 
     //! \brief Register this Module to the list of Loaders, so it knows to search for PRS1 data.
     static void Register();
@@ -237,13 +236,13 @@ class PRS1Loader : public CPAPLoader
     QHash<QString, Machine *> PRS1List;
 
     //! \brief Opens the SD folder structure for this machine, scans for data files and imports any new sessions
-    int OpenMachine(QString path);
+    int OpenMachine(const QString & path);
 
 //    //! \brief Parses "properties.txt" file containing machine information
 //    bool ParseProperties(Machine *m, QString filename);
 
     //! \brief Parse a .005 waveform file, extracting Flow Rate waveform (and Mask Pressure data if available)
-    bool OpenWaveforms(SessionID sid, QString filename);
+    bool OpenWaveforms(SessionID sid, const QString & filename);
 
     //! \brief Parse a data chunk from the .000 (brick) and .001 (summary) files.
     bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data,
@@ -252,7 +251,7 @@ class PRS1Loader : public CPAPLoader
 
 
     //! \brief Open a PRS1 data file, and break into data chunks, delivering them to the correct parser.
-    bool OpenFile(Machine *mach, QString filename);
+    bool OpenFile(Machine *mach, const QString & filename);
 
     QHash<SessionID, Session *> extra_session;
 

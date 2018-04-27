@@ -116,10 +116,10 @@ bool matchSignal(ChannelID ch, const QString & name)
 
 
 
-void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
+void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
 {
-    QStringList::iterator strend = strfiles.end();
-    for (QStringList::iterator it = strfiles.begin(); it != strend; ++it) {
+    const QStringList::const_iterator strend = strfiles.cend();
+    for (QStringList::const_iterator it = strfiles.cbegin(); it != strend; ++it) {
         ResMedEDFParser str(*it);
         if (!str.Parse()) continue;
         if (mach->serial() != str.serialnumber) {
@@ -133,6 +133,8 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
 
         qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
 
+
+        // ResMed and their consistent naming and spacing... :/
         EDFSignal *maskon = str.lookupLabel("Mask On");
         if (!maskon) {
             maskon = str.lookupLabel("MaskOn");
@@ -141,6 +143,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QStringList strfiles)
         if (!maskoff) {
              maskoff = str.lookupLabel("MaskOff");
         }
+
         EDFSignal *sig = nullptr;
         quint32 laston = 0;
 
@@ -1076,7 +1079,7 @@ struct EDFduration {
     EDFType type;
 };
 
-EDFType lookupEDFType(QString text)
+EDFType lookupEDFType(const QString & text)
 {
     if (text == "EVE") {
         return EDF_EVE;
@@ -1214,7 +1217,7 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
 
 
 // Looks inside an EDF or EDF.gz and grabs the start and duration
-EDFduration getEDFDuration(QString filename)
+EDFduration getEDFDuration(const QString & filename)
 {
     QString ext = filename.section("_", -1).section(".",0,0).toUpper();
 
@@ -1341,7 +1344,7 @@ EDFduration getEDFDuration(QString filename)
     return dur;
 }
 
-int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
+int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 {
     QHash<QString, SessionID> skipfiles;
 
@@ -1740,7 +1743,7 @@ int ResmedLoader::scanFiles(Machine * mach, QString datalog_path)
     return c;
 }
 
-int ResmedLoader::Open(QString path)
+int ResmedLoader::Open(const QString & dirpath)
 {
 
     QString key, value;
@@ -1750,6 +1753,7 @@ int ResmedLoader::Open(QString path)
 
     QHash<QString, QString> idmap;  // Temporary properties hash
 
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     // Strip off end "/" if any
@@ -2141,7 +2145,7 @@ int ResmedLoader::Open(QString path)
 }
 
 
-QString ResmedLoader::backup(QString fullname, QString backup_path)
+QString ResmedLoader::backup(const QString & fullname, const QString & backup_path)
 {
     bool compress = p_profile->session->compressBackupData();
 

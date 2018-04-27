@@ -1,4 +1,4 @@
-/* SleepLib RemStar M-Series Loader Implementation
+﻿/* SleepLib RemStar M-Series Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -109,7 +109,7 @@ blockLayoutOffsets   {
                     */
 
 
-int MSeriesLoader::Open(QString path)
+int MSeriesLoader::Open(const QString & path)
 {
     // Until a smartcard reader is written, this is not an auto-scanner.. it just opens a block file..
 

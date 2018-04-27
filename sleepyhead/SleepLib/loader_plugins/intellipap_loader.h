@@ -1,4 +1,4 @@
-/* Intellipap Loader Header
+﻿/* Intellipap Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -55,11 +55,11 @@ class IntellipapLoader : public CPAPLoader
     virtual bool Detect(const QString & path);
 
     //! \brief Scans path for Intellipap data signature, and Loads any new data
-    virtual int Open(QString path);
+    virtual int Open(const QString & path);
     //! \brief Scans path for Intellipap DV5 data signature, and Loads any new data
-    virtual int OpenDV5(QString path);
+    virtual int OpenDV5(const QString & path);
     //! \brief Scans path for Intellipap DV6 data signature, and Loads any new data
-    virtual int OpenDV6(QString path);
+    virtual int OpenDV6(const QString & path);
 
     //! \brief Returns SleepLib database version of this IntelliPap loader
     virtual int Version() { return intellipap_data_version; }

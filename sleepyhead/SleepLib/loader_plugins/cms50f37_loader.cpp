@@ -115,7 +115,7 @@ bool CMS50F37Loader::Detect(const QString &path)
     return false;
 }
 
-int CMS50F37Loader::Open(QString path)
+int CMS50F37Loader::Open(const QString & path)
 {
     // Only one active Oximeter module at a time, set in preferences
 
@@ -850,7 +850,7 @@ void CMS50F37Loader::shutdownPorts()
 
 
 
-bool CMS50F37Loader::readSpoRFile(QString path)
+bool CMS50F37Loader::readSpoRFile(const QString & path)
 {
     QFile file(path);
     if (!file.exists()) {

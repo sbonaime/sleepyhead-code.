@@ -1,4 +1,4 @@
-/* SleepLib ZEO Loader Implementation
+﻿/* SleepLib ZEO Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -27,16 +27,15 @@ ZEOLoader::~ZEOLoader()
 {
 }
 
-int ZEOLoader::Open(QString path)
+int ZEOLoader::Open(const QString & dirpath)
 {
-    Q_UNUSED(path)
-
     QString newpath;
 
     QString dirtag = "zeo";
 
     // Could Scan the ZEO folder for a list of CSVs
 
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     if (path.toLower().endsWith("/" + dirtag)) {
@@ -80,7 +79,7 @@ int ZEOLoader::Open(QString path)
 15267: "Detailed Sleep Graph"
 15268: "Firmware Version"  */
 
-int ZEOLoader::OpenFile(QString filename)
+int ZEOLoader::OpenFile(const QString & filename)
 {
     QFile file(filename);
 

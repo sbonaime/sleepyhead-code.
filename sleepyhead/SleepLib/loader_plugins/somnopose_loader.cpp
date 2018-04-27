@@ -1,4 +1,4 @@
-/* SleepLib Somnopose Loader Implementation
+﻿/* SleepLib Somnopose Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -26,16 +26,15 @@ SomnoposeLoader::SomnoposeLoader()
 SomnoposeLoader::~SomnoposeLoader()
 {
 }
-int SomnoposeLoader::Open(QString path)
+int SomnoposeLoader::Open(const QString & dirpath)
 {
-    Q_UNUSED(path)
-
     QString newpath;
 
     QString dirtag = "somnopose";
 
     // Could Scan the ZEO folder for a list of CSVs
 
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     if (path.toLower().endsWith("/" + dirtag)) {
@@ -52,7 +51,7 @@ int SomnoposeLoader::Open(QString path)
     return 0; // number of machines affected
 }
 
-int SomnoposeLoader::OpenFile(QString filename)
+int SomnoposeLoader::OpenFile(const QString & filename)
 {
     QFile file(filename);
 

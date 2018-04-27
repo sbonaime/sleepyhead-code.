@@ -1,4 +1,4 @@
-/* SleepLib ChoiceMMed MD300W1 Oximeter Loader Implementation
+﻿/* SleepLib ChoiceMMed MD300W1 Oximeter Loader Implementation
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -61,7 +61,7 @@ bool MD300W1Loader::Detect(const QString &path)
     return false;
 }
 
-int MD300W1Loader::Open(QString path)
+int MD300W1Loader::Open(const QString & path)
 {
     // Only one active Oximeter module at a time, set in preferences
 
@@ -156,7 +156,7 @@ void MD300W1Loader::resetImportTimeout()
 //        0  0  id yr mm dd hh mm ss o2 pulse
 // report title etc.
 
-bool MD300W1Loader::readDATFile(QString path)
+bool MD300W1Loader::readDATFile(const QString & path)
 {
     QFile file(path);
     

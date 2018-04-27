@@ -1,4 +1,4 @@
-/* SleepLib ZEO Loader Header
+﻿/* SleepLib ZEO Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -26,8 +26,8 @@ class ZEOLoader : public MachineLoader
 
     virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
 
-    virtual int Open(QString path);
-    virtual int OpenFile(QString filename);
+    virtual int Open(const QString & path);
+    virtual int OpenFile(const QString & filename);
     static void Register();
 
     virtual int Version() { return zeo_data_version; }

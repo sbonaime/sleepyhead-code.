@@ -171,33 +171,52 @@ void MachineLoader::queTask(ImportTask * task)
 
 void MachineLoader::runTasks(bool threaded)
 {
-    threaded=AppSetting->multithreading();
 
     m_totaltasks=m_tasklist.size();
+    if (m_totaltasks == 0) return;
     m_currenttask=0;
+
+    threaded=AppSetting->multithreading();
 
     if (!threaded) {
         while (!m_tasklist.isEmpty()) {
             ImportTask * task = m_tasklist.takeFirst();
             task->run();
             float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
-            qprogress->setValue(f);
+
             m_currenttask++;
-            QApplication::processEvents();
-        }
-    } else {
-        QThreadPool * threadpool = QThreadPool::globalInstance();
-        qprogress->setMaximum(m_totaltasks);
-        while (!m_tasklist.isEmpty()) {
-            if (threadpool->tryStart(m_tasklist.at(0))) {
-                m_tasklist.pop_front();
-                //float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
-                qprogress->setValue(m_currenttask);
-                m_currenttask++;
-            }
             if ((m_currenttask % 50)==0) {
+                qprogress->setValue(f);
                 QApplication::processEvents();
             }
+        }
+    } else {
+        ImportTask * task = m_tasklist[0];
+
+        QThreadPool * threadpool = QThreadPool::globalInstance();
+        qprogress->setMaximum(m_totaltasks);
+
+        while (true) {
+
+            if (threadpool->tryStart(task)) {
+                m_tasklist.pop_front();
+
+                if (!m_tasklist.isEmpty()) {
+                    // next task to be run
+                    task = m_tasklist[0];
+
+                    // update progress bar
+                    m_currenttask++;
+                    if ((m_currenttask % 50) == 0) {
+                        qprogress->setValue(m_currenttask);
+                        QApplication::processEvents();
+                    }
+                } else {
+                    // job list finished
+                    break;
+                }
+            }
+            //QThread::sleep(100);
         }
         QThreadPool::globalInstance()->waitForDone(-1);
     }

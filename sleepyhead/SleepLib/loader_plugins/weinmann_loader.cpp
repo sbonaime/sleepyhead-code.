@@ -1,4 +1,4 @@
-/* SleepLib Weinmann SOMNOsoft/Balance Loader Implementation
+﻿/* SleepLib Weinmann SOMNOsoft/Balance Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -114,9 +114,9 @@ void HighPass(char * data, int samples, float cutoff, float dt)
     delete [] Y;
 }
 
-int WeinmannLoader::Open(QString path)
+int WeinmannLoader::Open(const QString & dirpath)
 {
-
+    QString path(dirpath);
     path = path.replace("\\", "/");
 
     QFile wmdata(path + "/WM_DATA.TDF");

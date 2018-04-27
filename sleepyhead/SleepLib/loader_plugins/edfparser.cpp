@@ -211,7 +211,7 @@ bool EDFParser::Parse()
 
     return true;
 }
-bool EDFParser::Open(QString name)
+bool EDFParser::Open(const QString & name)
 {
     if (buffer != nullptr) {
         qWarning() << "EDFParser::Open() called with buffer already initialized";
@@ -282,7 +282,7 @@ badfile:
     return false;
 }
 
-EDFSignal *EDFParser::lookupLabel(QString name, int index)
+EDFSignal *EDFParser::lookupLabel(const QString & name, int index)
 {
     QHash<QString, QList<EDFSignal *> >::iterator it = signalList.find(name);
 

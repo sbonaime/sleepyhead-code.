@@ -1,4 +1,4 @@
-/* SleepLib Somnopose Loader Header
+﻿/* SleepLib Somnopose Loader Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -24,10 +24,10 @@ class SomnoposeLoader : public MachineLoader
     SomnoposeLoader();
     virtual ~SomnoposeLoader();
 
-    virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
+    virtual bool Detect(const QString & path) { Q_UNUSED(path); return false; }  // bypass autoscanner
 
-    virtual int Open(QString path);
-    virtual int OpenFile(QString filename);
+    virtual int Open(const QString & path);
+    virtual int OpenFile(const QString & filename);
     static void Register();
 
     virtual int Version() { return somnopose_data_version; }
