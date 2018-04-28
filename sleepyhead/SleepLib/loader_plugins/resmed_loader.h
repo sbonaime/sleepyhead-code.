@@ -36,14 +36,15 @@ public:
     ResMedEDFParser(QString filename = "");
     ~ResMedEDFParser();
     EDFSignal *lookupSignal(ChannelID ch);
-
 };
+
+
 
 struct STRRecord
 {
     STRRecord() {
-        maskon = 0;
-        maskoff = 0;
+        maskon.clear();
+        maskoff.clear();
         maskdur = 0;
         maskevents = -1;
         mode = -1;
@@ -127,6 +128,10 @@ struct STRRecord
         leak95 = copy.leak95;
         leakmax = copy.leakmax;
         leakgain = copy.leakgain;
+        s_EPREnable = copy.s_EPREnable;
+        s_EPR_ClinEnable = copy.s_EPREnable;
+        s_RampEnable = copy.s_RampEnable;
+        s_RampTime = copy.s_RampTime;
 
         s_SmartStart = copy.s_SmartStart;
         s_PtAccess = copy.s_PtAccess;
@@ -141,8 +146,9 @@ struct STRRecord
         s_Temp = copy.s_Temp;
         ramp_pressure = copy.ramp_pressure;
     }
-    quint32 maskon;
-    quint32 maskoff;
+    QVector<quint32> maskon;
+    QVector<quint32> maskoff;
+
     EventDataType maskdur;
     EventDataType maskevents;
     EventDataType mode;
@@ -218,7 +224,47 @@ struct EDFGroup {
     QString SAD;
 };
 
-class ResmedImport:public ImportTask
+struct EDFduration {
+    EDFduration() { start = end = 0; type = EDF_UNKNOWN; }
+    EDFduration(const EDFduration & copy) {
+        path = copy.path;
+        start = copy.start;
+        end = copy.end;
+        type = copy.type;
+        filename = copy.filename;
+    }
+    EDFduration(quint32 start, quint32 end, QString path) :
+        start(start), end(end), path(path) {}
+    quint32 start;
+    quint32 end;
+    QString path;
+    QString filename;
+    EDFType type;
+};
+
+struct ResMedDay {
+    QDate date;
+    STRRecord str;
+    QHash<QString, QString> files;
+//    QHash<QString, EDFduration> durations;
+
+};
+
+class ResDayTask:public ImportTask
+{
+public:
+    ResDayTask(ResmedLoader * l, Machine * m, ResMedDay * d): loader(l), mach(m), resday(d) {}
+    virtual ~ResDayTask() {}
+    virtual void run();
+
+protected:
+    ResmedLoader * loader;
+    Machine * mach;
+    ResMedDay * resday;
+};
+
+
+/*class ResmedImport:public ImportTask
 {
 public:
     ResmedImport(ResmedLoader * l, SessionID s, QHash<EDFType, QStringList> grp, Machine * m): loader(l), sessionid(s), files(grp), mach(m) {}
@@ -243,7 +289,9 @@ protected:
     ResmedLoader * loader;
     STRRecord R;
     Machine * mach;
-};
+}; */
+
+
 
 
 /*! \class ResmedLoader
@@ -317,9 +365,11 @@ class ResmedLoader : public CPAPLoader
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    volatile int sessionCount;
 
 protected:
     void ParseSTR(Machine *mach, const QStringList & strfiles);
+
 
     //! \brief Scan for new files to import, group into sessions and add to task que
     int scanFiles(Machine * mach, const QString & datalog_path);
@@ -329,6 +379,7 @@ protected:
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;
     QMap<QDate, QList<STRRecord *> > strdate;
+    QHash<QDate, ResMedDay> resdayList;
 
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;

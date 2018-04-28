@@ -1174,13 +1174,18 @@ EventDataType Day::count(ChannelID code)
     return total;
 }
 
-bool Day::summaryOnly()
+bool Day::summaryOnly(Machine * mach)
 {
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session & sess = *(*it);
-        if (sess.summaryOnly())
+        if ((mach == nullptr) && sess.summaryOnly()) {
+            // If this day generally has just summary data.
             return true;
+        } else if ((mach == sess.machine())  && sess.summaryOnly()) {
+            // Focus only on machine mach
+            return true;
+        }
     }
     return false;
 }
@@ -1460,13 +1465,21 @@ bool Day::removeSession(Session *sess)
     return b;
 }
 bool Day::searchMachine(MachineType mt) {
-    for (int i=0;  i < sessions.size(); ++i) {
+    for (int i=0; i < sessions.size(); ++i) {
         if (sessions.at(i)->type() == mt)
             return true;
     }
     return false;
 }
 
+bool Day::hasMachine(Machine * mach)
+{
+    for (int i=0; i < sessions.size(); ++i) {
+        if (sessions.at(i)->machine() == mach)
+            return true;
+    }
+    return false;
+}
 
 QString Day::getCPAPMode()
 {

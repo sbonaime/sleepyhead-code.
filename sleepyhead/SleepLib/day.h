@@ -1,4 +1,4 @@
-/* SleepLib Day Class Header
+﻿/* SleepLib Day Class Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -91,8 +91,13 @@ class Day
     //! \brief Returns if the cache contains SummaryType information about the requested code
     bool hasData(ChannelID code, SummaryType type);
 
+    //! \brief Returns true if Day has specific machine type
     inline bool hasMachine(MachineType mt) const { return machines.contains(mt); }
 
+    //! \brief Returns true if Day has specific machine record
+    bool hasMachine(Machine * mach);
+
+    //! \brief Returns true if any sessions have records matching specific machine type
     bool searchMachine(MachineType mt);
 
     //! \brief Returns the Average of all Sessions setting 'code' for this day
@@ -183,7 +188,7 @@ class Day
     QList<Session *>::iterator end() { return sessions.end(); }
 
     //! \brief Check if day contains SummaryOnly records
-    bool summaryOnly();
+    bool summaryOnly(Machine * mach = nullptr);
 
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
     int find(Session *sess) { return sessions.indexOf(sess); }

@@ -114,25 +114,30 @@ bool matchSignal(ChannelID ch, const QString & name)
     return false;
 }
 
-
-
+// This function parses a list of STR files and creates a date ordered map of individual records
 void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
 {
-    const QStringList::const_iterator strend = strfiles.cend();
-    for (QStringList::const_iterator it = strfiles.cbegin(); it != strend; ++it) {
-        ResMedEDFParser str(*it);
+    int numSTRs = strfiles.size();
+    if (!qprogress) {
+        qWarning() << "What happened to qprogress object in ResmedLoader::ParseSTR()";
+        return;
+    }
+
+    for (int i=0; i< numSTRs; ++i) {
+
+        const QString & strfile = strfiles.at(i);
+
+        // Open and Parse STR.edf file
+        ResMedEDFParser str(strfile);
         if (!str.Parse()) continue;
         if (mach->serial() != str.serialnumber) {
-            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->serial() << str.serialnumber;
-            qDebug() << (*it);
+            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->serial() << "!=" << str.serialnumber << "in" << strfile;
             continue;
         }
 
-        QDateTime start = QDateTime::fromMSecsSinceEpoch(str.startdate, Qt::UTC);
-        QDate date = start.date();
+        QDate date = str.startdate_orig.date(); // each STR.edf record starts at 12 noon
 
-        qDebug() << "Parsing" << *it << date << str.GetNumDataRecords() << str.GetNumSignals();
-
+        qDebug() << "Parsing" << strfile << date << str.GetNumDataRecords() << str.GetNumSignals();
 
         // ResMed and their consistent naming and spacing... :/
         EDFSignal *maskon = str.lookupLabel("Mask On");
@@ -145,379 +150,348 @@ void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
         }
 
         EDFSignal *sig = nullptr;
-        quint32 laston = 0;
-
-        //bool skipday;
 
         int size = str.GetNumDataRecords();
         int cnt=0;
-        QDateTime dt = start;
 
         // For each data record, representing 1 day each
-        for (int rec = 0; rec < str.GetNumDataRecords(); ++rec) {
-            uint timestamp = dt.toTime_t();
+        for (int rec = 0; rec < size; ++rec, date = date.addDays(1)) {
+
+            QHash<QDate, ResMedDay>::iterator rit = resdayList.find(date);
+            if (rit != resdayList.end()) {
+                // Already seen this record.. should check if the data is the same, but meh.
+                continue;
+            }
+
             int recstart = rec * maskon->nr;
 
-           // skipday = false;
-            if ((++cnt % 10) == 0) {
-                // TODO: Change me to emit once MachineLoader is QObjectified...
-                if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
+            bool validday = false;
+            for (int s = 0; s < maskon->nr; ++s) {
+                qint32 on = maskon->data[recstart + s];
+                qint32 off = maskoff->data[recstart + s];
 
+                if ((on >= 0) && (off >= 0)) validday=true;
+            }
+            if (!validday) {
+                // There are no mask on/off events, so this STR day is useless.
+                continue;
+            }
+
+            rit = resdayList.insert(date, ResMedDay());
+
+            STRRecord &R = rit.value().str;
+
+            uint timestamp = QDateTime(date,QTime(12,0,0)).toTime_t();
+            R.date = date;
+
+           // skipday = false;
+            if ((cnt++ % 10) == 0) {
+                qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0));
                 QApplication::processEvents();
             }
 
-            // Scan the mask on/off events
+            // For every mask on, there will be a session within 1 minute either way
+            // We can use that for data matching
+            // Scan the mask on/off events by minute
+            R.maskon.resize(maskon->nr);
+            R.maskoff.resize(maskoff->nr);
             for (int s = 0; s < maskon->nr; ++s) {
-                qint32 on = maskon->data[recstart+s];
-                qint32 off = maskoff->data[recstart+s];
-                quint32 ontime = timestamp + on * 60;
-                quint32 offtime = timestamp + off * 60;
+                qint32 on = maskon->data[recstart + s];
+                qint32 off = maskoff->data[recstart + s];
 
-                // -1 marks empty record, but can start with mask off, if sleep crosses noon
-                if (on < 0) {
-                    if (off < 0) continue;  // Both are -1, skip the rest of this day
-                    // laston stops on this record
-
-                    QMap<quint32, STRRecord>::iterator si = strsess.find(laston);
-                    if (si != strsess.end()) {
-                        if (si.value().maskoff == 0) {
-                            if (offtime > laston) {
-                                si.value().maskoff = offtime;
-                            }
-                        } else {
-                            if (si.value().maskoff != offtime) {
-                                // not sure why this happens.
-                                qDebug() << "WTF?? mask off's don't match"
-                                        << QDateTime::fromTime_t(laston).toString()
-                                        << QDateTime::fromTime_t(si.value().maskoff).toString()
-                                        << "!=" << QDateTime::fromTime_t(offtime).toString();
-                            }
-                            //NO ASSERTS!!!! Q   _ASSERT(si.value().maskoff == offtime);
-                        }
-                    }
-                    continue;
-                }
-
-                QMap<quint32, STRRecord>::iterator sid = strsess.find(ontime);
-                // Record already exists?
-                if (sid != strsess.end()) {
-                    // then skip
-                    laston = ontime;
-                    continue;
-                }
-
-                // For every mask on, there will be a session within 1 minute either way
-                // We can use that for data matching
-                STRRecord R;
-
-                R.maskon = ontime;
-                if (offtime > 0) {
-                    R.maskoff = offtime;
-                }
-                CPAPMode mode = MODE_UNKNOWN;
-
-                if ((sig = str.lookupSignal(CPAP_Mode))) {
-                    int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    R.rms9_mode = mod;
-
-                    if (mod == 11) {
-                        mode = MODE_APAP; // For her
-                    } else if (mod >= 8) {       // mod 8 == vpap adapt variable epap
-                        mode = MODE_ASV_VARIABLE_EPAP;
-                    } else if (mod >= 7) {       // mod 7 == vpap adapt
-                        mode = MODE_ASV;
-                    } else if (mod >= 6) { // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
-                        mode = MODE_BILEVEL_AUTO_FIXED_PS;
-                    } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
-                        mode = MODE_BILEVEL_FIXED;
-                        // 4,5 are S/T types...
-
-                    } else if (mod >= 1) {
-                        mode = MODE_APAP; // mod 1 == apap
-                        // not sure what mode 2 is ?? split ?
-                    } else {
-                        mode = MODE_CPAP; // mod 0 == cpap
-                    }
-                    R.mode = mode;
-
-                    // Settings.CPAP.Starting Pressure
-                    if ((mod == 0) && (sig = str.lookupLabel("S.C.StartPress"))) {
-                        R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    // Settings.Adaptive Starting Pressure? // mode 11 = APAP for her?
-                    if (((mod == 1) || (mod == 11)) && (sig = str.lookupLabel("S.AS.StartPress"))) {
-                        R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-
-                    if ((R.mode == MODE_BILEVEL_FIXED) && (sig = str.lookupLabel("S.BL.StartPress"))) {
-                        // Bilevel Starting Pressure
-                        R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if (((R.mode == MODE_ASV) || (R.mode == MODE_ASV_VARIABLE_EPAP)) && (sig = str.lookupLabel("S.VA.StartPress"))) {
-                        // Bilevel Starting Pressure
-                        R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                }
-
-
-                if ((sig = str.lookupLabel("Mask Dur"))) {
-                    R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-                if ((sig = str.lookupLabel("Leak Med"))) {
-                    float gain = sig->gain * 60.0;
-                    R.leakgain = gain;
-                    R.leakmed = EventDataType(sig->data[rec]) * gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("Leak Max"))) {
-                    float gain = sig->gain * 60.0;
-                    R.leakgain = gain;
-                    R.leakmax = EventDataType(sig->data[rec]) * gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("Leak 95"))) {
-                    float gain = sig->gain * 60.0;
-                    R.leakgain = gain;
-                    R.leak95 = EventDataType(sig->data[rec]) * gain + sig->offset;
-                }
-
-                bool haveipap = false;
-//                if (R.mode == MODE_BILEVEL_FIXED) {
-                    if ((sig = str.lookupSignal(CPAP_IPAP))) {
-                        R.ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        haveipap = true;
-                    }
-
-                    if ((sig = str.lookupSignal(CPAP_EPAP))) {
-                        R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-
-
-                if (R.mode == MODE_ASV) {
-                    if ((sig = str.lookupLabel("S.AV.StartPress"))) {
-                        EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        R.ramp_pressure = sp;
-                    }
-                    if ((sig = str.lookupLabel("S.AV.EPAP"))) {
-                        R.min_epap = R.max_epap = R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-
-                    }
-                    if ((sig = str.lookupLabel("S.AV.MinPS"))) {
-                        R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupLabel("S.AV.MaxPS"))) {
-                        R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        R.max_ipap = R.epap + R.max_ps;
-                        R.min_ipap = R.epap + R.min_ps;
-                    }
-                }
-                if (R.mode == MODE_ASV_VARIABLE_EPAP) {
-                    if ((sig = str.lookupLabel("S.AA.StartPress"))) {
-                        EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        R.ramp_pressure = sp;
-                    }
-                    if ((sig = str.lookupLabel("S.AA.MinEPAP"))) {
-                        R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupLabel("S.AA.MaxEPAP"))) {
-                        R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupLabel("S.AA.MinPS"))) {
-                        R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupLabel("S.AA.MaxPS"))) {
-                        R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        R.max_ipap = R.max_epap + R.max_ps;
-                        R.min_ipap = R.min_epap + R.min_ps;
-                    }
-                }
-
-                    if ((sig = str.lookupSignal(CPAP_PressureMax))) {
-                        R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupSignal(CPAP_PressureMin))) {
-                        R.min_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupSignal(RMS9_SetPressure))) {
-                        R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-
-                    if ((sig = str.lookupSignal(CPAP_EPAPHi))) {
-                        R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
-                        R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-
-                    if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
-                        R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        haveipap = true;
-                    }
-                    if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
-                        R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        haveipap = true;
-                    }
-                    if ((sig = str.lookupSignal(CPAP_PS))) {
-                        R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-               //  }
-
-
-                // Okay, problem here: THere are TWO PSMin & MAX values on the 36037 with the same string
-                // One is for ASV mode, and one is for ASVAuto
-                int psvar = (mode == MODE_ASV_VARIABLE_EPAP) ? 1 : 0;
-
-                if ((sig = str.lookupLabel("Max PS", psvar))) {
-                    R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("Min PS", psvar))) {
-                    R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-
-
-                if (!haveipap) {
-                }
-
-                if (mode == MODE_ASV_VARIABLE_EPAP) {
-                    R.min_ipap = R.min_epap + R.min_ps;
-                    R.max_ipap = R.max_epap + R.max_ps;
-                } else if (mode == MODE_ASV) {
-                    R.min_ipap = R.epap + R.min_ps;
-                    R.max_ipap = R.epap + R.max_ps;
-                }
-
-                EventDataType epr = -1, epr_level = -1;
-                bool a10 = false;
-                if ((mode == MODE_CPAP) || (mode == MODE_APAP)) {
-                    if ((sig = str.lookupSignal(RMS9_EPR))) {
-                        epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
-                        epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-
-                    if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
-                        a10 = true;
-                        epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                        epr += 1;
-                    }
-                    int epr_on=0, clin_epr_on=0;
-                    if ((sig = str.lookupLabel("S.EPR.EPREnable"))) { // first check machines opinion
-                        a10 = true;
-                        epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if (epr_on && (sig = str.lookupLabel("S.EPR.ClinEnable"))) {
-                        a10 = true;
-                        clin_epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    }
-                    if (a10 && !(epr_on && clin_epr_on)) {
-                        epr = 0;
-                        epr_level = 0;
-                    }
-
-
-                }
-
-
-                if ((epr >= 0) && (epr_level >= 0)) {
-                    R.epr_level = epr_level;
-                    R.epr = epr;
-                } else {
-                    if (epr >= 0) {
-                        static bool warn=false;
-                        if (!warn) { // just nag once
-                            qDebug() << "If you can read this, please tell Jedimark you found a ResMed with EPR but no EPR_LEVEL so he can remove this warning";
-                            warn = true;
-                        }
-
-                        R.epr = (epr > 0) ? 1 : 0;
-                        R.epr_level = epr;
-                    } else if (epr_level >= 0) {
-                        R.epr_level = epr_level;
-                        R.epr = (epr_level > 0) ? 1 : 0;
-                    }
-                }
-
-
-                if ((sig = str.lookupLabel("AHI"))) {
-                    R.ahi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("AI"))) {
-                    R.ai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("HI"))) {
-                    R.hi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("UAI"))) {
-                    R.uai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("CAI"))) {
-                    R.cai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-
-                if ((sig = str.lookupLabel("S.RampTime"))) {
-                    R.s_RampTime = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.RampEnable"))) {
-                    R.s_RampEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.EPR.ClinEnable"))) {
-                    R.s_EPR_ClinEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.EPR.EPREnable"))) {
-                    R.s_EPREnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-                if ((sig = str.lookupLabel("S.ABFilter"))) {
-                    R.s_ABFilter = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-                if ((sig = str.lookupLabel("S.ClimateControl"))) {
-                    R.s_ClimateControl = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-                if ((sig = str.lookupLabel("S.Mask"))) {
-                    R.s_Mask = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.PtAccess"))) {
-                    R.s_PtAccess = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.SmartStart"))) {
-                    R.s_SmartStart = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.HumEnable"))) {
-                    R.s_HumEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.HumLevel"))) {
-                    R.s_HumLevel = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.TempEnable"))) {
-                    R.s_TempEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.Temp"))) {
-                    R.s_Temp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupLabel("S.Tube"))) {
-                    R.s_Tube = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-
-                laston = ontime;
-
-                // TODO UTC
-                QDateTime dontime = QDateTime::fromTime_t(ontime);
-                date = dontime.date();
-                R.date = date;
-
-                //CHECKME: Should I be taking noon day split time into account here?
-                strdate[date].push_back(&strsess.insert(ontime, R).value());
-
-                //QDateTime dofftime = QDateTime::fromTime_t(offtime);
-                //qDebug() << "Mask on" << dontime << "Mask off" << dofftime;
+                R.maskon[s] = (on>0) ? (timestamp + (on * 60)) : 0;
+                R.maskoff[s] = (off>0) ? (timestamp + (off * 60)) : 0;
             }
 
-            // Wait... ResMed has a DST bug here...should I be replicating it by using multiples of 86400 seconds?
-            dt = dt.addDays(1);
+
+            // two conditions that need dealing with, mask running at noon start, and finishing at noon start..
+            // (Sessions are forcibly split by resmed.. why the heck don't they store it that way???)
+            if ((R.maskon[0]==0) && (R.maskoff[0]>0)) {
+                R.maskon[0] = timestamp;
+            }
+            if ((R.maskon[maskon->nr-1] > 0) && (R.maskoff[maskoff->nr-1] == 0)) {
+                R.maskoff[maskoff->nr-1] = QDateTime(date,QTime(12,0,0)).addDays(1).toTime_t() - 1;
+            }
+
+            CPAPMode mode = MODE_UNKNOWN;
+
+            if ((sig = str.lookupSignal(CPAP_Mode))) {
+                int mod = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                R.rms9_mode = mod;
+
+                if (mod == 11) {
+                    mode = MODE_APAP; // For her
+                } else if (mod >= 8) {       // mod 8 == vpap adapt variable epap
+                    mode = MODE_ASV_VARIABLE_EPAP;
+                } else if (mod >= 7) {       // mod 7 == vpap adapt
+                    mode = MODE_ASV;
+                } else if (mod >= 6) { // mod 6 == vpap auto (Min EPAP, Max IPAP, PS)
+                    mode = MODE_BILEVEL_AUTO_FIXED_PS;
+                } else if (mod >= 3) {// mod 3 == vpap s fixed pressure (EPAP, IPAP, No PS)
+                    mode = MODE_BILEVEL_FIXED;
+                    // 4,5 are S/T types...
+
+                } else if (mod >= 1) {
+                    mode = MODE_APAP; // mod 1 == apap
+                    // not sure what mode 2 is ?? split ?
+                } else {
+                    mode = MODE_CPAP; // mod 0 == cpap
+                }
+                R.mode = mode;
+
+                // Settings.CPAP.Starting Pressure
+                if ((mod == 0) && (sig = str.lookupLabel("S.C.StartPress"))) {
+                    R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                // Settings.Adaptive Starting Pressure? // mode 11 = APAP for her?
+                if (((mod == 1) || (mod == 11)) && (sig = str.lookupLabel("S.AS.StartPress"))) {
+                    R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                if ((R.mode == MODE_BILEVEL_FIXED) && (sig = str.lookupLabel("S.BL.StartPress"))) {
+                    // Bilevel Starting Pressure
+                    R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (((R.mode == MODE_ASV) || (R.mode == MODE_ASV_VARIABLE_EPAP)) && (sig = str.lookupLabel("S.VA.StartPress"))) {
+                    // Bilevel Starting Pressure
+                    R.ramp_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+            }
+
+            if ((sig = str.lookupLabel("Mask Dur"))) {
+                R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("Leak Med"))) {
+                float gain = sig->gain * 60.0;
+                R.leakgain = gain;
+                R.leakmed = EventDataType(sig->data[rec]) * gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("Leak Max"))) {
+                float gain = sig->gain * 60.0;
+                R.leakgain = gain;
+                R.leakmax = EventDataType(sig->data[rec]) * gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("Leak 95"))) {
+                float gain = sig->gain * 60.0;
+                R.leakgain = gain;
+                R.leak95 = EventDataType(sig->data[rec]) * gain + sig->offset;
+            }
+
+            bool haveipap = false;
+//                if (R.mode == MODE_BILEVEL_FIXED) {
+                if ((sig = str.lookupSignal(CPAP_IPAP))) {
+                    R.ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
+                }
+
+                if ((sig = str.lookupSignal(CPAP_EPAP))) {
+                    R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+
+            if (R.mode == MODE_ASV) {
+                if ((sig = str.lookupLabel("S.AV.StartPress"))) {
+                    EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    R.ramp_pressure = sp;
+                }
+                if ((sig = str.lookupLabel("S.AV.EPAP"))) {
+                    R.min_epap = R.max_epap = R.epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+
+                }
+                if ((sig = str.lookupLabel("S.AV.MinPS"))) {
+                    R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("S.AV.MaxPS"))) {
+                    R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    R.max_ipap = R.epap + R.max_ps;
+                    R.min_ipap = R.epap + R.min_ps;
+                }
+            }
+            if (R.mode == MODE_ASV_VARIABLE_EPAP) {
+                if ((sig = str.lookupLabel("S.AA.StartPress"))) {
+                    EventDataType sp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    R.ramp_pressure = sp;
+                }
+                if ((sig = str.lookupLabel("S.AA.MinEPAP"))) {
+                    R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("S.AA.MaxEPAP"))) {
+                    R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("S.AA.MinPS"))) {
+                    R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupLabel("S.AA.MaxPS"))) {
+                    R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    R.max_ipap = R.max_epap + R.max_ps;
+                    R.min_ipap = R.min_epap + R.min_ps;
+                }
+            }
+
+                if ((sig = str.lookupSignal(CPAP_PressureMax))) {
+                    R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_PressureMin))) {
+                    R.min_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(RMS9_SetPressure))) {
+                    R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                if ((sig = str.lookupSignal(CPAP_EPAPHi))) {
+                    R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
+                    R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
+                    R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
+                }
+                if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
+                    R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    haveipap = true;
+                }
+                if ((sig = str.lookupSignal(CPAP_PS))) {
+                    R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+           //  }
+
+
+            // Okay, problem here: THere are TWO PSMin & MAX values on the 36037 with the same string
+            // One is for ASV mode, and one is for ASVAuto
+            int psvar = (mode == MODE_ASV_VARIABLE_EPAP) ? 1 : 0;
+
+            if ((sig = str.lookupLabel("Max PS", psvar))) {
+                R.max_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("Min PS", psvar))) {
+                R.min_ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if (!haveipap) {
+            }
+
+            if (mode == MODE_ASV_VARIABLE_EPAP) {
+                R.min_ipap = R.min_epap + R.min_ps;
+                R.max_ipap = R.max_epap + R.max_ps;
+            } else if (mode == MODE_ASV) {
+                R.min_ipap = R.epap + R.min_ps;
+                R.max_ipap = R.epap + R.max_ps;
+            }
+
+            EventDataType epr = -1, epr_level = -1;
+            bool a10 = false;
+            if ((mode == MODE_CPAP) || (mode == MODE_APAP)) {
+                if ((sig = str.lookupSignal(RMS9_EPR))) {
+                    epr= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if ((sig = str.lookupSignal(RMS9_EPRLevel))) {
+                    epr_level= EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+
+                if ((sig = str.lookupLabel("S.EPR.EPRType"))) {
+                    a10 = true;
+                    epr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                    epr += 1;
+                }
+                int epr_on=0, clin_epr_on=0;
+                if ((sig = str.lookupLabel("S.EPR.EPREnable"))) { // first check machines opinion
+                    a10 = true;
+                    epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (epr_on && (sig = str.lookupLabel("S.EPR.ClinEnable"))) {
+                    a10 = true;
+                    clin_epr_on = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                }
+                if (a10 && !(epr_on && clin_epr_on)) {
+                    epr = 0;
+                    epr_level = 0;
+                }
+            }
+
+            if ((epr >= 0) && (epr_level >= 0)) {
+                R.epr_level = epr_level;
+                R.epr = epr;
+            } else {
+                if (epr >= 0) {
+                    static bool warn=false;
+                    if (!warn) { // just nag once
+                        qDebug() << "If you can read this, please tell Jedimark you found a ResMed with EPR but no EPR_LEVEL so he can remove this warning";
+                        warn = true;
+                    }
+
+                    R.epr = (epr > 0) ? 1 : 0;
+                    R.epr_level = epr;
+                } else if (epr_level >= 0) {
+                    R.epr_level = epr_level;
+                    R.epr = (epr_level > 0) ? 1 : 0;
+                }
+            }
+
+            if ((sig = str.lookupLabel("AHI"))) {
+                R.ahi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("AI"))) {
+                R.ai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("HI"))) {
+                R.hi = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("UAI"))) {
+                R.uai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("CAI"))) {
+                R.cai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("S.RampTime"))) {
+                R.s_RampTime = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.RampEnable"))) {
+                R.s_RampEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.EPR.ClinEnable"))) {
+                R.s_EPR_ClinEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.EPR.EPREnable"))) {
+                R.s_EPREnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("S.ABFilter"))) {
+                R.s_ABFilter = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("S.ClimateControl"))) {
+                R.s_ClimateControl = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("S.Mask"))) {
+                R.s_Mask = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.PtAccess"))) {
+                R.s_PtAccess = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.SmartStart"))) {
+                R.s_SmartStart = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.HumEnable"))) {
+                R.s_HumEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.HumLevel"))) {
+                R.s_HumLevel = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.TempEnable"))) {
+                R.s_TempEnable = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.Temp"))) {
+                R.s_Temp = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("S.Tube"))) {
+                R.s_Tube = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
         }
     }
 }
@@ -525,7 +499,7 @@ void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
 
 
 
-void ResmedImport::run()
+/*void ResmedImport::run()
 {
     loader->saveMutex.lock();
 
@@ -812,7 +786,7 @@ void ResmedImport::run()
 
     // Free the memory used by this session
     sess->TrashEvents();
-}
+} */
 
 ResmedLoader::ResmedLoader()
 {
@@ -832,7 +806,7 @@ ResmedLoader::~ResmedLoader()
 {
 }
 
-void ResmedImportStage2::run()
+/*void ResmedImportStage2::run()
 {
     if (R.maskon == R.maskoff) return;
     Session * sess = new Session(mach, R.maskon);
@@ -975,7 +949,7 @@ void ResmedImportStage2::run()
     //loader->saveMutex.lock();
     sess->Store(mach->getDataPath());
     //loader->saveMutex.unlock();
-}
+} */
 
 
 long event_cnt = 0;
@@ -1061,23 +1035,6 @@ MachineInfo ResmedLoader::PeekInfo(const QString & path)
 
 
 
-struct EDFduration {
-    EDFduration() { start = end = 0; type = EDF_UNKNOWN; }
-    EDFduration(const EDFduration & copy) {
-        path = copy.path;
-        start = copy.start;
-        end = copy.end;
-        type = copy.type;
-        filename = copy.filename;
-    }
-    EDFduration(quint32 start, quint32 end, QString path) :
-        start(start), end(end), path(path) {}
-    quint32 start;
-    quint32 end;
-    QString path;
-    QString filename;
-    EDFType type;
-};
 
 EDFType lookupEDFType(const QString & text)
 {
@@ -1215,8 +1172,9 @@ int PeekAnnotations(const QString & path, quint32 &start, quint32 &end)
     return goodrecs;
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
 // Looks inside an EDF or EDF.gz and grabs the start and duration
+///////////////////////////////////////////////////////////////////////////////
 EDFduration getEDFDuration(const QString & filename)
 {
     QString ext = filename.section("_", -1).section(".",0,0).toUpper();
@@ -1321,6 +1279,10 @@ EDFduration getEDFDuration(const QString & filename)
         quint32 en2;
 
         // Have to get the actual duration of the EVE file by parsing the annotations. :(
+
+
+        // Can we cache the stupid EDFParser file for later ???
+
         int recs = PeekAnnotations(filename, st2, en2);
         if (recs > 0) {
             start = qMin(st2, start);
@@ -1344,169 +1306,173 @@ EDFduration getEDFDuration(const QString & filename)
     return dur;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Sorted EDF files that need processing into date records according to ResMed noon split
+///////////////////////////////////////////////////////////////////////////////////////////
 int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 {
-    QHash<QString, SessionID> skipfiles;
+    QTime time;
 
-    bool create_backups = true; //p_profile->session->backupCardData();
-
+    bool create_backups = p_profile->session->backupCardData();
     QString backup_path = mach->getBackupPath();
 
-    QString dlog = datalog_path;
-
-    if (datalog_path == backup_path + RMS9_STR_datalog + "/") {
+    if (datalog_path == (backup_path + RMS9_STR_datalog + "/")) {
         // Don't create backups if importing from backup folder
         create_backups = false;
     }
 
-    // Read the "already imported" file list
-    QFile impfile(mach->getDataPath()+"/imported_files.csv");
-    if (impfile.open(QFile::ReadOnly)) {
-        QTextStream impstream(&impfile);
-        QString serial;
-        impstream >> serial;
-        if (mach->serial() == serial) {
-            QString line, file, str;
-            SessionID sid;
-            bool ok;
-            do {
-                impstream >> line;
-                file = line.section(',',0,0);
-                str = line.section(',',1);
-                sid = str.toInt(&ok);
 
-                skipfiles[file] = sid;
-            } while (!impstream.atEnd());
-        }
-    }
-    impfile.close();
+    ///////////////////////////////////////////////////////////////////////////////////////
+    // Generate list of files for later processing
+    ///////////////////////////////////////////////////////////////////////////////////////
 
-
-    QStringList dirs;
-    dirs.push_back(datalog_path);
+#ifdef DEBUG_EFFICIENCY
+    time.start();
+#endif
+    QFileInfoList EDFfiles;
 
     QDir dir(datalog_path);
-
     dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    QFileInfoList flist = dir.entryInfoList();
     QString filename;
-    bool ok, gz;
+    bool ok;
 
+    QFileInfoList flist = dir.entryInfoList();
+    int flistSize = flist.size();
 
-    // Scan for any sub folders
-    for (int i = 0; i < flist.size(); i++) {
-        QFileInfo fi = flist.at(i);
+    qDebug() << "Generating list of EDF files";
+    // Scan for any sub folders and create files lists
+    for (int i = 0; i < flistSize ; i++) {
+        const QFileInfo & fi = flist.at(i);
         filename = fi.fileName();
 
-        if (filename.length() == 4) {
-            // year folder (used in backups)
+        int len = filename.length();
+        if ((len == 4) || (len == 8)) {
             filename.toInt(&ok);
-
             if (ok) {
-                dirs.push_back(fi.canonicalFilePath());
-            }
-        } else if (filename.length() == 8) {
-            // S10 stores sessions per day folders
-            filename.toInt(&ok);
+                // Get file lists under this directory
+                dir.setPath(fi.canonicalFilePath());
+                dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+                dir.setSorting(QDir::Name);
 
-            if (ok) {
-                dirs.push_back(fi.canonicalFilePath());
+                // Append all files to one big QFileInfoList
+                EDFfiles.append(dir.entryInfoList());
             }
         }
     }
+#ifdef DEBUG_EFFICIENCY
+    qDebug() << "Generating EDF files list took" << time.elapsed() << "ms";
+#endif
 
-    QStringList newSkipFiles;
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Scan through EDF files, Extracting EDF Durations, and skipping already imported files
+    // Check for duplicates along the way from compressed/uncompressed files
+    ////////////////////////////////////////////////////////////////////////////////////////
 
-    QMap<QString, EDFduration> newfiles; // used for duplicate checking, and session overlap testing to group sessions
-    QHash<EDFType, QList<EDFduration *> > filesbytype;
-
-
-    QTime time;
+#ifdef DEBUG_EFFICIENCY
     time.start();
+#endif
+    QString datestr;
+    QDateTime datetime;
+    QDate date;
+    int totalfiles = EDFfiles.size();
 
     // Calculate number of files for progress bar for this stage
-    int dsiz = dirs.size();
-    int numfiles = 0;
-    for (int d=0; d < dsiz; ++d) {
-        dir.setPath(dirs.at(d));
-        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-        dir.setSorting(QDir::Name);
+    int pbarFreq = totalfiles / 50;
+    if (pbarFreq < 1) pbarFreq = 1; // stop a divide by zero
 
-        flist = dir.entryInfoList();
-
-        // get number of files in current directory being processed
-        int size = flist.size();
-        numfiles += size;
-    }
-
-    qprogress->setMaximum(numfiles);
-
+    qprogress->setMaximum(totalfiles);
+    qprogress->setValue(0);
 
     int cnt = 0;
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
-    for (int d=0; d < dirs.size(); ++d) {
-        dir.setPath(dirs.at(d));
-        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-        dir.setSorting(QDir::Name);
 
-        flist = dir.entryInfoList();
+    qDebug() << "Starting EDF duration scan pass";
+    for (int i=0; i < totalfiles; ++i) {
+        const QFileInfo & fi = EDFfiles.at(i);
 
-        // get number of files in current directory being processed
-        int size = flist.size();
+        // Update progress bar
+        if ((cnt++ % pbarFreq) == 0) {
+            qprogress->setValue(cnt);
+            QApplication::processEvents();
+        }
 
-        // For each file in flist...
-        for (int i = 0; i < size; i++) {
-            QFileInfo fi = flist.at(i);
-            filename = fi.fileName();
-            cnt++;
-            if (cnt % 50) {
-                qprogress->setValue(cnt);
-                QApplication::processEvents();
-            }
+        // Forget about it if it can't be read.
+        if (!fi.isReadable()) {
+            continue;
+        }
 
-            // Forget about it if it can't be read.
-            if (!fi.isReadable()) {
-                continue;
-            }
+        filename = fi.fileName();
 
-            // Chop off the .gz component if it exists
-            if (filename.endsWith(STR_ext_gz)) {
-                filename.chop(3);
-                gz = true;
-            } else { gz = false; }
+        datestr = filename.section("_", 0, 1);
+        datetime = QDateTime().fromString(datestr,"yyyyMMdd_HHmmss");
+        date = datetime.date();
+        // ResMed splits days at noon and now so do we, so all times before noon
+        // go to the previous day
+        if (datetime.time().hour() < 12) {
+            date = date.addDays(-1);
+        }
 
-            Q_UNUSED(gz)
+        // Chop off the .gz component if it exists, it's not needed at this stage
+        if (filename.endsWith(STR_ext_gz)) {
+            filename.chop(3);
+        }
 
-            // Skip if this file is in the already imported list
-            if (skipfiles.contains(filename)) continue;
-
-            if (newfiles.contains(filename)) {
-                // Not sure what to do with it.. delete it? check compress status and delete the other one?
-                qDebug() << "Duplicate EDF file detected" << filename;
-                continue;
-            }
-
-            // Peek inside file and get duration in seconds..
-
-            // Accept only .edf and .edf.gz files
-            if (filename.right(4).toLower() != "." + STR_ext_EDF) {
-                continue;
-            }
+        QString newpath = create_backups ? backup(fi.canonicalFilePath(), backup_path) : fi.canonicalFilePath();
 
 
-            QString fullname = fi.canonicalFilePath();
+        // Accept only .edf and .edf.gz files
+        if (filename.right(4).toLower() != ("."+STR_ext_EDF)) {
+            continue;
+        }
 
-            // Peek inside the EDF file and get the EDFDuration record for the session matching that follows
-            EDFduration dur = getEDFDuration(fullname);
-            dur.filename = filename;
+//        QString ext = key.section("_", -1).section(".",0,0).toUpper();
+//        EDFType type = lookupEDFType(ext);
 
-            if (dur.start != dur.end) { // make sure empty EVE's are skipped
-                QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, dur); //getEDFDuration(fullname));
-                filesbytype[dur.type].append(&it.value());
-            }
+        // Find or create ResMedDay object for this date
+        QHash<QDate, ResMedDay>::iterator rd = resdayList.find(date);
+        if (rd == resdayList.end()) {
+            rd = resdayList.insert(date, ResMedDay());
+            rd.value().date = date;
+
+            // We have data files without STR.edf record... the user MAY be planning on importing from another backup
+            // later which could cause problems if we don't deal with it.
+            // Best solution I can think of is import and tag the day No Settings and skip the day from overview.
+        }
+        ResMedDay & resday = rd.value();
+
+        if (!resday.files.contains(filename)) {
+            resday.files[filename] = newpath;
         }
     }
-    qDebug() << "ResmedLoader::scanFiles() took" << time.elapsed() << "ms";
+    return resdayList.size();
+}
+        /*// Check for duplicates
+        if (newfiles.contains(filename)) {
+            // Not sure what to do with it.. delete it? check compress status and delete the other one?
+            // Either way we don't want to process so skip it
+            qDebug() << "Duplicate EDF file detected" << filename;
+            continue;
+        }
+
+        QString fullname = fi.canonicalFilePath();
+
+        // Peek inside the EDF file and get the EDFDuration record for the session matching that follows
+        EDFduration dur = getEDFDuration(fullname);
+        dur.filename = filename;
+
+        if (dur.start != dur.end) { // make sure empty EVE's are skipped
+
+            // Insert into newfiles map for later processing
+            QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, dur);
+
+            // And index in filesbytype for quick lookup by type
+            filesbytype[dur.type].append(&it.value());
+        }
+    }
+#ifdef DEBUG_EFFICIENCY
+    qDebug() << "ResmedLoader::scanFiles() EDF Duration scan took" << time.elapsed() << "ms";
+#endif
 
     QList<EDFType> EDForder;
     EDForder.push_back(EDF_PLD);
@@ -1627,7 +1593,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 
     // No PLD files
 
-/*    QMap<QString, EDFduration>::iterator it;
+    QMap<QString, EDFduration>::iterator it;
     QMap<QString, EDFduration>::iterator itn;
     QMap<QString, EDFduration>::iterator it_end = newfiles.end();
 
@@ -1721,7 +1687,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
     } */
 
     // Run the tasks...
-    int c = countTasks();
+   /* int c = countTasks();
     runTasks(AppSetting->multithreading());
 
     newSkipFiles.append(skipfiles.keys());
@@ -1741,7 +1707,376 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
     impfile.close();
 
     return c;
+}*/
+
+void StoreSettings(Session * sess, STRRecord & R)
+{
+    if (R.mode >= 0) {
+        sess->settings[CPAP_Mode] = R.mode;
+        sess->settings[RMS9_Mode] = R.rms9_mode;
+        if (R.mode == MODE_CPAP) {
+            if (R.set_pressure >= 0) {
+                sess->settings[CPAP_Pressure] = R.set_pressure;
+            }
+        } else if (R.mode == MODE_APAP) {
+            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        } else if (R.mode == MODE_BILEVEL_FIXED) {
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        } else if (R.mode == MODE_BILEVEL_AUTO_FIXED_PS) {
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        } else if (R.mode == MODE_ASV) {
+            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        } else if (R.mode == MODE_ASV_VARIABLE_EPAP) {
+            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        }
+    } else {
+        if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
+        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
+        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
+        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
+        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
+        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
+        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
+        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
+        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
+        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
+        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
+        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
+    }
+
+    if (R.epr >= 0) {
+        sess->settings[RMS9_EPR] = (int)R.epr;
+        if (R.epr > 0) {
+            if (R.epr_level >= 0) {
+                sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
+            }
+        }
+    }
+
+    if (R.s_RampEnable >= 0) {
+        sess->settings[RMS9_RampEnable] = R.s_RampEnable;
+
+        if (R.s_RampEnable >= 1) {
+            if (R.s_RampTime >= 0) {
+                sess->settings[CPAP_RampTime] = R.s_RampTime;
+            }
+            if (R.ramp_pressure >= 0) {
+                sess->settings[CPAP_RampPressure] = R.ramp_pressure;
+            }
+        }
+    }
+
+    if (R.s_SmartStart >= 0) {
+        sess->settings[RMS9_SmartStart] = R.s_SmartStart;
+    }
+    if (R.s_ABFilter >= 0) {
+        sess->settings[RMS9_ABFilter] = R.s_ABFilter;
+    }
+    if (R.s_ClimateControl >= 0) {
+        sess->settings[RMS9_ClimateControl] = R.s_ClimateControl;
+    }
+    if (R.s_Mask >= 0) {
+        sess->settings[RMS9_Mask] = R.s_Mask;
+    }
+    if (R.s_PtAccess >= 0) {
+        sess->settings[RMS9_PtAccess] = R.s_PtAccess;
+    }
+
+    if (R.s_HumEnable >= 0) {
+        sess->settings[RMS9_HumidStatus] = (short)R.s_HumEnable;
+        if ((R.s_HumEnable >= 1) && (R.s_HumLevel >= 0)) {
+            sess->settings[RMS9_HumidLevel] = (short)R.s_HumLevel;
+        }
+    }
+    if (R.s_TempEnable >= 0) {
+        sess->settings[RMS9_TempEnable] = (short)R.s_TempEnable;
+        if ((R.s_TempEnable >= 1) && (R.s_Temp >= 0)){
+            sess->settings[RMS9_Temp] = (short)R.s_Temp;
+        }
+    }
+
 }
+
+struct OverlappingEDF {
+    quint32 start;
+    quint32 end;
+    QMultiMap<quint32, QString> filemap;
+    Session * sess;
+};
+
+void ResDayTask::run()
+{
+
+    /*loader->sessionMutex.lock();
+    Day *day = p_profile->FindDay(resday->date, MT_CPAP);
+    if (day) {
+        if (day->summaryOnly(mach)) {
+            if (resday->files.size() == 0) {
+                // Summary only, and no new data files detected so we are done.
+                loader->sessionMutex.unlock();
+                return;
+            }
+            QList<Session *> sessions = day->getSessions(MT_CPAP);
+
+            // Delete sessions for this day so they recreate with a clean slate.
+            for (int i=0;i<sessions.size();++i) {
+                Session * sess = sessions[i];
+                day->removeSession(sess);
+                delete sess;
+            }
+
+        } else {
+            loader->sessionMutex.unlock();
+            return;
+        }
+    }
+    loader->sessionMutex.unlock(); */
+    if (resday->files.size() == 0) {
+        if (!resday->str.date.isValid()) {
+            // No STR or files???
+            // This condition should be impossible, but just in case something gets fudged up elsewhere later
+            return;
+        }
+        // Summary only day, create one session and tag it summary only
+        SessionID sid = resday->str.maskon[0];
+        STRRecord & R = resday->str;
+
+        Session * sess = new Session(mach, sid);
+        StoreSettings(sess, R);
+
+        sess->setSummaryOnly(true);
+        sess->SetChanged(true);
+
+        loader->sessionMutex.lock();
+        mach->AddSession(sess);
+        loader->sessionCount++;
+        loader->sessionMutex.unlock();
+
+        sess->Store(mach->getDataPath());
+        sess->TrashEvents();
+
+        return;
+    }
+
+    // sooo... at this point we have
+    // resday record populated with correct STR.edf settings for this date
+    // files list containing unsorted EDF files that match this day
+    // guaranteed no sessions for this day for this machine.
+
+    // Need to overlap check sessions
+
+    QList<OverlappingEDF> overlaps;
+
+    int maskevents = resday->str.maskon.size();
+    if (resday->str.date.isValid()) {
+
+        //First populate Overlaps with Mask ON/OFF events
+        for (int i=0; i < maskevents; ++i) {
+            if ((resday->str.maskon[i]>0) || (resday->str.maskoff[i]>0)) {
+                OverlappingEDF ov;
+                ov.start = resday->str.maskon[i];
+                ov.end = resday->str.maskoff[i];
+                ov.sess = nullptr;
+                overlaps.append(ov);
+            }
+        }
+    }
+
+    QMap<quint32, QString> EVElist, CSLlist;
+
+    QHash<QString, QString>::iterator fit;
+    for (fit=resday->files.begin(); fit!=resday->files.end(); ++fit) {
+        const QString & key = fit.key();
+        const QString & fullpath = fit.value();
+        QString ext = key.section("_", -1).section(".",0,0).toUpper();
+        EDFType type = lookupEDFType(ext);
+
+        QString datestr = key.section("_", 0, 1);
+        QDateTime datetime = QDateTime().fromString(datestr,"yyyyMMdd_HHmmss");
+
+        quint32 tt = datetime.toTime_t();
+        if (type == EDF_EVE) {
+            EVElist[tt] = key;
+            continue;
+        } else if (type == EDF_CSL) {
+            CSLlist[tt] = key;
+            continue;
+        }
+
+        bool added = false;
+        for (int i=0; i< overlaps.size(); i++) {
+            OverlappingEDF & ovr = overlaps[i];
+            if ((tt >= (ovr.start)) && (tt < ovr.end)) {
+                ovr.filemap.insert(tt, key);
+
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            // Didn't get a hit, look at the actual EDF files duration and check for an overlap
+            EDFduration dur = getEDFDuration(fullpath);
+            for (int i=overlaps.size()-1; i>=0; --i) {
+                OverlappingEDF & ovr = overlaps[i];
+                if ((ovr.start < dur.end) && (dur.start < ovr.end)) {
+                    ovr.filemap.insert(tt, key);
+                    // Expand ovr's scope
+                    //ovr.start = min(ovr.start, dur.start);
+                    //ovr.end = max(ovr.end, dur.end);
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                // Couldn't fit it in anywhere, create a new Overlap entry/session
+                OverlappingEDF ov;
+                ov.start = dur.start;
+                ov.end = dur.end;
+                ov.filemap.insert(tt, key);
+                overlaps.append(ov);
+            }
+        }
+    }
+
+
+    // Create an ordered map and see how far apart the sessions really are.
+    QMap<quint32, OverlappingEDF> mapov;
+    for (int i=0;i<overlaps.size();++i) {
+        OverlappingEDF & ovr = overlaps[i];
+        mapov[ovr.start] = ovr;
+    }
+
+    // Examine the gaps in between to see if we should merge sessions
+    QMap<quint32, OverlappingEDF>::iterator oit;
+    for (oit=mapov.begin(); oit != mapov.end(); ++oit) {
+        // Get next in line
+        QMap<quint32, OverlappingEDF>::iterator next_oit = oit+1;
+        if (next_oit != mapov.end()) {
+            OverlappingEDF & A = oit.value();
+            OverlappingEDF & B = next_oit.value();
+            int gap = B.start - A.end;
+            if (gap < 60) {
+                qDebug() << "Only a" << gap << "s sgap between ResMed sessions on" << resday->date.toString();
+            }
+        }
+    }
+
+
+    if (overlaps.size()==0) return;
+
+
+    // Now overlaps is populated with zero or more individual session groups of EDF files (zero because of sucky summary only days)
+    for (int s=0; s<overlaps.size(); ++s) {
+        OverlappingEDF & ovr = overlaps[s];
+        if (ovr.filemap.size() == 0) continue;
+        Session * sess = new Session(mach, ovr.start);
+        ovr.sess = sess;
+
+        QMultiMap<quint32,QString>::iterator mit;
+        for (mit = ovr.filemap.begin(); mit != ovr.filemap.end(); ++mit) {
+            const QString & filename = mit.value();
+            const QString & fullpath = resday->files[filename];
+            QString ext = filename.section("_", -1).section(".",0,0).toUpper();
+            EDFType type = lookupEDFType(ext);
+
+#ifdef SESSION_DEBUG
+            sess->session_files.append(filename);
+#endif
+            switch (type) {
+            case EDF_BRP:
+                loader->LoadBRP(sess, fullpath);
+                break;
+            case EDF_PLD:
+                loader->LoadPLD(sess, fullpath);
+                break;
+            case EDF_SAD:
+                loader->LoadSAD(sess, fullpath);
+                break;
+            case EDF_EVE:
+            case EDF_CSL:
+                break;
+            default:
+                qWarning() << "Unrecognized file type for" << filename;
+            }
+        }
+
+        // Turns out there is only one or sometimes two EVE's per day, and they store data for the whole day
+        // So we have to extract Annotations data and apply it for all sessions
+        QMap<quint32, QString>::iterator eit;
+        for (eit = EVElist.begin(); eit != EVElist.end(); ++eit) {
+            const QString & fullpath = resday->files[eit.value()];
+
+            loader->LoadEVE(ovr.sess, fullpath);
+        }
+        for (eit = CSLlist.begin(); eit != CSLlist.end(); ++eit) {
+            const QString & fullpath = resday->files[eit.value()];
+            loader->LoadCSL(ovr.sess, fullpath);
+        }
+
+        if (EVElist.size() == 0) {
+            sess->AddEventList(CPAP_Obstructive, EVL_Event);
+            sess->AddEventList(CPAP_ClearAirway, EVL_Event);
+            sess->AddEventList(CPAP_Apnea, EVL_Event);
+            sess->AddEventList(CPAP_Hypopnea, EVL_Event);
+        }
+        if (resday->str.date.isValid()) {
+            STRRecord & R = resday->str;
+
+            // Claim this session
+            R.sessionid = sess->session();
+
+            // Save maskon time in session setting so we can use it later to avoid doubleups.
+            //sess->settings[RMS9_MaskOnTime] = R.maskon;
+
+    #ifdef SESSION_DEBUG
+            sess->session_files.append("STR.edf");
+    #endif
+            StoreSettings(sess, R);
+
+        } else {
+            // We have no Summary or Settings data... we need to do something to indicate this, and detect the mode
+            if (sess->eventlist.contains(CPAP_Pressure)) {
+                EventList * pressure = sess->eventlist[CPAP_Pressure];
+            }
+
+        }
+        sess->setSummaryOnly(false);
+        sess->SetChanged(true);
+
+        if (sess->length() > 0) {
+            loader->addSession(sess);
+            sess->UpdateSummaries();
+
+            // Save is not threadsafe?
+           // loader->saveMutex.lock();
+            //backup file...
+            sess->Store(mach->getDataPath());
+           // loader->saveMutex.unlock();
+
+            // Free the memory used by this session
+            sess->TrashEvents();
+            loader->sessionMutex.lock();
+            loader->sessionCount++;
+            loader->sessionMutex.unlock();
+        } else {
+            delete sess;
+        }
+    }
+}
+
 
 int ResmedLoader::Open(const QString & dirpath)
 {
@@ -1858,12 +2193,12 @@ int ResmedLoader::Open(const QString & dirpath)
     ///////////////////////////////////////////////////////////////////////////////////
     // Create machine object (unless it's already registered)
     ///////////////////////////////////////////////////////////////////////////////////
-    Machine *m = p_profile->CreateMachine(info);
+    Machine *mach = p_profile->CreateMachine(info);
 
     bool create_backups = p_profile->session->backupCardData();
     bool compress_backups = p_profile->session->compressBackupData();
 
-    QString backup_path = m->getBackupPath();
+    QString backup_path = mach->getBackupPath();
 
     if (path == backup_path) {
         // Don't create backups if importing from backup folder
@@ -1874,18 +2209,21 @@ int ResmedLoader::Open(const QString & dirpath)
     // Parse the idmap into machine objects properties, (overwriting any old values)
     ///////////////////////////////////////////////////////////////////////////////////
     for (QHash<QString, QString>::iterator i = idmap.begin(); i != idmap.end(); i++) {
-        m->properties[i.key()] = i.value();
+        mach->properties[i.key()] = i.value();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Open and Parse STR.edf file
     ///////////////////////////////////////////////////////////////////////////////////
+
+    resdayList.clear();
+
+    // List all STR.edf backups and tag on latest for processing
     QStringList strfiles;
     strfiles.push_back(strpath);
     QDir dir(path + "STR_Backup");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
     QFileInfoList flist = dir.entryInfoList();
-
 
     int size = flist.size();
     for (int i = 0; i < size; i++) {
@@ -1896,10 +2234,9 @@ int ResmedLoader::Open(const QString & dirpath)
         }
     }
 
+    ParseSTR(mach, strfiles);
 
-    strsess.clear();
-    ParseSTR(m, strfiles);
-
+    // This is ugly, we only need the starting date for backup purposes
     ResMedEDFParser stredf(strpath);
     if (!stredf.Parse()) {
         qDebug() << "Faulty file" << RMS9_STR_strfile;
@@ -1913,7 +2250,6 @@ int ResmedLoader::Open(const QString & dirpath)
 
     // Creating early as we need the object
     dir.setPath(newpath);
-
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Create the backup folder for storing a copy of everything in..
@@ -1997,7 +2333,52 @@ int ResmedLoader::Open(const QString & dirpath)
     // Scan DATALOG files, sort, and import any new sessions
     ///////////////////////////////////////////////////////////////////////////////////
 
-    int num_new_sessions = scanFiles(m, newpath);
+    // First remove a legacy file if present...
+    QFile impfile(mach->getDataPath()+"/imported_files.csv");
+    if (impfile.exists()) impfile.remove();
+
+    scanFiles(mach, newpath);
+
+    // Now at this point we have resdayList populated with processable summary and EDF files data
+    // that can be processed in threads..
+
+    QHash<QDate, ResMedDay>::iterator rdi;
+
+    for (rdi = resdayList.begin(); rdi != resdayList.end(); rdi++) {
+        QDate date = rdi.key();
+
+        ResMedDay & resday = rdi.value();
+        resday.date = date;
+
+        /*Day * day = p_profile->FindDay(date, MT_CPAP);
+        if (day && day->hasMachine(mach)) {
+            // Sessions found for this machine, check if only summary info
+
+            if (day->summaryOnly(mach)) {
+                // Note: if this isn't an EDF file, there's really no point doing this here,
+                // but the worst case scenario is this session is deleted and reimported.. this just slows things down a bit in that case
+
+                // This day was first imported as a summary from STR.edf, so we now totally want to redo this day
+                QList<Session *> sessions = day->getSessions(MT_CPAP);
+
+                // Delete sessions for this day so they recreate with a clean slate.
+                for (int i=0;i<sessions.size();++i) {
+                    Session * sess = sessions[i];
+                    day->removeSession(sess);
+                    delete sess;
+                }
+            } else {
+                continue;
+            }
+        }*/
+
+        queTask(new ResDayTask(this, mach, &resday));
+    }
+
+    sessionCount = 0;
+    runTasks();
+    int num_new_sessions = sessionCount;
+
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Now look for any new summary data that can be extracted from STR.edf records
@@ -2006,7 +2387,7 @@ int ResmedLoader::Open(const QString & dirpath)
 
     //int size = m->sessionlist.size();
     //int cnt=0;
-    Session * sess;
+//    Session * sess;
 
 
     // Scan through all sessions, and remove any strsess records that have a matching session already
@@ -2023,8 +2404,8 @@ int ResmedLoader::Open(const QString & dirpath)
 //    }
 ///
 
-    QHash<SessionID, Session *>::iterator sessit;
-    QHash<SessionID, Session *>::iterator sessend = m->sessionlist.end();;
+/*    QHash<SessionID, Session *>::iterator sessit;
+    QHash<SessionID, Session *>::iterator sessend = mach->sessionlist.end();;
 
     QMap<SessionID, Session *>::iterator sit;
     QMap<SessionID, Session *>::iterator ns_end = new_sessions.end();
@@ -2039,7 +2420,7 @@ int ResmedLoader::Open(const QString & dirpath)
         quint32 s1 = R.maskon;
         quint32 e1 = R.maskoff;
         bool fnd = false;
-        for (sessit = m->sessionlist.begin(); sessit != sessend; ++sessit) {
+        for (sessit = mach->sessionlist.begin(); sessit != sessend; ++sessit) {
             sess = sessit.value();
             quint32 s2 = sess->session();
             quint32 e2 = s2 + (sess->length() / 1000L);
@@ -2086,7 +2467,7 @@ int ResmedLoader::Open(const QString & dirpath)
         STRRecord & R = it.value();
 
         if (ignoreold && (R.maskon < ignoreolder)) {
-            m->skipSaveTask();
+            mach->skipSaveTask();
             continue;
         }
 
@@ -2094,16 +2475,18 @@ int ResmedLoader::Open(const QString & dirpath)
 
         // the following should not happen
         if (R.sessionid > 0) {
-            m->skipSaveTask();
+            mach->skipSaveTask();
             continue;
         }
 
 
-        queTask(new ResmedImportStage2(this, R, m));
+        queTask(new ResmedImportStage2(this, R, mach));
     }
 
     num_new_sessions += countTasks();
-    runTasks();
+    */
+
+
 
     finishAddingSessions();
 
@@ -2332,8 +2715,9 @@ bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
                         }
 
                         if (csr_starts > 0) {
-                            if (sess->checkInside(csr_starts))
+                            if (sess->checkInside(csr_starts)) {
                                 CSR->AddEvent(tt, double(tt - csr_starts) / 1000.0);
+                            }
                             csr_starts = 0;
                         } else {
                             qDebug() << "If you can read this, ResMed sucks and split CSR flagging!";
@@ -2382,7 +2766,7 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
     double tt;
 
     // Notes: Event records have useless duration record.
-   // sess->updateFirst(edf.startdate);
+    // Do not update session start / end times because they are needed to determine if events belong in this session or not...
 
     EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr, *RE = nullptr;
 
@@ -2400,8 +2784,6 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
         data = (char *)edf.edfsignals[s].data;
         pos = 0;
         tt = edf.startdate;
-    //    sess->updateFirst(tt);
-        //duration = 0;
 
         while (pos < recs) {
             c = data[pos];
@@ -2481,13 +2863,17 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
                     } else if (matchSignal(CPAP_RERA, t)) {
                         // Not all machines have it, so only create it when necessary..
                         if (!RE) {
-                            if (!(RE = sess->AddEventList(CPAP_RERA, EVL_Event))) { return false; }
+                            if (!(RE = sess->AddEventList(CPAP_RERA, EVL_Event))) {
+                                return false;
+                            }
                         }
                         if (sess->checkInside(tt)) RE->AddEvent(tt, duration);
                     } else if (matchSignal(CPAP_ClearAirway, t)) {
                         // Not all machines have it, so only create it when necessary..
                         if (!CA) {
-                            if (!(CA = sess->AddEventList(CPAP_ClearAirway, EVL_Event))) { return false; }
+                            if (!(CA = sess->AddEventList(CPAP_ClearAirway, EVL_Event))) {
+                                return false;
+                            }
                         }
 
                         if (sess->checkInside(tt)) CA->AddEvent(tt, duration);
@@ -2511,7 +2897,6 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
             if (pos >= recs) { break; }
         }
 
-    //    sess->updateLast(tt);
     }
 
     return true;

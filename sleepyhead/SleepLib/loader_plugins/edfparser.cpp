@@ -88,22 +88,21 @@ bool EDFParser::Parse()
         serialnumber += recordingident[i];
     }
 
-    QDateTime startDate = QDateTime::fromString(QString::fromLatin1(header.datetime, 16), "dd.MM.yyHH.mm.ss");
-    //startDate.toTimeSpec(Qt::UTC);
+    startdate_orig = QDateTime::fromString(QString::fromLatin1(header.datetime, 16), "dd.MM.yyHH.mm.ss");
 
-    QDate d2 = startDate.date();
+    QDate d2 = startdate_orig.date();
 
     if (d2.year() < 2000) {
         d2.setDate(d2.year() + 100, d2.month(), d2.day());
-        startDate.setDate(d2);
+        startdate_orig.setDate(d2);
     }
 
-    if (!startDate.isValid()) {
+    if (!startdate_orig.isValid()) {
         qDebug() << "Invalid date time retreieved parsing EDF File " << filename;
         return false;
     }
 
-    startdate = qint64(startDate.toTime_t()) * 1000L;
+    startdate = qint64(startdate_orig.toTime_t()) * 1000L;
     //startdate-=timezoneOffset();
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");

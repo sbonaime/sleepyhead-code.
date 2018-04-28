@@ -159,6 +159,7 @@ class EDFParser
     QString patientident;
     QString recordingident;
     QString serialnumber;
+    QDateTime startdate_orig;
     qint64 startdate;
     qint64 enddate;
     QString reserved44;

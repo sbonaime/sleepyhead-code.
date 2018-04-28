@@ -185,7 +185,7 @@ void MachineLoader::runTasks(bool threaded)
             float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
 
             m_currenttask++;
-            if ((m_currenttask % 50)==0) {
+            if ((m_currenttask % 10)==0) {
                 qprogress->setValue(f);
                 QApplication::processEvents();
             }
@@ -207,7 +207,7 @@ void MachineLoader::runTasks(bool threaded)
 
                     // update progress bar
                     m_currenttask++;
-                    if ((m_currenttask % 50) == 0) {
+                    if ((m_currenttask % 10) == 0) {
                         qprogress->setValue(m_currenttask);
                         QApplication::processEvents();
                     }
