@@ -659,6 +659,7 @@ PreferencesDialog::~PreferencesDialog()
 
 bool PreferencesDialog::Save()
 {
+    bool recompress_events = false;
     bool recalc_events = false;
     bool needs_restart = false;
 
@@ -719,9 +720,18 @@ bool PreferencesDialog::Save()
     }
 
     if (profile->session->compressSessionData() != ui->compressSessionData->isChecked()) {
-        recalc_events = true;
+        recompress_events = true;
     }
 
+    if (recompress_events) {
+        if (profile->countDays(MT_CPAP, profile->FirstDay(), profile->LastDay()) > 0) {
+            if (QMessageBox::question(this, tr("Data Processing Required"),
+                                      tr("A data re/decompression proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),
+                                      QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
+                return false;
+            }
+        } else { recompress_events = false; }
+    }
     if (recalc_events) {
         if (profile->countDays(MT_CPAP, profile->FirstDay(), profile->LastDay()) > 0) {
             if (QMessageBox::question(this, tr("Data Reindex Required"),
@@ -895,7 +905,9 @@ bool PreferencesDialog::Save()
     PREF.Save();
     profile->Save();
 
-    if (recalc_events) {
+    if (recompress_events) {
+        mainwin->recompressEvents();
+    } else if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
     } else if (needs_restart) {

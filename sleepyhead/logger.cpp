@@ -45,9 +45,9 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
     if (logger && logger->isRunning()) {
         logger->append(msg);
     }
-    //else {
+    else {
         fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
-//    }
+    }
 
     if (type == QtFatalMsg) {
         abort();

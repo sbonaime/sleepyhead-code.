@@ -2209,6 +2209,10 @@ void MainWindow::on_filterBookmarksButton_clicked()
     }
 }
 
+void MainWindow::recompressEvents()
+{
+    QTimer::singleShot(0, this, SLOT(doRecompressEvents()));
+}
 void MainWindow::reprocessEvents(bool restart)
 {
     m_restartRequired = restart;
@@ -2245,12 +2249,11 @@ void MainWindow::MachineUnsupported(Machine * m)
     QMessageBox::information(this, STR_MessageBox_Error, QObject::tr("Sorry, your %1 %2 machine is not currently supported.").arg(m->brand()).arg(m->model()), QMessageBox::Ok);
 }
 
-void MainWindow::doReprocessEvents()
+void MainWindow::doRecompressEvents()
 {
     if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) == 0) {
         return;
     }
-
     m_inRecalculation = true;
     QDate first = p_profile->FirstDay();
     QDate date = p_profile->LastDay();
@@ -2265,7 +2268,71 @@ void MainWindow::doReprocessEvents()
     int daycount = first.daysTo(date);
     int idx = 0;
 
+    qstatus->setText(tr("Re/Decompressing Session Event Data"));
+
+    if (qprogress) {
+        qprogress->setValue(0);
+        qprogress->setVisible(true);
+        qprogress->setMaximum(daycount);
+    }
+
+    bool isopen;
+
+    do {
+        day = p_profile->GetDay(date, MT_CPAP);
+
+        if (day) {
+            for (int i = 0; i < day->size(); i++) {
+                sess = (*day)[i];
+                isopen = sess->eventsLoaded();
+
+                // Load the events if they aren't loaded already
+                sess->OpenEvents();
+
+                sess->SetChanged(true);
+
+                sess->machine()->SaveSession(sess);
+
+                if (!isopen) {
+                    sess->TrashEvents();
+                }
+            }
+        }
+
+        date = date.addDays(-1);
+        qprogress->setValue(idx);
+        QApplication::processEvents();
+        idx++;
+    } while (date >= first);
+
+    qstatus->setText(tr(""));
+    qprogress->setVisible(false);
+    m_inRecalculation = false;
+
+    Notify(tr("Session re/decompression are now complete."), tr("Task Completed"));
+}
+void MainWindow::doReprocessEvents()
+{
+    if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) == 0) {
+        return;
+    }
+
+    m_inRecalculation = true;
+    QDate first = p_profile->FirstDay();
+    QDate date = p_profile->LastDay();
+    Session *sess;
+    Day *day;
+    //FlowParser flowparser;
+
+    mainwin->Notify(tr("Performance will be degraded during these recalculations."),
+                    tr("Recompressing Session Data"));
+
+    // For each day in history
+    int daycount = first.daysTo(date);
+    int idx = 0;
+
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+
 
     // Disabling multithreaded save as it appears it's causing problems
     bool cache_sessions = false; //p_profile->session->cacheSessions();

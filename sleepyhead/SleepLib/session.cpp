@@ -1,4 +1,4 @@
-/* SleepLib Session Implementation
+﻿/* SleepLib Session Implementation
  * This stuff contains the base calculation smarts
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
@@ -137,10 +137,10 @@ bool Session::Destroy()
     QString summaryfile = s_machine->getSummariesPath() + base + ".000";
     QString eventfile = s_machine->getEventsPath() + base + ".001";
     if (!dir.remove(summaryfile)) {
-        qDebug() << "Could not delete" << summaryfile;
+       // qDebug() << "Could not delete" << summaryfile;
     }
     if (!dir.remove(eventfile)) {
-        qDebug() << "Could not delete" << eventfile;
+      //  qDebug() << "Could not delete" << eventfile;
     }
 
     return s_machine->unlinkSession(this); //!dir.exists(base + ".000") && !dir.exists(base + ".001");
@@ -714,7 +714,6 @@ bool Session::StoreEvents()
             }
         }
     }
-
     for (i = eventlist.begin(); i != i_end; i++) {
         ev_size=i.value().size();
 

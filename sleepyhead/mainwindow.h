@@ -134,6 +134,7 @@ class MainWindow : public QMainWindow
 
     //! \brief Sets up recalculation of all event summaries and flags
     void reprocessEvents(bool restart = false);
+    void recompressEvents();
 
 
     //! \brief Internal function to set Records Box html from statistics module
@@ -149,6 +150,7 @@ class MainWindow : public QMainWindow
   public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();
+    void doRecompressEvents();
 
     void MachineUnsupported(Machine * m);
 
