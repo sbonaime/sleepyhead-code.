@@ -2246,6 +2246,7 @@ void ResDayTask::run()
 
         // Free the memory used by this session
         sess->TrashEvents();
+
         loader->sessionMutex.lock();
         loader->sessionCount++;
         loader->sessionMutex.unlock();
@@ -2572,11 +2573,12 @@ int ResmedLoader::Open(const QString & dirpath)
         ResMedDay & resday = rdi.value();
         resday.date = date;
 
-        /*Day * day = p_profile->FindDay(date, MT_CPAP);
+        Day * day = p_profile->FindDay(date, MT_CPAP);
+        bool reimporting = false;
         if (day && day->hasMachine(mach)) {
             // Sessions found for this machine, check if only summary info
 
-            if (day->summaryOnly(mach)) {
+            if (day->summaryOnly(mach) && (resday.files.size()> 0)) {
                 // Note: if this isn't an EDF file, there's really no point doing this here,
                 // but the worst case scenario is this session is deleted and reimported.. this just slows things down a bit in that case
 
@@ -2589,13 +2591,16 @@ int ResmedLoader::Open(const QString & dirpath)
                     day->removeSession(sess);
                     delete sess;
                 }
+
+                reimporting = true;
             } else {
                 continue;
             }
-        }*/
+        }
 
-        BROKEN WAIT FOR A NEW COMMIT!
-        queTask(new ResDayTask(this, mach, &resday));
+        ResDayTask * rdt = new ResDayTask(this, mach, &resday);
+        queTask(rdt);
+        rdt->reimporting = reimporting;
     }
 
     sessionCount = 0;

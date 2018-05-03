@@ -313,9 +313,10 @@ struct ResMedDay {
 class ResDayTask:public ImportTask
 {
 public:
-    ResDayTask(ResmedLoader * l, Machine * m, ResMedDay * d): loader(l), mach(m), resday(d) {}
+    ResDayTask(ResmedLoader * l, Machine * m, ResMedDay * d): reimporting(false), loader(l), mach(m), resday(d) {}
     virtual ~ResDayTask() {}
     virtual void run();
+    bool reimporting;
 
 protected:
     ResmedLoader * loader;
