@@ -2594,6 +2594,7 @@ int ResmedLoader::Open(const QString & dirpath)
             }
         }*/
 
+        BROKEN WAIT FOR A NEW COMMIT!
         queTask(new ResDayTask(this, mach, &resday));
     }
 
