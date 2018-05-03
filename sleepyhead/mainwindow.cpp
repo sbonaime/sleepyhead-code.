@@ -2346,6 +2346,7 @@ void MainWindow::doReprocessEvents()
     if (qprogress) {
         qprogress->setValue(0);
         qprogress->setVisible(true);
+        qprogress->setMaximum(daycount);
     }
 
     bool isopen;
@@ -2394,10 +2395,9 @@ void MainWindow::doReprocessEvents()
         }
 
         date = date.addDays(-1);
-        // if (qprogress && (++idx % 10) ==0) {
-        qprogress->setValue(0 + (float(++idx) / float(daycount) * 100.0));
+
+        qprogress->setValue(++idx);
         QApplication::processEvents();
-        // }
 
     } while (date >= first);
 
