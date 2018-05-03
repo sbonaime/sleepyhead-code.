@@ -1,4 +1,4 @@
-/* SleepyHead Logger module implementation
+﻿/* SleepyHead Logger module implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -10,22 +10,12 @@
 
 QThreadPool * otherThreadPool = NULL;
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-void MyOutputHandler(QtMsgType type, const char *msgtxt)
-{
-
-#else
 void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgtxt)
 {
     Q_UNUSED(context)
-#endif
 
     if (!logger) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
         fprintf(stderr, "Pre/Post: %s\n", msgtxt.toLocal8Bit().constData());
-#else
-        fprintf(stderr, "Pre/Post: %s\n", msgtxt);
-#endif
         return;
     }
 
@@ -49,18 +39,15 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
         break;
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    msg = typestr +
-          msgtxt; //+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
-#else
-    msg = typestr + msgtxt;
-#endif
+    msg = typestr + msgtxt; //+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
+
 
     if (logger && logger->isRunning()) {
         logger->append(msg);
-    } else {
-        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
     }
+    //else {
+        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
+//    }
 
     if (type == QtFatalMsg) {
         abort();

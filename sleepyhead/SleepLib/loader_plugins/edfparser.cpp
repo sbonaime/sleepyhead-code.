@@ -239,9 +239,11 @@ bool EDFParser::Open(const QString & name)
             goto badfile;
         }
 
+        EDFMutex.lock();
         // Open gzip file for reading
         gzFile f = gzopen(name.toLatin1(), "rb");
         if (!f) {
+            EDFMutex.unlock();
             goto badfile;
         }
 
@@ -250,6 +252,7 @@ bool EDFParser::Open(const QString & name)
         buffer = new char [datasize];
         gzread(f, buffer, datasize);
         gzclose(f);
+        EDFMutex.unlock();
     } else {
 
         // Open and read uncompressed file
@@ -292,3 +295,5 @@ EDFSignal *EDFParser::lookupLabel(const QString & name, int index)
 
     return it.value()[index];
 }
+
+QMutex EDFParser::EDFMutex;

@@ -1,4 +1,4 @@
-/* UpdaterWindow
+﻿/* UpdaterWindow
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -23,8 +23,8 @@
 #include <QProcess>
 
 #include "SleepLib/profiles.h"
-#include <quazip/quazip.h>
-#include <quazip/quazipfile.h>
+//#include <quazip/quazip.h>
+//#include <quazip/quazipfile.h>
 #include "UpdaterWindow.h"
 #include "ui_UpdaterWindow.h"
 #include "version.h"
@@ -67,8 +67,7 @@ UpdaterWindow::UpdaterWindow(QWidget *parent) :
 
 UpdaterWindow::~UpdaterWindow()
 {
-    disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this,
-               SLOT(replyFinished(QNetworkReply *)));
+    disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
     delete ui;
 }
 
@@ -93,7 +92,7 @@ void UpdaterWindow::checkForUpdates()
 {
     QString platform=platformStr();
 
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
     QString filename = QApplication::applicationDirPath() + "/Updates.xml";
 #else
     QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platform);
@@ -107,7 +106,7 @@ void UpdaterWindow::checkForUpdates()
         if (age < 900) {
             QFile file(filename);
             file.open(QFile::ReadOnly);
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
             ParseUpdatesXML(&file);
 #else
             ParseLatestVersion(&file);
@@ -119,7 +118,7 @@ void UpdaterWindow::checkForUpdates()
 
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
     update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/%1/Updates.xml").arg(platform));
 #else
     update_url = QUrl(QString("http://sleepyhead.jedimark.net/releases/LatestVersion-%1").arg(platform));
@@ -135,7 +134,6 @@ void UpdaterWindow::downloadUpdateXML()
     req.setRawHeader("User-Agent", "Wget/1.12 (linux-gnu)");
     reply = netmanager->get(req);
     ui->plainTextEdit->appendPlainText(tr("Requesting ") + update_url.toString());
-  //  netmanager->connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this,SLOT(downloadProgress(qint64, qint64)));
 
     connect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
 
@@ -146,9 +144,6 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
         qDebug() << "Update Check Error: "+reply->errorString();
-//        netmanager->disconnect(reply,
-//                               SIGNAL(downloadProgress(qint64, qint64)), this,
-//                               SLOT(downloadProgress(qint64, qint64)));
         disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
         mainwin->Notify(tr("SleepyHead Updates are currently unvailable for this platform"),tr("SleepyHead Updates"));
     } else {
@@ -160,15 +155,12 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
             QTimer::singleShot(100, this, SLOT(downloadUpdateXML()));
             return;
         }
-//        netmanager->disconnect(reply,
-//                               SIGNAL(downloadProgress(qint64, qint64)), this,
-//                               SLOT(downloadProgress(qint64, qint64)));
         disconnect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(updateFinished(QNetworkReply *)));
 
 
         ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
 
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
         QString filename = QApplication::applicationDirPath() + "/Updates.xml";
 #else
         QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platformStr());
@@ -181,7 +173,7 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
         file.close();
         file.open(QFile::ReadOnly);
 
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
         ParseUpdatesXML(&file);
 #else
         ParseLatestVersion(&file);
@@ -193,7 +185,7 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
     }
 }
 
-void UpdaterWindow::dataReceived()
+/*void UpdaterWindow::dataReceived()
 {
     QString rs = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
@@ -267,7 +259,7 @@ void UpdaterWindow::requestFile()
     connect(reply, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64,
             qint64)));
-}
+} */
 
 int checkVersionStatus(QString statusstr)
 {
@@ -435,7 +427,7 @@ void StartMaintenanceTool()
 {
     QString mt_path = QApplication::applicationDirPath()+"/MaintenanceTool.exe";
     SpawnApp(mt_path);
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN32
 
 #endif
 }
@@ -516,7 +508,7 @@ void UpdaterWindow::ParseUpdatesXML(QIODevice *dev)
 }
 
 // Old
-void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
+/*void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 {
     QXmlInputSource src(dev);
     QXmlSimpleReader reader;
@@ -856,14 +848,14 @@ void UpdaterWindow::replyFinished(QNetworkReply *reply)
         mainwin->Notify(tr("There was an error completing a network request:\n\n(") + reply->errorString()
                         + ")");
     }
-}
+} */
 
 void UpdaterWindow::on_CloseButton_clicked()
 {
     close();
 }
 
-void UpdaterWindow::upgradeNext()
+/*void UpdaterWindow::upgradeNext()
 {
     QTableWidgetItem *item;
     bool fnd = false;
@@ -950,7 +942,7 @@ void UpdaterWindow::on_upgradeButton_clicked()
 
     ui->stackedWidget->setCurrentIndex(1);
     upgradeNext();
-}
+} */
 
 void UpdaterWindow::on_FinishedButton_clicked()
 {

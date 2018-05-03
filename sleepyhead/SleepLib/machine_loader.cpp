@@ -173,6 +173,7 @@ bool compressFile(QString infile, QString outfile)
     }
     if (QFile::exists(outfile)) {
         qDebug() << "compressFile()" << outfile << "already exists";
+        return false;
     }
 
     QFile f(infile);
@@ -198,6 +199,7 @@ bool compressFile(QString infile, QString outfile)
     }
 
     f.close();
+
     gzFile gz = gzopen(outfile.toLatin1(), "wb");
 
     //gzbuffer(gz,65536*2);

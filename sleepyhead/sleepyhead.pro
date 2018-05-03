@@ -293,9 +293,9 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-include(../3rdparty/quazip/quazip/quazip.pri)
-INCLUDEPATH += $$PWD/../3rdparty/quazip
-DEPENDPATH += $$PWD/../3rdparty/quazip
+#include(../3rdparty/quazip/quazip/quazip.pri)
+#INCLUDEPATH += $$PWD/../3rdparty/quazip
+#DEPENDPATH += $$PWD/../3rdparty/quazip
 
 DISTFILES += \
     ../README

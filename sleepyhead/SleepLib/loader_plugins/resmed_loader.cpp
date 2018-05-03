@@ -1467,8 +1467,9 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
         if (filename.endsWith(STR_ext_gz)) {
             filename.chop(3);
         }
+        QString fullpath = fi.filePath();
 
-        QString newpath = create_backups ? backup(fi.canonicalFilePath(), backup_path) : fi.canonicalFilePath();
+        QString newpath = create_backups ? backup(fullpath, backup_path) : fullpath;
 
 
         // Accept only .edf and .edf.gz files
@@ -1495,6 +1496,10 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
             resday.files[filename] = newpath;
         }
     }
+#ifdef DEBUG_EFFICIENCY
+    qDebug() << "Scanning EDF files took" << time.elapsed() << "ms";
+#endif
+
     return resdayList.size();
 }
         /*// Check for duplicates
@@ -2114,7 +2119,7 @@ void ResDayTask::run()
             OverlappingEDF & B = next_oit.value();
             int gap = B.start - A.end;
             if (gap < 60) {
-                qDebug() << "Only a" << gap << "s sgap between ResMed sessions on" << resday->date.toString();
+//                qDebug() << "Only a" << gap << "s sgap between ResMed sessions on" << resday->date.toString();
             }
         }
     }
@@ -2452,7 +2457,10 @@ int ResmedLoader::Open(const QString & dirpath)
 
             QString backupfile = strBackupPath+"/"+newname;
 
-            if (compress_backups) backupfile += STR_ext_gz;
+            QString gzfile = backupfile + STR_ext_gz;
+            QString nongzfile = backupfile;
+
+            backupfile = compress_backups ? gzfile : nongzfile;
 
             if (!QFile::exists(backupfile)) {
                 if (filename.endsWith(STR_ext_gz,Qt::CaseInsensitive)) {
@@ -2469,6 +2477,12 @@ int ResmedLoader::Open(const QString & dirpath)
                         QFile::copy(filename, backupfile);
                     }
                 }
+            }
+            // Remove any duplicate compressed/uncompressed
+            if (compress_backups) {
+                QFile::exists(nongzfile) && QFile::remove(nongzfile);
+            } else {
+                QFile::exists(gzfile) && QFile::remove(gzfile);
             }
 
 
@@ -2542,6 +2556,8 @@ int ResmedLoader::Open(const QString & dirpath)
                 qDebug() << "Could not create S9 backup directory :-/";
             }
         }
+
+        compress_backups ? compressFile(path + "STR.edf", backup_path + "STR.edf.gz") : QFile::copy(path + "STR.edf", backup_path + "STR.edf");
 
         // Copy Identification files to backup folder
         QFile::copy(path + RMS9_STR_idfile + STR_ext_TGT, backup_path + RMS9_STR_idfile + STR_ext_TGT);
@@ -2758,13 +2774,16 @@ int ResmedLoader::Open(const QString & dirpath)
 
 QString ResmedLoader::backup(const QString & fullname, const QString & backup_path)
 {
+    QDir dir;
+    QString filename, yearstr, newname, oldname;
+
     bool compress = p_profile->session->compressBackupData();
 
-    QString filename, yearstr, newname, oldname;
-    bool ok, gz = (fullname.right(3).toLower() == STR_ext_gz);
+    bool ok;
+    bool gz = (fullname.right(3).toLower() == STR_ext_gz);  // Input file is a .gz?
+
 
     filename = fullname.section("/", -1);
-
     if (gz) {
         filename.chop(3);
     }
@@ -2772,61 +2791,48 @@ QString ResmedLoader::backup(const QString & fullname, const QString & backup_pa
     yearstr = filename.left(4);
     yearstr.toInt(&ok, 10);
 
-
     if (!ok) {
-        qDebug() << "Invalid EDF filename given to ResMedLoader::backup()";
+        qDebug() << "Invalid EDF filename given to ResMedLoader::backup()" << fullname;
         return "";
     }
 
-    newname = backup_path + RMS9_STR_datalog + "/" + yearstr;
-    QDir dir;
-    dir.mkpath(newname);
-    newname += "/" + filename;
+    QString newpath = backup_path + RMS9_STR_datalog + "/" + yearstr;
+    !dir.exists(newpath) && dir.mkpath(newpath);
+
+    newname = newpath+"/"+filename;
 
     QString tmpname = newname;
 
-    if (compress) {
-        newname += STR_ext_gz;
-    }
+    QString newnamegz = newname + STR_ext_gz;
+    QString newnamenogz = newname;
 
-    // First make sure the correct backup exists.
+    newname = compress ? newnamegz : newnamenogz;
+
+    // First make sure the correct backup exists in the right place
     if (!QFile::exists(newname)) {
         if (compress) {
-            gz ?
-            QFile::copy(fullname, newname)      // Already compressed.. copy it to the right location
-            :
-            compressFile(fullname, newname);
+            // If input file is already compressed.. copy it to the right location, otherwise compress it
+            gz ? QFile::copy(fullname, newname) : compressFile(fullname, newname);
         } else {
-            // dont really care if it's compressed and not meant to be, leave it that way
-            QFile::copy(fullname, newname);
+            // If inputs a gz, uncompress it, otherwise copy is raw
+            gz ? uncompressFile(fullname, newname) : QFile::copy(fullname, newname);
         }
-    } // else backup already exists...
+    } // else backup already exists... good.
 
     // Now the correct backup is in place, we can trash any
     if (compress) {
         // Remove any uncompressed duplicate
-        if (QFile::exists(tmpname)) {
-            QFile::remove(tmpname);
-        }
+        QFile::exists(newnamenogz) && QFile::remove(newnamenogz);
     } else {
         // Delete the non compressed copy and choose it instead.
-        if (QFile::exists(tmpname + STR_ext_gz)) {
-            QFile::remove(tmpname);
-            newname = tmpname + STR_ext_gz;
-        }
-
+        QFile::exists(newnamegz) && QFile::remove(newnamegz);
     }
 
+    // Used to store it under Backup\Datalog
     // Remove any traces from old backup directory structure
     oldname = backup_path + RMS9_STR_datalog + "/" + filename;
-
-    if (QFile::exists(oldname)) {
-        QFile::remove(oldname);
-    }
-
-    if (QFile::exists(oldname + STR_ext_gz)) {
-        QFile::remove(oldname + STR_ext_gz);
-    }
+    QFile::exists(oldname) && QFile::remove(oldname);
+    QFile::exists(oldname + STR_ext_gz) && QFile::remove(oldname + STR_ext_gz);
 
     return newname;
 }

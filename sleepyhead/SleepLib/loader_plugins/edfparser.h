@@ -13,6 +13,7 @@
 #include <QVector>
 #include <QHash>
 #include <QList>
+#include <QMutex>
 
 #include "SleepLib/common.h"
 
@@ -163,6 +164,7 @@ class EDFParser
     qint64 startdate;
     qint64 enddate;
     QString reserved44;
+    static QMutex EDFMutex;
 };
 
 

@@ -1615,15 +1615,13 @@ void MainWindow::on_action_CycleTabs_triggered()
 
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
-    ui->webView->load(
-        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide"));
+    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_action_Frequently_Asked_Questions_triggered()
 {
-    ui->webView->load(
-        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions"));
+    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
@@ -1638,7 +1636,6 @@ void packEventList(EventList *el, EventDataType minval = 0)
     bool f = false;
     qint64 lasttime = 0;
     EventDataType min = 999, max = 0;
-
 
     for (quint32 i = 0; i < el->count(); i++) {
         t = el->data(i);

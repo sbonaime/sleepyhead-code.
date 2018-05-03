@@ -1,4 +1,4 @@
-/* UpdaterWindow
+﻿/* UpdaterWindow
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -50,24 +50,24 @@ class UpdaterWindow : public QMainWindow
     /*! \fn ParseUpdateXML(QIODevice * dev)
         \brief Parses the update.xml from either QFile or QNetworkReply source
         */
-    void ParseUpdateXML(QIODevice *dev);
+    //void ParseUpdateXML(QIODevice *dev);
     void ParseUpdatesXML(QIODevice *dev);
     void ParseLatestVersion(QIODevice *dev);
 
   protected slots:
     void updateFinished(QNetworkReply *reply);
 
-    //! \brief Network reply completed
-    void replyFinished(QNetworkReply *reply);
+   // //! \brief Network reply completed
+    //void replyFinished(QNetworkReply *reply);
 
-    //! \brief Update the progress bars as data is received
-    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    ////! \brief Update the progress bars as data is received
+    //void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
-    //! \brief Save incomming data
-    void dataReceived();
+    ////! \brief Save incomming data
+    //void dataReceived();
 
-    //! \brief Request a file to download
-    void requestFile();
+//    //! \brief Request a file to download
+//    void requestFile();
 
     //! \brief Request the update.xml file
     void downloadUpdateXML();
@@ -76,11 +76,11 @@ class UpdaterWindow : public QMainWindow
     //! \brief Just close the Updater window
     void on_CloseButton_clicked();
 
-    //! \brief Start processing the download que, and applying the updates
-    void on_upgradeButton_clicked();
+  //  //! \brief Start processing the download que, and applying the updates
+//    void on_upgradeButton_clicked();
 
-    //! \brief Selects the next file in the download queue
-    void upgradeNext();
+//    //! \brief Selects the next file in the download queue
+//    void upgradeNext();
 
     //! \brief Click on finished, restart if app has been upgraded, otherwise just close the window.
     void on_FinishedButton_clicked();
