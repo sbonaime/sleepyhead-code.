@@ -445,13 +445,16 @@ void MainWindow::OpenProfile(QString profileName)
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
         QString mclass=(*it)->loaderName();
         if (mclass == STR_MACH_ResMed) {
-            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
+            qDebug() << "ResMed machine found.. dumbing down SleepyHead to suit it's dodgy summary system";
 
             // Have to sacrifice these features to get access to summary data.
             p_profile->session->setCombineCloseSessions(0);
             p_profile->session->setDaySplitTime(QTime(12,0,0));
             p_profile->session->setIgnoreShortSessions(false);
             p_profile->session->setLockSummarySessions(true);
+            p_profile->general->setPrefCalcPercentile(95.0);    // 95%
+            p_profile->general->setPrefCalcMiddle(0);           // Median (50%)
+            p_profile->general->setPrefCalcMax(1);              // Dodgy max
 
             break;
         }

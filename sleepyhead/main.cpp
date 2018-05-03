@@ -217,7 +217,16 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Missing argument to --profile\n");
                 exit(1);
             }
-        }
+        } else if (args[i] == "--datadir") { // mltam's idea
+            QString datadir ;
+            if ((i+1) < args.size()) {
+              datadir = args[++i];
+              settings.setValue("Settings/AppRoot", datadir);
+            } else {
+              fprintf(stderr, "Missing argument to --datadir\n");
+              exit(1);
+            }
+          }
     }
 
     initializeLogger();

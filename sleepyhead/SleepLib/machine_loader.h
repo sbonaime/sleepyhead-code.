@@ -178,6 +178,7 @@ MachineLoader * lookupLoader(QString loaderName);
 void DestroyLoaders();
 
 bool compressFile(QString inpath, QString outpath = "");
+bool uncompressFile(QString infile, QString outfile);
 
 QList<MachineLoader *> GetLoaders(MachineType mt = MT_UNKNOWN);
 

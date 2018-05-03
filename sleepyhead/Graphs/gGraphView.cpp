@@ -1,4 +1,4 @@
-/* gGraphView Implementation
+﻿/* gGraphView Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -16,6 +16,9 @@
 #include <QFontMetrics>
 #include <QWidgetAction>
 #include <QGridLayout>
+#include <QVBoxLayout>
+#include <QDockWidget>
+#include <QMainWindow>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
@@ -358,6 +361,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     use_pixmap_cache = AppSetting->usePixmapCaching();
 
     pin_graph = nullptr;
+    popout_graph = nullptr;
    // pixmapcache.setCacheLimit(10240*2);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
@@ -376,6 +380,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     context_menu = new QMenu(this);
     pin_action = context_menu->addAction(QString(), this, SLOT(togglePin()));
     pin_icon = QPixmap(":/icons/pushpin.png");
+
+    popout_action = context_menu->addAction(QObject::tr("Pop out Graph"), this, SLOT(popoutGraph()));
 
     snap_action = context_menu->addAction(QString(), this, SLOT(onSnapshotGraphToggle()));
     context_menu->addSeparator();
@@ -423,6 +429,114 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
                                     background-color: #ABCDEF;\
                                 }");
 #endif
+}
+
+void MyDockWindow::closeEvent(QCloseEvent *event)
+{
+    gGraphView::dock->deleteLater();
+    gGraphView::dock=nullptr;
+    QMainWindow::closeEvent(event);
+}
+
+MyDockWindow * gGraphView::dock = nullptr;
+void gGraphView::popoutGraph()
+{
+    if (popout_graph) {
+        if (dock == nullptr) {
+            dock = new MyDockWindow(mainwin->getDaily(), Qt::Window);
+            dock->resize(width(),0);
+         //   QScrollArea
+        }
+        QDockWidget * widget = new QDockWidget(dock);
+        widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        widget->setMouseTracking(true);
+        int h = dock->height()+popout_graph->height()+30;
+        if (h > height()) h = height();
+        dock->resize(dock->width(), h);
+        widget->resize(width(), popout_graph->height()+30);
+
+        gGraphView * gv = new gGraphView(widget, this);
+        widget->setWidget(gv);
+        gv->setMouseTracking(true);
+        gv->setDay(this->day());
+        dock->addDockWidget(Qt::BottomDockWidgetArea, widget,Qt::Vertical);
+
+        /////// Fix some resize glitches ///////
+        // https://stackoverflow.com/questions/26286646/create-a-qdockwidget-that-resizes-to-its-contents?rq=1
+        QDockWidget* dummy = new QDockWidget;
+        dock->addDockWidget(Qt::BottomDockWidgetArea, dummy);
+        dock->removeDockWidget(dummy);
+
+        QPoint mousePos = dock->mapFromGlobal(QCursor::pos());
+        mousePos.setY(dock->rect().bottom()+2);
+        QCursor::setPos(dock->mapToGlobal(mousePos));
+        QMouseEvent* grabSeparatorEvent =
+            new QMouseEvent(QMouseEvent::MouseButtonPress,mousePos,Qt::LeftButton,Qt::LeftButton,Qt::NoModifier);
+        qApp->postEvent(dock, grabSeparatorEvent);
+        /////////////////////////////////////////
+
+//        dock->updateGeometry();
+        if (!dock->isVisible()) dock->show();
+
+        gGraph * graph = popout_graph;
+
+        QString basename = graph->title()+" - ";
+        if (graph->m_day) {
+            // append the date of the graph's left edge to the snapshot name
+            // so the user knows what day the snapshot starts
+            // because the name is displayed to the user, use local time
+            QDateTime date = QDateTime::fromMSecsSinceEpoch(graph->min_x, Qt::LocalTime);
+            basename += date.date().toString(Qt::SystemLocaleLongDate);
+        }
+
+        QString newname = basename;
+
+        // Find a new name.. How many snapshots for each graph counts as stupid?
+
+        QString newtitle = graph->title();
+
+        widget->setWindowTitle(newname);
+        gGraph * newgraph = new gGraph(newname, nullptr, newtitle, graph->units(), graph->height(), graph->group());
+        newgraph->setHeight(graph->height());
+
+        short group = 0;
+        gv->m_graphs.insert(m_graphs.indexOf(graph)+1, newgraph);
+        gv->m_graphsbyname[newname] = newgraph;
+        newgraph->m_graphview = gv;
+
+        for (int i=0; i < graph->m_layers.size(); ++i) {
+            Layer * layer = graph->m_layers.at(i)->Clone();
+            if (layer) {
+                newgraph->m_layers.append(layer);
+            }
+        }
+
+        for (int i=0;i<m_graphs.size();i++) {
+            gGraph *g = m_graphs.at(i);
+            group = qMax(g->group(), group);
+        }
+        newgraph->setGroup(group+1);
+        //newgraph->setMinHeight(pm.height());
+
+        newgraph->setDay(graph->m_day);
+        if (graph->m_day) {
+            graph->m_day->incUseCounter();
+        }
+        newgraph->min_x = graph->min_x;
+        newgraph->max_x = graph->max_x;
+
+        newgraph->setBlockSelect(false);
+        newgraph->setZoomY(graph->zoomY());
+
+        newgraph->setSnapshot(false);
+        newgraph->setShowTitle(true);
+
+
+        gv->resetLayout();
+        gv->timedRedraw(0);
+        //widget->setUpdatesEnabled(true);
+
+    }
 }
 
 void gGraphView::togglePin()
@@ -1396,7 +1510,7 @@ void gGraphView::paintGL()
         QString txt;
         if (m_showAuthorMessage) {
             if (emptyText() == STR_Empty_Brick) {
-                txt = "\nI'm very sorry your machine doesn't record useful data to graph in Daily View :(";
+                txt = QObject::tr("\nI'm very sorry your machine doesn't record useful data to graph in Daily View :(");
             } else {
                 // not proud of telling them their machine is a Brick.. ;)
                 txt = QObject::tr("SleepyHead is proudly brought to you by JediMark.");
@@ -2605,7 +2719,10 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         //done=true;
                     } else if ((event->button() == Qt::RightButton) && (x < (titleWidth + gYAxis::Margin))) {
                         this->setCursor(Qt::ArrowCursor);
+                        popout_action->setText(QObject::tr("Popout %1 Graph").arg(g->title()));
+                        popout_graph = g;
                         pin_action->setText(QObject::tr("Pin %1 Graph").arg(g->title()));
+
                         pin_graph = g;
                         populateMenu(g);
 

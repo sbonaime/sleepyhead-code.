@@ -57,7 +57,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1311,20 +1311,6 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             <string>Preferred Calculation Methods</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_42">
-              <property name="text">
-               <string>Upper Percentile</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_43">
-              <property name="text">
-               <string>Maximum Calcs</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1">
              <widget class="QSpinBox" name="prefCalcPercentile">
               <property name="toolTip">
@@ -1352,6 +1338,27 @@ as this is the only value available on summary-only days.</string>
               </property>
               <property name="text">
                <string>Middle Calculations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_43">
+              <property name="text">
+               <string>Maximum Calcs</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_42">
+              <property name="text">
+               <string>Upper Percentile</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_29">
+              <property name="text">
+               <string>Culminative Indices</string>
               </property>
              </widget>
             </item>
@@ -1430,15 +1437,40 @@ as this is the only value available on summary-only days.</string>
               </item>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_29">
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="resmedPrefCalcsNotice">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>Culminative Indices</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;Due to summary design limitations, ResMed machines do not support changing these settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
            </layout>
           </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>

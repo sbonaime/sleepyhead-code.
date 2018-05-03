@@ -118,25 +118,74 @@ void MachineLoader::finishAddingSessions()
 
 }
 
-bool compressFile(QString inpath, QString outpath)
+bool uncompressFile(QString infile, QString outfile)
 {
-    if (outpath.isEmpty()) {
-        outpath = inpath + ".gz";
-    } else if (!outpath.endsWith(".gz")) {
-        outpath += ".gz";
+    if (!infile.endsWith(".gz",Qt::CaseInsensitive)) {
+        qDebug() << "uncompressFile()" << outfile << "missing .gz extension???";
+        return false;
     }
 
-    QFile f(inpath);
+    if (QFile::exists(outfile)) {
+        qDebug() << "uncompressFile()" << outfile << "already exists";
+        return false;
+    }
 
-    if (!f.exists(inpath)) {
-        qDebug() << "compressFile()" << inpath << "does not exist";
+    // Get file length from inside gzip file
+    QFile fi(infile);
+
+    if (!fi.open(QFile::ReadOnly) || !fi.seek(fi.size() - 4)) {
+        return false;
+    }
+
+    unsigned char ch[4];
+    fi.read((char *)ch, 4);
+    quint32 datasize = ch[0] | (ch [1] << 8) | (ch[2] << 16) | (ch[3] << 24);
+
+    // Open gzip file for reading
+    gzFile f = gzopen(infile.toLatin1(), "rb");
+    if (!f) {
+        return false;
+    }
+
+
+    // Decompressed header and data block
+    char * buffer = new char [datasize];
+    gzread(f, buffer, datasize);
+    gzclose(f);
+
+    QFile out(outfile);
+    if (out.open(QFile::WriteOnly)) {
+        out.write(buffer, datasize);
+        out.close();
+    }
+
+    delete [] buffer;
+    return true;
+
+}
+
+bool compressFile(QString infile, QString outfile)
+{
+    if (outfile.isEmpty()) {
+        outfile = infile + ".gz";
+    } else if (!outfile.endsWith(".gz")) {
+        outfile += ".gz";
+    }
+    if (QFile::exists(outfile)) {
+        qDebug() << "compressFile()" << outfile << "already exists";
+    }
+
+    QFile f(infile);
+
+    if (!f.exists(infile)) {
+        qDebug() << "compressFile()" << infile << "does not exist";
         return false;
     }
 
     qint64 size = f.size();
 
     if (!f.open(QFile::ReadOnly)) {
-        qDebug() << "compressFile() Couldn't open" << inpath;
+        qDebug() << "compressFile() Couldn't open" << infile;
         return false;
     }
 
@@ -144,16 +193,16 @@ bool compressFile(QString inpath, QString outpath)
 
     if (!f.read(buf, size)) {
         delete [] buf;
-        qDebug() << "compressFile() Couldn't read all of" << inpath;
+        qDebug() << "compressFile() Couldn't read all of" << infile;
         return false;
     }
 
     f.close();
-    gzFile gz = gzopen(outpath.toLatin1(), "wb");
+    gzFile gz = gzopen(outfile.toLatin1(), "wb");
 
     //gzbuffer(gz,65536*2);
     if (!gz) {
-        qDebug() << "compressFile() Couldn't open" << outpath << "for writing";
+        qDebug() << "compressFile() Couldn't open" << outfile << "for writing";
         delete [] buf;
         return false;
     }
@@ -174,6 +223,7 @@ void MachineLoader::runTasks(bool threaded)
 
     m_totaltasks=m_tasklist.size();
     if (m_totaltasks == 0) return;
+    qprogress->setMaximum(m_totaltasks);
     m_currenttask=0;
 
     threaded=AppSetting->multithreading();
@@ -182,11 +232,9 @@ void MachineLoader::runTasks(bool threaded)
         while (!m_tasklist.isEmpty()) {
             ImportTask * task = m_tasklist.takeFirst();
             task->run();
-            float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
 
-            m_currenttask++;
-            if ((m_currenttask % 10)==0) {
-                qprogress->setValue(f);
+            if ((m_currenttask++ % 10)==0) {
+                qprogress->setValue(m_currenttask);
                 QApplication::processEvents();
             }
         }
@@ -194,7 +242,6 @@ void MachineLoader::runTasks(bool threaded)
         ImportTask * task = m_tasklist[0];
 
         QThreadPool * threadpool = QThreadPool::globalInstance();
-        qprogress->setMaximum(m_totaltasks);
 
         while (true) {
 
@@ -206,8 +253,7 @@ void MachineLoader::runTasks(bool threaded)
                     task = m_tasklist[0];
 
                     // update progress bar
-                    m_currenttask++;
-                    if ((m_currenttask % 10) == 0) {
+                    if ((m_currenttask++ % 10) == 0) {
                         qprogress->setValue(m_currenttask);
                         QApplication::processEvents();
                     }

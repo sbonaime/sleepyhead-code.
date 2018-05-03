@@ -71,8 +71,24 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         profile->session->setIgnoreShortSessions(0);
         profile->session->setCombineCloseSessions(0);
         profile->session->setLockSummarySessions(true);
+        p_profile->general->setPrefCalcPercentile(95.0);    // 95%
+        p_profile->general->setPrefCalcMiddle(0);           // Median (50%)
+        p_profile->general->setPrefCalcMax(1);              // 99.9th percentile max
+        ui->prefCalcMax->setEnabled(false);
+        ui->prefCalcMiddle->setEnabled(false);
+        ui->prefCalcPercentile->setEnabled(false);
+        ui->showUnknownFlags->setEnabled(false);
+        ui->calculateUnintentionalLeaks->setEnabled(false);
+
+        p_profile->session->setBackupCardData(true);
+        ui->createSDBackups->setChecked(true);
+        ui->createSDBackups->setEnabled(false);
+
     }
+    ui->resmedPrefCalcsNotice->setVisible(haveResMed);
 #endif
+
+    ui->culminativeIndices->setEnabled(false);
 
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);

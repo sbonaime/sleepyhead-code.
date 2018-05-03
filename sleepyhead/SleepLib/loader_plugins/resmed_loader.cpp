@@ -115,25 +115,19 @@ bool matchSignal(ChannelID ch, const QString & name)
 }
 
 // This function parses a list of STR files and creates a date ordered map of individual records
-void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
+void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
 {
-    int numSTRs = strfiles.size();
     if (!qprogress) {
         qWarning() << "What happened to qprogress object in ResmedLoader::ParseSTR()";
         return;
     }
 
-    for (int i=0; i< numSTRs; ++i) {
+    QMap<QDate, STRFile>::iterator it;
 
-        const QString & strfile = strfiles.at(i);
-
-        // Open and Parse STR.edf file
-        ResMedEDFParser str(strfile);
-        if (!str.Parse()) continue;
-        if (mach->serial() != str.serialnumber) {
-            qDebug() << "Trying to import a STR.edf from another machine, skipping" << mach->serial() << "!=" << str.serialnumber << "in" << strfile;
-            continue;
-        }
+    for (it = STRmap.begin(); it!= STRmap.end(); ++it) {
+        STRFile & file = it.value();
+        QString & strfile = file.filename;
+        ResMedEDFParser & str = *file.edf;
 
         QDate date = str.startdate_orig.date(); // each STR.edf record starts at 12 noon
 
@@ -157,7 +151,7 @@ void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
         // For each data record, representing 1 day each
         for (int rec = 0; rec < size; ++rec, date = date.addDays(1)) {
 
-            QHash<QDate, ResMedDay>::iterator rit = resdayList.find(date);
+            QMap<QDate, ResMedDay>::iterator rit = resdayList.find(date);
             if (rit != resdayList.end()) {
                 // Already seen this record.. should check if the data is the same, but meh.
                 continue;
@@ -262,21 +256,77 @@ void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
                 R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
             }
 
-            if ((sig = str.lookupLabel("Leak Med"))) {
+            if ((sig = str.lookupLabel("Leak Med")) || (sig = str.lookupLabel("Leak.50"))) {
                 float gain = sig->gain * 60.0;
-                R.leakgain = gain;
-                R.leakmed = EventDataType(sig->data[rec]) * gain + sig->offset;
+                R.leak50 = EventDataType(sig->data[rec]) * gain + sig->offset;
             }
-            if ((sig = str.lookupLabel("Leak Max"))) {
+            if ((sig = str.lookupLabel("Leak Max"))|| (sig = str.lookupLabel("Leak.Max"))) {
                 float gain = sig->gain * 60.0;
-                R.leakgain = gain;
                 R.leakmax = EventDataType(sig->data[rec]) * gain + sig->offset;
             }
-            if ((sig = str.lookupLabel("Leak 95"))) {
+            if ((sig = str.lookupLabel("Leak 95")) || (sig = str.lookupLabel("Leak.95"))) {
                 float gain = sig->gain * 60.0;
-                R.leakgain = gain;
                 R.leak95 = EventDataType(sig->data[rec]) * gain + sig->offset;
             }
+
+            if ((sig = str.lookupLabel("RespRate.50"))) {
+                R.rr50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("RespRate.Max"))) {
+                R.rrmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("RespRate.95"))) {
+                R.rr95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("MinVent.50"))) {
+                R.mv50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("MinVent.Max"))) {
+                R.mvmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("MinVent.95"))) {
+                R.mv95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TidVol.50"))) {
+                R.tv50 = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TidVol.Max"))) {
+                R.tvmax = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TidVol.95"))) {
+                R.tv95 = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("MaskPress.50"))) {
+                R.mp50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("MaskPress.Max"))) {
+                R.mpmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("MaskPress.95"))) {
+                R.mp95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("TgtEPAP.50"))) {
+                R.tgtepap50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TgtEPAP.Max"))) {
+                R.tgtepapmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TgtEPAP.95"))) {
+                R.tgtepap95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
+            if ((sig = str.lookupLabel("TgtIPAP.50"))) {
+                R.tgtipap50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TgtIPAP.Max"))) {
+                R.tgtipapmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("TgtIPAP.95"))) {
+                R.tgtipap95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+
 
             bool haveipap = false;
 //                if (R.mode == MODE_BILEVEL_FIXED) {
@@ -329,35 +379,35 @@ void ResmedLoader::ParseSTR(Machine *mach, const QStringList & strfiles)
                 }
             }
 
-                if ((sig = str.lookupSignal(CPAP_PressureMax))) {
-                    R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupSignal(CPAP_PressureMin))) {
-                    R.min_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupSignal(RMS9_SetPressure))) {
-                    R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
+            if ((sig = str.lookupSignal(CPAP_PressureMax))) {
+                R.max_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupSignal(CPAP_PressureMin))) {
+                R.min_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupSignal(RMS9_SetPressure))) {
+                R.set_pressure = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
 
-                if ((sig = str.lookupSignal(CPAP_EPAPHi))) {
-                    R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-                if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
-                    R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
+            if ((sig = str.lookupSignal(CPAP_EPAPHi))) {
+                R.max_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupSignal(CPAP_EPAPLo))) {
+                R.min_epap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
 
-                if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
-                    R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    haveipap = true;
-                }
-                if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
-                    R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                    haveipap = true;
-                }
-                if ((sig = str.lookupSignal(CPAP_PS))) {
-                    R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-                }
-           //  }
+            if ((sig = str.lookupSignal(CPAP_IPAPHi))) {
+                R.max_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                haveipap = true;
+            }
+            if ((sig = str.lookupSignal(CPAP_IPAPLo))) {
+                R.min_ipap = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+                haveipap = true;
+            }
+            if ((sig = str.lookupSignal(CPAP_PS))) {
+                R.ps = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            //  }
 
 
             // Okay, problem here: THere are TWO PSMin & MAX values on the 36037 with the same string
@@ -1430,7 +1480,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 //        EDFType type = lookupEDFType(ext);
 
         // Find or create ResMedDay object for this date
-        QHash<QDate, ResMedDay>::iterator rd = resdayList.find(date);
+        QMap<QDate, ResMedDay>::iterator rd = resdayList.find(date);
         if (rd == resdayList.end()) {
             rd = resdayList.insert(date, ResMedDay());
             rd.value().date = date;
@@ -1708,6 +1758,92 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 
     return c;
 }*/
+void DetectPAPMode(Session *sess)
+{
+    if (sess->channelDataExists(CPAP_Pressure)) {
+        // Determine CPAP or APAP?
+        EventDataType min = sess->Min(CPAP_Pressure);
+        EventDataType max = sess->Max(CPAP_Pressure);
+        if ((max-min)<0.1) {
+            sess->settings[CPAP_Mode] = MODE_CPAP;
+            sess->settings[CPAP_Pressure] = qRound(max * 10.0)/10.0;
+            // early call.. It's CPAP mode
+        } else {
+            // Ramp is ugly
+            if (sess->length() > 1800000L) {  // half an our
+            }
+            sess->settings[CPAP_Mode] = MODE_APAP;
+            sess->settings[CPAP_PressureMin] = qRound(min * 10.0)/10.0;
+            sess->settings[CPAP_PressureMax] = qRound(max * 10.0)/10.0;
+        }
+
+    } else if (sess->eventlist.contains(CPAP_IPAP)) {
+        sess->settings[CPAP_Mode] = MODE_BILEVEL_AUTO_VARIABLE_PS;
+       // Determine BiPAP or ASV
+    }
+
+}
+void StoreSummarySettings(Session * sess, STRRecord & R)
+{
+    if (R.mode >= 0) {
+        if (R.mode == MODE_CPAP) {
+        } else if (R.mode == MODE_APAP) {
+        }
+    }
+
+    if (R.leak95 >= 0) {
+//        sess->setp95(CPAP_Leak, R.leak95);
+    }
+    if (R.leak50 >= 0) {
+//        sess->setp50(CPAP_Leak, R.leak50);
+    }
+    if (R.leakmax >= 0) {
+        sess->setMax(CPAP_Leak, R.leakmax);
+    }
+
+    if (R.rr95 >= 0) {
+//        sess->setp95(CPAP_RespRate, R.rr95);
+    }
+    if (R.rr50 >= 0) {
+//        sess->setp50(CPAP_RespRate, R.rr50);
+    }
+    if (R.rrmax >= 0) {
+        sess->setMax(CPAP_RespRate, R.rrmax);
+    }
+
+    if (R.mv95 >= 0) {
+//        sess->setp95(CPAP_MinuteVent, R.mv95);
+    }
+    if (R.mv50 >= 0) {
+//        sess->setp50(CPAP_MinuteVent, R.mv50);
+    }
+    if (R.mvmax >= 0) {
+        sess->setMax(CPAP_MinuteVent, R.mvmax);
+    }
+
+    if (R.tv95 >= 0) {
+  //      sess->setp95(CPAP_TidalVolume, R.tv95);
+    }
+    if (R.tv50 >= 0) {
+//        sess->setp50(CPAP_TidalVolume, R.tv50);
+    }
+    if (R.tvmax >= 0) {
+        sess->setMax(CPAP_TidalVolume, R.tvmax);
+    }
+
+    if (R.mp95 >= 0) {
+//        sess->setp95(CPAP_MaskPressure, R.mp95);
+    }
+    if (R.mp50 >= 0) {
+//        sess->setp50(CPAP_MaskPressure, R.mp50);
+    }
+    if (R.mpmax >= 0) {
+        sess->setMax(CPAP_MaskPressure, R.mpmax);
+    }
+
+
+
+}
 
 void StoreSettings(Session * sess, STRRecord & R)
 {
@@ -1851,23 +1987,32 @@ void ResDayTask::run()
             return;
         }
         // Summary only day, create one session and tag it summary only
-        SessionID sid = resday->str.maskon[0];
         STRRecord & R = resday->str;
 
-        Session * sess = new Session(mach, sid);
-        StoreSettings(sess, R);
+        for (int i=0;i<resday->str.maskon.size();++i) {
+            quint32 maskon = resday->str.maskon[i];
+            quint32 maskoff = resday->str.maskoff[i];
+            if ((maskon>0) && (maskoff>0)) {
+                Session * sess = new Session(mach, maskon);
+                sess->set_first(quint64(maskon) * 1000L);
+                sess->set_last(quint64(maskoff) * 1000L);
+                // Process the STR.edf settings
+                StoreSettings(sess, R);
+                // We want the summary information too otherwise we've got nothing.
+                StoreSummarySettings(sess, R);
 
-        sess->setSummaryOnly(true);
-        sess->SetChanged(true);
+                sess->setSummaryOnly(true);
+                sess->SetChanged(true);
+                sess->Store(mach->getDataPath());
 
-        loader->sessionMutex.lock();
-        mach->AddSession(sess);
-        loader->sessionCount++;
-        loader->sessionMutex.unlock();
+                loader->sessionMutex.lock();
+                mach->AddSession(sess);
+                loader->sessionCount++;
+                loader->sessionMutex.unlock();
 
-        sess->Store(mach->getDataPath());
-        sess->TrashEvents();
-
+                //sess->TrashEvents();
+            }
+        }
         return;
     }
 
@@ -2032,6 +2177,13 @@ void ResDayTask::run()
             sess->AddEventList(CPAP_Apnea, EVL_Event);
             sess->AddEventList(CPAP_Hypopnea, EVL_Event);
         }
+        sess->setSummaryOnly(false);
+        sess->SetChanged(true);
+
+        if (sess->length()>0) {
+            // we want empty sessions even though they are crap
+        }
+
         if (resday->str.date.isValid()) {
             STRRecord & R = resday->str;
 
@@ -2047,36 +2199,58 @@ void ResDayTask::run()
             StoreSettings(sess, R);
 
         } else {
-            // We have no Summary or Settings data... we need to do something to indicate this, and detect the mode
-            if (sess->eventlist.contains(CPAP_Pressure)) {
-                EventList * pressure = sess->eventlist[CPAP_Pressure];
+            // No corresponding STR.edf record, but we have EDF files
+
+            bool foundprev = false;
+            // This is yuck.. we need to find the LAST date with valid settings data
+            QDate first = p_profile->FirstDay(MT_CPAP);
+            for (QDate d = resday->date.addDays(-1); d >= first; d = d.addDays(-1)) {
+                loader->sessionMutex.lock();
+                Day * day = p_profile->GetDay(d, MT_CPAP);
+                bool hasmachine = day && day->hasMachine(mach);
+                loader->sessionMutex.unlock();
+
+                if (!day) continue;
+                if (!hasmachine) continue;
+
+                QList<Session *> sessions = day->getSessions(MT_CPAP);
+
+                if (sessions.size() > 0) {
+                    Session *chksess = sessions[0];
+                    sess->settings = chksess->settings;
+                    foundprev = true;
+                    break;
+                }
+
             }
+            sess->settings[CPAP_BrokenSummary] = true;
 
+            if (!foundprev) {
+                // We have no Summary or Settings data... we need to do something to indicate this, and detect the mode
+                if (sess->channelDataExists(CPAP_Pressure)) {
+                    DetectPAPMode(sess);
+                }
+            }
         }
-        sess->setSummaryOnly(false);
-        sess->SetChanged(true);
 
-        if (sess->length() > 0) {
-            loader->addSession(sess);
-            sess->UpdateSummaries();
+        sess->UpdateSummaries();
 
-            // Save is not threadsafe?
-           // loader->saveMutex.lock();
-            //backup file...
-            sess->Store(mach->getDataPath());
-           // loader->saveMutex.unlock();
+        // Save is not threadsafe?
+       // loader->saveMutex.lock();
+        sess->Store(mach->getDataPath());
+       // loader->saveMutex.unlock();
 
-            // Free the memory used by this session
-            sess->TrashEvents();
-            loader->sessionMutex.lock();
-            loader->sessionCount++;
-            loader->sessionMutex.unlock();
-        } else {
-            delete sess;
-        }
+        loader->sessionMutex.lock();
+        mach->AddSession(sess);
+        loader->sessionMutex.unlock();
+
+        // Free the memory used by this session
+        sess->TrashEvents();
+        loader->sessionMutex.lock();
+        loader->sessionCount++;
+        loader->sessionMutex.unlock();
     }
 }
-
 
 int ResmedLoader::Open(const QString & dirpath)
 {
@@ -2195,6 +2369,7 @@ int ResmedLoader::Open(const QString & dirpath)
     ///////////////////////////////////////////////////////////////////////////////////
     Machine *mach = p_profile->CreateMachine(info);
 
+    bool importing_backups = false;
     bool create_backups = p_profile->session->backupCardData();
     bool compress_backups = p_profile->session->compressBackupData();
 
@@ -2202,6 +2377,7 @@ int ResmedLoader::Open(const QString & dirpath)
 
     if (path == backup_path) {
         // Don't create backups if importing from backup folder
+        importing_backups = true;
         create_backups = false;
     }
 
@@ -2213,48 +2389,152 @@ int ResmedLoader::Open(const QString & dirpath)
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
-    // Open and Parse STR.edf file
+    // Open and Parse STR.edf files (including those listed in STR_Backup)
     ///////////////////////////////////////////////////////////////////////////////////
 
     resdayList.clear();
 
     // List all STR.edf backups and tag on latest for processing
-    QStringList strfiles;
-    strfiles.push_back(strpath);
-    QDir dir(path + "STR_Backup");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
-    QFileInfoList flist = dir.entryInfoList();
+    QMap<QDate, STRFile> STRmap;
 
-    int size = flist.size();
-    for (int i = 0; i < size; i++) {
-        QFileInfo fi = flist.at(i);
-        filename = fi.fileName();
-        if (filename.startsWith("STR", Qt::CaseInsensitive)) {
-            strfiles.push_back(fi.filePath());
+    QDir dir;
+
+    // Create the STR_Backup folder if it doesn't exist
+    QString strBackupPath = backup_path + "STR_Backup";
+    if (!dir.exists(strBackupPath)) dir.mkpath(strBackupPath);
+
+    if (!importing_backups ) {
+        QStringList strfiles;
+        // add primary STR.edf
+        strfiles.push_back(strpath);
+
+        // Just in case we are importing into a new folder, process SleepyHead backup structures
+        dir.setPath(path + "STR_Backup");
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
+        QFileInfoList flist = dir.entryInfoList();
+
+        int size = flist.size();
+        // Add any STR_Backup versions to the file list
+        for (int i = 0; i < size; i++) {
+            QFileInfo fi = flist.at(i);
+            filename = fi.fileName();
+            if (!filename.startsWith("STR", Qt::CaseInsensitive))
+                continue;
+            if (!(filename.endsWith("edf.gz", Qt::CaseInsensitive) || filename.endsWith("edf", Qt::CaseInsensitive)))
+                continue;
+            strfiles.push_back(fi.canonicalFilePath());
+        }
+
+        // Now place any of these files in the Backup folder sorted by the file date
+        for (int i=0;i<strfiles.size();i++) {
+            QString filename = strfiles.at(i);
+            ResMedEDFParser * stredf = new ResMedEDFParser(filename);
+            if (!stredf->Parse()) {
+                qDebug() << "Faulty STR file" << filename;
+                delete stredf;
+                continue;
+            }
+
+            if (stredf->serialnumber != info.serial) {
+                qDebug() << "Identification.tgt Serial number doesn't match" << filename;
+                delete stredf;
+                continue;
+            }
+
+            QDate date = stredf->startdate_orig.date();
+            date = QDate(date.year(), date.month(), 1);
+            if (STRmap.contains(date)) {
+                delete stredf;
+                continue;
+            }
+            QString newname = "STR-"+date.toString("yyyyMM")+"."+STR_ext_EDF;
+
+            QString backupfile = strBackupPath+"/"+newname;
+
+            if (compress_backups) backupfile += STR_ext_gz;
+
+            if (!QFile::exists(backupfile)) {
+                if (filename.endsWith(STR_ext_gz,Qt::CaseInsensitive)) {
+                    if (compress_backups) {
+                        QFile::copy(filename, backupfile);
+                    } else {
+                        uncompressFile(filename, backupfile);
+                    }
+                } else {
+                    if (compress_backups) {
+                        // already compressed, keep it.
+                        compressFile(filename, backupfile);
+                    } else {
+                        QFile::copy(filename, backupfile);
+                    }
+                }
+            }
+
+
+            STRmap[date] = STRFile(backupfile, stredf);
         }
     }
 
-    ParseSTR(mach, strfiles);
+    // Now we open the REAL STR_Backup, and open the rest for later parsing
 
-    // This is ugly, we only need the starting date for backup purposes
-    ResMedEDFParser stredf(strpath);
-    if (!stredf.Parse()) {
-        qDebug() << "Faulty file" << RMS9_STR_strfile;
-        return 0;
+    dir.setPath(backup_path + "STR_Backup");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
+    QFileInfoList flist = dir.entryInfoList();
+    QDate date;
+
+    int size = flist.size();
+    // Add any STR_Backup versions to the file list
+    for (int i = 0; i < size; i++) {
+        QFileInfo fi = flist.at(i);
+        filename = fi.fileName();
+        if (!filename.startsWith("STR", Qt::CaseInsensitive))
+            continue;
+        if (!(filename.endsWith("edf.gz", Qt::CaseInsensitive) || filename.endsWith("edf", Qt::CaseInsensitive)))
+            continue;
+        QString datestr = filename.section("STR-",-1).section(".edf",0,0)+"01";
+        date = QDate().fromString(datestr,"yyyyMMdd");
+
+        if (STRmap.contains(date)) {
+            continue;
+        }
+
+        ResMedEDFParser * stredf = new ResMedEDFParser(fi.canonicalFilePath());
+        if (!stredf->Parse()) {
+            qDebug() << "Faulty STR file" << filename;
+            delete stredf;
+            continue;
+        }
+
+        if (stredf->serialnumber != info.serial) {
+            qDebug() << "Identification.tgt Serial number doesn't match" << filename;
+            delete stredf;
+            continue;
+        }
+
+        // Don't trust the filename date, pick the one inside the STR...
+        date = stredf->startdate_orig.date();
+        date = QDate(date.year(), date.month(), 1);
+
+        STRmap[date] = STRFile(fi.canonicalFilePath(), stredf);
     }
 
-    if (stredf.serialnumber != info.serial) {
-        qDebug() << "Identification.tgt Serial number doesn't match STR.edf!";
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Build a Date map of all records in STR.edf files, populating ResDayList
+    ///////////////////////////////////////////////////////////////////////////////////
+    ParseSTR(mach, STRmap);
+
+    // We are done with the Parsed STR EDF objects, so delete them
+    QMap<QDate, STRFile>::iterator it;
+    for (it=STRmap.begin(); it!= STRmap.end(); ++it) {
+        delete it.value().edf;
     }
 
-
-    // Creating early as we need the object
-    dir.setPath(newpath);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Create the backup folder for storing a copy of everything in..
     // (Unless we are importing from this backup folder)
     ///////////////////////////////////////////////////////////////////////////////////
+    dir.setPath(newpath);
     if (create_backups) {
         if (!dir.exists(backup_path)) {
             if (!dir.mkpath(backup_path + RMS9_STR_datalog)) {
@@ -2266,68 +2546,10 @@ int ResmedLoader::Open(const QString & dirpath)
         QFile::copy(path + RMS9_STR_idfile + STR_ext_TGT, backup_path + RMS9_STR_idfile + STR_ext_TGT);
         QFile::copy(path + RMS9_STR_idfile + STR_ext_CRC, backup_path + RMS9_STR_idfile + STR_ext_CRC);
 
-        QDateTime dts = QDateTime::fromMSecsSinceEpoch(stredf.startdate, Qt::UTC);
-        dir.mkpath(backup_path + "STR_Backup");
-        QString strmonthly = backup_path + "STR_Backup/STR-" + dts.toString("yyyyMM") + "." + STR_ext_EDF;
-
-        //copy STR files to backup folder
-        if (strpath.endsWith(STR_ext_gz)) { // Already compressed. Don't bother decompressing..
-            QFile::copy(strpath, backup_path + RMS9_STR_strfile + STR_ext_EDF + STR_ext_gz);
-        } else { // Compress STR file to backup folder
-            QString strf = backup_path + RMS9_STR_strfile + STR_ext_EDF;
-
-            // Copy most recent to STR.edf
-            if (QFile::exists(strf)) {
-                QFile::remove(strf);
-            }
-
-            if (QFile::exists(strf + STR_ext_gz)) {
-                QFile::remove(strf + STR_ext_gz);
-            }
-
-            compress_backups ?
-            compressFile(strpath, strf)
-            :
-            QFile::copy(strpath, strf);
-
-        }
-
-        // Keep one STR.edf backup every month
-        if (!QFile::exists(strmonthly) && !QFile::exists(strmonthly + ".gz")) {
-            compress_backups ?
-            compressFile(strpath, strmonthly)
-            :
-            QFile::copy(strpath, strmonthly);
-        }
-
         // Meh.. these can be calculated if ever needed for ResScan SDcard export
         QFile::copy(path + "STR.crc", backup_path + "STR.crc");
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Process the actual STR.edf data
-    ///////////////////////////////////////////////////////////////////////////////////
-
-    qint64 numrecs = stredf.GetNumDataRecords();
-    qint64 duration = numrecs * stredf.GetDuration();
-
-    int days = duration / 86400000L; // GetNumDataRecords = this.. Duh!
-
-    if (days<0) {
-        qDebug() << "Error: Negative number of days in STR.edf, aborting import";
-        days=0;
-        return -1;
-    }
-
-    // Process STR.edf and find first and last time for each day
-
-    QVector<qint8> dayused;
-    dayused.resize(days);
-
-    //time_t time = stredf.startdate / 1000L; // == 12pm on first day
-
-    // reset time to first day
-    //time = stredf.startdate / 1000;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Scan DATALOG files, sort, and import any new sessions
@@ -2342,7 +2564,7 @@ int ResmedLoader::Open(const QString & dirpath)
     // Now at this point we have resdayList populated with processable summary and EDF files data
     // that can be processed in threads..
 
-    QHash<QDate, ResMedDay>::iterator rdi;
+    QMap<QDate, ResMedDay>::iterator rdi;
 
     for (rdi = resdayList.begin(); rdi != resdayList.end(); rdi++) {
         QDate date = rdi.key();

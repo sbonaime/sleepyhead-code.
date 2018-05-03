@@ -71,10 +71,33 @@ struct STRRecord
         uai = -1;
         cai = -1;
 
-        leakmed = -1;
+        leak50 = -1;
         leak95 = -1;
         leakmax = -1;
-        leakgain = 0;
+
+        rr50 = -1;
+        rr95 = -1;
+        rrmax = -1;
+
+        mv50 = -1;
+        mv95 = -1;
+        mvmax = -1;
+
+        tv50 = -1;
+        tv95 = -1;
+        tvmax = -1;
+
+        mp50 = -1;
+        mp95 = -1;
+        mpmax = -1;
+
+        tgtepap50 = -1;
+        tgtepap95 = -1;
+        tgtepapmax = -1;
+
+        tgtipap50 = -1;
+        tgtipap95 = -1;
+        tgtipapmax = -1;
 
         s_RampTime = -1;
         s_RampEnable = -1;
@@ -124,10 +147,29 @@ struct STRRecord
         uai = copy.uai;
         cai = copy.cai;
         date = copy.date;
-        leakmed = copy.leakmed;
+        leak50 = copy.leak50;
         leak95 = copy.leak95;
         leakmax = copy.leakmax;
-        leakgain = copy.leakgain;
+        rr50 = copy.rr50;
+        rr95 = copy.rr95;
+        rrmax = copy.rrmax;
+        mv50 = copy.mv50;
+        mv95 = copy.mv95;
+        mvmax = copy.mvmax;
+        tv50 = copy.tv50;
+        tv95 = copy.tv95;
+        tvmax = copy.tvmax;
+        mp50 = copy.mp50;
+        mp95 = copy.mp95;
+        mpmax = copy.mpmax;
+
+        tgtepap50 = copy.tgtepap50;
+        tgtepap95 = copy.tgtepap95;
+        tgtepapmax = copy.tgtepapmax;
+        tgtipap50 = copy.tgtipap50;
+        tgtipap95 = copy.tgtipap95;
+        tgtipapmax = copy.tgtipapmax;
+
         s_EPREnable = copy.s_EPREnable;
         s_EPR_ClinEnable = copy.s_EPREnable;
         s_RampEnable = copy.s_RampEnable;
@@ -173,10 +215,28 @@ struct STRRecord
     EventDataType hi;
     EventDataType uai;
     EventDataType cai;
-    EventDataType leakmed;
+    EventDataType leak50;
     EventDataType leak95;
     EventDataType leakmax;
-    EventDataType leakgain;
+    EventDataType rr50;
+    EventDataType rr95;
+    EventDataType rrmax;
+    EventDataType mv50;
+    EventDataType mv95;
+    EventDataType mvmax;
+    EventDataType tv50;
+    EventDataType tv95;
+    EventDataType tvmax;
+    EventDataType mp50;
+    EventDataType mp95;
+    EventDataType mpmax;
+    EventDataType tgtepap50;
+    EventDataType tgtepap95;
+    EventDataType tgtepapmax;
+    EventDataType tgtipap50;
+    EventDataType tgtipap95;
+    EventDataType tgtipapmax;
+
     EventDataType ramp_pressure;
     QDate date;
 
@@ -263,6 +323,21 @@ protected:
     ResMedDay * resday;
 };
 
+struct STRFile {
+    STRFile() :
+        filename(QString()), edf(nullptr) {}
+    STRFile(QString name, ResMedEDFParser *str) :
+        filename(name), edf(str) {}
+    STRFile(const STRFile & copy) {
+        filename = copy.filename;
+        edf = copy.edf;
+    }
+    ~STRFile() {
+    }
+
+    QString filename;
+    ResMedEDFParser * edf;
+};
 
 /*class ResmedImport:public ImportTask
 {
@@ -368,7 +443,7 @@ class ResmedLoader : public CPAPLoader
     volatile int sessionCount;
 
 protected:
-    void ParseSTR(Machine *mach, const QStringList & strfiles);
+    void ParseSTR(Machine *, QMap<QDate, STRFile> &);
 
 
     //! \brief Scan for new files to import, group into sessions and add to task que
@@ -379,7 +454,7 @@ protected:
     QMap<SessionID, QStringList> sessfiles;
     QMap<quint32, STRRecord> strsess;
     QMap<QDate, QList<STRRecord *> > strdate;
-    QHash<QDate, ResMedDay> resdayList;
+    QMap<QDate, ResMedDay> resdayList;
 
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;

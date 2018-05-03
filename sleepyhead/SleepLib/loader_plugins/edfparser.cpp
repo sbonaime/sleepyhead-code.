@@ -17,7 +17,8 @@
 EDFParser::EDFParser(QString name)
 {
     buffer = nullptr;
-    Open(name);
+    if (!name.isEmpty())
+        Open(name);
 }
 EDFParser::~EDFParser()
 {

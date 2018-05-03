@@ -1,4 +1,4 @@
-/* gGraphView Header
+﻿/* gGraphView Header
  *
  * Copyright (c) 2011-2015 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -9,6 +9,7 @@
 #ifndef GGRAPHVIEW_H
 #define GGRAPHVIEW_H
 
+#include <QMainWindow>
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <QThread>
@@ -278,6 +279,14 @@ struct SelectionHistoryItem {
     quint64 maxx;
 };
 
+class MyDockWindow:public QMainWindow
+{
+public:
+    MyDockWindow(QWidget * parent, Qt::WindowFlags flags) : QMainWindow(parent, flags) {}
+    void closeEvent(QCloseEvent *event);
+};
+
+
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 
@@ -531,6 +540,7 @@ class gGraphView
 
     QVector<SelectionHistoryItem> history;
 
+    static MyDockWindow * dock;
   protected:
 
     bool event(QEvent * event) Q_DECL_OVERRIDE;
@@ -661,8 +671,10 @@ class gGraphView
     QTime horizScrollTime, vertScrollTime;
     QMenu * context_menu;
     QAction * pin_action;
+    QAction * popout_action;
     QPixmap pin_icon;
     gGraph *pin_graph;
+    gGraph *popout_graph;
 
     QAction * snap_action;
 
@@ -697,13 +709,13 @@ class gGraphView
 
     bool hasSnapshots();
 
+    void popoutGraph();
     void togglePin();
 protected slots:
     void onLinesClicked(QAction *);
     void onPlotsClicked(QAction *);
     void onOverlaysClicked(QAction *);
     void onSnapshotGraphToggle();
-
 };
 
 #endif // GGRAPHVIEW_H
