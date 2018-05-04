@@ -1380,9 +1380,16 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 #ifdef DEBUG_EFFICIENCY
     time.start();
 #endif
-    QFileInfoList EDFfiles;
 
     QDir dir(datalog_path);
+
+    // First list any EDF files in DATALOG folder
+    QStringList filter;
+    filter << "*.edf";
+    dir.setNameFilters(filter);
+    QFileInfoList EDFfiles = dir.entryInfoList();
+
+    dir.setNameFilters(QStringList());
     dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
     QString filename;
     bool ok;
@@ -2240,13 +2247,13 @@ void ResDayTask::run()
 
         sess->UpdateSummaries();
 
-        // Save is not threadsafe?
+        // Save is not threadsafe? (meh... it seems to be)
        // loader->saveMutex.lock();
         sess->Store(mach->getDataPath());
        // loader->saveMutex.unlock();
 
         loader->sessionMutex.lock();
-        mach->AddSession(sess);
+        mach->AddSession(sess);  // AddSession definitely ain't.
         loader->sessionMutex.unlock();
 
         // Free the memory used by this session

@@ -57,7 +57,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -2247,7 +2247,7 @@ p, li { white-space: pre-wrap; }
             <item row="2" column="1">
              <widget class="QComboBox" name="openingTabCombo">
               <property name="toolTip">
-               <string>Which tab to open at startup. (Note: It will default to Profile if there is no open Profile)</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which tab to open on loading a profile. (Note: It will default to Profile if there is no open Profile)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="currentText">
                <string>Profile</string>
