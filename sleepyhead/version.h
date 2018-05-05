@@ -1,4 +1,4 @@
-/* Version.h
+﻿/* Version.h
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -23,6 +23,8 @@ const QString VersionString = QString("%1.%2.%3-%4-%5").arg(major_version).arg(m
 const QString PlatformString = "MacOSX";
 #elif defined(Q_OS_WIN32)
 const QString PlatformString = "Win32";
+#elif defined(Q_OS_WIN64)
+const QString PlatformString = "Win64";
 #elif defined(Q_OS_LINUX)
 const QString PlatformString = "Linux";
 #elif defined(Q_OS_HAIKU)

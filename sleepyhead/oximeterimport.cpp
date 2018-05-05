@@ -400,11 +400,7 @@ void OximeterImport::doUpdateProgress(int v, int t)
 void OximeterImport::on_fileImportButton_clicked()
 {
 
-#if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
-        const QString documentsFolder = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-#else
-        const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-#endif
+    const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
 	qDebug() << "File Import button clicked";
 	
@@ -412,8 +408,6 @@ void OximeterImport::on_fileImportButton_clicked()
 
     if (filename.isEmpty())
         return;
-
-
 
     // Make sure filename dialog had time to close properly..
     QApplication::processEvents();

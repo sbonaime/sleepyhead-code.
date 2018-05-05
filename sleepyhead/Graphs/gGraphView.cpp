@@ -19,13 +19,10 @@
 #include <QVBoxLayout>
 #include <QDockWidget>
 #include <QMainWindow>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
-#endif
+
 
 #ifdef DEBUG_EFFICIENCY
-// Only works in 4.8
 # include <QElapsedTimer>
 #endif
 
@@ -364,10 +361,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     popout_graph = nullptr;
    // pixmapcache.setCacheLimit(10240*2);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     m_dpr = devicePixelRatio();
-    m_dpr = 1;
-#endif
+    m_dpr = 1; // meh???
 
 #ifndef BROKEN_OPENGL_BUILD
     setAutoFillBackground(false);
@@ -1127,7 +1122,7 @@ void gGraphView::updateScale()
 
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,4,0) && !defined(BROKEN_OPENGL_BUILD)
+#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0)) && !defined(BROKEN_OPENGL_BUILD)
     // This ques a needed redraw event..
     QOpenGLWidget::resizeEvent(e);
 #endif

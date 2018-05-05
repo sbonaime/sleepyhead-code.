@@ -16,7 +16,8 @@
 #include <QDesktopServices>
 #include <QDebug>
 #include <QSettings>
-#ifdef Q_OS_WIN32
+
+#ifdef Q_OS_WIN
 #include "windows.h"
 #include "lmcons.h"
 #endif
@@ -32,7 +33,7 @@ const QString &getUserName()
     if (userName.isEmpty()) {
         userName = QObject::tr("Windows User");
 
-#if defined (Q_OS_WIN32)
+#if defined (Q_OS_WIN)
 #if defined(UNICODE)
 
         if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
@@ -62,12 +63,7 @@ QString GetAppRoot()
 
     QString HomeAppRoot = settings.value("Settings/AppRoot").toString();
 
-#if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
-    const QString desktopFolder = QDesktopServices::storageLocation(
-                                      QDesktopServices::DocumentsLocation);
-#else
     const QString desktopFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-#endif
 
     if (HomeAppRoot.isEmpty()) {
         HomeAppRoot = desktopFolder + "/" + getDefaultAppRoot();

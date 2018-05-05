@@ -8,6 +8,8 @@
 
 #include "logger.h"
 
+#define ASSERTS_SUCK
+
 QThreadPool * otherThreadPool = NULL;
 
 void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgtxt)
@@ -45,9 +47,11 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
     if (logger && logger->isRunning()) {
         logger->append(msg);
     }
-    else {
+#ifdef ASSERTS_SUCK
+//    else {
         fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
-    }
+//    }
+#endif
 
     if (type == QtFatalMsg) {
         abort();
@@ -60,11 +64,7 @@ void initializeLogger()
     logger = new LogThread();
     otherThreadPool = new QThreadPool();
     bool b = otherThreadPool->tryStart(logger);
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     qInstallMessageHandler(MyOutputHandler);
-#else
-    qInstallMsgHandler(MyOutputHandler);
-#endif
     if (b) {
         qWarning() << "Started logging thread";
     } else {

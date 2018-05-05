@@ -92,7 +92,7 @@ void UpdaterWindow::checkForUpdates()
 {
     QString platform=platformStr();
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     QString filename = QApplication::applicationDirPath() + "/Updates.xml";
 #else
     QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platform);
@@ -106,7 +106,7 @@ void UpdaterWindow::checkForUpdates()
         if (age < 900) {
             QFile file(filename);
             file.open(QFile::ReadOnly);
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
             ParseUpdatesXML(&file);
 #else
             ParseLatestVersion(&file);
@@ -118,7 +118,7 @@ void UpdaterWindow::checkForUpdates()
 
     mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     update_url = QUrl(QString("http://sleepyhead.jedimark.net/packages/%1/Updates.xml").arg(platform));
 #else
     update_url = QUrl(QString("http://sleepyhead.jedimark.net/releases/LatestVersion-%1").arg(platform));
@@ -160,7 +160,7 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
 
         ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
         QString filename = QApplication::applicationDirPath() + "/Updates.xml";
 #else
         QString filename = QApplication::applicationDirPath() + QString("/LatestVersion-%1").arg(platformStr());
@@ -173,7 +173,7 @@ void UpdaterWindow::updateFinished(QNetworkReply *reply)
         file.close();
         file.open(QFile::ReadOnly);
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
         ParseUpdatesXML(&file);
 #else
         ParseLatestVersion(&file);
@@ -427,7 +427,7 @@ void StartMaintenanceTool()
 {
     QString mt_path = QApplication::applicationDirPath()+"/MaintenanceTool.exe";
     SpawnApp(mt_path);
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 
 #endif
 }

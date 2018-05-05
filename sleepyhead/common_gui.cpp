@@ -87,53 +87,10 @@ QString getBranchVersion()
 }
 
 
-#if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
-// Qt 4.8 makes this a whole lot easier
 Qt::DayOfWeek firstDayOfWeekFromLocale()
 {
     return QLocale::system().firstDayOfWeek();
 }
-#elif defined(__GLIBC__)
-# include <langinfo.h>
-Qt::DayOfWeek firstDayOfWeekFromLocale()
-{
-    const unsigned char *const s = nl_langinfo(_NL_TIME_FIRST_WEEKDAY);
-
-    if (s && *s >= 1 && *s <= 7) {
-        // Map between nl_langinfo and Qt:
-        //              Sun Mon Tue Wed Thu Fri Sat
-        // nl_langinfo:  1   2   3   4   5   6   7
-        //   DayOfWeek:  7   1   2   3   4   5   6
-        return (Qt::DayOfWeek)((*s + 5) % 7 + 1);
-    }
-
-    return Qt::Monday;
-}
-#elif defined(Q_OS_WIN)
-# include "windows.h"
-Qt::DayOfWeek firstDayOfWeekFromLocale()
-{
-    Qt::DayOfWeek firstDay = Qt::Monday; // Fallback, acknowledging the awesome concept of weekends.
-    WCHAR wsDay[4];
-# if defined(_WIN32_WINNT_VISTA) && WINVER >= _WIN32_WINNT_VISTA && defined(LOCALE_NAME_USER_DEFAULT)
-
-    if (GetLocaleInfoEx(LOCALE_NAME_USER_DEFAULT, LOCALE_IFIRSTDAYOFWEEK, wsDay, 4)) {
-# else
-
-    if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IFIRSTDAYOFWEEK, wsDay, 4)) {
-# endif
-        bool ok;
-        int wfd = QString::fromWCharArray(wsDay).toInt(&ok) + 1;
-
-        if (ok) {
-            return (Qt::DayOfWeek)(unsigned char)wfd;
-        }
-    }
-
-    return firstDay;
-}
-
-#endif // QT_VERSION
 
 // Flag Colors
 QColor COLOR_Hypopnea       = Qt::blue;

@@ -139,7 +139,7 @@ void release_notes()
 void sDelay(int s)
 {
     // QThread::msleep() is exposed in Qt5
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     Sleep(s * 1000);
 #else
     sleep(s);
@@ -177,10 +177,6 @@ int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
     XInitThreads();
-#endif
-
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-    QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
 #endif
 
     bool dont_load_profile = false;

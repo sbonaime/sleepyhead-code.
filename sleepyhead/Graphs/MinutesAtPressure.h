@@ -1,4 +1,4 @@
-/* Minutes At Pressure Graph Header
+﻿/* Minutes At Pressure Graph Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -126,8 +126,8 @@ public:
 
         layer->ahis = ahis;
 
-        mutex.unlock();
         timelock.unlock();
+        mutex.unlock();
     }
 protected:
     QMutex timelock;

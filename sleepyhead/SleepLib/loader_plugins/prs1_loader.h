@@ -85,6 +85,7 @@ public:
     quint16 duration;
 
     QList<PRS1Waveform> waveformInfo;
+    QHash<unsigned char, short> hblock;
 };
 
 class PRS1Loader;
@@ -157,6 +158,8 @@ public:
     bool ParseF0Events();
     //! \brief Parse a single data chunk from a .002 file containing event data for a AVAPS 1060P machine
     bool ParseF3Events();
+    //! \brief Parse a single data chunk from a .002 file containing event data for a AVAPS 1060P machine file version 3
+    bool ParseF3EventsV3();
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool ParseF5Events();
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV file version 3 machine (which has a different format again)
@@ -230,6 +233,7 @@ class PRS1Loader : public CPAPLoader
 
 
     QHash<SessionID, PRS1Import*> sesstasks;
+    QMap<unsigned char, QStringList> unknownCodes;
 
   protected:
     QString last;

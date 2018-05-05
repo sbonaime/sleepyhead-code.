@@ -36,8 +36,8 @@ RecalcMAP::~RecalcMAP()
 {
 }
 void RecalcMAP::quit() {
-    m_quit = true;
     map->mutex.lock();
+    m_quit = true;
     map->mutex.unlock();
 }
 
@@ -148,6 +148,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_maxx = graph.max_x;
 
     if (graph.printing() || ((m_lastminx != m_minx) || (m_lastmaxx != m_maxx))) {
+        // note: this doesn't run on popout graphs that aren't linked with scrolling...
+        // it's a pretty useless graph to popout, probably should just block it's popout instead.
         recalculate(&graph);
     }
 
@@ -157,17 +159,21 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     QMap<EventStoreType, int>::iterator it;
     if (graph.printing()) {
-        // lock the other mutex...
-//        while (recalculating()) {};
-//        recalculate(&graph);
-        while (recalculating()) {};
+        // Could just lock the mutex QMutex instead
+        mutex.lock();
+        // do nothing between, it should hang until complete.
+        mutex.unlock();
+        //while (recalculating()) { QThread::yieldCurrentThread(); } // yield or whatever
 
     }
 
     if (!painter.isActive()) return;
 
-    // Lock the stuff we need to draw
-    timelock.lock();
+    // Recalculating in the background...  So we just draw an old copy until then the new data is ready
+    // (it will refresh itself when complete)
+    // The only time we can't draw when at the end of the recalc when the map variables are being updated
+    // So use a mutex to lock
+    QMutexLocker TimeLock(&timelock);
 
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
@@ -201,8 +207,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 peakstep = 20.0;
                 peakmult = double(height+2) / (peak/peakstep);
                 if (peakmult < h+4) {
-                    peakstep = 40.0;
-                    //peakmult = double(height+2) / (peak/peakstep);
+                    peakstep = 50.0;
+                    peakmult = double(height+2) / (peak/peakstep);
+                    if (peakmult < h+4) {
+                        peakstep = 100.0;
+                        peakmult = double(height+2) / (peak/peakstep);
+                    }
                 }
             }
         }
@@ -317,11 +327,15 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         // Plot IPAP Time at Pressure
         ////////////////////////////////////////////////////////////////////
         xp=left;
-        s2 = double(ipap.times[qMax(0, min-1)]/60.0);
-        if (s2 < 0) s2=0;
+        if ( ipap.times.size()>qMax(0, min-1)) {
+            s2 = double(ipap.times[qMax(0, min-1)]/60.0);
+
+            if (s2 < 0) s2=0;
+        } else s2 =0;
 
         double lastyp = bottom - (s2 * ystep);
-        for (int i=min; i<max; ++i) {
+        int tmax = qMin(ipap.times.size(), max);
+        for (int i=qMax(min,1); i<tmax; ++i) {
             p0 = ipap.times[i-1] / 60.0;
             p1 = ipap.times[i]/ 60.0;
             p2 = ipap.times[i+1]/ 60.0;
@@ -417,11 +431,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 painter.setPen(col);
                 painter.setPen(QPen(col, lineThickness));
 
-
                 xp = left;
-                s2 = ipap.events[ch][qMax(min-1,0)];
+                if (ipap.events.size()>qMax(min-1,0)) {
+                    s2 = ipap.events[ch][qMax(min-1,0)];
+                } else s2 = 0;
                 lastyp = bottom - (s2 * estep);
-                for (int i=min; i<max; ++i) {
+                int tmax = qMin(ipap.events.size(), max);
+                for (int i=qMax(min,1); i<tmax; ++i) {
                     p0 = ipap.events[ch][i-1];
                     p1 = ipap.events[ch][i];
                     p2 = ipap.events[ch][i+1];
@@ -518,9 +534,14 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         if (epap.min_pressure) {
             painter.setPen(QPen(echan.defaultColor(), lineThickness));
 
-            s2 = double(epap.times[qMax(min,0)]/60.0);
+            if ( epap.times.size() > qMax(min,0)) {
+                s2 = double(epap.times[qMax(min,0)]/60.0);
+            } else {
+                s2 = 0;
+            }
             xp=left, lastyp = bottom - (s2 * ystep);
-            for (int i=min; i<max; ++i) {
+            int tmax = qMin(epap.times.size(), max);
+            for (int i=qMax(min,1); i<tmax; ++i) {
                 p0 = epap.times[i-1]/60.0;
                 p1 = epap.times[i]/60.0;
                 p2 = epap.times[i+1]/60.0;
@@ -822,13 +843,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 //    QString txt=QString("%1 %2").arg(maxmins).arg(float(maxevents * 60.0) / maxmins);
 //    graph.renderText(txt, rect.left(), rect.top()-10);
 */
-    timelock.unlock();
+ //   TimeLock.unlock();
 
-    if (m_recalculating) {
+//    if (m_recalculating) {
 //        painter.setFont(*defaultfont);
 //        painter.setPen(QColor(0,0,0,125));
 //        painter.drawText(region.boundingRect(), Qt::AlignCenter, QObject::tr("Recalculating..."));
-    }
+  //  }
 
 
 //    painter.setPen(QPen(Qt::black,1));
@@ -1245,14 +1266,15 @@ skip:
 //    }
 */
 
-    QMutexLocker timelock(&map->timelock);
+    map->timelock.lock();
+
 //    map->times = times;
 //    map->events = events;
     map->epap = EPAP;
     map->ipap = IPAP;
 //    map->chans = chans;
  //   map->m_presChannel = ipapcode;
-    timelock.unlock();
+    map->timelock.unlock();
 
     map->recalcFinished();
     m_done = true;
@@ -1276,21 +1298,27 @@ void MinutesAtPressure::recalculate(gGraph * graph)
         m_remap->run();
     } else {
         while(!tp->tryStart(m_remap));
+
+        m_lastmaxx = m_maxx;
+        m_lastminx = m_minx;
+
     }
 
 
     // Start recalculating in another thread, organize a callback to redraw when done..
 
 
+
 }
 
 void MinutesAtPressure::recalcFinished()
 {
-    if (m_graph) {
-        m_graph->timedRedraw(0);
+    if (m_graph && !m_graph->printing()) {
+        // Can't call this using standard timedRedraw function, we are in another thread, so have to use a throwaway timer
+        QTimer::singleShot(0, m_graph->graphView(), SLOT(refreshTimeout()));
     }
-    m_recalculating = false;
     m_remap = nullptr;
+    m_recalculating = false;
 //    QThreadPool * tp = QThreadPool::globalInstance();
 //    tp->releaseThread();
 
@@ -1316,7 +1344,7 @@ bool MinutesAtPressure::mouseMoveEvent(QMouseEvent *, gGraph *graph)
 
 //    graph->graphView()->setCurrentTime(c);
 
-    graph->timedRedraw(0);
+    if (graph) graph->timedRedraw(0);
     return false;
 }
 

@@ -1,4 +1,4 @@
-/* Reports/Printing Module
+﻿/* Reports/Printing Module
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -605,11 +605,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
 
         if (!pm.isNull()) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
             painter.drawImage(QRect(0, top, pm.width(), pm.height()), pm);
-#else
-            painter.drawImage(0, top, pm);
-#endif
 
             //painter.drawImage(0,top,virt_width,full_graph_height-normal_height,pm);
         }

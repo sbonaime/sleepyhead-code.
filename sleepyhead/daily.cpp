@@ -1,4 +1,4 @@
-/* Daily Panel
+﻿/* Daily Panel
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -300,20 +300,21 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     graphlist[schema::channel[CPAP_Snore].code()]->AddLayer(new gLineChart(CPAP_Snore, true));
 
     graphlist[schema::channel[CPAP_PTB].code()]->AddLayer(new gLineChart(CPAP_PTB, square));
-    graphlist[schema::channel[CPAP_Test1].code()]->AddLayer(new gLineChart(CPAP_Test1, false));
+    graphlist[schema::channel[CPAP_Test1].code()]->AddLayer(new gLineChart(CPAP_Test1, square));
+    //graphlist[schema::channel[CPAP_Test2].code()]->AddLayer(new gLineChart(CPAP_Test2, square));
 
 
     gLineChart *lc = nullptr;
     graphlist[schema::channel[CPAP_MaskPressure].code()]->AddLayer(new gLineChart(CPAP_MaskPressure, false));
-    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(lc=new gLineChart(CPAP_RespRate, false));
+    graphlist[schema::channel[CPAP_RespRate].code()]->AddLayer(lc=new gLineChart(CPAP_RespRate, square));
 
     graphlist[schema::channel[POS_Inclination].code()]->AddLayer(new gLineChart(POS_Inclination));
     graphlist[schema::channel[POS_Orientation].code()]->AddLayer(new gLineChart(POS_Orientation));
 
-    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(lc=new gLineChart(CPAP_MinuteVent, false));
+    graphlist[schema::channel[CPAP_MinuteVent].code()]->AddLayer(lc=new gLineChart(CPAP_MinuteVent, square));
     lc->addPlot(CPAP_TgMV, square);
 
-    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(lc=new gLineChart(CPAP_TidalVolume, false));
+    graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(lc=new gLineChart(CPAP_TidalVolume, square));
     //lc->addPlot(CPAP_Test2,COLOR_DarkYellow,square);
 
     //graphlist[schema::channel[CPAP_TidalVolume].code()]->AddLayer(AddCPAP(new gLineChart("TidalVolume2", square)));
