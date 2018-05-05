@@ -77,7 +77,7 @@ void gSummaryChart::SetDay(Day *unused_day)
     QDate date = firstday;
     int idx = 0;
     do {
-        QMap<QDate, Day *>::iterator di = p_profile->daylist.find(date);
+        auto di = p_profile->daylist.find(date);
         Day * day = nullptr;
         if (di != p_profile->daylist.end()) {
             day = di.value();
@@ -146,7 +146,7 @@ bool gSummaryChart::mouseReleaseEvent(QMouseEvent *event, gGraph *graph)
 
     date = date.addDays(idx);
 
-    QMap<QDate, int>::iterator it = dayindex.find(date);
+    auto it = dayindex.find(date);
     if (it != dayindex.end()) {
         Day * day = daylist.at(it.value());
         if (day) {
@@ -162,8 +162,7 @@ void gSummaryChart::preCalc()
 {
     midcalc = p_profile->general->prefCalcMiddle();
 
-    for (int i=0; i<calcitems.size(); ++i) {
-        SummaryCalcItem & calc = calcitems[i];
+    for (auto & calc : calcitems) {
         calc.reset(idx_end - idx_start, midcalc);
     }
 }
@@ -175,6 +174,7 @@ void gSummaryChart::customCalc(Day *day, QVector<SummaryChartSlice> & slices)
         return;
     }
     float hour = day->hours(m_machtype);
+
     for (int i=0; i < size; ++i) {
         const SummaryChartSlice & slice = slices.at(i);
         SummaryCalcItem & calc = calcitems[i];
@@ -208,8 +208,8 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
 
     schema::Channel & chan = schema::channel[calcitems.at(0).code];
 
-    for (int i=0; i<calcitems.size(); ++i) {
-        SummaryCalcItem & calc = calcitems[i];
+    for (auto & calc : calcitems) {
+
         if (calcitems.size() == 1) {
             float val = calc.min;
             if (val < 99998)
@@ -303,10 +303,9 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
 
 QString gSummaryChart::tooltipData(Day *, int idx)
 {
-    QVector<SummaryChartSlice> & slices = cache[idx];
     QString txt;
-    for (int i=0; i< slices.size(); ++i) {
-        SummaryChartSlice & slice = slices[i];
+    const auto & slices = cache[idx];
+    for (const auto & slice : slices) {
         txt += QString("\n%1: %2").arg(slice.name).arg(float(slice.value), 0, 'f', 2);
 
     }
@@ -316,10 +315,8 @@ QString gSummaryChart::tooltipData(Day *, int idx)
 void gSummaryChart::populate(Day * day, int idx)
 {
 
-    int size = calcitems.size();
     bool good = false;
-    for (int i=0; i < size; ++i) {
-        const SummaryCalcItem & item = calcitems.at(i);
+    for (const auto & item : calcitems) {
         if (day->hasData(item.code, item.type)) {
             good = true;
             break;
@@ -327,12 +324,12 @@ void gSummaryChart::populate(Day * day, int idx)
     }
     if (!good) return;
 
-    QVector<SummaryChartSlice> & slices = cache[idx];
+    auto & slices = cache[idx];
 
     float hours = day->hours(m_machtype);
     float base = 0;
-    for (int i=0; i < size; ++i) {
-        SummaryCalcItem & item = calcitems[i];
+
+    for (auto & item : calcitems) {
         ChannelID code = item.code;
         schema::Channel & chan = schema::channel[code];
         float value = 0;
@@ -413,7 +410,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
     //float lasty1 = rect.bottom();
 
-    QMap<QDate, int>::iterator it = dayindex.find(date);
+    auto it = dayindex.find(date);
     idx_start = 0;
     if (it == dayindex.end()) {
         it = dayindex.begin();
@@ -423,7 +420,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
     int idx = idx_start;
 
-    QMap<QDate, int>::iterator ite = dayindex.find(enddate);
+    auto ite = dayindex.find(enddate);
     idx_end = daylist.size()-1;
     if (ite != dayindex.end()) {
         idx_end = ite.value();
@@ -486,7 +483,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
 
         day->OpenSummary();
 
-        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(i);
+        auto cit = cache.find(i);
 
         if (cit == cache.end()) {
             populate(day, i);
@@ -494,11 +491,8 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
         }
 
         if (cit != cache.end()) {
-            QVector<SummaryChartSlice> & list = cit.value();
             float base = 0, val;
-            int listsize = list.size();
-            for (int j=0; j < listsize; ++j) {
-                SummaryChartSlice & slice = list[j];
+            for (const auto & slice : cit.value()) {
                 val = slice.height;
                 base += val;
             }
@@ -559,7 +553,7 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             hlday = true;
         }
 
-        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(idx);
+        auto cit = cache.find(idx);
 
         if (cit == cache.end()) {
             populate(day, idx);
@@ -574,12 +568,9 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
             QVector<SummaryChartSlice> & list = cit.value();
             customCalc(day, list);
 
-            int listsize = list.size();
             QLinearGradient gradient(lastx1, 0, lastx1 + barw, 0); //rect.bottom(), barw, rect.bottom());
 
-            for (int i=0; i < listsize; ++i) {
-                SummaryChartSlice & slice = list[i];
-
+            for (const auto & slice : list) {
                 val = slice.height;
                 y1 = ((lastval-miny) * ymult);
                 y2 = (val * ymult);
@@ -608,14 +599,11 @@ void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &regio
                 }
 
                 lastval += val;
-
             }
-
         }
 
         lastx1 = x1;
         it++;
-
     } while (++idx <= idx_end);
     painter.setPen(QPen(Qt::black,1));
     painter.drawRects(outlines);
@@ -756,11 +744,9 @@ void gSessionTimesChart::customCalc(Day *, QVector<SummaryChartSlice> & slices) 
     calc1.update(slices.size(), 1);
 
     EventDataType max = 0;
-    for (int i=0; i<size; ++i) {
-        SummaryChartSlice & slice = slices[i];
-        SummaryCalcItem & calc = *slice.calc;
 
-        calc.update(slice.height, slice.height);
+    for (auto & slice : slices) {
+        slice.calc->update(slice.height, slice.height);
 
         max = qMax(slice.height, max);
     }
@@ -837,7 +823,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 //    float lasty1 = rect.bottom();
     float lastx1 = rect.left();
 
-    QMap<QDate, int>::iterator it = dayindex.find(date);
+    auto it = dayindex.find(date);
     int idx=0;
 
     if (it == dayindex.end()) {
@@ -846,7 +832,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         idx = it.value();
     }
 
-    QMap<QDate, int>::iterator ite = dayindex.find(enddate);
+    auto ite = dayindex.find(enddate);
     int idx_end = daylist.size()-1;
     if (ite != dayindex.end()) {
         idx_end = ite.value();
@@ -860,14 +846,14 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
     int size = idx_end - idx;
     outlines.reserve(size * 5);
 
-    QMap<QDate, int>::iterator it2 = it;
+    auto it2 = it;
 
     /////////////////////////////////////////////////////////////////////
     /// Calculate Graph Peaks
     /////////////////////////////////////////////////////////////////////
     peak_value = 0;
     min_value = 999;
-    QMap<QDate, int>::iterator it_end = dayindex.end();
+    auto it_end = dayindex.end();
 
     float right_edge = (rect.left()+rect.width()+1);
     for (int i=idx; (i <= idx_end) && (it2 != it_end); ++i, ++it2, lastx1 += barw) {
@@ -880,13 +866,12 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             continue;
         }
 
-        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(i);
+        auto cit = cache.find(i);
 
         if (cit == cache.end()) {
             day->OpenSummary();
             date = it2.key();
             splittime = QDateTime(date, split);
-            QList<Session *>::iterator si;
 
             QVector<SummaryChartSlice> & slices = cache[i];
 
@@ -896,16 +881,13 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
             QString datestr = date.toString(Qt::SystemLocaleShortDate);
 
-            for (si = day->begin(); si != day->end(); ++si) {
-                Session *sess = (*si);
+            for (const auto & sess : day->sessions) {
                 if (!sess->enabled() || (sess->type() != m_machtype)) continue;
 
                 // Look at mask on/off slices...
-                int slize = sess->m_slices.size();
-                if (slize > 0) {
+                if (sess->m_slices.size() > 0) {
                     // segments
-                    for (int j=0; j<slize; ++j) {
-                        const SessionSlice & slice = sess->m_slices.at(j);
+                    for (const auto & slice : sess->m_slices) {
                         QDateTime st = QDateTime::fromMSecsSinceEpoch(slice.start, Qt::LocalTime);
 
                         float s1 = float(splittime.secsTo(st)) / 3600.0;
@@ -936,13 +918,9 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
         }
 
         if (cit != cache.end()) {
-            QVector<SummaryChartSlice> & list = cit.value();
-            int listsize = list.size();
-
             float peak = 0, base = 999;
 
-            for (int j=0; j < listsize; ++j) {
-                SummaryChartSlice & slice = list[j];
+            for (const auto & slice : cit.value()) {
                 float s1 = slice.value;
                 float s2 = slice.height;
 
@@ -994,7 +972,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             continue;
         }
 
-        QHash<int, QVector<SummaryChartSlice> >::iterator cit = cache.find(idx);
+        auto cit = cache.find(idx);
 
         float x1 = lastx1 + barw;
 
@@ -1011,12 +989,10 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
             QVector<SummaryChartSlice> & slices = cit.value();
 
             customCalc(day, slices);
-            int size = slices.size();
 
             QLinearGradient gradient(lastx1, rect.bottom(), lastx1+barw, rect.bottom());
 
-            for (int i=0; i < size; ++i) {
-                const SummaryChartSlice & slice = slices.at(i);
+            for (const auto & slice : slices) {
                 float s1 = slice.value - miny;
                 float s2 = slice.height;
 
@@ -1028,7 +1004,6 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
                 QRect rec(lastx1, rect.bottom() - y1 - y2, barw, y2);
                 rec = rec.intersected(rect);
 
-//                QBrush brush = slice.brush;
                 if (rec.contains(mouse)) {
                     col = Qt::yellow;
                     graph.ToolTip(slice.name, mouse.x() - 15,mouse.y() + 15, TT_AlignRight);
@@ -1068,6 +1043,7 @@ void gTTIAChart::preCalc()
 {
     gSummaryChart::preCalc();
 }
+
 void gTTIAChart::customCalc(Day *, QVector<SummaryChartSlice> & slices)
 {
     if (slices.size() == 0) return;
@@ -1075,13 +1051,12 @@ void gTTIAChart::customCalc(Day *, QVector<SummaryChartSlice> & slices)
 
     calcitems[0].update(slice.value, slice.value);
 }
+
 void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
 {
     QStringList txtlist;
-    int num_channels = calcitems.size();
 
-    for (int i=0; i < num_channels; ++i) {
-        SummaryCalcItem & calc = calcitems[i];
+    for (auto & calc : calcitems) {
         //ChannelID code = calc.code;
         //schema::Channel & chan = schema::channel[code];
         float mid = 0;
@@ -1108,6 +1083,7 @@ void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
     QString txt = txtlist.join(", ");
     graph.renderText(txt, rect.left(), rect.top()-5*graph.printScaleY(), 0);
 }
+
 void gTTIAChart::populate(Day *day, int idx)
 {
     QVector<SummaryChartSlice> & slices = cache[idx];
@@ -1116,9 +1092,8 @@ void gTTIAChart::populate(Day *day, int idx)
     int m = int(ttia) / 60 % 60;
     int s = int(ttia) % 60;
     slices.append(SummaryChartSlice(&calcitems[0], ttia / 60.0, ttia / 60.0, QObject::tr("\nTTIA: %1").arg(QString().sprintf("%02i:%02i:%02i",h,m,s)), QColor(255,147,150)));
-
-
 }
+
 QString gTTIAChart::tooltipData(Day *, int idx)
 {
     QVector<SummaryChartSlice> & slices = cache[idx];
@@ -1151,8 +1126,8 @@ void gAHIChart::customCalc(Day *day, QVector<SummaryChartSlice> &list)
     if (size == 0) return;
     EventDataType hours = day->hours(m_machtype);
     EventDataType ahi_cnt = 0;
-    for (int i=0; i < size; ++i) {
-        SummaryChartSlice & slice = list[i];
+
+    for (auto & slice : list) {
         SummaryCalcItem * calc = slice.calc;
 
         EventDataType value = slice.value;
@@ -1170,8 +1145,6 @@ void gAHIChart::customCalc(Day *day, QVector<SummaryChartSlice> &list)
             calc->cnt++;
             break;
         }
-
-
 
         calc->min = qMin(valh, calc->min);
         calc->max = qMax(valh, calc->max);
@@ -1220,10 +1193,7 @@ void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
     QStringList txtlist;
     if (!skip) txtlist.append(QObject::tr("%1 %2 / %3 / %4").arg(STR_TR_AHI).arg(min_ahi, 0, 'f', 2).arg(med, 0, 'f', 2).arg(max_ahi, 0, 'f', 2));
 
-    int num_channels = calcitems.size();
-
-    for (int i=0; i < num_channels; ++i) {
-        SummaryCalcItem & calc = calcitems[i];
+    for (auto & calc : calcitems) {
         ChannelID code = calc.code;
         schema::Channel & chan = schema::channel[code];
         float mid = 0;
@@ -1260,10 +1230,8 @@ void gAHIChart::populate(Day *day, int idx)
     QVector<SummaryChartSlice> & slices = cache[idx];
 
     float hours = day->hours();
-    int num_channels = calcitems.size();
 
-    for (int i=0; i < num_channels; ++i) {
-        SummaryCalcItem & calc = calcitems[i];
+    for (auto & calc : calcitems) {
         ChannelID code = calc.code;
         if (!day->hasData(code, ST_CNT)) continue;
 
@@ -1279,11 +1247,9 @@ QString gAHIChart::tooltipData(Day *day, int idx)
     float total = 0;
     float hour = day->hours(m_machtype);
     QString txt;
-    for (int i=0; i< slices.size(); ++i) {
-        SummaryChartSlice & slice = slices[i];
+    for (const auto & slice : slices) {
         total += slice.value;
         txt += QString("\n%1: %2").arg(slice.name).arg(float(slice.value) / hour, 0, 'f', 2);
-
     }
     return QString("\n%1: %2").arg(STR_TR_AHI).arg(float(total) / hour,0,'f',2)+txt;
 }

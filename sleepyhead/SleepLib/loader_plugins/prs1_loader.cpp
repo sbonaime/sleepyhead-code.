@@ -742,8 +742,7 @@ int PRS1Loader::OpenMachine(const QString & path)
     finishAddingSessions();
 
     if (unknownCodes.size() > 0) {
-        QMap<unsigned char, QStringList>::iterator it;
-        for (it = unknownCodes.begin(); it != unknownCodes.end(); ++it) {
+        for (auto it = unknownCodes.begin(), end=unknownCodes.end(); it != end; ++it) {
             qDebug() << QString("Unknown CPAP Codes '0x%1' was detected during import").arg((short)it.key(), 2, 16, QChar(0));
             QStringList & strlist = it.value();
             for (int i=0;i<it.value().size(); ++i) {
@@ -2352,7 +2351,6 @@ bool PRS1Import::ParseSummaryF3()
 {
     CPAPMode mode = MODE_UNKNOWN;
     EventDataType epap, ipap;
-    int duration;
 
     QMap<unsigned char, QByteArray>::iterator it;
 
@@ -2383,11 +2381,36 @@ bool PRS1Import::ParseSummaryF3()
     session->settings[CPAP_Mode] = (int)mode;
 
     if ((it=hbdata.find(5)) != hbdata.end()) {
-        duration = (it.value()[1] << 8 ) + it.value()[0];
+        summary_duration = (it.value()[1] << 8 ) + it.value()[0];
     }
 
+/*    QDateTime date = QDateTime::fromMSecsSinceEpoch(session->first());
+    if (date.date() == QDate(2018,5,1)) {
 
-    summary_duration = duration;
+        qDebug() << "Dumping session" << (int)session->session() << "summary file";
+        QString hexstr = QString("%1@0000: ").arg(session->session(),8,16,QChar('0'));
+        const unsigned char * data = (const unsigned char *)summary->m_data.constData();
+        int size = summary->m_data.size();
+        for (int i=0; i<size; ++i) {
+            unsigned char val = data[i];
+            hexstr += QString(" %1").arg((short)val, 2, 16, QChar('0'));
+            if ((i % 0x10) == 0x0f) {
+                qDebug() << hexstr;
+                hexstr = QString("%1@%2: ").arg(session->session(),8,16,QChar('0')).arg(i+1, 4, 16, QChar('0'));
+            }
+        }
+        qDebug() << "Dumping mainblock";
+        for (auto it=mainblock.cbegin(), end=mainblock.cend(); it!=end; ++it) {
+            qDebug() << it.key() << it.value().toHex();
+        }
+        qDebug() << "Dumping hbdata";
+        for (auto it=hbdata.cbegin(), end=hbdata.cend(); it!=end; ++it) {
+            qDebug() << it.key() << it.value().toHex();
+        }
+
+        qDebug() << "In date";
+    } */
+
 
     return true;
 }

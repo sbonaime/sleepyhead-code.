@@ -86,12 +86,12 @@ Profile::~Profile()
     delete general;
 
     // delete machine objects...
-    for (int i=0; i<m_machlist.size(); ++i) {
-        delete m_machlist[i];
+    for (auto & mach : m_machlist) {
+        delete mach;
     }
 
-    for (QMap<QDate, Day *>::iterator d = daylist.begin(); d != daylist.end(); d++) {
-        delete d.value();
+    for (auto & day : daylist) {
+        delete day;
     }
 
 }
@@ -340,7 +340,7 @@ QString Environment::searchInDirectory(const QStringList & execs, QString direct
     if (!directory.endsWith(slash))
         directory += slash;
 
-    foreach (const QString & exec, execs) {
+    for (auto & exec : execs) {
         QFileInfo fi(directory + exec);
         if (fi.exists() && fi.isFile() && fi.isExecutable())
             return fi.absoluteFilePath();
@@ -387,7 +387,7 @@ QString Environment::searchInPath(const QString &executable, const QStringList &
     if (executable.indexOf(QLatin1Char('/')) != -1)
         return QString();
 
-    foreach (const QString &p, path()) {
+    for (auto & p : path()) {
         if (alreadyChecked.contains(p))
             continue;
         alreadyChecked.insert(p);
@@ -550,16 +550,14 @@ void Profile::UnloadMachineData()
         return;
     }
 
-    QMap<QDate, Day *>::iterator it;
-    for (it = daylist.begin(); it != daylist.end(); ++it) {
-        delete it.value();
+    for (auto & day : daylist) {
+        delete day;
     }
     daylist.clear();
 
-    for (int i=0; i<m_machlist.size(); ++i) {
-        Machine *m = m_machlist[i];
-        m->sessionlist.clear();
-        m->day.clear();
+    for (auto & mach : m_machlist) {
+        mach->sessionlist.clear();
+        mach->day.clear();
     }
     removeLock();
 }
@@ -567,36 +565,34 @@ void Profile::LoadMachineData()
 {
     addLock();
 
-    for (int i=0; i<m_machlist.size();++i) {
-        Machine *m = m_machlist[i];
-
-        MachineLoader *loader = lookupLoader(m);
+    for (auto & mach : m_machlist) {
+        MachineLoader *loader = lookupLoader(mach);
 
         if (loader) {
-            if (m->version() < loader->Version()) {
-                DataFormatError(m);
+            if (mach->version() < loader->Version()) {
+                DataFormatError(mach);
             } else {
                 try {
-                    m->Load();
+                    mach->Load();
                 } catch (OldDBVersion& e) {
                     Q_UNUSED(e)
-                    DataFormatError(m);
+                    DataFormatError(mach);
                 }
             }
         } else {
-            m->Load();
+            mach->Load();
         }
     }
     loadChannels();
 }
 
-void Profile::removeMachine(Machine * m)
+void Profile::removeMachine(Machine * mach)
 {
-    m_machlist.removeAll(m);
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(m->loaderName());
+    m_machlist.removeAll(mach);
+    auto mlit = MachineList.find(mach->loaderName());
 
     if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(m->serial());
+        auto mit = mlit.value().find(mach->serial());
         if (mit != mlit.value().end()) {
             mlit.value().erase(mit);
         }
@@ -606,9 +602,9 @@ void Profile::removeMachine(Machine * m)
 
 Machine * Profile::lookupMachine(QString serial, QString loadername)
 {
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loadername);
+    auto mlit = MachineList.find(loadername);
     if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(serial);
+        auto mit = mlit.value().find(serial);
         if (mit != mlit.value().end()) {
             return mit.value();
         }
@@ -619,13 +615,12 @@ Machine * Profile::lookupMachine(QString serial, QString loadername)
 
 Machine * Profile::CreateMachine(MachineInfo info, MachineID id)
 {
-
     Machine *m = nullptr;
 
-    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(info.loadername);
+    auto mlit = MachineList.find(info.loadername);
 
     if (mlit != MachineList.end()) {
-        QHash<QString, Machine *>::iterator mit = mlit.value().find(info.serial);
+        auto mit = mlit.value().find(info.serial);
         if (mit != mlit.value().end()) {
             mit.value()->setInfo(info); // update info
             return mit.value();
@@ -701,7 +696,7 @@ void Profile::DelMachine(Machine *m)
 
 Day *Profile::addDay(QDate date)
 {
-    QMap<QDate, Day *>::iterator dit = daylist.find(date);
+    auto dit = daylist.find(date);
     if (dit == daylist.end()) {
         dit = daylist.insert(date, new Day());
     }
@@ -732,11 +727,10 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
         return nullptr;
 
     // For a machine match, find at least one enabled Session.
-    for (int i = 0; i < day->size(); ++i) {
-        Session * sess = (*day)[i];
+
+    for (auto & sess : day->sessions) {
         if (((type == MT_UNKNOWN) || (sess->type() == type)) && sess->enabled()) {
             day->OpenSummary();
-
             return day;
         }
     }
@@ -752,8 +746,7 @@ Day *Profile::FindGoodDay(QDate date, MachineType type)
         return nullptr;
 
     // For a machine match, find at least one enabled Session.
-    for (int i = 0; i < day->size(); ++i) {
-        Session * sess = (*day)[i];
+    for (auto & sess : day->sessions) {
         if (((type == MT_UNKNOWN) || (sess->type() == type)) && sess->enabled()) {
             return day;
         }
@@ -766,7 +759,7 @@ Day *Profile::FindGoodDay(QDate date, MachineType type)
 
 Day *Profile::GetDay(QDate date, MachineType type)
 {
-    QMap<QDate, Day *>::iterator di = daylist.find(date);
+    auto di = daylist.find(date);
     if (di == daylist.end()) return nullptr;
 
     Day * day = di.value();
@@ -786,7 +779,7 @@ Day *Profile::GetDay(QDate date, MachineType type)
 
 Day *Profile::FindDay(QDate date, MachineType type)
 {
-    QMap<QDate, Day *>::iterator di = daylist.find(date);
+    auto di = daylist.find(date);
     if (di == daylist.end()) return nullptr;
 
     Day * day = di.value();
@@ -815,7 +808,7 @@ int Profile::Import(QString path)
 
     QList<MachineLoader *>loaders = GetLoaders(MT_CPAP);
 
-    Q_FOREACH(MachineLoader * loader, loaders) {
+    for(auto & loader : loaders) {
         if (c += loader->Open(path)) {
             break;
         }
@@ -826,9 +819,9 @@ int Profile::Import(QString path)
 
 MachineLoader *GetLoader(QString name)
 {
-    QList<MachineLoader *>loaders = GetLoaders();
+    QList<MachineLoader *> loaders = GetLoaders();
 
-    Q_FOREACH(MachineLoader * loader, loaders) {
+    for (auto & loader : loaders) {
         if (loader->loaderName() == name) {
             return loader;
         }
@@ -843,17 +836,16 @@ QList<Machine *> Profile::GetMachines(MachineType t)
 {
     QList<Machine *> vec;
 
-    for (int i=0; i<m_machlist.size(); ++i) {
-        Machine * m = m_machlist[i];
-        if (!m) {
+    for (auto & mach : m_machlist) {
+        if (!mach) {
             qWarning() << "Profile::GetMachines() m == nullptr";
             continue;
         }
 
-        MachineType mt = m->type();
+        MachineType mt = mach->type();
 
         if ((t == MT_UNKNOWN) || (mt == t)) {
-            vec.push_back(m);
+            vec.push_back(mach);
         }
     }
 
@@ -905,11 +897,8 @@ Machine *Profile::GetMachine(MachineType t)
 
 bool Profile::unlinkDay(Day * day)
 {
-    QMap<QDate, Day *>::iterator it;
-    QMap<QDate, Day *>::iterator it_end = daylist.end();
-
     // Find the key...
-    for (it = daylist.begin(); it != it_end; ++it) {
+    for (auto it = daylist.begin(), it_end = daylist.end(); it != it_end; ++it) {
         if (it.value() == day) {
             daylist.erase(it);
             return true;
@@ -995,9 +984,7 @@ void saveProfileList()
 
     root.appendChild(doc.createComment("This file is created during Profile Scan for cloud access convenience, it's not used by Desktop version of SleepyHead."));
 
-    QMap<QString, Profile *>::iterator it;
-
-    for (it = profiles.begin(); it != profiles.end(); ++it) {
+    for (auto it = profiles.begin(); it != profiles.end(); ++it) {
         QDomElement elem = doc.createElement("profile");
         elem.setAttribute("name", it.key());
         // Not technically nessesary..
@@ -1027,8 +1014,7 @@ int CleanupProfile(Profile *prof)
                 << STR_CS_UserEventPieChart << STR_AS_OverlayType << STR_AS_OverviewLinechartMode;
 
     int cnt = 0;
-    for (int i=0; i<migrateList.length(); ++i) {
-        const QString &prf = migrateList.at(i);
+    for (auto & prf :migrateList) {
         if (prof->contains(prf)) {
             qDebug() << "Migrating profile preference" << prf;
             PREF[prf] = (*prof)[prf];
@@ -1068,8 +1054,7 @@ void Scan()
     int cleanup = 0;
 
     // Iterate through subdirectories and load profiles..
-    for (int i = 0; i < list.size(); i++) {
-        QFileInfo fi = list.at(i);
+    for (auto & fi : list) {
         QString npath = fi.canonicalFilePath();
         Profile *prof = new Profile(npath);
         //prof->Open();
@@ -1354,15 +1339,10 @@ EventDataType Profile::calcBelowThreshold(ChannelID code, EventDataType threshol
 
 Day * Profile::findSessionDay(Session * session)
 {
-//    MachineType mt = session->type();
-
-    QMap<QDate, Day *>::iterator it;
-    QMap<QDate, Day *>::iterator it_end = p_profile->daylist.end();
-    for (it = p_profile->daylist.begin(); it != it_end; ++it) {
+    for (auto it=p_profile->daylist.begin(),it_end = p_profile->daylist.end(); it != it_end; ++it) {
         Day *day = it.value();
-        for (int i=0; i<day->size(); i++) {
-            Session * s = day->sessions.at(i);
-            if (s == session) {
+        for (auto & sess : day->sessions) {
+            if (sess == session) {
                 return day;
             }
         }
@@ -1661,13 +1641,14 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                 summaryOnly = true;
                 break;
             }
-            for (int i = 0; i < day->size(); i++) {
-                for (QList<Session *>::iterator s = day->begin(); s != day->end(); s++) {
-                    if (!(*s)->enabled()) {
+
+            // why was this nested like this???
+            //for (int i = 0; i < day->size(); i++) {
+                for (auto & sess : day->sessions) {
+                    if (!sess->enabled()) {
                         continue;
                     }
 
-                    Session *sess = *s;
                     gain = sess->m_gain[code];
 
                     if (!gain) { gain = 1; }
@@ -1683,7 +1664,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                     QHash<EventStoreType, quint32> &tsum = tsi.value();
 
                     if (timeweight) {
-                        for (QHash<EventStoreType, quint32>::iterator k = tsum.begin(); k != tsum.end(); k++) {
+                        for (auto k=tsum.begin(), tsumend=tsum.end(); k != tsumend; k++) {
                             weight = k.value();
                             value = EventDataType(k.key()) * gain;
 
@@ -1697,7 +1678,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                             }
                         }
                     } else {
-                        for (QHash<EventStoreType, EventStoreType>::iterator k = vsum.begin(); k != vsum.end(); k++) {
+                        for (auto k=vsum.begin(), vsumend=vsum.end(); k!=vsumend; k++) {
                             weight = k.value();
                             value = EventDataType(k.key()) * gain;
 
@@ -1712,7 +1693,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                         }
                     }
                 }
-            }
+           // }
         }
 
         date = date.addDays(1);
@@ -1879,8 +1860,7 @@ QDate Profile::LastGoodDay(MachineType mt)
 
 bool Profile::channelAvailable(ChannelID code)
 {
-    for (int i=0; i<m_machlist.size(); ++i) {
-        Machine * mach = m_machlist[i];
+    for (auto & mach : m_machlist) {
         if (mach->hasChannel(code))
             return true;
     }
@@ -1942,10 +1922,7 @@ void Profile::saveChannels()
     quint16 size = schema::channel.channels.size();
     out << size;
 
-    QHash<ChannelID, schema::Channel *>::iterator it;
-    QHash<ChannelID, schema::Channel *>::iterator it_end = schema::channel.channels.end();
-
-    for (it = schema::channel.channels.begin(); it != it_end; ++it) {
+    for (auto it = schema::channel.channels.begin(),it_end = schema::channel.channels.end(); it != it_end; ++it) {
         schema::Channel * chan = it.value();
         out << it.key();
         out << chan->code();

@@ -50,19 +50,12 @@ void MinutesAtPressure::SetDay(Day *day)
     Machine * cpap = nullptr;
     if (day) cpap = day->machine(MT_CPAP);
     if (cpap) {
-        QList<Session *>::iterator sit;
         EventDataType minpressure = 20;
         EventDataType maxpressure = 0;
 
-        QMap<QDate, Day *>::iterator it;
-        QMap<QDate, Day *>::iterator day_end = cpap->day.end();
         // look at overall pressure ranges and find the max
-
-        for (it = cpap->day.begin(); it != day_end; ++it) {
-            Day * d = it.value();
-            QList<Session *>::iterator sess_end = d->end();
-            for (sit = d->begin(); sit != sess_end; ++sit) {
-                Session * sess = (*sit);
+        for (const auto d : cpap->day) {
+            for (const auto sess : d->sessions) {
                 if (sess->channelExists(CPAP_Pressure)) {
                     minpressure = qMin(sess->Min(CPAP_Pressure), minpressure);
                     maxpressure = qMax(sess->Max(CPAP_Pressure), maxpressure);
@@ -157,7 +150,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     m_lastminx = m_minx;
     m_lastmaxx = m_maxx;
 
-    QMap<EventStoreType, int>::iterator it;
     if (graph.printing()) {
         // Could just lock the mutex QMutex instead
         mutex.lock();
@@ -245,8 +237,8 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         ////////////////////////////////////////////////////////////////////
         double pstep = xstep * pressureMult;
 
-        xp = left;// /2.0;
-        for (int i = 0; i<=max-min; ++i) {
+        xp = left;
+        for (int i=0, end=max-min; i<=end; ++i) {
             yp = bottom+1;
             painter.drawLine(xp, yp, xp, yp+6);
             if (i>0) { // skip the first mid tick
@@ -335,11 +327,12 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         double lastyp = bottom - (s2 * ystep);
         int tmax = qMin(ipap.times.size(), max);
+        const auto & ipaptimes = ipap.times;
         for (int i=qMax(min,1); i<tmax; ++i) {
-            p0 = ipap.times[i-1] / 60.0;
-            p1 = ipap.times[i]/ 60.0;
-            p2 = ipap.times[i+1]/ 60.0;
-            p3 = ipap.times[i+2]/ 60.0;
+            p0 = ipaptimes[i-1] / 60.0;
+            p1 = ipaptimes[i]/ 60.0;
+            p2 = ipaptimes[i+1]/ 60.0;
+            p3 = ipaptimes[i+2]/ 60.0;
 
             yp = bottom - qMax((double(p1) * ystep),0.0);
 
@@ -376,12 +369,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             painter.drawLine(xp, lastyp, xp+xstep, yp);
             xp+=xstep;
             lastyp = yp;
-
-
         }
 
         double estep;
-
 
         if (ipap.peakevents>0) {
             double evpeak = ipap.peakevents;
@@ -403,7 +393,6 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             evpeak = ceil(evpeak/g)*g;
             r = double(height+3) / (evpeak / g);
 
-
             yp = bot;
             widest_YAxis+=2;
             for (double f=0.0; f<=evpeak; f+=g) {
@@ -421,8 +410,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             }
 
             estep =  double(height) / ipap.peakevents;
-            for (int k=0; k<ipap.chans.size(); ++k) {
-                ChannelID ch = ipap.chans.at(k);
+            for (const auto ch : ipap.chans) {
                 //(ch != CPAP_AHI) &&
                 //if ((ch != CPAP_Hypopnea) && (ch != CPAP_Obstructive) && (ch != CPAP_ClearAirway) && (ch != CPAP_Apnea)) continue;
                 schema::Channel & chan = schema::channel[ch];
@@ -437,11 +425,13 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
                 } else s2 = 0;
                 lastyp = bottom - (s2 * estep);
                 int tmax = qMin(ipap.events.size(), max);
+
+                const auto & ipapev = ipap.events[ch];
                 for (int i=qMax(min,1); i<tmax; ++i) {
-                    p0 = ipap.events[ch][i-1];
-                    p1 = ipap.events[ch][i];
-                    p2 = ipap.events[ch][i+1];
-                    p3 = ipap.events[ch][i+1];
+                    p0 = ipapev[i-1];
+                    p1 = ipapev[i];
+                    p2 = ipapev[i+1];
+                    p3 = ipapev[i+1];
                     yp = bottom - qMax((double(p1) * estep),0.0);
                     painter.drawLine(xp, lastyp, xp+xstep, yp);
                     lastyp = yp;
@@ -534,18 +524,19 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
         if (epap.min_pressure) {
             painter.setPen(QPen(echan.defaultColor(), lineThickness));
 
-            if ( epap.times.size() > qMax(min,0)) {
-                s2 = double(epap.times[qMax(min,0)]/60.0);
+            const auto & epaptimes = epap.times;
+            if ( epaptimes.size() > qMax(min,0)) {
+                s2 = double(epaptimes[qMax(min,0)]/60.0);
             } else {
                 s2 = 0;
             }
             xp=left, lastyp = bottom - (s2 * ystep);
-            int tmax = qMin(epap.times.size(), max);
+            int tmax = qMin(epaptimes.size(), max);
             for (int i=qMax(min,1); i<tmax; ++i) {
-                p0 = epap.times[i-1]/60.0;
-                p1 = epap.times[i]/60.0;
-                p2 = epap.times[i+1]/60.0;
-                p3 = epap.times[i+2]/60.0;
+                p0 = epaptimes[i-1]/60.0;
+                p1 = epaptimes[i]/60.0;
+                p2 = epaptimes[i+1]/60.0;
+                p3 = epaptimes[i+2]/60.0;
 
                 if (i == mouseOverKey) {
                     painter.setPen(QPen(Qt::black));
@@ -586,7 +577,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     }
 
 
-    /*QMap<EventStoreType, int>::iterator times_end = times.end();
+    /*auto times_end = times.end();
     QPoint mouse = graph.graphView()->currentMousePos();
 
     float ypos = top;
@@ -637,9 +628,9 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     ypos += hix * 2;
   //  left = rect.left();
 
-    QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
-    //QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator ev_end = events.end();
-    QMap<EventStoreType, EventDataType>::iterator vit;
+    auto eit;
+    //auto  ev_end = events.end();
+    auto vit;
 
 
     int row = 0;
@@ -654,7 +645,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
         xpos = left;
 
-        QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
+        auto eit_end = eit.value().end();
 
         QString text = chan.label();
         rec = QRectF(titleWidth, ypos, marginWidth, hix);
@@ -796,7 +787,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             if (type == schema::SPAN)
                 continue;
             eit = events.find(code);
-            QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
+            auto eit_end = eit.value().end();
             for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
                 //float minutes = float(it.value()) / 60.0;
                 float value = vit.value();
@@ -823,7 +814,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             xpos = left;//+pix/2;
 
             y1 = 0;
-            QMap<EventStoreType, EventDataType>::iterator eit_end = eit.value().end();
+            auto eit_end = eit.value().end();
             for (it = times.begin(), vit = eit.value().begin(); vit != eit_end; ++vit, ++it) {
                 //float minutes = float(it.value()) / 60.0;
                 float value = vit.value();
@@ -879,19 +870,16 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
     if (code == 0) return;
 
     // Find pressure channel
-    QHash<ChannelID, QVector<EventList *> >::iterator ei = sess->eventlist.find(code);
+    auto ei = sess->eventlist.find(code);
 
     // Done already if no channel
     if (ei == sess->eventlist.end())
         return;
 
-    const QVector<EventList *> & evec = ei.value();
-    int esize = evec.size();
-
     pressureMult = (sess->machine()->loaderName() == "PRS1") ? 2 : 5;
     // Loop through event lists
-    for (int ei = 0; ei < esize; ++ei) {
-        const EventList *EL = evec.at(ei);
+
+    for (const auto & EL : ei.value()) {
         gain = EL->gain();
 
         // Don't bother with short sessions
@@ -939,10 +927,8 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
                 key = lastdata;
                 info.times[key] += duration;
 
-                int cs = info.chans.size();
 
-                for (int c = 0; c < cs; ++c) {
-                    ChannelID cod = info.chans.at(c);
+                for (const auto & cod : info.chans) {
                     schema::Channel & chan = schema::channel[cod];
                     if (chan.type() == schema::SPAN) {
                         info.events[cod][key] += val = sess->rangeSum(cod, d1, d2);
@@ -966,10 +952,8 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
             duration = (d2 - d1) / 1000L;
             key = lastdata;
             info.times[key] += duration;
-            int cs = info.chans.size();
 
-            for (int c = 0; c < cs; ++c) {
-                ChannelID cod = info.chans.at(c);
+            for (const auto & cod : info.chans) {
                 schema::Channel & chan = schema::channel[cod];
                 if (chan.type() == schema::SPAN) {
                     info.events[cod][key] += sess->rangeSum(cod, d1, d2);
@@ -977,9 +961,7 @@ void RecalcMAP::updateTimes(PressureInfo & info, Session * sess)
                     info.events[cod][key] += sess->rangeCount(cod, d1, d2);
                 }
             }
-
         }
-
     }
 }
 
@@ -991,7 +973,7 @@ void PressureInfo::finishCalcs()
 
     int val;
 
-    for (int i=0; i<times.size(); ++i) {
+    for (int i=0, end=times.size(); i<end; ++i) {
         val = times.at(i);
         peaktime = qMax(peaktime, times.at(i));
 
@@ -1003,7 +985,6 @@ void PressureInfo::finishCalcs()
         }
     }
 
-    ChannelID cod;
     //chans.push_front(CPAP_AHI);
 
     int size = events[CPAP_Obstructive].size();
@@ -1011,11 +992,10 @@ void PressureInfo::finishCalcs()
 /*   events[CPAP_AHI].resize(size);
 
 
-    QHash<unsigned int, QVector<int> >::iterator OB = events.find(CPAP_Obstructive);
-    QHash<unsigned int, QVector<int> >::iterator HY = events.find(CPAP_Hypopnea);
-    QHash<unsigned int, QVector<int> >::iterator A = events.find(CPAP_Apnea);
-    QHash<unsigned int, QVector<int> >::iterator CA = events.find(CPAP_ClearAirway);
-
+    auto OB = events.find(CPAP_Obstructive);
+    auto HY = events.find(CPAP_Hypopnea);
+    auto A = events.find(CPAP_Apnea);
+    auto CA = events.find(CPAP_ClearAirway);
 
     for (int i = 0; i < size; i++) {
 
@@ -1034,9 +1014,7 @@ void PressureInfo::finishCalcs()
     } */
 
     for (int i = 0; i < size; i++) {
-
-        for (int j=0 ; j < chans.size(); ++j) {
-            cod = chans.at(j);
+        for (const auto & cod : chans) {
             if ((cod == CPAP_AHI) || (schema::channel[cod].type() == schema::SPAN)) continue;
             val = events[cod][i];
             peakevents = qMax(val, peakevents);
@@ -1051,14 +1029,6 @@ void RecalcMAP::run()
     map->m_recalculating = true;
     Day * day = map->m_day;
     if (!day) return;
-
-    QList<Session *>::iterator sit;
-    QList<Session *>::iterator sess_end = day->end();
-
-
-    QMap<EventStoreType, int> times;
-
-    QHash<ChannelID, QMap<EventStoreType, EventDataType> > events;
 
     // Get the channels for specified Channel types
     QList<ChannelID> chans = day->getSortedMachineChannels(schema::FLAG);
@@ -1109,8 +1079,7 @@ void RecalcMAP::run()
 
 
 
-    for (sit = day->begin(); sit != sess_end; ++sit) {
-        Session * sess = (*sit);
+    for (const auto & sess : day->sessions) {
 
         updateTimes(EPAP, sess);
         updateTimes(IPAP, sess);
@@ -1121,11 +1090,11 @@ void RecalcMAP::run()
         }
 
 
-/*        QHash<ChannelID, QVector<EventList *> >::iterator ei = sess->eventlist.find(ipapcode);
+/*        auto ei = sess->eventlist.find(ipapcode);
         if (ei == sess->eventlist.end())
             continue;
 
-        const QVector<EventList *> & evec = ei.value();
+        const auto & evec = ei.value();
         int esize = evec.size();
         for (int ei = 0; ei < esize; ++ei) {
             const EventList *EL = evec.at(ei);
@@ -1218,12 +1187,11 @@ skip:
     EPAP.finishCalcs();
     IPAP.finishCalcs();
 
-/*    QMap<EventStoreType, int>::iterator it;
-    QMap<EventStoreType, int>::iterator times_end = times.end();
+/*
     int maxtime = 0;
 
     QList<EventStoreType> trash;
-    for (it = times.begin(); it != times_end; ++it) {
+    for (auto it=times.begin(), end=times.end(); it != end; ++it) {
         //EventStoreType key = it.key();
         int value = it.value();
 //        if (value == 0) {
@@ -1254,13 +1222,12 @@ skip:
             maxevents = qMax(val, maxevents);
         }
     }
-    QHash<ChannelID, QMap<EventStoreType, EventDataType> >::iterator eit;
 
 //    for (int i=0; i< trash.size(); ++i) {
 //        EventStoreType key = trash.at(i);
 
 //        times.remove(key);
-//        for (eit = events.begin(); eit != events.end(); ++eit) {
+//        for (auto eit=events.begin(), end=events.end(); eit != end; ++eit) {
 //            eit.value().remove(key);
 //        }
 //    }

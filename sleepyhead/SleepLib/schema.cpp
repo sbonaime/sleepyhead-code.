@@ -787,8 +787,8 @@ ChannelList::ChannelList()
 }
 ChannelList::~ChannelList()
 {
-    for (QHash<ChannelID, Channel *>::iterator i = channels.begin(); i != channels.end(); i++) {
-        delete i.value();
+    for (auto & chan : channels) {
+        delete chan;
     }
 }
 bool ChannelList::Load(QString filename)
@@ -835,8 +835,7 @@ bool ChannelList::Load(QString filename)
 
     bool ok;
     int id, linkid;
-    QString chantype, scopestr, typestr, name, group, idtxt, details, label, unit, datatypestr,
-            defcolor, link;
+    QString chantype, scopestr, typestr, name, group, idtxt, details, label, unit, datatypestr, defcolor, link;
     ChanType type;
     DataType datatype;
     Channel *chan;
@@ -1031,19 +1030,14 @@ bool ChannelList::Save(QString filename)
     QDomElement root = doc.createElement("channels");
     droot.appendChild(root);
 
-    QHash<QString, QHash<QString, Channel *> >::iterator git;
-    QHash<QString, QHash<QString, Channel *> >::iterator groups_end = groups.end();
 
-    for (git = groups.begin(); git != groups_end; ++git) {
-        QHash<QString, Channel *> & chanlist = git.value();
-        QHash<QString, Channel *>::iterator it;
-        QHash<QString, Channel *>::iterator chend = chanlist.end();
+    for (auto git=groups.begin(), end=groups.end(); git != end; ++git) {
+        auto & chanlist = git.value();
 
         QDomElement grp = doc.createElement("group");
         grp.setAttribute("name", git.key());
         root.appendChild(grp);
-
-        for (it =chanlist.begin(); it!= chend; ++it) {
+        for (auto it = chanlist.begin(), cend=chanlist.end(); it!=cend; ++it) {
             Channel * chan = it.value();
             QDomElement cn = doc.createElement("channel");
             cn.setAttribute("id", chan->id());
@@ -1058,8 +1052,7 @@ bool ChannelList::Save(QString filename)
             cn.setAttribute("type", chan->type());
             cn.setAttribute("datatype", chan->datatype());
             cn.setAttribute("overview", chan->showInOverview());
-            QHash<int, QString>::iterator op;
-            for (op = chan->m_options.begin(); op!=chan->m_options.end(); ++op) {
+            for (auto op=chan->m_options.begin(), opend=chan->m_options.end(); op!=opend; ++op) {
                 QDomElement c2 = doc.createElement("option");
                 c2.setAttribute("key", op.key());
                 c2.setAttribute("value", op.value());
@@ -1069,9 +1062,7 @@ bool ChannelList::Save(QString filename)
             //cn.appendChild(doc.createTextNode(i.value().toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
             grp.appendChild(cn);
         }
-
     }
-
 
     QFile file(filename);
 
@@ -1083,11 +1074,10 @@ bool ChannelList::Save(QString filename)
     ts << doc.toString();
     file.close();
 
-
     return true;
 }
 
-}
+} // namespace
 
 QString ChannelCalc::label()
 {

@@ -172,7 +172,7 @@ class Day
         return d_hours = double(total_time()) / 3600000.0;
     }
     EventDataType hours(MachineType type) {
-        QHash<MachineType, EventDataType>::iterator it = d_machhours.find(type);
+        auto it = d_machhours.find(type);
         if (it == d_machhours.end()) {
             return d_machhours[type] = double(total_time(type)) / 3600000.0;
         }

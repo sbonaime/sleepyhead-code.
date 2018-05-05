@@ -69,8 +69,8 @@ void RegisterLoader(MachineLoader *loader)
 }
 void DestroyLoaders()
 {
-    for (QList<MachineLoader *>::iterator i = m_loaders.begin(); i != m_loaders.end(); i++) {
-        delete(*i);
+    for (auto & loader : m_loaders) {
+        delete(loader);
     }
 
     m_loaders.clear();
@@ -89,33 +89,17 @@ MachineLoader::MachineLoader() :QObject(nullptr)
 
 MachineLoader::~MachineLoader()
 {
-//    for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {
-//        delete *m;
-//    }
 }
 
 void MachineLoader::finishAddingSessions()
 {
-    QMap<SessionID, Session *>::iterator it;
-    QMap<SessionID, Session *>::iterator it_end = new_sessions.end();
-
     // Using a map specifically so they are inserted in order.
-    for (it = new_sessions.begin(); it != it_end; ++it) {
+    for (auto it=new_sessions.begin(), end=new_sessions.end(); it != end; ++it) {
         Session * sess = it.value();
         Machine * mach = sess->machine();
         mach->AddSession(sess);
     }
-
     new_sessions.clear();
-
-/*    QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(loaderName());
-
-    if (mlit != MachineList.end()) {
-        for(QHash<QString, Machine *>::iterator mit = mlit.value().begin(); mit!=mlit.value().end(); ++mit) {
-            mit.value()->SaveSummary();
-        }
-    } */
-
 }
 
 bool uncompressFile(QString infile, QString outfile)

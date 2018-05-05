@@ -1,4 +1,4 @@
-/* gFlagsLine Implementation
+﻿/* gFlagsLine Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -79,10 +79,8 @@ void gFlagsGroup::SetDay(Day *d)
     if (m_rebuild_cpap) {
         QHash<ChannelID, schema::Channel *> chans;
 
-        for (int i=0; i< m_day->size(); ++i) {
-            Session * sess = m_day->sessions.at(i);
-            QHash<ChannelID, QVector<EventList *> >::iterator it;
-            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+        for (const auto & sess : m_day->sessions) {
+            for (auto it=sess->eventlist.begin(), end=sess->eventlist.end(); it != end; ++it) {
                 ChannelID code = it.key();
                 if (chans.contains(code)) continue;
 
@@ -103,10 +101,8 @@ void gFlagsGroup::SetDay(Day *d)
     }
 
     lvisible.clear();
-    for (int i=0; i < availableChans.size(); ++i) {
-        ChannelID code = availableChans.at(i);
+    for (const auto code : availableChans) {
 //        const schema::Channel & chan = schema::channel[code];
-
         gFlagsLine * fl = new gFlagsLine(code);
         fl->SetDay(d);
         lvisible.push_back(fl);
@@ -164,9 +160,9 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 
     QVector<gFlagsLine *> visflags;
 
-    for (int i = 0; i < lvisible.size(); i++) {
-        if (schema::channel[lvisible.at(i)->code()].enabled())
-            visflags.push_back(lvisible.at(i));
+    for (const auto & flagsline : lvisible) {
+        if (schema::channel[flagsline->code()].enabled())
+            visflags.push_back(flagsline);
     }
 
     int vis = visflags.size();
@@ -175,7 +171,7 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 
     QColor barcol;
 
-    for (int i = 0; i < visflags.size(); i++) {
+    for (int i=0, end=visflags.size(); i < end; i++) {
         //schema::Channel & chan = schema::channel[visflags.at(i)->code()];
 
         // Alternating box color
@@ -221,15 +217,15 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         return false;
     }
 
-    for (int i = 0; i < lvisible.size(); i++) {
-        gFlagsLine *fl = lvisible[i];
+    for (int i=0, end=lvisible.size(); i < end; i++) {
+        gFlagsLine *fl = lvisible.at(i);
 
         if (fl->m_rect.contains(event->x(), event->y())) {
             if (fl->mouseMoveEvent(event, graph)) { return true; }
         } else {
             // Inside main graph area?
             if ((event->y() > fl->m_rect.y()) && (event->y()) < (fl->m_rect.y() + fl->m_rect.height())) {
-                if (event->x() < lvisible[i]->m_rect.x()) {
+                if (event->x() < fl->m_rect.x()) {
                     // Display tooltip
                     QString ttip = schema::channel[fl->code()].fullname() + "\n" +
                                    schema::channel[fl->code()].description();
@@ -309,27 +305,26 @@ void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int tooltipTimeout = AppSetting->tooltipTimeout();
 
     bool hover = false;
-    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
-        if (!(*s)->enabled()) {
+    for (const auto & sess : m_day->sessions) {
+        if (!sess->enabled()) {
             continue;
         }
 
-        drift = ((*s)->type() == MT_CPAP) ? clockdrift : 0;
+        drift = (sess->type() == MT_CPAP) ? clockdrift : 0;
 
-        cei = (*s)->eventlist.find(m_code);
+        cei = sess->eventlist.find(m_code);
 
-        if (cei == (*s)->eventlist.end()) {
+        if (cei == sess->eventlist.end()) {
             continue;
         }
 
-        QVector<EventList *> &evlist = cei.value();
 
-        for (int k = 0; k < evlist.size(); k++) {
-            EventList &el = *(evlist[k]);
-            start = el.first() + drift;
-            tptr = el.rawTime();
-            dptr = el.rawData();
-            int np = el.count();
+        for (const auto & el : cei.value()) {
+
+            start = el->first() + drift;
+            tptr = el->rawTime();
+            dptr = el->rawData();
+            int np = el->count();
             eptr = dptr + np;
 
             for (idx = 0; dptr < eptr; dptr++, tptr++, idx++) {

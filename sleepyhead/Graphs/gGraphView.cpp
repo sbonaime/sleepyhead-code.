@@ -266,8 +266,8 @@ void gGraphView::queGraph(gGraph *g, int left, int top, int width, int height)
 void gGraphView::trashGraphs(bool destroy)
 {
     if (destroy) {
-        for (int i=0; i< m_graphs.size(); ++i) {
-            delete m_graphs[i];
+        for (auto & graph : m_graphs) {
+            delete graph;
         }
     }
     // Don't actually want to delete them here.. we are just borrowing the graphs
@@ -505,15 +505,14 @@ void gGraphView::popoutGraph()
         gv->m_graphsbyname[newname] = newgraph;
         newgraph->m_graphview = gv;
 
-        for (int i=0; i < graph->m_layers.size(); ++i) {
-            Layer * layer = graph->m_layers.at(i)->Clone();
+        for (auto & l : graph->m_layers) {
+            Layer * layer = l->Clone();
             if (layer) {
                 newgraph->m_layers.append(layer);
             }
         }
 
-        for (int i=0;i<m_graphs.size();i++) {
-            gGraph *g = m_graphs.at(i);
+        for (auto & g : m_graphs) {
             group = qMax(g->group(), group);
         }
         newgraph->setGroup(group+1);
@@ -578,7 +577,7 @@ gGraphView::~gGraphView()
 
 #ifdef ENABLE_THREADED_DRAWING
 
-    for (int i = 0; i < m_threads.size(); i++) {
+    for (int i=0; i < m_threads.size(); i++) {
         delete m_threads[i];
     }
 
@@ -586,8 +585,7 @@ gGraphView::~gGraphView()
 #endif
 
     // Note: This will cause a crash if two graphs accidentally have the same name
-    for (QList<gGraph *>::iterator g = m_graphs.begin(); g!= m_graphs.end(); ++g) {
-        gGraph * graph = *g;
+    for (auto & graph : m_graphs) {
         delete graph;
     }
 
@@ -616,17 +614,17 @@ bool gGraphView::pinchTriggered(QPinchGesture * gesture)
 {
     gGraph * graph = nullptr;
     int group =0;
-    if (!graph) {
+//    if (!graph) {
         // just pick any graph then
-        for (int i = 0; i < m_graphs.size(); i++) {
-            if (!m_graphs[i]) continue;
-            if (!m_graphs[i]->isEmpty()) {
-                graph = m_graphs[i];
+        for (const auto & g : m_graphs) {
+            if (!g) continue;
+            if (!g->isEmpty()) {
+                graph = g;
                 group = graph->group();
                 break;
             }
         }
-    } else group=graph->group();
+//    } else group=graph->group();
 
     if (!graph) { return true; }
 
@@ -694,10 +692,8 @@ void gGraphView::dumpInfo()
         mainwin->log(QString("Available Channels for %1").arg(dt.toString("MMM dd yyyy")));
         QHash<schema::ChanType, QList<schema::Channel *> > list;
 
-        for (int i=0; i< day->size(); ++i) {
-            Session * sess = day->sessions.at(i);
-            QHash<ChannelID, QVector<EventList *> >::iterator it;
-            for (it = sess->eventlist.begin(); it != sess->eventlist.end(); ++it) {
+        for (const auto & sess : day->sessions) {
+            for (auto it=sess->eventlist.begin(), end=sess->eventlist.end(); it != end; ++it) {
                 ChannelID code = it.key();
                 schema::Channel * chan = &schema::channel[code];
                 list[chan->type()].append(chan);
@@ -705,7 +701,7 @@ void gGraphView::dumpInfo()
         }
 
         QHash<schema::ChanType, QList<schema::Channel *> >::iterator lit;
-        for (lit = list.begin(); lit != list.end(); ++lit) {
+        for (auto lit = list.begin(), end=list.end(); lit != end; ++lit) {
             switch (lit.key()) {
             case schema::DATA:
                 text = "DATA: ";
@@ -732,8 +728,8 @@ void gGraphView::dumpInfo()
                 break;
             }
             QStringList str;
-            for (int i=0; i< lit.value().size(); ++i) {
-                str.append(lit.value().at(i)->code());
+            for (const auto & chan : lit.value()) {
+                str.append(chan->code());
             }
             str.sort();
             text.append(str.join(", "));
@@ -825,13 +821,9 @@ void gGraphView::DrawTextQue(QPainter &painter)
 {
     {
         // process the text drawing queue
-        int m_textque_items = m_textque.size();
-
         int h,w;
 
-        for (int i = 0; i < m_textque_items; ++i) {
-            const TextQue &q = m_textque.at(i);
-
+        for (const auto & q : m_textque) {
             // can do antialiased text via texture cache fine on mac
             if (usePixmapCache()) {
                 // Generate the pixmap cache "key"
@@ -919,12 +911,9 @@ void gGraphView::DrawTextQue(QPainter &painter)
     ////////////////////////////////////////////////////////////////////////
     // Text Rectangle Queues..
     ////////////////////////////////////////////////////////////////////////
-    int items = m_textqueRect.size();
 
     float ww, hh;
-    for (int i = 0; i < items; ++i) {
-        const TextQueRect &q = m_textqueRect.at(i);
-
+    for (const auto & q : m_textqueRect) {
         // can do antialiased text via texture cache fine on mac
         if (usePixmapCache()) {
             // Generate the pixmap cache "key"
@@ -1065,8 +1054,7 @@ float gGraphView::totalHeight()
 {
     float th = 0;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph * g = m_graphs[i];
+    for (const auto & g : m_graphs) {
         if (g->isEmpty() || (!g->visible())) { continue; }
 
         th += g->height() + graphSpacer;
@@ -1079,12 +1067,12 @@ float gGraphView::findTop(gGraph *graph)
 {
     float th = -m_offsetY;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i] == graph) { break; }
+    for (const auto & g : m_graphs) {
+        if (g == graph) { break; }
 
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) { continue; }
+        if (g->isEmpty() || (!g->visible())) { continue; }
 
-        th += m_graphs[i]->height() * m_scaleY + graphSpacer;
+        th += g->height() * m_scaleY + graphSpacer;
     }
 
     return ceil(th);
@@ -1094,10 +1082,10 @@ float gGraphView::scaleHeight()
 {
     float th = 0;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) { continue; }
+    for (const auto & graph : m_graphs) {
+        if (graph->isEmpty() || (!graph->visible())) { continue; }
 
-        th += m_graphs[i]->height() * m_scaleY + graphSpacer;
+        th += graph->height() * m_scaleY + graphSpacer;
     }
 
     return ceil(th);
@@ -1136,8 +1124,8 @@ void gGraphView::resizeEvent(QResizeEvent *e)
     updateScale();
 
     if (m_scaleY > 0.0001) {
-        for (int i = 0; i < m_graphs.size(); i++) {
-            m_graphs[i]->resize(e->size().width(), m_graphs[i]->height() * m_scaleY);
+        for (auto & graph : m_graphs) {
+            graph->resize(e->size().width(), graph->height() * m_scaleY);
         }
     }
     e->accept();
@@ -1158,19 +1146,12 @@ void gGraphView::scrollbarValueChanged(int val)
 
 void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
 {
-    //qint64 m1=0,m2=0;
-    gGraph *g = nullptr;
-
-    for (int i = 0; i < m_graphs.size(); i++) {
-        g = m_graphs[i];
-
-        if (g->group() == 0) {
+    for (const auto & graph : m_graphs) {
+        if (graph->group() == 0) {
+            st = graph->rmin_x;
+            et = graph->rmax_x;
             break;
         }
-    }
-    if (g) {
-        st = g->rmin_x;
-        et = g->rmax_x;
     }
 }
 
@@ -1179,18 +1160,18 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     if (m_graphs.size() == 0) return;
     Q_UNUSED(refresh)
     qint64 m1 = 0, m2 = 0;
-    gGraph *g = nullptr;
+    gGraph *graph = nullptr;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->ResetBounds();
+    for (auto & g : m_graphs) {
+        g->ResetBounds();
 
-        if (!m_graphs[i]->min_x) { continue; }
+        if (!g->min_x) { continue; }
 
-        g = m_graphs[i];
+        graph = g;
 
-        if (!m1 || m_graphs[i]->min_x < m1) { m1 = m_graphs[i]->min_x; }
+        if (!m1 || g->min_x < m1) { m1 = g->min_x; }
 
-        if (!m2 || m_graphs[i]->max_x > m2) { m2 = m_graphs[i]->max_x; }
+        if (!m2 || g->max_x > m2) { m2 = g->max_x; }
     }
 
 //    if (p_profile->general->linkGroups()) {
@@ -1200,12 +1181,12 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 //        }
 //    }
 
-    if (!g) {
-        g = m_graphs[0];
+    if (!graph) {
+        graph = m_graphs[0];
     }
 
-    m_minx = g->min_x;
-    m_maxx = g->max_x;
+    m_minx = graph->min_x;
+    m_maxx = graph->max_x;
 
     updateScale();
 }
@@ -1218,9 +1199,9 @@ void gGraphView::GetXBounds(qint64 &st, qint64 &et)
 
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
 {
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if ((m_graphs[i]->group() == group)) {
-            m_graphs[i]->SetXBounds(minx, maxx);
+    for (auto & graph : m_graphs) {
+        if ((graph->group() == group)) {
+            graph->SetXBounds(minx, maxx);
         }
     }
 
@@ -1241,8 +1222,8 @@ void gGraphView::updateScrollBar()
 
     float vis = 0;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        vis += (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) ? 0 : 1;
+    for (const auto & graph : m_graphs) {
+        vis += (graph->isEmpty() || !graph->visible()) ? 0 : 1;
     }
 
     if (th < h) { // less graphs than fits on screen
@@ -1304,10 +1285,8 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     float pinned_height = 0; // pixel height total
     int pinned_graphs = 0; // count
-    gGraph * g = nullptr;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        g = m_graphs[i];
+    for (auto & g : m_graphs) {
         int minh = g->minHeight();
         if (g->height() < minh) {
             g->setHeight(minh);
@@ -1326,8 +1305,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     py += pinned_height; // start drawing at the end of pinned space
 
     // Draw non pinned graphs
-    for (int i = 0; i < m_graphs.size(); i++) {
-        g = m_graphs[i];
+    for (auto & g : m_graphs) {
         if (g->isEmpty()) { continue; }
 
         if (!g->visible()) { continue; }
@@ -1367,13 +1345,10 @@ bool gGraphView::renderGraphs(QPainter &painter)
     }
 
     // Physically draw the unpinned graphs
-    int s = m_drawlist.size();
-
-    for (int i = 0; i < s; i++) {
-        g = m_drawlist.at(0);
-        m_drawlist.pop_front();
+    for (const auto & g : m_drawlist) {
         g->paint(painter, QRegion(g->m_rect));
     }
+    m_drawlist.clear();
 
     if (m_graphs.size() > 1) {
         DrawTextQue(painter);
@@ -1389,8 +1364,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     py = 0; // start drawing at top...
 
     // Draw Pinned graphs
-    for (int i = 0; i < m_graphs.size(); i++) {
-        g = m_graphs[i];
+    for (const auto & g : m_graphs) {
         if (g->isEmpty()) { continue; }
 
         if (!g->visible()) { continue; }
@@ -1439,13 +1413,10 @@ bool gGraphView::renderGraphs(QPainter &painter)
         masterlock->release(m_idealthreads);
     } else {
 #endif
-        s = m_drawlist.size();
-
-        for (int i = 0; i < s; i++) {
-            g = m_drawlist.at(0);
-            m_drawlist.pop_front();
+        for (const auto & g : m_drawlist) {
             g->paint(painter, QRegion(g->m_rect));
         }
+        m_drawlist.clear();
 
 #ifdef ENABLED_THREADED_DRAWING
     }
@@ -1776,22 +1747,22 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
     bool done = false;
 
     // Do pinned graphs first
-    for (int i = 0; i < m_graphs.size(); i++) {
+    for (const auto & graph : m_graphs) {
 
-        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned()) {
+        if (graph->isEmpty() || !graph->visible() || !graph->isPinned()) {
             continue;
         }
 
-        h = m_graphs[i]->height() * m_scaleY;
+        h = graph->height() * m_scaleY;
         pinned_height += h + graphSpacer;
 
         if (py > height()) {
             break;    // we are done.. can't draw anymore
         }
 
-        if (!((y >= py + m_graphs[i]->top) && (y < py + h - m_graphs[i]->bottom))) {
-            if (m_graphs[i]->isSelected()) {
-                m_graphs[i]->deselect();
+        if (!((y >= py + graph->top) && (y < py + h - graph->bottom))) {
+            if (graph->isSelected()) {
+                graph->deselect();
                 timedRedraw(150);
             }
         }
@@ -1817,7 +1788,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
             //           QPoint p(x,y);
             //           QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
 
-            m_graphs[i]->mouseMoveEvent(event);
+            graph->mouseMoveEvent(event);
 
             done = true;
         }
@@ -1831,21 +1802,21 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
 
     // Propagate mouseMove events to relevant graphs
     if (!done)
-        for (int i = 0; i < m_graphs.size(); i++) {
+        for (const auto & graph : m_graphs) {
 
-            if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned()) {
+            if (graph->isEmpty() || !graph->visible() || graph->isPinned()) {
                 continue;
             }
 
-            h = m_graphs[i]->height() * m_scaleY;
+            h = graph->height() * m_scaleY;
 
             if (py > height()) {
                 break;    // we are done.. can't draw anymore
             }
 
-            if (!((y >= py + m_graphs[i]->top) && (y < py + h - m_graphs[i]->bottom))) {
-                if (m_graphs[i]->isSelected()) {
-                    m_graphs[i]->deselect();
+            if (!((y >= py + graph->top) && (y < py + h - graph->bottom))) {
+                if (graph->isSelected()) {
+                    graph->deselect();
                     timedRedraw(150);
                 }
             }
@@ -1867,11 +1838,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                 m_horiz_travel += qAbs(x - m_lastxpos) + qAbs(y - m_lastypos);
                 m_lastxpos = x;
                 m_lastypos = y;
-                gGraph *g = m_graphs[i];
-                if (g) {
-                    g->mouseMoveEvent(event);
+                if (graph) {
+                    graph->mouseMoveEvent(event);
                 }
-
             }
 
             /*            else if (!m_button_down && (y >= py) && (y < py+m_graphs[i]->top)) {
@@ -1936,10 +1905,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
 
 Layer * gGraphView::findLayer(gGraph * graph, LayerType type)
 {
-    for (int i=0; i< graph->layers().size(); i++) {
-        Layer * l = graph->layers()[i];
-        if (l->layerType() == type) {
-            return l;
+    for (auto & layer : graph->m_layers) {
+        if (layer->layerType() == type) {
+            return layer;
         }
     }
     return nullptr;
@@ -2020,8 +1988,6 @@ void MinMaxWidget::onComboChanged(int idx)
 
 void MinMaxWidget::createLayout()
 {
-
-
     QGridLayout * layout = new QGridLayout;
     layout->setMargin(4);
     layout->setSpacing(4);
@@ -2106,7 +2072,6 @@ void gGraphView::populateMenu(gGraph * graph)
 {
     QAction * action;
 
-
     if (graph->isSnapshot()) {
         snap_action->setText(tr("Remove Clone"));
         snap_action->setData(graph->name()+"|remove");
@@ -2117,7 +2082,6 @@ void gGraphView::populateMenu(gGraph * graph)
       //  zoom100_action->setVisible(true);
     }
 
-
     // Menu title fonts
     QFont font = QApplication::font();
     font.setBold(true);
@@ -2126,7 +2090,6 @@ void gGraphView::populateMenu(gGraph * graph)
     gLineChart * lc = dynamic_cast<gLineChart *>(findLayer(graph,LT_LineChart));
     SummaryChart * sc = dynamic_cast<SummaryChart *>(findLayer(graph,LT_SummaryChart));
     gSummaryChart * stg = dynamic_cast<gSummaryChart *>(findLayer(graph,LT_Overview));
-
 
     limits_menu->clear();
     if (lc || sc || stg) {
@@ -2141,12 +2104,11 @@ void gGraphView::populateMenu(gGraph * graph)
         limits_menu->menuAction()->setVisible(false);
     }
 
-
     // First check for any linechart for this graph..
     if (lc) {
         lines_menu->clear();
-        for (int i=0; i < lc->m_dotlines.size(); i++) {
-            DottedLine & dot = lc->m_dotlines[i];
+        for (int i=0, end=lc->m_dotlines.size(); i < end; i++) {
+            const DottedLine & dot = lc->m_dotlines[i];
 
             if (!lc->m_enabled[dot.code]) continue;
 
@@ -2171,15 +2133,7 @@ void gGraphView::populateMenu(gGraph * graph)
                 bool b = lc->m_dot_enabled[dot.code][dot.type]; //chan.calc[dot.type].enabled;
                 chbox->setChecked(b);
                 lines_menu->addAction(widget);
-
-
-
-//                QAction *action = lines_menu->addAction(chan.calc[dot.type].label());
-//                action->setData(graph->name());
-//                action->setCheckable(true);
-//                action->setChecked(chan.calc[dot.type].enabled);
             }
-
         }
 
         lines_menu->menuAction()->setVisible(lines_menu->actions().size() > 0);
@@ -2194,45 +2148,35 @@ void gGraphView::populateMenu(gGraph * graph)
 
         }
 
-
-
         //////////////////////////////////////////////////////////////////////////////////////
         // Populate Plots Menus
         //////////////////////////////////////////////////////////////////////////////////////
 
         plots_menu->clear();
 
-        if (lc->m_codes.size() > 1) {
-            for (int i=0; i <lc->m_codes.size(); ++i) {
-                ChannelID code = lc->m_codes[i];
-                if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
+        for (const auto code : lc->m_codes) {
+            if (lc->m_day && !lc->m_day->channelHasData(code)) continue;
 
-                QWidgetAction * widget = new QWidgetAction(context_menu);
+            QWidgetAction * widget = new QWidgetAction(context_menu);
 
-                QCheckBox *chbox = new QCheckBox(schema::channel[code].label(), context_menu);
-                chbox->setMouseTracking(true);
-                chbox->setToolTip(schema::channel[code].description());
-                chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
+            QCheckBox *chbox = new QCheckBox(schema::channel[code].label(), context_menu);
+            chbox->setMouseTracking(true);
+            chbox->setToolTip(schema::channel[code].description());
+            chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
 
 
-                widget->setDefaultWidget(chbox);
+            widget->setDefaultWidget(chbox);
 
-                widget->setCheckable(true);
-                widget->setData(QString("%1|%2").arg(graph->name()).arg(code));
+            widget->setCheckable(true);
+            widget->setData(QString("%1|%2").arg(graph->name()).arg(code));
 
-                connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
-                connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
+            connect(chbox, SIGNAL(toggled(bool)), widget, SLOT(setChecked(bool)));
+            connect(chbox, SIGNAL(clicked()), widget, SLOT(trigger()));
 
-                bool b = lc->m_enabled[code];
-                chbox->setChecked(b);
+            bool b = lc->m_enabled[code];
+            chbox->setChecked(b);
 
-                plots_menu->addAction(widget);
-
-//                QAction * action = plots_menu->addAction(schema::channel[code].label());
-//                action->setData(QString("%1|%2").arg(graph->name()).arg(code));
-//                action->setCheckable(true);
-//                action->setChecked(lc->m_enabled[code]);
-            }
+            plots_menu->addAction(widget);
         }
 
         plots_menu->menuAction()->setVisible((plots_menu->actions().size() > 1));
@@ -2258,10 +2202,9 @@ void gGraphView::populateMenu(gGraph * graph)
         if (p_profile->general->showUnknownFlags()) showflags |= schema::UNKNOWN;
         QList<ChannelID> chans = lc->m_day->getSortedMachineChannels(showflags);
 
-
         QHash<MachineType, int> Vis;
-        for (int i=0; i < chans.size() ; ++i) {
-            ChannelID code = chans.at(i);
+
+        for (const auto code : chans) {
             schema::Channel & chan = schema::channel[code];
 
             QWidgetAction * widget = new QWidgetAction(context_menu);
@@ -2271,7 +2214,6 @@ void gGraphView::populateMenu(gGraph * graph)
             chbox->setMouseTracking(true);
             chbox->setToolTip(schema::channel[code].description());
             chbox->setStyleSheet(QString("QCheckBox:hover { background: %1; }").arg(QApplication::palette().highlight().color().name()));
-
 
             widget->setDefaultWidget(chbox);
 
@@ -2284,7 +2226,6 @@ void gGraphView::populateMenu(gGraph * graph)
             bool b = lc->m_flags_enabled[code];
             chbox->setChecked(b);
             Vis[chan.machtype()] += b ? 1 : 0;
-
 
             action = nullptr;
             if (chan.machtype() == MT_OXIMETER) {
@@ -2310,7 +2251,6 @@ void gGraphView::populateMenu(gGraph * graph)
                 action = cpap_menu->addAction(ShowAllEvents);
                 action->setData(QString("%1|ShowAll:CPAP").arg(graph->name()));
             }
-
 
             // Show CPAP Events menu Header...
             cpap_menu->insertSeparator(cpap_menu->actions()[0]);
@@ -2354,7 +2294,7 @@ void gGraphView::onSnapshotGraphToggle()
 {
     QString name = snap_action->data().toString().section("|",0,0);
     QString cmd = snap_action->data().toString().section("|",-1).toLower();
-    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    auto it = m_graphsbyname.find(name);
     if (it == m_graphsbyname.end()) return;
 
     gGraph * graph = it.value();
@@ -2387,8 +2327,8 @@ void gGraphView::onSnapshotGraphToggle()
         for (int i=1; i < 100; i++) {
             newtitle = graph->title()+"-"+QString::number(i);
             fnd = false;
-            for (int j=0; j<m_graphs.size(); ++j) {
-                if (m_graphs[j]->title() == newtitle) {
+            for (const auto & graph : m_graphs) {
+                if (graph->title() == newtitle) {
                     fnd = true;
                     break;
                 }
@@ -2400,7 +2340,6 @@ void gGraphView::onSnapshotGraphToggle()
             return;
         }
 
-
         gGraph * newgraph = new gGraph(newname, nullptr, newtitle, graph->units(), graph->height(), graph->group());
        // newgraph->setBlockSelect(true);
         newgraph->setHeight(graph->height());
@@ -2410,15 +2349,14 @@ void gGraphView::onSnapshotGraphToggle()
         m_graphsbyname[newname] = newgraph;
         newgraph->m_graphview = this;
 
-        for (int i=0; i < graph->m_layers.size(); ++i) {
-            Layer * layer = graph->m_layers.at(i)->Clone();
+        for (const auto & l : graph->m_layers) {
+            Layer * layer = l->Clone();
             if (layer) {
                 newgraph->m_layers.append(layer);
             }
         }
 
-        for (int i=0;i<m_graphs.size();i++) {
-            gGraph *g = m_graphs.at(i);
+        for (const auto & g : m_graphs) {
             group = qMax(g->group(), group);
         }
         newgraph->setGroup(group+1);
@@ -2456,7 +2394,6 @@ void gGraphView::onSnapshotGraphToggle()
         m_graphs.removeAll(it.value());
         delete graph;
 
-
         updateScale();
         timedRedraw(0);
 
@@ -2467,10 +2404,8 @@ void gGraphView::onSnapshotGraphToggle()
 
 bool gGraphView::hasSnapshots()
 {
-    int size = m_graphs.size();
     bool snap = false;
-    for (int i=0; i< size; ++i) {
-        gGraph * graph = m_graphs.at(i);
+    for (const auto & graph : m_graphs) {
         if (graph->isSnapshot()) {
             snap = true;
             break;
@@ -2485,7 +2420,7 @@ void gGraphView::onPlotsClicked(QAction *action)
     QString name = action->data().toString().section("|",0,0);
     ChannelID code = action->data().toString().section("|",-1).toInt();
 
-    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    auto it = m_graphsbyname.find(name);
     if (it == m_graphsbyname.end()) return;
 
     gGraph * graph = it.value();
@@ -2506,7 +2441,7 @@ void gGraphView::onOverlaysClicked(QAction *action)
 {
     QString name = action->data().toString().section("|",0,0);
     QString data = action->data().toString().section("|",-1);
-    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    auto it = m_graphsbyname.find(name);
     if (it == m_graphsbyname.end()) return;
     gGraph * graph = it.value();
 
@@ -2539,11 +2474,8 @@ void gGraphView::onOverlaysClicked(QAction *action)
         else if (group == "OXI") mtype = MT_OXIMETER;
         else mtype = MT_UNKNOWN;
 
-        QHash<ChannelID, bool>::iterator it;
-        QHash<ChannelID, bool>::iterator mfe = lc->m_flags_enabled.end();
-
         // First toggle the actual flag bits
-        for (it = lc->m_flags_enabled.begin(); it != mfe; ++it) {
+        for (auto it=lc->m_flags_enabled.begin(), end=lc->m_flags_enabled.end(); it != end; ++it) {
             if (schema::channel[it.key()].machtype() == mtype) {
                 lc->m_flags_enabled[it.key()] = value;
             }
@@ -2551,15 +2483,15 @@ void gGraphView::onOverlaysClicked(QAction *action)
 
         // Now toggle the menu actions.. bleh
         if (mtype == MT_CPAP) {
-            for (int i=0; i< cpap_menu->actions().size(); i++) {
-                if (cpap_menu->actions().at(i)->isCheckable())  {
-                    cpap_menu->actions().at(i)->setChecked(value);
+            for (auto & action : cpap_menu->actions()) {
+                if (action->isCheckable())  {
+                    action->setChecked(value);
                 }
             }
         } else if (mtype == MT_OXIMETER) {
-            for (int i=0; i< oximeter_menu->actions().size(); i++) {
-                if (oximeter_menu->actions().at(i)->isCheckable())  {
-                    oximeter_menu->actions().at(i)->setChecked(value);
+            for (auto & action : oximeter_menu->actions()) {
+                if (action->isCheckable())  {
+                    action->setChecked(value);
                 }
             }
         }
@@ -2573,7 +2505,7 @@ void gGraphView::onLinesClicked(QAction *action)
     QString name = action->data().toString().section("|",0,0);
     QString data = action->data().toString().section("|",-1);
 
-    QHash<QString, gGraph *>::iterator it = m_graphsbyname.find(name);
+    auto it = m_graphsbyname.find(name);
     if (it == m_graphsbyname.end()) return;
 
     gGraph * graph = it.value();
@@ -2607,8 +2539,8 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
 
     // first handle pinned graphs.
     // Calculate total height of all pinned graphs
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph *g = m_graphs[i];
+    for (int i=0, end=m_graphs.size(); i<end; ++i) {
+        gGraph * g = m_graphs[i];
 
         if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
@@ -2684,10 +2616,9 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
     py = -m_offsetY;
     py += pinned_height;
 
-    if (!done)
-        for (int i = 0; i < m_graphs.size(); i++) {
+    if (!done) {
+        for (int i=0, end=m_graphs.size(); i<end; ++i) {
             gGraph * g = m_graphs[i];
-            if (!g) continue;
 
             if (!g || g->isEmpty() || !g->visible() || g->isPinned()) { continue; }
 
@@ -2753,7 +2684,7 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
             py += h + graphSpacer;
             done=true;
         }
-
+    }
     if (!done) {
 //        if (event->button() == Qt::RightButton) {
 //            this->setCursor(Qt::ArrowCursor);
@@ -2778,8 +2709,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     m_button_down = false;
 
     // Handle pinned graphs first
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph *g = m_graphs[i];
+    for (const auto & g : m_graphs) {
 
         if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
@@ -2818,8 +2748,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent *event)
     py += pinned_height;
 
     if (done)
-        for (int i = 0; i < m_graphs.size(); i++) {
-            gGraph *g = m_graphs[i];
+        for (const auto & g : m_graphs) {
 
             if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
@@ -2893,7 +2822,6 @@ void gGraphView::keyReleaseEvent(QKeyEvent *event)
         }
 
         m_metaselect = false;
-
         timedRedraw(50);
     }
     if (event->key() == Qt::Key_Escape) {
@@ -2929,8 +2857,7 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
     bool done = false;
 
     // Handle pinned graphs first
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph *g = m_graphs[i];
+    for (const auto & g : m_graphs) {
         if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
         }
@@ -2972,8 +2899,7 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent *event)
     py += pinned_height;
 
     if (!done) // then handle unpinned graphs
-        for (int i = 0; i < m_graphs.size(); i++) {
-            gGraph *g = m_graphs[i];
+        for (const auto & g : m_graphs) {
             if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
             }
@@ -3046,8 +2972,8 @@ void gGraphView::wheelEvent(QWheelEvent *event)
 
 
     // Find graph hovered over
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph *g = m_graphs[i];
+    for (const auto & g : m_graphs) {
+
         if (!g || g->isEmpty() || !g->visible() || !g->isPinned()) {
             continue;
         }
@@ -3077,8 +3003,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
         py = -m_offsetY;
         py += pinned_height;
 
-        for (int i = 0; i < m_graphs.size(); i++) {
-            gGraph *g = m_graphs[i];
+        for (const auto & g : m_graphs) {
             if (!g || g->isEmpty() || !g->visible() || g->isPinned()) {
                 continue;
             }
@@ -3110,10 +3035,10 @@ void gGraphView::wheelEvent(QWheelEvent *event)
     if (event->modifiers() == Qt::NoModifier) {
         if (!graph) {
             // just pick any graph then
-            for (int i = 0; i < m_graphs.size(); i++) {
-                if (!m_graphs[i]) continue;
-                if (!m_graphs[i]->isEmpty()) {
-                    graph = m_graphs[i];
+            for (const auto & g : m_graphs) {
+                if (!g) continue;
+                if (!g->isEmpty()) {
+                    graph = g;
                     group = graph->group();
                     break;
                 }
@@ -3272,19 +3197,19 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
     int group = 0;
 
     // Pick the first valid graph in the primary group
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->group() == group) {
-            if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
-                g = m_graphs[i];
+    for (const auto & gr : m_graphs) {
+        if (gr->group() == group) {
+            if (!gr->isEmpty() && gr->visible()) {
+                g = gr;
                 break;
             }
         }
     }
 
     if (!g) {
-        for (int i = 0; i < m_graphs.size(); i++) {
-            if (!m_graphs[i]->isEmpty()) {
-                g = m_graphs[i];
+        for (const auto & gr : m_graphs) {
+            if (!gr->isEmpty()) {
+                g = gr;
                 group = g->group();
                 break;
             }
@@ -3350,8 +3275,8 @@ void gGraphView::setDay(Day *day)
 
     m_day = day;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]) m_graphs[i]->setDay(day);
+    for (const auto & g : m_graphs) {
+        if (g) g->setDay(day);
     }
 
     ResetBounds(false);
@@ -3360,8 +3285,7 @@ bool gGraphView::isEmpty()
 {
     bool res = true;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        gGraph * graph = m_graphs.at(i);
+    for (const auto & graph : m_graphs) {
         if (!graph->isSnapshot() && !graph->isEmpty()) {
             res = false;
             break;
@@ -3397,8 +3321,8 @@ void gGraphView::resetLayout()
 {
     int default_height = AppSetting->graphHeight();
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]) m_graphs[i]->setHeight(default_height);
+    for (auto & graph : m_graphs) {
+        if (graph) graph->setHeight(default_height);
     }
 
     updateScale();
@@ -3406,8 +3330,8 @@ void gGraphView::resetLayout()
 }
 void gGraphView::deselect()
 {
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]) m_graphs[i]->deselect();
+    for (auto & graph : m_graphs) {
+        if (graph) graph->deselect();
     }
 }
 
@@ -3429,8 +3353,7 @@ void gGraphView::SaveSettings(QString title)
 
     out << (qint16)size();
 
-    for (qint16 i = 0; i < size(); i++) {
-        gGraph * graph = m_graphs[i];
+    for (auto & graph : m_graphs) {
         if (!graph) continue;
         if (graph->isSnapshot()) continue;
 
@@ -3586,17 +3509,17 @@ bool gGraphView::LoadSettings(QString title)
 
 gGraph *gGraphView::findGraph(QString name)
 {
-    QHash<QString, gGraph *>::iterator i = m_graphsbyname.find(name);
+    auto it = m_graphsbyname.find(name);
 
-    if (i == m_graphsbyname.end()) { return nullptr; }
+    if (it == m_graphsbyname.end()) { return nullptr; }
 
-    return i.value();
+    return it.value();
 }
 
 gGraph *gGraphView::findGraphTitle(QString title)
 {
-    for (int i=0; i< m_graphs.size(); ++i) {
-        if (m_graphs[i]->title() == title) return m_graphs[i];
+    for (auto & graph : m_graphs) {
+        if (graph->title() == title) return graph;
     }
     return nullptr;
 }
@@ -3605,8 +3528,8 @@ int gGraphView::visibleGraphs()
 {
     int cnt = 0;
 
-    for (int i = 0; i < m_graphs.size(); i++) {
-        if (m_graphs[i]->visible() && !m_graphs[i]->isEmpty()) { cnt++; }
+    for (auto & graph : m_graphs) {
+        if (graph->visible() && !graph->isEmpty()) { cnt++; }
     }
 
     return cnt;
@@ -3614,8 +3537,8 @@ int gGraphView::visibleGraphs()
 
 void gGraphView::dataChanged()
 {
-    for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->dataChanged();
+    for (auto & graph : m_graphs) {
+        graph->dataChanged();
     }
 }
 

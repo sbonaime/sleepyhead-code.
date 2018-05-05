@@ -44,11 +44,10 @@ const QString STR_UnknownModel = "Resmed S9 ???";
 const QString & lookupModel(quint16 model)
 {
 
-    QHash<QString, QList<quint16> >::iterator end = Resmed_Model_Map.end();
-    for (QHash<QString, QList<quint16> >::iterator it = Resmed_Model_Map.begin(); it != end; ++it) {
+    for (auto it=Resmed_Model_Map.begin(),end = Resmed_Model_Map.end(); it != end; ++it) {
         QList<quint16> & list = it.value();
-        for (int i=0; i < list.size(); ++i) {
-            if (list.at(i) == model) {
+        for (auto val : list) {
+            if (val == model) {
                 return it.key();
             }
         }
@@ -74,8 +73,7 @@ ResMedEDFParser::~ResMedEDFParser()
 EDFSignal *ResMedEDFParser::lookupSignal(ChannelID ch)
 {
     // Get list of all known foreign language names for this channel
-    QHash<ChannelID, QStringList>::iterator channames = resmed_codes.find(ch);
-
+    auto channames = resmed_codes.find(ch);
     if (channames == resmed_codes.end()) {
         // no alternatives strings found for this channel
         return nullptr;
@@ -84,8 +82,8 @@ EDFSignal *ResMedEDFParser::lookupSignal(ChannelID ch)
     // This is bad, because ResMed thinks it was a cool idea to use two channels with the same name.
 
     // Scan through EDF's list of signals to see if any match
-    for (int i = 0; i < channames.value().size(); i++) {
-        EDFSignal *sig = lookupLabel(channames.value()[i]);
+    for (auto & name : channames.value()) {
+        EDFSignal *sig = lookupLabel(name);
         if (sig) return sig;
     }
 
@@ -96,18 +94,14 @@ EDFSignal *ResMedEDFParser::lookupSignal(ChannelID ch)
 // Check if given string matches any alternative signal names for this channel
 bool matchSignal(ChannelID ch, const QString & name)
 {
-    QHash<ChannelID, QStringList>::iterator channames = resmed_codes.find(ch);
-
+    auto channames = resmed_codes.find(ch);
     if (channames == resmed_codes.end()) {
         return false;
     }
 
-    QStringList & strings = channames.value();
-    int size = strings.size();
-
-    for (int i=0; i < size; ++i) {
+    for (auto & string : channames.value()) {
         // Using starts with, because ResMed is very lazy about consistency
-        if (name.startsWith(strings.at(i), Qt::CaseInsensitive)) {
+        if (name.startsWith(string, Qt::CaseInsensitive)) {
                 return true;
         }
     }
@@ -117,14 +111,14 @@ bool matchSignal(ChannelID ch, const QString & name)
 // This function parses a list of STR files and creates a date ordered map of individual records
 void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
 {
+    Q_UNUSED(mach)
+
     if (!qprogress) {
         qWarning() << "What happened to qprogress object in ResmedLoader::ParseSTR()";
         return;
     }
 
-    QMap<QDate, STRFile>::iterator it;
-
-    for (it = STRmap.begin(); it!= STRmap.end(); ++it) {
+    for (auto it=STRmap.begin(), end=STRmap.end(); it != end; ++it) {
         STRFile & file = it.value();
         QString & strfile = file.filename;
         ResMedEDFParser & str = *file.edf;
@@ -151,7 +145,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
         // For each data record, representing 1 day each
         for (int rec = 0; rec < size; ++rec, date = date.addDays(1)) {
 
-            QMap<QDate, ResMedDay>::iterator rit = resdayList.find(date);
+            auto rit = resdayList.find(date);
             if (rit != resdayList.end()) {
                 // Already seen this record.. should check if the data is the same, but meh.
                 continue;
@@ -1488,7 +1482,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 //        EDFType type = lookupEDFType(ext);
 
         // Find or create ResMedDay object for this date
-        QMap<QDate, ResMedDay>::iterator rd = resdayList.find(date);
+        auto rd = resdayList.find(date);
         if (rd == resdayList.end()) {
             rd = resdayList.insert(date, ResMedDay());
             rd.value().date = date;
@@ -1967,7 +1961,9 @@ struct OverlappingEDF {
 
 void ResDayTask::run()
 {
-
+    if (this->resday->date == QDate(2016,1,20)) {
+        qDebug() << "in resday" << this->resday->date;
+    }
     /*loader->sessionMutex.lock();
     Day *day = p_profile->FindDay(resday->date, MT_CPAP);
     if (day) {
@@ -2054,8 +2050,7 @@ void ResDayTask::run()
 
     QMap<quint32, QString> EVElist, CSLlist;
 
-    QHash<QString, QString>::iterator fit;
-    for (fit=resday->files.begin(); fit!=resday->files.end(); ++fit) {
+    for (auto fit=resday->files.begin(), fend=resday->files.end(); fit!=fend; ++fit) {
         const QString & key = fit.key();
         const QString & fullpath = fit.value();
         QString ext = key.section("_", -1).section(".",0,0).toUpper();
@@ -2074,8 +2069,7 @@ void ResDayTask::run()
         }
 
         bool added = false;
-        for (int i=0; i< overlaps.size(); i++) {
-            OverlappingEDF & ovr = overlaps[i];
+        for (auto & ovr : overlaps) {
             if ((tt >= (ovr.start)) && (tt < ovr.end)) {
                 ovr.filemap.insert(tt, key);
 
@@ -2111,16 +2105,14 @@ void ResDayTask::run()
 
     // Create an ordered map and see how far apart the sessions really are.
     QMap<quint32, OverlappingEDF> mapov;
-    for (int i=0;i<overlaps.size();++i) {
-        OverlappingEDF & ovr = overlaps[i];
+    for (auto & ovr : overlaps) {
         mapov[ovr.start] = ovr;
     }
 
     // Examine the gaps in between to see if we should merge sessions
-    QMap<quint32, OverlappingEDF>::iterator oit;
-    for (oit=mapov.begin(); oit != mapov.end(); ++oit) {
+    for (auto oit=mapov.begin(), oend=mapov.end(); oit != oend; ++oit) {
         // Get next in line
-        QMap<quint32, OverlappingEDF>::iterator next_oit = oit+1;
+        auto next_oit = oit+1;
         if (next_oit != mapov.end()) {
             OverlappingEDF & A = oit.value();
             OverlappingEDF & B = next_oit.value();
@@ -2134,16 +2126,13 @@ void ResDayTask::run()
 
     if (overlaps.size()==0) return;
 
-
     // Now overlaps is populated with zero or more individual session groups of EDF files (zero because of sucky summary only days)
-    for (int s=0; s<overlaps.size(); ++s) {
-        OverlappingEDF & ovr = overlaps[s];
+    for (auto & ovr : overlaps) {
         if (ovr.filemap.size() == 0) continue;
         Session * sess = new Session(mach, ovr.start);
         ovr.sess = sess;
 
-        QMultiMap<quint32,QString>::iterator mit;
-        for (mit = ovr.filemap.begin(); mit != ovr.filemap.end(); ++mit) {
+        for (auto mit=ovr.filemap.begin(), mend=ovr.filemap.end(); mit != mend; ++mit) {
             const QString & filename = mit.value();
             const QString & fullpath = resday->files[filename];
             QString ext = filename.section("_", -1).section(".",0,0).toUpper();
@@ -2172,13 +2161,11 @@ void ResDayTask::run()
 
         // Turns out there is only one or sometimes two EVE's per day, and they store data for the whole day
         // So we have to extract Annotations data and apply it for all sessions
-        QMap<quint32, QString>::iterator eit;
-        for (eit = EVElist.begin(); eit != EVElist.end(); ++eit) {
+        for (auto eit=EVElist.begin(), eveend=EVElist.end(); eit != eveend; ++eit) {
             const QString & fullpath = resday->files[eit.value()];
-
             loader->LoadEVE(ovr.sess, fullpath);
         }
-        for (eit = CSLlist.begin(); eit != CSLlist.end(); ++eit) {
+        for (auto eit=CSLlist.begin(), cslend=CSLlist.end(); eit != cslend; ++eit) {
             const QString & fullpath = resday->files[eit.value()];
             loader->LoadCSL(ovr.sess, fullpath);
         }
@@ -2397,7 +2384,7 @@ int ResmedLoader::Open(const QString & dirpath)
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse the idmap into machine objects properties, (overwriting any old values)
     ///////////////////////////////////////////////////////////////////////////////////
-    for (QHash<QString, QString>::iterator i = idmap.begin(); i != idmap.end(); i++) {
+    for (auto i=idmap.begin(), idend=idmap.end(); i != idend; i++) {
         mach->properties[i.key()] = i.value();
     }
 
@@ -2426,10 +2413,8 @@ int ResmedLoader::Open(const QString & dirpath)
         dir.setFilter(QDir::Files | QDir::Hidden | QDir::Readable);
         QFileInfoList flist = dir.entryInfoList();
 
-        int size = flist.size();
         // Add any STR_Backup versions to the file list
-        for (int i = 0; i < size; i++) {
-            QFileInfo fi = flist.at(i);
+        for (auto & fi : flist) {
             filename = fi.fileName();
             if (!filename.startsWith("STR", Qt::CaseInsensitive))
                 continue;
@@ -2439,8 +2424,7 @@ int ResmedLoader::Open(const QString & dirpath)
         }
 
         // Now place any of these files in the Backup folder sorted by the file date
-        for (int i=0;i<strfiles.size();i++) {
-            QString filename = strfiles.at(i);
+        for (auto & filename : strfiles) {
             ResMedEDFParser * stredf = new ResMedEDFParser(filename);
             if (!stredf->Parse()) {
                 qDebug() << "Faulty STR file" << filename;
@@ -2506,8 +2490,7 @@ int ResmedLoader::Open(const QString & dirpath)
 
     int size = flist.size();
     // Add any STR_Backup versions to the file list
-    for (int i = 0; i < size; i++) {
-        QFileInfo fi = flist.at(i);
+    for (auto & fi : flist) {
         filename = fi.fileName();
         if (!filename.startsWith("STR", Qt::CaseInsensitive))
             continue;
@@ -2546,8 +2529,7 @@ int ResmedLoader::Open(const QString & dirpath)
     ParseSTR(mach, STRmap);
 
     // We are done with the Parsed STR EDF objects, so delete them
-    QMap<QDate, STRFile>::iterator it;
-    for (it=STRmap.begin(); it!= STRmap.end(); ++it) {
+    for (auto it=STRmap.begin(), end=STRmap.end(); it != end; ++it) {
         delete it.value().edf;
     }
 
@@ -2588,9 +2570,7 @@ int ResmedLoader::Open(const QString & dirpath)
     // Now at this point we have resdayList populated with processable summary and EDF files data
     // that can be processed in threads..
 
-    QMap<QDate, ResMedDay>::iterator rdi;
-
-    for (rdi = resdayList.begin(); rdi != resdayList.end(); rdi++) {
+    for (auto rdi=resdayList.begin(), rend=resdayList.end(); rdi != rend; rdi++) {
         QDate date = rdi.key();
 
         ResMedDay & resday = rdi.value();
@@ -2606,13 +2586,11 @@ int ResmedLoader::Open(const QString & dirpath)
                 // but the worst case scenario is this session is deleted and reimported.. this just slows things down a bit in that case
 
                 // This day was first imported as a summary from STR.edf, so we now totally want to redo this day
-                QList<Session *> sessions = day->getSessions(MT_CPAP);
-
-                // Delete sessions for this day so they recreate with a clean slate.
-                for (int i=0;i<sessions.size();++i) {
-                    Session * sess = sessions[i];
-                    day->removeSession(sess);
-                    delete sess;
+                for (auto & sess : day->sessions) {
+                    if (sess->type() == MT_CPAP) {
+                        day->removeSession(sess);
+                        delete sess;
+                    }
                 }
 
                 reimporting = true;
@@ -2747,8 +2725,7 @@ int ResmedLoader::Open(const QString & dirpath)
         qint64 totalns = 0;
         qDebug() << "Time Delta Efficiency Information";
 
-        for (QHash<ChannelID, qint64>::iterator it = channel_efficiency.begin();
-                it != channel_efficiency.end(); it++) {
+        for (auto it = channel_efficiency.begin(), end=channel_efficiency.end(); it != end; it++) {
             ChannelID code = it.key();
             qint64 value = it.value();
             qint64 ns = channel_time[code];
@@ -3154,9 +3131,7 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
 
-    for (int s = 0; s < edf.GetNumSignals(); s++) {
-        EDFSignal &es = edf.edfsignals[s];
-
+    for (auto & es : edf.edfsignals) {
         long recs = es.nr * edf.GetNumDataRecords();
         if (recs < 0)
             continue;
@@ -3338,7 +3313,7 @@ void ResmedLoader::ToTimeDelta(Session *sess, ResMedEDFParser &edf, EDFSignal &e
         int cnt = el->count();
         int bytes = cnt * (sizeof(EventStoreType) + sizeof(quint32));
         int wvbytes = recs * (sizeof(EventStoreType));
-        QHash<ChannelID, qint64>::iterator it = channel_efficiency.find(code);
+        auto it = channel_efficiency.find(code);
 
         if (it == channel_efficiency.end()) {
             channel_efficiency[code] = wvbytes - bytes;
@@ -3362,8 +3337,7 @@ bool ResmedLoader::LoadSAD(Session *sess, const QString & path)
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
 
-    for (int s = 0; s < edf.GetNumSignals(); s++) {
-        EDFSignal &es = edf.edfsignals[s];
+    for (auto & es : edf.edfsignals) {
         //qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs = es.nr * edf.GetNumDataRecords();
         ChannelID code;
@@ -3419,9 +3393,8 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
     long recs;
     ChannelID code;
 
-    for (int s = 0; s < edf.GetNumSignals(); s++) {
+    for (auto & es : edf.edfsignals) {
         a = nullptr;
-        EDFSignal &es = edf.edfsignals[s];
         recs = es.nr * edf.GetNumDataRecords();
 
         if (recs <= 0) { continue; }

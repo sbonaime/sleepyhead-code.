@@ -1,4 +1,4 @@
-/* gLineChart Implementation
+﻿/* gLineChart Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -64,8 +64,7 @@ gLineChart::gLineChart(ChannelID code, bool square_plot, bool disable_accel)
 }
 gLineChart::~gLineChart()
 {
-    QHash<ChannelID, gLineOverlayBar *>::iterator fit;
-    for (fit = flags.begin(); fit != flags.end(); ++fit) {
+    for (auto fit = flags.begin(), end=flags.end(); fit != end; ++fit) {
         // destroy any overlay bar from previous day
         delete fit.value();
     }
@@ -78,10 +77,8 @@ bool gLineChart::isEmpty()
 {
     if (!m_day) { return true; }
 
-    for (int j = 0; j < m_codes.size(); j++) {
-        ChannelID code = m_codes[j];
-
-        for (int i = 0; i < m_day->size(); i++) {
+    for (const auto code : m_codes) {
+        for (int i=0, end=m_day->size(); i < end; i++) {
             Session *sess = m_day->sessions[i];
 
             if (sess->channelExists(code)) {
@@ -112,10 +109,9 @@ void gLineChart::SetDay(Day *d)
 
     bool first = true;
 
-    for (int j = 0; j < m_codes.size(); j++) {
-        ChannelID code = m_codes[j];
+    for (auto & code : m_codes) {
 
-        for (int i = 0; i < d->size(); i++) {
+        for (int i=0, end=d->size(); i < end; i++) {
             Session *sess = d->sessions[i];
             if (!sess->enabled()) continue;
 
@@ -129,7 +125,7 @@ void gLineChart::SetDay(Day *d)
 
             if (code == CPAP_MaskPressure) {
                 if (sess->channelExists(CPAP_MaskPressureHi)) {
-                    code = m_codes[j] = CPAP_MaskPressureHi;
+                    code = CPAP_MaskPressureHi; // verify setting m_codes[]
                     m_enabled[code] = schema::channel[CPAP_MaskPressureHi].enabled();
 
                     goto skipcheck; // why not :P
@@ -192,8 +188,7 @@ skipcheck:
 
     subtract_offset = 0;
 
-    QHash<ChannelID, gLineOverlayBar *>::iterator fit;
-    for (fit = flags.begin(); fit != flags.end(); ++fit) {
+    for (auto fit = flags.begin(), end=flags.end(); fit != end; ++fit) {
         // destroy any overlay bar from previous day
         delete fit.value();
     }
@@ -204,8 +199,7 @@ skipcheck:
     if (p_profile->general->showUnknownFlags()) z |= schema::UNKNOWN;
     QList<ChannelID> available = m_day->getSortedMachineChannels(z);
 
-    for (int i=0; i < available.size(); ++i) {
-        ChannelID code = available.at(i);
+    for (const auto & code : available) {
         if (!m_flags_enabled.contains(code)) {
             bool b = false;
 
@@ -214,7 +208,6 @@ skipcheck:
             m_flags_enabled[code] = b;
         }
         if (!m_day->channelExists(code)) continue;
-
 
         schema::Channel * chan = &schema::channel[code];
         gLineOverlayBar * lob = nullptr;
@@ -235,9 +228,8 @@ skipcheck:
 
     m_dotlines.clear();
 
-    for (int i=0; i< m_codes.size(); i++) {
-        ChannelID code = m_codes[i];
-        schema::Channel & chan = schema::channel[code];
+    for (const auto & code : m_codes) {
+        const schema::Channel & chan = schema::channel[code];
         addDotLine(DottedLine(code, Calc_Max,chan.calc[Calc_Max].enabled));
         if ((code != CPAP_FlowRate) && (code != CPAP_MaskPressure) && (code != CPAP_MaskPressureHi)) {
             addDotLine(DottedLine(code, Calc_Perc,chan.calc[Calc_Perc].enabled));
@@ -260,20 +252,19 @@ skipcheck:
 
 
     if (m_day) {
-        for (int i=0; i < m_dotlines.size(); i++) {
-            m_dotlines[i].calc(m_day);
+        for (auto & dot : m_dotlines) {
+            dot.calc(m_day);
 
-            ChannelID code = m_dotlines[i].code;
-            ChannelCalcType type = m_dotlines[i].type;
+            ChannelID code = dot.code;
+            ChannelCalcType type = dot.type;
 
             bool b = false; // default value
 
-            QHash<ChannelID, QHash<quint32, bool> >::iterator cit = m_dot_enabled.find(code);
-
+            const auto & cit = m_dot_enabled.find(code);
             if (cit == m_dot_enabled.end()) {
                 m_dot_enabled[code].insert(type, b);
             } else {
-                QHash<quint32, bool>::iterator it = cit.value().find(type);
+                const auto & it = cit.value().find(type);
                 if (it == cit.value().end()) {
                     cit.value().insert(type, b);
                 }
@@ -283,15 +274,13 @@ skipcheck:
 }
 EventDataType gLineChart::Miny()
 {
-    int size = m_codes.size();
-    if (size == 0) return 0;
+    if (m_codes.size() == 0) return 0;
     if (!m_day) return 0;
 
     bool first = false;
     EventDataType min = 0, tmp;
 
-    for (int i=0; i< size; ++i) {
-        ChannelID code = m_codes[i];
+    for (const auto code : m_codes) {
         if (!m_enabled[code] || !m_day->channelExists(code)) continue;
 
         tmp = m_day->Min(code);
@@ -308,27 +297,16 @@ EventDataType gLineChart::Miny()
     m_miny = min;
 
     return min;
-//    int m = Layer::Miny();
-
-//    if (subtract_offset > 0) {
-//        m -= subtract_offset;
-
-//        if (m < 0) { m = 0; }
-//    }
-
-//    return m;
 }
 EventDataType gLineChart::Maxy()
 {
-    int size = m_codes.size();
-    if (size == 0) return 0;
+    if (m_codes.size() == 0) return 0;
     if (!m_day) return 0;
 
     bool first = false;
     EventDataType max = 0, tmp;
 
-    for (int i=0; i< size; ++i) {
-        ChannelID code = m_codes[i];
+    for (const auto code : m_codes) {
         if (!m_enabled[code] || !m_day->channelExists(code)) continue;
 
         tmp = m_day->Max(code);
@@ -357,18 +335,15 @@ bool gLineChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
 QString gLineChart::getMetaString(qint64 time)
 {
-    lasttext = QString();
     if (!m_day) return lasttext;
-
+    lasttext = QString();
 
     EventDataType val;
 
     EventDataType ipap = 0, epap = 0;
     bool addPS = false;
 
-    for (int i=0; i<m_codes.size(); ++i) {
-        ChannelID code = m_codes[i];
-
+    for (const auto code : m_codes) {
         if (m_day->channelHasData(code)) {
             val = m_day->lookupValue(code, time, m_square_plot);
             lasttext += " "+QString("%1: %2").arg(schema::channel[code].label()).arg(val,0,'f',2); //.arg(schema::channel[code].units());
@@ -543,33 +518,27 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.setFont(*defaultfont);
     bool showDottedLines = true;
 
-    int dotlinesize = m_dotlines.size();
-
     // Unset Dotted lines visible status, so we only draw necessary labels later
-    for (int i=0; i < dotlinesize; i++) {
-        DottedLine & dot = m_dotlines[i];
+    for (auto & dot : m_dotlines) {
         dot.visible = false;
     }
 
-    Session * sess = nullptr;
     ChannelID code;
 
     float lineThickness = AppSetting->lineThickness()+0.001F;
 
-    for (int gi = 0; gi < m_codes.size(); gi++) {
-        code = m_codes[gi];
-        schema::Channel &chan = schema::channel[code];
+    for (const auto & code : m_codes) {
+        const schema::Channel &chan = schema::channel[code];
 
         ////////////////////////////////////////////////////////////////////////
         // Draw the Channel Threshold dotted lines, and flow waveform centreline
         ////////////////////////////////////////////////////////////////////////
         if (showDottedLines) {
-            for (int i=0; i < dotlinesize; i++) {
-                DottedLine & dot = m_dotlines[i];
+            for (auto & dot : m_dotlines) {
                 if ((dot.code != code) || (!m_dot_enabled[dot.code][dot.type]) || (!dot.available) || (!m_enabled[dot.code])) {
                     continue;
                 }
-                schema::Channel & chan = schema::channel[code];
+                //schema::Channel & chan = schema::channel[code];
 
                 dot.visible = true;
                 QColor color = chan.calc[dot.type].color;
@@ -588,10 +557,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         codepoints = 0;
 
         // For each session...
-        int daysize = m_day->size();
-        for (int svi = 0; svi < daysize; svi++) {
-            sess = (*m_day)[svi];
-
+        for (const auto & sess : m_day->sessions) {
             if (!sess) {
                 qWarning() << "gLineChart::Plot() nullptr Session Record.. This should not happen";
                 continue;
@@ -604,12 +570,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             schema::Channel ch = schema::channel[code];
             bool fndbetter = false;
 
-            QList<schema::Channel *>::iterator mlend=ch.m_links.end();
-            for (QList<schema::Channel *>::iterator l = ch.m_links.begin(); l != mlend; l++) {
-                schema::Channel &c = *(*l);
-                ci = (*m_day)[svi]->eventlist.find(c.id());
+            for (const auto & c : ch.m_links) {
+                ci = sess->eventlist.find(c->id());
 
-                if (ci != (*m_day)[svi]->eventlist.end()) {
+                if (ci != sess->eventlist.end()) {
                     fndbetter = true;
                     break;
                 }
@@ -617,20 +581,15 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
 
             if (!fndbetter) {
-                ci = (*m_day)[svi]->eventlist.find(code);
+                ci = sess->eventlist.find(code);
 
-                if (ci == (*m_day)[svi]->eventlist.end()) { continue; }
+                if (ci == sess->eventlist.end()) { continue; }
             }
 
-
-            QVector<EventList *> &evec = ci.value();
             num_points = 0;
 
-            QVector<EventList *>::iterator evec_end = evec.end();
-            QVector<EventList *>::iterator ni;
-
-            for (ni = evec.begin(); ni != evec_end; ++ni) {
-                num_points += (*ni)->count();
+            for (const auto & ni : ci.value()) {
+                num_points += ni->count();
             }
 
             total_points += num_points;
@@ -639,9 +598,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             // Max number of samples taken from samples per pixel for better min/max values
             const int num_averages = 20;
 
-            int n=0;
-            for (ni = evec.begin(); ni != evec_end; ++ni, ++n) {
-                EventList & el = *(EventList*) (*ni);
+            for (auto & ni : ci.value()) {
+                EventList & el = (*ni);
 
                 accel = (el.type() == EVL_Waveform); // Turn on acceleration if this is a waveform.
 
@@ -655,7 +613,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 }
 
                 if (m_disable_accel) { accel = false; }
-
 
                 square_plot = m_square_plot;
 
@@ -882,7 +839,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     w.graphView()->lines_drawn_this_frame += lines.count();
                     lines.clear();
 
-
                 } else  {
                     //////////////////////////////////////////////////////////////////
                     // Standard events/zoomed in Plot
@@ -1050,8 +1006,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     ////////////////////////////////////////////////////////////////////
     // Draw Channel Threshold legend markers
     ////////////////////////////////////////////////////////////////////
-    for (int i=0; i < dotlinesize; i++) {
-        DottedLine & dot = m_dotlines[i];
+    for (const auto & dot : m_dotlines) {
         if (!dot.visible) continue;
         code = dot.code;
         schema::Channel &chan = schema::channel[code];
@@ -1074,8 +1029,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         int yp = rec.top()+(rec.height()/2);
         painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
         legendx -= linewidth + (2*ratioX);
-
-
     }
 
     painter.setClipping(true);
@@ -1094,8 +1047,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     double time = 0;
 
     // Calculate the CPAP session time.
-    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
-        sess = *s;
+    for (auto & sess : m_day->sessions) {
         if (!sess->enabled() || (sess->type() != MT_CPAP)) continue;
 
         first = sess->first();
@@ -1134,10 +1086,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     // Draw the linechart overlays
     if (m_day && (AppSetting->lineCursorMode() || (m_codes[0]==CPAP_FlowRate))) {
-        QHash<ChannelID, gLineOverlayBar *>::iterator fit;
         bool blockhover = false;
-
-        for (fit = flags.begin(); fit != flags.end(); ++fit) {
+        for (auto fit=flags.begin(), end=flags.end(); fit != end; ++fit) {
             code = fit.key();
             if ((!m_flags_enabled[code]) || (!m_day->channelExists(code))) continue;
             gLineOverlayBar * lob = fit.value();
@@ -1151,8 +1101,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             }
         }
     }
-//    if (m_codes[0] == OXI_SPO2Drop) {
-//    }
     if (m_codes[0] == CPAP_FlowRate) {
         float hours = time / 3600.0;
         int h = time / 3600;

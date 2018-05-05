@@ -1,4 +1,4 @@
-/* gLineOverlayBar Implementation
+﻿/* gLineOverlayBar Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -86,28 +86,24 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int tooltipTimeout = AppSetting->tooltipTimeout();
 
     // For each session, process it's eventlist
-    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
+    for (const auto sess : m_day->sessions) {
+        if (!sess->enabled()) { continue; }
 
-        if (!(*s)->enabled()) { continue; }
+        cei = sess->eventlist.find(m_code);
 
-        cei = (*s)->eventlist.find(m_code);
+        if (cei == sess->eventlist.end()) { continue; }
 
-        if (cei == (*s)->eventlist.end()) { continue; }
+        if (cei.value().size() == 0) { continue; }
 
-        QVector<EventList *> &evlist = cei.value();
-
-        if (evlist.size() == 0) { continue; }
-
-        drift = ((*s)->type() == MT_CPAP) ? clockdrift : 0;
+        drift = (sess->type() == MT_CPAP) ? clockdrift : 0;
 
         // Could loop through here, but nowhere uses more than one yet..
-        for (int k = 0; k < evlist.size(); k++) {
-            EventList &el = *(evlist[k]);
-            count = el.count();
-            stime = el.first() + drift;
-            dptr = el.rawData();
+        for (const auto & el : cei.value()) {
+            count = el->count();
+            stime = el->first() + drift;
+            dptr = el->rawData();
             eptr = dptr + count;
-            tptr = el.rawTime();
+            tptr = el->rawTime();
 
             ////////////////////////////////////////////////////////////////////////////
             // Skip data previous to minx bounds
@@ -352,22 +348,22 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
     double sum = 0;
     bool isSpan = false;
 
-    for (int i = 0; i < m_overlays.size(); i++) {
-        cnt += m_overlays[i]->count();
-        sum += m_overlays[i]->sum();
+    for (const auto & lobar : m_overlays) {
+        cnt += lobar->count();
+        sum += lobar->sum();
 
-        if (m_overlays[i]->flagtype() == FT_Span) { isSpan = true; }
+        if (lobar->flagtype() == FT_Span) { isSpan = true; }
     }
 
     double val, first, last;
     double time = 0;
 
     // Calculate the session time.
-    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
-        if (!(*s)->enabled()) { continue; }
+    for (const auto & sess : m_day->sessions) {
+        if (!sess->enabled()) { continue; }
 
-        first = (*s)->first();
-        last = (*s)->last();
+        first = sess->first();
+        last = sess->last();
 
         if (last < w.min_x) { continue; }
 

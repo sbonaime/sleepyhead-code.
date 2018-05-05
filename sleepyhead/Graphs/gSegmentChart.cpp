@@ -1,4 +1,4 @@
-/* gSegmentChart Implementation
+﻿/* gSegmentChart Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -33,13 +33,17 @@ void gSegmentChart::SetDay(Day *d)
 
     if (!m_day) { return; }
 
-    for (int c = 0; c < m_codes.size(); c++) {
-        m_values[c] = 0;
 
-        for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); ++s) {
-            if ((*s)->enabled() && (*s)->m_cnt.contains(m_codes[c])) {
-                EventDataType cnt = (*s)->count(m_codes[c]);
-                m_values[c] += cnt;
+    for (int c = 0; c < m_codes.size(); c++) {
+        auto & mval = m_values[c];
+        auto & mcode = m_codes[c];
+
+        mval = 0;
+
+        for (const auto & sess : m_day->sessions) {
+            if (sess->enabled() && sess->m_cnt.contains(mcode)) {
+                EventDataType cnt = sess->count(mcode);
+                mval += cnt;
                 m_total += cnt;
             }
         }
@@ -47,8 +51,8 @@ void gSegmentChart::SetDay(Day *d)
 
     m_empty = true;
 
-    for (int i = 0; i < m_codes.size(); i++) {
-        if (m_day->count(m_codes[i]) > 0) {
+    for (const auto & mc : m_codes) {
+        if (m_day->count(mc) > 0) {
             m_empty = false;
             break;
         }
@@ -249,27 +253,25 @@ void gTAPGraph::SetDay(Day *d)
     EventDataType gain = 1, offset = 0;
     QHash<ChannelID, QVector<EventList *> >::iterator ei;
 
-    for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); ++s) {
-        if (!(*s)->enabled()) { continue; }
+    for (const auto & sess : m_day->sessions) {
+        if (!sess->enabled()) { continue; }
 
-        if ((ei = (*s)->eventlist.find(m_code)) == (*s)->eventlist.end()) { continue; }
+        ei = sess->eventlist.find(m_code);
+        if (ei == sess->eventlist.end()) { continue; }
 
-        for (int q = 0; q < ei.value().size(); q++) {
-            EventList &el = *(ei.value()[q]);
-            lasttime = el.time(0);
-            lastval = el.raw(0);
+        for (const auto & el : ei.value()) {
+            lasttime = el->time(0);
+            lastval = el->raw(0);
 
             if (rfirst) {
-                gain = el.gain();
-                offset = el.offset();
+                gain = el->gain();
+                offset = el->offset();
                 rfirst = false;
             }
 
-            //first=true;
-            //changed=false;
-            for (quint32 i = 1; i < el.count(); i++) {
-                data = el.raw(i);
-                time = el.time(i);
+            for (quint32 i=1, end=el->count(); i < end; i++) {
+                data = el->raw(i);
+                time = el->time(i);
 
                 if (lastval != data) {
                     qint64 v = (time - lasttime);
@@ -303,7 +305,7 @@ void gTAPGraph::SetDay(Day *d)
     m_total = 0;
     EventDataType val;
 
-    for (QMap<EventStoreType, qint64>::iterator i = tap.begin(); i != tap.end(); i++) {
+    for (auto i=tap.begin(), end=tap.end(); i != end; i++) {
         val = float(i.key()) * gain + offset;
 
         m_values.push_back(i.value() / 1000L);

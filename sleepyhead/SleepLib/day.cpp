@@ -26,8 +26,8 @@ Day::Day()
 }
 Day::~Day()
 {
-    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); ++s) {
-        delete(*s);
+    for (auto & sess : sessions) {
+        delete sess;
     }
 }
 
@@ -38,9 +38,7 @@ void Day::updateCPAPCache()
     OpenSummary();
     QList<ChannelID> channels = getSortedMachineChannels(MT_CPAP, schema::FLAG | schema::MINOR_FLAG | schema::SPAN);
 
-    int num_channels = channels.size();
-    for (int i=0; i< num_channels; ++i) {
-        ChannelID code = channels.at(i);
+    for (const auto code : channels) {
         d_count[code] = count(code);
         d_sum[code] = count(code);
         d_machhours[MT_CPAP] = hours(MT_CPAP);
@@ -49,8 +47,7 @@ void Day::updateCPAPCache()
 
 Session * Day::firstSession(MachineType type)
 {
-    for (int i=0; i<sessions.size(); i++) {
-        Session * sess = sessions.at(i);
+    for (auto & sess : sessions) {
         if (!sess->enabled()) continue;
         if (sess->type() == type) {
             return sess;
@@ -70,7 +67,7 @@ bool Day::addMachine(Machine *mach)
 }
 Machine *Day::machine(MachineType type)
 {
-    QHash<MachineType,Machine *>::iterator it = machines.find(type);
+    auto it = machines.find(type);
     if (it != machines.end())
         return it.value();
     return nullptr;
@@ -78,31 +75,25 @@ Machine *Day::machine(MachineType type)
 
 QList<Session *> Day::getSessions(MachineType type, bool ignore_enabled)
 {
-    QList<Session *>::iterator it;
-    QList<Session *>::iterator sess_end = sessions.end();
-
     QList<Session *> newlist;
 
-    for (it = sessions.begin(); it != sess_end; ++it) {
-        if (!ignore_enabled && !(*it)->enabled())
+    for (auto & sess : sessions) {
+        if (!ignore_enabled && !sess->enabled())
             continue;
 
-        if ((*it)->type() == type)
-            newlist.append((*it));
+        if (sess->type() == type)
+            newlist.append(sess);
     }
-
     return newlist;
 }
 
 Session *Day::find(SessionID sessid)
 {
-    QList<Session *>::iterator end=sessions.end();
-    for (QList<Session *>::iterator s = sessions.begin(); s != end; ++s) {
-        if ((*s)->session() == sessid) {
-            return (*s);
+    for (auto & sess : sessions) {
+        if (sess->session() == sessid) {
+            return sess;
         }
     }
-
     return nullptr;
 }
 
@@ -113,8 +104,7 @@ void Day::addSession(Session *s)
         return;
     }
     invalidate();
-    QHash<MachineType, Machine *>::iterator mi = machines.find(s->type());
-
+    auto mi = machines.find(s->type());
     if (mi != machines.end()) {
         if (mi.value() != s->machine()) {
             qDebug() << "SleepyHead can't add session" << s->session() << "to this day record, as it already contains a different machine of the same MachineType";
@@ -170,13 +160,10 @@ QString Day::calcPercentileLabel(ChannelID code)
 
 EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)
 {
-    QList<Session *>::iterator end = sessions.end();
     int count = 0;
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            count += sess.countInsideSpan(span, code);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            count += sess->countInsideSpan(span, code);
         }
     }
     return count;
@@ -184,14 +171,11 @@ EventDataType Day::countInsideSpan(ChannelID span, ChannelID code)
 
 EventDataType Day::lookupValue(ChannelID code, qint64 time, bool square)
 {
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            if ((time > sess.first()) && (time < sess.last())) {
-                if (sess.channelExists(code)) {
-                    return sess.SearchValue(code,time,square);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            if ((time > sess->first()) && (time < sess->last())) {
+                if (sess->channelExists(code)) {
+                    return sess->SearchValue(code,time,square);
                 }
             }
         }
@@ -204,15 +188,11 @@ EventDataType Day::timeAboveThreshold(ChannelID code, EventDataType threshold)
 {
     EventDataType val = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled() && sess.m_availableChannels.contains(code)) {
-            val += sess.timeAboveThreshold(code,threshold);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_availableChannels.contains(code)) {
+            val += sess->timeAboveThreshold(code,threshold);
         }
     }
-
     return val;
 }
 
@@ -220,15 +200,11 @@ EventDataType Day::timeBelowThreshold(ChannelID code, EventDataType threshold)
 {
     EventDataType val = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            val += sess.timeBelowThreshold(code,threshold);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            val += sess->timeBelowThreshold(code,threshold);
         }
     }
-
     return val;
 }
 
@@ -237,19 +213,14 @@ EventDataType Day::settings_sum(ChannelID code)
 {
     EventDataType val = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            QHash<ChannelID, QVariant>::iterator set = sess.settings.find(code);
-
-            if (set != sess.settings.end()) {
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            auto set = sess->settings.find(code);
+            if (set != sess->settings.end()) {
                 val += set.value().toDouble();
             }
         }
     }
-
     return val;
 }
 
@@ -259,17 +230,14 @@ EventDataType Day::settings_max(ChannelID code)
     EventDataType max = min;
     EventDataType value;
 
-    QList<Session *>::iterator end = sessions.end();
-    for(QList<Session *>::iterator it = sessions.begin(); it < end; ++it) {
-        Session &sess = *(*it);
-        if (sess.enabled()) {
-            value = sess.settings.value(code, min).toFloat();
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            value = sess->settings.value(code, min).toFloat();
             if (value > max) {
                 max = value;
             }
         }
     }
-
     return max;
 }
 
@@ -279,18 +247,14 @@ EventDataType Day::settings_min(ChannelID code)
     EventDataType min = max;
     EventDataType value;
 
-    QList<Session *>::iterator end=sessions.end();
-
-    for(QList<Session *>::iterator it = sessions.begin(); it < end; ++it) {
-        Session &sess = *(*it);
-        if (sess.enabled()) {
-            value = sess.settings.value(code, max).toFloat();
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            value = sess->settings.value(code, max).toFloat();
             if (value < min) {
                 min = value;
             }
         }
     }
-
     return min;
 }
 
@@ -299,19 +263,16 @@ EventDataType Day::settings_avg(ChannelID code)
     EventDataType val = 0;
     int cnt = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; it++) {
-        Session &sess = *(*it);
-        if (sess.enabled()) {
-            QHash<ChannelID, QVariant>::iterator set = sess.settings.find(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            auto set = sess->settings.find(code);
 
-            if (set != sess.settings.end()) {
+            if (set != sess->settings.end()) {
                 val += set.value().toDouble();
                 cnt++;
             }
         }
     }
-
     val = (cnt > 0) ? (val / EventDataType(cnt)) : val;
 
     return val;
@@ -321,22 +282,18 @@ EventDataType Day::settings_wavg(ChannelID code)
 {
     double s0 = 0, s1 = 0, s2 = 0, tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; it++) {
-        Session &sess = *(*it);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            auto set = sess->settings.find(code);
 
-        if (sess.enabled()) {
-            QHash<ChannelID, QVariant>::iterator set = sess.settings.find(code);
-
-            if (set != sess.settings.end()) {
-                s0 = sess.hours();
+            if (set != sess->settings.end()) {
+                s0 = sess->hours();
                 tmp = set.value().toDouble();
                 s1 += tmp * s0;
                 s2 += s0;
             }
         }
     }
-
     if (s2 == 0) { return 0; }
 
     tmp = (s1 / s2);
@@ -366,18 +323,15 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     // First Calculate count of all events
     bool timeweight;
 
-    QList<Session *>::iterator sess_end = sessions.end();
-    for (QList<Session *>::iterator sess_it = sessions.begin(); sess_it != sess_end; ++sess_it) {
-        Session &sess = *(*sess_it);
-        if (!sess.enabled()) { continue; }
+    for (auto & sess : sessions) {
+        if (!sess->enabled()) { continue; }
 
-        QHash<ChannelID, QHash<EventStoreType, EventStoreType> >::iterator ei = sess.m_valuesummary.find(code);
+        auto ei = sess->m_valuesummary.find(code);
+        if (ei == sess->m_valuesummary.end()) { continue; }
 
-        if (ei == sess.m_valuesummary.end()) { continue; }
-
-        QHash<ChannelID, QHash<EventStoreType, quint32> >::iterator tei = sess.m_timesummary.find(code);
-        timeweight = (tei != sess.m_timesummary.end());
-        gain = sess.m_gain[code];
+        auto tei = sess->m_timesummary.find(code);
+        timeweight = (tei != sess->m_timesummary.end());
+        gain = sess->m_gain[code];
 
         // Here's assuming gains don't change accross a days sessions
         // Can't assume this in any multi day calculations..
@@ -393,20 +347,17 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
 
         //qint64 tval;
         if (timeweight) {
-            QHash<EventStoreType, quint32>::iterator teival_end = tei.value().end();
             wmap.reserve(wmap.size() + tei.value().size());
 
-            for (QHash<EventStoreType, quint32>::iterator it = tei.value().begin(); it != teival_end; ++it) {
+            for (auto it = tei.value().begin(), teival_end=tei.value().end(); it != teival_end; ++it) {
                 weight = it.value();
                 SN += weight;
 
                 wmap[it.key()] += weight;
             }
         } else {
-            QHash<EventStoreType, EventStoreType>::iterator eival_end = ei.value().end();
-
             wmap.reserve(wmap.size() + ei.value().size());
-            for (QHash<EventStoreType, EventStoreType>::iterator it = ei.value().begin(); it != eival_end; ++it) {
+            for (auto it = ei.value().begin(), eival_end=ei.value().end(); it != eival_end; ++it) {
                 weight = it.value();
 
                 SN += weight;
@@ -421,9 +372,9 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     valcnt.resize(wmap.size());
     // Build sorted list of value/counts
 
-    QHash<EventStoreType, qint64>::iterator wmap_end = wmap.end();
+    auto wmap_end = wmap.end();
     int ii=0;
-    for (QHash<EventStoreType, qint64>::iterator it = wmap.begin(); it != wmap_end; ++it) {
+    for (auto it = wmap.begin(); it != wmap_end; ++it) {
         valcnt[ii++]=ValueCount(EventDataType(it.key()) * gain, it.value(), 0);
     }
 
@@ -493,12 +444,9 @@ EventDataType Day::rangeCount(ChannelID code, qint64 st, qint64 et)
 {
     int cnt = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            cnt += sess.rangeCount(code, st, et);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            cnt += sess->rangeCount(code, st, et);
         }
     }
 
@@ -508,12 +456,9 @@ EventDataType Day::rangeSum(ChannelID code, qint64 st, qint64 et)
 {
     double val = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            val += sess.rangeSum(code, st, et);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            val += sess->rangeSum(code, st, et);
         }
     }
 
@@ -524,16 +469,12 @@ EventDataType Day::rangeAvg(ChannelID code, qint64 st, qint64 et)
     double val = 0;
     int cnt = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            val += sess.rangeSum(code, st, et);
-            cnt += sess.rangeCount(code, st,et);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            val += sess->rangeSum(code, st, et);
+            cnt += sess->rangeCount(code, st,et);
         }
     }
-
     if (cnt == 0) { return 0; }
     val /= double(cnt);
 
@@ -543,30 +484,26 @@ EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
 {
     double sum = 0;
     double cnt = 0;
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-        QHash<ChannelID, QVector<EventList *> >::iterator EVEC = sess.eventlist.find(code);
-        if (EVEC == sess.eventlist.end()) continue;
+    qint64 lasttime, time;
+    double data, duration;
 
-        QVector<EventList *>::iterator EL;
-        QVector<EventList *>::iterator EVEC_end = EVEC.value().end();
-        for (EL = EVEC.value().begin(); EL != EVEC_end; ++EL) {
-            EventList * el = *EL;
+    for (auto & sess : sessions) {
+        auto EVEC = sess->eventlist.find(code);
+        if (EVEC == sess->eventlist.end()) continue;
+
+        for (auto & el : EVEC.value()) {
             if (el->count() < 1) continue;
-            //EventDataType lastdata = el->data(0);
-            qint64 lasttime = el->time(0);
+            lasttime = el->time(0);
 
             if (lasttime < st)
                 lasttime = st;
 
             for (unsigned i=1; i<el->count(); i++)  {
-                double data = el->data(i);
-                qint64 time = el->time(i);
+                data = el->data(i);
+                time = el->time(i);
 
                 if (time < st) {
                     lasttime = st;
-                    //lastdata = data;
                     continue;
                 }
 
@@ -574,14 +511,13 @@ EventDataType Day::rangeWavg(ChannelID code, qint64 st, qint64 et)
                     time = et;
                 }
 
-                double duration = double(time - lasttime) / 1000.0;
+                duration = double(time - lasttime) / 1000.0;
                 sum += data * duration;
                 cnt += duration;
 
                 if (time >= et) break;
 
                 lasttime = time;
-                //lastdata = data;
             }
         }
     }
@@ -598,19 +534,15 @@ EventDataType Day::rangePercentile(ChannelID code, float p, qint64 st, qint64 et
     QVector<EventDataType> list;
     list.resize(count);
     int idx = 0;
+    qint64 time;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-        QHash<ChannelID, QVector<EventList *> >::iterator EVEC = sess.eventlist.find(code);
-        if (EVEC == sess.eventlist.end()) continue;
+    for (auto & sess : sessions) {
+        auto EVEC = sess->eventlist.find(code);
+        if (EVEC == sess->eventlist.end()) continue;
 
-        QVector<EventList *>::iterator EL;
-        QVector<EventList *>::iterator EVEC_end = EVEC.value().end();
-        for (EL = EVEC.value().begin(); EL != EVEC_end; ++EL) {
-            EventList * el = *EL;
+        for (auto & el : EVEC.value()) {
             for (unsigned i=0; i<el->count(); i++)  {
-                qint64 time = el->time(i);
+                time = el->time(i);
                 if ((time < st) || (time > et)) continue;
                 list[idx++] = el->data(i);
             }
@@ -646,16 +578,12 @@ EventDataType Day::avg(ChannelID code)
     // Cache this?
     int cnt = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled()) {
-            val += sess.sum(code);
-            cnt += sess.count(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            val += sess->sum(code);
+            cnt += sess->count(code);
         }
     }
-
     if (cnt == 0) { return 0; }
     val /= double(cnt);
 
@@ -667,12 +595,9 @@ EventDataType Day::sum(ChannelID code)
     // Cache this?
     EventDataType val = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled() && sess.m_sum.contains(code)) {
-            val += sess.sum(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_sum.contains(code)) {
+            val += sess->sum(code);
         }
     }
 
@@ -684,17 +609,13 @@ EventDataType Day::wavg(ChannelID code)
     double s0 = 0, s1 = 0, s2 = 0;
     qint64 d;
 
-    QList<Session *>::iterator end = sessions.end();
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-
-        if (sess.enabled() && sess.m_wavg.contains(code)) {
-            d = sess.length(); //.last(code)-sess.first(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_wavg.contains(code)) {
+            d = sess->length();
             s0 = double(d) / 3600000.0;
 
             if (s0 > 0) {
-                s1 += sess.wavg(code) * s0;
+                s1 += sess->wavg(code) * s0;
                 s2 += s0;
             }
         }
@@ -717,25 +638,23 @@ qint64 Day::total_time()
     // Remember sessions may overlap..
 
     qint64 first, last;
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-        int slicesize = sess.m_slices.size();
 
-        if (sess.enabled() && (sess.type() != MT_JOURNAL)) {
-            first = sess.first();
-            last = sess.last();
+    for (auto & sess : sessions) {
+        int slicesize = sess->m_slices.size();
+
+        if (sess->enabled() && (sess->type() != MT_JOURNAL)) {
+            first = sess->first();
+            last = sess->last();
 
             if (slicesize == 0) {
                 // This algorithm relies on non zero length, and correctly ordered sessions
                 if (last > first) {
                     range.insert(first, 0);
                     range.insert(last, 1);
-                    d_totaltime += sess.length();
+                    d_totaltime += sess->length();
                 }
             } else {
-                for (int i=0; i<slicesize; ++i) {
-                    const SessionSlice & slice = sess.m_slices.at(i);
+                for (auto & slice : sess->m_slices) {
                     if (slice.status == EquipmentOn) {
                         range.insert(slice.start, 0);
                         range.insert(slice.end, 1);
@@ -754,8 +673,8 @@ qint64 Day::total_time()
     // This is my implementation of a typical "brace counting" algorithm mentioned here:
     // http://stackoverflow.com/questions/7468948/problem-calculating-overlapping-date-ranges
 
-    QMultiMap<qint64, bool>::iterator rend = range.end();
-    for (QMultiMap<qint64, bool>::iterator rit = range.begin(); rit != rend; ++rit) {
+    auto rend = range.end();
+    for (auto rit = range.begin(); rit != rend; ++rit) {
         b = rit.value();
 
         if (!b) {
@@ -790,25 +709,22 @@ qint64 Day::total_time(MachineType type)
     // Remember sessions may overlap..
 
     qint64 first, last;
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session &sess = *(*it);
-        int slicesize = sess.m_slices.size();
+    for (auto & sess : sessions) {
+        int slicesize = sess->m_slices.size();
 
-        if (sess.enabled() && (sess.type() == type)) {
-            first = sess.first();
-            last = sess.last();
+        if (sess->enabled() && (sess->type() == type)) {
+            first = sess->first();
+            last = sess->last();
 
             // This algorithm relies on non zero length, and correctly ordered sessions
             if (slicesize == 0) {
                 if (last > first) {
                     range.insert(first, 0);
                     range.insert(last, 1);
-                    d_totaltime += sess.length();
+                    d_totaltime += sess->length();
                 }
             } else {
-                for (int i=0; i<slicesize; ++i) {
-                    const SessionSlice & slice = sess.m_slices.at(i);
+                for (const auto & slice : sess->m_slices) {
                     if (slice.status == EquipmentOn) {
                         range.insert(slice.start, 0);
                         range.insert(slice.end, 1);
@@ -827,8 +743,8 @@ qint64 Day::total_time(MachineType type)
     // This is my implementation of a typical "brace counting" algorithm mentioned here:
     // http://stackoverflow.com/questions/7468948/problem-calculating-overlapping-date-ranges
 
-    QMultiMap<qint64, bool>::iterator rend = range.end();
-    for (QMultiMap<qint64, bool>::iterator rit = range.begin(); rit != rend; ++rit) {
+    auto rend = range.end();
+    for (auto rit = range.begin(); rit != rend; ++rit) {
         b = rit.value();
 
         if (!b) {
@@ -856,27 +772,21 @@ qint64 Day::total_time(MachineType type)
 
 bool Day::hasEnabledSessions()
 {
-    QList<Session *>::iterator end = sessions.end();
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        if ((*it)->enabled()) {
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
             return true;
         }
     }
-
     return false;
 }
 
 bool Day::hasEnabledSessions(MachineType type)
 {
-    QList<Session *>::iterator end = sessions.end();
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        if (((*it)->type() == type) && (*it)->enabled()) {
+    for (auto & sess : sessions) {
+        if ((sess->type() == type) && sess->enabled()) {
             return true;
         }
     }
-
     return false;
 }
 
@@ -885,10 +795,9 @@ bool Day::hasEnabledSessions(MachineType type)
     double val=0;
     int cnt=0;
 
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
-            val+=sess.percentile(code,percent);
+    for (auto & sess : sessions) {
+        if (sess->eventlist.find(code)!=sess->eventlist.end()) {
+            val+=sess->percentile(code,percent);
             cnt++;
         }
     }
@@ -902,12 +811,9 @@ qint64 Day::first(ChannelID code)
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess=*(*it);
-
-        if (sess.enabled()) {
-            tmp = sess.first(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            tmp = sess->first(code);
 
             if (!tmp) { continue; }
 
@@ -927,12 +833,9 @@ qint64 Day::last(ChannelID code)
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; it++) {
-        Session & sess = *(*it);
-
-        if (sess.enabled()) {
-            tmp = sess.last(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            tmp = sess->last(code);
 
             if (!tmp) { continue; }
 
@@ -953,13 +856,10 @@ EventDataType Day::Min(ChannelID code)
     EventDataType tmp;
     bool first = true;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; it++) {
-        Session & sess = *(*it);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_min.contains(code)) {
 
-        if (sess.enabled() && sess.m_min.contains(code)) {
-
-            tmp = sess.Min(code);
+            tmp = sess->Min(code);
 
             if (first) {
                 min = tmp;
@@ -979,13 +879,10 @@ EventDataType Day::physMin(ChannelID code)
     EventDataType tmp;
     bool first = true;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_min.contains(code)) {
 
-        if (sess.enabled() && sess.m_min.contains(code)) {
-
-            tmp = sess.physMin(code);
+            tmp = sess->physMin(code);
 
             if (first) {
                 min = tmp;
@@ -1003,59 +900,56 @@ bool Day::hasData(ChannelID code, SummaryType type)
 {
     bool has = false;
 
-    QList<Session *>::iterator end = sessions.end();
+    for (auto & sess : sessions) {
+        if (sess->type() == MT_JOURNAL) continue;
 
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-        if (sess.type() == MT_JOURNAL) continue;
-
-        if (sess.enabled()) {
+        if (sess->enabled()) {
             switch (type) {
             //        case ST_90P:
             //            has=sess->m_90p.contains(code);
             //            break;
             case ST_PERC:
-                has = sess.m_valuesummary.contains(code);
+                has = sess->m_valuesummary.contains(code);
                 break;
 
             case ST_MIN:
-                has = sess.m_min.contains(code);
+                has = sess->m_min.contains(code);
                 break;
 
             case ST_MAX:
-                has = sess.m_max.contains(code);
+                has = sess->m_max.contains(code);
                 break;
 
             case ST_CNT:
-                has = sess.m_cnt.contains(code);
+                has = sess->m_cnt.contains(code);
                 break;
 
             case ST_AVG:
-                has = sess.m_avg.contains(code);
+                has = sess->m_avg.contains(code);
                 break;
 
             case ST_WAVG:
-                has = sess.m_wavg.contains(code);
+                has = sess->m_wavg.contains(code);
                 break;
 
             case ST_CPH:
-                has = sess.m_cph.contains(code);
+                has = sess->m_cph.contains(code);
                 break;
 
             case ST_SPH:
-                has = sess.m_sph.contains(code);
+                has = sess->m_sph.contains(code);
                 break;
 
             case ST_FIRST:
-                has = sess.m_firstchan.contains(code);
+                has = sess->m_firstchan.contains(code);
                 break;
 
             case ST_LAST:
-                has = sess.m_lastchan.contains(code);
+                has = sess->m_lastchan.contains(code);
                 break;
 
             case ST_SUM:
-                has = sess.m_sum.contains(code);
+                has = sess->m_sum.contains(code);
                 break;
 
             default:
@@ -1075,13 +969,10 @@ EventDataType Day::Max(ChannelID code)
     EventDataType tmp;
     bool first = true;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_max.contains(code)) {
 
-        if (sess.enabled() && sess.m_max.contains(code)) {
-
-            tmp = sess.Max(code);
+            tmp = sess->Max(code);
 
             if (first) {
                 max = tmp;
@@ -1091,7 +982,6 @@ EventDataType Day::Max(ChannelID code)
             }
         }
     }
-
     return max;
 }
 
@@ -1101,12 +991,9 @@ EventDataType Day::physMax(ChannelID code)
     EventDataType tmp;
     bool first = true;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled() && sess.m_max.contains(code)) {
-            tmp = sess.physMax(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_max.contains(code)) {
+            tmp = sess->physMax(code);
 
             if (first) {
                 max = tmp;
@@ -1116,24 +1003,17 @@ EventDataType Day::physMax(ChannelID code)
             }
         }
     }
-
     return max;
 }
 EventDataType Day::cph(ChannelID code)
 {
     double sum = 0;
 
-    //EventDataType h=0;
-
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled() && sess.m_cnt.contains(code)) {
-            sum += sess.count(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_cnt.contains(code)) {
+            sum += sess->count(code);
         }
     }
-
     sum /= hours();
     return sum;
 }
@@ -1143,13 +1023,9 @@ EventDataType Day::sph(ChannelID code)
     EventDataType sum = 0;
     EventDataType h = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled() && sess.m_sum.contains(code)) {
-            sum += sess.sum(code) / 3600.0; //*sessions[i]->hours();
-            //h+=sessions[i]->hours();
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_sum.contains(code)) {
+            sum += sess->sum(code) / 3600.0;
         }
     }
 
@@ -1162,27 +1038,21 @@ EventDataType Day::count(ChannelID code)
 {
     EventDataType total = 0;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled() && sess.m_cnt.contains(code)) {
-            total += sess.count(code);
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->m_cnt.contains(code)) {
+            total += sess->count(code);
         }
     }
-
     return total;
 }
 
 bool Day::summaryOnly(Machine * mach)
 {
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-        if ((mach == nullptr) && sess.summaryOnly()) {
+    for (auto & sess : sessions) {
+        if ((mach == nullptr) && sess->summaryOnly()) {
             // If this day generally has just summary data.
             return true;
-        } else if ((mach == sess.machine())  && sess.summaryOnly()) {
+        } else if ((mach == sess->machine())  && sess->summaryOnly()) {
             // Focus only on machine mach
             return true;
         }
@@ -1192,29 +1062,21 @@ bool Day::summaryOnly(Machine * mach)
 
 bool Day::settingExists(ChannelID id)
 {
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled()) {
-            QHash<ChannelID, QVariant>::iterator set = sess.settings.find(id);
-
-            if (set != sess.settings.end()) {
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            auto set = sess->settings.find(id);
+            if (set != sess->settings.end()) {
                 return true;
             }
         }
     }
-
     return false;
 }
 
 bool Day::eventsLoaded()
 {
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.eventsLoaded()) {
+    for (auto & sess : sessions) {
+        if (sess->eventsLoaded()) {
             return true;
         }
     }
@@ -1224,11 +1086,8 @@ bool Day::eventsLoaded()
 
 bool Day::channelExists(ChannelID id)
 {
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled() && sess.eventlist.contains(id)) {
+    for (auto & sess : sessions) {
+        if (sess->enabled() && sess->eventlist.contains(id)) {
             return true;
         }
     }
@@ -1236,30 +1095,25 @@ bool Day::channelExists(ChannelID id)
     return false;
 }
 bool Day::hasEvents() {
-    int s=sessions.size();
-    for (int i=0; i<s; ++i) {
-        if (sessions.at(i)->eventlist.size() > 0) return true;
+    for (auto & sess : sessions) {
+        if (sess->eventlist.size() > 0) return true;
     }
     return false;
 }
 
 bool Day::channelHasData(ChannelID id)
 {
-    QList<Session *>::iterator end = sessions.end();
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if (sess.enabled()) {
-            if (sess.m_cnt.contains(id)) {
+    for (auto & sess : sessions) {
+        if (sess->enabled()) {
+            if (sess->m_cnt.contains(id)) {
                 return true;
             }
 
-            if (sess.eventlist.contains(id)) {
+            if (sess->eventlist.contains(id)) {
                 return true;
             }
 
-            if (sess.m_valuesummary.contains(id)) {
+            if (sess->m_valuesummary.contains(id)) {
                 return true;
             }
         }
@@ -1270,11 +1124,9 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
-//    if (d_events_open)
-//        return;
-    Q_FOREACH(Session * session, sessions) {
-        if (session->type() != MT_JOURNAL)
-            session->OpenEvents();
+    for (auto & sess : sessions) {
+        if (sess->type() != MT_JOURNAL)
+            sess->OpenEvents();
     }
     d_events_open = true;
 }
@@ -1282,8 +1134,8 @@ void Day::OpenEvents()
 void Day::OpenSummary()
 {
     if (d_summaries_open) return;
-    Q_FOREACH(Session * session, sessions) {
-        session->LoadSummary();
+    for (auto & sess : sessions) {
+        sess->LoadSummary();
     }
     d_summaries_open = true;
 }
@@ -1291,8 +1143,8 @@ void Day::OpenSummary()
 
 void Day::CloseEvents()
 {
-    Q_FOREACH(Session * session, sessions) {
-        session->TrashEvents();
+    for (auto & sess : sessions) {
+        sess->TrashEvents();
     }
     d_events_open = false;
 }
@@ -1300,23 +1152,20 @@ void Day::CloseEvents()
 QList<ChannelID> Day::getSortedMachineChannels(MachineType type, quint32 chantype)
 {
     QList<ChannelID> available;
-    QHash<MachineType, Machine *>::iterator mi_end = machines.end();
-    for (QHash<MachineType, Machine *>::iterator mi = machines.begin(); mi != mi_end; mi++) {
+    auto mi_end = machines.end();
+    for (auto mi = machines.begin(); mi != mi_end; mi++) {
         if (mi.key() != type) continue;
         available.append(mi.value()->availableChannels(chantype));
     }
 
     QMultiMap<int, ChannelID> order;
 
-    for (int i=0; i < available.size(); ++i) {
-        ChannelID code = available.at(i);
+    for (const auto code : available) {
         order.insert(schema::channel[code].order(), code);
     }
 
-    QMultiMap<int, ChannelID>::iterator it;
-
     QList<ChannelID> channels;
-    for (it = order.begin(); it != order.end(); ++it) {
+    for (auto it = order.begin(); it != order.end(); ++it) {
         ChannelID code = it.value();
         channels.append(code);
     }
@@ -1327,23 +1176,20 @@ QList<ChannelID> Day::getSortedMachineChannels(MachineType type, quint32 chantyp
 QList<ChannelID> Day::getSortedMachineChannels(quint32 chantype)
 {
     QList<ChannelID> available;
-    QHash<MachineType, Machine *>::iterator mi_end = machines.end();
-    for (QHash<MachineType, Machine *>::iterator mi = machines.begin(); mi != mi_end; mi++) {
+    auto mi_end = machines.end();
+    for (auto mi = machines.begin(); mi != mi_end; mi++) {
         if (mi.key() == MT_JOURNAL) continue;
         available.append(mi.value()->availableChannels(chantype));
     }
 
     QMultiMap<int, ChannelID> order;
 
-    for (int i=0; i < available.size(); ++i) {
-        ChannelID code = available.at(i);
+    for (auto code : available) {
         order.insert(schema::channel[code].order(), code);
     }
 
-    QMultiMap<int, ChannelID>::iterator it;
-
     QList<ChannelID> channels;
-    for (it = order.begin(); it != order.end(); ++it) {
+    for (auto it = order.begin(); it != order.end(); ++it) {
         ChannelID code = it.value();
         channels.append(code);
     }
@@ -1355,12 +1201,9 @@ qint64 Day::first(MachineType type)
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if ((sess.type() == type) && sess.enabled()) {
-            tmp = sess.first();
+    for (auto & sess : sessions) {
+        if ((sess->type() == type) && sess->enabled()) {
+            tmp = sess->first();
 
             if (!tmp) { continue; }
 
@@ -1371,7 +1214,6 @@ qint64 Day::first(MachineType type)
             }
         }
     }
-
     return date;
 }
 
@@ -1380,15 +1222,11 @@ qint64 Day::first()
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-        if (sess.type() == MT_JOURNAL) continue;
-        if (sess.enabled()) {
-            tmp = sess.first();
-
+    for (auto & sess : sessions) {
+        if (sess->type() == MT_JOURNAL) continue;
+        if (sess->enabled()) {
+            tmp = sess->first();
             if (!tmp) { continue; }
-
             if (!date) {
                 date = tmp;
             } else {
@@ -1396,7 +1234,6 @@ qint64 Day::first()
             }
         }
     }
-
     return date;
 }
 
@@ -1406,17 +1243,11 @@ qint64 Day::last()
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-        if (sess.type() == MT_JOURNAL) continue;
-
-        if (sess.enabled()) {
-            tmp = sess.last();
-
+    for (auto & sess : sessions) {
+        if (sess->type() == MT_JOURNAL) continue;
+        if (sess->enabled()) {
+            tmp = sess->last();
             if (!tmp) { continue; }
-
             if (!date) {
                 date = tmp;
             } else {
@@ -1424,7 +1255,6 @@ qint64 Day::last()
             }
         }
     }
-
     return date;
 }
 
@@ -1433,17 +1263,10 @@ qint64 Day::last(MachineType type)
     qint64 date = 0;
     qint64 tmp;
 
-    QList<Session *>::iterator end = sessions.end();
-
-
-    for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
-        Session & sess = *(*it);
-
-        if ((sess.type() == type) && sess.enabled()) {
-            tmp = sess.last();
-
+    for (auto & sess : sessions) {
+        if ((sess->type() == type) && sess->enabled()) {
+            tmp = sess->last();
             if (!tmp) { continue; }
-
             if (!date) {
                 date = tmp;
             } else {
@@ -1451,7 +1274,6 @@ qint64 Day::last(MachineType type)
             }
         }
     }
-
     return date;
 }
 
@@ -1465,8 +1287,8 @@ bool Day::removeSession(Session *sess)
     return b;
 }
 bool Day::searchMachine(MachineType mt) {
-    for (int i=0; i < sessions.size(); ++i) {
-        if (sessions.at(i)->type() == mt)
+    for (auto & sess : sessions) {
+        if (sess->type() == mt)
             return true;
     }
     return false;
@@ -1474,8 +1296,8 @@ bool Day::searchMachine(MachineType mt) {
 
 bool Day::hasMachine(Machine * mach)
 {
-    for (int i=0; i < sessions.size(); ++i) {
-        if (sessions.at(i)->machine() == mach)
+    for (auto & sess : sessions) {
+        if (sess->machine() == mach)
             return true;
     }
     return false;

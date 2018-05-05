@@ -125,9 +125,9 @@ void SummaryChart::SetDay(Day * nullday)
     bool first = true;
 
     // For each day in the main profile daylist
-    QMap<QDate, Day *>::iterator d;
 
-    for (d = p_profile->daylist.begin(); d != p_profile->daylist.end(); d++) {
+    for (auto d=p_profile->daylist.begin(), dend=p_profile->daylist.end(); d!=dend; ++d) {
+        Day * day = d.value();
 
         // get the timestamp of this day.
         tt = QDateTime(d.key(), QTime(0, 0, 0), Qt::UTC).toTime_t();
@@ -155,7 +155,6 @@ void SummaryChart::SetDay(Day * nullday)
             }
 
             // for each day object on record for this date
-            day = d.value();
 
             // skip any empty or irrelevant day records
             if (!day || (day->machine(m_machinetype) == nullptr)) { continue; }
@@ -168,7 +167,7 @@ void SummaryChart::SetDay(Day * nullday)
             // ft = first sessions time, rounded back to midnight..
 
             // For each session in this day record
-            for (int s = 0; s < day->size(); s++) {
+            for (int s=0, size=day->size(); s < size; s++) {
                 Session *sess = (*day)[s];
 
                 if (!sess->enabled()) { continue; }
@@ -366,8 +365,8 @@ void SummaryChart::SetDay(Day * nullday)
 
     m_empty = true;
 
-    for (int i = 0; i < m_goodcodes.size(); i++) {
-        if (m_goodcodes[i]) {
+    for (const auto & goodcode : m_goodcodes) {
+        if (goodcode) {
             m_empty = false;
             break;
         }
@@ -486,7 +485,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     lastY.resize(numcodes);
     int zd = minx / 86400000L;
     zd--;
-    QHash<int, QMap<short, EventDataType> >::iterator d = m_values.find(zd);
+    auto d = m_values.find(zd);
 
     QVector<bool> goodcodes;
     goodcodes.resize(m_goodcodes.size());
@@ -619,7 +618,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             if (graphtype == GT_SESSIONS) {
                 int j;
-                QHash<int, QMap<short, EventDataType> >::iterator times = m_times.find(zd);
+                auto times = m_times.find(zd);
                 QColor col = m_colors[0];
                 //if (hours<compliance_hours) col=QColor("#f03030");
 
@@ -637,8 +636,8 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 int np = d.value().size();
 
                 if (np > 0) {
-                    for (int i = 0; i < goodcodes.size(); i++) {
-                        goodcodes[i] = true;
+                    for (auto & goodcode : goodcodes) {
+                        goodcode = true;
                     }
                 }
 
@@ -695,7 +694,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 bool good;
                 SummaryType type;
 
-                for (QMap<short, EventDataType>::iterator g = d.value().begin(); g != d.value().end(); g++) {
+                for (auto g=d.value().begin(), dend=d.value().end(); g != dend; g++) {
                     short j = g.key();
 
                     if (!j) { continue; }
@@ -1077,7 +1076,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
         hl_day = zd;
         graph->Trigger(2000);
 
-        QHash<int, QMap<short, EventDataType> >::iterator d = m_values.find(hl_day);
+        auto d = m_values.find(hl_day);
 
         QMap<short, EventDataType> &valhash = d.value();
 

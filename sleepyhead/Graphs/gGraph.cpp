@@ -1,4 +1,4 @@
-/* gGraph Implemntation
+﻿/* gGraph Implemntation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -116,8 +116,8 @@ void DestroyGraphGlobals()
     delete bigfont;
     delete mediumfont;
 
-    for (QHash<QString, QImage *>::iterator i = images.begin(); i != images.end(); i++) {
-        delete i.value();
+    for (auto & image : images) {
+        delete image;
     }
 
     globalsInitialized = false;
@@ -187,9 +187,9 @@ gGraph::gGraph(QString name, gGraphView *graphview, QString title, QString units
 }
 gGraph::~gGraph()
 {
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->unref()) {
-            delete m_layers[i];
+    for (auto & layer : m_layers) {
+        if (layer->unref()) {
+            delete layer;
         }
     }
 
@@ -216,16 +216,16 @@ void gGraph::Timeout()
 
 void gGraph::deselect()
 {
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        (*l)->deselect();
+    for (auto & layer : m_layers) {
+        layer->deselect();
     }
 }
 bool gGraph::isSelected()
 {
     bool res = false;
 
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        res = (*l)->isSelected();
+    for (const auto & layer : m_layers) {
+        res = layer->isSelected();
 
         if (res) { break; }
     }
@@ -237,13 +237,12 @@ bool gGraph::isEmpty()
 {
     bool empty = true;
 
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        if (!(*l)->isEmpty()) {
+    for (const auto & layer : m_layers) {
+        if (!layer->isEmpty()) {
             empty = false;
             break;
         }
     }
-
 
     return empty;
 }
@@ -272,8 +271,8 @@ void gGraph::setDay(Day *day)
 
     m_day = day;
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        m_layers[i]->SetDay(day);
+    for (auto & layer : m_layers) {
+        layer->SetDay(day);
     }
 
     rmin_y = rmax_y = 0;
@@ -369,31 +368,27 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 
    // left = 0;
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
 
-        if (!ll->visible()) { continue; }
+        tmp = layer->minimumHeight();// * m_graphview->printScaleY();
 
-        tmp = ll->minimumHeight();// * m_graphview->printScaleY();
-
-        if (ll->position() == LayerTop) { top += tmp; }
-        if (ll->position() == LayerBottom) { bottom += tmp * printScaleY(); }
+        if (layer->position() == LayerTop) { top += tmp; }
+        if (layer->position() == LayerBottom) { bottom += tmp * printScaleY(); }
     }
 
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
 
-        if (!ll->visible()) { continue; }
-
-        tmp = ll->minimumWidth();
+        tmp = layer->minimumWidth();
         tmp *= m_graphview->printScaleX();
         tmp *= m_graphview->devicePixelRatio();
 
-        if (ll->position() == LayerLeft) {
+        if (layer->position() == LayerLeft) {
             QRect rect(originX + left, originY + top, tmp, height - top - bottom);
-            ll->m_rect = rect;
-          //  ll->paint(painter, *this, QRegion(rect));
+            layer->m_rect = rect;
+          //  layer->paint(painter, *this, QRegion(rect));
             left += tmp;
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
@@ -402,11 +397,11 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
 #endif
         }
 
-        if (ll->position() == LayerRight) {
+        if (layer->position() == LayerRight) {
             right += tmp;
             QRect rect(originX + width - right, originY + top, tmp, height - top - bottom);
-            ll->m_rect = rect;
-            //ll->paint(painter, *this, QRegion(rect));
+            layer->m_rect = rect;
+            //layer->paint(painter, *this, QRegion(rect));
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
             painter.setPen(col);
@@ -418,25 +413,23 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
     bottom = marginBottom() * printScaleY();
     top = marginTop();
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
 
-        if (!ll->visible()) { continue; }
+        tmp = layer->minimumHeight();
 
-        tmp = ll->minimumHeight();
-
-        if (ll->position() == LayerTop) {
+        if (layer->position() == LayerTop) {
             QRect rect(originX + left, originY + top, width - left - right, tmp);
-            ll->m_rect = rect;
-            ll->paint(painter, *this, QRegion(rect));
+            layer->m_rect = rect;
+            layer->paint(painter, *this, QRegion(rect));
             top += tmp;
         }
 
-        if (ll->position() == LayerBottom) {
+        if (layer->position() == LayerBottom) {
             bottom += tmp * printScaleY();
             QRect rect(originX + left, originY + height - bottom, width - left - right, tmp);
-            ll->m_rect = rect;
-            ll->paint(painter, *this, QRegion(rect));
+            layer->m_rect = rect;
+            layer->paint(painter, *this, QRegion(rect));
         }
     }
 
@@ -445,25 +438,21 @@ void gGraph::paint(QPainter &painter, const QRegion &region)
         painter.fillRect(originX + left, originY + top, width - right, height - bottom - top, QBrush(QColor(Qt::white)));
     }
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
 
-        if (!ll->visible()) { continue; }
-
-        if (ll->position() == LayerCenter) {
+        if (layer->position() == LayerCenter) {
             QRect rect(originX + left, originY + top, width - left - right, height - top - bottom);
-            ll->m_rect = rect;
-            ll->paint(painter, *this, QRegion(rect));
+            layer->m_rect = rect;
+            layer->paint(painter, *this, QRegion(rect));
         }
     }
 
     // Draw anything like the YAxis labels afterwards, in case the graph scale was updated during draw
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
-
-        if (!ll->visible()) { continue; }
-        if ((ll->position() == LayerLeft) || (ll->position() == LayerRight)) {
-            ll->paint(painter, *this, QRegion(ll->m_rect));
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
+        if ((layer->position() == LayerLeft) || (layer->position() == LayerRight)) {
+            layer->paint(painter, *this, QRegion(layer->m_rect));
         }
     }
 
@@ -697,9 +686,8 @@ void gGraph::AddLayer(Layer *l, LayerPosition position, short width, short heigh
 
 void gGraph::dataChanged()
 {
-    int size = m_layers.size();
-    for (int i=0; i < size; i++) {
-        m_layers[i]->dataChanged();
+    for (auto & layer : m_layers) {
+        layer->dataChanged();
     }
 }
 
@@ -739,11 +727,10 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     timedRedraw(0);
 
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->m_rect.contains(x, y))
-            if (m_layers[i]->mouseMoveEvent(event, this)) {
+    for (const auto & layer : m_layers) {
+        if (layer->m_rect.contains(x, y))
+            if (layer->mouseMoveEvent(event, this)) {
                 return;
-//                doredraw = true;
             }
     }
 
@@ -753,7 +740,6 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
     int x2 = m_graphview->pointClicked().x() - m_rect.left();
 
     int w = m_rect.width() - left - right;
-
 
     double xx; //= max_x - min_x;
     double xmult;// = xx / double(w);
@@ -888,9 +874,9 @@ void gGraph::mousePressEvent(QMouseEvent *event)
     int y = event->pos().y();
     int x = event->pos().x();
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->m_rect.contains(x, y))
-            if (m_layers[i]->mousePressEvent(event, this)) {
+    for (const auto & layer : m_layers) {
+        if (layer->m_rect.contains(x, y))
+            if (layer->mousePressEvent(event, this)) {
                 return;
             }
     }
@@ -914,9 +900,9 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
     int y = event->pos().y();
     int x = event->pos().x();
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->m_rect.contains(x, y))
-            if (m_layers[i]->mouseReleaseEvent(event, this)) {
+    for (const auto & layer : m_layers) {
+        if (layer->m_rect.contains(x, y))
+            if (layer->mouseReleaseEvent(event, this)) {
                 return;
             }
     }
@@ -924,13 +910,11 @@ void gGraph::mouseReleaseEvent(QMouseEvent *event)
     x -= m_rect.left();
     y -= m_rect.top();
 
-
     int w = m_rect.width() - left - right; //(m_marginleft+left+right+m_marginright);
     int h = m_rect.height() - bottom; //+m_marginbottom);
 
     int x2 = m_graphview->pointClicked().x() - m_rect.left();
     //int y2 = m_graphview->pointClicked().y() - m_rect.top();
-
 
     m_selDurString = QString();
 
@@ -1091,9 +1075,9 @@ void gGraph::wheelEvent(QWheelEvent *event)
     int y = event->pos().y();
     x = event->pos().x();
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->m_rect.contains(x, y)) {
-            m_layers[i]->wheelEvent(event, this);
+    for (const auto & layer : m_layers) {
+        if (layer->m_rect.contains(x, y)) {
+            layer->wheelEvent(event, this);
         }
     }
 
@@ -1105,9 +1089,9 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent *event)
     int y = event->pos().y();
     int x = event->pos().x();
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        if (m_layers[i]->m_rect.contains(x, y)) {
-            m_layers[i]->mouseDoubleClickEvent(event, this);
+    for (const auto & layer : m_layers) {
+        if (layer->m_rect.contains(x, y)) {
+            layer->mouseDoubleClickEvent(event, this);
         }
     }
 
@@ -1131,8 +1115,8 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent *event)
 }
 void gGraph::keyPressEvent(QKeyEvent *event)
 {
-    for (QVector<Layer *>::iterator i = m_layers.begin(); i != m_layers.end(); i++) {
-        (*i)->keyPressEvent(event, this);
+    for (const auto & layer : m_layers) {
+        layer->keyPressEvent(event, this);
     }
 
     //qDebug() << m_title << "Key Pressed.. implement me" << event->key();
@@ -1225,12 +1209,12 @@ qint64 gGraph::MinX()
 {
     qint64 val = 0, tmp;
 
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        if ((*l)->isEmpty()) {
+    for (const auto & layer : m_layers) {
+        if (layer->isEmpty()) {
             continue;
         }
 
-        tmp = (*l)->Minx();
+        tmp = layer->Minx();
 
         if (!tmp) {
             continue;
@@ -1250,15 +1234,15 @@ qint64 gGraph::MaxX()
     //bool first=true;
     qint64 val = 0, tmp;
 
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        if ((*l)->isEmpty()) {
+    for (const auto & layer : m_layers) {
+        if (layer->isEmpty()) {
             continue;
         }
 
-        tmp = (*l)->Maxx();
+        tmp = layer->Maxx();
 
         //if (!tmp) continue;
-        if (!val || tmp > val) {
+        if (!val || (tmp > val)) {
             val = tmp;
         }
     }
@@ -1277,12 +1261,12 @@ EventDataType gGraph::MinY()
         return rmin_y = f_miny;
     }
 
-    for (QVector<Layer *>::iterator l = m_layers.begin(); l != m_layers.end(); l++) {
-        if ((*l)->isEmpty() || ((*l)->layerType() == LT_Other)) {
+    for (const auto & layer : m_layers) {
+        if (layer->isEmpty() || (layer->layerType() == LT_Other)) {
             continue;
         }
 
-        tmp = (*l)->Miny();
+        tmp = layer->Miny();
 
 //        if (tmp == 0 && tmp == (*l)->Maxy()) {
 //            continue;
@@ -1309,9 +1293,7 @@ EventDataType gGraph::MaxY()
         return rmax_y = f_maxy;
     }
 
-    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
-    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
-        Layer *layer = *iter;
+    for (const auto & layer : m_layers) {
         if (layer->isEmpty() || (layer->layerType() == LT_Other)) {
             continue;
         }
@@ -1341,9 +1323,7 @@ EventDataType gGraph::physMinY()
 
     //if (m_enforceMinY) return rmin_y=f_miny;
 
-    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
-    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
-        Layer *layer = *iter;
+    for (const auto & layer : m_layers) {
         if (layer->isEmpty()) {
             continue;
         }
@@ -1372,9 +1352,7 @@ EventDataType gGraph::physMaxY()
 
     // if (m_enforceMaxY) return rmax_y=f_maxy;
 
-    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
-    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
-        Layer *layer = *iter;
+    for (const auto & layer : m_layers) {
         if (layer->isEmpty()) {
             continue;
         }
@@ -1421,8 +1399,8 @@ Layer *gGraph::getLineChart()
 {
     gLineChart *lc;
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        lc = dynamic_cast<gLineChart *>(m_layers[i]);
+    for (auto & layer : m_layers) {
+        lc = dynamic_cast<gLineChart *>(layer);
 
         if (lc) { return lc; }
     }
@@ -1436,8 +1414,8 @@ int gGraph::minHeight()
 //    int top = 0;
 //    int center = 0;
 //    int bottom = 0;
-    for (int i=0; i<m_layers.size(); ++i) {
-        int mh = m_layers[i]->minimumHeight();
+    for (const auto & layer : m_layers) {
+        int mh = layer->minimumHeight();
         mh += m_margintop + m_marginbottom;
         if (mh > minheight) minheight = mh;
     }
@@ -1452,13 +1430,11 @@ int GetXHeight(QFont *font)
 }
 
 void gGraph::dumpInfo() {
-    for (int i = 0; i < m_layers.size(); i++) {
-        Layer *ll = m_layers[i];
+    for (const auto & layer : m_layers) {
+        if (!layer->visible()) { continue; }
 
-        if (!ll->visible()) { continue; }
-
-        if (ll->position() == LayerCenter) {
-            gLineChart *lc = dynamic_cast<gLineChart *>(ll);
+        if (layer->position() == LayerCenter) {
+            gLineChart *lc = dynamic_cast<gLineChart *>(layer);
             if (lc != nullptr) {
                 QString text = lc->getMetaString(currentTime());
                 if (!text.isEmpty()) {
