@@ -179,6 +179,12 @@ void gToolTip::paint(QPainter &painter)     //actually paints it.
         rect.moveTopLeft(m_pos);
     }
 
+    int bot = rect.bottom() - m_graphview->height();
+    if (bot > 0) {
+        rect.setTop(rect.top()-bot);
+        rect.setBottom(m_graphview->height());
+    }
+
 
     QBrush brush(QColor(255, 255, 128, 230));
     brush.setStyle(Qt::SolidPattern);
