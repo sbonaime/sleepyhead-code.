@@ -339,6 +339,8 @@ class MainWindow : public QMainWindow
 
     void on_profilesButton_clicked();
 
+    void reloadProfile();
+
 private:
     void importCPAPBackups();
     void finishCPAPImport();

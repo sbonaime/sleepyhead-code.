@@ -23,7 +23,7 @@
 
 
 // Disable this to cut excess debug messages
-#define DEBUG_IMPORTER
+//#define DEBUG_IMPORTER
 
 //const int PRS1_MAGIC_NUMBER = 2;
 //const int PRS1_SUMMARY_FILE=1;

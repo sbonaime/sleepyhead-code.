@@ -1814,6 +1814,14 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     daily->LoadDate(getDaily()->getDate());
     overview->ReloadGraphs();
 }
+void MainWindow::reloadProfile()
+{
+    QString username = p_profile->user->userName();
+    int tabidx = ui->tabWidget->currentIndex();
+    CloseProfile();
+    OpenProfile(username);
+    ui->tabWidget->setCurrentIndex(tabidx);
+}
 
 void MainWindow::RestartApplication(bool force_login, QString cmdline)
 {

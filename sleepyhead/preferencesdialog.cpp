@@ -740,13 +740,13 @@ bool PreferencesDialog::Save()
                 return false;
             }
         } else { recalc_events = false; }
-    } else if (needs_restart) {
+    } /*else if (needs_restart) {
         if (QMessageBox::question(this, tr("Restart Required"),
                                   tr("One or more of the changes you have made will require this application to be restarted,\nin order for these changes to come into effect.\n\nWould you like do this now?"),
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
             return false;
         }
-    }
+    }*/
 
     schema::channel[OXI_SPO2].setLowerThreshold(ui->oxiDesaturationThreshold->value());
     schema::channel[OXI_Pulse].setLowerThreshold(ui->flagPulseBelow->value());
@@ -911,8 +911,9 @@ bool PreferencesDialog::Save()
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
     } else if (needs_restart) {
-        profile->removeLock();
-        mainwin->RestartApplication();
+        QTimer::singleShot(0, mainwin, SLOT(reloadProfile()));
+//        profile->removeLock();
+//        mainwin->RestartApplication();
     } else {
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
         // Save early.. just in case..
