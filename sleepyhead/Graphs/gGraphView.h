@@ -321,7 +321,7 @@ class gGraphView
         */
     explicit gGraphView(QWidget *parent = 0, gGraphView *shared = 0);
     virtual ~gGraphView();
-    virtual void closeEvent(QCloseEvent * event);
+    void closeEvent(QCloseEvent * event) override;
 
     //! \brief Add gGraph g to this gGraphView, in the requested graph-linkage group
     void addGraph(gGraph *g, short group = 0);
@@ -549,13 +549,13 @@ class gGraphView
     bool pinchTriggered(QPinchGesture * gesture);
 
 
-    virtual void leaveEvent (QEvent * event);
+    void leaveEvent (QEvent * event) override;
 
     //! \brief The heart of the drawing code
 #ifdef BROKEN_OPENGL_BUILD
-    virtual void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *) override;
 #else
-    virtual void paintGL();
+    void paintGL() override;
 #endif
     //! \brief Calculates the sum of all graph heights
     float totalHeight();
@@ -564,7 +564,7 @@ class gGraphView
     float scaleHeight();
 
     //! \brief Update the OpenGL area when the screen is resized
-    virtual void resizeEvent(QResizeEvent *);
+    void resizeEvent(QResizeEvent *) override;
 
     //! \brief Set the Vertical offset (used in scrolling)
     void setOffsetY(int offsetY);
@@ -573,19 +573,19 @@ class gGraphView
     void setOffsetX(int offsetX);
 
     //! \brief Mouse Moved somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseMoveEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event) override;
     //! \brief Mouse Button Press Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event) override;
     //! \brief Mouse Button Release Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseReleaseEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event) override;
     //! \brief Mouse Button Double Click Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
     //! \brief Mouse Wheel Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void wheelEvent(QWheelEvent *event);
+    void wheelEvent(QWheelEvent *event) override;
     //! \brief Keyboard event while main gGraphArea has focus.
-    virtual void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event) override;
     //! \brief Keyboard event while main gGraphArea has focus.
-    virtual void keyReleaseEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event) override;
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *, int originX, int originY, int width, int height);

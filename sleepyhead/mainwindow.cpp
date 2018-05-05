@@ -249,12 +249,23 @@ void MainWindow::logMessage(QString msg)
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    if (AppSetting->removeCardReminder()) {
-        Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
+    static bool runonce = false;
+    if (!runonce) {
+        if (AppSetting->removeCardReminder()) {
+            Notify(QObject::tr("Don't forget to place your datacard back in your CPAP machine"), QObject::tr("SleepyHead Reminder"));
+            QThread::msleep(1000);
+            QApplication::processEvents();
+        }
+        runonce = true;
+    } else {
+        qDebug() << "Qt is still calling closevent multiple times";
         QApplication::processEvents();
-        QThread::msleep(1000);
     }
+}
 
+extern MainWindow *mainwin;
+MainWindow::~MainWindow()
+{
     schema::channel.Save();
     if (p_profile) {
         CloseProfile();
@@ -267,12 +278,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
     QSettings settings(getDeveloperName(), getAppName());
     settings.setValue("MainWindow/geometry", saveGeometry());
 
-    QMainWindow::closeEvent(event);
-}
-
-extern MainWindow *mainwin;
-MainWindow::~MainWindow()
-{
     // Trash anything allocated by the Graph objects
     DestroyGraphGlobals();
 

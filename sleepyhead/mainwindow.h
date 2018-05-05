@@ -156,8 +156,8 @@ class MainWindow : public QMainWindow
 
 
   protected:
-    virtual void closeEvent(QCloseEvent *);
-    virtual void keyPressEvent(QKeyEvent *event);
+    void closeEvent(QCloseEvent *) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
   private slots:
     /*! \fn void on_action_Import_Data_triggered();
