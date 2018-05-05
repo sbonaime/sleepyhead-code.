@@ -23,7 +23,9 @@
 
 
 // Disable this to cut excess debug messages
-//#define DEBUG_IMPORTER
+
+#define DEBUG_SUMMARY
+
 
 //const int PRS1_MAGIC_NUMBER = 2;
 //const int PRS1_SUMMARY_FILE=1;
@@ -1439,8 +1441,8 @@ bool PRS1Import::ParseF3EventsV3()
         code = data[pos++];
         delta = (data[pos+1] < 8) | data[pos];
         pos += 2;
-#ifdef DEBUG_IMPORTER
-        if (code == 0x02) {
+#ifdef DEBUG_EVENTS
+        if (code == 0x00) {
             if (!loader->unknownCodes.contains(code)) {
                 loader->unknownCodes.insert(code, QStringList());
             }
@@ -2152,12 +2154,6 @@ bool PRS1Import::ParseSummaryF0()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
-
     CPAPMode cpapmode = MODE_UNKNOWN;
 
     switch (data[0x02]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
@@ -2265,12 +2261,6 @@ bool PRS1Import::ParseSummaryF0V4()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
-
     CPAPMode cpapmode = MODE_UNKNOWN;
 
     switch (data[0x02]) {  // PRS1 mode   // 0 = CPAP, 2 = APAP
@@ -2360,153 +2350,44 @@ bool PRS1Import::ParseSummaryF0V4()
 
 bool PRS1Import::ParseSummaryF3()
 {
+    CPAPMode mode = MODE_UNKNOWN;
+    EventDataType epap, ipap;
+    int duration;
 
-    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+    QMap<unsigned char, QByteArray>::iterator it;
 
-    int size = summary->m_data.size();
-    if (session->session() > 0xae) {
-
-//        event->m_headerblock.
-
-        qDebug() << "Dumping session" << (int)session->session() << "summary file";
-        QString hexstr = QString("%1@0000: ").arg(session->session(),8,16,QChar('0'));
-
-        for (int i=0; i<size; ++i) {
-            unsigned char val = data[i];
-            hexstr += QString(" %1").arg((short)val, 2, 16, QChar('0'));
-            if ((i % 0x10) == 0x0f) {
-                qDebug() << hexstr;
-                hexstr = QString("%1@%2: ").arg(session->session(),8,16,QChar('0')).arg(i+1, 4, 16, QChar('0'));
-            }
-        }
-
+    if ((it=mainblock.find(0x0a)) != mainblock.end()) {
+        mode = MODE_CPAP;
+        session->settings[CPAP_Pressure] = EventDataType(it.value()[0]/10.0f);
+    } else if ((it=mainblock.find(0x0d)) != mainblock.end()) {
+        mode = MODE_APAP;
+        session->settings[CPAP_PressureMin] = EventDataType(it.value()[0]/10.0f);
+        session->settings[CPAP_PressureMax] = EventDataType(it.value()[1]/10.0f);
+    } else if ((it=mainblock.find(0x0e)) != mainblock.end()) {
+        mode = MODE_BILEVEL_FIXED;
+        session->settings[CPAP_EPAP] = ipap = EventDataType(it.value()[0] / 10.0f);
+        session->settings[CPAP_IPAP] = epap = EventDataType(it.value()[1] / 10.0f);
+        session->settings[CPAP_PS] = ipap - epap;
+    } else if ((it=mainblock.find(0x0f)) != mainblock.end()) {
+        mode = MODE_BILEVEL_AUTO_VARIABLE_PS;
+        session->settings[CPAP_EPAPLo] = EventDataType(it.value()[0]/10.0f);
+        session->settings[CPAP_IPAPHi] = EventDataType(it.value()[1]/10.0f);
+        session->settings[CPAP_PSMin] = EventDataType(it.value()[2]/10.0f);
+        session->settings[CPAP_PSMax] = EventDataType(it.value()[3]/10.0f);
+    } else if ((it=mainblock.find(0x10)) != mainblock.end()) {
+        mode = MODE_APAP; // Disgusting APAP "IQ" trial
+        session->settings[CPAP_PressureMin] = EventDataType(it.value()[0]/10.0f);
+        session->settings[CPAP_PressureMax] = EventDataType(it.value()[1]/10.0f);
     }
 
-    int pos = 0;
-    if (data[pos++] != 0) {
-        qDebug() << "Non zero hblock[0] indicator";
-        return false;
+    session->settings[CPAP_Mode] = (int)mode;
+
+    if ((it=hbdata.find(5)) != hbdata.end()) {
+        duration = (it.value()[1] << 8 ) + it.value()[0];
     }
 
-    pos += summary->hblock[0];
-
-    QString str;
-
-    unsigned char code;
-    unsigned char length;
-    qint64 duration = 0;
-
-    if (!summary->hblock.contains(1) || (data[pos++] != 1)) {
-        qDebug() << session->session() << "Missing hblock 1 data";
-        return false;
-    }
-    int hBlockSize = summary->hblock[1];
-
-    EventDataType min_pressure, max_pressure, imin_epap, imin_ps, imax_ps;
-    CPAPMode cpapmode = MODE_UNKNOWN;
-
-    do {
-        code = data[pos++];
-        length = data[pos++];
-        switch(code) {
-        case 10: // 0x0a
-            cpapmode = MODE_CPAP;
-            if (length != 1) qDebug() << "PRS1Loader::ParseSummaryF3" << "Bad CPAP value";
-            imin_epap = data[pos];
-            break;
-        case 13: // 0x0d
-            cpapmode = MODE_APAP;
-            if (length != 2) qDebug() << "PRS1Loader::ParseSummaryF3" << "Bad APAP value";
-            min_pressure = data[pos];
-            max_pressure = data[pos+1];
-            break;
-        case 14: // 0x0e  // <--- this is a total guess.. might be 3 and have a pressure support value
-            cpapmode = MODE_BILEVEL_FIXED;
-            if (length != 2) qDebug() << "PRS1Loader::ParseSummaryF3" << "Bad APAP value";
-            min_pressure = data[pos];
-            max_pressure = data[pos+1];
-            imin_ps = max_pressure - min_pressure;
-            break;
-        case 15: // 0x0f
-            cpapmode = MODE_BILEVEL_AUTO_VARIABLE_PS; //might be C_CHECK?
-            if (length != 4) qDebug() << "PRS1Loader::ParseSummaryF3" << "Bad APAP value";
-            min_pressure = data[pos+0];
-            max_pressure = data[pos+1];
-            imin_ps = data[pos+2];
-            imax_ps = data[pos+3];
-            break;
-        case 0x10: // Auto Trial mode
-            cpapmode = MODE_APAP;
-            if (length != 3) qDebug() << "PRS1Loader::ParseSummaryF3" << "Bad APAP value";
-            min_pressure = data[pos+0];
-            max_pressure = data[pos+1];
-            break;
-
-        /*case 0x35:
-            duration = ( data[pos+1] << 8 ) + data[pos+0];
-            break;*/
-
-        default:
-            str = QString("%1: [%2] [%3]")
-                    .arg(session->session(), 8, 16, QChar('0'))
-                    .arg(code, 2, 16, QChar('0'))
-                    .arg(length, 2, 16, QChar('0'));
-
-            for (int i=0;i<length; ++i) {
-                str += QString(" %1").arg((short)data[pos+i], 2, 16, QChar('0'));
-            }
-            qDebug() << str;
-        break;
-        }
-
-        pos += length;
-
-    } while (pos <= hBlockSize);
-
-    if (!summary->hblock.contains(2) || (data[pos++] != 2)) {
-        qDebug() << session->session() << "Missing hblock 2 data";
-        return false;
-    }
-    pos += summary->hblock[2];
-
-    if (!summary->hblock.contains(3)) {
-        qDebug() << session->session() << "Missing hblock 3 data";
-        return false;
-    }
-    hBlockSize = summary->hblock[3];
-
-    int len = data[pos++];
-    pos+=len;
-    if (data[pos++] != 5) {
-        qDebug() << "Expected length after 0x05" << session->session();
-        return false;
-    }
-
-    duration = ( data[pos+1] << 8 ) + data[pos+0];
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
-    //session->set_last(session->first() + (duration * 1000L));
 
     summary_duration = duration;
-    session->settings[CPAP_Mode] = (int)cpapmode;
-    if (cpapmode == MODE_CPAP) {
-        session->settings[CPAP_Pressure] = imin_epap/10.0f;
-
-    } else if (cpapmode == MODE_APAP) {
-        session->settings[CPAP_PressureMin] = min_pressure/10.0f;
-        session->settings[CPAP_PressureMax] = max_pressure/10.0f;
-    } else if (cpapmode == MODE_BILEVEL_FIXED) {
-        // Guessing here.. haven't seen BIPAP data.
-        session->settings[CPAP_EPAP] = min_pressure/10.0f;
-        session->settings[CPAP_IPAP] = max_pressure/10.0f;
-        session->settings[CPAP_PS] = imin_ps/10.0f;
-    } else if (cpapmode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
-        session->settings[CPAP_EPAPLo] = min_pressure/10.0f;
-        session->settings[CPAP_IPAPHi] = max_pressure/10.0f;
-        session->settings[CPAP_PSMin] = imin_ps/10.0f;
-        session->settings[CPAP_PSMax] = imax_ps/10.0f;
-
-    }
 
     return true;
 }
@@ -2514,12 +2395,6 @@ bool PRS1Import::ParseSummaryF3()
 bool PRS1Import::ParseSummaryF5V0()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
-
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
@@ -2601,12 +2476,6 @@ bool PRS1Import::ParseSummaryF5V1()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
-
     CPAPMode cpapmode = MODE_UNKNOWN;
 
     int imin_epap = data[0x3];
@@ -2687,12 +2556,6 @@ bool PRS1Import::ParseSummaryF5V2()
 {
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
 
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
-
     //CPAPMode cpapmode = MODE_UNKNOWN;
     summary_duration = data[0x18] | data[0x19] << 8;
 
@@ -2723,12 +2586,6 @@ bool PRS1Import::ParseSummaryF0V6()
     // APAP models..
 
     const unsigned char * data = (unsigned char *)summary->m_data.constData();
-
-    if (data[0x00] > 0) {
-        return false;
-    }
-
-    session->set_first(qint64(summary->timestamp) * 1000L);
 
     CPAPMode cpapmode = MODE_UNKNOWN;
 
@@ -2881,13 +2738,62 @@ bool PRS1Import::ParseSummaryF0V6()
 
 bool PRS1Import::ParseSummary()
 {
+    if (!summary) return false;
 
+    // All machines have a first byte zero for clean summary
+    if (summary->m_data.constData()[0] != 0) {
+        qDebug() << "Non zero hblock[0] indicator";
+        return false;
+    }
+
+    session->set_first(qint64(summary->timestamp) * 1000L);
+
+
+    /* Example data block
+    000000c6@0000: 00 [10] 01 [00 01 02 01 01 00 02 01 00 04 01 40 07
+    000000c6@0010: 01 60 1e 03 02 0c 14 2c 01 14 2d 01 40 2e 01 02
+    000000c6@0020: 2f 01 00 35 02 28 68 36 01 00 38 01 00 39 01 00
+    000000c6@0030: 3b 01 01 3c 01 80] 02 [00 01 00 01 01 00 02 01 00]
+    000000c6@0040: 04 [00 00 28 68] 0c [78 00 2c 6c] 05 [e4 69] 07 [40 40]
+    000000c6@0050: 08 [61 60] 0a [00 00 00 00 03 00 00 00 02 00 02 00
+    000000c6@0060: 05 00 2b 11 00 10 2b 5c 07 12 00 00] 03 [00 00 01
+    000000c6@0070: 1a 00 38 04]  */
+    if (summary->fileVersion == 3) {
+        // Parse summary structures into bytearray map according to size given in header block
+        const unsigned char * data = (unsigned char *)summary->m_data.constData();
+        int size = summary->m_data.size();
+
+        int pos = 0;
+        int bsize;
+        short val, len;
+        do {
+            val = data[pos++];
+            auto it = summary->hblock.find(val);
+            if (it == summary->hblock.end()) {
+                qDebug() << "Block parse error in ParseSummary" << session->session();
+                break;
+            }
+            bsize = it.value();
+            if (val != 1) {
+                hbdata[val] = QByteArray((const char *)(&data[pos]), bsize);
+            } else {
+                // Parse nested data structure which contains pressure block
+                int p2 = 0;
+                do {
+                    val = data[pos + p2++];
+                    len = data[pos + p2++];
+                    mainblock[val] = QByteArray((const char *)(&data[pos+p2]), len);
+                    p2 += len;
+                } while ((p2 < bsize) && ((pos+p2) < size));
+            }
+            pos += bsize;
+        } while (pos < size);
+    }
     // Family 0 = XPAP
     // Family 3 = BIPAP AVAPS
     // Family 5 = BIPAP AutoSV
 
 
-    if (!summary) return false;
 
     session->setPhysMax(CPAP_LeakTotal, 120);
     session->setPhysMin(CPAP_LeakTotal, 0);

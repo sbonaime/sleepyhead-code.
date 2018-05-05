@@ -18,8 +18,8 @@
 //********************************************************************************************
 /// IMPORTANT!!!
 //********************************************************************************************
-// Please INCREMENT the following value when making changes to this loaders implementation.
-//
+// Please INCREMENT the following value when making changes to this loaders implementation
+// BEFORE making a release
 const int prs1_data_version = 15;
 //
 //********************************************************************************************
@@ -85,7 +85,7 @@ public:
     quint16 duration;
 
     QList<PRS1Waveform> waveformInfo;
-    QHash<unsigned char, short> hblock;
+    QMap<unsigned char, short> hblock;
 };
 
 class PRS1Loader;
@@ -116,6 +116,10 @@ public:
     PRS1DataChunk * event;
     QList<PRS1DataChunk *> waveforms;
     QList<PRS1DataChunk *> oximetery;
+
+    QMap<unsigned char, QByteArray> mainblock;
+    QMap<unsigned char, QByteArray> hbdata;
+
 
     QString wavefile;
     QString oxifile;
