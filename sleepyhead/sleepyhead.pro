@@ -31,7 +31,7 @@ QT += opengl
 #ResMed summary data design is SHIT... SleepyHead *MUST* follow ResMed's idiocy.
 DEFINES += LOCK_RESMED_SESSIONS
 
-#CONFIG += c++11
+CONFIG += c++11
 CONFIG += rtti
 
 #static {
