@@ -1,4 +1,12 @@
-﻿#ifndef PROFILESELECTOR_H
+﻿/* Profile Selector Header
+ *
+ * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
+ *
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License. See the file COPYING in the main directory of the Linux
+ * distribution for more details. */
+
+#ifndef PROFILESELECTOR_H
 #define PROFILESELECTOR_H
 
 #include <QWidget>
