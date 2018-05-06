@@ -193,7 +193,10 @@ void ProfileSelector::updateProfileHighlight(QString name)
         if (!p_profile->user->phone().isEmpty()) {
             html += tr("Phone: %1").arg(p_profile->user->phone())+"<br/>";
         }
-        if (!p_profile->user->phone().isEmpty()) {
+        if (!p_profile->user->email().isEmpty()) {
+            html += tr("Email: <a href='mailto:%1'>%1</a>").arg(p_profile->user->email())+"<br/>";
+        }
+        if (!p_profile->user->address().isEmpty()) {
             html += "<br/>"+tr("Address:")+"<br/>"+p_profile->user->address().trimmed().replace("\n","<br/>")+"<br/>";
         }
 

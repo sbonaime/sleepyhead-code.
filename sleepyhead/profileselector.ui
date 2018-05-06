@@ -277,7 +277,7 @@
               <bool>true</bool>
              </property>
              <property name="openExternalLinks">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
             </widget>
            </item>
