@@ -190,6 +190,9 @@ class Day
     //! \brief Check if day contains SummaryOnly records
     bool summaryOnly(Machine * mach = nullptr);
 
+    //! \brief Check if day has missing Summary/Settings records
+    bool noSettings(Machine * mach = nullptr);
+
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
     int find(Session *sess) { return sessions.indexOf(sess); }
 

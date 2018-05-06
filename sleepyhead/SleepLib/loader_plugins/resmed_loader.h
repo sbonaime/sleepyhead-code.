@@ -460,6 +460,18 @@ protected:
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID, qint64> channel_efficiency;
     QHash<ChannelID, qint64> channel_time;
+    volatile qint64 timeInLoadBRP;
+    volatile qint64 timeInLoadPLD;
+    volatile qint64 timeInLoadEVE;
+    volatile qint64 timeInLoadCSL;
+    volatile qint64 timeInLoadSAD;
+    volatile qint64 timeInEDFOpen;
+    volatile qint64 timeInEDFParser;
+    volatile qint64 timeInAddWaveform;
+    volatile qint64 timeInTimeDelta;
+    QMutex timeMutex;
+
+
 #endif
 };
 

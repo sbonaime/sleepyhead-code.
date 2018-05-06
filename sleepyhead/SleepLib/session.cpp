@@ -23,7 +23,7 @@ using namespace std;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version = 17;
+const quint16 summary_version = 18;
 const quint16 events_version = 10;
 
 Session::Session(Machine *m, SessionID session)
@@ -46,7 +46,7 @@ Session::Session(Machine *m, SessionID session)
     s_first = s_last = 0;
     s_evchecksum_checked = false;
 
-    s_summaryOnly = false;
+    s_noSettings = s_summaryOnly = false;
 
     destroyed = false;
 }
@@ -361,6 +361,8 @@ bool Session::StoreSummary()
     out << s_summaryOnly;
     // 13 ->
 
+    out << s_noSettings; // 18
+
     out << m_slices;
 
     file.close();
@@ -608,6 +610,11 @@ bool Session::LoadSummary()
             } else s_summaryOnly = false;
         } else if (version > 13) {
             in >> s_summaryOnly;
+        }
+        if (version >= 18) {
+            in >> s_noSettings;
+        } else {
+            s_noSettings = (settings.size() == 0);
         }
 
         if (version == 16) {

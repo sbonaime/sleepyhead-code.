@@ -1,4 +1,4 @@
-/* SleepLib Session Header
+﻿/* SleepLib Session Header
  *
  * This stuff contains the session calculation smarts
  *
@@ -386,13 +386,11 @@ class Session
     Machine *machine() { return s_machine; }
 
     //! \brief Returns true if session only contains summary data
-    inline bool summaryOnly() {
-        return s_summaryOnly;
-    }
+    inline bool summaryOnly() { return s_summaryOnly; }
+    inline bool noSettings() { return s_noSettings; }
 
-    inline void setSummaryOnly(bool b) {
-        s_summaryOnly = b;
-    }
+    inline void setSummaryOnly(bool b) { s_summaryOnly = b; }
+    inline void setNoSettings(bool b) { s_noSettings = b; }
 
     void setOpened(bool b = true) {
         s_events_loaded = b;
@@ -432,6 +430,7 @@ protected:
     bool s_evchecksum_checked;
     bool _first_session;
     bool s_summaryOnly;
+    bool s_noSettings;
 
     bool s_summary_loaded;
     bool s_events_loaded;

@@ -228,7 +228,7 @@ bool EDFParser::Open(const QString & name)
     }
 
     if (name.endsWith(STR_ext_gz)) {
-        filename = name.mid(0, -3); // DoubleCheck: why am I cropping the extension? this is used for debugging
+        filename = name; //name.mid(0, -3); // DoubleCheck: why am I cropping the extension? this is used for debugging
 
         // Open and decempress file
         data = gUncompress(fi.readAll());
@@ -243,7 +243,6 @@ bool EDFParser::Open(const QString & name)
 
     if (filesize > EDFHeaderSize) {
         header = (EDFHeader *)data.constData();
-        //memcpy((char *)&header, (char *)data.constData(), sizeof(EDFHeader));
         buffer = (char *)data.constData() + EDFHeaderSize;
         datasize = filesize - EDFHeaderSize;
     } else goto badfile;

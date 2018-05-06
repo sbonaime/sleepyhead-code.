@@ -1,4 +1,4 @@
-/* SleepLib Event Class Implementation
+﻿/* SleepLib Event Class Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -162,27 +162,24 @@ void EventList::AddWaveform(qint64 start, qint16 *data, int recs, qint64 duratio
   //  EventStoreType *edata = m_data.data();
 
     EventStoreType raw;
- //   qint16 *ep = data + recs;
-    qint16 *sp = data;
+    const qint16 *sp = data;
+    const qint16 *ep = data + recs;
+    EventStoreType *dp = (EventStoreType *)m_data.data()+r;
 //    EventStoreType *dp = &edata[r];
 
     if (m_update_minmax) {
         EventDataType min = m_min, max = m_max, val, gain = m_gain;
 
-        for (int i=0; i < recs; ++i) {
-            m_data[r++] = raw = *sp++;
-            val = EventDataType(raw) * gain + m_offset;
+        memcpy(dp, sp, recs*2);
+
+        for (sp = data; sp < ep; ++sp) {
+//            *dp++ = raw = *sp;
+            val = EventDataType(*sp) * gain + m_offset;
+
             if (min > val) { min = val; }
+
             if (max < val) { max = val; }
         }
-//        for (sp = data; sp < ep; ++sp) {
-//            *dp++ = raw = *sp;
-//            val = EventDataType(raw) * gain + m_offset;
-
-//            if (min > val) { min = val; }
-
-//            if (max < val) { max = val; }
-//        }
 
         m_min = min;
         m_max = max;

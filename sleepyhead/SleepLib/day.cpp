@@ -1046,6 +1046,20 @@ EventDataType Day::count(ChannelID code)
     return total;
 }
 
+bool Day::noSettings(Machine * mach)
+{
+    for (auto & sess : sessions) {
+        if ((mach == nullptr) && sess->noSettings()) {
+            // If this day generally has just summary data.
+            return true;
+        } else if ((mach == sess->machine())  && sess->noSettings()) {
+            // Focus only on machine mach
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Day::summaryOnly(Machine * mach)
 {
     for (auto & sess : sessions) {

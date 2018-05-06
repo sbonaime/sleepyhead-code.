@@ -987,7 +987,9 @@ QString Daily::getMachineSettings(Day * day) {
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
 
-        if ((day->settingExists(CPAP_BrokenSummary))) {
+        if (day->noSettings(cpap)) {
+            html+="<tr><td colspan=5 align=center><i>"+tr("<b>Please Note:</b> All settings shown below are based on assumptions that nothing's changed since previous days.")+"</i></td></tr>\n";
+        } else if ((day->settingExists(CPAP_BrokenSummary))) {
             html+="<tr><td colspan=5 align=center><i>"+tr("Machine Settings Unavailable")+"</i></td></tr></table><hr/>\n";
             return html;
         }
@@ -1147,9 +1149,9 @@ QString Daily::getCPAPInformation(Day * day)
     html+=tr("PAP Mode: %1<br/>").arg(day->getCPAPMode());
     html+= day->getPressureSettings();
     html+="</td></tr>\n";
-    if ((day->settingExists(CPAP_BrokenSummary))) {
-        html+="<tr><td>&nbsp;</td></tr>\n";
-        html+=QString("<tr><td colspan=2><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+":</b> "+ tr("This day has missing pressure, mode and settings data."));
+    if (day->noSettings(cpap)) { // (day->settingExists(CPAP_BrokenSummary))) {
+        //html+="<tr><td>&nbsp;</td></tr>\n";
+        html+=QString("<tr><td colspan=2 align=center><i>%1</i></td></tr>").arg(tr("(Mode/Pressure settings are guessed on this day.)"));
     }
 
     html+="</table>\n";
@@ -1257,7 +1259,7 @@ QString Daily::getStatisticsInfo(Day * day)
 
     if (GraphView->isEmpty() && ((ccnt>0) || (cpap && day->summaryOnly()))) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
-        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available ."));
+        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg("<b>"+STR_MessageBox_PleaseNote+"</b> "+ tr("This day just contains summary data, only limited information is available."));
     } else if (cpap) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
 

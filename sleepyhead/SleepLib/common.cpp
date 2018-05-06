@@ -585,7 +585,7 @@ QByteArray gCompress(const QByteArray& data)
 
 
 // Pinched from http://stackoverflow.com/questions/2690328/qt-quncompress-gzip-data
-QByteArray gUncompress(const QByteArray &data)
+QByteArray gUncompress(const QByteArray & data)
 {
     if (data.size() <= 4) {
         qWarning("gUncompress: Input data is truncated");
@@ -596,7 +596,7 @@ QByteArray gUncompress(const QByteArray &data)
 
     int ret;
     z_stream strm;
-    static const int CHUNK_SIZE = 1024;
+    static const int CHUNK_SIZE = 1048576;
     char out[CHUNK_SIZE];
 
     /* allocate inflate state */

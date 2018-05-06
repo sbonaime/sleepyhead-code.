@@ -1,4 +1,4 @@
-/* SleepLib Event Class Header
+﻿/* SleepLib Event Class Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *

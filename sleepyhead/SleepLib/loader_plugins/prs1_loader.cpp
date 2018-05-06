@@ -3165,7 +3165,6 @@ QList<PRS1DataChunk *> PRS1Loader::ParseFile(const QString & path)
 
     int cruft = 0;
     int firstsession = 0;
-    int extra_bytes = 0;
     int htype,family,familyVersion,ext,header_size = 0;
     quint8 achk=0;
     quint32 sessionid=0, timestamp=0;

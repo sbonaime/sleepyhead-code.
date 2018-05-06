@@ -845,6 +845,10 @@ ResmedLoader::ResmedLoader()
     m_pixmaps[STR_ResMed_AirCurve10] = QPixmap(RM10C_ICON);
     m_pixmap_paths[STR_ResMed_AirCurve10] = RM10C_ICON;
     m_type = MT_CPAP;
+
+    timeInTimeDelta = timeInLoadBRP = timeInLoadPLD = timeInLoadEVE = 0;
+    timeInLoadCSL = timeInLoadSAD = timeInEDFParser = timeInEDFOpen = timeInAddWaveform = 0;
+
 }
 ResmedLoader::~ResmedLoader()
 {
@@ -1502,9 +1506,8 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 #endif
 
     return resdayList.size();
-}
-        /*// Check for duplicates
-        if (newfiles.contains(filename)) {
+} /*// Check for duplicates
+      if (newfiles.contains(filename)) {
             // Not sure what to do with it.. delete it? check compress status and delete the other one?
             // Either way we don't want to process so skip it
             qDebug() << "Duplicate EDF file detected" << filename;
@@ -2222,7 +2225,7 @@ void ResDayTask::run()
                 }
 
             }
-            sess->settings[CPAP_BrokenSummary] = true;
+            sess->setNoSettings(true);
 
             if (!foundprev) {
                 // We have no Summary or Settings data... we need to do something to indicate this, and detect the mode
@@ -2593,6 +2596,18 @@ int ResmedLoader::Open(const QString & dirpath)
                 }
 
                 reimporting = true;
+            } else if (day->noSettings(mach) && resday.str.date.isValid()) {
+                // STR is present now, it wasn't before... we don't need to trash the files, but we do want the official settings.
+                // Do it right here
+                for (auto & sess : day->sessions) {
+                    if (sess->machine() != mach) continue;
+
+                    qDebug() << "Adding STR.edf information to session" << sess->session();
+                    StoreSettings(sess, resday.str);
+                    sess->setNoSettings(false);
+                    sess->SetChanged(true);
+                    sess->StoreSummary();
+                }
             } else {
                 continue;
             }
@@ -2722,7 +2737,7 @@ int ResmedLoader::Open(const QString & dirpath)
     {
         qint64 totalbytes = 0;
         qint64 totalns = 0;
-        qDebug() << "Time Delta Efficiency Information";
+        qDebug() << "Performance / Efficiency Information";
 
         for (auto it = channel_efficiency.begin(), end=channel_efficiency.end(); it != end; it++) {
             ChannelID code = it.key();
@@ -2736,8 +2751,17 @@ int ResmedLoader::Open(const QString & dirpath)
                      QString::number(qAbs(value)) + " bytes and took " + QString::number(secs, 'f', 4) + "s";
         }
 
-        qDebug() << "Total toTimeDelta function usage:" << totalbytes << "in" << double(
-                     totalns) / 1000000000.0 << "seconds";
+        qDebug() << "Total toTimeDelta function usage:" << totalbytes << "in" << double(totalns) / 1000000000.0 << "seconds";
+
+        qDebug() << "Total CPU time in EDF Open" << timeInEDFOpen;
+        qDebug() << "Total CPU time in EDF Parser" << timeInEDFParser;
+        qDebug() << "Total CPU time in LoadBRP" << timeInLoadBRP;
+        qDebug() << "Total CPU time in LoadPLD" << timeInLoadPLD;
+        qDebug() << "Total CPU time in LoadSAD" << timeInLoadSAD;
+        qDebug() << "Total CPU time in LoadEVE" << timeInLoadEVE;
+        qDebug() << "Total CPU time in LoadCSL" << timeInLoadCSL;
+        qDebug() << "Total CPU time in (BRP) AddWaveform" << timeInAddWaveform;
+        qDebug() << "Total CPU time in TimeDelta function" << timeInTimeDelta;
     }
 #endif
 
@@ -2822,9 +2846,21 @@ QString ResmedLoader::backup(const QString & fullname, const QString & backup_pa
 
 bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
 {
+#ifdef DEBUG_EFFICIENCY
+    QTime time;
+    time.start();
+#endif
     ResMedEDFParser edf(path);
+#ifdef DEBUG_EFFICIENCY
+    int edfopentime = time.elapsed();
+    time.start();
+#endif
     if (!edf.Parse())
         return false;
+#ifdef DEBUG_EFFICIENCY
+    int edfparsetime = time.elapsed();
+    time.start();
+#endif
 
     QString t;
 
@@ -2961,15 +2997,34 @@ bool ResmedLoader::LoadCSL(Session *sess, const QString & path)
     }
 
     Q_UNUSED(duration)
+#ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
+    timeInLoadCSL += time.elapsed();
+    timeInEDFOpen += edfopentime;
+    timeInEDFParser += edfparsetime;
+    timeMutex.unlock();
+#endif
 
     return true;
 }
 
 bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
 {
+#ifdef DEBUG_EFFICIENCY
+    QTime time;
+    time.start();
+#endif
     ResMedEDFParser edf(path);
+#ifdef DEBUG_EFFICIENCY
+    int edfopentime = time.elapsed();
+    time.start();
+#endif
     if (!edf.Parse())
         return false;
+#ifdef DEBUG_EFFICIENCY
+    int edfparsetime = time.elapsed();
+    time.start();
+#endif
 
     QString t;
 
@@ -3115,18 +3170,38 @@ bool ResmedLoader::LoadEVE(Session *sess, const QString & path)
         }
 
     }
+#ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
+    timeInLoadEVE += time.elapsed();
+    timeInEDFOpen += edfopentime;
+    timeInEDFParser += edfparsetime;
+    timeMutex.unlock();
+#endif
 
     return true;
 }
 
 bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
 {
+#ifdef DEBUG_EFFICIENCY
+    QTime time;
+    time.start();
+#endif
     ResMedEDFParser edf(path);
+#ifdef DEBUG_EFFICIENCY
+    int edfopentime = time.elapsed();
+    time.start();
+#endif
     if (!edf.Parse())
         return false;
-
+#ifdef DEBUG_EFFICIENCY
+    int edfparsetime = time.elapsed();
+    time.start();
+    int AddWavetime = 0;
+#endif
     sess->updateFirst(edf.startdate);
 
+    QTime time2;
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
 
@@ -3158,7 +3233,14 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
             double rate = double(duration) / double(recs);
             EventList *a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->setDimension(es.physical_dimension);
+#ifdef DEBUG_EFFICIENCY
+            time2.start();
+#endif
             a->AddWaveform(edf.startdate, es.data, recs, duration);
+#ifdef DEBUG_EFFICIENCY
+            AddWavetime+= time2.elapsed();
+#endif
+
             EventDataType min = a->Min();
             EventDataType max = a->Max();
 
@@ -3172,6 +3254,15 @@ bool ResmedLoader::LoadBRP(Session *sess, const QString & path)
             sess->setPhysMax(code, es.physical_maximum);
         }
     }
+
+#ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
+    timeInLoadBRP += time.elapsed();
+    timeInEDFOpen += edfopentime;
+    timeInEDFParser += edfparsetime;
+    timeInAddWaveform += AddWavetime;
+    timeMutex.unlock();
+#endif
 
     return true;
 }
@@ -3307,6 +3398,7 @@ void ResmedLoader::ToTimeDelta(Session *sess, ResMedEDFParser &edf, EDFSignal &e
     }
 
 #ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
     if (el != nullptr) {
         qint64 t = time.nsecsElapsed();
         int cnt = el->count();
@@ -3322,15 +3414,29 @@ void ResmedLoader::ToTimeDelta(Session *sess, ResMedEDFParser &edf, EDFSignal &e
             channel_time[code] += t;
         }
     }
+    timeInTimeDelta += time.elapsed();
+    timeMutex.unlock();
 #endif
 }
 
 // Load SAD Oximetry Signals
 bool ResmedLoader::LoadSAD(Session *sess, const QString & path)
 {
+#ifdef DEBUG_EFFICIENCY
+    QTime time;
+    time.start();
+#endif
     ResMedEDFParser edf(path);
+#ifdef DEBUG_EFFICIENCY
+    int edfopentime = time.elapsed();
+    time.start();
+#endif
     if (!edf.Parse())
         return false;
+#ifdef DEBUG_EFFICIENCY
+    int edfparsetime = time.elapsed();
+    time.start();
+#endif
 
     sess->updateFirst(edf.startdate);
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
@@ -3369,15 +3475,34 @@ bool ResmedLoader::LoadSAD(Session *sess, const QString & path)
         }
     }
 
+#ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
+    timeInLoadSAD += time.elapsed();
+    timeInEDFOpen += edfopentime;
+    timeInEDFParser += edfparsetime;
+    timeMutex.unlock();
+#endif
     return true;
 }
 
 
 bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
 {
+#ifdef DEBUG_EFFICIENCY
+    QTime time;
+    time.start();
+#endif
     ResMedEDFParser edf(path);
+#ifdef DEBUG_EFFICIENCY
+    int edfopentime = time.elapsed();
+    time.start();
+#endif
     if (!edf.Parse())
         return false;
+#ifdef DEBUG_EFFICIENCY
+    int edfparsetime = time.elapsed();
+    time.start();
+#endif
 
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres = 0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
@@ -3510,6 +3635,13 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
         }
 
     }
+#ifdef DEBUG_EFFICIENCY
+    timeMutex.lock();
+    timeInLoadPLD += time.elapsed();
+    timeInEDFOpen += edfopentime;
+    timeInEDFParser += edfparsetime;
+    timeMutex.unlock();
+#endif
 
     return true;
 }
