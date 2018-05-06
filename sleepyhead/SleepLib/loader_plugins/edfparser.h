@@ -123,8 +123,6 @@ class EDFParser
     //! \brief ResMed likes to use the SAME signal name
     QHash<QString, QList<EDFSignal *> > signalList;
 
-    QList<EDFSignal *> signal;
-
     EDFSignal *lookupLabel(const QString & name, int index=0);
 
     //! \brief Returns the number of signals contained in this EDF file
@@ -144,7 +142,8 @@ class EDFParser
     char *buffer;
 
     //! \brief  The EDF+ files header structure, used as a place holder while processing the text data.
-    EDFHeader header;
+    EDFHeader *header;
+    QByteArray data;
 
     QString filename;
     long filesize;
@@ -164,7 +163,8 @@ class EDFParser
     qint64 startdate;
     qint64 enddate;
     QString reserved44;
-    static QMutex EDFMutex;
+//    static QMutex EDFMutex;
+    bool eof;
 };
 
 

@@ -66,7 +66,7 @@ void initializeLogger()
     bool b = otherThreadPool->tryStart(logger);
     qInstallMessageHandler(MyOutputHandler);
     if (b) {
-        qWarning() << "Started logging thread";
+        qDebug() << "Started logging thread";
     } else {
         qWarning() << "Logging thread did not start correctly";
     }

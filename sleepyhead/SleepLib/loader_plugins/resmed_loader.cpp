@@ -2488,7 +2488,6 @@ int ResmedLoader::Open(const QString & dirpath)
     QFileInfoList flist = dir.entryInfoList();
     QDate date;
 
-    int size = flist.size();
     // Add any STR_Backup versions to the file list
     for (auto & fi : flist) {
         filename = fi.fileName();

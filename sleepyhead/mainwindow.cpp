@@ -249,6 +249,7 @@ void MainWindow::logMessage(QString msg)
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+    Q_UNUSED(event);
     static bool runonce = false;
     if (!runonce) {
         if (AppSetting->removeCardReminder()) {

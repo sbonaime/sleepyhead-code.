@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
+#include <QMutexLocker>
 #include "zlib.h"
 
 
@@ -22,16 +23,15 @@ EDFParser::EDFParser(QString name)
 }
 EDFParser::~EDFParser()
 {
-    for (QVector<EDFSignal>::iterator s = edfsignals.begin(); s != edfsignals.end(); s++) {
-        if ((*s).data) { delete [](*s).data; }
+    for (auto & s : edfsignals) {
+        if (s.data) { delete [] s.data; }
     }
-
-    if (buffer) { delete [] buffer; }
 }
 // Read a 16 bits integer
 qint16 EDFParser::Read16()
 {
-    if ((pos + 2) > filesize) {
+    if ((pos + 2) > datasize) {
+        eof = true;
         return 0;
     }
 
@@ -49,8 +49,9 @@ qint16 EDFParser::Read16()
 
 QString EDFParser::Read(unsigned n)
 {
-    if ((pos + long(n)) > filesize) {
-        return "";
+    if ((pos + long(n)) > datasize) {
+        eof = true;
+        return QString();
     }
 
     QByteArray buf(&buffer[pos], n);
@@ -61,25 +62,22 @@ QString EDFParser::Read(unsigned n)
 bool EDFParser::Parse()
 {
     bool ok;
-    QString temp, temp2;
 
-    version = QString::fromLatin1(header.version, 8).toLong(&ok);
+    if (header == nullptr) {
+        qWarning() << "EDFParser::Parse() called without valid EDF data" << filename;
+        return false;
+    }
 
+    eof = false;
+    version = QString::fromLatin1(header->version, 8).toLong(&ok);
     if (!ok) {
         return false;
     }
 
     //patientident=QString::fromLatin1(header.patientident,80);
-    recordingident = QString::fromLatin1(header.recordingident, 80); // Serial number is in here..
+    recordingident = QString::fromLatin1(header->recordingident, 80); // Serial number is in here..
     int snp = recordingident.indexOf("SRN=");
     serialnumber.clear();
-    /*char * idx=index(header.recordingident,'=');
-    idx++;
-    for (int i=0;i<16;++i) {
-        if (*idx==0x20) break;
-        serialnumber+=*idx;
-        ++idx;
-    } */
 
     for (int i = snp + 4; i < recordingident.length(); i++) {
         if (recordingident[i] == ' ') {
@@ -89,7 +87,7 @@ bool EDFParser::Parse()
         serialnumber += recordingident[i];
     }
 
-    startdate_orig = QDateTime::fromString(QString::fromLatin1(header.datetime, 16), "dd.MM.yyHH.mm.ss");
+    startdate_orig = QDateTime::fromString(QString::fromLatin1(header->datetime, 16), "dd.MM.yyHH.mm.ss");
 
     QDate d2 = startdate_orig.date();
 
@@ -108,26 +106,26 @@ bool EDFParser::Parse()
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
-    num_header_bytes = QString::fromLatin1(header.num_header_bytes, 8).toLong(&ok);
+    num_header_bytes = QString::fromLatin1(header->num_header_bytes, 8).toLong(&ok);
 
     if (!ok) {
         return false;
     }
 
     //reserved44=QString::fromLatin1(header.reserved,44);
-    num_data_records = QString::fromLatin1(header.num_data_records, 8).toLong(&ok);
+    num_data_records = QString::fromLatin1(header->num_data_records, 8).toLong(&ok);
 
     if (!ok) {
         return false;
     }
 
-    dur_data_record = (QString::fromLatin1(header.dur_data_records, 8).toDouble(&ok) * 1000.0L);
+    dur_data_record = (QString::fromLatin1(header->dur_data_records, 8).toDouble(&ok) * 1000.0L);
 
     if (!ok) {
         return false;
     }
 
-    num_signals = QString::fromLatin1(header.num_signals, 4).toLong(&ok);
+    num_signals = QString::fromLatin1(header->num_signals, 4).toLong(&ok);
 
     if (!ok) {
         return false;
@@ -142,47 +140,50 @@ bool EDFParser::Parse()
     // Initialize fixed-size signal list.
     edfsignals.resize(num_signals);
 
-    for (int i = 0; i < num_signals; i++) {
-        EDFSignal &sig = edfsignals[i];
+    for (auto & sig : edfsignals) {
         sig.data = nullptr;
         sig.label = Read(16);
 
         signal_labels.push_back(sig.label);
         signalList[sig.label].push_back(&sig);
-        signal.push_back(&sig);
+        if (eof) return false;
     }
 
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].transducer_type = Read(80); }
-
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].physical_dimension = Read(8); }
-
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].physical_minimum = Read(8).toDouble(&ok); }
-
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].physical_maximum = Read(8).toDouble(&ok); }
-
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].digital_minimum = Read(8).toDouble(&ok); }
-
-    for (int i = 0; i < num_signals; i++) {
-        EDFSignal &e = edfsignals[i];
-        e.digital_maximum = Read(8).toDouble(&ok);
-        e.gain = (e.physical_maximum - e.physical_minimum) / (e.digital_maximum - e.digital_minimum);
-        e.offset = 0;
+    for (auto & sig : edfsignals) { sig.transducer_type = Read(80); }
+    for (auto & sig : edfsignals) { sig.physical_dimension = Read(8); }
+    for (auto & sig : edfsignals) { sig.physical_minimum = Read(8).toDouble(&ok); }
+    for (auto & sig : edfsignals) { sig.physical_maximum = Read(8).toDouble(&ok); }
+    for (auto & sig : edfsignals) { sig.digital_minimum = Read(8).toDouble(&ok); }
+    for (auto & sig : edfsignals) { sig.digital_maximum = Read(8).toDouble(&ok);
+        sig.gain = (sig.physical_maximum - sig.physical_minimum) / (sig.digital_maximum - sig.digital_minimum);
+        sig.offset = 0;
     }
+    for (auto & sig : edfsignals) { sig.prefiltering = Read(80); }
+    for (auto & sig : edfsignals) { sig.nr = Read(8).toLong(&ok); }
+    for (auto & sig : edfsignals) { sig.reserved = Read(32); }
 
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].prefiltering = Read(80); }
+    // could do it earlier, but it won't crash from > EOF Reads
+    if (eof) return false;
 
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].nr = Read(8).toLong(&ok); }
-
-    for (int i = 0; i < num_signals; i++) { edfsignals[i].reserved = Read(32); }
+    // Now check the file isn't truncated before allocating all the memory
+    long allocsize = 0;
+    for (auto & sig : edfsignals) {
+        if (num_data_records > 0) {
+            allocsize += sig.nr * num_data_records * 2;
+        }
+    }
+    if (allocsize > (datasize - pos)) {
+        // Space required more than the remainder left to read,
+        // so abort and let the user clean up the corrupted file themselves
+        qWarning() << "EDFParser::Parse():" << filename << " is truncated!";
+        return false;
+    }
 
     // allocate the buffers
-    for (int i = 0; i < num_signals; i++) {
-        //qDebug//cout << "Reading signal " << signals[i]->label << endl;
-        EDFSignal &sig = edfsignals[i];
-
+    for (auto & sig : edfsignals) {
         long recs = sig.nr * num_data_records;
 
-        if (num_data_records < 0) {
+        if (num_data_records <= 0) {
             sig.data = nullptr;
             continue;
         }
@@ -191,9 +192,9 @@ bool EDFParser::Parse()
         sig.pos = 0;
     }
 
+
     for (int x = 0; x < num_data_records; x++) {
-        for (int i = 0; i < num_signals; i++) {
-            EDFSignal &sig = edfsignals[i];
+        for (auto & sig : edfsignals) {
 #ifdef Q_LITTLE_ENDIAN
             // Intel x86, etc..
             memcpy((char *)&sig.data[sig.pos], (char *)&buffer[pos], sig.nr * 2);
@@ -211,84 +212,58 @@ bool EDFParser::Parse()
 
     return true;
 }
+
+QByteArray gUncompress(const QByteArray &data);
+
 bool EDFParser::Open(const QString & name)
 {
     if (buffer != nullptr) {
-        qWarning() << "EDFParser::Open() called with buffer already initialized";
+        qWarning() << "EDFParser::Open() called with file already open" << name;
         return false;
     }
 
-    if (name.endsWith(STR_ext_gz)) {
-        // Open and decempress file to buffer
-
-        filename = name.mid(0, -3);
-
-        // Get file length from inside gzip file
-        QFile fi(name);
-
-        if (!fi.open(QFile::ReadOnly) || !fi.seek(fi.size() - 4)) {
-            goto badfile;
-        }
-
-        unsigned char ch[4];
-        fi.read((char *)ch, 4);
-        filesize = ch[0] | (ch [1] << 8) | (ch[2] << 16) | (ch[3] << 24);
-
-        datasize = filesize - EDFHeaderSize;
-        if (datasize < 0) {
-            goto badfile;
-        }
-
-        EDFMutex.lock();
-        // Open gzip file for reading
-        gzFile f = gzopen(name.toLatin1(), "rb");
-        if (!f) {
-            EDFMutex.unlock();
-            goto badfile;
-        }
-
-        // Decompressed header and data block
-        gzread(f, (char *)&header, EDFHeaderSize);
-        buffer = new char [datasize];
-        gzread(f, buffer, datasize);
-        gzclose(f);
-        EDFMutex.unlock();
-    } else {
-
-        // Open and read uncompressed file
-        QFile f(name);
-
-        if (!f.open(QIODevice::ReadOnly)) {
-            goto badfile;
-        }
-
-        filename = name;
-        filesize = f.size();
-        datasize = filesize - EDFHeaderSize;
-
-        if (datasize < 0) {
-            goto badfile;
-        }
-
-        f.read((char *)&header, EDFHeaderSize);
-
-        buffer = new char [datasize];
-        f.read(buffer, datasize);
-        f.close();
+    QFile fi(name);
+    if (!fi.open(QFile::ReadOnly)) {
+        goto badfile;
     }
+
+    if (name.endsWith(STR_ext_gz)) {
+        filename = name.mid(0, -3); // DoubleCheck: why am I cropping the extension? this is used for debugging
+
+        // Open and decempress file
+        data = gUncompress(fi.readAll());
+    } else {
+        // Open and read uncompressed file
+        filename = name;
+        data = fi.readAll();
+    }
+    fi.close();
+
+    filesize = data.size();
+
+    if (filesize > EDFHeaderSize) {
+        header = (EDFHeader *)data.constData();
+        //memcpy((char *)&header, (char *)data.constData(), sizeof(EDFHeader));
+        buffer = (char *)data.constData() + EDFHeaderSize;
+        datasize = filesize - EDFHeaderSize;
+    } else goto badfile;
 
     pos = 0;
     return true;
 
 badfile:
+    filesize = 0;
+    datasize = 0;
+    buffer = nullptr;
+    header = nullptr;
+    data.clear();
     qDebug() << "EDFParser::Open() Couldn't open file" << name;
     return false;
 }
 
 EDFSignal *EDFParser::lookupLabel(const QString & name, int index)
 {
-    QHash<QString, QList<EDFSignal *> >::iterator it = signalList.find(name);
-
+    auto it = signalList.find(name);
     if (it == signalList.end()) return nullptr;
 
     if (index >= it.value().size()) return nullptr;
@@ -296,4 +271,4 @@ EDFSignal *EDFParser::lookupLabel(const QString & name, int index)
     return it.value()[index];
 }
 
-QMutex EDFParser::EDFMutex;
+//QMutex EDFParser::EDFMutex;
