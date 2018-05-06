@@ -414,18 +414,7 @@ void MainWindow::OpenProfile(QString profileName)
     QString lockhost = prof->checkLock();
 
     if (!lockhost.isEmpty()) {
-        if (lockhost.compare(QHostInfo::localHostName()) == 0) {
-            // Localhost has it locked..
-            if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
-                                  QObject::tr("There is a lockfile already present for profile '%1'.").arg(prof->user->userName())+"\n\n"+
-                                  QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
-                                  QObject::tr("Please close any other instances of SleepyHead running with this profile before proceeding.")+"\n\n"+
-                                  QObject::tr("If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message."),
-                                  QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
-                return;
-            }
-
-        } else {
+        if (lockhost.compare(QHostInfo::localHostName()) != 0) {
             if (QMessageBox::warning(nullptr, STR_MessageBox_Warning,
                                   QObject::tr("There is a lockfile already present for this profile '%1', claimed on '%2'.").arg(prof->user->userName()).arg(lockhost)+"\n\n"+
                                   QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
@@ -433,7 +422,7 @@ void MainWindow::OpenProfile(QString profileName)
                                   QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
                 return;
             }
-        }
+        } // not worried about localhost locks anymore, just silently drop it.
 
         prof->removeLock();
     }
