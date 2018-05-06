@@ -125,7 +125,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->oxiDiscardThreshold->setValue(profile->oxi->oxiDiscardThreshold());
 
     ui->eventIndexCombo->setCurrentIndex(profile->general->calculateRDI() ? 1 : 0);
-    ui->automaticImport->setChecked(profile->cpap->autoImport());
+
+    ui->automaticImport->setChecked(profile->cpap->autoImport()); // Skip extra dialogs, this needs to rename.
+
+    ui->autoLoadLastUsed->setChecked(AppSetting->autoOpenLastUsed());
 
     ui->timeEdit->setTime(profile->session->daySplitTime());
     int val = profile->session->combineCloseSessions();
@@ -823,7 +826,8 @@ bool PreferencesDialog::Save()
     profile->cpap->setAHIWindow(ui->ahiGraphWindowSize->value());
     profile->cpap->setAHIReset(ui->ahiGraphZeroReset->isChecked());
 
-    profile->cpap->setAutoImport(ui->automaticImport->isChecked());
+    profile->cpap->setAutoImport(ui->automaticImport->isChecked()); // delete me???
+    AppSetting->setAutoOpenLastUsed(ui->autoLoadLastUsed->isChecked());
 
     profile->cpap->setUserEventFlagging(ui->customEventGroupbox->isChecked());
 

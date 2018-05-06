@@ -59,6 +59,7 @@ ProfileSelector::~ProfileSelector()
     delete ui;
 }
 
+const Qt::GlobalColor openProfileHighlightColor = Qt::darkGreen;
 
 void ProfileSelector::updateProfileList()
 {
@@ -114,11 +115,14 @@ void ProfileSelector::updateProfileList()
             model->setData(model->index(row, 4, QModelIndex()), mach->lastImported().toString(Qt::SystemLocaleShortDate));
         }
         QBrush bg = QColor(Qt::black);
+        QFont font = QApplication::font();
         if (prof == p_profile) {
-            bg = QBrush(Qt::red);
+            bg = QBrush(openProfileHighlightColor);
+            font.setBold(true);
         }
         for (int i=0; i<columns; i++) {
             model->setData(model->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
+            //model->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
         }
 
         QRect rect = fm.boundingRect(name);
@@ -156,21 +160,50 @@ void ProfileSelector::updateProfileList()
 
 void ProfileSelector::updateProfileHighlight(QString name)
 {
+    QFont font = QApplication::font();
+    font.setBold(false);
     QBrush bg = QColor(Qt::black);
     for (int row=0;row < model->rowCount(); row++) {
         for (int i=0; i<model->columnCount(); i++) {
             model->setData(model->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
+            //model->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
         }
     }
-    bg = QBrush(Qt::red);
+    bg = QBrush(openProfileHighlightColor);
+    font = QApplication::font();
+    font.setBold(true);
     for (int row=0;row < proxy->rowCount(); row++) {
         if (proxy->data(proxy->index(row, 0, QModelIndex())).toString().compare(name)==0) {
             for (int i=0; i<proxy->columnCount(); i++) {
                 proxy->setData(proxy->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
+              //  proxy->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
             }
             break;
         }
     }
+    if (p_profile) {
+        QString html = QString();
+
+        if (!p_profile->user->lastName().isEmpty() && !p_profile->user->firstName().isEmpty()) {
+            html += tr("Name: %1, %2").arg(p_profile->user->lastName()).arg(p_profile->user->firstName())+"<br/>";
+        }
+        if (!p_profile->user->phone().isEmpty()) {
+            html += tr("Phone: %1").arg(p_profile->user->phone())+"<br/>";
+        }
+        if (!p_profile->user->phone().isEmpty()) {
+            html += "<br/>"+tr("Address:")+"<br/>"+p_profile->user->address().trimmed().replace("\n","<br/>")+"<br/>";
+        }
+
+        if (html.isEmpty()) {
+            html += tr("No profile information given");
+        }
+
+        ui->profileInfoGroupBox->setTitle(tr("Current Profile: %1").arg(name));
+        ui->profileInfoLabel->setText(html);
+    } else {
+
+    }
+
 }
 
 void ProfileSelector::SelectProfile(QString profname)
@@ -232,6 +265,8 @@ void ProfileSelector::on_buttonEditProfile_clicked()
             }
 
             proxy->setData(proxy->index(ui->profileView->currentIndex().row(), 5, QModelIndex()), usersname);
+            //updateProfileList();
+            if (prof == p_profile) updateProfileHighlight(name);
         }
 
         delete newprof;
@@ -266,8 +301,9 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
 {
     if (ui->profileView->currentIndex().isValid()) {
         QString name = proxy->data(proxy->index(ui->profileView->currentIndex().row(), 0, QModelIndex()), Qt::UserRole+2).toString();
-
         Profile * profile = Profiles::profiles[name];
+        QString path = profile->Get(PrefMacro(STR_GEN_DataFolder));
+
         bool reallydelete = false;
         if (profile->user->hasPassword()) {
             QDialog dialog(this, Qt::Dialog);
@@ -301,11 +337,12 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
                     }
                 }
             } while (tries < 3);
-        } else { reallydelete = true; }
+            if (!reallydelete) return;
+        }
 
         QDialog confirmdlg;
         QVBoxLayout layout(&confirmdlg);
-        QLabel message(QString("<b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to destroy profile '%1'.")+"<br/><br/>"+tr("Enter the word DELETE below to confirm.")).arg(name), &confirmdlg);
+        QLabel message(QString("<b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to destroy profile '<b>%1</b>'.")+"<br/><br/>"+tr("Think carefully, as this will irretrievably delete the profile along with all <b>backup data</b> stored under<br/>%2.")+"<br/><br/>"+tr("Enter the word <b>DELETE</b> below to confirm.")).arg(name).arg(path), &confirmdlg);
         layout.insertWidget(0,&message,1);
         QLineEdit lineedit(&confirmdlg);
         layout.insertWidget(1, &lineedit, 1);
@@ -330,7 +367,6 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
 
         if (reallydelete) {
             qDebug() << "Deleting Profile" << name;
-            QString path = profile->Get(PrefMacro(STR_GEN_DataFolder));
             if (profile == p_profile) {
                 // Shut down if active
                 mainwin->CloseProfile();

@@ -51,6 +51,7 @@ const QString STR_US_AutoLaunchImport = "AutoLaunchImport";
 const QString STR_US_RemoveCardReminder = "RemoveCardReminder";
 const QString STR_IS_CacheSessions = "MemoryHog";
 
+const QString STR_GEN_AutoOpenLastUsed = "AutoOpenLastUsed";
 const QString STR_GEN_UpdatesLastChecked = "UpdatesLastChecked";
 const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
 const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
@@ -94,6 +95,7 @@ public:
       initPref(STR_IS_CacheSessions, false);
       initPref(STR_US_RemoveCardReminder, true);
       initPref(STR_GEN_Profile, "");
+      initPref(STR_GEN_AutoOpenLastUsed, true);
 
       initPref(STR_GEN_UpdatesAutoCheck, true);
       initPref(STR_GEN_UpdateCheckFrequency, 7);
@@ -157,6 +159,7 @@ public:
   int openTabAtStart() const { return getPref(STR_US_OpenTabAtStart).toInt(); }
   int openTabAfterImport() const { return getPref(STR_US_OpenTabAfterImport).toInt(); }
   bool removeCardReminder() const { return getPref(STR_US_RemoveCardReminder).toBool(); }
+  bool autoOpenLastUsed() const { return getPref(STR_GEN_AutoOpenLastUsed).toBool(); }
 
   void setProfileName(QString name) { setPref(STR_GEN_Profile, name); }
   void setAutoLaunchImport(bool b) { setPref(STR_US_AutoLaunchImport, b); }
@@ -211,6 +214,7 @@ public:
   void setAllowEarlyUpdates(bool b)  { setPref(STR_PREF_AllowEarlyUpdates, b); }
   void setUpdatesLastChecked(QDateTime datetime) { setPref(STR_GEN_UpdatesLastChecked, datetime); }
   void setUpdateCheckFrequency(int freq) { setPref(STR_GEN_UpdateCheckFrequency,freq); }
+  void setAutoOpenLastUsed(bool b) { setPref(STR_GEN_AutoOpenLastUsed , b); }
 
 };
 

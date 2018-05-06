@@ -57,7 +57,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -567,15 +567,28 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
           <string>Memory and Startup Options</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_14">
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="automaticImport">
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="autoLaunchImporter">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogs during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Bypass the login screen and load the most recent User Profile</string>
             </property>
             <property name="text">
-             <string>Import without asking for confirmation</string>
+             <string>Auto-Launch CPAP Importer after opening profile</string>
             </property>
            </widget>
+          </item>
+          <item row="4" column="0">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="cacheSessionData">
@@ -598,27 +611,21 @@ SleepyHead can keep a copy of this data if you ever need to reinstall.
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="autoLaunchImporter">
-            <property name="toolTip">
-             <string>Bypass the login screen and load the most recent User Profile</string>
-            </property>
+           <widget class="QCheckBox" name="autoLoadLastUsed">
             <property name="text">
-             <string>Auto-Launch CPAP Importer after application start-up</string>
+             <string>Automatically load last used profile on start-up</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="automaticImport">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cuts down on any unimportant confirmation dialogs during import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+            <property name="text">
+             <string>Import without asking for confirmation</string>
             </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -2247,7 +2254,7 @@ p, li { white-space: pre-wrap; }
             <item row="2" column="1">
              <widget class="QComboBox" name="openingTabCombo">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which tab to open on loading a profile. (Note: It will default to Profile if there is no open Profile)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which tab to open on loading a profile. (Note: It will default to Profile if SleepyHead is set to not open a profile on startup)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="currentText">
                <string>Profile</string>

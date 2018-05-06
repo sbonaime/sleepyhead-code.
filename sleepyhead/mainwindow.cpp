@@ -547,9 +547,10 @@ void MainWindow::CloseProfile()
 
 void MainWindow::Startup()
 {
+
     QString lastProfile = AppSetting->profileName();
 
-    if (Profiles::profiles.contains(lastProfile)) {
+    if (Profiles::profiles.contains(lastProfile) && AppSetting->autoOpenLastUsed()) {
         OpenProfile(lastProfile);
         ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
 
