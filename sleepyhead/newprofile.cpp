@@ -264,6 +264,8 @@ void NewProfile::on_nextButton_clicked()
             //profile->user->setUserName(username);
             AppSetting->setProfileName(username);
 
+            profile->Save();
+
             this->accept();
         }
     }

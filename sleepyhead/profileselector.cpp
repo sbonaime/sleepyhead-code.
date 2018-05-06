@@ -221,6 +221,41 @@ void ProfileSelector::SelectProfile(QString profname)
     Profile * prof = Profiles::profiles[profname];
 
     if (prof != p_profile) {
+        if (prof->user->hasPassword()) {
+            QDialog dialog(this, Qt::Dialog);
+            QLineEdit *e = new QLineEdit(&dialog);
+            e->setEchoMode(QLineEdit::Password);
+            dialog.connect(e, SIGNAL(returnPressed()), &dialog, SLOT(accept()));
+            dialog.setWindowTitle(tr("Enter Password for %1").arg(profname));
+            dialog.setMinimumWidth(300);
+            QVBoxLayout *lay = new QVBoxLayout();
+            dialog.setLayout(lay);
+            lay->addWidget(e);
+            int tries = 0;
+            bool succeeded = false;
+
+            do {
+                e->setText("");
+
+                if (dialog.exec() != QDialog::Accepted) { break; }
+
+                tries++;
+
+                if (prof->user->checkPassword(e->text())) {
+                    succeeded = true;
+                    break;
+                } else {
+                    if (tries < 3) {
+                        QMessageBox::warning(this, STR_MessageBox_Error, tr("You entered an incorrect password"), QMessageBox::Ok);
+                    } else {
+                        QMessageBox::warning(this, STR_MessageBox_Error,
+                                             tr("Forgot your password?")+"\n"+tr("Ask on the forums how to reset it, it's actually pretty easy."),
+                                             QMessageBox::Ok);
+                    }
+                }
+            } while (tries < 3);
+            if (!succeeded) return;
+        }
 
         // Unselect everything in ProfileView
 
