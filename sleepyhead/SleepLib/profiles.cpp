@@ -307,6 +307,36 @@ bool Profile::StoreMachines()
     return true;
 }
 
+qint64 Profile::diskSpaceSummaries()
+{
+    qint64 size = 0;
+    for (auto & mach : m_machlist) {
+        size += mach->diskSpaceSummaries();
+    }
+    return size;
+}
+qint64 Profile::diskSpaceEvents()
+{
+    qint64 size = 0;
+    for (auto & mach : m_machlist) {
+        size += mach->diskSpaceEvents();
+    }
+    return size;
+}
+qint64 Profile::diskSpaceBackups()
+{
+    qint64 size = 0;
+    for (auto & mach : m_machlist) {
+        size += mach->diskSpaceBackups();
+    }
+    return size;
+}
+qint64 Profile::diskSpace()
+{
+    return (diskSpaceSummaries()+diskSpaceEvents()+diskSpaceBackups());
+}
+
+
 
 #if defined(Q_OS_WIN)
 class Environment

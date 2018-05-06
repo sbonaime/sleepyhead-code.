@@ -51,11 +51,14 @@ private slots:
 
     void on_buttonDestroyProfile_clicked();
 
+    void on_diskSpaceInfo_linkActivated(const QString &link);
+
 private:
     Ui::ProfileSelector *ui;
     QStandardItemModel *model;
     MySortFilterProxyModel2 *proxy;
 
+    bool showDiskUsage;
 };
 
 #endif // PROFILESELECTOR_H

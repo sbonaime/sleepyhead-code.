@@ -1,4 +1,4 @@
-/* SleepLib Machine Class Header
+﻿/* SleepLib Machine Class Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -136,6 +136,11 @@ class Machine
     const QString getEventsPath();
     const QString getSummariesPath();
     const QString getBackupPath();
+
+    qint64 diskSpaceSummaries();
+    qint64 diskSpaceEvents();
+    qint64 diskSpaceBackups();
+
 
     //! \brief Returns the machineID as a lower case hexadecimal string
     QString hexid() { return QString().sprintf("%08lx", m_id); }

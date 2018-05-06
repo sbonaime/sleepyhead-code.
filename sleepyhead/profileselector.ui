@@ -276,6 +276,22 @@
              <property name="wordWrap">
               <bool>true</bool>
              </property>
+             <property name="openExternalLinks">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="diskSpaceInfo">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string notr="true"/>
+             </property>
             </widget>
            </item>
           </layout>

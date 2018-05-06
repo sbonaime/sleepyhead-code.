@@ -51,6 +51,11 @@ class Profile : public Preferences
     bool OpenMachines();
     bool StoreMachines();
 
+    qint64 diskSpaceSummaries();
+    qint64 diskSpaceEvents();
+    qint64 diskSpaceBackups();
+    qint64 diskSpace();
+
     //! \brief Returns hostname that locked profile, or empty string if unlocked
     QString checkLock();
 

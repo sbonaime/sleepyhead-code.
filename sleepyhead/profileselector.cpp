@@ -51,7 +51,11 @@ ProfileSelector::ProfileSelector(QWidget *parent) :
     model = nullptr;
     proxy = nullptr;
 
+    showDiskUsage = false;
+    on_diskSpaceInfo_linkActivated(showDiskUsage ? "show" : "hide");
+
     ui->versionLabel->setText(VersionString);
+    ui->diskSpaceInfo->setVisible(false);
 }
 
 ProfileSelector::~ProfileSelector()
@@ -80,7 +84,7 @@ void ProfileSelector::updateProfileList()
     ui->profileView->setStyleSheet("QHeaderView::section { background-color:lightgrey }");
 
     int row = 0;
-    int sel = -1;
+//    int sel = -1;
 
     QFontMetrics fm(ui->profileView->font());
 
@@ -89,9 +93,9 @@ void ProfileSelector::updateProfileList()
         Profile *prof = pi.value();
         name = pi.key();
 
-        if (AppSetting->profileName() == name) {
-            sel = row;
-        }
+//        if (AppSetting->profileName() == name) {
+//            sel = row;
+//        }
 
         Machine * mach = prof->GetMachine(MT_CPAP);  // only interested in last cpap machine...
         if (!mach) {
@@ -139,7 +143,6 @@ void ProfileSelector::updateProfileList()
     proxy = new MySortFilterProxyModel2(this);
     proxy->setSourceModel(model);
     proxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-
 
     ui->profileView->setModel(proxy);
     ui->profileView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -195,13 +198,15 @@ void ProfileSelector::updateProfileHighlight(QString name)
         }
 
         if (html.isEmpty()) {
-            html += tr("No profile information given");
+            html += tr("No profile information given")+"<br/>";
         }
-
+        ui->diskSpaceInfo->setVisible(true);
         ui->profileInfoGroupBox->setTitle(tr("Current Profile: %1").arg(name));
         ui->profileInfoLabel->setText(html);
-    } else {
 
+        on_diskSpaceInfo_linkActivated(showDiskUsage ? "show" : "hide"); // don't show disk info by default
+    } else {
+        ui->diskSpaceInfo->setVisible(false);
     }
 
 }
@@ -218,6 +223,7 @@ void ProfileSelector::SelectProfile(QString profname)
 
         mainwin->OpenProfile(profname);
         updateProfileHighlight(profname);
+
     }
 
 }
@@ -388,4 +394,38 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
     }
 }
 
+QString formatSize(qint64 size) {
+    QStringList units = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
+    int i;
+    double outputSize = size;
+    for (i=0; i<units.size()-1; i++) {
+        if (outputSize < 1024) break;
+        outputSize = outputSize/1024;
+    }
+    return QString("%0 %1").arg(outputSize, 0, 'f', 2).arg(units[i]);
+}
 
+
+void ProfileSelector::on_diskSpaceInfo_linkActivated(const QString &link)
+{
+    QString html;
+
+    if (link == "show") {
+        html += "<a href='hide'>"+tr("Hide disk usage information")+"</a>";
+        if (p_profile) {
+            qint64 sizeSummaries = p_profile->diskSpaceSummaries();
+            qint64 sizeEvents = p_profile->diskSpaceEvents();
+            qint64 sizeBackups = p_profile->diskSpaceBackups();
+
+            html += "<table>"
+                    "<tr><td align=right>"+tr("Summaries:")+"</td><td>"+formatSize(sizeSummaries)+"</td></tr>"
+                    "<tr><td align=right>"+tr("Events:")+"</td><td>"+formatSize(sizeEvents)+"</td></tr>"
+                    "<tr><td align=right>"+tr("Backups:")+"</td><td>"+formatSize(sizeBackups)+"</td></tr></table>";
+        }
+        showDiskUsage = true;
+    } else {
+        html += "<a href='show'>"+tr("Show disk usage information")+"</a>";
+        showDiskUsage = false;
+    }
+    ui->diskSpaceInfo->setText(html);
+}

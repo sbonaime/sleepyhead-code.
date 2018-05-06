@@ -560,6 +560,37 @@ const QString Machine::getBackupPath()
     return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
 }
 
+// dirSize lazily pinched from https://stackoverflow.com/questions/47854288/can-not-get-directory-size-in-qt-c, thank's "Mike"
+qint64 dirSize(QString dirPath) {
+    qint64 size = 0;
+
+    QDir dir(dirPath);
+    QDir::Filters fileFilters = QDir::Files | QDir::System | QDir::Hidden;
+    for(QString filePath : dir.entryList(fileFilters)) {
+        QFileInfo fi(dir, filePath);
+        size += fi.size();
+    }
+
+    QDir::Filters dirFilters = QDir::Dirs | QDir::NoDotAndDotDot | QDir::System | QDir::Hidden;
+    for(QString childDirPath : dir.entryList(dirFilters))
+        size += dirSize(dirPath + QDir::separator() + childDirPath);
+
+    return size;
+}
+
+qint64 Machine::diskSpaceSummaries()
+{
+    return dirSize(getSummariesPath());
+}
+qint64 Machine::diskSpaceEvents()
+{
+    return dirSize(getEventsPath());
+}
+qint64 Machine::diskSpaceBackups()
+{
+    return dirSize(getBackupPath());
+}
+
 bool Machine::Load()
 {
     QString path = getDataPath();
