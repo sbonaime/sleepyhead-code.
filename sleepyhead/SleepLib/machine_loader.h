@@ -109,6 +109,7 @@ class MachineLoader: public QObject
 
 signals:
     void updateProgress(int cnt, int total);
+    void updateMessage(QString);
     void machineUnsupported(Machine *);
 
 protected:
@@ -151,6 +152,7 @@ public:
     virtual ChannelID HumidifierLevel() { return CPAP_HumidSetting; }
     virtual ChannelID CPAPModeChannel() { return CPAP_Mode; }
     virtual void initChannels() {}
+
 };
 
 struct ImportPath

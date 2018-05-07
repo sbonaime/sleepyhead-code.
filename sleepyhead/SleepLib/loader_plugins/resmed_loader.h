@@ -375,6 +375,7 @@ protected:
     */
 class ResmedLoader : public CPAPLoader
 {
+    Q_OBJECT
     friend class ResmedImport;
     friend class ResmedImportStage2;
   public:

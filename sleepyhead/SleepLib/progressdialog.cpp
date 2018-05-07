@@ -1,4 +1,4 @@
-/* SleepLib Progress Dialog Header
+﻿/* SleepLib Progress Dialog Header
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -9,7 +9,7 @@
 #include "progressdialog.h"
 
 ProgressDialog::ProgressDialog(QWidget * parent):
-    QDialog(parent, Qt::SplashScreen)
+    QDialog(parent, Qt::Popup)
 {
     waitmsg = new QLabel(QObject::tr("PLease Wait..."));
     hlayout = new QHBoxLayout;
@@ -36,3 +36,7 @@ void ProgressDialog::doUpdateProgress(int cnt, int total)
     progress->setValue(cnt);
 }
 
+
+void ProgressDialog::setMessage(QString msg) {
+    waitmsg->setText(msg); update();
+}

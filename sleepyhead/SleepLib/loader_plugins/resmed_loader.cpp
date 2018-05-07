@@ -2301,6 +2301,9 @@ int ResmedLoader::Open(const QString & dirpath)
     }
     MachineInfo info = newInfo();
 
+    emit updateMessage(QObject::tr("Parsing Identification File"));
+    QApplication::processEvents();
+
     // Parse # entries into idmap.
     while (!f.atEnd()) {
         line = f.readLine().trimmed();
@@ -2397,7 +2400,11 @@ int ResmedLoader::Open(const QString & dirpath)
 
     resdayList.clear();
 
+    emit updateMessage(QObject::tr("Locating STR.edf File(s)..."));
+    QCoreApplication::processEvents();
+
     // List all STR.edf backups and tag on latest for processing
+
     QMap<QDate, STRFile> STRmap;
 
     QDir dir;
@@ -2528,6 +2535,9 @@ int ResmedLoader::Open(const QString & dirpath)
     ///////////////////////////////////////////////////////////////////////////////////
     // Build a Date map of all records in STR.edf files, populating ResDayList
     ///////////////////////////////////////////////////////////////////////////////////
+    emit updateMessage(QObject::tr("Processing STR.edf File(s)..."));
+    QApplication::processEvents();
+
     ParseSTR(mach, STRmap);
 
     // We are done with the Parsed STR EDF objects, so delete them
@@ -2567,10 +2577,16 @@ int ResmedLoader::Open(const QString & dirpath)
     QFile impfile(mach->getDataPath()+"/imported_files.csv");
     if (impfile.exists()) impfile.remove();
 
+    emit updateMessage(QObject::tr("Searching for EDF Files..."));
+    QApplication::processEvents();
+
     scanFiles(mach, newpath);
 
     // Now at this point we have resdayList populated with processable summary and EDF files data
     // that can be processed in threads..
+
+    emit updateMessage(QObject::tr("Queing Import Jobs..."));
+    QApplication::processEvents();
 
     for (auto rdi=resdayList.begin(), rend=resdayList.end(); rdi != rend; rdi++) {
         QDate date = rdi.key();
@@ -2619,6 +2635,7 @@ int ResmedLoader::Open(const QString & dirpath)
     }
 
     sessionCount = 0;
+    emit updateMessage(QObject::tr("Importing Sessions..."));
     runTasks();
     int num_new_sessions = sessionCount;
 
@@ -2627,6 +2644,8 @@ int ResmedLoader::Open(const QString & dirpath)
     // Now look for any new summary data that can be extracted from STR.edf records
     ////////////////////////////////////////////////////////////////////////////////////
 
+    emit updateMessage(QObject::tr("Finishing Up..."));
+    QApplication::processEvents();
 
     //int size = m->sessionlist.size();
     //int cnt=0;

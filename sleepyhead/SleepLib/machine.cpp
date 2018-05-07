@@ -606,12 +606,14 @@ bool Machine::Load()
 
     QPixmap image = getPixmap().scaled(64,64);
     popup->setPixmap(image);
-    popup->setMessage(QObject::tr("Loading %1 data...").arg(info.brand));
+    popup->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(p_profile->user->userName()));
     popup->show();
 
-    QProgressBar * progress = popup->progress;
+    QProgressBar * saveQProgress = qprogress;
 
-    if (!LoadSummary(progress)) {
+    qprogress = popup->progress;
+
+    if (!LoadSummary(qprogress)) {
         // No XML index file, so assume upgrading, or it simply just got screwed up or deleted...
         QTime time;
         time.start();
@@ -631,17 +633,15 @@ bool Machine::Load()
         QStringList filelist = dir.entryList();
         int size = filelist.size();
 
-        if (progress) {
-            progress->setMinimum(0);
-            progress->setMaximum(0);
-            progress->setValue(0);
+        if (qprogress) {
+            qprogress->setMinimum(0);
+            qprogress->setValue(0);
             QApplication::processEvents();
         }
 
-        for (int i=0; i < size; i++) {
-            QString filename = filelist.at(i);
-            QFile::copy(path+filename, summarypath+filename);
-            QFile::remove(path+filename);
+        // Legacy crap.. Summary and Event stuff used to be in one big pile in the machine folder root
+        for (auto & filename : filelist) {
+            QFile::rename(path+filename, summarypath+filename);
         }
 
         // Copy old Event files to folder
@@ -654,14 +654,13 @@ bool Machine::Load()
             if (!dir.exists(eventpath)) dir.mkpath(eventpath);
             for (int i=0; i< size; i++) {
                 if ((i % 50) == 0) { // This is slow.. :-/
-                    if (progress) { progress->setValue((float(i) / float(size) * 100.0)); }
+                    if (qprogress) { qprogress->setValue((float(i) / float(size) * 100.0)); }
 
                     QApplication::processEvents();
                 }
 
                 QString filename = filelist.at(i);
-                QFile::copy(path+filename, eventpath+filename);
-                QFile::remove(path+filename);
+                QFile::rename(path+filename, eventpath+filename);
             }
         }
 
@@ -675,10 +674,10 @@ bool Machine::Load()
         filelist = dir.entryList();
         size = filelist.size();
 
-        if (progress) {
-            progress->setMinimum(0);
-            progress->setMaximum(size);
-            progress->setValue(0);
+        if (qprogress) {
+            qprogress->setMinimum(0);
+            qprogress->setMaximum(size);
+            qprogress->setValue(0);
             QApplication::processEvents();
         }
 
@@ -689,7 +688,7 @@ bool Machine::Load()
         for (int i=0; i < size; i++) {
 
             if ((i % 50) == 0) { // This is slow.. :-/
-                if (progress) { progress->setValue(i); }
+                if (qprogress) { qprogress->setValue(i); }
 
                 QApplication::processEvents();
             }
@@ -713,14 +712,16 @@ bool Machine::Load()
 
         SaveSummary();
         qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
-        if (progress) { progress->setValue(size); }
+        if (qprogress) { qprogress->setValue(size); }
     } else {
-        if (progress) { progress->setValue(100); }
+        if (qprogress) { qprogress->setValue(100); }
     }
     loadSessionInfo();
     QApplication::processEvents();
     popup->hide();
     delete popup;
+
+    qprogress = saveQProgress;
 
     return true;
 }
@@ -893,16 +894,15 @@ void Machine::runTasks()
         return;
 
     QThreadPool * threadpool = QThreadPool::globalInstance();
-   // int m_totaltasks=m_tasklist.size();
+    int m_totaltasks=m_tasklist.size();
     int m_currenttask=0;
+    qprogress->setMaximum(m_totaltasks);
     while (!m_tasklist.isEmpty()) {
         if (threadpool->tryStart(m_tasklist.at(0))) {
             m_tasklist.pop_front();
-          //  float f = float(m_currenttask) / float(m_totaltasks) * 100.0;
-          //  qprogress->setValue(f);
-            m_currenttask++;
+            qprogress->setValue(m_currenttask++);
+            QApplication::processEvents();
         }
-        //QApplication::processEvents();
     }
     QThreadPool::globalInstance()->waitForDone(-1);
 

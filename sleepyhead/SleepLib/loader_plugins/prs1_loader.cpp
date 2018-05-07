@@ -513,6 +513,9 @@ int PRS1Loader::OpenMachine(const QString & path)
         return 0;
     }
 
+    emit updateMessage(QObject::tr("Getting Ready..."));
+    QCoreApplication::processEvents();
+
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist = dir.entryInfoList();
@@ -626,6 +629,9 @@ int PRS1Loader::OpenMachine(const QString & path)
     PRS1Import * task = nullptr;
     // Note, I have observed p0/p1/etc folders containing duplicates session files (in Robin Sanders data.)
 
+    emit updateMessage(QObject::tr("Scanning Files..."));
+    QCoreApplication::processEvents();
+
     // for each p0/p1/p2/etc... folder
     for (int p=0; p < size; ++p) {
         dir.setPath(paths.at(p));
@@ -738,7 +744,14 @@ int PRS1Loader::OpenMachine(const QString & path)
     int tasks = countTasks();
     unknownCodes.clear();
 
+    emit updateMessage(QObject::tr("Importing Sessions..."));
+    QCoreApplication::processEvents();
+
     runTasks(AppSetting->multithreading());
+
+    emit updateMessage(QObject::tr("Finishing up..."));
+    QCoreApplication::processEvents();
+
     finishAddingSessions();
 
     if (unknownCodes.size() > 0) {

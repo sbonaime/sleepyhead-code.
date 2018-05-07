@@ -463,13 +463,12 @@ void MainWindow::OpenProfile(QString profileName)
         p_profile->p_preferences[STR_PREF_ReimportBackup]=false;
     }
 
-    p_profile->LoadMachineData();
-
     QList<MachineLoader *> loaders = GetLoaders();
     for (int i=0; i<loaders.size(); ++i) {
         connect(loaders.at(i), SIGNAL(machineUnsupported(Machine*)), this, SLOT(MachineUnsupported(Machine*)));
     }
 
+    p_profile->LoadMachineData();
 
     ui->statStartDate->setDate(p_profile->FirstDay());
     ui->statEndDate->setDate(p_profile->LastDay());
@@ -536,7 +535,9 @@ void MainWindow::CloseProfile()
 
 void MainWindow::Startup()
 {
-
+    for (auto & loader : GetLoaders()) {
+        loader->setParent(this);
+    }
     QString lastProfile = AppSetting->profileName();
 
     if (Profiles::profiles.contains(lastProfile) && AppSetting->autoOpenLastUsed()) {
@@ -557,27 +558,21 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         return 0;
     }
 
-    QDialog * popup = new QDialog(this);
-    QLabel * waitmsg = new QLabel(message);
-    QHBoxLayout *hlayout = new QHBoxLayout;
-
-    QLabel * imglabel = new QLabel(popup);
+    ProgressDialog * progdlg = new ProgressDialog(this);
 
     QPixmap image = import.loader->getPixmap(import.loader->PeekInfo(import.path).series);
-//    QPixmap image(getCPAPPixmap(import.loader->loaderName()));
     image = image.scaled(64,64);
-    imglabel->setPixmap(image);
+    progdlg->setPixmap(image);
 
+    QProgressBar *saveQprogress = qprogress;
+    qprogress = progdlg->progress;
 
-    QVBoxLayout * vlayout = new QVBoxLayout;
-    popup->setLayout(vlayout);
-    vlayout->addLayout(hlayout);
-    hlayout->addWidget(imglabel);
-    hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
-    vlayout->addWidget(qprogress,1);
+    progdlg->show();
+    progdlg->setMessage(message);
 
-    qprogress->setVisible(true);
-    popup->show();
+    import.loader->setParent(this);
+    connect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
+
     int c = import.loader->Open(import.path);
 
     if (c > 0) {
@@ -587,17 +582,17 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     } else {
         Notify(tr("Couldn't find any valid Machine Data at\n\n%1").arg(import.path),tr("Import Problem"));
     }
+    disconnect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
 
-    popup->hide();
-    vlayout->removeWidget(qprogress);
-    ui->statusbar->insertWidget(1,qprogress,1);
-    qprogress->setVisible(false);
+    progdlg->hide();
 
-    delete popup;
+    delete progdlg;
+
     if (AppSetting->openTabAfterImport()>0) {
         ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
     }
 
+    qprogress=saveQprogress;
     return c;
 }
 
