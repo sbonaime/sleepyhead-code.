@@ -111,6 +111,8 @@ public slots:
 
 signals:
     void updateProgress(int cnt, int total);
+    void setProgressMax(int max);
+    void setProgressValue(int val);
     void updateMessage(QString);
     void machineUnsupported(Machine *);
 

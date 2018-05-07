@@ -589,8 +589,6 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     image = image.scaled(64,64);
     progdlg->setPixmap(image);
 
-    QProgressBar *saveQprogress = qprogress;
-    qprogress = progdlg->progress;
     progdlg->addAbortButton();
 
     progdlg->setWindowModality(Qt::ApplicationModal);
@@ -598,6 +596,8 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     progdlg->setMessage(message);
 
     connect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
+    connect(import.loader, SIGNAL(setProgressMax(int)), progdlg, SLOT(setProgressMax(int)));
+    connect(import.loader, SIGNAL(setProgressValue(int)), progdlg, SLOT(setProgressValue(int)));
     connect(progdlg, SIGNAL(abortClicked()), import.loader, SLOT(abortImport()));
 
     int c = import.loader->Open(import.path);
@@ -610,6 +610,8 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         Notify(tr("Couldn't find any valid Machine Data at\n\n%1").arg(import.path),tr("Import Problem"));
     }
     disconnect(progdlg, SIGNAL(abortClicked()), import.loader, SLOT(abortImport()));
+    disconnect(import.loader, SIGNAL(setProgressMax(int)), progdlg, SLOT(setProgressMax(int)));
+    disconnect(import.loader, SIGNAL(setProgressValue(int)), progdlg, SLOT(setProgressValue(int)));
     disconnect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
 
     progdlg->close();
@@ -620,7 +622,6 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
     }
 
-    qprogress = saveQprogress;
     return c;
 }
 
@@ -844,16 +845,9 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QTime time;
     time.start();
-    QDialog popup(this, Qt::FramelessWindowHint);
-    popup.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QLabel * waitmsg = new QLabel(tr("Please wait, scanning for CPAP data cards..."));
-    QVBoxLayout *waitlayout = new QVBoxLayout();
-    waitlayout->addWidget(waitmsg,1,Qt::AlignCenter);
-    waitlayout->addWidget(qprogress,1);
-    popup.setLayout(waitlayout);
+
 
     bool asknew = false;
-    qprogress->setVisible(false);
 
     if (datacards.size() > 0) {
         MachineInfo info = datacards[0].loader->PeekInfo(datacards[0].path);
@@ -883,22 +877,21 @@ void MainWindow::on_action_Import_Data_triggered()
 
             if (res == QMessageBox::Cancel) {
                 // Give the communal progress bar back
-                ui->statusbar->insertWidget(1,qprogress,1);
                 in_import=false;
                 return;
             } else if (res == QMessageBox::No) {
-                waitmsg->setText(tr("Please wait, launching file dialog..."));
+                //waitmsg->setText(tr("Please wait, launching file dialog..."));
                 datacards.clear();
                 asknew = true;
             }
         }
     } else {
-        waitmsg->setText(tr("No CPAP data card detected, launching file dialog..."));
+        //waitmsg->setText(tr("No CPAP data card detected, launching file dialog..."));
         asknew = true;
     }
 
     if (asknew) {
-        popup.show();
+       // popup.show();
         mainwin->Notify(tr("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder."),
                         tr("Import Reminder"),8000);
 
@@ -942,14 +935,11 @@ void MainWindow::on_action_Import_Data_triggered()
 //#endif
 
         if (w.exec() != QDialog::Accepted) {
-            popup.hide();
-            ui->statusbar->insertWidget(1,qprogress,1);
             in_import=false;
 
             return;
         }
 
-        popup.hide();
 
         for (int i = 0; i < w.selectedFiles().size(); i++) {
             Q_FOREACH(MachineLoader * loader, loaders) {
@@ -969,17 +959,28 @@ void MainWindow::on_action_Import_Data_triggered()
 //    qprogress->setVisible(true);
 
 //    popup.show();
+    ProgressDialog * prog = new ProgressDialog(this);
+    prog->setMessage(tr("Processing import list..."));
+    prog->addAbortButton();
+    prog->setWindowModality(Qt::ApplicationModal);
+
+    prog->open();
 
     int c = -1;
     for (int i = 0; i < datacards.size(); i++) {
         QString dir = datacards[i].path;
         MachineLoader * loader = datacards[i].loader;
         if (!loader) continue;
+        connect(loader, SIGNAL(updateMessage(QString)), prog, SLOT(setMessage(QString)));
+        connect(loader, SIGNAL(setProgressMax(int)), prog, SLOT(setProgressMax(int)));
+        connect(loader, SIGNAL(setProgressValue(int)), prog, SLOT(setProgressValue(int)));
+        connect(prog, SIGNAL(abortClicked()), loader, SLOT(abortImport()));
+
+        QPixmap image = loader->getPixmap(loader->PeekInfo(dir).series);
+        image = image.scaled(64,64);
+        prog->setPixmap(image);
 
         if (!dir.isEmpty()) {
-//            qprogress->setValue(0);
-//            qprogress->show();
-//            qstatus->setText(tr("Importing Data"));
             c = importCPAP(datacards[i], tr("Importing Data"));
             qDebug() << "Finished Importing data" << c;
 
@@ -992,19 +993,20 @@ void MainWindow::on_action_Import_Data_triggered()
             if (c > 0) {
                 newdata = true;
             }
-
-//            qstatus->setText("");
-//            qprogress->hide();
         }
+        disconnect(prog, SIGNAL(abortClicked()), loader, SLOT(abortImport()));
+        disconnect(loader, SIGNAL(setProgressMax(int)), prog, SLOT(setProgressMax(int)));
+        disconnect(loader, SIGNAL(setProgressValue(int)), prog, SLOT(setProgressValue(int)));
+        disconnect(loader, SIGNAL(updateMessage(QString)), prog, SLOT(setMessage(QString)));
     }
-//    popup.hide();
-
-//    ui->statusbar->insertWidget(1, qprogress,1);
 
     if (newdata)  {
         finishCPAPImport();
         PopulatePurgeMenu();
     }
+
+    prog->close();
+    prog->deleteLater();
     in_import=false;
 
 }
@@ -1895,10 +1897,13 @@ void MainWindow::on_actionRebuildCPAP(QAction *action)
         }
     }
 
-    purgeMachine(mach);
+    QString path = mach->getBackupPath();
+    MachineLoader *loader = lookupLoader(mach);
+
+    purgeMachine(mach); // purge destroys machine record
 
     if (backups) {
-        importCPAP(ImportPath(mach->getBackupPath(), lookupLoader(mach)), tr("Please wait, importing from backup folder(s)..."));
+        importCPAP(ImportPath(path, loader), tr("Please wait, importing from backup folder(s)..."));
     } else {
         if (QMessageBox::information(this, STR_MessageBox_Warning,
                                  tr("Because there are no internal backups to rebuild from, you will have to restore from your own.")+"\n\n"+
@@ -1914,6 +1919,8 @@ void MainWindow::on_actionRebuildCPAP(QAction *action)
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
+    welcome->refreshPage();
+    PopulatePurgeMenu();
     GenerateStatistics();
     p_profile->StoreMachines();
 }
@@ -2396,8 +2403,7 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
 
 void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
 {
-    ui->webView->load(
-        QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary"));
+    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
@@ -2405,8 +2411,6 @@ void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
     QUrl url = QUrl("https://sleepyhead.jedimark.net/donate.php");
     QDesktopServices().openUrl(url);
-    //    ui->webView->load(url);
-    //    ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_actionChange_Language_triggered()

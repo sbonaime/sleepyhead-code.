@@ -6,13 +6,10 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <QProgressBar>
 #include <QApplication>
 #include <QFile>
 #include <QDir>
 #include <QThreadPool>
-
-extern QProgressBar *qprogress;
 
 #include "machine_loader.h"
 
@@ -209,7 +206,7 @@ void MachineLoader::runTasks(bool threaded)
 
     m_totaltasks=m_tasklist.size();
     if (m_totaltasks == 0) return;
-    qprogress->setMaximum(m_totaltasks);
+    emit setProgressMax(m_totaltasks);
     m_currenttask=0;
 
     threaded=AppSetting->multithreading();
@@ -221,8 +218,9 @@ void MachineLoader::runTasks(bool threaded)
 
             // update progress bar
             m_currenttask++;
-            qprogress->setValue(m_currenttask);
+            emit setProgressValue(++m_currenttask);
             QApplication::processEvents();
+
             delete task;
         }
     } else {
@@ -240,8 +238,7 @@ void MachineLoader::runTasks(bool threaded)
                     task = m_tasklist[0];
 
                     // update progress bar
-                    m_currenttask++;
-                    qprogress->setValue(m_currenttask);
+                    emit setProgressValue(++m_currenttask);
                     QApplication::processEvents();
                 } else {
                     // job list finished

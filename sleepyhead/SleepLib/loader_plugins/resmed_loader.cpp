@@ -12,7 +12,6 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
-#include <QProgressBar>
 #include <QTextStream>
 #include <QDebug>
 #include <QStringList>
@@ -26,8 +25,6 @@
 #ifdef DEBUG_EFFICIENCY
 #include <QElapsedTimer>  // only available in 4.8
 #endif
-
-extern QProgressBar *qprogress;
 
 QHash<QString, QList<quint16> > Resmed_Model_Map;
 
@@ -113,13 +110,21 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
 {
     Q_UNUSED(mach)
 
-    if (!qprogress) {
-        qWarning() << "What happened to qprogress object in ResmedLoader::ParseSTR()";
-        return;
-    }
-
     QDateTime ignoreBefore = p_profile->session->ignoreOlderSessionsDate();
     bool ignoreOldSessions = p_profile->session->ignoreOlderSessions();
+
+    int totalRecs = 0;
+    for (auto it=STRmap.begin(), end=STRmap.end(); it != end; ++it) {
+        STRFile & file = it.value();
+        ResMedEDFParser & str = *file.edf;
+        totalRecs += str.GetNumDataRecords();
+    }
+
+    emit updateMessage("Parsing STR.edf records...");
+    emit setProgressMax(totalRecs);
+    QCoreApplication::processEvents();
+
+    int currentRec = 0;
 
     for (auto it=STRmap.begin(), end=STRmap.end(); it != end; ++it) {
         STRFile & file = it.value();
@@ -143,10 +148,12 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
         EDFSignal *sig = nullptr;
 
         int size = str.GetNumDataRecords();
-        int cnt=0;
 
         // For each data record, representing 1 day each
         for (int rec = 0; rec < size; ++rec, date = date.addDays(1)) {
+            emit setProgressValue(++currentRec);
+            QCoreApplication::processEvents();
+
             if (ignoreOldSessions) {
                 if (date < ignoreBefore.date()) {
                     continue;
@@ -180,11 +187,7 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
             uint timestamp = QDateTime(date,QTime(12,0,0)).toTime_t();
             R.date = date;
 
-           // skipday = false;
-            if ((cnt++ % 10) == 0) {
-                qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0));
-                QApplication::processEvents();
-            }
+            // skipday = false;
 
             // For every mask on, there will be a session within 1 minute either way
             // We can use that for data matching
@@ -1414,6 +1417,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
             filename.toInt(&ok);
             if (ok) {
                 // Get file lists under this directory
+
                 dir.setPath(fi.canonicalFilePath());
                 dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
                 dir.setSorting(QDir::Name);
@@ -1444,10 +1448,10 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
     int pbarFreq = totalfiles / 50;
     if (pbarFreq < 1) pbarFreq = 1; // stop a divide by zero
 
-    qprogress->setMaximum(totalfiles);
-    qprogress->setValue(0);
+    emit setProgressValue(0);
+    emit setProgressMax(totalfiles);
+    QCoreApplication::processEvents();
 
-    int cnt = 0;
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
     QDateTime ignoreBefore = p_profile->session->ignoreOlderSessionsDate();
     bool ignoreOldSessions = p_profile->session->ignoreOlderSessions();
@@ -1459,9 +1463,9 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
         const QFileInfo & fi = EDFfiles.at(i);
 
         // Update progress bar
-        if ((cnt++ % pbarFreq) == 0) {
-            qprogress->setValue(cnt);
-            QApplication::processEvents();
+        if ((i % pbarFreq) == 0) {
+            emit setProgressValue(i);
+            QCoreApplication::processEvents();
         }
 
         // Forget about it if it can't be read.
@@ -2554,8 +2558,6 @@ int ResmedLoader::Open(const QString & dirpath)
     ///////////////////////////////////////////////////////////////////////////////////
     // Build a Date map of all records in STR.edf files, populating ResDayList
     ///////////////////////////////////////////////////////////////////////////////////
-    emit updateMessage(QObject::tr("Processing STR.edf File(s)..."));
-    QApplication::processEvents();
 
     ParseSTR(mach, STRmap);
 
@@ -2607,7 +2609,7 @@ int ResmedLoader::Open(const QString & dirpath)
     // Now at this point we have resdayList populated with processable summary and EDF files data
     // that can be processed in threads..
 
-    emit updateMessage(QObject::tr("Queing Import Jobs..."));
+    emit updateMessage(QObject::tr("Queueing Import Tasks..."));
     QApplication::processEvents();
 
     for (auto rdi=resdayList.begin(), rend=resdayList.end(); rdi != rend; rdi++) {
@@ -2807,8 +2809,6 @@ int ResmedLoader::Open(const QString & dirpath)
         qDebug() << "Total CPU time in TimeDelta function" << timeInTimeDelta;
     }
 #endif
-
-    if (qprogress) { qprogress->setValue(100); }
 
     sessfiles.clear();
     strsess.clear();

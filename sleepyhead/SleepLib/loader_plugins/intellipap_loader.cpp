@@ -9,11 +9,8 @@
  * distribution for more details. */
 
 #include <QDir>
-#include <QProgressBar>
 
 #include "intellipap_loader.h"
-
-extern QProgressBar *qprogress;
 
 ChannelID INTP_SmartFlexMode, INTP_SmartFlexLevel;
 
@@ -587,8 +584,6 @@ int IntellipapLoader::OpenDV5(const QString & path)
 
 
     delete [] m_buffer;
-
-    if (qprogress) { qprogress->setValue(100); }
 
     f.close();
 

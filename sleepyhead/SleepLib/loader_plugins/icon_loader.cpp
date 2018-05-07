@@ -7,15 +7,12 @@
  * distribution for more details. */
 
 #include <QDir>
-#include <QProgressBar>
 #include <QMessageBox>
 #include <QDataStream>
 #include <QTextStream>
 #include <cmath>
 
 #include "icon_loader.h"
-
-extern QProgressBar *qprogress;
 
 const QString FPHCARE = "FPHCARE";
 
@@ -195,7 +192,7 @@ int FPIconLoader::OpenMachine(Machine *mach, const QString & path)
 
     QString filename, fpath;
 
-    if (qprogress) { qprogress->setValue(0); }
+    emit setProgressValue(0);
 
     QStringList summary, log, flw, det;
     Sessions.clear();

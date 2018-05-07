@@ -13,9 +13,9 @@
 #include <QFile>
 #include <QDataStream>
 #include <QMessageBox>
-#include <QProgressBar>
 #include <QDebug>
 #include <cmath>
+
 #include "SleepLib/schema.h"
 #include "prs1_loader.h"
 #include "SleepLib/session.h"
@@ -39,9 +39,6 @@
 // Please INCREMENT the prs1_data_version in prs1_loader.h when making changes to this loader
 // that change loader behaviour or modify channels.
 //********************************************************************************************
-
-
-extern QProgressBar *qprogress;
 
 QHash<int, QString> ModelMap;
 
@@ -524,7 +521,7 @@ int PRS1Loader::OpenMachine(const QString & path)
 
     QString filename;
 
-    if (qprogress) { qprogress->setValue(0); }
+    emit setProgressValue(0);
 
     QStringList paths;
 

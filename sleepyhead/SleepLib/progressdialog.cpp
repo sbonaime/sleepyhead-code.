@@ -34,10 +34,14 @@ ProgressDialog::~ProgressDialog()
     }
 }
 
-void ProgressDialog::doUpdateProgress(int cnt, int total)
+void ProgressDialog::setProgressMax(int max)
 {
-    progress->setMaximum(total);
-    progress->setValue(cnt);
+    progress->setMaximum(max);
+}
+
+void ProgressDialog::setProgressValue(int val)
+{
+    progress->setValue(val);
 }
 
 

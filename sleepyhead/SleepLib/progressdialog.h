@@ -28,8 +28,11 @@ public:
     QProgressBar * progress;
 public slots:
     void setMessage(QString msg);
-    void doUpdateProgress(int cnt, int total);
     void onAbortClicked();
+
+    void setProgressMax(int max);
+    void setProgressValue(int val);
+
 signals:
     void abortClicked();
 protected:
