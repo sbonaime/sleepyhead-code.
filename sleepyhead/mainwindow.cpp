@@ -567,10 +567,10 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     QProgressBar *saveQprogress = qprogress;
     qprogress = progdlg->progress;
 
-    progdlg->show();
+    progdlg->setWindowModality(Qt::ApplicationModal);
+    progdlg->open();
     progdlg->setMessage(message);
 
-    import.loader->setParent(this);
     connect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
 
     int c = import.loader->Open(import.path);

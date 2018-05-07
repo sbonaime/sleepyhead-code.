@@ -118,6 +118,9 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
         return;
     }
 
+    QDateTime ignoreBefore = p_profile->session->ignoreOlderSessionsDate();
+    bool ignoreOldSessions = p_profile->session->ignoreOlderSessions();
+
     for (auto it=STRmap.begin(), end=STRmap.end(); it != end; ++it) {
         STRFile & file = it.value();
         QString & strfile = file.filename;
@@ -144,6 +147,11 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
 
         // For each data record, representing 1 day each
         for (int rec = 0; rec < size; ++rec, date = date.addDays(1)) {
+            if (ignoreOldSessions) {
+                if (date < ignoreBefore.date()) {
+                    continue;
+                }
+            }
 
             auto rit = resdayList.find(date);
             if (rit != resdayList.end()) {
@@ -1441,6 +1449,8 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 
     int cnt = 0;
     // Scan through all folders looking for EDF files, skip any already imported and peek inside to get durations
+    QDateTime ignoreBefore = p_profile->session->ignoreOlderSessionsDate();
+    bool ignoreOldSessions = p_profile->session->ignoreOlderSessions();
 
     qDebug() << "Starting EDF duration scan pass";
     for (int i=0; i < totalfiles; ++i) {
@@ -1466,6 +1476,11 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
         // go to the previous day
         if (datetime.time().hour() < 12) {
             date = date.addDays(-1);
+        }
+
+        if (ignoreOldSessions) {
+            if (date < ignoreBefore.date())
+                continue;
         }
 
         // Chop off the .gz component if it exists, it's not needed at this stage

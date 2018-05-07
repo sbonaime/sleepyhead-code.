@@ -234,8 +234,6 @@ bool Machine::AddSession(Session *s)
         return false;
     }
 
-    updateChannels(s);
-
     if (p_profile->session->ignoreOlderSessions()) {
         qint64 ignorebefore = p_profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
         if (s->last() < ignorebefore) {
@@ -243,6 +241,9 @@ bool Machine::AddSession(Session *s)
             return false;
         }
     }
+
+
+    updateChannels(s);
 
     if (s->session() > highest_sessionid) {
         highest_sessionid = s->session();

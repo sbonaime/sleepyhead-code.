@@ -9,7 +9,7 @@
 #include "progressdialog.h"
 
 ProgressDialog::ProgressDialog(QWidget * parent):
-    QDialog(parent, Qt::Popup)
+    QDialog(parent, Qt::Tool | Qt::FramelessWindowHint)
 {
     waitmsg = new QLabel(QObject::tr("PLease Wait..."));
     hlayout = new QHBoxLayout;

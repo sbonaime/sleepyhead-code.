@@ -431,6 +431,7 @@ int PRS1Loader::Open(const QString & dirpath)
             c += OpenMachine(newpath + "/" + *sn);
         }
     }
+    // Serial numbers that don't start with a letter.
     for (sn = SerialNumbers.begin(); sn != SerialNumbers.end(); sn++) {
         if (!(*sn)[0].isLetter()) {
             c += OpenMachine(newpath + "/" + *sn);
@@ -632,6 +633,11 @@ int PRS1Loader::OpenMachine(const QString & path)
     emit updateMessage(QObject::tr("Scanning Files..."));
     QCoreApplication::processEvents();
 
+    QDateTime datetime;
+
+    QDateTime ignoreBefore = p_profile->session->ignoreOlderSessionsDate();
+    bool ignoreOldSessions = p_profile->session->ignoreOlderSessions();
+
     // for each p0/p1/p2/etc... folder
     for (int p=0; p < size; ++p) {
         dir.setPath(paths.at(p));
@@ -657,6 +663,14 @@ int PRS1Loader::OpenMachine(const QString & path)
                 // not a numerical session ID
                 continue;
             }
+
+            if (ignoreOldSessions) {
+                datetime = QDateTime::fromTime_t(sid);
+                if (datetime < ignoreBefore) {
+                    continue;
+                }
+            }
+
 
             if (m->SessionExists(sid)) {
                 // Skip already imported session

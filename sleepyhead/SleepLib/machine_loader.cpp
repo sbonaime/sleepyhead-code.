@@ -219,10 +219,10 @@ void MachineLoader::runTasks(bool threaded)
             ImportTask * task = m_tasklist.takeFirst();
             task->run();
 
-            if ((m_currenttask++ % 10)==0) {
-                qprogress->setValue(m_currenttask);
-                QApplication::processEvents();
-            }
+            // update progress bar
+            m_currenttask++;
+            qprogress->setValue(m_currenttask);
+            QApplication::processEvents();
         }
     } else {
         ImportTask * task = m_tasklist[0];
@@ -239,10 +239,9 @@ void MachineLoader::runTasks(bool threaded)
                     task = m_tasklist[0];
 
                     // update progress bar
-                    if ((m_currenttask++ % 10) == 0) {
-                        qprogress->setValue(m_currenttask);
-                        QApplication::processEvents();
-                    }
+                    m_currenttask++;
+                    qprogress->setValue(m_currenttask);
+                    QApplication::processEvents();
                 } else {
                     // job list finished
                     break;
