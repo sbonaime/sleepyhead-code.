@@ -155,7 +155,6 @@ SOURCES += \
     SleepLib/loader_plugins/md300w1_loader.cpp \
     Graphs/gSessionTimesChart.cpp \
     logger.cpp \
-    welcome.cpp \
     SleepLib/machine_common.cpp \
     SleepLib/loader_plugins/weinmann_loader.cpp \
     Graphs/gdailysummary.cpp \
@@ -165,7 +164,8 @@ SOURCES += \
     SleepLib/loader_plugins/cms50f37_loader.cpp \
     profileselector.cpp \
     SleepLib/loader_plugins/edfparser.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    welcome.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -231,7 +231,8 @@ HEADERS  += \
     profileselector.h \
     SleepLib/appsettings.h \
     SleepLib/loader_plugins/edfparser.h \
-    aboutdialog.h
+    aboutdialog.h \
+    welcome.h
 
 FORMS += \
     daily.ui \
@@ -246,7 +247,8 @@ FORMS += \
     UpdaterWindow.ui \
     oximeterimport.ui \
     profileselector.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    welcome.ui
 
 RESOURCES += \
     Resources.qrc

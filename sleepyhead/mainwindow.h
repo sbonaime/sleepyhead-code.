@@ -18,6 +18,7 @@
 
 #include "daily.h"
 #include "overview.h"
+#include "welcome.h"
 #include "profileselector.h"
 #include "preferencesdialog.h"
 
@@ -129,6 +130,10 @@ class MainWindow : public QMainWindow
     static void RestartApplication(bool force_login = false, QString cmdline = QString());
 
     void JumpDaily();
+    void JumpOverview();
+    void JumpStatistics();
+    void JumpImport();
+    void JumpOxiWizard();
 
     void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
 
@@ -355,6 +360,7 @@ private:
     Daily *daily;
     Overview *overview;
     ProfileSelector *profileSelector;
+    Welcome * welcome;
     bool first_load;
     PreferencesDialog *prefdialog;
     QTime logtime;

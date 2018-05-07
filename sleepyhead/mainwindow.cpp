@@ -494,6 +494,9 @@ void MainWindow::OpenProfile(QString profileName)
         qCritical() << "OpenProfile called with active Daily object!";
         return;
     }
+    welcome = new Welcome(ui->tabWidget);
+    ui->tabWidget->insertTab(1, welcome, tr("Welcome"));
+
     daily = new Daily(ui->tabWidget, nullptr);
     ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
     daily->ReloadGraphs();
@@ -534,6 +537,10 @@ void MainWindow::CloseProfile()
         daily->clearLastDay(); // otherwise Daily will crash
         delete daily;
         daily = nullptr;
+    }
+    if (welcome) {
+        delete welcome;
+        welcome = nullptr;
     }
     if (overview) {
         delete overview;
@@ -605,7 +612,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     disconnect(progdlg, SIGNAL(abortClicked()), import.loader, SLOT(abortImport()));
     disconnect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
 
-    progdlg->hide();
+    progdlg->close();
 
     delete progdlg;
 
@@ -613,7 +620,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         ui->tabWidget->setCurrentIndex(AppSetting->openTabAfterImport());
     }
 
-    qprogress=saveQprogress;
+    qprogress = saveQprogress;
     return c;
 }
 
@@ -1117,11 +1124,8 @@ QString MainWindow::getWelcomeHTML()
 
 void MainWindow::on_homeButton_clicked()
 {
+    if (welcome) ui->tabWidget->setCurrentWidget(welcome);
 
-    ui->webView->setHtml(getWelcomeHTML());
-
-    //QString infourl="qrc:/docs/index.html"; // use this as a fallback
-    //ui->webView->setUrl(QUrl(infourl));
 }
 
 void MainWindow::updateFavourites()
@@ -1216,11 +1220,6 @@ void MainWindow::on_dailyButton_clicked()
         daily->RedrawGraphs();
     }
 }
-void MainWindow::JumpDaily()
-{
-    on_dailyButton_clicked();
-}
-
 void MainWindow::on_overviewButton_clicked()
 {
     if (overview) {
@@ -2447,16 +2446,28 @@ void MainWindow::GenerateStatistics()
     page->currentFrame()->setHtml(html);
     ui->statisticsView->setPage(page);
 
+}
 
 
-    MyStatsPage *page2 = new MyStatsPage(this);
-    page2->currentFrame()->setHtml(GenerateWelcomeHTML());
-    ui->welcomeView->setPage(page2);
-
-    //    connect(ui->statisticsView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
-    //    QString file="qrc:/docs/index.html";
-    //    QUrl url(file);
-    //    ui->webView->setUrl(url);
+void MainWindow::JumpDaily()
+{
+    ui->tabWidget->setCurrentWidget(daily);
+}
+void MainWindow::JumpOverview()
+{
+    ui->tabWidget->setCurrentWidget(overview);
+}
+void MainWindow::JumpStatistics()
+{
+    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+}
+void MainWindow::JumpImport()
+{
+    on_importButton_clicked();
+}
+void MainWindow::JumpOxiWizard()
+{
+    on_oximetryButton_clicked();
 }
 
 
