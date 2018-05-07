@@ -2617,6 +2617,7 @@ void MainWindow::on_actionReport_a_Bug_triggered()
 {
     QSettings settings(getDeveloperName(), getAppName());
     QString language = settings.value(LangSetting).toString();
+
     QDesktopServices::openUrl(QUrl(QString("https://sleepyhead.jedimark.net/report_bugs.php?lang=%1&version=%2&platform=%3").arg(language).arg(VersionString).arg(PlatformString)));
 }
 

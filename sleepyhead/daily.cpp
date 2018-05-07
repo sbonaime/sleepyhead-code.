@@ -17,13 +17,10 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QSpacerItem>
-#include <QWebFrame>
 #include <QFontMetrics>
 #include <QLabel>
 
 #include <cmath>
-//#include <QPrinter>
-//#include <QProgressBar>
 
 #include "daily.h"
 #include "ui_daily.h"
@@ -111,15 +108,22 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     ui->calNavWidget->setMaximumHeight(ui->calNavWidget->height());
     ui->calNavWidget->setMinimumHeight(ui->calNavWidget->height());
-    sessbar=nullptr;
+    QWidget *widget = new QWidget(ui->tabWidget);
+    sessionbar = new SessionBar(widget);
+    sessionbar->setMinimumHeight(25);
+    sessionbar->setMouseTracking(true);
+    connect(sessionbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
+    QVBoxLayout *layout2 = new QVBoxLayout();
+    layout2->setMargin(0);
+    widget->setLayout(layout2);
 
-    webView=new MyWebView(this);
+    webView=new QTextBrowser(widget);
+    webView->setOpenLinks(false);
+    layout2->insertWidget(0,webView, 1);
+    layout2->insertWidget(1,sessionbar,0);
+    // add the sessionbar after it.
 
-
-
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, true);
-
-    ui->tabWidget->insertTab(0,webView,QIcon(),"Details");
+    ui->tabWidget->insertTab(0,widget,QIcon(),"Details");
 
     ui->graphFrame->setLayout(layout);
     //ui->graphMainArea->setLayout(layout);
@@ -377,11 +381,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     ui->calendar->setFirstDayOfWeek(dow);
 
-    ui->tabWidget->setCurrentWidget(webView);
+    ui->tabWidget->setCurrentWidget(widget);
 
-    webView->settings()->setFontSize(QWebSettings::DefaultFontSize,QApplication::font().pointSize());
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    connect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
+    connect(webView,SIGNAL(anchorClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
 
     int ews=p_profile->general->eventWindowSize();
     ui->evViewSlider->setValue(ews);
@@ -420,42 +422,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 }
 
 
-//void Daily::populateSessionWidget()
-//{
-
-//    ui->sessionWidget->clearContents();
-//    ui->sessionWidget->setColumnCount(2);
-
-//    QMap<QDate, Day *>::iterator it;
-//    QMap<QDate, Day *>::iterator it_end = p_profile->daylist.end();
-
-//    int row = 0;
-//    for (it = p_profile->daylist.begin(); it != it_end; ++it) {
-//        const QDate & date = it.key();
-//        Day * day = it.value();
-//        QList<Session *> sessions = day->getSessions(MT_CPAP);
-//        int size = sessions.size();
-//        if (size > 0) {
-//            QTableWidgetItem * item = new QTableWidgetItem(date.toString(Qt::SystemLocaleShortDate));
-//            item->setData(Qt::UserRole, date);
-//            ui->sessionWidget->setItem(row, 0, item);
-//            SessionBar * sb = new SessionBar();
-
-//            for (int i=0; i < size; i++) {
-//                Session * sess = sessions[i];
-//                QColor col = Qt::blue;
-//                sb->add(sess, col);
-//            }
-//            ui->sessionWidget->setCellWidget(row, 1, sb);
-//            row++;
-//        }
-//    }
-//    ui->sessionWidget->setRowCount(row-1);
-//    ui->sessionWidget->setCurrentCell(row-1, 0);
-//    ui->sessionWidget->scrollToBottom();
-//}
 Daily::~Daily()
 {
+    disconnect(sessionbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
 //    disconnect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
 
     // Save any last minute changes..
@@ -505,23 +474,23 @@ void Daily::Link_clicked(const QUrl &url)
         Session *sess=day->find(sid);
         if (!sess)
             return;
-        int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
+//        int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
 
         // Reload day
         LoadDate(previous_date);
-        webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
+  //      webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
     } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
         day=p_profile->GetDay(previous_date,MT_OXIMETER);
         Session *sess=day->find(sid);
         if (!sess)
             return;
-        int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
+//        int i=webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         sess->setEnabled(!sess->enabled());
 
         // Reload day
         LoadDate(previous_date);
-        webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
+  //      webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
     } else if (code=="cpap")  {
         day=p_profile->GetDay(previous_date,MT_CPAP);
         if (day) {
@@ -836,37 +805,6 @@ void Daily::graphtogglebutton_toggled(bool b)
     GraphView->redraw();
 }
 
-MyWebPage::MyWebPage(QObject *parent):
-   QWebPage(parent)
-{
-   // Enable plugin support
-   settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-}
-
-QObject *MyWebPage::createPlugin(const QString &classid, const QUrl &url, const QStringList & paramNames, const QStringList & paramValues)
-{
-    Q_UNUSED(paramNames)
-    Q_UNUSED(paramValues)
-    Q_UNUSED(url)
-
-    if (classid=="SessionBar") {
-        return mainwin->getDaily()->sessionBar();
-    }
-    qDebug() << "Request for unknown MyWebPage plugin";
-    return new QWidget();
-}
-
-MyWebView::MyWebView(QWidget *parent):
-   QWebView(parent),
-   m_page(this)
-{
-   // Set the page of our own PageView class, MyPageView,
-   // because only objects of this class will handle
-   // object-tags correctly.
-   setPage(&m_page);
-}
-
-
 QString Daily::getSessionInformation(Day * day)
 {
     QString html;
@@ -880,20 +818,8 @@ QString Daily::getSessionInformation(Day * day)
 
     Machine * cpap = day->machine(MT_CPAP);
 
-    if (cpap) {
-        html+=QString("<tr><td colspan=5 align=center>"
-        "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=%1 width=100%></object>"
-//        "<script>"
-//        "sessbar.show();"
-//        "</script>"
-        "</td></tr>").arg(r.height()*3,0,10);
-        html+="<tr><td colspan=5 align=center>&nbsp; </td></tr>";
-    }
-
-
     QDateTime fd,ld;
     bool corrupted_waveform=false;
-    QString tooltip;
 
     QString type;
 
@@ -947,10 +873,10 @@ QString Daily::getSessionInformation(Day * day)
             Session *sess=*s;
 
             QString tooltip = QObject::tr("Click to %1 this session.").arg(sess->enabled() ? QObject::tr("disable") : QObject::tr("enable"));
-            html+=QString("<tr class='datarow2'><td colspan=5 align=center>%2</td></tr>"
-                          "<tr class='datarow2'>"
+            html+=QString("<tr><td colspan=5 align=center>%2</td></tr>"
+                          "<tr>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
-                          "<img src='qrc:/icons/session-%4.png' width=24px title=\""+tooltip+"\"></a></td>"
+                          "<img src='qrc:/icons/session-%4.png' title=\""+tooltip+"\"></a></td>"
                           "<td align=left>%5</td>"
                           "<td align=left>%6</td>"
                           "<td align=left>%7</td>"
@@ -1009,7 +935,7 @@ QString Daily::getMachineSettings(Day * day) {
 
         ChannelID cpapmode = loader->CPAPModeChannel();
         schema::Channel & chan = schema::channel[cpapmode];
-        first[cpapmode] = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+        first[cpapmode] = QString("<tr><td><p tiltle='%2'>%1</p></td><td colspan=4>%3</td></tr>")
                 .arg(chan.label())
                 .arg(chan.description())
                 .arg(day->getCPAPMode());
@@ -1036,7 +962,7 @@ QString Daily::getMachineSettings(Day * day) {
 
                 data = it.value().toString() + " "+ chan.units();
             }
-            QString tmp = QString("<tr class='datarow'><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+            QString tmp = QString("<tr><td><p title='%2'>%1</p></td><td colspan=4>%3</td></tr>")
                     .arg(schema::channel[code].label())
                     .arg(schema::channel[code].description())
                     .arg(data);
@@ -1132,25 +1058,19 @@ QString Daily::getCPAPInformation(Day * day)
     Machine * cpap = day->machine(MT_CPAP);
     if (!cpap) return html;
 
-
     MachineInfo info = cpap->getInfo();
 
     html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    html+="<tr><td align=center><a class=info2 href='#'>"+info.brand + " "+ info.series+"<br/> "+info.model+"<span>";
-    QString tooltip=("Model "+info.modelnumber+" - "+info.serial);
+    QString tooltip=tr("Model %1 - %2").arg(info.modelnumber).arg(info.serial);
     tooltip=tooltip.replace(" ","&nbsp;");
-
-    html+=tooltip;
-    html+="</span></td></tr>\n";
-    //CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
+    html+="<tr><td align=center><p title=\""+tooltip+"\">"+info.brand + " "+ info.series+"<br/> "+info.model+"</p></td></tr>\n";
     html+="<tr><td align=center>";
 
     html+=tr("PAP Mode: %1<br/>").arg(day->getCPAPMode());
     html+= day->getPressureSettings();
     html+="</td></tr>\n";
-    if (day->noSettings(cpap)) { // (day->settingExists(CPAP_BrokenSummary))) {
-        //html+="<tr><td>&nbsp;</td></tr>\n";
+    if (day->noSettings(cpap)) {
         html+=QString("<tr><td colspan=2 align=center><i>%1</i></td></tr>").arg(tr("(Mode/Pressure settings are guessed on this day.)"));
     }
 
@@ -1246,7 +1166,7 @@ QString Daily::getStatisticsInfo(Day * day)
             }
         }
 
-        html+=QString("<tr class='datarow'><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+        html+=QString("<tr><td align=left title='%6'>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
             .arg(schema::channel[code].label())
             .arg(mn,0,'f',2)
             .arg(med,0,'f',2)
@@ -1385,53 +1305,11 @@ void Daily::Load(QDate date)
         }
     }
 
-    // Don't really see a point in unlinked oximetery sessions anymore... All I can say is BLEH...
-//    if ((cpap && oxi) && day->hasEnabledSessions(MT_OXIMETER)) {
-//        int gr;
-
-//        if (qAbs(day->first(MT_CPAP) - day->first(MT_OXIMETER)) > 30000) {
-//            mainwin->Notify(tr("Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked."),"",3000);
-//            gr=1;
-//        } else
-//            gr=0;
-
-//        (*GraphView)[schema::channel[OXI_Pulse].code()]->setGroup(gr);
-//        (*GraphView)[schema::channel[OXI_SPO2].code()]->setGroup(gr);
-//        (*GraphView)[schema::channel[OXI_Plethy].code()]->setGroup(gr);
-//    }
     lastcpapday=day;
 
-    QString html="<html><head><style type='text/css'>"
-    "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
-    "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
-    "tr.datarow:nth-child(even) {"
-    "background-color: #f8f8f8;"
-    "}"
-    "tr.datarow2:nth-child(4n-1) {"
-    "background-color: #f8f8f8;"
-    "}"
-    "tr.datarow2:nth-child(4n+0) {"
-    "background-color: #f8f8f8;"
-    "}"
-    "table.curved {"
-    "border: 1px solid gray;"
-    "border-radius:10px;"
-    "-moz-border-radius:10px;"
-    "-webkit-border-radius:10px;"
-    "page-break-after:auto;"
-    "-fs-table-paginate: paginate;"
-    "}"
-
-    "</style>"
-    "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
-    "<script language='javascript'><!--"
-            "func dosession(sessid) {"
-            ""
-            "}"
-    "--></script>"
+    QString html="<html>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
-    QString tmp;
 
     if (day) {
         day->OpenEvents();
@@ -1439,10 +1317,6 @@ void Daily::Load(QDate date)
     GraphView->setDay(day);
 
 
-//    UpdateOXIGraphs(oxi);
-//    UpdateCPAPGraphs(cpap);
-//    UpdateSTAGEGraphs(stage);
-//    UpdatePOSGraphs(posit);
     UpdateEventsTree(ui->treeWidget, day);
 
     // FIXME:
@@ -1450,15 +1324,6 @@ void Daily::Load(QDate date)
     mainwin->GenerateStatistics();
 
     snapGV->setDay(day);
-
-   // GraphView->ResetBounds(false);
-
-    // wtf is hiding the scrollbars for???
-//    if (!cpap && !oxi) {
-//        scrollbar->hide();
-//    } else {
-//        scrollbar->show();
-//    }
 
     QString modestr;
     CPAPMode mode=MODE_UNKNOWN;
@@ -1486,9 +1351,6 @@ void Daily::Load(QDate date)
         GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
     }
     if (cpap) {
-        //QHash<schema::ChanType, QList<schema::Channel *> > list;
-
-
         float hours=day->hours(MT_CPAP);
         if (GraphView->isEmpty() && (hours>0)) {
             if (!p_profile->hasChannel(CPAP_Obstructive) && !p_profile->hasChannel(CPAP_Hypopnea)) {
@@ -1519,7 +1381,7 @@ void Daily::Load(QDate date)
                     ahichan=CPAP_RDI;
                     ahiname=STR_TR_RDI;
                 }
-                html+=QString("<td colspan=4 bgcolor='%1' align=center><a class=info2 href='#'><font size=+4 color='%2'><b>%3</b></font><span>%4</span></a> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
+                html+=QString("<td colspan=4 bgcolor='%1' align=center><p title='%4'><font size=+4 color='%2'><b>%3</b></font></p> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
                         .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].fullname()).arg(ahi,0,'f',2);
             } else {
                 html+=QString("<td colspan=5 bgcolor='%1' align=center><font size=+4 color='yellow'>%2</font></td>\n")
@@ -1556,23 +1418,10 @@ void Daily::Load(QDate date)
                 }
                 values[code] = val;
                 QColor altcolor = (brightness(chan.defaultColor()) < 0.3) ? Qt::white : Qt::black; // pick a contrasting color
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5' style='text-decoration:none;color:%2'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
                         .arg(chan.defaultColor().name()).arg(altcolor.name()).arg(chan.fullname()).arg(data).arg(code);
             }
 
-
-//            for (int i=0;i<numchans;i++) {
-//                if (!cpap->channelHasData(chans[i].id))
-//                    continue;
-//                if ((cpap->machine->loaderName() == STR_MACH_PRS1) && (chans[i].id == CPAP_VSnore))
-//                    continue;
-//                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
-//                        .arg(schema::channel[chans[i].id].defaultColor().name()).arg(chans[i].color2.name()).arg(schema::channel[chans[i].id].fullname()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
-
-//                // keep in case tooltips are needed
-//                //html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-//                // .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(schema::channel[chans[i].id].description()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
-//            }
             html+="</table>";
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -1591,7 +1440,7 @@ void Daily::Load(QDate date)
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                         buffer.open(QIODevice::WriteOnly);
                         pixmap.save(&buffer, "PNG");
-                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + QString("\" width='%1' height='%2px'></td></tr>\n").arg(w).arg(h);
+                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + QString("\"></td></tr>\n");
                     } else {
                         html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }
@@ -1616,7 +1465,7 @@ void Daily::Load(QDate date)
                 html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
                 if (day->size()>0) {
                     html+="<tr><td colspan=5 align='center'><font size='+3'>"+tr("Sessions all off!")+"</font></td></tr>";
-                    html+="<tr><td align=center><img src='qrc:/docs/sheep.png' width=120px></td></tr>";
+                    html+="<tr><td colspan=5 align='center><img src='qrc:/docs/sheep.png' align=center></td></tr>";
                     html+="<tr bgcolor='#89abcd'><td colspan=5 align='center'><i><font color=white size=+1>"+tr("Sessions exist for this day but are switched off.")+"</font></i></td></tr>\n";
                     GraphView->setEmptyText(STR_Empty_NoSessions);
                 } else {
@@ -1670,18 +1519,16 @@ void Daily::Load(QDate date)
 
     // WebView trashes it without asking.. :(
     if (cpap) {
-        sessbar=new SessionBar(this);
-        sessbar->setMouseTracking(true);
-        connect(sessbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
         int c=0;
 
+        sessionbar->clear();
         for (i=day->begin();i!=day->end();++i) {
             Session * s=*i;
             if ((*s).type() == MT_CPAP)
-                sessbar->add(s, cols[c % maxcolors]);
+                sessionbar->add(s, cols[c % maxcolors]);
             c++;
         }
-    } else sessbar=nullptr;
+    }
     //sessbar->update();
 
     webView->setHtml(html);
@@ -2020,30 +1867,6 @@ void Daily::on_RangeUpdate(double minx, double /*maxx*/)
     } else {
         dateDisplay->setText(QString(GraphView->emptyText()));
     }
-
-/*    // Delay render some stats...
-    Day * day = GraphView->day();
-    if (day) {
-        QTime time;
-        time.start();
-        QList<ChannelID> list = day->getSortedMachineChannels(schema::WAVEFORM);
-        for (int i=0; i< list.size();i++) {
-            schema::Channel & chan = schema::channel[list.at(i)];
-            ChannelID code = chan.id();
-            if (!day->channelExists(code)) continue;
-             float avg = day->rangeAvg(code, minx, maxx);
-            float wavg = day->rangeWavg(code, minx, maxx);
-            float median = day->rangePercentile(code, 0.5, minx, maxx);
-           float p90 = day->rangePercentile(code, 0.9, minx, maxx);
-//            qDebug() << chan.label()
-//                     << "AVG=" << avg
-//                     << "WAVG=" << wavg;
-                  //   << "MED" << median
-                   //  << "90%" << p90;
-        }
-
-        qDebug() << time.elapsed() << "ms";
-    }*/
 }
 
 
@@ -2304,9 +2127,6 @@ void Daily::on_ZombieMeter_valueChanged(int action)
     }
     journal->settings[Journal_ZombieMeter]=ui->ZombieMeter->value();
     journal->SetChanged(true);
-
-    // shouldn't be needed anymore with new overview model..
-    //if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Zombie");
 }
 
 void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
@@ -2407,18 +2227,14 @@ void Daily::on_ouncesSpinBox_editingFinished()
         }
     }
     journal->SetChanged(true);
-
-    // shouldn't be needed anymore with new overview model
-    //if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph(STR_GRAPH_Weight);
 }
 
 QString Daily::GetDetailsText()
 {
-    webView->triggerPageAction(QWebPage::SelectAll);
-    QString text=webView->page()->selectedText();
-    webView->triggerPageAction(QWebPage::MoveToEndOfDocument);
-    webView->triggerPageAction(QWebPage::SelectEndOfDocument);
-    return text;
+    QTextDocument * doc = webView->document();
+    QString content = doc->toHtml();
+
+    return content;
 }
 
 void Daily::on_graphCombo_activated(int index)

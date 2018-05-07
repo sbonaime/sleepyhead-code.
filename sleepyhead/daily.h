@@ -1,4 +1,4 @@
-/* Daily GUI Headers
+﻿/* Daily GUI Headers
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -20,40 +20,18 @@
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
 #include <QTableWidgetItem>
-#include <QWebView>
-#include <QWebPage>
-#include "Graphs/gSummaryChart.h"
+#include <QTextBrowser>
 
-#include <SleepLib/profiles.h>
+#include "SleepLib/profiles.h"
 #include "mainwindow.h"
+#include "Graphs/gSummaryChart.h"
 #include "Graphs/gGraphView.h"
-
 #include "Graphs/gLineChart.h"
 #include "sessionbar.h"
 
 namespace Ui {
     class Daily;
 }
-
-class MyWebPage:public QWebPage
-{
-Q_OBJECT
-public:
-    MyWebPage(QObject *parent = 0);
-protected:
-    QObject *createPlugin(const QString & classid, const QUrl & url, const QStringList & paramNames, const QStringList & paramValues);
-};
-
-class MyWebView:public QWebView
-{
-   Q_OBJECT
-   private:
-      MyWebPage m_page;
-   public:
-      MyWebView(QWidget *parent = 0);
-};
-
-
 
 class MainWindow;
 
@@ -126,7 +104,6 @@ public:
         \returns gGraph * object containing this chart
         */
     gGraph * eventBreakdownPie() { return graphlist["EventBreakdown"]; }
-    QWidget * sessionBar() { return sessbar; }
 
     void clearLastDay();
 
@@ -361,10 +338,10 @@ private:
     QIcon * icon_on;
     QIcon * icon_off;
 
-    SessionBar * sessbar;
+    SessionBar * sessionbar;
     MyLabel * dateDisplay;
 
-    MyWebView * webView;
+    QTextBrowser * webView;
     Day * lastcpapday;
 
     gLineChart *leakchart;
