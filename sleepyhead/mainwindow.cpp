@@ -30,6 +30,8 @@
 #include <QTranslator>
 #include <QPushButton>
 #include <QCalendarWidget>
+#include <QDialogButtonBox>
+#include <QTextBrowser>
 #include <cmath>
 
 #include "common_gui.h"
@@ -47,6 +49,7 @@
 #include "logger.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "aboutdialog.h"
 #include "newprofile.h"
 #include "exportcsv.h"
 #include "SleepLib/schema.h"
@@ -393,6 +396,19 @@ void MainWindow::PopulatePurgeMenu()
     ui->menuPurge_CPAP_Data->connect(ui->menuPurge_CPAP_Data, SIGNAL(triggered(QAction*)), this, SLOT(on_actionPurgeMachine(QAction*)));
 }
 
+void MainWindow::firstRunMessage()
+{
+    if (AppSetting->showAboutDialog() > 0) {
+        AboutDialog * about = new AboutDialog(this);
+
+        about->exec();
+
+        AppSetting->setShowAboutDialog(-1);
+
+        about->deleteLater();
+    }
+}
+
 QString GenerateWelcomeHTML();
 
 void MainWindow::OpenProfile(QString profileName)
@@ -539,6 +555,8 @@ void MainWindow::Startup()
         loader->setParent(this);
     }
     QString lastProfile = AppSetting->profileName();
+
+    firstRunMessage();
 
     if (Profiles::profiles.contains(lastProfile) && AppSetting->autoOpenLastUsed()) {
         OpenProfile(lastProfile);
@@ -1253,122 +1271,11 @@ void MainWindow::aboutBoxLinkClicked(const QUrl &url)
 
 void MainWindow::on_action_About_triggered()
 {
-    QString gitrev = QString(GIT_REVISION);
+    AboutDialog * about = new AboutDialog(this);
 
-    if (!gitrev.isEmpty()) { gitrev = tr("Revision:")+" " + gitrev + " (" + QString(GIT_BRANCH) + " " + tr("branch") + ")"; }
+    about->exec();
 
-    //    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
-    QString msg = QString(
-                "<html>"
-                "<head><style type=\"text/css\">a:link, a:visited { color: #000044; text-decoration: underline; font-weight: normal;}"
-                "a:hover { background-color: inherit; color: #4444ff; text-decoration:none; font-weight: normal; }"
-                "</style></head>"
-
-                "<body>"
-                "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
-                "<table width=100%><tr><td>"
-                "<p><h1>" + STR_TR_SleepyHead +
-                QString(" %1</h1></p><font color=black><p>").arg(STR_TR_AppVersion) +
-                tr("Build Date: %1 %2").arg(__DATE__).arg(__TIME__) +
-                QString("<br/>%1<br/>").arg(gitrev) +
-                tr("Graphics Engine: %1").arg(getGraphicsEngine())+
-                "<br/>" +
-                (tr("Data Folder Location: <a href=\"file://%1\">%2</a>").arg(GetAppRoot()).arg(QDir::toNativeSeparators(GetAppRoot())) +
-                "<hr/>"+tr("Copyright") + " &copy;2011-2018 Mark Watkins (jedimark) <br/> \n" +
-                tr("This software is released under the GNU Public License v3.0<br/>") +
-                "<hr>"
-
-                // Project links
-                "<p>" +tr("SleepyHead Project Page") +
-                ": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"
-                +
-                tr("SleepyHead Wiki") +
-                ": <a href=\"http://sleepyhead.sourceforge.net/wiki\">http://sleepyhead.sourceforge.net/wiki</a><p/>" +
-
-                // Social media links.. (Dear Translators, if one of these isn't available in your country, it's ok to leave it out.)
-                tr("Don't forget to Like/+1 SleepyHead on <a href=\"http://www.facebook.com/SleepyHeadCPAP\">Facebook</a> or <a href=\"http://plus.google.com/u/0/b/101426655252362287937\">Google+")
-                + "</p>" +
-
-                // Image
-                "</td><td align='center'><img src=\"qrc:/icons/Jedimark.png\" width=260px><br/> <br/><i>"
-                +tr("SleepyHead, brought to you by Jedimark") + "</i></td></tr><tr colspan><td colspan=2>" +
-
-
-                // Credits section
-                "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
-                tr("Bugfixes, Patches and Platform Help:") + "</b> " +
-                tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.")
-                + "</p>"
-
-                "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I've still to add here.") +
-                "</p>"
-
-                "<p><b>" + tr("3rd Party Libaries:") + "</b> " +
-                tr("SleepyHead is built using the <a href=\"http://qt-project.org\">Qt Application Framework</a>.")
-                + " " +
-                tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")
-                + "<br/>"
-                "<p>" + tr("Special thanks to Pugsy and Robysue from <a href='http://cpaptalk.com'>CPAPTalk</a> for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")
-                + "</p>"
-
-                // Donations
-                "<hr><p><font color=\"blue\">" +
-                tr("Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.")
-                + "</font>"
-
-
-                "<hr><p><b>Disclaimer</b><br/><i>" +
-                tr("This software comes with absolutely no warranty, either express of implied.") + " " +
-                tr("It comes with no guarantee of fitness for any particular purpose.") + " " +
-                tr("No guarantees are made regarding the accuracy of any data this program displays.") + "</i></p>"
-                "<p><i>" +
-                tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.")
-                +
-                "<b> " + tr("This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.")
-                + "</b></i></p>"
-                "<p><i>" +
-                tr("The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")
-                + "</p><p><b>" +
-                tr("Use this software entirely at your own risk.") + "</b></i></p>"
-                "</font></td></tr></table></span></body>"
-               ));
-    //"</div></body></html>"
-
-    QDialog aboutbox;
-    aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
-
-
-    QVBoxLayout layout;
-    aboutbox.setLayout(&layout);
-
-    QWebView webview(&aboutbox);
-
-    webview.setHtml(msg);
-    webview.page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    connect(&webview, SIGNAL(linkClicked(const QUrl &)), SLOT(aboutBoxLinkClicked(const QUrl &)));
-
-    layout.insertWidget(0, &webview, 1);
-
-    QHBoxLayout layout2;
-    layout.insertLayout(1, &layout2, 1);
-    QPushButton okbtn(QObject::tr("&Close"), &aboutbox);
-    aboutbox.connect(&okbtn, SIGNAL(clicked()), SLOT(reject()));
-    layout2.insertWidget(1, &okbtn, 1);
-
-    QPushButton donatebtn(QObject::tr("&Donate"), &aboutbox);
-    aboutbox.connect(&donatebtn, SIGNAL(clicked()),
-                     SLOT(accept())); //hack this button to use the accepted slot, so clicking x closes like it shouldß
-    layout2.insertWidget(1, &donatebtn, 1);
-
-    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
-
-
-    if (aboutbox.exec() == QDialog::Accepted) {
-        QDesktopServices::openUrl(QUrl("http://sleepyhead.jedimark.net/donate.php"));
-        //spawn browser with paypal site.
-    }
-
-    disconnect(&webview, SIGNAL(linkClicked(const QUrl &)), this, SLOT(aboutBoxLinkClicked(const QUrl &)));
+    about->deleteLater();
 }
 
 void MainWindow::on_actionDebug_toggled(bool checked)
@@ -1394,7 +1301,6 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 
 void MainWindow::on_action_Preferences_triggered()
 {
-    //MW: TODO: This will crash if attempted to enter while still loading..
     if (!p_profile) {
         mainwin->Notify(tr("Please open a profile first."));
         return;
@@ -1409,17 +1315,12 @@ void MainWindow::on_action_Preferences_triggered()
     prefdialog = &pd;
 
     if (pd.exec() == PreferencesDialog::Accepted) {
-        qDebug() << "Preferences Accepted";
-
-        //pd.Save();
         if (daily) {
-            //daily->ReloadGraphs();
             daily->RedrawGraphs();
         }
 
         if (overview) {
             overview->RebuildGraphs(true);
-            //overview->RedrawGraphs();
         }
     }
 

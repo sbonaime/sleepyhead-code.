@@ -6,35 +6,22 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-//#include <QtPlugin>
 #include <QApplication>
 #include <QMessageBox>
-#include <QFontDatabase>
-#include <QStringList>
 #include <QDebug>
-#include <QPushButton>
-#include <QWebFrame>
-#include <QWebView>
 #include <QTranslator>
-#include <QDir>
-#include <QComboBox>
-#include <QPushButton>
 #include <QSettings>
 #include <QFileDialog>
-#include <QSysInfo>
-#include <QXmlSimpleReader>
+#include <QFontDatabase>
 
 #include "version.h"
 #include "logger.h"
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
-#include "profileselect.h"
-#include "newprofile.h"
 #include "translation.h"
 #include "common_gui.h"
-#include "SleepLib/machine_loader.h"
-
+//#include "SleepLib/machine_loader.h"
 
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
@@ -54,87 +41,6 @@
 #endif
 
 MainWindow *mainwin = nullptr;
-
-void initialize()
-{
-    schema::init();
-}
-
-void release_notes()
-{
-    QString str = QObject::tr("SleepyHead Release Notes");
-    QDialog relnotes;
-    relnotes.setWindowTitle(str);
-    relnotes.setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    relnotes.setStyleSheet("QDialog { background:white; }");
-    relnotes.setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-
-    QHBoxLayout * hlayout = new QHBoxLayout();
-    QLabel * title = new QLabel("<html><body><div align=top>"
-    "<font size=+4>"+STR_TR_SleepyHead+"</font> &nbsp; "
-    "<font size=+1>"+STR_TR_AppVersion+"</font> &nbsp; "
-    "<font size=+2><i>"+QObject::tr("Release Notes")+"</i></font>"
-    "<hr/>"
-    "</div></body></html>", &relnotes);
-    QPixmap img=QPixmap(":/docs/sheep.png").scaled(100,100);
-    QLabel * logo= new QLabel(&relnotes);//, * logo2 = new QLabel();
-    logo->setPixmap(img);
-    hlayout->insertWidget(0, title, 1);
-    hlayout->insertWidget(1, logo, 0);
-
-    QVBoxLayout * layout = new QVBoxLayout(&relnotes);
-    QWebView * web = new QWebView(&relnotes);
-
-//    QString welcomeMessage = "<font size=+1>"
-//            "<p>"+QObject::tr("After four years in the making, this build brings SleepyHead into the final beta phase.")+"</p>"
-//            "<p>"+QObject::tr("Things are not perfect yet, but the focus from now is putting on the finishing touches. ")+
-//            QObject::tr("This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.")+
-//            "</p></font>";
-;
-    QFile clfile(":/docs/release_notes.html");
-    QString changeLog = QObject::tr("Sorry, could not locate changelog.");
-    if (clfile.open(QIODevice::ReadOnly)) {
-        QTextStream ts(&clfile);
-        //Todo, write XML parser and only show the latest..
-        changeLog = ts.readAll();
-    }
-
-
-    QString html = "<html>"
-    //"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head>"
-    "<body>";
-    //"<h2><p>"+QObject::tr("Greetings!")+"</p></h2>";
-
-//    html += welcomeMessage;
-
-
-    if (ReleaseStatus != "r") {
-        html += "<p><font color='red' size=+1><b>"+QObject::tr("Important:")+"</b></font> "
-        "<font size=+1><i>"+QObject::tr("As this is a pre-release version, it is recommended that you back up your data folder manually before proceding, because attempting to roll back later may break things.")+"</i></font></p>";
-    }
-
-//    html += "<p><b>"+QObject::tr("Sleep Well, and good luck!")+"</b></p>"
-//            "<p><b><i>"+"JediMark"+"</i></b></p><br/><b><i>"+QObject::tr("Change log")+"</i></b><hr/><br/><br/>";
-
-    html += changeLog;
-    html += "</body></html>";
-
-    //QUrl("qrc:/docs/release_notes.html")
-
-    // Should read these from online!!! with language code
-    web->setHtml(html);
-
-    //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
-    relnotes.setLayout(layout);
-    layout->insertLayout(0, hlayout, 0);
-    layout->insertWidget(1, web, 1);
-    QPushButton * okbtn = new QPushButton(QObject::tr("&Ok, get on with it.."), &relnotes);
-    relnotes.connect(okbtn, SIGNAL(clicked()), SLOT(accept()));
-    layout->insertWidget(2, okbtn, 0);
-    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
-
-    relnotes.exec();
-}
 
 void sDelay(int s)
 {
@@ -252,13 +158,6 @@ int main(int argc, char *argv[])
     getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
 #endif
 
-//#if defined(Q_OS_WIN)
-//    bool angle_supported = getGraphicsEngine().contains(CSTR_GFX_ANGLE, Qt::CaseInsensitive) && (QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA);
-//    if (bad_graphics) {
-//        bad_graphics = !angle_supported;
-//    }
-//#endif
-
 #ifdef BROKEN_OPENGL_BUILD
     Q_UNUSED(bad_graphics)
     Q_UNUSED(intel_graphics)
@@ -274,21 +173,7 @@ int main(int argc, char *argv[])
                              QObject::tr("You will not be bothered with this message again."), QMessageBox::Ok, QMessageBox::Ok);
             settings.setValue(BetterBuild, true);
         }
-    } /*else {
-#if defined(Q_OS_WIN)
-        if (angle_supported) {
-            if (!settings.value(betterbuild, false).toBool()) {
-                QMessageBox::information(nullptr, fasterbuildavailable,
-                             QObject::tr("This build of SleepyHead was designed to work with older computers lacking OpenGL 2.0 support, which yours doesn't have, but there may still be a better version available for your computer.") + "<br/><br/>"+
-                             betterresults.arg("-ANGLE")+"<br/><br/>"+
-                             QObject::tr("If you are running this in a virtual machine like VirtualBox or VMware, please disregard this message, as no better build is available.")+"<br/><br/>"+
-                             lookfor + "<br/><br/>"+
-                             notbotheragain, QMessageBox::Ok, QMessageBox::Ok);
-                settings.setValue(betterbuild, true);
-            }
-        }
-#endif
-    } */
+    }
 #else
     if (bad_graphics) {
         QMessageBox::warning(nullptr, QObject::tr("Incompatible Graphics Hardware"),
@@ -371,7 +256,7 @@ retry_directory:
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Register Importer Modules for autoscanner
     ////////////////////////////////////////////////////////////////////////////////////////////
-    initialize();
+    schema::init();
     PRS1Loader::Register();
     ResmedLoader::Register();
     IntellipapLoader::Register();
@@ -382,8 +267,7 @@ retry_directory:
     MD300W1Loader::Register();
     //ZEOLoader::Register(); // Use outside of directory importer..
 
-    schema::setOrders();
-
+    schema::setOrders(); // could be called in init...
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     // Initialize preferences system (Don't use PREF before this point)
@@ -391,6 +275,9 @@ retry_directory:
     p_pref = new Preferences("Preferences");
     PREF.Open();
     AppSetting = new AppWideSetting(p_pref);
+
+    QString language = settings.value(LangSetting, "").toString();
+    AppSetting->setLanguage(language);
 
     // Clean up some legacy crap
     QFile lf(PREF.Get("{home}/Layout.xml"));
@@ -401,13 +288,11 @@ retry_directory:
     PREF.Erase(STR_AppName);
     PREF.Erase(STR_GEN_SkipLogin);
 
-    // Todo: Make a wrapper for Preference settings, like Profile settings have..
-    QDateTime lastchecked, today = QDateTime::currentDateTime();
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
     ////////////////////////////////////////////////////////////////////////////////////////////
+    QDateTime lastchecked, today = QDateTime::currentDateTime();
+
     bool check_updates = false;
 
     if (AppSetting->updatesAutoCheck()) {
@@ -427,7 +312,8 @@ retry_directory:
 
     int vc = compareVersion(AppSetting->versionString());
     if (vc < 0) {
-        release_notes();
+        AppSetting->setShowAboutDialog(1);
+        //release_notes();
 
         check_updates = false;
     } else if (vc > 0) {
@@ -475,10 +361,6 @@ retry_directory:
 
     // Scan for user profiles
     Profiles::Scan();
-
-    if (!dont_load_profile) {
-        // TODO: set the don't automatically load profile AppSetting
-    }
 
     Q_UNUSED(changing_language)
 

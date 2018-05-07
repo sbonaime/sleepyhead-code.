@@ -164,7 +164,8 @@ SOURCES += \
     SleepLib/progressdialog.cpp \
     SleepLib/loader_plugins/cms50f37_loader.cpp \
     profileselector.cpp \
-    SleepLib/loader_plugins/edfparser.cpp
+    SleepLib/loader_plugins/edfparser.cpp \
+    aboutdialog.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -229,7 +230,8 @@ HEADERS  += \
     build_number.h \
     profileselector.h \
     SleepLib/appsettings.h \
-    SleepLib/loader_plugins/edfparser.h
+    SleepLib/loader_plugins/edfparser.h \
+    aboutdialog.h
 
 FORMS += \
     daily.ui \
@@ -243,7 +245,8 @@ FORMS += \
     exportcsv.ui \
     UpdaterWindow.ui \
     oximeterimport.ui \
-    profileselector.ui
+    profileselector.ui \
+    aboutdialog.ui
 
 RESOURCES += \
     Resources.qrc

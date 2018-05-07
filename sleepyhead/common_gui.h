@@ -21,7 +21,7 @@ QString getBranchVersion();
 
 const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";
-const QString CSTR_GFX_BrokenGL = "BrokenGL";
+const QString CSTR_GFX_BrokenGL = "QWidget";
 
 const QString STR_GRAPH_EventBreakdown = "EventBreakdown";
 const QString STR_GRAPH_SleepFlags = "SF";

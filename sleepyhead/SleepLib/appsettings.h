@@ -5,12 +5,12 @@
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the sourcecode. */
 
 #ifndef APPSETTINGS_H
 #define APPSETTINGS_H
 
+#include <QDateTime>
 #include "preferences.h"
 #include "common.h"
 #include "version.h"
@@ -55,9 +55,10 @@ const QString STR_GEN_AutoOpenLastUsed = "AutoOpenLastUsed";
 const QString STR_GEN_UpdatesLastChecked = "UpdatesLastChecked";
 const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
 const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
+const QString STR_GEN_Language = "Language";
 const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
 const QString STR_PREF_VersionString = "VersionString";
-
+const QString STR_GEN_ShowAboutDialog = "ShowAboutDialog";
 
 
 class AppWideSetting: public PrefSettings
@@ -102,6 +103,8 @@ public:
       initPref(STR_PREF_AllowEarlyUpdates, false);
       initPref(STR_GEN_UpdatesLastChecked, QDateTime());
       initPref(STR_PREF_VersionString, VersionString);
+      initPref(STR_GEN_Language, "en_US");
+      initPref(STR_GEN_ShowAboutDialog, 0);  // default to about screen, set to -1 afterwards
   }
 
   QString versionString() const { return getPref(STR_PREF_VersionString).toString(); }
@@ -109,6 +112,8 @@ public:
   bool allowEarlyUpdates() const { return getPref(STR_PREF_AllowEarlyUpdates).toBool(); }
   QDateTime updatesLastChecked() const { return getPref(STR_GEN_UpdatesLastChecked).toDateTime(); }
   int updateCheckFrequency() const { return getPref(STR_GEN_UpdateCheckFrequency).toInt(); }
+  int showAboutDialog() const { return getPref(STR_GEN_ShowAboutDialog).toInt(); }
+  void setShowAboutDialog(int tab) {setPref(STR_GEN_ShowAboutDialog, tab); }
 
   QString profileName() const { return getPref(STR_GEN_Profile).toString(); }
   bool autoLaunchImport() const { return getPref(STR_US_AutoLaunchImport).toBool(); }
@@ -160,6 +165,7 @@ public:
   int openTabAfterImport() const { return getPref(STR_US_OpenTabAfterImport).toInt(); }
   bool removeCardReminder() const { return getPref(STR_US_RemoveCardReminder).toBool(); }
   bool autoOpenLastUsed() const { return getPref(STR_GEN_AutoOpenLastUsed).toBool(); }
+  QString language() const { return getPref(STR_GEN_Language).toString(); }
 
   void setProfileName(QString name) { setPref(STR_GEN_Profile, name); }
   void setAutoLaunchImport(bool b) { setPref(STR_US_AutoLaunchImport, b); }
@@ -215,6 +221,7 @@ public:
   void setUpdatesLastChecked(QDateTime datetime) { setPref(STR_GEN_UpdatesLastChecked, datetime); }
   void setUpdateCheckFrequency(int freq) { setPref(STR_GEN_UpdateCheckFrequency,freq); }
   void setAutoOpenLastUsed(bool b) { setPref(STR_GEN_AutoOpenLastUsed , b); }
+  void setLanguage(QString language) { setPref(STR_GEN_Language, language); }
 
 };
 

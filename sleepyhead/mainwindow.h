@@ -146,6 +146,8 @@ class MainWindow : public QMainWindow
     void log(QString text);
 
     bool importScanCancelled;
+    void firstRunMessage();
+
 
   public slots:
     //! \brief Recalculate all event summaries and flags

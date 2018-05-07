@@ -54,5 +54,6 @@
         <file>icons/daily.png</file>
         <file>icons/dv64.png</file>
         <file>icons/overview-page.png</file>
+        <file>docs/GPLv3-en_US</file>
     </qresource>
 </RCC>

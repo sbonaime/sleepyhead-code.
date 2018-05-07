@@ -1,10 +1,9 @@
-/* gFlagsLine Header
+﻿/* gFlagsLine Header
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code for more details. */
 
 #ifndef GFLAGSLINE_H
 #define GFLAGSLINE_H
