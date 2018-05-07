@@ -135,7 +135,7 @@ class MainWindow : public QMainWindow
     void JumpImport();
     void JumpOxiWizard();
 
-    void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
+    void sendStatsUrl(QString msg) { on_recordsBox_anchorClicked(QUrl(msg)); }
 
     //! \brief Sets up recalculation of all event summaries and flags
     void reprocessEvents(bool restart = false);
@@ -265,9 +265,7 @@ class MainWindow : public QMainWindow
 
     void on_action_Sidebar_Toggle_toggled(bool arg1);
 
-    void on_recordsBox_linkClicked(const QUrl &arg1);
-
-    void on_helpButton_clicked();
+        void on_helpButton_clicked();
 
     void on_actionView_Statistics_triggered();
 
@@ -282,8 +280,6 @@ class MainWindow : public QMainWindow
     //! \brief Display Help WebView Link in statusbar.
     void LinkHovered(const QString &link, const QString &title, const QString &textContent);
     void on_tabWidget_currentChanged(int index);
-
-    void on_bookmarkView_linkClicked(const QUrl &arg1);
 
     void on_filterBookmarks_editingFinished();
 
@@ -347,6 +343,10 @@ class MainWindow : public QMainWindow
     void on_profilesButton_clicked();
 
     void reloadProfile();
+
+    void on_bookmarkView_anchorClicked(const QUrl &arg1);
+
+    void on_recordsBox_anchorClicked(const QUrl &linkurl);
 
 private:
     void importCPAPBackups();

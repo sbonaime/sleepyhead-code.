@@ -213,10 +213,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->action_Sidebar_Toggle->setChecked(b);
     ui->toolBox->setVisible(b);
 
-    ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
-    ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
     QString loadingtxt =
         "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'>"
@@ -2039,35 +2037,6 @@ void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
     AppSetting->setRightSidebarVisible(visible);
 }
 
-void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
-{
-    QString link = linkurl.toString().section("=", 0, 0).toLower();
-    QString data = linkurl.toString().section("=", 1).toLower();
-    qDebug() << linkurl.toString() << link << data;
-
-    if (link == "daily") {
-        QDate date = QDate::fromString(data, Qt::ISODate);
-        ui->tabWidget->setCurrentWidget(daily);
-        QApplication::processEvents();
-        daily->LoadDate(date);
-    } else if (link == "overview") {
-        QString date1 = data.section(",", 0, 0);
-        QString date2 = data.section(",", 1);
-
-        QDate d1 = QDate::fromString(date1, Qt::ISODate);
-        QDate d2 = QDate::fromString(date2, Qt::ISODate);
-        overview->setRange(d1, d2);
-        ui->tabWidget->setCurrentWidget(overview);
-    } else if (link == "import") {
-        // Don't run the importer directly from here because it destroys the object that called this function..
-        // Schedule it instead
-        if (data == "cpap") QTimer::singleShot(0, mainwin, SLOT(on_importButton_clicked()));
-        if (data == "oximeter") QTimer::singleShot(0, mainwin, SLOT(on_oximetryButton_clicked()));
-    } else if (link == "statistics") {
-        ui->tabWidget->setCurrentWidget(ui->statisticsTab);
-    }
-}
-
 void MainWindow::on_helpButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(ui->helpTab);
@@ -2108,11 +2077,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
    // QWidget *widget = ui->tabWidget->currentWidget();
 }
 
-
-void MainWindow::on_bookmarkView_linkClicked(const QUrl &arg1)
-{
-    on_recordsBox_linkClicked(arg1);
-}
 
 void MainWindow::on_filterBookmarks_editingFinished()
 {
@@ -2208,9 +2172,7 @@ void MainWindow::doRecompressEvents()
 
                 // Load the events if they aren't loaded already
                 sess->OpenEvents();
-
                 sess->SetChanged(true);
-
                 sess->machine()->SaveSession(sess);
 
                 if (!isopen) {
@@ -2518,8 +2480,7 @@ void MainWindow::on_statisticsButton_clicked()
 
 void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
 {
-    //qDebug() << arg1;
-    on_recordsBox_linkClicked(arg1);
+    on_recordsBox_anchorClicked(arg1);
 }
 
 void MainWindow::on_reportModeMonthly_clicked()
@@ -2662,4 +2623,38 @@ void MainWindow::on_actionReport_a_Bug_triggered()
 void MainWindow::on_profilesButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(profileSelector);
+}
+
+void MainWindow::on_bookmarkView_anchorClicked(const QUrl &arg1)
+{
+    on_recordsBox_anchorClicked(arg1);
+}
+
+void MainWindow::on_recordsBox_anchorClicked(const QUrl &linkurl)
+{
+    QString link = linkurl.toString().section("=", 0, 0).toLower();
+    QString data = linkurl.toString().section("=", 1).toLower();
+    qDebug() << linkurl.toString() << link << data;
+
+    if (link == "daily") {
+        QDate date = QDate::fromString(data, Qt::ISODate);
+        ui->tabWidget->setCurrentWidget(daily);
+        QApplication::processEvents();
+        daily->LoadDate(date);
+    } else if (link == "overview") {
+        QString date1 = data.section(",", 0, 0);
+        QString date2 = data.section(",", 1);
+
+        QDate d1 = QDate::fromString(date1, Qt::ISODate);
+        QDate d2 = QDate::fromString(date2, Qt::ISODate);
+        overview->setRange(d1, d2);
+        ui->tabWidget->setCurrentWidget(overview);
+    } else if (link == "import") {
+        // Don't run the importer directly from here because it destroys the object that called this function..
+        // Schedule it instead
+        if (data == "cpap") QTimer::singleShot(0, mainwin, SLOT(on_importButton_clicked()));
+        if (data == "oximeter") QTimer::singleShot(0, mainwin, SLOT(on_oximetryButton_clicked()));
+    } else if (link == "statistics") {
+        ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+    }
 }

@@ -2598,7 +2598,7 @@ int ResmedLoader::Open(const QString & dirpath)
     QFile impfile(mach->getDataPath()+"/imported_files.csv");
     if (impfile.exists()) impfile.remove();
 
-    emit updateMessage(QObject::tr("Searching for EDF Files..."));
+    emit updateMessage(QObject::tr("Cataloguing EDF Files..."));
     QApplication::processEvents();
 
     if (isAborted()) return 0;
