@@ -10,29 +10,40 @@ Welcome::Welcome(QWidget *parent) :
     ui(new Ui::Welcome)
 {
     ui->setupUi(this);
+    pixmap.load(":/icons/mask.png");
 
-    if (!p_profile) {
-        return;
-    }
 
-    // The SDCard warning does not need to be seen anymore for people who DON'T use ResMed S9's.. show first import and only when S9 is present
-
-    const auto & mlist = p_profile->GetMachines(MT_CPAP);
-    bool showCardWarning = (mlist.size() == 0);
-    for (auto & mach :mlist) {
-        if (mach->series().compare("S9") == 0) showCardWarning = true;
-    }
-
-    ui->S9Warning->setVisible(showCardWarning);
-
-    ui->cpapInfo->setHtml(GenerateCPAPHTML());
-    ui->oxiInfo->setHtml(GenerateOxiHTML());
-
+    refreshPage();
 }
 
 Welcome::~Welcome()
 {
     delete ui;
+}
+
+void Welcome::refreshPage()
+{
+    const auto & mlist = p_profile->GetMachines(MT_CPAP);
+
+    bool b = mlist.size() > 0;
+    bool showCardWarning = !b;
+
+
+    // The SDCard warning does not need to be seen anymore for people who DON'T use ResMed S9's.. show first import and only when S9 is present
+    for (auto & mach :mlist) {
+        if (mach->series().compare("S9") == 0) showCardWarning = true;
+    }
+    ui->S9Warning->setVisible(showCardWarning);
+
+    if (!b) {
+        ui->cpapIcon->setPixmap(pixmap);
+    }
+    ui->dailyButton->setEnabled(b);
+    ui->overviewButton->setEnabled(b);
+    ui->statisticsButton->setEnabled(b);
+
+    ui->cpapInfo->setHtml(GenerateCPAPHTML());
+    ui->oxiInfo->setHtml(GenerateOxiHTML());
 }
 
 void Welcome::on_dailyButton_clicked()

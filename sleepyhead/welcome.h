@@ -15,6 +15,8 @@ public:
     explicit Welcome(QWidget *parent = 0);
     ~Welcome();
 
+    void refreshPage();
+
 private slots:
     void on_dailyButton_clicked();
 
@@ -29,6 +31,7 @@ private slots:
 private:
     QString GenerateCPAPHTML();
     QString GenerateOxiHTML();
+    QPixmap pixmap;
     Ui::Welcome *ui;
 };
 

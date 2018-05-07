@@ -618,13 +618,15 @@ void Profile::LoadMachineData()
 
 void Profile::removeMachine(Machine * mach)
 {
-    m_machlist.removeAll(mach);
-    auto mlit = MachineList.find(mach->loaderName());
+    if (m_machlist.removeAll(mach)) {
 
-    if (mlit != MachineList.end()) {
-        auto mit = mlit.value().find(mach->serial());
-        if (mit != mlit.value().end()) {
-            mlit.value().erase(mit);
+        QHash<QString, QHash<QString, Machine *> >::iterator mlit = MachineList.find(mach->loaderName());
+
+        if (mlit != MachineList.end()) {
+            QHash<QString, Machine *>::iterator mit = mlit.value().find(mach->serial());
+            if (mit != mlit.value().end()) {
+                mlit.value().erase(mit);
+            }
         }
     }
 

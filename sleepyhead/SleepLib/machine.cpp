@@ -88,6 +88,7 @@ const quint16 sessinfo_version = 2;
 bool Machine::saveSessionInfo()
 {
     if (info.type == MT_JOURNAL) return false;
+    if (sessionlist.size() == 0) return false;
 
     qDebug() << "Saving" << info.brand << "session info" << info.loadername;
     QString filename = getDataPath() + "Sessions.info";
@@ -457,8 +458,11 @@ bool Machine::Purge(int secret)
     QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
     rxcache.remove();
 
-    QFile sumfile(getDataPath()+"Summaries.xml.gz");
+    QFile sumfile(getDataPath()+"/Summaries.xml.gz");
     sumfile.remove();
+
+    QFile sessinfofile(getDataPath()+"/Sessions.info");
+    sessinfofile.remove();
 
     // Create a copy of the list so the hash can be manipulated
     QList<Session *> sessions = sessionlist.values();
@@ -491,12 +495,10 @@ bool Machine::Purge(int secret)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
 
-    QFileInfoList list = dir.entryInfoList();
+    const QFileInfoList & list = dir.entryInfoList();
     int could_not_kill = 0;
 
-    int size = list.size();
-    for (int i = 0; i < size; ++i) {
-        QFileInfo fi = list.at(i);
+    for (const auto & fi : list) {
         QString fullpath = fi.canonicalFilePath();
 
         QString ext_s = fullpath.section('.', -1);
@@ -515,7 +517,6 @@ bool Machine::Purge(int secret)
             // cruft file..
         }
     }
-
 
     if (could_not_kill > 0) {
         qWarning() << "Could not purge path" << could_not_kill << "files in " << path;

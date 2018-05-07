@@ -630,6 +630,8 @@ void MainWindow::finishCPAPImport()
     GenerateStatistics();
     profileSelector->updateProfileList();
 
+    welcome->refreshPage();
+
     if (overview) { overview->ReloadGraphs(); }
     if (daily) {
 //        daily->populateSessionWidget();
@@ -1939,11 +1941,6 @@ void MainWindow::on_actionPurgeMachine(QAction *action)
                               "<p>"+tr("Are you <b>absolutely sure</b> you want to proceed?")+"</p>", QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
 
         purgeMachine(mach);
-
-        p_profile->DelMachine(mach);
-        delete mach;
-        PopulatePurgeMenu();
-
     }
 
 }
@@ -1957,6 +1954,38 @@ void MainWindow::purgeMachine(Machine * mach)
     if (mach->Purge(3478216)) {
         mach->sessionlist.clear();
         mach->day.clear();
+        QDir dir;
+        QString path = mach->getDataPath();
+        path.chop(1);
+
+        p_profile->DelMachine(mach);
+        delete mach;
+        // remove the directory unless it's got unexpected crap in it..
+        bool deleted = false;
+        if (!dir.remove(path)) {
+#ifdef Q_OS_WIN
+            wchar_t* directoryPtr = (wchar_t*)path.utf16();
+            SetFileAttributes(directoryPtr, GetFileAttributes(directoryPtr) & ~FILE_ATTRIBUTE_READONLY);
+            if (!::RemoveDirectory(directoryPtr)) {
+               DWORD lastError = ::GetLastError();
+               qDebug() << "RemoveDirectory GetLastError: " << lastError;
+
+            } else {
+               qDebug() << "Success on second attempt deleting folder with windows API " << path;
+               deleted = true;
+            }
+#else
+            qDebug() << "Couldn't remove directory" << path;
+#endif
+        } else {
+            deleted = true;
+        }
+        if (!deleted) {
+            qDebug() << "Leaving backup folder intact";
+        }
+
+        PopulatePurgeMenu();
+        p_profile->StoreMachines();
     } else {
         QMessageBox::warning(this, STR_MessageBox_Error,
                              tr("A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:")
@@ -1972,6 +2001,7 @@ void MainWindow::purgeMachine(Machine * mach)
         return;
     }
 
+
     if (overview) overview->ReloadGraphs();
     QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
     rxcache.remove();
@@ -1980,7 +2010,11 @@ void MainWindow::purgeMachine(Machine * mach)
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
+
+    welcome->refreshPage();
+
     QApplication::processEvents();
+
 
 
 //    GenerateStatistics();
