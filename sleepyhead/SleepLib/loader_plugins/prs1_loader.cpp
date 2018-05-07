@@ -513,6 +513,7 @@ int PRS1Loader::OpenMachine(const QString & path)
     if (!dir.exists() || (!dir.isReadable())) {
         return 0;
     }
+    m_abort = false;
 
     emit updateMessage(QObject::tr("Getting Ready..."));
     QCoreApplication::processEvents();
@@ -648,6 +649,7 @@ int PRS1Loader::OpenMachine(const QString & path)
 
         // Scan for individual session files
         for (int i = 0; i < flist.size(); i++) {
+            if (isAborted()) break;
             QFileInfo fi = flist.at(i);
 
             QString ext_s = fi.fileName().section(".", -1);
@@ -706,6 +708,8 @@ int PRS1Loader::OpenMachine(const QString & path)
             QList<PRS1DataChunk *> Chunks = ParseFile(fi.canonicalFilePath());
 
             for (int i=0; i < Chunks.size(); ++i) {
+                if (isAborted()) break;
+
                 PRS1DataChunk * chunk = Chunks.at(i);
 
                 if (ext <= 1) {
@@ -752,6 +756,7 @@ int PRS1Loader::OpenMachine(const QString & path)
                 }
             }
         }
+        if (isAborted()) break;
     }
 
 

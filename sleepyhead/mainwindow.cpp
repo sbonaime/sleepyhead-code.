@@ -566,12 +566,14 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
 
     QProgressBar *saveQprogress = qprogress;
     qprogress = progdlg->progress;
+    progdlg->addAbortButton();
 
     progdlg->setWindowModality(Qt::ApplicationModal);
     progdlg->open();
     progdlg->setMessage(message);
 
     connect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
+    connect(progdlg, SIGNAL(abortClicked()), import.loader, SLOT(abortImport()));
 
     int c = import.loader->Open(import.path);
 
@@ -582,6 +584,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     } else {
         Notify(tr("Couldn't find any valid Machine Data at\n\n%1").arg(import.path),tr("Import Problem"));
     }
+    disconnect(progdlg, SIGNAL(abortClicked()), import.loader, SLOT(abortImport()));
     disconnect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
 
     progdlg->hide();

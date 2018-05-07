@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
+#include <QPushButton>
 
 class ProgressDialog:public QDialog {
 Q_OBJECT
@@ -21,17 +22,22 @@ public:
     explicit ProgressDialog(QWidget * parent);
     virtual ~ProgressDialog();
 
+    void addAbortButton();
+
     void setPixmap(QPixmap &pixmap) { imglabel->setPixmap(pixmap); }
     QProgressBar * progress;
 public slots:
     void setMessage(QString msg);
     void doUpdateProgress(int cnt, int total);
-
+    void onAbortClicked();
+signals:
+    void abortClicked();
 protected:
     QLabel * waitmsg;
     QHBoxLayout *hlayout;
     QLabel * imglabel;
     QVBoxLayout * vlayout;
+    QPushButton * abortButton;
 
 };
 

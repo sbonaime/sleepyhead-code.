@@ -1454,6 +1454,8 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 
     qDebug() << "Starting EDF duration scan pass";
     for (int i=0; i < totalfiles; ++i) {
+        if (isAborted()) return 0;
+
         const QFileInfo & fi = EDFfiles.at(i);
 
         // Update progress bar
@@ -2304,6 +2306,8 @@ int ResmedLoader::Open(const QString & dirpath)
         return -1;
     }
 
+    m_abort = false;
+
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse Identification.tgt file (containing serial number and machine information)
     ///////////////////////////////////////////////////////////////////////////////////
@@ -2595,7 +2599,10 @@ int ResmedLoader::Open(const QString & dirpath)
     emit updateMessage(QObject::tr("Searching for EDF Files..."));
     QApplication::processEvents();
 
+    if (isAborted()) return 0;
+
     scanFiles(mach, newpath);
+    if (isAborted()) return 0;
 
     // Now at this point we have resdayList populated with processable summary and EDF files data
     // that can be processed in threads..
@@ -2604,6 +2611,8 @@ int ResmedLoader::Open(const QString & dirpath)
     QApplication::processEvents();
 
     for (auto rdi=resdayList.begin(), rend=resdayList.end(); rdi != rend; rdi++) {
+        if (isAborted()) return 0;
+
         QDate date = rdi.key();
 
         ResMedDay & resday = rdi.value();

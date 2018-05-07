@@ -24,10 +24,14 @@ ProgressDialog::ProgressDialog(QWidget * parent):
     hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
     vlayout->addWidget(progress,1);
     progress->setMaximum(100);
+    abortButton = nullptr;
 }
 
 ProgressDialog::~ProgressDialog()
 {
+    if (abortButton) {
+        disconnect(abortButton, SIGNAL(released()), this, SLOT(onAbortClicked()));
+    }
 }
 
 void ProgressDialog::doUpdateProgress(int cnt, int total)
@@ -39,4 +43,16 @@ void ProgressDialog::doUpdateProgress(int cnt, int total)
 
 void ProgressDialog::setMessage(QString msg) {
     waitmsg->setText(msg); update();
+}
+
+void ProgressDialog::addAbortButton()
+{
+    abortButton = new QPushButton(tr("Abort"),this);
+    connect(abortButton, SIGNAL(released()), this, SLOT(onAbortClicked()));
+    hlayout->addWidget(abortButton);
+}
+
+void ProgressDialog::onAbortClicked()
+{
+    emit abortClicked();
 }

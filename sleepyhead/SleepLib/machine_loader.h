@@ -106,6 +106,8 @@ class MachineLoader: public QObject
         }
         return genericPixmapPath;
     }
+public slots:
+    void abortImport() { abort(); }
 
 signals:
     void updateProgress(int cnt, int total);

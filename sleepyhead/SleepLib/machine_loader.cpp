@@ -215,7 +215,7 @@ void MachineLoader::runTasks(bool threaded)
     threaded=AppSetting->multithreading();
 
     if (!threaded) {
-        while (!m_tasklist.isEmpty()) {
+        while (!m_tasklist.isEmpty() && !m_abort) {
             ImportTask * task = m_tasklist.takeFirst();
             task->run();
 
@@ -223,13 +223,14 @@ void MachineLoader::runTasks(bool threaded)
             m_currenttask++;
             qprogress->setValue(m_currenttask);
             QApplication::processEvents();
+            delete task;
         }
     } else {
         ImportTask * task = m_tasklist[0];
 
         QThreadPool * threadpool = QThreadPool::globalInstance();
 
-        while (true) {
+        while (!m_abort) {
 
             if (threadpool->tryStart(task)) {
                 m_tasklist.pop_front();
@@ -250,6 +251,13 @@ void MachineLoader::runTasks(bool threaded)
             //QThread::sleep(100);
         }
         QThreadPool::globalInstance()->waitForDone(-1);
+    }
+    if (m_abort) {
+        // delete remaining tasks and clear task list
+        for (auto & task : m_tasklist) {
+            delete task;
+        }
+        m_tasklist.clear();
     }
 }
 
