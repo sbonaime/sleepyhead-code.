@@ -35,6 +35,16 @@ namespace Ui {
 
 class MainWindow;
 
+
+class MyTextBrowser:public QTextBrowser
+{
+    Q_OBJECT
+public:
+    MyTextBrowser(QWidget * parent):QTextBrowser(parent) {}
+    virtual ~MyTextBrowser() {}
+    virtual QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
+};
+
 /*! \class Daily
     \brief SleepyHead's Daily view which displays the calendar and all the graphs relative to a selected Day
     */
@@ -341,7 +351,7 @@ private:
     SessionBar * sessionbar;
     MyLabel * dateDisplay;
 
-    QTextBrowser * webView;
+    MyTextBrowser * webView;
     Day * lastcpapday;
 
     gLineChart *leakchart;
@@ -349,5 +359,6 @@ private:
     bool ZombieMeterMoved;
     bool BookmarksChanged;
 };
+
 
 #endif // DAILY_H

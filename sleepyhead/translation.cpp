@@ -1,4 +1,4 @@
-/* Multilingual Support files
+﻿/* Multilingual Support files
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -64,8 +64,7 @@ void initTranslations(QSettings & settings) {
     langNames[en]="English US";
 
     // Scan through available translations, and add them to the list
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fi = list.at(i);
+    for (const auto & fi : list) {
         QString name = fi.fileName().section('.', 0, 0);
         QString code = fi.fileName().section('.', 1, 1);
 

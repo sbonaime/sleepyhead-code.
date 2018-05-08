@@ -105,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     daily = nullptr;
     prefdialog = nullptr;
     profileSelector = nullptr;
+    welcome = nullptr;
 
     ui->oximetryButton->setDisabled(true);
     ui->dailyButton->setDisabled(true);
@@ -1917,7 +1918,7 @@ void MainWindow::on_actionRebuildCPAP(QAction *action)
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
-    welcome->refreshPage();
+    if (welcome) welcome->refreshPage();
     PopulatePurgeMenu();
     GenerateStatistics();
     p_profile->StoreMachines();
@@ -2002,6 +2003,8 @@ void MainWindow::purgeMachine(Machine * mach)
             daily->clearLastDay(); // otherwise Daily will crash
             daily->ReloadGraphs();
         }
+        if (welcome) welcome->refreshPage();
+
         //GenerateStatistics();
         return;
     }
@@ -2015,14 +2018,9 @@ void MainWindow::purgeMachine(Machine * mach)
         daily->clearLastDay(); // otherwise Daily will crash
         daily->ReloadGraphs();
     }
-
-    welcome->refreshPage();
+    if (welcome) welcome->refreshPage();
 
     QApplication::processEvents();
-
-
-
-//    GenerateStatistics();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -2532,16 +2530,18 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
         QList<Session *> sessionlist;
         sessionlist.append(day->sessions);
 
-        for (int i=0; i < sessionlist.size(); ++i) {
-            Session * sess = sessionlist.at(i);
+        for (auto & sess : sessionlist) {
             sess->Destroy();
             delete sess;
         }
 
 
-        daily->clearLastDay(); // otherwise Daily will crash
-
-        getDaily()->ReloadGraphs();
+        if (daily) {
+            daily->clearLastDay(); // otherwise Daily will crash
+            daily->ReloadGraphs();
+        }
+        if (overview) overview->ReloadGraphs();
+        if (welcome) welcome->refreshPage();
     } else {
         QMessageBox::information(this, STR_MessageBox_Information,
             tr("Select the day with valid oximetry data in daily view first."),QMessageBox::Ok);

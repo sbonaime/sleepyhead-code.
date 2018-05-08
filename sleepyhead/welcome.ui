@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>965</width>
-    <height>719</height>
+    <height>742</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,7 +259,7 @@ border: 2px solid #56789a; border-radius: 10px;
 }</string>
          </property>
          <property name="text">
-          <string>View Daily</string>
+          <string>Daily View</string>
          </property>
          <property name="icon">
           <iconset resource="Resources.qrc">
@@ -297,7 +297,7 @@ border: 2px solid #56789a; border-radius: 10px;
 }</string>
          </property>
          <property name="text">
-          <string>View Overview</string>
+          <string>Overview</string>
          </property>
          <property name="icon">
           <iconset resource="Resources.qrc">
@@ -335,7 +335,7 @@ border: 2px solid #56789a; border-radius: 10px;
 }</string>
          </property>
          <property name="text">
-          <string>View Statistics</string>
+          <string>Statistics</string>
          </property>
          <property name="icon">
           <iconset resource="Resources.qrc">
@@ -435,7 +435,7 @@ border: 2px solid #56789a; border-radius: 10px;
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">border: 1px solid; border-radius:20px; background-color: palette(base); </string>
+             <string notr="true">border: 1px solid; border-radius:20px; background-color: #ffffd0; </string>
             </property>
             <property name="verticalScrollBarPolicy">
              <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -513,7 +513,7 @@ p, li { white-space: pre-wrap; }
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">border: 1px solid; border-radius:20px; background-color: palette(base); </string>
+             <string notr="true">border: 1px solid; border-radius:20px; background-color: #ffffd0; </string>
             </property>
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>

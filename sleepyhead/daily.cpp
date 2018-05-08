@@ -19,6 +19,7 @@
 #include <QSpacerItem>
 #include <QFontMetrics>
 #include <QLabel>
+#include <QMutexLocker>
 
 #include <cmath>
 
@@ -117,7 +118,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout2->setMargin(0);
     widget->setLayout(layout2);
 
-    webView=new QTextBrowser(widget);
+    webView=new MyTextBrowser(widget);
     webView->setOpenLinks(false);
     layout2->insertWidget(0,webView, 1);
     layout2->insertWidget(1,sessionbar,0);
@@ -754,6 +755,12 @@ void Daily::on_calendar_selectionChanged()
 
 void Daily::on_ReloadDay()
 {
+    static volatile bool inReload = false;
+
+    if (inReload) {
+        qDebug() << "attempt to renter on_ReloadDay()";
+    }
+    inReload = true;
     graphView()->releaseKeyboard();
     QTime time;
     time_t unload_time, load_time, other_time;
@@ -789,6 +796,7 @@ void Daily::on_ReloadDay()
     other_time=time.restart();
 
     qDebug() << "Page change time (in ms): Unload ="<<unload_time<<"Load =" << load_time << "Other =" << other_time;
+    inReload = false;
 }
 void Daily::ResetGraphLayout()
 {
@@ -875,8 +883,13 @@ QString Daily::getSessionInformation(Day * day)
             QString tooltip = QObject::tr("Click to %1 this session.").arg(sess->enabled() ? QObject::tr("disable") : QObject::tr("enable"));
             html+=QString("<tr><td colspan=5 align=center>%2</td></tr>"
                           "<tr>"
-                          "<td width=26><a href='toggle"+type+"session=%1'>"
-                          "<img src='qrc:/icons/session-%4.png' title=\""+tooltip+"\"></a></td>"
+                          "<td width=26>"
+#ifdef DITCH_ICONS
+                          "[<a href='toggle"+type+"session=%1'><b title='"+tooltip+"'>%4</b></a>]"
+#else
+                          "<a href='toggle"+type+"session=%1'><img src='qrc:/icons/session-%4.png' title=\""+tooltip+"\"></a>"
+#endif
+                          "</td>"
                           "<td align=left>%5</td>"
                           "<td align=left>%6</td>"
                           "<td align=left>%7</td>"
@@ -1269,6 +1282,18 @@ QString Daily::getSleepTime(Day * day)
     return html;
 }
 
+QVariant MyTextBrowser::loadResource(int type, const QUrl &url)
+{
+    if (type == QTextDocument::ImageResource
+         && url.scheme().compare(QLatin1String("data"), Qt::CaseInsensitive) == 0)
+     {
+       static QRegularExpression re("^image/[^;]+;base64,.+={0,2}$");
+       QRegularExpressionMatch match = re.match(url.path());
+       if (match.hasMatch())
+         return QVariant();
+     }
+     return QTextBrowser::loadResource(type, url);
+}
 
 
 void Daily::Load(QDate date)
@@ -1440,7 +1465,7 @@ void Daily::Load(QDate date)
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                         buffer.open(QIODevice::WriteOnly);
                         pixmap.save(&buffer, "PNG");
-                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + QString("\"></td></tr>\n");
+                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
                     } else {
                         html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }
@@ -1465,7 +1490,7 @@ void Daily::Load(QDate date)
                 html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
                 if (day->size()>0) {
                     html+="<tr><td colspan=5 align='center'><font size='+3'>"+tr("Sessions all off!")+"</font></td></tr>";
-                    html+="<tr><td colspan=5 align='center><img src='qrc:/docs/sheep.png' align=center></td></tr>";
+                    html+="<tr><td colspan=5 align='center><img src='qrc:/docs/sheep.png'></td></tr>";
                     html+="<tr bgcolor='#89abcd'><td colspan=5 align='center'><i><font color=white size=+1>"+tr("Sessions exist for this day but are switched off.")+"</font></i></td></tr>\n";
                     GraphView->setEmptyText(STR_Empty_NoSessions);
                 } else {
@@ -1494,7 +1519,7 @@ void Daily::Load(QDate date)
             html+="<table cellspacing=0 cellpadding=0 border=0 height=100% width=100%>";
             html+="<tr height=25%><td align=center></td></tr>";
             html+="<tr><td align=center><font size='+3'>"+tr("\"Nothing's here!\"")+"</font></td></tr>";
-            html+="<tr><td align=center><img src='qrc:/docs/sheep.png' width=120px></td></tr>";
+            html+="<tr><td align=center><img src='qrc:/docs/sheep.png'></td></tr>";
             html+="<tr height=5px><td align=center></td></tr>";
             html+="<tr bgcolor='#89abcd'><td align=center><i><font size=+1 color=white>"+tr("Bob is bored with this days lack of data.")+"</font></i></td></tr>";
             html+="<tr height=25%><td align=center></td></tr>";
@@ -1530,6 +1555,16 @@ void Daily::Load(QDate date)
         }
     }
     //sessbar->update();
+
+#ifdef DEBUG_DAILY_HTML
+    QString name = GetAppRoot()+"/test.html";
+    QFile file(name);
+    if (file.open(QFile::WriteOnly)) {
+        const QByteArray & b = html.toLocal8Bit();
+        file.write(b.data(), b.size());
+        file.close();
+    }
+#endif
 
     webView->setHtml(html);
 
@@ -1679,39 +1714,43 @@ void Daily::Unload(QDate date)
         }
     }
 
-    webView->setHtml("");
-    Session *journal=GetJournalSession(date);
+    // Update the journal notes
+    Session *journal = GetJournalSession(date);
 
-    bool nonotes=ui->JournalNotes->toPlainText().isEmpty();
-    if (journal) {
-        QString jhtml=ui->JournalNotes->toHtml();
-        if ((!journal->settings.contains(Journal_Notes) && !nonotes) || (journal->settings[Journal_Notes]!=jhtml)) {
-            journal->settings[Journal_Notes]=jhtml;
-            journal->SetChanged(true);
-        }
-    } else {
-        if (!nonotes) {
-            journal=CreateJournalSession(date);
-            if (!nonotes) {
-                journal->settings[Journal_Notes]=ui->JournalNotes->toHtml();
-                journal->SetChanged(true);
-            }
-        }
+    bool editorHasContent = !ui->JournalNotes->toPlainText().isEmpty(); // have a look as plaintext to see if really empty.
+
+    if (!journal && editorHasContent) {
+        journal = CreateJournalSession(date);
     }
 
     if (journal) {
-        if (nonotes) {
-            QHash<ChannelID,QVariant>::iterator it=journal->settings.find(Journal_Notes);
-            if (it!=journal->settings.end()) {
-                journal->settings.erase(it);
+        auto jit = journal->settings.find(Journal_Notes);
+
+        if (jit != journal->settings.end()) {
+            // we do have a journal_notes record
+            if (editorHasContent) {
+                const QString & html = ui->JournalNotes->toHtml();
+
+                if (jit.value() != html) { // has the content of it changed?
+                    jit.value() = html;
+                    journal->SetChanged(true);
+                }
+            } else {
+                // empty, so don't need this notes setting anymore
+                journal->settings.erase(jit);
+                journal->SetChanged(true);
             }
+        } else if (editorHasContent) {
+            // Create the note
+            journal->settings[Journal_Notes] = ui->JournalNotes->toHtml();
+            journal->SetChanged(true);
         }
+
         if (journal->IsChanged()) {
-            journal->settings[LastUpdated]=QDateTime::currentDateTime();
-            // blah.. was updating overview graphs here.. Was too slow.
+            journal->settings[LastUpdated] = QDateTime::currentDateTime();
+            journal->machine()->SaveSummary();
+            journal->SetChanged(false); // save summary doesn't automatically do this
         }
-        Machine *jm=p_profile->GetMachine(MT_JOURNAL);
-        if (jm) jm->SaveSummary(); //(journal);
     }
     UpdateCalendarDay(date);
 }
@@ -2268,7 +2307,6 @@ void Daily::updateCube()
         ui->toggleGraphs->blockSignals(true);
         ui->toggleGraphs->setChecked(true);
         ui->toggleGraphs->blockSignals(false);
-
 
         if (ui->graphCombo->count() > 0) {
             GraphView->setEmptyText(STR_Empty_NoGraphs);

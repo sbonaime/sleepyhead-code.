@@ -112,7 +112,7 @@ QString Welcome::GenerateCPAPHTML()
     "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
     "</style>"
     "</head>"
-    "<body leftmargin=5 topmargin=5 rightmargin=5 bottommargin=5 valign=center align=center>";
+    "<body leftmargin=5 topmargin=10 rightmargin=5 bottommargin=5 vertical-align=center align=center>";
 
     Machine * cpap = nullptr;
     if (!havecpapdata && !haveoximeterdata) {
@@ -239,22 +239,6 @@ QString Welcome::GenerateCPAPHTML()
             html += "<p>"+tr("No CPAP data has been imported yet.")+"</p>";
         }
     }
-
-/*        html += QString("<div align=center><table class=curved cellpadding=3 width=75%>")+
-        "<tr>"
-        "<td align=center colspan=2><b>"+QObject::tr("Very Important Warning For ResMed S9 Users")+"</b></font></td></tr>"
-        "<tr><td align=center>"+
-        "<p>"+QObject::tr("ALWAYS <font color=red><b>write protect</b></font> CPAP SDCards before inserting them into your computer.")+"</p><p>"+
-        +"<span title=\""+QObject::tr("Mac OSX and Win8.1")+"\" onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");'>"+
-        QObject::tr("<font color=blue>Certain operating systems</font></span> write index files to the card without asking, which can render your card unreadable by your cpap machine.")+ " "+
-        QObject::tr("As a second line of protection, make sure to <font color=red><b>unmount</b></font> the data card properly before removing it!")+"</p>"
-        "</td>"
-        "<td><img src=\"qrc:/icons/sdcard-lock.png\" width=64px></td>"
-        "</tr>"
-        "</table>"
-        "</td></tr></table></div>";*/
-//    } else {
- //   }
 
     html += "</body></html>";
     return html;
