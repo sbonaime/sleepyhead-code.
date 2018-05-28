@@ -4,13 +4,11 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml printsupport serialport
+QT += core gui network xml printsupport serialport widgets
 
 
-greaterThan(QT_MAJOR_VERSION,4) {
-    QT += widgets webkitwidgets
-} else { # qt4
-    QT += webkit
+lessThan(QT_MAJOR_VERSION,5) {
+    error("Sorry, need Qt 5 to build SleepyHead");
 }
 
 #SleepyHead requires OpenGL 2.0 support to run smoothly

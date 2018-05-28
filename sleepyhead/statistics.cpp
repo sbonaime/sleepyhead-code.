@@ -1,4 +1,4 @@
-/* Statistics Report Generator Implementation
+﻿/* Statistics Report Generator Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -9,12 +9,21 @@
 #include <QApplication>
 #include <QFile>
 #include <QDataStream>
+#include <QBuffer>
 #include <cmath>
 
 #include "mainwindow.h"
 #include "statistics.h"
 
 extern MainWindow *mainwin;
+
+QString resizeHTMLPixmap(QPixmap &pixmap, int width, int height) {
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(&buffer, "PNG");
+    return QString("<img src=\"data:image/png;base64,"+byteArray.toBase64()+"\">");
+}
 
 QString formatTime(float time)
 {
@@ -623,6 +632,8 @@ QString htmlHeader(bool showheader)
     "</script>"
     "</head>"
     "<body leftmargin=0 topmargin=5 rightmargin=0>";
+
+    QPixmap bobPixmap(":/icons/bob-v3.0.png");
     if (showheader) {
         html += "<div align=center><table class=curved "+table_width+">"
         "<td>"+userinfo+"</td>"
@@ -630,7 +641,7 @@ QString htmlHeader(bool showheader)
         "<font size='+2'>" + STR_TR_SleepyHead + "</font><br/>"
         "<font size='+1'>" + QObject::tr("Usage Statistics") + "</font>"
         "</td>"
-        "<td align='right' width=170px><img src='qrc:/icons/bob-v3.0.png' height=140px><br/>"
+        "<td align='right' width=170px>" +resizeHTMLPixmap(bobPixmap,140,140)+"<br/>"
         "</td></tr></table>"
         "</div><br/>";
     }

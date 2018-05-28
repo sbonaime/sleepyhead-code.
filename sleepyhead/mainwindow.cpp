@@ -11,11 +11,6 @@
 #include <QMessageBox>
 #include <QResource>
 #include <QProgressBar>
-#include <QWebHistory>
-#include <QWebFrame>
-#include <QNetworkRequest>
-#include <QDesktopServices>
-#include <QNetworkReply>
 #include <QTimer>
 #include <QSettings>
 #include <QPixmap>
@@ -32,6 +27,8 @@
 #include <QCalendarWidget>
 #include <QDialogButtonBox>
 #include <QTextBrowser>
+#include <QStandardPaths>
+#include <QDesktopServices>
 #include <cmath>
 
 #include "common_gui.h"
@@ -214,8 +211,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->action_Sidebar_Toggle->setChecked(b);
     ui->toolBox->setVisible(b);
 
-    ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
+//    ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+//    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
 
     QString loadingtxt =
         "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'>"
@@ -322,29 +319,6 @@ void MainWindow::Notify(QString s, QString title, int ms)
     } else {
         ui->statusbar->showMessage(s, ms);
     }
-}
-
-class MyStatsPage: public QWebPage
-{
-  public:
-    MyStatsPage(QObject *parent);
-    virtual ~MyStatsPage();
-  protected:
-    //virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
-    virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
-};
-MyStatsPage::MyStatsPage(QObject *parent)
-    : QWebPage(parent)
-{
-}
-MyStatsPage::~MyStatsPage()
-{
-}
-
-void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
-{
-    Q_UNUSED(frame);
-    mainwin->sendStatsUrl(msg);
 }
 
 QString getCPAPPixmap(QString mach_class)
@@ -1197,12 +1171,12 @@ void MainWindow::updateFavourites()
 
 void MainWindow::on_backButton_clicked()
 {
-    ui->webView->back();
+    ui->helpBrowser->backward();
 }
 
 void MainWindow::on_forwardButton_clicked()
 {
-    ui->webView->forward();
+    ui->helpBrowser->forward();
 }
 
 void MainWindow::on_webView_urlChanged(const QUrl &arg1)
@@ -1212,8 +1186,9 @@ void MainWindow::on_webView_urlChanged(const QUrl &arg1)
 
 void MainWindow::on_urlBar_activated(const QString &arg1)
 {
-    QUrl url(arg1);
-    ui->webView->setUrl(url);
+    Q_UNUSED(arg1);
+    //QUrl url(arg1);
+    //ui->webView->setUrl(url);
 }
 
 void MainWindow::on_dailyButton_clicked()
@@ -1242,17 +1217,15 @@ void MainWindow::on_webView_loadFinished(bool arg1)
         qstatus->setText("");
     }
 
-    ui->backButton->setEnabled(ui->webView->history()->canGoBack());
-    ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
+    ui->backButton->setEnabled(ui->helpBrowser->backwardHistoryCount()>0);
+    ui->forwardButton->setEnabled(ui->helpBrowser->forwardHistoryCount()>0);
 
-    connect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this,
-            SLOT(LinkHovered(QString, QString, QString)));
+    //connect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this, SLOT(LinkHovered(QString, QString, QString)));
 }
 
 void MainWindow::on_webView_loadStarted()
 {
-    disconnect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this,
-               SLOT(LinkHovered(QString, QString, QString)));
+    //disconnect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this, SLOT(LinkHovered(QString, QString, QString)));
 
     if (!first_load) {
         qstatus->setText(tr("Loading"));
@@ -1455,7 +1428,7 @@ void MainWindow::on_actionPrint_Report_triggered()
             if (ui->tabWidget->currentWidget() == ui->statisticsTab) {
                 ui->statisticsView->print(&printer);
             } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
-                ui->webView->print(&printer);
+                ui->helpBrowser->print(&printer);
             }
 
         }
@@ -1489,14 +1462,12 @@ void MainWindow::on_action_CycleTabs_triggered()
 
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
-    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide"));
-    ui->tabWidget->setCurrentWidget(ui->helpTab);
+    QDesktopServices::openUrl(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide"));
 }
 
 void MainWindow::on_action_Frequently_Asked_Questions_triggered()
 {
-    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions"));
-    ui->tabWidget->setCurrentWidget(ui->helpTab);
+    QDesktopServices::openUrl(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions"));
 }
 
 void packEventList(EventList *el, EventDataType minval = 0)
@@ -2053,7 +2024,7 @@ void MainWindow::on_webView_linkClicked(const QUrl &url)
     if (s.toLower().startsWith("https:")) {
         QDesktopServices().openUrl(url);
     } else {
-        ui->webView->setUrl(url);
+        //ui->helpBrowser->setUrl(url);
     }
 }
 
@@ -2363,14 +2334,12 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
 
 void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
 {
-    ui->webView->load(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary"));
-    ui->tabWidget->setCurrentWidget(ui->helpTab);
+    QDesktopServices::openUrl(QUrl("http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary"));
 }
 
 void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
-    QUrl url = QUrl("https://sleepyhead.jedimark.net/donate.php");
-    QDesktopServices().openUrl(url);
+    QDesktopServices().openUrl(QUrl("https://sleepyhead.jedimark.net/donate.php"));
 }
 
 void MainWindow::on_actionChange_Language_triggered()
@@ -2440,9 +2409,7 @@ void MainWindow::GenerateStatistics()
     //QWebFrame *frame=ui->statisticsView->page()->currentFrame();
     //frame->addToJavaScriptWindowObject("mainwin",this);
     //ui->statisticsView->setHtml(html);
-    MyStatsPage *page = new MyStatsPage(this);
-    page->currentFrame()->setHtml(html);
-    ui->statisticsView->setPage(page);
+    ui->statisticsView->setHtml(html);
 
 }
 

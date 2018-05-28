@@ -11,8 +11,6 @@
 
 #include <QMainWindow>
 #include <QGLContext>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QSystemTrayIcon>
 #include <QTimer>
 

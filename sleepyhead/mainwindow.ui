@@ -926,7 +926,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -958,19 +958,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QWebView" name="statisticsView" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="url" stdset="0">
-             <url>
-              <string>about:blank</string>
-             </url>
-            </property>
-           </widget>
+           <widget class="QTextBrowser" name="statisticsView"/>
           </item>
           <item>
            <widget class="QFrame" name="frame_3">
@@ -1228,31 +1216,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QWebView" name="webView" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="baseSize">
-                <size>
-                 <width>0</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="url" stdset="0">
-                <url>
-                 <string>qrc:/docs/index.html</string>
-                </url>
-               </property>
-              </widget>
+              <widget class="QTextBrowser" name="helpBrowser"/>
              </item>
             </layout>
            </widget>
@@ -1417,7 +1381,7 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>158</width>
+          <width>310</width>
           <height>676</height>
          </rect>
         </property>
@@ -1875,7 +1839,7 @@ border: 2px solid #56789a; border-radius: 30px;
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>175</width>
+          <width>327</width>
           <height>667</height>
          </rect>
         </property>
@@ -2931,7 +2895,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>175</width>
+          <width>327</width>
           <height>667</height>
          </rect>
         </property>
@@ -3417,13 +3381,6 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>
