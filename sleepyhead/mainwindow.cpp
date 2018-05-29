@@ -239,6 +239,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainsplitter->setSizes(a);
     ui->mainsplitter->setStretchFactor(0,1);
     ui->mainsplitter->setStretchFactor(1,0);
+
+    QTimer::singleShot(0, this, SLOT(Startup()));
+
+    ui->backButton->setEnabled(ui->helpBrowser->backwardHistoryCount()>0);
+    ui->forwardButton->setEnabled(ui->helpBrowser->forwardHistoryCount()>0);
+
 }
 
 void MainWindow::logMessage(QString msg)
@@ -1179,16 +1185,10 @@ void MainWindow::on_forwardButton_clicked()
     ui->helpBrowser->forward();
 }
 
-void MainWindow::on_webView_urlChanged(const QUrl &arg1)
-{
-    ui->urlBar->setEditText(arg1.toString());
-}
-
 void MainWindow::on_urlBar_activated(const QString &arg1)
 {
     Q_UNUSED(arg1);
-    //QUrl url(arg1);
-    //ui->webView->setUrl(url);
+    ui->helpBrowser->setText(QString("This ain't no web browser.. this needs to look up %1 in help index or something").arg(arg1));
 }
 
 void MainWindow::on_dailyButton_clicked()
@@ -1203,40 +1203,6 @@ void MainWindow::on_overviewButton_clicked()
     if (overview) {
         ui->tabWidget->setCurrentWidget(overview);
     }
-}
-
-void MainWindow::on_webView_loadFinished(bool arg1)
-{
-    Q_UNUSED(arg1);
-    qprogress->hide();
-
-    if (first_load) {
-        QTimer::singleShot(0, this, SLOT(Startup()));
-        first_load = false;
-    } else {
-        qstatus->setText("");
-    }
-
-    ui->backButton->setEnabled(ui->helpBrowser->backwardHistoryCount()>0);
-    ui->forwardButton->setEnabled(ui->helpBrowser->forwardHistoryCount()>0);
-
-    //connect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this, SLOT(LinkHovered(QString, QString, QString)));
-}
-
-void MainWindow::on_webView_loadStarted()
-{
-    //disconnect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this, SLOT(LinkHovered(QString, QString, QString)));
-
-    if (!first_load) {
-        qstatus->setText(tr("Loading"));
-        qprogress->reset();
-        qprogress->show();
-    }
-}
-
-void MainWindow::on_webView_loadProgress(int progress)
-{
-    qprogress->setValue(progress);
 }
 
 void MainWindow::aboutBoxLinkClicked(const QUrl &url)
@@ -2016,23 +1982,6 @@ void MainWindow::on_actionView_Statistics_triggered()
     ui->tabWidget->setCurrentWidget(ui->statisticsTab);
 }
 
-void MainWindow::on_webView_linkClicked(const QUrl &url)
-{
-    QString s = url.toString();
-    qDebug() << "Link Clicked" << url;
-
-    if (s.toLower().startsWith("https:")) {
-        QDesktopServices().openUrl(url);
-    } else {
-        //ui->helpBrowser->setUrl(url);
-    }
-}
-
-void MainWindow::on_webView_statusBarMessage(const QString &text)
-{
-    ui->statusbar->showMessage(text);
-}
-
 void MainWindow::LinkHovered(const QString &link, const QString &title, const QString &textContent)
 {
     Q_UNUSED(title);
@@ -2443,11 +2392,6 @@ void MainWindow::on_statisticsButton_clicked()
     }
 }
 
-void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
-{
-    on_recordsBox_anchorClicked(arg1);
-}
-
 void MainWindow::on_reportModeMonthly_clicked()
 {
     ui->statStartDate->setVisible(false);
@@ -2624,5 +2568,28 @@ void MainWindow::on_recordsBox_anchorClicked(const QUrl &linkurl)
         if (data == "oximeter") QTimer::singleShot(0, mainwin, SLOT(on_oximetryButton_clicked()));
     } else if (link == "statistics") {
         ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+    }
+}
+
+void MainWindow::on_helpBrowser_sourceChanged(const QUrl &url)
+{
+    ui->urlBar->setEditText(url.toString());
+}
+
+void MainWindow::on_statisticsView_anchorClicked(const QUrl &url)
+{
+    on_recordsBox_anchorClicked(url);
+}
+
+void MainWindow::on_helpBrowser_anchorClicked(const QUrl &url)
+{
+    QString s = url.toString();
+    qDebug() << "Link Clicked" << url;
+
+    if (s.toLower().startsWith("https:")) {
+        QDesktopServices().openUrl(url);
+    } else {
+        ui->helpBrowser->setText(QString("Loading resource %1").arg(url.toString()));
+        //ui->helpBrowser->setUrl(url);
     }
 }

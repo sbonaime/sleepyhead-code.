@@ -183,9 +183,6 @@ class MainWindow : public QMainWindow
     //! \brief Go forward in the welcome browsers history
     void on_forwardButton_clicked();
 
-    //! \brief Updates the URL bar to show changes to the URL
-    void on_webView_urlChanged(const QUrl &arg1);
-
     //! \brief Loads a web page when enter is pressed in the URL bar
     void on_urlBar_activated(const QString &arg1);
 
@@ -194,15 +191,6 @@ class MainWindow : public QMainWindow
 
     //! \brief Selects the Overview page and redraws the graphs
     void on_overviewButton_clicked();
-
-    //! \brief called when webpage has finished loading in welcome browser
-    void on_webView_loadFinished(bool arg1);
-
-    //! \brief called when webpage has starts loading in welcome browser
-    void on_webView_loadStarted();
-
-    //! \brief Updates the progress bar in the statusbar while a page is loading
-    void on_webView_loadProgress(int progress);
 
     //! \brief Display About Dialog
     void on_action_About_triggered();
@@ -267,13 +255,9 @@ class MainWindow : public QMainWindow
 
     void on_actionView_Statistics_triggered();
 
-    void on_webView_linkClicked(const QUrl &arg1);
-
     //void on_favouritesList_itemSelectionChanged();
 
     //void on_favouritesList_itemClicked(QListWidgetItem *item);
-
-    void on_webView_statusBarMessage(const QString &text);
 
     //! \brief Display Help WebView Link in statusbar.
     void LinkHovered(const QString &link, const QString &title, const QString &textContent);
@@ -301,8 +285,6 @@ class MainWindow : public QMainWindow
 
     //! \brief Populates the statistics with information.
     void on_statisticsButton_clicked();
-
-    void on_statisticsView_linkClicked(const QUrl &arg1);
 
     void on_reportModeMonthly_clicked();
 
@@ -345,6 +327,12 @@ class MainWindow : public QMainWindow
     void on_bookmarkView_anchorClicked(const QUrl &arg1);
 
     void on_recordsBox_anchorClicked(const QUrl &linkurl);
+
+    void on_helpBrowser_sourceChanged(const QUrl &url);
+
+    void on_statisticsView_anchorClicked(const QUrl &url);
+
+    void on_helpBrowser_anchorClicked(const QUrl &url);
 
 private:
     void importCPAPBackups();
