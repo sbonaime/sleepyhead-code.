@@ -2633,6 +2633,7 @@ int ResmedLoader::Open(const QString & dirpath)
                 for (auto & sess : day->sessions) {
                     if (sess->type() == MT_CPAP) {
                         day->removeSession(sess);
+                        mach->sessionlist.remove(sess->session());
                         delete sess;
                     }
                 }
@@ -2674,8 +2675,6 @@ int ResmedLoader::Open(const QString & dirpath)
     QApplication::processEvents();
 
     finishAddingSessions();
-
-    mach->SaveSummary();
 
 #ifdef DEBUG_EFFICIENCY
     {

@@ -607,6 +607,12 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
 void MainWindow::finishCPAPImport()
 {
     p_profile->StoreMachines();
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+    for (Machine * mach : machines) {
+        mach->saveSessionInfo();
+        mach->SaveSummary();
+    }
+
     GenerateStatistics();
     profileSelector->updateProfileList();
 
@@ -1300,29 +1306,22 @@ void MainWindow::on_action_Screenshot_triggered()
 }
 void MainWindow::DelayedScreenshot()
 {
-    int w = width();
-    int h = height();
-
-    // Scale for high resolution displays (like Retina)
-#if(QT_VERSION>=QT_VERSION_CHECK(5,0,0))
+    // Make sure to scale for high resolution displays (like Retina)
     qreal pr = devicePixelRatio();
-    w /= pr;
-    h /= pr;
-#endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_LINUX) || defined(Q_OS_HAIKU)
-    Q_UNUSED(w)
-    Q_UNUSED(h)
-     //QRect rec = QApplication::desktop()->screenGeometry();
 
+    QPixmap pixmap=grab();
+
+/*#if defined(Q_OS_WIN) || defined(Q_OS_LINUX) || defined(Q_OS_HAIKU)
      // grab the whole screen
+    grab()
      QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
 
-     QPixmap pixmap = desktop.copy(x() * devicePixelRatio(), y() * devicePixelRatio(), (width()+6) * devicePixelRatio(), (height()+22) * devicePixelRatio());
+     QPixmap pixmap = desktop.copy(x() * pr, y() * pr, (width()+6) * pr, (height()+22) * pr);
 
 #elif defined(Q_OS_MAC)
-    QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), w, h+10);
-#endif
+    QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), width() / pr, (height() / pr) + 10);
+#endif */
 
     QString a = PREF.Get("{home}/Screenshots");
     QDir dir(a);
