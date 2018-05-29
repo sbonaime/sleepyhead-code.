@@ -2664,7 +2664,7 @@ int ResmedLoader::Open(const QString & dirpath)
     emit updateMessage(QObject::tr("Importing Sessions..."));
     runTasks();
     int num_new_sessions = sessionCount;
-    mach->SaveSummary();
+
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Now look for any new summary data that can be extracted from STR.edf records
@@ -2690,7 +2690,7 @@ int ResmedLoader::Open(const QString & dirpath)
 //            strsess.erase(e);
 //        }
 //    }
-//
+///
 
 /*    QHash<SessionID, Session *>::iterator sessit;
     QHash<SessionID, Session *>::iterator sessend = mach->sessionlist.end();;

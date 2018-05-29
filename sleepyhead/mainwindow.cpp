@@ -1407,6 +1407,7 @@ void MainWindow::on_actionPrint_Report_triggered()
                 QRect rect = printer.pageRect();
                 b.setHtml(ui->statisticsView->toHtml());
                 b.resize(rect.width()/4, rect.height()/4);
+                b.setFrameShape(QFrame::NoFrame);
 
                 double xscale = printer.pageRect().width()/double(b.width());
                 double yscale = printer.pageRect().height()/double(b.height());
@@ -1414,7 +1415,6 @@ void MainWindow::on_actionPrint_Report_triggered()
                 painter.translate(printer.paperRect().x() + printer.pageRect().width()/2, printer.paperRect().y() + printer.pageRect().height()/2);
                 painter.scale(scale, scale);
                 painter.translate(-b.width()/2, -b.height()/2);
-                //painter.translate(-printer.pageRect().width()/2, -printer.pageRect().height()/2);
 
                 b.render(&painter, QPoint(0,0));
                 painter.end();

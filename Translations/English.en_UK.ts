@@ -3404,7 +3404,7 @@ If you use a few different masks, pick average values instead. It should still b
         <location filename="../sleepyhead/preferencesdialog.ui" line="1237"/>
         <source>AHI</source>
         <extracomment>Apnea Hypopnea Index</extracomment>
-        <translation>Apnoea Hypopnea Index</translation>
+        <translation>Apnoea Hypopnoea Index</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1242"/>
