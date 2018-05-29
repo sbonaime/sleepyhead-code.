@@ -1,4 +1,13 @@
-﻿#include "welcome.h"
+﻿/* Welcome page Implementation
+ *
+ * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
+ *
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License. See the file COPYING in the main directory of Source Code. */
+
+#include <cmath>
+
+#include "welcome.h"
 #include "ui_welcome.h"
 
 #include "mainwindow.h"
