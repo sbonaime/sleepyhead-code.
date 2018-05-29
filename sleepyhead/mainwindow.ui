@@ -958,7 +958,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QTextBrowser" name="statisticsView"/>
+           <widget class="MyTextBrowser" name="statisticsView"/>
           </item>
           <item>
            <widget class="QFrame" name="frame_3">
@@ -3403,6 +3403,13 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyTextBrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>mytextbrowser.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>

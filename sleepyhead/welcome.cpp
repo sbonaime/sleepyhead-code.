@@ -178,7 +178,7 @@ QString Welcome::GenerateCPAPHTML()
                 comp = equal;
             }
 
-            html += tr("You had an AHI of %1, which is <b>%2</b> your %3 day average of %4.").arg(ahi,0,'f',2).arg(comp).arg(averagedays).arg(ahidays,0,'f',2);
+            html += tr("You had an AHI of %1, which is %2 your %3 day average of %4.").arg(ahi,0,'f',2).arg(comp).arg(averagedays).arg(ahidays,0,'f',2);
 
             html += "<br/>";
 
@@ -230,7 +230,7 @@ QString Welcome::GenerateCPAPHTML()
                 comp = equal;
             }
 
-            html += tr("Your average leaks were %1 %2, which is <b>%3</b> your %4 day average of %5.").arg(leak,0,'f',2).arg(schema::channel[CPAP_Leak].units()).arg(comp).arg(averagedays).arg(leakdays,0,'f',2);
+            html += tr("Your average leaks were %1 %2, which is %3 your %4 day average of %5.").arg(leak,0,'f',2).arg(schema::channel[CPAP_Leak].units()).arg(comp).arg(averagedays).arg(leakdays,0,'f',2);
 
             html += "<br/>";
 

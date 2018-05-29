@@ -230,7 +230,8 @@ HEADERS  += \
     SleepLib/appsettings.h \
     SleepLib/loader_plugins/edfparser.h \
     aboutdialog.h \
-    welcome.h
+    welcome.h \
+    mytextbrowser.h
 
 FORMS += \
     daily.ui \

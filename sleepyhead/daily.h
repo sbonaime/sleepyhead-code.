@@ -28,6 +28,7 @@
 #include "Graphs/gGraphView.h"
 #include "Graphs/gLineChart.h"
 #include "sessionbar.h"
+#include "mytextbrowser.h"
 
 namespace Ui {
     class Daily;
@@ -35,15 +36,6 @@ namespace Ui {
 
 class MainWindow;
 
-
-class MyTextBrowser:public QTextBrowser
-{
-    Q_OBJECT
-public:
-    MyTextBrowser(QWidget * parent):QTextBrowser(parent) {}
-    virtual ~MyTextBrowser() {}
-    virtual QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
-};
 
 /*! \class Daily
     \brief SleepyHead's Daily view which displays the calendar and all the graphs relative to a selected Day

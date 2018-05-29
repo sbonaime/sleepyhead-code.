@@ -431,7 +431,7 @@ void MainWindow::OpenProfile(QString profileName)
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
         QString mclass=(*it)->loaderName();
         if (mclass == STR_MACH_ResMed) {
-            qDebug() << "ResMed machine found.. dumbing down SleepyHead to suit it's dodgy summary system";
+            qDebug() << "ResMed machine found.. locking SleepyHead preferences to suit it's summary system";
 
             // Have to sacrifice these features to get access to summary data.
             p_profile->session->setCombineCloseSessions(0);
@@ -1383,16 +1383,43 @@ void MainWindow::on_actionPrint_Report_triggered()
         printer.setOutputFileName(filename);
 #endif
         printer.setPrintRange(QPrinter::AllPages);
-        printer.setOrientation(QPrinter::Portrait);
+//        if (ui->tabWidget->currentWidget() == ui->statisticsTab) {
+//            printer.setOrientation(QPrinter::Landscape);
+//        } else {
+            printer.setOrientation(QPrinter::Portrait);
+        //}
         printer.setFullPage(false); // This has nothing to do with scaling
         printer.setNumCopies(1);
+        printer.setResolution(1200);
+        //printer.setPaperSize(QPrinter::A4);
+        //printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setPageMargins(5, 5, 5, 5, QPrinter::Millimeter);
         QPrintDialog pdlg(&printer, this);
 
         if (pdlg.exec() == QPrintDialog::Accepted) {
 
             if (ui->tabWidget->currentWidget() == ui->statisticsTab) {
-                ui->statisticsView->print(&printer);
+
+                QTextBrowser b;
+                QPainter painter;
+                painter.begin(&printer);
+
+                QRect rect = printer.pageRect();
+                b.setHtml(ui->statisticsView->toHtml());
+                b.resize(rect.width()/4, rect.height()/4);
+
+                double xscale = printer.pageRect().width()/double(b.width());
+                double yscale = printer.pageRect().height()/double(b.height());
+                double scale = qMin(xscale, yscale);
+                painter.translate(printer.paperRect().x() + printer.pageRect().width()/2, printer.paperRect().y() + printer.pageRect().height()/2);
+                painter.scale(scale, scale);
+                painter.translate(-b.width()/2, -b.height()/2);
+                //painter.translate(-printer.pageRect().width()/2, -printer.pageRect().height()/2);
+
+                b.render(&painter, QPoint(0,0));
+                painter.end();
+
+
             } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
                 ui->helpBrowser->print(&printer);
             }
