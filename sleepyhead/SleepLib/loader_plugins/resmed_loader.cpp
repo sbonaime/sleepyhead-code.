@@ -1547,9 +1547,9 @@ struct OverlappingEDF {
 
 void ResDayTask::run()
 {
-//    if (this->resday->date == QDate(2016,1,20)) {
-//        qDebug() << "in resday" << this->resday->date;
-//    }
+    if (this->resday->date == QDate(2016,1,6)) {
+        qDebug() << "in resday" << this->resday->date;
+    }
     /*loader->sessionMutex.lock();
     Day *day = p_profile->FindDay(resday->date, MT_CPAP);
     if (day) {
@@ -1597,9 +1597,9 @@ void ResDayTask::run()
 
                 sess->setSummaryOnly(true);
                 sess->SetChanged(true);
-                sess->Store(mach->getDataPath());
 
                 loader->sessionMutex.lock();
+                sess->Store(mach->getDataPath());
                 mach->AddSession(sess);
                 loader->sessionCount++;
                 loader->sessionMutex.unlock();
@@ -1788,15 +1788,15 @@ void ResDayTask::run()
             // No corresponding STR.edf record, but we have EDF files
 
             bool foundprev = false;
-            // This is yuck.. we need to find the LAST date with valid settings data
-            QDate first = p_profile->FirstDay(MT_CPAP);
-            if (first.isValid())for (QDate d = resday->date.addDays(-1); d >= first; d = d.addDays(-1)) {
-                loader->sessionMutex.lock();
-                Day * day = p_profile->GetDay(d, MT_CPAP);
-                bool hasmachine = day && day->hasMachine(mach);
-                loader->sessionMutex.unlock();
+            loader->sessionMutex.lock();
 
-                if (!day) continue;
+            auto it=p_profile->daylist.find(resday->date); // should exist already to be here
+            auto begin = p_profile->daylist.begin();
+            while (it!=begin) {
+                --it;
+                Day * day = it.value();
+                bool hasmachine = day && day->hasMachine(mach);
+
                 if (!hasmachine) continue;
 
                 QList<Session *> sessions = day->getSessions(MT_CPAP);
@@ -1809,6 +1809,7 @@ void ResDayTask::run()
                 }
 
             }
+            loader->sessionMutex.unlock();
             sess->setNoSettings(true);
 
             if (!foundprev) {
@@ -1823,10 +1824,10 @@ void ResDayTask::run()
 
         // Save is not threadsafe? (meh... it seems to be)
        // loader->saveMutex.lock();
-        sess->Store(mach->getDataPath());
        // loader->saveMutex.unlock();
 
         loader->sessionMutex.lock();
+        sess->Store(mach->getDataPath());
         mach->AddSession(sess);  // AddSession definitely ain't threadsafe.
         loader->sessionCount++;
         loader->sessionMutex.unlock();
