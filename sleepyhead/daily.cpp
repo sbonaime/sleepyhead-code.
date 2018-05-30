@@ -1748,7 +1748,7 @@ void Daily::Unload(QDate date)
 
         if (journal->IsChanged()) {
             journal->settings[LastUpdated] = QDateTime::currentDateTime();
-            journal->machine()->SaveSummary();
+            journal->machine()->SaveSummaryCache();
             journal->SetChanged(false); // save summary doesn't automatically do this
         }
     }

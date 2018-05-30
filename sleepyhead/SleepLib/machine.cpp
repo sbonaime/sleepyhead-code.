@@ -712,7 +712,7 @@ bool Machine::Load()
             }
         }
 
-        SaveSummary();
+        SaveSummaryCache();
         qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
         if (qprogress) { qprogress->setValue(size); }
     } else {
@@ -1075,7 +1075,7 @@ bool Machine::LoadSummary(QProgressBar * progress)
     return true;
 }
 
-bool Machine::SaveSummary()
+bool Machine::SaveSummaryCache()
 {
     qDebug() << "Saving" << info.brand << info.model <<  "Summaries";
     QString filename = getDataPath() + summaryFileName;

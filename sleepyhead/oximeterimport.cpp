@@ -1021,7 +1021,7 @@ void OximeterImport::on_saveButton_clicked()
 
     mach->AddSession(session);
     mach->Save();
-    mach->SaveSummary();
+    mach->SaveSummaryCache();
     p_profile->StoreMachines();
 
     mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());

@@ -551,298 +551,6 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
     }
 }
 
-
-
-
-/*void ResmedImport::run()
-{
-    loader->saveMutex.lock();
-
-    Session * sess = mach->SessionExists(sessionid);
-    if (sess) {
-        if (sess->summaryOnly()) {
-            // Reuse this session
-            sess->wipeSummary();
-        } else {
-            // Already imported
-            loader->saveMutex.unlock();
-            return;
-        }
-    } else {
-        // Could be importing from an older backup.. if so, destroy the summary only records
-        quint32 key = int(sessionid / 60) * 60;
-
-        sess = mach->SessionExists(key);
-        if (sess) {
-            if (sess->summaryOnly()) {
-
-                sess->Destroy();
-                delete sess;
-            }
-        }
-
-        // Create the session
-        sess = new Session(mach, sessionid);
-    }
-    loader->saveMutex.unlock();
-
-    if (files.contains(EDF_PLD)) {
-        QStringList & sl = files[EDF_PLD];
-        for (int i=0; i<sl.size(); ++i) {
-            QString file = sl.at(i);
-            loader->LoadPLD(sess, file);
-#ifdef SESSION_DEBUG
-            sess->session_files.append(file);
-#endif
-        }
-    }
-    if (files.contains(EDF_BRP)) {
-        QStringList & sl = files[EDF_BRP];
-        for (int i=0; i<sl.size(); ++i) {
-            QString file = sl.at(i);
-
-            loader->LoadBRP(sess, file);
-#ifdef SESSION_DEBUG
-            sess->session_files.append(file);
-#endif
-        }
-    }
-    if (files.contains(EDF_SAD)) {
-        QStringList & sl = files[EDF_SAD];
-        for (int i=0; i<sl.size(); ++i) {
-            QString file = sl.at(i);
-            loader->LoadSAD(sess, file);
-#ifdef SESSION_DEBUG
-            sess->session_files.append(file);
-#endif
-        }
-    }
-
-    if (files.contains(EDF_CSL)) {
-        QStringList & sl = files[EDF_CSL];
-        for (int i=0; i<sl.size(); ++i) {
-            QString file = sl.at(i);
-            loader->LoadCSL(sess, file);
-#ifdef SESSION_DEBUG
-            sess->session_files.append(file);
-#endif
-        }
-    }
-
-    bool haveeve = false;
-    if (files.contains(EDF_EVE)) {
-        QStringList & sl = files[EDF_EVE];
-        for (int i=0; i<sl.size(); ++i) {
-            QString file = sl.at(i);
-            loader->LoadEVE(sess, file);
-#ifdef SESSION_DEBUG
-            sess->session_files.append(file);
-#endif
-
-            haveeve = true;
-        }
-    }
-
-    if (!haveeve) {
-        sess->AddEventList(CPAP_Obstructive, EVL_Event);
-        sess->AddEventList(CPAP_ClearAirway, EVL_Event);
-        sess->AddEventList(CPAP_Apnea, EVL_Event);
-        sess->AddEventList(CPAP_Hypopnea, EVL_Event);
-    }
-
-
-    if (sess->first() == 0) {
-       // loader->saveMutex.lock();
-
-        //if (mach->sessionlist.contains(sess->session())) {
-       // sess->Destroy();
-            //mach->sessionlist.remove(sess->session());
-        //}
-        delete sess;
-        //loader->saveMutex.unlock();
-        return;
-    }
-
-    sess->setSummaryOnly(false);
-    sess->SetChanged(true);
-
-    /////////////////////////////////////////////////////////////////////////////////
-    // Process STR.edf now all valid Session data is imported
-    /////////////////////////////////////////////////////////////////////////////////
-
-    quint32 key = quint32(sessionid / 60) * 60; // round to 1 minute
-
-    QMap<quint32, STRRecord>::iterator strsess_end = loader->strsess.end();
-    QMap<quint32, STRRecord>::iterator it = loader->strsess.find(key);
-
-    if (it == strsess_end) {
-        // ResMed merges mask on/off groups that are less than a minute apart
-        // this means have to jump back to the last session closest.
-
-        it = loader->strsess.lowerBound(key);
-        if (it != loader->strsess.begin()) it--;
-    }
-
-    if (it != strsess_end) {
-        STRRecord & R = it.value();
-
-        // calculate the time between session record and mask-on record.
-        int gap = sessionid - R.maskon;
-
-        if (gap > 3600*6) {
-            QDateTime dt = QDateTime::fromTime_t(sessionid);
-            QDateTime rt = QDateTime::fromTime_t(R.maskon);
-
-            QString msg = QString("Warning: Closest matching STR record for %1 is %2 by %3 seconds").
-                    arg(dt.toString(Qt::ISODate)).
-                    arg(sess->length() / 1000.0L,0,'f',1).
-                    arg(gap);
-            qDebug() << msg;
-        }
-
-
-        // Claim this session
-        R.sessionid = sessionid;
-
-
-        // Save maskon time in session setting so we can use it later to avoid doubleups.
-        sess->settings[RMS9_MaskOnTime] = R.maskon;
-
-#ifdef SESSION_DEBUG
-        sess->session_files.append("STR.edf");
-#endif
-
-        if (R.mode >= 0) {
-            sess->settings[CPAP_Mode] = R.mode;
-            sess->settings[RMS9_Mode] = R.rms9_mode;
-            if (R.mode == MODE_CPAP) {
-                if (R.set_pressure >= 0) {
-                    sess->settings[CPAP_Pressure] = R.set_pressure;
-                }
-            } else if (R.mode == MODE_APAP) {
-                if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-                if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-            } else if (R.mode == MODE_BILEVEL_FIXED) {
-                if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-                if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-                if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-            } else if (R.mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-                if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-                if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-            } else if (R.mode == MODE_ASV) {
-                if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-                if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-                if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-            } else if (R.mode == MODE_ASV_VARIABLE_EPAP) {
-                if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-                if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-                if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-                if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-                if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-                if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-            }
-        } else {
-            if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
-            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-        }
-
-        if (R.epr >= 0) {
-            sess->settings[RMS9_EPR] = (int)R.epr;
-            if (R.epr > 0) {
-                if (R.epr_level >= 0) {
-                    sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
-                }
-            }
-        }
-
-        if (R.s_RampEnable >= 0) {
-            sess->settings[RMS9_RampEnable] = R.s_RampEnable;
-
-            if (R.s_RampEnable >= 1) {
-                if (R.s_RampTime >= 0) {
-                    sess->settings[CPAP_RampTime] = R.s_RampTime;
-                }
-                if (R.ramp_pressure >= 0) {
-                    sess->settings[CPAP_RampPressure] = R.ramp_pressure;
-                }
-            }
-        }
-
-        if (R.s_SmartStart >= 0) {
-            sess->settings[RMS9_SmartStart] = R.s_SmartStart;
-        }
-        if (R.s_ABFilter >= 0) {
-            sess->settings[RMS9_ABFilter] = R.s_ABFilter;
-        }
-        if (R.s_ClimateControl >= 0) {
-            sess->settings[RMS9_ClimateControl] = R.s_ClimateControl;
-        }
-        if (R.s_Mask >= 0) {
-            sess->settings[RMS9_Mask] = R.s_Mask;
-        }
-        if (R.s_PtAccess >= 0) {
-            sess->settings[RMS9_PtAccess] = R.s_PtAccess;
-        }
-
-        if (R.s_HumEnable >= 0) {
-            sess->settings[RMS9_HumidStatus] = (short)R.s_HumEnable;
-            if ((R.s_HumEnable >= 1) && (R.s_HumLevel >= 0)) {
-                sess->settings[RMS9_HumidLevel] = (short)R.s_HumLevel;
-            }
-        }
-        if (R.s_TempEnable >= 0) {
-            sess->settings[RMS9_TempEnable] = (short)R.s_TempEnable;
-            if ((R.s_TempEnable >= 1) && (R.s_Temp >= 0)){
-                sess->settings[RMS9_Temp] = (short)R.s_Temp;
-            }
-        }
-
-        // Ignore all the rest of the sumary data, because there is enough available to calculate it with higher accuracy.
-
-        if (sess->length() > 0) {
-            loader->addSession(sess);
-        } else {
-            delete sess;
-            return;
-        }
-    }
-    CPAPMode mode = (CPAPMode)sess->settings[CPAP_Mode].toInt();
-
-    if ((mode >= MODE_BILEVEL_FIXED) && (!sess->eventlist.contains(CPAP_IPAP))) {
-        QVector<EventList *> & evl = sess->eventlist[CPAP_Pressure];
-
-        for (int i=0; i<evl.size(); ++i) {
-            EventList * el = evl[i];
-            sess->eventlist[CPAP_IPAP].push_back(el);
-        }
-
-        sess->eventlist.remove(CPAP_Pressure);
-    }
-
-    // Update indexes, process waveform and perform flagging
-    sess->UpdateSummaries();
-
-    // Save is not threadsafe?
-   // loader->saveMutex.lock();
-    sess->Store(mach->getDataPath());
-   // loader->saveMutex.unlock();
-
-    // Free the memory used by this session
-    sess->TrashEvents();
-} */
-
 ResmedLoader::ResmedLoader()
 {
     const QString RMS9_ICON = ":/icons/rms9.png";
@@ -864,152 +572,6 @@ ResmedLoader::ResmedLoader()
 ResmedLoader::~ResmedLoader()
 {
 }
-
-/*void ResmedImportStage2::run()
-{
-    if (R.maskon == R.maskoff) return;
-    Session * sess = new Session(mach, R.maskon);
-
-
-    sess->really_set_first(qint64(R.maskon) * 1000L);
-    sess->really_set_last(qint64(R.maskoff) * 1000L);
-
-    // Claim this record for future imports
-    sess->settings[RMS9_MaskOnTime] = R.maskon;
-    sess->setSummaryOnly(true);
-
-#ifdef SESSION_DEBUG
-    sess->session_files.append("STR.edf");
-#endif
-    sess->SetChanged(true);
-
-    // First take the settings
-
-    if (R.mode >= 0) {
-        sess->settings[CPAP_Mode] = R.mode;
-        sess->settings[RMS9_Mode] = R.rms9_mode;
-
-        if (R.mode == MODE_CPAP) {
-            if (R.set_pressure >= 0) {
-                sess->settings[CPAP_Pressure] = R.set_pressure;
-            }
-        } else if (R.mode == MODE_APAP) {
-            if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-            if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-        } else if (R.mode == MODE_BILEVEL_FIXED) {
-            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-            if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-        } else if (R.mode == MODE_BILEVEL_AUTO_FIXED_PS) {
-            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-            if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-        } else if (R.mode == MODE_ASV) {
-            if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-        } else if (R.mode == MODE_ASV_VARIABLE_EPAP) {
-            if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-            if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-            if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-            if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-            if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-            if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-        }
-    } else {
-        if (R.set_pressure >= 0) sess->settings[CPAP_Pressure] = R.set_pressure;
-        if (R.min_pressure >= 0) sess->settings[CPAP_PressureMin] = R.min_pressure;
-        if (R.max_pressure >= 0) sess->settings[CPAP_PressureMax] = R.max_pressure;
-        if (R.max_epap >= 0) sess->settings[CPAP_EPAPHi] = R.max_epap;
-        if (R.min_epap >= 0) sess->settings[CPAP_EPAPLo] = R.min_epap;
-        if (R.max_ipap >= 0) sess->settings[CPAP_IPAPHi] = R.max_ipap;
-        if (R.min_ipap >= 0) sess->settings[CPAP_IPAPLo] = R.min_ipap;
-        if (R.min_ps >= 0) sess->settings[CPAP_PSMin] = R.min_ps;
-        if (R.max_ps >= 0) sess->settings[CPAP_PSMax] = R.max_ps;
-        if (R.ps >= 0) sess->settings[CPAP_PS] = R.ps;
-        if (R.epap >= 0) sess->settings[CPAP_EPAP] = R.epap;
-        if (R.ipap >= 0) sess->settings[CPAP_IPAP] = R.ipap;
-    }
-
-
-    if (R.epr >= 0) {
-        sess->settings[RMS9_EPR] = (int)R.epr;
-        if (R.epr > 0) {
-            if (R.epr_level >= 0) {
-                sess->settings[RMS9_EPRLevel] = (int)R.epr_level;
-            }
-        }
-    }
-    if (R.leakmax >= 0) sess->setMax(CPAP_Leak, R.leakmax);
-    if (R.leakmax >= 0) sess->setMin(CPAP_Leak, 0);
-    if ((R.leakmed >= 0) && (R.leak95 >= 0) && (R.leakmax >= 0)) {
-        sess->m_timesummary[CPAP_Leak][short(R.leakmax / R.leakgain)]=1;
-        sess->m_timesummary[CPAP_Leak][short(R.leak95 / R.leakgain)]=9;
-        sess->m_timesummary[CPAP_Leak][short(R.leakmed / R.leakgain)]=65;
-        sess->m_timesummary[CPAP_Leak][0]=25;
-    }
-
-
-    // Find the matching date group for this record
-    QMap<QDate, QList<STRRecord *> >::iterator dtit = loader->strdate.find(R.date);
-
-    // should not be possible, but my brain hurts...
-    if (dtit == loader->strdate.end()) {
-        qWarning() << "ResmedImportStage2::run() ASSERT(dtit != loader->strdate.end()) failed";
-        return;
-    }
-
-    if (dtit != loader->strdate.end()) {
-        QList<STRRecord *> & dayrecs = dtit.value();
-        bool hasdatasess=false;
-        EventDataType time=0, totaltime=0;
-
-        for (int c=0; c < dayrecs.size(); ++c) {
-            STRRecord *r = dayrecs[c];
-            if (r->sessionid > 0) {
-                // get complicated.. calculate all the counts for valid sessions, and use the summary to make up the rest
-                hasdatasess = true;
-            }
-            totaltime += r->maskoff - r->maskon;
-        }
-
-
-        if (!hasdatasess) {
-            for (int c=0; c < dayrecs.size(); ++c) {
-                STRRecord *r = dayrecs[c];
-                time = r->maskoff - r->maskon;
-                float ratio = time / totaltime;
-
-                // Add the time weighted proportion of the events counts
-                if (r->ai >= 0) {
-                    sess->setCount(CPAP_Obstructive, r->ai * ratio);
-                    sess->setCph(CPAP_Obstructive, (r->ai * ratio) / (time / 3600.0));
-                }
-                if (r->uai >= 0) {
-                    sess->setCount(CPAP_Apnea, r->uai * ratio);
-                    sess->setCph(CPAP_Apnea, (r->uai * ratio) / (time / 3600.0));
-                }
-                if (r->hi >= 0) {
-                    sess->setCount(CPAP_Hypopnea, r->hi * ratio);
-                    sess->setCph(CPAP_Hypopnea, (r->hi * ratio) / (time / 3600.0));
-                }
-                if (r->cai >= 0) {
-                    sess->setCount(CPAP_ClearAirway, r->cai * ratio);
-                    sess->setCph(CPAP_ClearAirway, (r->ai * ratio) / (time / 3600.0));
-                }
-
-            }
-
-        }
-    }
-
-    loader->addSession(sess);
-    //loader->saveMutex.lock();
-    sess->Store(mach->getDataPath());
-    //loader->saveMutex.unlock();
-} */
-
 
 long event_cnt = 0;
 
@@ -1985,9 +1547,9 @@ struct OverlappingEDF {
 
 void ResDayTask::run()
 {
-    if (this->resday->date == QDate(2016,1,20)) {
-        qDebug() << "in resday" << this->resday->date;
-    }
+//    if (this->resday->date == QDate(2016,1,20)) {
+//        qDebug() << "in resday" << this->resday->date;
+//    }
     /*loader->sessionMutex.lock();
     Day *day = p_profile->FindDay(resday->date, MT_CPAP);
     if (day) {
@@ -2045,6 +1607,7 @@ void ResDayTask::run()
                 //sess->TrashEvents();
             }
         }
+
         return;
     }
 
@@ -2227,7 +1790,7 @@ void ResDayTask::run()
             bool foundprev = false;
             // This is yuck.. we need to find the LAST date with valid settings data
             QDate first = p_profile->FirstDay(MT_CPAP);
-            for (QDate d = resday->date.addDays(-1); d >= first; d = d.addDays(-1)) {
+            if (first.isValid())for (QDate d = resday->date.addDays(-1); d >= first; d = d.addDays(-1)) {
                 loader->sessionMutex.lock();
                 Day * day = p_profile->GetDay(d, MT_CPAP);
                 bool hasmachine = day && day->hasMachine(mach);
@@ -2264,15 +1827,13 @@ void ResDayTask::run()
        // loader->saveMutex.unlock();
 
         loader->sessionMutex.lock();
-        mach->AddSession(sess);  // AddSession definitely ain't.
+        mach->AddSession(sess);  // AddSession definitely ain't threadsafe.
+        loader->sessionCount++;
         loader->sessionMutex.unlock();
 
         // Free the memory used by this session
         sess->TrashEvents();
 
-        loader->sessionMutex.lock();
-        loader->sessionCount++;
-        loader->sessionMutex.unlock();
     }
 }
 

@@ -610,7 +610,7 @@ void MainWindow::finishCPAPImport()
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (Machine * mach : machines) {
         mach->saveSessionInfo();
-        mach->SaveSummary();
+        mach->SaveSummaryCache();
     }
 
     GenerateStatistics();
@@ -1663,7 +1663,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     for (int i = 0; i < machines.size(); i++) {
         Machine *m = machines[i];
         m->Save();
-        m->SaveSummary();
+        m->SaveSummaryCache();
     }
 
     daily->LoadDate(getDaily()->getDate());

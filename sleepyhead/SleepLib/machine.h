@@ -93,7 +93,7 @@ class Machine
 
     //! \brief Save all Sessions where changed bit is set.
     bool Save();
-    bool SaveSummary();
+    bool SaveSummaryCache();
 
     //! \brief Save individual session
     bool SaveSession(Session *sess);
