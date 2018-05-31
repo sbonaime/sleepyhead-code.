@@ -33,7 +33,9 @@
 #include <algorithm>
 #include "SleepLib/schema.h"
 #include "SleepLib/day.h"
+#include "mainwindow.h"
 
+extern MainWindow * mainwin;
 extern QProgressBar *qprogress;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -604,12 +606,12 @@ bool Machine::Load()
         return false;
     }
 
-    ProgressDialog * popup = new ProgressDialog(nullptr);
+    ProgressDialog * popup = new ProgressDialog(mainwin);
 
     QPixmap image = getPixmap().scaled(64,64);
     popup->setPixmap(image);
     popup->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(p_profile->user->userName()));
-    popup->show();
+    popup->open();
 
     QProgressBar * saveQProgress = qprogress;
 
