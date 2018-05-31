@@ -66,10 +66,12 @@ struct STRRecord
         sessionid = 0;
 
         ahi = -1;
+        oai = -1;
         ai = -1;
         hi = -1;
         uai = -1;
         cai = -1;
+        csr = -1;
 
         leak50 = -1;
         leak95 = -1;
@@ -82,6 +84,10 @@ struct STRRecord
         mv50 = -1;
         mv95 = -1;
         mvmax = -1;
+
+        ie50 = -1;
+        ie95 = -1;
+        iemax = -1;
 
         tv50 = -1;
         tv95 = -1;
@@ -143,9 +149,12 @@ struct STRRecord
         sessionid = copy.sessionid;
         ahi = copy.ahi;
         ai = copy.ai;
+        oai = copy.oai;
         hi = copy.hi;
         uai = copy.uai;
         cai = copy.cai;
+        csr = copy.csr;
+
         date = copy.date;
         leak50 = copy.leak50;
         leak95 = copy.leak95;
@@ -156,12 +165,16 @@ struct STRRecord
         mv50 = copy.mv50;
         mv95 = copy.mv95;
         mvmax = copy.mvmax;
+        ie50 = copy.ie50;
+        ie95 = copy.ie95;
+        iemax = copy.iemax;
         tv50 = copy.tv50;
         tv95 = copy.tv95;
         tvmax = copy.tvmax;
         mp50 = copy.mp50;
         mp95 = copy.mp95;
         mpmax = copy.mpmax;
+
 
         tgtepap50 = copy.tgtepap50;
         tgtepap95 = copy.tgtepap95;
@@ -211,10 +224,12 @@ struct STRRecord
     EventDataType epr_level;
     quint32 sessionid;
     EventDataType ahi;
+    EventDataType oai;
     EventDataType ai;
     EventDataType hi;
     EventDataType uai;
     EventDataType cai;
+    EventDataType csr;
     EventDataType leak50;
     EventDataType leak95;
     EventDataType leakmax;
@@ -230,6 +245,9 @@ struct STRRecord
     EventDataType mp50;
     EventDataType mp95;
     EventDataType mpmax;
+    EventDataType ie50;
+    EventDataType ie95;
+    EventDataType iemax;
     EventDataType tgtepap50;
     EventDataType tgtepap95;
     EventDataType tgtepapmax;

@@ -260,78 +260,85 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
             if ((sig = str.lookupLabel("Mask Dur"))) {
                 R.maskdur = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
             }
-
             if ((sig = str.lookupLabel("Leak Med")) || (sig = str.lookupLabel("Leak.50"))) {
                 float gain = sig->gain * 60.0;
-                R.leak50 = EventDataType(sig->data[rec]) * gain + sig->offset;
+                R.leak50 = EventDataType(sig->data[rec]) * gain;
             }
             if ((sig = str.lookupLabel("Leak Max"))|| (sig = str.lookupLabel("Leak.Max"))) {
                 float gain = sig->gain * 60.0;
-                R.leakmax = EventDataType(sig->data[rec]) * gain + sig->offset;
+                R.leakmax = EventDataType(sig->data[rec]) * gain;
             }
             if ((sig = str.lookupLabel("Leak 95")) || (sig = str.lookupLabel("Leak.95"))) {
                 float gain = sig->gain * 60.0;
-                R.leak95 = EventDataType(sig->data[rec]) * gain + sig->offset;
+                R.leak95 = EventDataType(sig->data[rec]) * gain;
+            }
+            if ((sig = str.lookupLabel("RespRate.50")) || (sig = str.lookupLabel("RR Med"))) {
+                R.rr50 = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("RespRate.Max")) || (sig = str.lookupLabel("RR Max"))) {
+                R.rrmax = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("RespRate.95")) || (sig = str.lookupLabel("RR 95"))) {
+                R.rr95 = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("MinVent.50")) || (sig = str.lookupLabel("Min Vent Med"))) {
+                R.mv50 = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("MinVent.Max")) || (sig = str.lookupLabel("Min Vent Max"))) {
+                R.mvmax = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("MinVent.95")) || (sig = str.lookupLabel("Min Vent 95"))) {
+                R.mv95 = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("TidVol.50")) || (sig = str.lookupLabel("Tid Vol Med"))) {
+                R.tv50 = EventDataType(sig->data[rec]) * (sig->gain*1000.0);
+            }
+            if ((sig = str.lookupLabel("TidVol.Max")) || (sig = str.lookupLabel("Tid Vol Max"))) {
+                R.tvmax = EventDataType(sig->data[rec]) * (sig->gain*1000.0);
+            }
+            if ((sig = str.lookupLabel("TidVol.95")) || (sig = str.lookupLabel("Tid Vol 95"))) {
+                R.tv95 = EventDataType(sig->data[rec]) * (sig->gain*1000.0);
             }
 
-            if ((sig = str.lookupLabel("RespRate.50"))) {
-                R.rr50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("MaskPress.50")) || (sig = str.lookupLabel("Mask Pres Med"))) {
+                R.mp50 = EventDataType(sig->data[rec]) * sig->gain;
             }
-            if ((sig = str.lookupLabel("RespRate.Max"))) {
-                R.rrmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("MaskPress.Max")) || (sig = str.lookupLabel("Mask Pres Max"))) {
+                R.mpmax = EventDataType(sig->data[rec]) * sig->gain ;
             }
-            if ((sig = str.lookupLabel("RespRate.95"))) {
-                R.rr95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("MinVent.50"))) {
-                R.mv50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("MinVent.Max"))) {
-                R.mvmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("MinVent.95"))) {
-                R.mv95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("TidVol.50"))) {
-                R.tv50 = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
-            }
-            if ((sig = str.lookupLabel("TidVol.Max"))) {
-                R.tvmax = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
-            }
-            if ((sig = str.lookupLabel("TidVol.95"))) {
-                R.tv95 = EventDataType(sig->data[rec]) * (sig->gain*1000.0) + sig->offset;
+            if ((sig = str.lookupLabel("MaskPress.95")) || (sig = str.lookupLabel("Mask Pres 95"))) {
+                R.mp95 = EventDataType(sig->data[rec]) * sig->gain ;
             }
 
-            if ((sig = str.lookupLabel("MaskPress.50"))) {
-                R.mp50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtEPAP.50")) || (sig = str.lookupLabel("Exp Pres Med"))) {
+                R.tgtepap50 = EventDataType(sig->data[rec]) * sig->gain;
             }
-            if ((sig = str.lookupLabel("MaskPress.Max"))) {
-                R.mpmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtEPAP.Max")) || (sig = str.lookupLabel("Exp Pres Max"))) {
+                R.tgtepapmax = EventDataType(sig->data[rec]) * sig->gain;
             }
-            if ((sig = str.lookupLabel("MaskPress.95"))) {
-                R.mp95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-
-            if ((sig = str.lookupLabel("TgtEPAP.50"))) {
-                R.tgtepap50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("TgtEPAP.Max"))) {
-                R.tgtepapmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
-            }
-            if ((sig = str.lookupLabel("TgtEPAP.95"))) {
-                R.tgtepap95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtEPAP.95")) || (sig = str.lookupLabel("Exp Pres 95"))) {
+                R.tgtepap95 = EventDataType(sig->data[rec]) * sig->gain;
             }
 
-            if ((sig = str.lookupLabel("TgtIPAP.50"))) {
-                R.tgtipap50 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtIPAP.50")) || (sig = str.lookupLabel("Insp Pres Med"))) {
+                R.tgtipap50 = EventDataType(sig->data[rec]) * sig->gain;
             }
-            if ((sig = str.lookupLabel("TgtIPAP.Max"))) {
-                R.tgtipapmax = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtIPAP.Max")) || (sig = str.lookupLabel("Insp Pres Max"))) {
+                R.tgtipapmax = EventDataType(sig->data[rec]) * sig->gain;
             }
-            if ((sig = str.lookupLabel("TgtIPAP.95"))) {
-                R.tgtipap95 = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            if ((sig = str.lookupLabel("TgtIPAP.95")) || (sig = str.lookupLabel("Insp Pres 95"))) {
+                R.tgtipap95 = EventDataType(sig->data[rec]) * sig->gain;
             }
 
+            if ((sig = str.lookupLabel("I:E Med"))) {
+                R.ie50 = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("I:E Max"))) {
+                R.iemax = EventDataType(sig->data[rec]) * sig->gain;
+            }
+            if ((sig = str.lookupLabel("I:E 95"))) {
+                R.ie95 = EventDataType(sig->data[rec]) * sig->gain;
+            }
 
             bool haveipap = false;
 //                if (R.mode == MODE_BILEVEL_FIXED) {
@@ -500,6 +507,12 @@ void ResmedLoader::ParseSTR(Machine *mach, QMap<QDate, STRFile> & STRmap)
             }
             if ((sig = str.lookupLabel("CAI"))) {
                 R.cai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("OAI"))) {
+                R.oai = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
+            }
+            if ((sig = str.lookupLabel("CSR"))) {
+                R.csr = EventDataType(sig->data[rec]) * sig->gain + sig->offset;
             }
 
             if ((sig = str.lookupLabel("S.RampTime"))) {
@@ -1383,57 +1396,57 @@ void StoreSummarySettings(Session * sess, STRRecord & R)
         }
     }
 
-    if (R.leak95 >= 0) {
-//        sess->setp95(CPAP_Leak, R.leak95);
-    }
     if (R.leak50 >= 0) {
+//        sess->setp95(CPAP_Leak, R.leak95);
 //        sess->setp50(CPAP_Leak, R.leak50);
-    }
-    if (R.leakmax >= 0) {
         sess->setMax(CPAP_Leak, R.leakmax);
     }
 
-    if (R.rr95 >= 0) {
-//        sess->setp95(CPAP_RespRate, R.rr95);
-    }
     if (R.rr50 >= 0) {
+//        sess->setp95(CPAP_RespRate, R.rr95);
 //        sess->setp50(CPAP_RespRate, R.rr50);
-    }
-    if (R.rrmax >= 0) {
         sess->setMax(CPAP_RespRate, R.rrmax);
     }
 
-    if (R.mv95 >= 0) {
-//        sess->setp95(CPAP_MinuteVent, R.mv95);
-    }
     if (R.mv50 >= 0) {
+//        sess->setp95(CPAP_MinuteVent, R.mv95);
 //        sess->setp50(CPAP_MinuteVent, R.mv50);
-    }
-    if (R.mvmax >= 0) {
         sess->setMax(CPAP_MinuteVent, R.mvmax);
     }
 
-    if (R.tv95 >= 0) {
-  //      sess->setp95(CPAP_TidalVolume, R.tv95);
-    }
     if (R.tv50 >= 0) {
+  //      sess->setp95(CPAP_TidalVolume, R.tv95);
 //        sess->setp50(CPAP_TidalVolume, R.tv50);
-    }
-    if (R.tvmax >= 0) {
         sess->setMax(CPAP_TidalVolume, R.tvmax);
     }
 
-    if (R.mp95 >= 0) {
-//        sess->setp95(CPAP_MaskPressure, R.mp95);
-    }
     if (R.mp50 >= 0) {
+//        sess->setp95(CPAP_MaskPressure, R.mp95);
 //        sess->setp50(CPAP_MaskPressure, R.mp50);
-    }
-    if (R.mpmax >= 0) {
         sess->setMax(CPAP_MaskPressure, R.mpmax);
     }
 
+    if (R.oai > 0) {
+        sess->setCph(CPAP_Obstructive, R.oai);
+        sess->setCount(CPAP_Obstructive, R.oai * sess->hours());
+    }
+    if (R.hi > 0) {
+        sess->setCph(CPAP_Hypopnea, R.hi);
+        sess->setCount(CPAP_Hypopnea, R.hi * sess->hours());
 
+    }
+    if (R.cai > 0) {
+        sess->setCph(CPAP_ClearAirway, R.cai);
+        sess->setCount(CPAP_ClearAirway, R.cai * sess->hours());
+    }
+    if (R.uai > 0) {
+        sess->setCph(CPAP_Apnea, R.uai);
+        sess->setCount(CPAP_Apnea, R.uai * sess->hours());
+    }
+    if (R.csr > 0) {
+        sess->setCph(CPAP_CSR, R.csr);
+        sess->setCount(CPAP_CSR, R.csr * sess->hours());
+    }
 
 }
 
