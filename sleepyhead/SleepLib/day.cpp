@@ -1293,6 +1293,7 @@ qint64 Day::last(MachineType type)
 
 bool Day::removeSession(Session *sess)
 {
+    sess->machine()->sessionlist.remove(sess->session());
     MachineType mt = sess->type();
     bool b = sessions.removeAll(sess) > 0;
     if (!searchMachine(mt)) {

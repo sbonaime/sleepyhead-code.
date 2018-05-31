@@ -1547,9 +1547,9 @@ struct OverlappingEDF {
 
 void ResDayTask::run()
 {
-    if (this->resday->date == QDate(2016,1,6)) {
-        qDebug() << "in resday" << this->resday->date;
-    }
+//    if (this->resday->date == QDate(2016,1,6)) {
+//        qDebug() << "in resday" << this->resday->date;
+//    }
     /*loader->sessionMutex.lock();
     Day *day = p_profile->FindDay(resday->date, MT_CPAP);
     if (day) {
@@ -2192,12 +2192,10 @@ int ResmedLoader::Open(const QString & dirpath)
                 // but the worst case scenario is this session is deleted and reimported.. this just slows things down a bit in that case
 
                 // This day was first imported as a summary from STR.edf, so we now totally want to redo this day
-                for (auto & sess : day->sessions) {
-                    if (sess->type() == MT_CPAP) {
-                        day->removeSession(sess);
-                        mach->sessionlist.remove(sess->session());
-                        delete sess;
-                    }
+                QList<Session *> sessions = day->getSessions(MT_CPAP);
+                for (auto & sess : sessions) {
+                    day->removeSession(sess);
+                    delete sess;
                 }
 
                 reimporting = true;
