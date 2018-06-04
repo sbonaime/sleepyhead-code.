@@ -802,9 +802,9 @@ bool PRS1Import::ParseF5EventsFV3()
     session->updateFirst(t);
     qint64 tt = 0;
     int pos = 0;
-    int cnt = 0;
+    //int cnt = 0;
     short delta;//,duration;
-    bool badcode = false;
+    //bool badcode = false;
     unsigned char lastcode3 = 0, lastcode2 = 0, lastcode = 0, code = 0;
     int lastpos = 0, startpos = 0, lastpos2 = 0, lastpos3 = 0;
 
@@ -1434,7 +1434,7 @@ bool PRS1Import::ParseF3EventsV3()
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
     EventList *ZZ = session->AddEventList(CPAP_NRI, EVL_Event);
-    EventList *Z2 = session->AddEventList(CPAP_ExP, EVL_Event);
+    //EventList *Z2 = session->AddEventList(CPAP_ExP, EVL_Event);
     EventList *CA = session->AddEventList(CPAP_ClearAirway, EVL_Event);
     EventList *PB = session->AddEventList(CPAP_PB, EVL_Event);
     EventList *LL = session->AddEventList(CPAP_LargeLeak, EVL_Event);
@@ -1452,7 +1452,7 @@ bool PRS1Import::ParseF3EventsV3()
     EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1);
     EventList *FLOW = session->AddEventList(CPAP_Test2, EVL_Event);
 
-    qint64 t = qint64(event->timestamp) * 1000L, tt;
+    qint64 t = qint64(event->timestamp) * 1000L; //, tt;
 
     int pos = 0;
     int datasize = event->m_data.size();
@@ -3001,10 +3001,10 @@ bool PRS1Import::ParseEvents()
 
 bool PRS1Import::ParseOximetery()
 {
-    int size = oximetery.size();
+    int size = oximetry.size();
 
     for (int i=0; i < size; ++i) {
-        PRS1DataChunk * oxi = oximetery.at(i);
+        PRS1DataChunk * oxi = oximetry.at(i);
         int num = oxi->waveformInfo.size();
 
         int size = oxi->m_data.size();
@@ -3130,7 +3130,7 @@ void PRS1Import::run()
         ParseWaveforms();
 
         // Parse .006 Waveform file
-        oximetery = loader->ParseFile(oxifile);
+        oximetry = loader->ParseFile(oxifile);
         ParseOximetery();
 
         if (session->first() > 0) {

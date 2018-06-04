@@ -3,8 +3,8 @@
  * Copyright (c) 2011-2015 Mark Watkins <jedimark@users.sourceforge.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code
+ * for more details. */
 
 #ifndef GGRAPHVIEW_H
 #define GGRAPHVIEW_H

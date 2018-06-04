@@ -3,8 +3,8 @@
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code
+ * for more details. */
 
 #include <QApplication>
 #include <QString>
@@ -1422,7 +1422,7 @@ void StoreSummarySettings(Session * sess, STRRecord & R)
 
     if (R.mp50 >= 0) {
 //        sess->setp95(CPAP_MaskPressure, R.mp95);
-//        sess->setp50(CPAP_MaskPressure, R.mp50);
+//        sess->seTTtp50(CPAP_MaskPressure, R.mp50);
         sess->setMax(CPAP_MaskPressure, R.mpmax);
     }
 

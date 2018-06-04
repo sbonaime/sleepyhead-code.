@@ -281,7 +281,7 @@ QString Welcome::GenerateOxiHTML()
         QDate oxidate=p_profile->LastDay(MT_OXIMETER);
         int daysto = oxidate.daysTo(QDate::currentDate());
 
-        html += "<p>"+QObject::tr("Most recent Oximetery data: <a onclick='alert(\"daily=%2\");'>%1</a> ").arg(oxidate.toString(Qt::SystemLocaleLongDate)).arg(oxidate.toString(Qt::ISODate));
+        html += "<p>"+QObject::tr("Most recent Oximetry data: <a onclick='alert(\"daily=%2\");'>%1</a> ").arg(oxidate.toString(Qt::SystemLocaleLongDate)).arg(oxidate.toString(Qt::ISODate));
         if (daysto == 1) html += QObject::tr("(last night)");
         else if (daysto == 2) html += QObject::tr("(yesterday)");
         else html += QObject::tr("(%2 day ago)").arg(oxidate.daysTo(QDate::currentDate()));
@@ -289,7 +289,7 @@ QString Welcome::GenerateOxiHTML()
         ui->oxiIcon->setVisible(true);
         ui->oxiInfo->setVisible(true);
     } else {
-        html += "<p>"+QObject::tr("No oximetery data has been imported yet.")+"</p>";
+        html += "<p>"+QObject::tr("No oximetry data has been imported yet.")+"</p>";
         ui->oxiIcon->setVisible(false);
         ui->oxiInfo->setVisible(false);
     }

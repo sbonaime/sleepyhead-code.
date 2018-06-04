@@ -3,8 +3,8 @@
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code
+ * for more details. */
 
 #ifndef PRS1LOADER_H
 #define PRS1LOADER_H
@@ -115,7 +115,7 @@ public:
     PRS1DataChunk * summary;
     PRS1DataChunk * event;
     QList<PRS1DataChunk *> waveforms;
-    QList<PRS1DataChunk *> oximetery;
+    QList<PRS1DataChunk *> oximetry;
 
     QMap<unsigned char, QByteArray> mainblock;
     QMap<unsigned char, QByteArray> hbdata;

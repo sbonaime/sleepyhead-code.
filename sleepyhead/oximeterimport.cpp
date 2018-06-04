@@ -3,8 +3,8 @@
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code
+ * for more details. */
 
 #include <QThread>
 #include <QMessageBox>
@@ -426,7 +426,7 @@ void OximeterImport::on_fileImportButton_clicked()
         }
     }
     if (!success) {
-        QMessageBox::warning(this, STR_MessageBox_Warning, tr("No Oximetery module could parse the given file:")+QString("\n\n%1").arg(filename), QMessageBox::Ok);
+        QMessageBox::warning(this, STR_MessageBox_Warning, tr("No Oximetry module could parse the given file:")+QString("\n\n%1").arg(filename), QMessageBox::Ok);
         return;
     }
     qDebug() << "Using loader " << oximodule->loaderName();
@@ -471,7 +471,7 @@ void OximeterImport::on_liveImportButton_clicked()
     Machine *mach = p_profile->CreateMachine(info);
 
     connect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
-    ui->liveConnectLabel->setText(tr("Live Oximetery Mode"));
+    ui->liveConnectLabel->setText(tr("Live Oximetry Mode"));
 
 
     liveView->setEmptyText(tr("Starting up..."));
@@ -523,8 +523,8 @@ void OximeterImport::finishedRecording()
 
     ui->stopButton->setVisible(false);
     ui->liveConnectLabel->setText(tr("Live Import Stopped"));
-    liveView->setEmptyText(tr("Live Oximetery Stopped"));
-    updateStatus(tr("Live Oximetery import has been stopped"));
+    liveView->setEmptyText(tr("Live Oximetry Stopped"));
+    updateStatus(tr("Live Oximetry import has been stopped"));
 
     disconnect(oximodule, SIGNAL(updatePlethy(QByteArray)), this, SLOT(on_updatePlethy(QByteArray)));
 
@@ -1124,7 +1124,7 @@ void OximeterImport::setInformation()
     "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
             "<span style=\" font-weight:600;\">"+tr("Please remember:")+" </span>"
             "<span style=\" font-weight:600; font-style:italic;\">"
-            +tr("If you are trying to sync oximetery and CPAP data, please make sure you imported your CPAP sessions first before proceeding!")+"</span></p>"
+            +tr("If you are trying to sync oximetry and CPAP data, please make sure you imported your CPAP sessions first before proceeding!")+"</span></p>"
     "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
             "<span style=\" font-weight:600;\">"+tr("Important Notes:")+" </span>"
             +tr("For SleepyHead to be able to locate and read directly from your Oximeter device, you need to ensure the correct device drivers (eg. USB to Serial UART) have been installed on your computer. For more information about this, %1click here%2.").arg("<a href=\"http://www.silabs.com/products/mcu/pages/usbtouartbridgevcpdrivers.aspx\"><span style=\" text-decoration: underline; color:#0000ff;\">").arg("</span></a>")+"</p>"

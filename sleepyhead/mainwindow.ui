@@ -3062,7 +3062,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <widget class="QMenu" name="menuPurge_Oximetery_Data">
       <property name="title">
-       <string>Purge Oximetery Data</string>
+       <string>Purge Oximetry Data</string>
       </property>
       <addaction name="actionPurgeCurrentDaysOximetry"/>
      </widget>
