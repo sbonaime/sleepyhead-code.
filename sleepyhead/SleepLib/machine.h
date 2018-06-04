@@ -83,7 +83,7 @@ class Machine
 
         If supplied MachineID is zero, it will generate a new unused random one.
         */
-    Machine(MachineID id = 0);
+    Machine(Profile * _profile, MachineID id = 0);
     virtual ~Machine();
 
     //! \brief Load all Machine summary data
@@ -268,6 +268,8 @@ class Machine
     QString m_summaryPath;
     QString m_eventsPath;
     QString m_dataPath;
+
+    Profile * profile;
 };
 
 
@@ -277,7 +279,7 @@ class Machine
 class CPAP: public Machine
 {
   public:
-    CPAP(MachineID id = 0);
+    CPAP(Profile *, MachineID id = 0);
     virtual ~CPAP();
 
 };
@@ -289,7 +291,7 @@ class CPAP: public Machine
 class Oximeter: public Machine
 {
   public:
-    Oximeter(MachineID id = 0);
+    Oximeter(Profile *, MachineID id = 0);
     virtual ~Oximeter();
   protected:
 };
@@ -300,7 +302,7 @@ class Oximeter: public Machine
 class SleepStage: public Machine
 {
   public:
-    SleepStage(MachineID id = 0);
+    SleepStage(Profile *, MachineID id = 0);
     virtual ~SleepStage();
   protected:
 };
@@ -311,7 +313,7 @@ class SleepStage: public Machine
 class PositionSensor: public Machine
 {
   public:
-    PositionSensor(MachineID id = 0);
+    PositionSensor(Profile *, MachineID id = 0);
     virtual ~PositionSensor();
   protected:
 };

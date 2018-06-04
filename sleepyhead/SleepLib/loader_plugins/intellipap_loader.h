@@ -29,7 +29,7 @@ const int intellipap_data_version = 3;
 class Intellipap: public CPAP
 {
   public:
-    Intellipap(MachineID id = 0);
+    Intellipap(Profile *, MachineID id = 0);
     virtual ~Intellipap();
 };
 

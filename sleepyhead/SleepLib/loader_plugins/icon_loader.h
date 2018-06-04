@@ -30,7 +30,7 @@ const int fpicon_data_version = 3;
 class FPIcon: public CPAP
 {
   public:
-    FPIcon(MachineID id = 0);
+    FPIcon(Profile *, MachineID id = 0);
     virtual ~FPIcon();
 };
 

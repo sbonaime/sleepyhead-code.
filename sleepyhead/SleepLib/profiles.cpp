@@ -674,23 +674,23 @@ Machine * Profile::CreateMachine(MachineInfo info, MachineID id)
 
     switch (info.type) {
     case MT_CPAP:
-        m = new CPAP(id);
+        m = new CPAP(this, id);
         break;
     case MT_SLEEPSTAGE:
-        m = new SleepStage(id);
+        m = new SleepStage(this, id);
         break;
     case MT_OXIMETER:
-        m = new Oximeter(id);
+        m = new Oximeter(this, id);
         break;
     case MT_POSITION:
-        m = new PositionSensor(id);
+        m = new PositionSensor(this, id);
         break;
     case MT_JOURNAL:
-        m = new Machine(id);
+        m = new Machine(this, id);
         m->setType(MT_JOURNAL);
         break;
     default:
-        m = new Machine(id);
+        m = new Machine(this, id);
 
         break;
     }

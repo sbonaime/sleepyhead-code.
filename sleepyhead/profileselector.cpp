@@ -51,15 +51,21 @@ ProfileSelector::ProfileSelector(QWidget *parent) :
     model = nullptr;
     proxy = nullptr;
 
-    showDiskUsage = false;
+    showDiskUsage = false;  // in case I want to preference it later
     on_diskSpaceInfo_linkActivated(showDiskUsage ? "show" : "hide");
 
     ui->versionLabel->setText(VersionString);
     ui->diskSpaceInfo->setVisible(false);
+
+    QItemSelectionModel * sm = ui->profileView->selectionModel();
+    connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
+    ui->buttonEditProfile->setEnabled(false);
 }
 
 ProfileSelector::~ProfileSelector()
 {
+    QItemSelectionModel * sm = ui->profileView->selectionModel();
+    disconnect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
     delete ui;
 }
 
@@ -87,6 +93,19 @@ void ProfileSelector::updateProfileList()
 //    int sel = -1;
 
     QFontMetrics fm(ui->profileView->font());
+    //#if QT_VERSION < QT_VERSION_CHECK(5,11,0) // not sure when this was fixed
+        QPalette palette = ui->profileView->palette();
+        palette.setColor(QPalette::Highlight, "#3a7fc2");
+        palette.setColor(QPalette::HighlightedText, "white");
+        ui->profileView->setPalette(palette);
+    //#endif
+
+    ui->profileView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->profileView->setFocusPolicy(Qt::NoFocus);
+//    ui->profileView->setSelectionMode(QAbstractItemView::NoSelection);
+    ui->profileView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->profileView->setSelectionMode(QAbstractItemView::SingleSelection);
+
 
     QMap<QString, Profile *>::iterator pi;
     for (pi = Profiles::profiles.begin(); pi != Profiles::profiles.end(); pi++) {
@@ -145,19 +164,14 @@ void ProfileSelector::updateProfileList()
     proxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     ui->profileView->setModel(proxy);
-    ui->profileView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->profileView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QHeaderView *headerView = ui->profileView->horizontalHeader();
     headerView->setStretchLastSection(true);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
 
-    QPalette* palette = new QPalette();
-    palette->setColor(QPalette::Highlight,QColor("#3a7fc2"));
-    palette->setColor(QPalette::HighlightedText, QColor("white"));
-
-    ui->profileView->setPalette(*palette);
-
+    QItemSelectionModel * sm = ui->profileView->selectionModel();
+    disconnect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
+    connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
 
 }
 
@@ -184,7 +198,7 @@ void ProfileSelector::updateProfileHighlight(QString name)
             break;
         }
     }
-    if (p_profile) {
+    /*if (p_profile) {
         QString html = QString();
 
         if (!p_profile->user->lastName().isEmpty() && !p_profile->user->firstName().isEmpty()) {
@@ -206,11 +220,9 @@ void ProfileSelector::updateProfileHighlight(QString name)
         ui->diskSpaceInfo->setVisible(true);
         ui->profileInfoGroupBox->setTitle(tr("Current Profile: %1").arg(name));
         ui->profileInfoLabel->setText(html);
-
-        on_diskSpaceInfo_linkActivated(showDiskUsage ? "show" : "hide"); // don't show disk info by default
     } else {
         ui->diskSpaceInfo->setVisible(false);
-    }
+    }  */
 
 }
 
@@ -314,6 +326,8 @@ void ProfileSelector::on_buttonEditProfile_clicked()
         }
 
         delete newprof;
+    } else {
+        QMessageBox::information(this, STR_MessageBox_Information, tr("Select a profile first"), QMessageBox::Ok);
     }
 }
 
@@ -386,7 +400,7 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
 
         QDialog confirmdlg;
         QVBoxLayout layout(&confirmdlg);
-        QLabel message(QString("<b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to destroy profile '<b>%1</b>'.")+"<br/><br/>"+tr("Think carefully, as this will irretrievably delete the profile along with all <b>backup data</b> stored under<br/>%2.")+"<br/><br/>"+tr("Enter the word <b>DELETE</b> below to confirm.")).arg(name).arg(path), &confirmdlg);
+        QLabel message(QString("<b>"+STR_MessageBox_Warning+":</b> "+tr("You are about to destroy profile '<b>%1</b>'.")+"<br/><br/>"+tr("Think carefully, as this will irretrievably delete the profile along with all <b>backup data</b> stored under<br/>%2.")+"<br/><br/>"+tr("Enter the word <b>DELETE</b> below (exactly as shown) to confirm.")).arg(name).arg(path), &confirmdlg);
         layout.insertWidget(0,&message,1);
         QLineEdit lineedit(&confirmdlg);
         layout.insertWidget(1, &lineedit, 1);
@@ -404,7 +418,7 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
         if (confirmdlg.exec() != QDialog::Accepted)
             return;
 
-        if (lineedit.text().compare("DELETE")!=0) {
+        if (lineedit.text().compare(tr("DELETE"))!=0) {
             QMessageBox::information(NULL, tr("Sorry"), tr("You need to enter DELETE in capital letters."), QMessageBox::Ok);
             return;
         }
@@ -444,26 +458,74 @@ QString formatSize(qint64 size) {
 }
 
 
+QString getProfileDiskInfo(Profile *profile)
+{
+    QString html;
+    if (profile) {
+        qint64 sizeSummaries = profile->diskSpaceSummaries();
+        qint64 sizeEvents = profile->diskSpaceEvents();
+        qint64 sizeBackups = profile->diskSpaceBackups();
+
+        html += "<table>"
+                "<tr><td align=right>"+QObject::tr("Summaries:")+"</td><td>"+formatSize(sizeSummaries)+"</td></tr>"
+                "<tr><td align=right>"+QObject::tr("Events:")+"</td><td>"+formatSize(sizeEvents)+"</td></tr>"
+                "<tr><td align=right>"+QObject::tr("Backups:")+"</td><td>"+formatSize(sizeBackups)+"</td></tr>"
+                "</table>";
+    }
+    return html;
+
+}
+
 void ProfileSelector::on_diskSpaceInfo_linkActivated(const QString &link)
 {
     QString html;
 
     if (link == "show") {
-        html += "<a href='hide'>"+tr("Hide disk usage information")+"</a>";
-        if (p_profile) {
-            qint64 sizeSummaries = p_profile->diskSpaceSummaries();
-            qint64 sizeEvents = p_profile->diskSpaceEvents();
-            qint64 sizeBackups = p_profile->diskSpaceBackups();
-
-            html += "<table>"
-                    "<tr><td align=right>"+tr("Summaries:")+"</td><td>"+formatSize(sizeSummaries)+"</td></tr>"
-                    "<tr><td align=right>"+tr("Events:")+"</td><td>"+formatSize(sizeEvents)+"</td></tr>"
-                    "<tr><td align=right>"+tr("Backups:")+"</td><td>"+formatSize(sizeBackups)+"</td></tr></table>";
-        }
+        html += "<a href='hide'>"+tr("Hide disk usage information")+"</a>"+getProfileDiskInfo(p_profile);
         showDiskUsage = true;
     } else {
         html += "<a href='show'>"+tr("Show disk usage information")+"</a>";
         showDiskUsage = false;
     }
     ui->diskSpaceInfo->setText(html);
+}
+
+void ProfileSelector::on_selectionChanged(const QModelIndex &index, const QModelIndex &)
+{
+    bool enabled = false;
+    if (index.isValid()) {
+        QString name = proxy->data(proxy->index(index.row(), 0, QModelIndex()), Qt::UserRole+2).toString();
+        auto prof = Profiles::profiles.find(name);
+        if (prof != Profiles::profiles.end()) {
+            enabled = true;
+            QString html = QString();
+            Profile * profile = prof.value();
+
+            if (!profile->user->lastName().isEmpty() && !profile->user->firstName().isEmpty()) {
+                html += tr("Name: %1, %2").arg(profile->user->lastName()).arg(profile->user->firstName())+"<br/>";
+            }
+            if (!profile->user->phone().isEmpty()) {
+                html += tr("Phone: %1").arg(profile->user->phone())+"<br/>";
+            }
+            if (!profile->user->email().isEmpty()) {
+                html += tr("Email: <a href='mailto:%1'>%1</a>").arg(profile->user->email())+"<br/>";
+            }
+            if (!profile->user->address().isEmpty()) {
+                html += "<br/>"+tr("Address:")+"<br/>"+profile->user->address().trimmed().replace("\n","<br/>")+"<br/>";
+            }
+            if (html.isEmpty()) {
+                html += tr("No profile information given")+"<br/>";
+            }
+            ui->diskSpaceInfo->setVisible(true);
+            ui->profileInfoGroupBox->setTitle(tr("Profile: %1").arg(name));
+            ui->profileInfoLabel->setText(html);
+
+            if (showDiskUsage) { // ugly, but uh....
+                ui->diskSpaceInfo->setText("<a href='hide'>"+tr("Hide disk usage information")+"</a>"+getProfileDiskInfo(prof.value()));
+            }
+        } else {
+           ui->diskSpaceInfo->setText("Something went wrong");
+        }
+    }
+    ui->buttonEditProfile->setEnabled(enabled);
 }

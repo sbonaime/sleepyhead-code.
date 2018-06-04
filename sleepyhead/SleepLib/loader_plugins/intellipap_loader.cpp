@@ -14,8 +14,8 @@
 
 ChannelID INTP_SmartFlexMode, INTP_SmartFlexLevel;
 
-Intellipap::Intellipap(MachineID id)
-    : CPAP(id)
+Intellipap::Intellipap(Profile *profile, MachineID id)
+    : CPAP(profile, id)
 {
 }
 

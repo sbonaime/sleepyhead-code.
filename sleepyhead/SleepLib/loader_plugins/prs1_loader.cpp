@@ -3,8 +3,8 @@
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
  * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of the Linux
- * distribution for more details. */
+ * License. See the file COPYING in the main directory of the source code
+ * for more details. */
 
 #include <QApplication>
 #include <QString>
@@ -102,7 +102,7 @@ enum FlexMode { FLEX_None, FLEX_CFlex, FLEX_CFlexPlus, FLEX_AFlex, FLEX_RiseTime
 
 ChannelID PRS1_TimedBreath = 0, PRS1_HeatedTubing = 0;
 
-PRS1::PRS1(MachineID id): CPAP(id)
+PRS1::PRS1(Profile *profile, MachineID id): CPAP(profile, id)
 {
 }
 PRS1::~PRS1()

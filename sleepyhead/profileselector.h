@@ -53,6 +53,8 @@ private slots:
 
     void on_diskSpaceInfo_linkActivated(const QString &link);
 
+    void on_selectionChanged(const QModelIndex &current, const QModelIndex &previous);
+
 private:
     Ui::ProfileSelector *ui;
     QStandardItemModel *model;

@@ -18,8 +18,8 @@
 
 extern QProgressBar *qprogress;
 
-Weinmann::Weinmann(MachineID id)
-    : CPAP(id)
+Weinmann::Weinmann(Profile *profile, MachineID id)
+    : CPAP(profile, id)
 {
 }
 

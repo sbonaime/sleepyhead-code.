@@ -16,8 +16,8 @@
 
 const QString FPHCARE = "FPHCARE";
 
-FPIcon::FPIcon(MachineID id)
-    : CPAP(id)
+FPIcon::FPIcon(Profile *profile, MachineID id)
+    : CPAP(profile, id)
 {
 }
 

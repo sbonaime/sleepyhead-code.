@@ -14,8 +14,8 @@ extern QProgressBar *qprogress;
 
 
 
-MSeries::MSeries(MachineID id)
-    : CPAP(id)
+MSeries::MSeries(Profile *profile, MachineID id)
+    : CPAP(profile, id)
 {
 }
 

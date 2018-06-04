@@ -30,7 +30,7 @@ const int prs1_data_version = 15;
 class PRS1: public CPAP
 {
   public:
-    PRS1(MachineID id = 0);
+    PRS1(Profile *, MachineID id = 0);
     virtual ~PRS1();
 };
 

@@ -31,7 +31,7 @@ const int mseries_data_version = 2;
 class MSeries: public CPAP
 {
   public:
-    MSeries(MachineID id = 0);
+    MSeries(Profile *, MachineID id = 0);
     virtual ~MSeries();
 };
 

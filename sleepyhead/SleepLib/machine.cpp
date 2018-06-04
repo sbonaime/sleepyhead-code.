@@ -41,7 +41,7 @@ extern QProgressBar *qprogress;
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Machine::Machine(MachineID id)
+Machine::Machine(Profile *_profile, MachineID id) : profile(_profile)
 {
     day.clear();
     highest_sessionid = 0;
@@ -57,8 +57,8 @@ Machine::Machine(MachineID id)
             temp = rand();
 
             found = false;
-            for (int i=0;i<p_profile->m_machlist.size(); ++i) {
-                if (p_profile->m_machlist.at(i)->id() == temp) found = true;
+            for (int i=0;i<profile->m_machlist.size(); ++i) {
+                if (profile->m_machlist.at(i)->id() == temp) found = true;
             }
         } while (found);
 
@@ -198,8 +198,8 @@ bool Machine::loadSessionInfo()
 // Find date this session belongs in
 QDate Machine::pickDate(qint64 first)
 {
-    QTime split_time = p_profile->session->daySplitTime();
-    int combine_sessions = p_profile->session->combineCloseSessions();
+    QTime split_time = profile->session->daySplitTime();
+    int combine_sessions = profile->session->combineCloseSessions();
 
     QDateTime d2 = QDateTime::fromTime_t(first / 1000);
 
@@ -232,13 +232,13 @@ bool Machine::AddSession(Session *s)
         qCritical() << "AddSession() called with a null object";
         return false;
     }
-    if (p_profile == nullptr) {
-        qCritical() << "AddSession() called without a valid p_profile";
+    if (profile == nullptr) {
+        qCritical() << "AddSession() called without a valid profile";
         return false;
     }
 
-    if (p_profile->session->ignoreOlderSessions()) {
-        qint64 ignorebefore = p_profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
+    if (profile->session->ignoreOlderSessions()) {
+        qint64 ignorebefore = profile->session->ignoreOlderSessionsDate().toMSecsSinceEpoch();
         if (s->last() < ignorebefore) {
             skipped_sessions++;
             return false;
@@ -254,24 +254,24 @@ bool Machine::AddSession(Session *s)
 
     QTime split_time;
     int combine_sessions;
-    bool locksessions = p_profile->session->lockSummarySessions();
+    bool locksessions = profile->session->lockSummarySessions();
 
     if (locksessions) {
-        split_time = s->summaryOnly() ? QTime(12,0,0) : p_profile->session->daySplitTime();
+        split_time = s->summaryOnly() ? QTime(12,0,0) : profile->session->daySplitTime();
         combine_sessions = s->summaryOnly() ? 0 : p_profile->session->combineCloseSessions();
     } else {
-        split_time = p_profile->session->daySplitTime();
-        combine_sessions = p_profile->session->combineCloseSessions();
+        split_time = profile->session->daySplitTime();
+        combine_sessions = profile->session->combineCloseSessions();
     }
 
-    int ignore_sessions = p_profile->session->ignoreShortSessions();
+    int ignore_sessions = profile->session->ignoreShortSessions();
 
     int session_length = s->last() - s->first();
     session_length /= 60000;
 
     sessionlist[s->session()] = s; // To make sure it get's saved later even if it's not wanted.
 
-    //int drift=p_profile->cpap->clockDrift();
+    //int drift=profile->cpap->clockDrift();
 
     QDateTime d2 = QDateTime::fromTime_t(s->first() / 1000);
 
@@ -338,7 +338,7 @@ bool Machine::AddSession(Session *s)
     dit = day.find(date);
 
     if (dit == day.end()) {
-        dit = day.insert(date, p_profile->addDay(date));
+        dit = day.insert(date, profile->addDay(date));
     }
     dd = dit.value();
 
@@ -356,9 +356,9 @@ bool Machine::AddSession(Session *s)
             dd->addSession(*i);
         }
 
-//        QMap<QDate, QList<Day *> >::iterator nd = p_profile->daylist.find(date.addDays(1));
-//        if (nd != p_profile->daylist.end()) {
-//            p_profile->unlinkDay(nd.key(), nd.value());
+//        QMap<QDate, QList<Day *> >::iterator nd = profile->daylist.find(date.addDays(1));
+//        if (nd != profile->daylist.end()) {
+//            profile->unlinkDay(nd.key(), nd.value());
 //        }
 
 //        QList<Day *>::iterator iend = nd.value().end();
@@ -425,7 +425,7 @@ bool Machine::unlinkSession(Session * sess)
             }
 
             if (d->size() == 0) {
-                p_profile->unlinkDay(d);
+                profile->unlinkDay(d);
             }
         }
     }
@@ -457,7 +457,7 @@ bool Machine::Purge(int secret)
     QFile impfile(getDataPath()+"/imported_files.csv");
     impfile.remove();
 
-    QFile rxcache(p_profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
+    QFile rxcache(profile->Get("{" + STR_GEN_DataFolder + "}/RXChanges.cache" ));
     rxcache.remove();
 
     QFile sumfile(getDataPath()+"/Summaries.xml.gz");
@@ -546,7 +546,7 @@ void Machine::setInfo(MachineInfo inf)
 const QString Machine::getDataPath()
 {
     if (m_dataPath.isEmpty()) {
-        m_dataPath = p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+        m_dataPath = profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
     }
     return m_dataPath;
 }
@@ -558,10 +558,9 @@ const QString Machine::getEventsPath()
 {
     return getDataPath() + "Events/";
 }
-
 const QString Machine::getBackupPath()
 {
-    return p_profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)  + "/Backup/");
+    return getDataPath() + "Backup/";
 }
 
 // dirSize lazily pinched from https://stackoverflow.com/questions/47854288/can-not-get-directory-size-in-qt-c, thank's "Mike"
@@ -610,7 +609,7 @@ bool Machine::Load()
 
     QPixmap image = getPixmap().scaled(64,64);
     popup->setPixmap(image);
-    popup->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(p_profile->user->userName()));
+    popup->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(profile->user->userName()));
     popup->open();
 
     QProgressBar * saveQProgress = qprogress;
@@ -1050,7 +1049,7 @@ bool Machine::LoadSummary(QProgressBar * progress)
     QMap<qint64, Session *>::iterator it_end = sess_order.end();
     QMap<qint64, Session *>::iterator it;
     int cnt = 0;
-    bool loadSummaries = p_profile->session->preloadSummaries();
+    bool loadSummaries = profile->session->preloadSummaries();
 
     progress->setMaximum(sess_order.size());
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
@@ -1086,7 +1085,7 @@ bool Machine::SaveSummaryCache()
 
     QDomElement root = doc.createElement("sessions");
     root.setAttribute("version", summaryxml_version);
-    root.setAttribute("profile", p_profile->user->userName());
+    root.setAttribute("profile", profile->user->userName());
     root.setAttribute("count", sessionlist.size());
     root.setAttribute("loader", info.loadername);
     root.setAttribute("serial", info.serial);
@@ -1220,7 +1219,7 @@ QList<ChannelID> Machine::availableChannels(quint32 chantype)
 //////////////////////////////////////////////////////////////////////////////////////////
 // CPAP implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-CPAP::CPAP(MachineID id): Machine(id)
+CPAP::CPAP(Profile * profile, MachineID id): Machine(profile, id)
 {
     m_type = MT_CPAP;
 }
@@ -1232,7 +1231,7 @@ CPAP::~CPAP()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Oximeter Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Oximeter::Oximeter(MachineID id): Machine(id)
+Oximeter::Oximeter(Profile * profile, MachineID id): Machine(profile, id)
 {
     m_type = MT_OXIMETER;
 }
@@ -1244,7 +1243,7 @@ Oximeter::~Oximeter()
 //////////////////////////////////////////////////////////////////////////////////////////
 // SleepStage Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-SleepStage::SleepStage(MachineID id): Machine(id)
+SleepStage::SleepStage(Profile * profile, MachineID id): Machine(profile, id)
 {
     m_type = MT_SLEEPSTAGE;
 }
@@ -1255,7 +1254,7 @@ SleepStage::~SleepStage()
 //////////////////////////////////////////////////////////////////////////////////////////
 // PositionSensor Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-PositionSensor::PositionSensor(MachineID id): Machine(id)
+PositionSensor::PositionSensor(Profile * profile, MachineID id): Machine(profile, id)
 {
     m_type = MT_POSITION;
 }

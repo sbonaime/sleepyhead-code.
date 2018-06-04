@@ -29,7 +29,7 @@ const int weinmann_data_version = 3;
 class Weinmann: public CPAP
 {
   public:
-    Weinmann(MachineID id = 0);
+    Weinmann(Profile *, MachineID id = 0);
     virtual ~Weinmann();
 };
 
