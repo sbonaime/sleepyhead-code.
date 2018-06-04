@@ -195,35 +195,11 @@ void ProfileSelector::updateProfileHighlight(QString name)
                 proxy->setData(proxy->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
               //  proxy->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
             }
+            on_selectionChanged(proxy->index(row, 0, QModelIndex()), QModelIndex());
             break;
         }
+
     }
-    /*if (p_profile) {
-        QString html = QString();
-
-        if (!p_profile->user->lastName().isEmpty() && !p_profile->user->firstName().isEmpty()) {
-            html += tr("Name: %1, %2").arg(p_profile->user->lastName()).arg(p_profile->user->firstName())+"<br/>";
-        }
-        if (!p_profile->user->phone().isEmpty()) {
-            html += tr("Phone: %1").arg(p_profile->user->phone())+"<br/>";
-        }
-        if (!p_profile->user->email().isEmpty()) {
-            html += tr("Email: <a href='mailto:%1'>%1</a>").arg(p_profile->user->email())+"<br/>";
-        }
-        if (!p_profile->user->address().isEmpty()) {
-            html += "<br/>"+tr("Address:")+"<br/>"+p_profile->user->address().trimmed().replace("\n","<br/>")+"<br/>";
-        }
-
-        if (html.isEmpty()) {
-            html += tr("No profile information given")+"<br/>";
-        }
-        ui->diskSpaceInfo->setVisible(true);
-        ui->profileInfoGroupBox->setTitle(tr("Current Profile: %1").arg(name));
-        ui->profileInfoLabel->setText(html);
-    } else {
-        ui->diskSpaceInfo->setVisible(false);
-    }  */
-
 }
 
 void ProfileSelector::SelectProfile(QString profname)

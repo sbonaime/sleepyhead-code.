@@ -265,7 +265,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Please open or create a profile...</string>
+              <string>Please select or create a profile...</string>
              </property>
              <property name="textFormat">
               <enum>Qt::AutoText</enum>
