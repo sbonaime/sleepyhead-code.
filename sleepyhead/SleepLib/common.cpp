@@ -11,6 +11,7 @@
 #include <QThread>
 #include <zlib.h>
 
+#include "version.h"
 #include "profiles.h"
 
 // Used by internal settings
@@ -23,6 +24,11 @@ const QString getDeveloperName()
 const QString getAppName()
 {
     QString name = STR_AppName;
+#ifdef GIT_BRANCH
+    if ((QString(GIT_BRANCH) != "master") || (!((ReleaseStatus.compare("r", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("rc", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("beta", Qt::CaseInsensitive)==0)))) {
+        name += "-"+QString(GIT_BRANCH);
+    }
+#endif
     return name;
 }
 

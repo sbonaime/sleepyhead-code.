@@ -55,7 +55,7 @@ void sDelay(int s)
 int compareVersion(QString version);
 
 
-void MigrateSettings()
+/*void MigrateSettings()
 {
     QSettings settings(getDeveloperName(), getAppName());
     if (settings.contains("Version")) { return; } // done, we are new
@@ -76,7 +76,7 @@ void MigrateSettings()
 
     qDebug() << keys;
 
-}
+} */
 
 
 int main(int argc, char *argv[])
@@ -93,8 +93,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
 
-    // Ok, first things first... Migrate the -Testing QSettings over
-    MigrateSettings();
+   // MigrateSettings();
 
     QSettings settings(getDeveloperName(), getAppName());
 
