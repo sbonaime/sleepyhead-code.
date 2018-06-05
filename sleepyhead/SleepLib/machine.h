@@ -25,6 +25,7 @@
 #include <list>
 
 #include "SleepLib/preferences.h"
+#include "SleepLib/progressdialog.h"
 #include "SleepLib/machine_common.h"
 #include "SleepLib/event.h"
 #include "SleepLib/session.h"
@@ -87,9 +88,9 @@ class Machine
     virtual ~Machine();
 
     //! \brief Load all Machine summary data
-    bool Load();
+    bool Load(ProgressDialog *progress);
 
-    bool LoadSummary(QProgressBar * progress);
+    bool LoadSummary(ProgressDialog *progress);
 
     //! \brief Save all Sessions where changed bit is set.
     bool Save();

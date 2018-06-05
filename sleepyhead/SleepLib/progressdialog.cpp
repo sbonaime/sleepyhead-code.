@@ -11,7 +11,7 @@
 ProgressDialog::ProgressDialog(QWidget * parent):
     QDialog(parent, Qt::Tool | Qt::FramelessWindowHint)
 {
-    waitmsg = new QLabel(QObject::tr("PLease Wait..."));
+    statusMsg = new QLabel(QObject::tr("Please Wait..."));
     hlayout = new QHBoxLayout;
 
     imglabel = new QLabel(this);
@@ -21,10 +21,12 @@ ProgressDialog::ProgressDialog(QWidget * parent):
     this->setLayout(vlayout);
     vlayout->addLayout(hlayout);
     hlayout->addWidget(imglabel);
-    hlayout->addWidget(waitmsg,1,Qt::AlignCenter);
+    hlayout->addWidget(statusMsg,1,Qt::AlignCenter);
     vlayout->addWidget(progress,1);
     progress->setMaximum(100);
     abortButton = nullptr;
+    setWindowModality(Qt::ApplicationModal);
+
 }
 
 ProgressDialog::~ProgressDialog()
@@ -46,7 +48,7 @@ void ProgressDialog::setProgressValue(int val)
 
 
 void ProgressDialog::setMessage(QString msg) {
-    waitmsg->setText(msg); update();
+    statusMsg->setText(msg);
 }
 
 void ProgressDialog::addAbortButton()

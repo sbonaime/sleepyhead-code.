@@ -594,7 +594,7 @@ qint64 Machine::diskSpaceBackups()
     return dirSize(getBackupPath());
 }
 
-bool Machine::Load()
+bool Machine::Load(ProgressDialog *progress)
 {
     QString path = getDataPath();
 
@@ -605,19 +605,24 @@ bool Machine::Load()
         return false;
     }
 
-    ProgressDialog * popup = new ProgressDialog(mainwin);
-
     QPixmap image = getPixmap().scaled(64,64);
-    popup->setPixmap(image);
-    popup->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(profile->user->userName()));
-    popup->open();
+    progress->setPixmap(image);
+    progress->setMessage(QObject::tr("Loading %1 data for %2...").arg(info.brand).arg(profile->user->userName()));
 
-    QProgressBar * saveQProgress = qprogress;
+    if (loader()) {
+        mainwin->connect(loader(), SIGNAL(updateMessage(QString)), progress, SLOT(setMessage(QString)));
+        mainwin->connect(loader(), SIGNAL(setProgressMax(int)),   progress, SLOT(setProgressMax(int)));
+        mainwin->connect(loader(), SIGNAL(setProgressValue(int)), progress, SLOT(setProgressValue(int)));
+    }
 
-    qprogress = popup->progress;
-
-    if (!LoadSummary(qprogress)) {
+    if (!LoadSummary(progress)) {
         // No XML index file, so assume upgrading, or it simply just got screwed up or deleted...
+        progress->setMessage(QObject::tr("Scanning Files"));
+        progress->setProgressValue(0);
+        QApplication::processEvents();
+
+
+
         QTime time;
         time.start();
         dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -636,11 +641,6 @@ bool Machine::Load()
         QStringList filelist = dir.entryList();
         int size = filelist.size();
 
-        if (qprogress) {
-            qprogress->setMinimum(0);
-            qprogress->setValue(0);
-            QApplication::processEvents();
-        }
 
         // Legacy crap.. Summary and Event stuff used to be in one big pile in the machine folder root
         for (auto & filename : filelist) {
@@ -653,11 +653,14 @@ bool Machine::Load()
         dir.setNameFilters(filters);
         filelist = dir.entryList();
         size = filelist.size();
+        progress->setMessage(QObject::tr("Migrating Summary File Location"));
+        progress->setProgressMax(size);
+        QApplication::processEvents();
         if (size > 0) {
             if (!dir.exists(eventpath)) dir.mkpath(eventpath);
             for (int i=0; i< size; i++) {
-                if ((i % 50) == 0) { // This is slow.. :-/
-                    if (qprogress) { qprogress->setValue((float(i) / float(size) * 100.0)); }
+                if ((i % 20) == 0) { // This is slow.. :-/
+                    progress->setProgressValue(i);
 
                     QApplication::processEvents();
                 }
@@ -677,12 +680,9 @@ bool Machine::Load()
         filelist = dir.entryList();
         size = filelist.size();
 
-        if (qprogress) {
-            qprogress->setMinimum(0);
-            qprogress->setMaximum(size);
-            qprogress->setValue(0);
-            QApplication::processEvents();
-        }
+        progress->setMessage("Reading summary files");
+        progress->setProgressValue(0);
+        QApplication::processEvents();
 
         QString sesstr;
         SessionID sessid;
@@ -690,9 +690,8 @@ bool Machine::Load()
 
         for (int i=0; i < size; i++) {
 
-            if ((i % 50) == 0) { // This is slow.. :-/
-                if (qprogress) { qprogress->setValue(i); }
-
+            if ((i % 20) == 0) { // This is slow.. :-/
+                progress->setProgressValue(i);
                 QApplication::processEvents();
             }
 
@@ -715,16 +714,18 @@ bool Machine::Load()
 
         SaveSummaryCache();
         qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
-        if (qprogress) { qprogress->setValue(size); }
-    } else {
-        if (qprogress) { qprogress->setValue(100); }
+        progress->setProgressValue(size);
     }
-    loadSessionInfo();
+    progress->setMessage("Loading Session Info");
     QApplication::processEvents();
-    popup->hide();
-    delete popup;
 
-    qprogress = saveQProgress;
+    loadSessionInfo();
+
+    if (loader()) {
+        mainwin->disconnect(loader(), SIGNAL(updateMessage(QString)), progress, SLOT(setMessage(QString)));
+        mainwin->disconnect(loader(), SIGNAL(setProgressMax(int)),   progress, SLOT(setProgressMax(int)));
+        mainwin->disconnect(loader(), SIGNAL(setProgressValue(int)), progress, SLOT(setProgressValue(int)));
+    }
 
     return true;
 }
@@ -943,7 +944,7 @@ void LoadTask::run()
     sess->LoadSummary();
 }
 
-bool Machine::LoadSummary(QProgressBar * progress)
+bool Machine::LoadSummary(ProgressDialog * progress)
 {
     QTime time;
     time.start();
@@ -954,6 +955,8 @@ bool Machine::LoadSummary(QProgressBar * progress)
     QDomDocument doc;
     QFile file(filename);
     qDebug() << "Opening " << filename;
+    progress->setMessage(QObject::tr("Opening Summaries.xml.gz"));
+    QApplication::processEvents();
 
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open" << filename;
@@ -997,7 +1000,12 @@ bool Machine::LoadSummary(QProgressBar * progress)
 
     QMap<qint64, Session *>  sess_order;
 
+    progress->setProgressMax(size);
     for (int s=0; s < size; ++s) {
+        if ((s % 20) == 0) {
+            progress->setProgressValue(s);
+            QApplication::processEvents();
+        }
         node = sessionlist.at(s);
         QDomElement e = node.toElement();
         SessionID sessid = e.attribute("id", "0").toLong(&s_ok);
@@ -1051,7 +1059,10 @@ bool Machine::LoadSummary(QProgressBar * progress)
     int cnt = 0;
     bool loadSummaries = profile->session->preloadSummaries();
 
-    progress->setMaximum(sess_order.size());
+    progress->setMessage(QObject::tr("Queueing Open Tasks"));
+    QApplication::processEvents();
+
+  //  progress->setMaximum(sess_order.size());
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
         //
 /*        if ((cnt % 100) == 0) {
@@ -1063,12 +1074,24 @@ bool Machine::LoadSummary(QProgressBar * progress)
             delete sess;
         } else {
             if (loadSummaries) {
-                queTask(new LoadTask(sess,this));
+                if (loader()) {
+                    loader()->queTask(new LoadTask(sess,this));
+                } else {
+                    // no progress bar
+                    queTask(new LoadTask(sess,this));
+                }
             }
         }
     }
-    runTasks();
-    progress->setValue(sess_order.size());
+    progress->setMessage(QObject::tr("Loading Sessions"));
+    QApplication::processEvents();
+
+    if (loader()) {
+        loader()->runTasks();
+    } else {
+        runTasks();
+    }
+    progress->setProgressValue(sess_order.size());
     QApplication::processEvents();
 
     qDebug() << "Loaded" << info.series << info.model << "data in" << time.elapsed() << "ms";

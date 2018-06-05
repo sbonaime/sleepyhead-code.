@@ -36,7 +36,7 @@ public slots:
 signals:
     void abortClicked();
 protected:
-    QLabel * waitmsg;
+    QLabel * statusMsg;
     QHBoxLayout *hlayout;
     QLabel * imglabel;
     QVBoxLayout * vlayout;

@@ -14,6 +14,7 @@
 #include <QThread>
 
 #include "version.h"
+#include "progressdialog.h"
 #include "machine.h"
 #include "machine_loader.h"
 #include "preferences.h"
@@ -74,7 +75,7 @@ class Profile : public Preferences
     void DelMachine(Machine *m);
 
     //! \brief Loads all machine (summary) data belonging to this profile
-    void LoadMachineData();
+    void LoadMachineData(ProgressDialog *progress);
 
     //! \brief Unloads all machine (summary) data for this profile to free up memory;
     void UnloadMachineData();

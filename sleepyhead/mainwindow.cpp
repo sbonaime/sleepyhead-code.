@@ -240,7 +240,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainsplitter->setStretchFactor(0,1);
     ui->mainsplitter->setStretchFactor(1,0);
 
-    QTimer::singleShot(0, this, SLOT(Startup()));
+    QTimer::singleShot(50, this, SLOT(Startup()));
 
     ui->backButton->setEnabled(ui->helpBrowser->backwardHistoryCount()>0);
     ui->forwardButton->setEnabled(ui->helpBrowser->forwardHistoryCount()>0);
@@ -432,6 +432,11 @@ bool MainWindow::OpenProfile(QString profileName)
 
     p_profile = prof;
 
+    ProgressDialog * progress = new ProgressDialog(this);
+
+    progress->setMessage(QObject::tr("Loading profile \"%1\"...").arg(profileName));
+    progress->open();
+
 #ifdef LOCK_RESMED_SESSIONS
     QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
     for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
@@ -469,7 +474,14 @@ bool MainWindow::OpenProfile(QString profileName)
         connect(loaders.at(i), SIGNAL(machineUnsupported(Machine*)), this, SLOT(MachineUnsupported(Machine*)));
     }
 
-    p_profile->LoadMachineData();
+    p_profile->LoadMachineData(progress);
+    progress->setMessage(tr("Setting up profile \"%1\"").arg(profileName));
+
+    // Show the sheep?
+//    QPixmap sheep=QPixmap(":/docs/sheep.png").scaled(64,64);
+//    progress->setPixmap(sheep);
+
+    QApplication::processEvents();
 
     ui->statStartDate->setDate(p_profile->FirstDay());
     ui->statEndDate->setDate(p_profile->LastDay());
@@ -488,6 +500,7 @@ bool MainWindow::OpenProfile(QString profileName)
 
     if (overview) {
         qCritical() << "OpenProfile called with active Overview object!";
+
         return false;
     }
     overview = new Overview(ui->tabWidget, daily->graphView());
@@ -507,6 +520,10 @@ bool MainWindow::OpenProfile(QString profileName)
     ui->overviewButton->setDisabled(false);
     ui->statisticsButton->setDisabled(false);
     ui->importButton->setDisabled(false);
+
+    progress->close();
+    delete progress;
+
 
     //qprogress->hide();
     //qstatus->setText("");

@@ -591,7 +591,7 @@ void Profile::UnloadMachineData()
     }
     removeLock();
 }
-void Profile::LoadMachineData()
+void Profile::LoadMachineData(ProgressDialog *progress)
 {
     addLock();
 
@@ -603,16 +603,17 @@ void Profile::LoadMachineData()
                 DataFormatError(mach);
             } else {
                 try {
-                    mach->Load();
+                    mach->Load(progress);
                 } catch (OldDBVersion& e) {
                     Q_UNUSED(e)
                     DataFormatError(mach);
                 }
             }
         } else {
-            mach->Load();
+            mach->Load(progress);
         }
     }
+    progress->setMessage("Loading Channel Information");
     loadChannels();
 }
 
