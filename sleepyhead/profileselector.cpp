@@ -350,7 +350,7 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
         Profile * profile = Profiles::profiles[name];
         QString path = profile->Get(PrefMacro(STR_GEN_DataFolder));
 
-        bool reallydelete = false;
+        bool verified = true;
         if (profile->user->hasPassword()) {
             QDialog dialog(this, Qt::Dialog);
             QLineEdit *e = new QLineEdit(&dialog);
@@ -371,19 +371,19 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
                 tries++;
 
                 if (profile->user->checkPassword(e->text())) {
-                    reallydelete = true;
+                    verified = true;
                     break;
                 } else {
                     if (tries < 3) {
                         QMessageBox::warning(this, STR_MessageBox_Error, tr("You entered an incorrect password"), QMessageBox::Ok);
                     } else {
                         QMessageBox::warning(this, STR_MessageBox_Error,
-                                             tr("If you're trying to delete because you forgot the password, you need to delete it manually."),
+                                             tr("If you're trying to delete because you forgot the password, you need to either reset it or delete the profile folder manually."),
                                              QMessageBox::Ok);
                     }
                 }
             } while (tries < 3);
-            if (!reallydelete) return;
+            if (!verified) return;
         }
 
         QDialog confirmdlg;
@@ -410,27 +410,25 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
             QMessageBox::information(NULL, tr("Sorry"), tr("You need to enter DELETE in capital letters."), QMessageBox::Ok);
             return;
         }
-
-        if (reallydelete) {
-            qDebug() << "Deleting Profile" << name;
-            if (profile == p_profile) {
-                // Shut down if active
-                mainwin->CloseProfile();
-            }
-            Profiles::profiles.remove(name);
-
-            if (!path.isEmpty()) {
-                if (!removeDir(path)) {
-                    QMessageBox::information(this, STR_MessageBox_Error,
-                                             tr("There was an error deleting the profile directory, you need to manually remove it.")+QString("\n\n%1").arg(path),
-                                             QMessageBox::Ok);
-                }
-                qDebug() << "Delete" << path;
-                QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
-            }
-
-            updateProfileList();
+        qDebug() << "Deleting Profile" << name;
+        if (profile == p_profile) {
+            // Shut down if active
+            mainwin->CloseProfile();
         }
+        Profiles::profiles.remove(name);
+
+        if (!path.isEmpty()) {
+            if (!removeDir(path)) {
+                QMessageBox::information(this, STR_MessageBox_Error,
+                                         tr("There was an error deleting the profile directory, you need to manually remove it.")+QString("\n\n%1").arg(path),
+                                         QMessageBox::Ok);
+            }
+            qDebug() << "Delete" << path;
+            QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
+        }
+
+        updateProfileList();
+
     }
 }
 
