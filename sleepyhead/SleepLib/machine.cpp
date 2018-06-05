@@ -955,7 +955,7 @@ bool Machine::LoadSummary(ProgressDialog * progress)
     QDomDocument doc;
     QFile file(filename);
     qDebug() << "Opening " << filename;
-    progress->setMessage(QObject::tr("Opening Summaries.xml.gz"));
+    progress->setMessage(QObject::tr("Loading Summaries.xml.gz"));
     QApplication::processEvents();
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1059,8 +1059,8 @@ bool Machine::LoadSummary(ProgressDialog * progress)
     int cnt = 0;
     bool loadSummaries = profile->session->preloadSummaries();
 
-    progress->setMessage(QObject::tr("Queueing Open Tasks"));
-    QApplication::processEvents();
+    //progress->setMessage(QObject::tr("Queueing Open Tasks"));
+    //QApplication::processEvents();
 
   //  progress->setMaximum(sess_order.size());
     for (it = sess_order.begin(); it != it_end; ++it, ++cnt) {
@@ -1083,7 +1083,7 @@ bool Machine::LoadSummary(ProgressDialog * progress)
             }
         }
     }
-    progress->setMessage(QObject::tr("Loading Sessions"));
+    progress->setMessage(QObject::tr("Loading Summary Data"));
     QApplication::processEvents();
 
     if (loader()) {

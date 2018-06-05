@@ -37,7 +37,7 @@ public:
     ~ProfileSelector();
 
     void updateProfileList();
-    Profile *SelectProfile(QString profname);
+    Profile *SelectProfile(QString profname, bool skippassword);
     void updateProfileHighlight(QString name);
 
 private slots:

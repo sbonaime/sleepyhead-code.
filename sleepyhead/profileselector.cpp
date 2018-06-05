@@ -210,7 +210,7 @@ void ProfileSelector::updateProfileHighlight(QString name)
     }
 }
 
-Profile *ProfileSelector::SelectProfile(QString profname)
+Profile *ProfileSelector::SelectProfile(QString profname, bool skippassword=false)
 {
     qDebug() << "Selecting new profile" << profname;
 
@@ -220,7 +220,7 @@ Profile *ProfileSelector::SelectProfile(QString profname)
     Profile * prof = pit.value();
 
     if (prof != p_profile) {
-        if (prof->user->hasPassword()) {
+        if (prof->user->hasPassword() && !skippassword) {
             QDialog dialog(this, Qt::Dialog);
             QLineEdit *e = new QLineEdit(&dialog);
             e->setEchoMode(QLineEdit::Password);
@@ -333,7 +333,7 @@ void ProfileSelector::on_buttonNewProfile_clicked()
         if (p_profile != nullptr) {
             QString name = p_profile->user->userName();
             p_profile = nullptr;
-            SelectProfile(name);
+            mainwin->OpenProfile(name, true); // open profile, skipping the already entered password
         } else {
             qWarning() << AppSetting->profileName() << "yielded a null profile";
             p_profile=nullptr;

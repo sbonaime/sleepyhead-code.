@@ -390,7 +390,7 @@ void MainWindow::firstRunMessage()
 
 QString GenerateWelcomeHTML();
 
-bool MainWindow::OpenProfile(QString profileName)
+bool MainWindow::OpenProfile(QString profileName, bool skippassword)
 {
     auto pit = Profiles::profiles.find(profileName);
     if (pit == Profiles::profiles.end()) return false;
@@ -404,7 +404,7 @@ bool MainWindow::OpenProfile(QString profileName)
             return false;
         }
     }
-    prof = profileSelector->SelectProfile(profileName);  // asks for the password and updates stuff in profileSelector tab
+    prof = profileSelector->SelectProfile(profileName, skippassword);  // asks for the password and updates stuff in profileSelector tab
     if (!prof) {
         return false;
     }
@@ -475,7 +475,7 @@ bool MainWindow::OpenProfile(QString profileName)
     }
 
     p_profile->LoadMachineData(progress);
-    progress->setMessage(tr("Setting up profile \"%1\"").arg(profileName));
+    progress->setMessage(tr("Loading profile \"%1\"").arg(profileName));
 
     // Show the sheep?
 //    QPixmap sheep=QPixmap(":/docs/sheep.png").scaled(64,64);

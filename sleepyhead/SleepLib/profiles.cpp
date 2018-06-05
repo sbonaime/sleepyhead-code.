@@ -963,8 +963,9 @@ void Done()
 
 Profile *Get(QString name)
 {
-    if (profiles.find(name) != profiles.end()) {
-        return profiles[name];
+    auto it = profiles.find(name);
+    if (it != profiles.end()) {
+        return it.value();
     }
 
     return nullptr;
@@ -987,7 +988,7 @@ Profile *Create(QString name)
     //if (!password.isEmpty()) p_profile.user->setPassword(password);
     p_profile->Set(STR_GEN_DataFolder, QString("{home}/Profiles/{") + QString(STR_UI_UserName) + QString("}"));
 
-    Machine *m = new Machine(0);
+    Machine *m = new Machine(p_profile, 0);
     m->setType(MT_JOURNAL);
     MachineInfo info(MT_JOURNAL, 0, STR_MACH_Journal, "SleepyHead", STR_MACH_Journal, QString(), m->hexid(), QString(), QDateTime::currentDateTime(), 0);
 

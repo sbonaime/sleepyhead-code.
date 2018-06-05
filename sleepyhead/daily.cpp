@@ -822,9 +822,9 @@ QString Daily::getSessionInformation(Day * day)
     html+=QString("<tr><td colspan=5 align=center><b>"+tr("Session Information")+"</b></td></tr>");
     html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
     QFontMetrics FM(*defaultfont);
-    QRect r=FM.boundingRect('@');
+//    QRect r=FM.boundingRect('@');
 
-    Machine * cpap = day->machine(MT_CPAP);
+ //   Machine * cpap = day->machine(MT_CPAP);
 
     QDateTime fd,ld;
     bool corrupted_waveform=false;
@@ -1834,7 +1834,7 @@ Session * Daily::CreateJournalSession(QDate date)
 {
     Machine *m = p_profile->GetMachine(MT_JOURNAL);
     if (!m) {
-        m=new Machine(0);
+        m=new Machine(p_profile, 0);
         MachineInfo info;
         info.loadername = "Journal";
         info.serial = m->hexid();
