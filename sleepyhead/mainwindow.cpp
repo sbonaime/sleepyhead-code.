@@ -390,19 +390,24 @@ void MainWindow::firstRunMessage()
 
 QString GenerateWelcomeHTML();
 
-void MainWindow::OpenProfile(QString profileName)
+bool MainWindow::OpenProfile(QString profileName)
 {
-    Profile * prof = Profiles::profiles[profileName];
+    auto pit = Profiles::profiles.find(profileName);
+    if (pit == Profiles::profiles.end()) return false;
+
+    Profile * prof = pit.value();
     if (p_profile) {
         if ((prof != p_profile)) {
             CloseProfile();
         } else {
             // Already open
-            return;
+            return false;
         }
     }
-    if (!prof) return;
-
+    prof = profileSelector->SelectProfile(profileName);  // asks for the password and updates stuff in profileSelector tab
+    if (!prof) {
+        return false;
+    }
     // TODO: Check profile password
 
     // Check Lockfile
@@ -415,14 +420,15 @@ void MainWindow::OpenProfile(QString profileName)
                                   QObject::tr("You can only work with one instance of an individual SleepyHead profile at a time.")+"\n\n"+
                                   QObject::tr("If you are using cloud storage, make sure SleepyHead is closed and syncing has completed first on the other computer before proceeding."),
                                   QMessageBox::Cancel |QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
-                return;
+                return false;
             }
         } // not worried about localhost locks anymore, just silently drop it.
 
         prof->removeLock();
     }
-    qstatus->setText(tr("Loading Data"));
-    qprogress->show();
+
+//    qstatus->setText(tr("Loading Data"));
+//    qprogress->show();
 
     p_profile = prof;
 
@@ -471,7 +477,7 @@ void MainWindow::OpenProfile(QString profileName)
     // Reload everything profile related
     if (daily) {
         qCritical() << "OpenProfile called with active Daily object!";
-        return;
+        return false;
     }
     welcome = new Welcome(ui->tabWidget);
     ui->tabWidget->insertTab(1, welcome, tr("Welcome"));
@@ -482,7 +488,7 @@ void MainWindow::OpenProfile(QString profileName)
 
     if (overview) {
         qCritical() << "OpenProfile called with active Overview object!";
-        return;
+        return false;
     }
     overview = new Overview(ui->tabWidget, daily->graphView());
     ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
@@ -496,17 +502,15 @@ void MainWindow::OpenProfile(QString profileName)
     AppSetting->setProfileName(p_profile->user->userName());
     mainwin->setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(getBranchVersion()).arg(AppSetting->profileName()));
 
-    profileSelector->updateProfileHighlight(profileName);
-
     ui->oximetryButton->setDisabled(false);
     ui->dailyButton->setDisabled(false);
     ui->overviewButton->setDisabled(false);
     ui->statisticsButton->setDisabled(false);
     ui->importButton->setDisabled(false);
 
-    qprogress->hide();
-    qstatus->setText("");
-
+    //qprogress->hide();
+    //qstatus->setText("");
+    return true;
 }
 
 void MainWindow::CloseProfile()
@@ -545,11 +549,12 @@ void MainWindow::Startup()
     firstRunMessage();
 
     if (Profiles::profiles.contains(lastProfile) && AppSetting->autoOpenLastUsed()) {
-        OpenProfile(lastProfile);
-        ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
+        if (OpenProfile(lastProfile)) {
+            ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
 
-        if (AppSetting->autoLaunchImport()) {
-            on_importButton_clicked();
+            if (AppSetting->autoLaunchImport()) {
+                on_importButton_clicked();
+            }
         }
     } else {
         ui->tabWidget->setCurrentWidget(profileSelector);

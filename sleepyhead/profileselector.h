@@ -13,6 +13,8 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 
+#include "SleepLib/profiles.h"
+
 namespace Ui {
 class ProfileSelector;
 }
@@ -35,7 +37,7 @@ public:
     ~ProfileSelector();
 
     void updateProfileList();
-    void SelectProfile(QString profname);
+    Profile *SelectProfile(QString profname);
     void updateProfileHighlight(QString name);
 
 private slots:

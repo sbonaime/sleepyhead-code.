@@ -177,36 +177,47 @@ void ProfileSelector::updateProfileList()
 
 void ProfileSelector::updateProfileHighlight(QString name)
 {
+
     QFont font = QApplication::font();
     font.setBold(false);
     QBrush bg = QColor(Qt::black);
     for (int row=0;row < model->rowCount(); row++) {
         for (int i=0; i<model->columnCount(); i++) {
-            model->setData(model->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
-            //model->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
+            QModelIndex idx = model->index(row, i, QModelIndex());
+            model->setData(idx, bg, Qt::ForegroundRole);
+            model->setData(idx, font, Qt::FontRole);
         }
     }
+
     bg = QBrush(openProfileHighlightColor);
-    font = QApplication::font();
     font.setBold(true);
+
     for (int row=0;row < proxy->rowCount(); row++) {
-        if (proxy->data(proxy->index(row, 0, QModelIndex())).toString().compare(name)==0) {
+        QModelIndex idx = proxy->index(row, 0, QModelIndex());
+
+        if (proxy->data(idx).toString().compare(name)==0) {
+            on_selectionChanged(idx, QModelIndex());
+
             for (int i=0; i<proxy->columnCount(); i++) {
-                proxy->setData(proxy->index(row, i, QModelIndex()), bg, Qt::ForegroundRole);
-              //  proxy->setData(model->index(row, i, QModelIndex()), font, Qt::FontRole);
+                idx = proxy->index(row, i, QModelIndex());
+
+                proxy->setData(idx, bg, Qt::ForegroundRole);
+                proxy->setData(idx, font, Qt::FontRole);
             }
-            on_selectionChanged(proxy->index(row, 0, QModelIndex()), QModelIndex());
             break;
         }
 
     }
 }
 
-void ProfileSelector::SelectProfile(QString profname)
+Profile *ProfileSelector::SelectProfile(QString profname)
 {
     qDebug() << "Selecting new profile" << profname;
 
-    Profile * prof = Profiles::profiles[profname];
+    auto pit = Profiles::profiles.find(profname);
+    if (pit == Profiles::profiles.end()) return nullptr;
+
+    Profile * prof = pit.value();
 
     if (prof != p_profile) {
         if (prof->user->hasPassword()) {
@@ -242,16 +253,15 @@ void ProfileSelector::SelectProfile(QString profname)
                     }
                 }
             } while (tries < 3);
-            if (!succeeded) return;
+            if (!succeeded) return nullptr;
         }
 
         // Unselect everything in ProfileView
 
-        mainwin->OpenProfile(profname);
         updateProfileHighlight(profname);
-
     }
 
+    return prof;
 }
 
 void ProfileSelector::on_profileView_doubleClicked(const QModelIndex &index)
@@ -259,7 +269,9 @@ void ProfileSelector::on_profileView_doubleClicked(const QModelIndex &index)
     QModelIndex idx = proxy->index(index.row(), 0, QModelIndex());
     QString profname = proxy->data(idx, Qt::UserRole+2).toString();
 
-    SelectProfile(profname);
+    //if (SelectProfile(profname)) {
+    mainwin->OpenProfile(profname);
+    //}
 }
 
 void ProfileSelector::on_profileFilter_textChanged(const QString &arg1)

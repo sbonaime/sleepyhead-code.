@@ -93,7 +93,7 @@ class MainWindow : public QMainWindow
     void CheckForUpdates();
 
     void CloseProfile();
-    void OpenProfile(QString name);
+    bool OpenProfile(QString name);
 
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
