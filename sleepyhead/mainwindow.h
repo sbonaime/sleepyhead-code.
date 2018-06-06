@@ -17,6 +17,8 @@
 #include "daily.h"
 #include "overview.h"
 #include "welcome.h"
+#include "help.h"
+
 #include "profileselector.h"
 #include "preferencesdialog.h"
 
@@ -174,18 +176,6 @@ class MainWindow : public QMainWindow
     //! \brief Toggle Fullscreen (currently F11)
     void on_action_Fullscreen_triggered();
 
-    //! \brief Loads the default page in the Welcome screens web browser
-    void on_homeButton_clicked();
-
-    //! \brief Go back in the welcome browsers history
-    void on_backButton_clicked();
-
-    //! \brief Go forward in the welcome browsers history
-    void on_forwardButton_clicked();
-
-    //! \brief Loads a web page when enter is pressed in the URL bar
-    void on_urlBar_activated(const QString &arg1);
-
     //! \brief Selects the Daily page and redraws the graphs
     void on_dailyButton_clicked();
 
@@ -323,11 +313,8 @@ class MainWindow : public QMainWindow
 
     void on_recordsBox_anchorClicked(const QUrl &linkurl);
 
-    void on_helpBrowser_sourceChanged(const QUrl &url);
-
     void on_statisticsView_anchorClicked(const QUrl &url);
 
-    void on_helpBrowser_anchorClicked(const QUrl &url);
 
 private:
     void importCPAPBackups();
@@ -342,6 +329,7 @@ private:
     Overview *overview;
     ProfileSelector *profileSelector;
     Welcome * welcome;
+    Help * help;
     bool first_load;
     PreferencesDialog *prefdialog;
     QTime logtime;

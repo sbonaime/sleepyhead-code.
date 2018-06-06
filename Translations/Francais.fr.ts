@@ -2,6 +2,139 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR" sourcelanguage="en_US">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished">Boite de dialogue</translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
+        <translation type="unfinished">&amp;Au sujet</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;Welcome to SleepyHead&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This software has been designed to assist you in reviewing the data produced by your CPAP machines and related equipment.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#ff0000;&quot;&gt;PLEASE READ CAREFULLY&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead is &lt;span style=&quot; font-weight:600;&quot;&gt;NOT &lt;/span&gt;a substitute for competent medical guidance from your Doctor.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Due to the lack of documentation released by manufacturers regarding file formats, accuracy of data displayed in SleepyHead can not in any way be guaranteed. &lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Any reports generated are for &lt;span style=&quot; font-weight:600;&quot;&gt;PERSONAL USE ONLY&lt;/span&gt;, and are &lt;span style=&quot; font-weight:600;&quot;&gt;NOT IN ANY WAY&lt;/span&gt; fit for compliance or medical diagnostic purposes.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Use of this software is &lt;span style=&quot; font-style:italic;&quot;&gt;entirely &lt;/span&gt;at your own risk. The author will not be held liable for &lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;anything&lt;/span&gt; related to the use or misuse of this software.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead is free (as in freedom) software, released under the &lt;span style=&quot; font-style:italic;&quot;&gt;GNU Public License v3&lt;/span&gt;, and comes with no warranty, and without ANY claims to fitness for any purpose.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead is copyright ©2011-2018 &lt;a href=&quot;http://jedimark.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Mark Watkins&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Release Notes</source>
+        <translation type="unfinished">Note de publication</translation>
+    </message>
+    <message>
+        <source>Credits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;SleepyHead Credits&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;For SleepyHead to come to you in the form you see it in now, it took a lot more work than just that of the projects creator &lt;a href=&quot;http://jedimark.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Jedimark&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;OpenSource Libraries&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SleepyHead uses the OpenSource version of the Qt cross platform toolkit available from &lt;a href=&quot;http://qt.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://qt.io&lt;/span&gt;&lt;/a&gt; which itself draws from many smaller open source libraries. You can read the individual licensing for many of these components that are used under the hood of SleepyHead at &lt;a href=&quot;http://doc.qt.io/archives/qt-5.7/3rdparty.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://doc.qt.io/archives/qt-5.7/3rdparty.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data formats&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Becase the CPAP machine data formats are mostly undocumented and getting them working in SleepyHead involved a lot of hacking, I needed a lot of SD card data samples, and patient users willing to put up with crashes and wonky data, and plenty of help from my fellow hackers out there who shared in the workload breaking data formats. Thanks to all of you who have helped in the fight to protect our right to keep our own data open and accessible!&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Patches, bugfixes and platform support&lt;/span&gt;&lt;br /&gt;&lt;span style=&quot; color:#000000;&quot;&gt;James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, JediBob, Pholy and names I&apos;m sure I&apos;ve missed or yet to add.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; color:#000000;&quot;&gt;Language and Translation&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and many others I&apos;ve still to add here.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-weight:600; color:#000000;&quot;&gt;Special Mentions&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; color:#000000;&quot;&gt;A big thanks (again) to Arie Klerk for tirelessly filling the role of SleepyHead&apos;s Translation coordinator and helping get SleepyHead out of it&apos;s monolingual rutt, and fit and ready to be shared with a much wider audience around the world.&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Special thanks to Pugsy and Robysue from &lt;/span&gt;&lt;a href=&quot;http://cpaptalk.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;CPAPTalk&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#000000;&quot;&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.&lt;br /&gt;&lt;br /&gt;Thanks to CPAPTalk&apos;s host &lt;/span&gt;&lt;a href=&quot;http://CPAP.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;CPAP.com&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#000000;&quot;&gt; for their generous donations, and letting me run amock in the early days and pester their forums users for help to test SleepyHead. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Thanks to SuperSleeper over at &lt;/span&gt;&lt;a href=&quot;http://www.apneaboard.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;ApneaBoard&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#000000;&quot;&gt; for helping out with mirroring space and forums and stuff.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GPL License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;Support SleepyHead Development&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;All software, regardless of it&apos;s software licensing costs time, money and resources to create and maintain, especially complex applications like SleepyHead.&lt;br /&gt;&lt;br /&gt;The SleepyHead project was created early in 2011 by myself (&lt;a href=&quot;http://jedimark.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Jedimark&lt;/span&gt;&lt;/a&gt;), and has grown over the years into a seriously complex cross platform desktop application. It is the compound result of an insane amount of hard work and many, many all nighter hacking sessions, and time spent distracted from family responsibilties.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;There is a lot of ongoing work trying to keep SleepyHead up to date with ever changing CPAP machine variants as well as the continuously improving understanding of the undocumented data formats. I know I haven&apos;t always kept up, but I really do try my best.&lt;br /&gt;&lt;br /&gt;I&apos;d like to offer a huge thankyou for those who have given donations and support along the way... you truly helped to make SleepyHead what it is today.&lt;br /&gt;&lt;br /&gt;If SleepyHead has benefited you and have the means to do so, please consider showing your apreciation by supportting continuing development of this software project.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://sleepyhead.jedimark.net/donate.php&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;Donate via Paypal&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Donate via Paypal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Fermer</translation>
+    </message>
+    <message>
+        <source>Revision: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Branch: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Build Date: %1</source>
+        <translation type="unfinished">Date de compilation : %1</translation>
+    </message>
+    <message>
+        <source>Graphics Engine: %1</source>
+        <translation type="unfinished">Moteur Graphique: %1</translation>
+    </message>
+    <message>
+        <source>Show data folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About SleepyHead</source>
+        <translation type="unfinished">Au sujet de SleepyHead</translation>
+    </message>
+    <message>
+        <source>SleepyHead v%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CMS50Loader</name>
     <message>
         <source>Could not get data transmission from oximeter.</source>
@@ -132,7 +265,7 @@
     </message>
     <message>
         <source>Oximetery Sessions</source>
-        <translation>Sessions d&apos;Oxymétrie</translation>
+        <translation type="vanished">Sessions d&apos;Oxymétrie</translation>
     </message>
     <message>
         <source>%1 event</source>
@@ -272,7 +405,7 @@
     </message>
     <message>
         <source>This day has missing pressure, mode and settings data.</source>
-        <translation>Jours sans pression,mode et réglages.</translation>
+        <translation type="vanished">Jours sans pression,mode et réglages.</translation>
     </message>
     <message>
         <source>Breakdown</source>
@@ -312,7 +445,7 @@
     </message>
     <message>
         <source>This day just contains summary data, only limited information is available .</source>
-        <translation>Jour avec informations limité, seulement le résumé.</translation>
+        <translation type="vanished">Jour avec informations limité, seulement le résumé.</translation>
     </message>
     <message>
         <source>No %1 events are recorded this day</source>
@@ -354,6 +487,26 @@
         <source>Session Start Times</source>
         <translation>Début de Session</translation>
     </message>
+    <message>
+        <source>Oximetry Sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Please Note:&lt;/b&gt; All settings shown below are based on assumptions that nothing&apos;s changed since previous days.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Model %1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(Mode/Pressure settings are guessed on this day.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This day just contains summary data, only limited information is available.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ExportCSV</name>
@@ -371,11 +524,11 @@
     </message>
     <message>
         <source> %1%</source>
-        <translation>%1%</translation>
+        <translation type="vanished">%1%</translation>
     </message>
     <message>
         <source> Avg</source>
-        <translation> Moy</translation>
+        <translation type="vanished"> Moy</translation>
     </message>
     <message>
         <source>Date</source>
@@ -517,6 +670,10 @@
         <source>Sessions</source>
         <translation>Sessions</translation>
     </message>
+    <message>
+        <source>%1% </source>
+        <translation type="unfinished">%1: {1%?}</translation>
+    </message>
 </context>
 <context>
     <name>FPIconLoader</name>
@@ -531,6 +688,37 @@
     <message>
         <source>The Day records overlap with already existing content.</source>
         <translation>Les enregistrements du jour se chevauchent avec le contenu déjà existant.</translation>
+    </message>
+</context>
+<context>
+    <name>Help</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">Formulaire</translation>
+    </message>
+    <message>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <source>Search Topic:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished">Rechercher</translation>
+    </message>
+    <message>
+        <source>&lt;h1&gt;Attention Source Builder&lt;/h1&gt;&lt;br/&gt;&lt;p&gt;No help files detected.. QMake (or you) needs to run &lt;b&gt;qcollectiongenerator&lt;/b&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -685,7 +873,7 @@
     </message>
     <message>
         <source>No CPAP data card detected, launching file dialog...</source>
-        <translation>Pas de carte détecté, lancement du sélecteur de fichier...</translation>
+        <translation type="vanished">Pas de carte détecté, lancement du sélecteur de fichier...</translation>
     </message>
     <message>
         <source>Online Users &amp;Guide</source>
@@ -697,7 +885,7 @@
     </message>
     <message>
         <source>Please wait, launching file dialog...</source>
-        <translation>Patientez, lancement du sélecteur de fichier...</translation>
+        <translation type="vanished">Patientez, lancement du sélecteur de fichier...</translation>
     </message>
     <message>
         <source>Are you sure you want to rebuild all CPAP data for the following machine:</source>
@@ -721,11 +909,11 @@
     </message>
     <message>
         <source>Loading Data</source>
-        <translation>Chargement en cours</translation>
+        <translation type="vanished">Chargement en cours</translation>
     </message>
     <message>
         <source>This software comes with absolutely no warranty, either express of implied.</source>
-        <translation>Ce logiciel est fournis sans aucune garantie explicte ou implicite.</translation>
+        <translation type="vanished">Ce logiciel est fournis sans aucune garantie explicte ou implicite.</translation>
     </message>
     <message>
         <source>There was a problem opening MSeries block File: </source>
@@ -741,7 +929,7 @@
     </message>
     <message>
         <source>SleepyHead is built using the &lt;a href=&quot;http://qt-project.org&quot;&gt;Qt Application Framework&lt;/a&gt;.</source>
-        <translation>SleepyHead utilise le &lt;a href=&quot;http://qt-project.org&quot;&gt;Framework QT&lt;/a&gt;.</translation>
+        <translation type="vanished">SleepyHead utilise le &lt;a href=&quot;http://qt-project.org&quot;&gt;Framework QT&lt;/a&gt;.</translation>
     </message>
     <message>
         <source>Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters</source>
@@ -749,11 +937,11 @@
     </message>
     <message>
         <source>Kudos &amp; Credits</source>
-        <translation>Remerciements</translation>
+        <translation type="vanished">Remerciements</translation>
     </message>
     <message>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
-        <translation>Recalcul terminé, relancez l&apos;application pour afficher les chagements.</translation>
+        <translation type="vanished">Recalcul terminé, relancez l&apos;application pour afficher les chagements.</translation>
     </message>
     <message>
         <source>Philips Respironics System One (CPAP Pro, Auto, BiPAP &amp; ASV models)</source>
@@ -761,7 +949,7 @@
     </message>
     <message>
         <source>Data Folder Location: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</source>
-        <translation>Emplacement des données: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
+        <translation type="vanished">Emplacement des données: &lt;a href=&quot;file://%1&quot;&gt;%2&lt;/a&gt;</translation>
     </message>
     <message>
         <source>&amp;copy;2011-2014</source>
@@ -769,11 +957,11 @@
     </message>
     <message>
         <source>&amp;copy;2011-2016</source>
-        <translation>&amp;copy;2011-2016</translation>
+        <translation type="vanished">&amp;copy;2011-2016</translation>
     </message>
     <message>
         <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
-        <translation>Merci de recompiler SleepyHead avec QT 4.8.5 ou plus, imprimer cause des plantages avec cette version de QT</translation>
+        <translation type="vanished">Merci de recompiler SleepyHead avec QT 4.8.5 ou plus, imprimer cause des plantages avec cette version de QT</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -781,7 +969,7 @@
     </message>
     <message>
         <source>Don&apos;t forget to Like/+1 SleepyHead on &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; or &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</source>
-        <translation>N&apos;oubliez pas d&apos;apprécier SleepyHead sur &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; ou &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</translation>
+        <translation type="vanished">N&apos;oubliez pas d&apos;apprécier SleepyHead sur &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; ou &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</translation>
     </message>
     <message>
         <source>Further Information</source>
@@ -805,11 +993,11 @@
     </message>
     <message>
         <source>Loading</source>
-        <translation>Chargement</translation>
+        <translation type="vanished">Chargement</translation>
     </message>
     <message>
         <source>Make sure you keep your SleepyHead data folder backed up when trying testing versions.</source>
-        <translation>Sauvegarder toujours vos données avant d&apos;utiliser une version de tests.</translation>
+        <translation type="vanished">Sauvegarder toujours vos données avant d&apos;utiliser une version de tests.</translation>
     </message>
     <message>
         <source>Daily Sidebar</source>
@@ -817,7 +1005,7 @@
     </message>
     <message>
         <source>&amp;Help Browser</source>
-        <translation>&amp;Aide</translation>
+        <translation type="vanished">&amp;Aide</translation>
     </message>
     <message>
         <source>Note as a precaution, the backup folder will be left in place.</source>
@@ -829,7 +1017,7 @@
     </message>
     <message>
         <source>In the updater code, SleepyHead uses &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant&apos;s ZIP/UNZIP package.</source>
-        <translation>Dans le module de mise à jour, SleepyHead utilise la librairie  &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; de Sergey A. Tachenov, qui encapsule le package ZIP/UNZIP de Gilles Vollant.</translation>
+        <translation type="vanished">Dans le module de mise à jour, SleepyHead utilise la librairie  &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; de Sergey A. Tachenov, qui encapsule le package ZIP/UNZIP de Gilles Vollant.</translation>
     </message>
     <message>
         <source>%1&apos;s Journal</source>
@@ -853,7 +1041,7 @@
     </message>
     <message>
         <source>Please wait, scanning for CPAP data cards...</source>
-        <translation>Patientez,scan de la carte de donnée PPC...</translation>
+        <translation type="vanished">Patientez,scan de la carte de donnée PPC...</translation>
     </message>
     <message>
         <source>View S&amp;tatistics</source>
@@ -873,15 +1061,15 @@
     </message>
     <message>
         <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
-        <translation>Ce logiciel est distribué sous la licence Publique GNU V3.0</translation>
+        <translation type="vanished">Ce logiciel est distribué sous la licence Publique GNU V3.0</translation>
     </message>
     <message>
         <source>Loading Event Data</source>
-        <translation>Chargement en cours</translation>
+        <translation type="vanished">Chargement en cours</translation>
     </message>
     <message>
         <source>No guarantees are made regarding the accuracy of any data this program displays.</source>
-        <translation>La précision des données affichées par ce programme n&apos;est absoluement pas garantie.</translation>
+        <translation type="vanished">La précision des données affichées par ce programme n&apos;est absoluement pas garantie.</translation>
     </message>
     <message>
         <source>Import</source>
@@ -889,11 +1077,11 @@
     </message>
     <message>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
-        <translation>L&apos;auteur et ses associés récusent toute responsabilité pour les dommages ou autres problèmes découlant de l&apos;utilisation correcte ou non de ce logiciel.</translation>
+        <translation type="vanished">L&apos;auteur et ses associés récusent toute responsabilité pour les dommages ou autres problèmes découlant de l&apos;utilisation correcte ou non de ce logiciel.</translation>
     </message>
     <message>
         <source>It comes with no guarantee of fitness for any particular purpose.</source>
-        <translation>Il n&apos;est pas garantie de convenir à quelques usage que ce soit.</translation>
+        <translation type="vanished">Il n&apos;est pas garantie de convenir à quelques usage que ce soit.</translation>
     </message>
     <message>
         <source>Because there are no internal backups to rebuild from, you will have to restore from your own.</source>
@@ -929,15 +1117,15 @@
     </message>
     <message>
         <source>Make sure you&apos;re willing and able to supply a .zip of your CPAP data or a crash report before you think about filing a bug report.</source>
-        <translation>Préparer un fichier ZIP de vos données ou un rapport de crash avant de remplir un formulaire d&apos;erreur.</translation>
+        <translation type="vanished">Préparer un fichier ZIP de vos données ou un rapport de crash avant de remplir un formulaire d&apos;erreur.</translation>
     </message>
     <message>
         <source>This red message line is intentional, and will not be a feature in the final version...</source>
-        <translation>Ce message rouge est intentinel et sera absent de la version finale...</translation>
+        <translation type="vanished">Ce message rouge est intentinel et sera absent de la version finale...</translation>
     </message>
     <message>
         <source>Restart Required</source>
-        <translation>Redémarage nécéssaire</translation>
+        <translation type="vanished">Redémarage nécéssaire</translation>
     </message>
     <message>
         <source>ResMed S9 Oximeter Attachment</source>
@@ -953,7 +1141,7 @@
     </message>
     <message>
         <source>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.</source>
-        <translation>Ce n&apos;est pas un logiciel médical, ce n&apos;est qu&apos;un logiciel de recherche qui fournit une représenation visuelle des données enregistrée par les appareils supportés.</translation>
+        <translation type="vanished">Ce n&apos;est pas un logiciel médical, ce n&apos;est qu&apos;un logiciel de recherche qui fournit une représenation visuelle des données enregistrée par les appareils supportés.</translation>
     </message>
     <message>
         <source>Rebuild CPAP Data</source>
@@ -965,7 +1153,7 @@
     </message>
     <message>
         <source>branch</source>
-        <translation>branche</translation>
+        <translation type="vanished">branche</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
@@ -973,7 +1161,7 @@
     </message>
     <message>
         <source>Translators:</source>
-        <translation>Traducteurs:</translation>
+        <translation type="vanished">Traducteurs:</translation>
     </message>
     <message>
         <source>Date Range</source>
@@ -985,7 +1173,7 @@
     </message>
     <message>
         <source>&lt;b&gt;Warning:&lt;/b&gt; This is a pre-release build, and may at times show unstable behaviour. It is intended for testing purposes.</source>
-        <translation>&lt;b&gt; Attention: &lt;/ b&gt; Ceci est une préversion, et peut souvent etre instable. Elle ne sert qu&apos;a des fin de test.</translation>
+        <translation type="vanished">&lt;b&gt; Attention: &lt;/ b&gt; Ceci est une préversion, et peut souvent etre instable. Elle ne sert qu&apos;a des fin de test.</translation>
     </message>
     <message>
         <source>Profile</source>
@@ -1005,7 +1193,7 @@
     </message>
     <message>
         <source>Think twice before filing a bug report that already exists, PLEASE search first, as your likely not the first one to notice it!</source>
-        <translation>Pensez a deux fois avant de signaler un bug, Verifiez auparavant s&apos;il n&apos;est pas déja remonté!</translation>
+        <translation type="vanished">Pensez a deux fois avant de signaler un bug, Verifiez auparavant s&apos;il n&apos;est pas déja remonté!</translation>
     </message>
     <message>
         <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik S�derstr�m (Swedish), Damien Vigneron (French), Ant�nio Jorge Costa (Portuguese), Judith Guzm�n (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
@@ -1025,7 +1213,7 @@
     </message>
     <message>
         <source>Copyright</source>
-        <translation>Copyright</translation>
+        <translation type="vanished">Copyright</translation>
     </message>
     <message>
         <source>Are you really sure you want to do this?</source>
@@ -1037,11 +1225,11 @@
     </message>
     <message>
         <source>about:blank</source>
-        <translation>ausujet:blanc</translation>
+        <translation type="vanished">ausujet:blanc</translation>
     </message>
     <message>
         <source>SleepyHead Project Page</source>
-        <translation>Site web du projet SleepyHead</translation>
+        <translation type="vanished">Site web du projet SleepyHead</translation>
     </message>
     <message>
         <source>*** &lt;u&gt;Use at your own risk&lt;/u&gt; ***</source>
@@ -1077,7 +1265,7 @@
     </message>
     <message>
         <source>Special thanks to Pugsy and Robysue from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for their help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
-        <translation>Un grand merci a Pugsy de &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; pour son aide avec la documentation and les tutoriaux, ainsi qu&apos;a tout ceux qui m&apos;on aidé a tester et qui qui ont partagés leur données de PPC.</translation>
+        <translation type="vanished">Un grand merci a Pugsy de &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; pour son aide avec la documentation and les tutoriaux, ainsi qu&apos;a tout ceux qui m&apos;on aidé a tester et qui qui ont partagés leur données de PPC.</translation>
     </message>
     <message>
         <source>Report Mode</source>
@@ -1085,7 +1273,7 @@
     </message>
     <message>
         <source>Bugfixes, Patches and Platform Help:</source>
-        <translation>Débbugage, Correctifs et Aides :</translation>
+        <translation type="vanished">Débbugage, Correctifs et Aides :</translation>
     </message>
     <message>
         <source>&lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=Frequently_Asked_Questions&quot;&gt;Frequently Asked Questions&lt;/a&gt;&lt;br/&gt;</source>
@@ -1105,7 +1293,7 @@
     </message>
     <message>
         <source>SleepyHead, brought to you by Jedimark</source>
-        <translation>SleepyHead, vous est proposé par Jedimark</translation>
+        <translation type="vanished">SleepyHead, vous est proposé par Jedimark</translation>
     </message>
     <message>
         <source>A file permission error or simillar screwed up the purge process, you will have to delete the following folder manually:</source>
@@ -1113,7 +1301,7 @@
     </message>
     <message>
         <source>Use this software entirely at your own risk.</source>
-        <translation>Utilisez ce logiciel à vos risques et périls.</translation>
+        <translation type="vanished">Utilisez ce logiciel à vos risques et périls.</translation>
     </message>
     <message>
         <source>&amp;Automatic Oximetry Cleanup</source>
@@ -1125,11 +1313,11 @@
     </message>
     <message>
         <source>Printing Disabled</source>
-        <translation>Impression déscativée</translation>
+        <translation type="vanished">Impression déscativée</translation>
     </message>
     <message>
         <source>Build Date: %1 %2</source>
-        <translation>Date de compilation : %1 %2</translation>
+        <translation type="vanished">Date de compilation : %1 %2</translation>
     </message>
     <message>
         <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sleepyhead.sourceforge.net/wiki/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
@@ -1173,11 +1361,11 @@
     </message>
     <message>
         <source>Purge Oximetery Data</source>
-        <translation>Purger les données de l&apos;Oxymétrie</translation>
+        <translation type="vanished">Purger les données de l&apos;Oxymétrie</translation>
     </message>
     <message>
         <source>If you experience CPAP chart/data errors after upgrading to a new version, try rebuilding your CPAP database from the Data menu.</source>
-        <translation>Si vous rencontrez des erreurs après une mise à jour vers une nouvelle version, essayez de reconstruire votre base de donéne à partir deu menu base de donnée.</translation>
+        <translation type="vanished">Si vous rencontrez des erreurs après une mise à jour vers une nouvelle version, essayez de reconstruire votre base de donéne à partir deu menu base de donnée.</translation>
     </message>
     <message>
         <source>Backup &amp;Journal</source>
@@ -1209,11 +1397,11 @@
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;This is pre-release software, some parts of this program may not yet function as intended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention: &lt;/span&gt;Ceci est une  pré-version, certaines parties de ce programme peuvent ne pas fonctionner comme prévu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention: &lt;/span&gt;Ceci est une  pré-version, certaines parties de ce programme peuvent ne pas fonctionner comme prévu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>3rd Party Libaries:</source>
-        <translation>Librairies logiciel externes utilisées:</translation>
+        <translation type="vanished">Librairies logiciel externes utilisées:</translation>
     </message>
     <message>
         <source>ResMed S9 models (CPAP, Auto, VPAP)</source>
@@ -1245,7 +1433,7 @@
     </message>
     <message>
         <source>This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.</source>
-        <translation>Ce logiciel n&apos;est pas adapté pour effectuer un quelconque diagnostique ou rapport de conformité , ou autre usage médical quelconque.</translation>
+        <translation type="vanished">Ce logiciel n&apos;est pas adapté pour effectuer un quelconque diagnostique ou rapport de conformité , ou autre usage médical quelconque.</translation>
     </message>
     <message>
         <source>Print &amp;Report</source>
@@ -1257,7 +1445,7 @@
     </message>
     <message>
         <source>Performance will be degraded during these recalculations.</source>
-        <translation>Les performances serons moindres pendant le recalcul.</translation>
+        <translation type="vanished">Les performances serons moindres pendant le recalcul.</translation>
     </message>
     <message>
         <source>You are about to &lt;font size=+2&gt;obliterate&lt;/font&gt; SleepyHead&apos;s machine database for the following machine:</source>
@@ -1273,7 +1461,7 @@
     </message>
     <message>
         <source>Graphics Engine: %1</source>
-        <translation>Moteur Graphique: %1</translation>
+        <translation type="vanished">Moteur Graphique: %1</translation>
     </message>
     <message>
         <source>Couldn&apos;t find any valid Machine Data at
@@ -1289,7 +1477,7 @@
     </message>
     <message>
         <source>SleepyHead Wiki</source>
-        <translation>Wiki de SleepyHead</translation>
+        <translation type="vanished">Wiki de SleepyHead</translation>
     </message>
     <message>
         <source>Export for Review</source>
@@ -1305,7 +1493,7 @@
     </message>
     <message>
         <source>Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.</source>
-        <translation>Merci d&apos;utiliser SleepyHead. S&apos;il vous est utile, merci d&apos;aider au developement en faisant un don via Paypal.</translation>
+        <translation type="vanished">Merci d&apos;utiliser SleepyHead. S&apos;il vous est utile, merci d&apos;aider au developement en faisant un don via Paypal.</translation>
     </message>
     <message>
         <source>Show Debug Pane</source>
@@ -1313,11 +1501,11 @@
     </message>
     <message>
         <source>Revision:</source>
-        <translation>Révision:</translation>
+        <translation type="vanished">Révision:</translation>
     </message>
     <message>
         <source>Task Completed</source>
-        <translation>Tâche terminée</translation>
+        <translation type="vanished">Tâche terminée</translation>
     </message>
     <message>
         <source>&amp;Edit Profile</source>
@@ -1329,7 +1517,7 @@
     </message>
     <message>
         <source>Recalculations are now complete.</source>
-        <translation>Recalcul terminé.</translation>
+        <translation type="vanished">Recalcul terminé.</translation>
     </message>
     <message>
         <source>Exp&amp;ort Data</source>
@@ -1369,7 +1557,7 @@
     </message>
     <message>
         <source>Recalculating Summaries</source>
-        <translation>Recalcule des résumés</translation>
+        <translation type="vanished">Recalcule des résumés</translation>
     </message>
     <message>
         <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, Fran�ois Revol, Michael Masterson.</source>
@@ -1405,7 +1593,7 @@
     </message>
     <message>
         <source>qrc:/docs/index.html</source>
-        <translation>qrc:/docs/index.html</translation>
+        <translation type="vanished">qrc:/docs/index.html</translation>
     </message>
     <message>
         <source>Shift+F2</source>
@@ -1421,7 +1609,7 @@
     </message>
     <message>
         <source>Recalculating Indices</source>
-        <translation>Recalcul des indices</translation>
+        <translation type="vanished">Recalcul des indices</translation>
     </message>
     <message>
         <source>(It doesn&apos;t support SSL encryption, so it&apos;s not a good idea to type your passwords or personal details anywhere.)</source>
@@ -1437,7 +1625,7 @@
     </message>
     <message>
         <source>When reporting bugs, please make sure to supply the SleepyHead version number, operating system details and CPAP machine model.</source>
-        <translation>Quand vous rapportez un bug, s&apos;il vous plaît assurez-vous de fournir le numéro de version SleepyHead, les détails du système d&apos;exploitation et de la machine PPC.</translation>
+        <translation type="vanished">Quand vous rapportez un bug, s&apos;il vous plaît assurez-vous de fournir le numéro de version SleepyHead, les détails du système d&apos;exploitation et de la machine PPC.</translation>
     </message>
     <message>
         <source>Navigation</source>
@@ -1453,18 +1641,10 @@
     </message>
     <message>
         <source>Please ensure you are running the latest version before reporting any bugs.</source>
-        <translation>Merci de vérifier que vous utilisez la dernière version avant de rapporter un bug.</translation>
+        <translation type="vanished">Merci de vérifier que vous utilisez la dernière version avant de rapporter un bug.</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, Sean Stangl, Roy Stone, François Revol, Michael Masterson, RezNet, PaleRider, JediBob, Diamaunt.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Arie Klerk (Translation Coordinator, also Dutch), Steffen Reitz (German), Chen Hao (Chinese), Lars-Erik Söderström (Swedish), Damien Vigneron (French), António Jorge Costa (Portuguese), Judith Guzmán (Spanish), Plamen Tonev (Bulgarian) and others I&apos;ve still to add here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1473,6 +1653,34 @@
     </message>
     <message>
         <source>Are you sure you want to do this?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purge Oximetry Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Help Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading profile &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Processing import list...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;copy;2011-2018</source>
+        <translation type="unfinished">&amp;copy;2011-2018</translation>
+    </message>
+    <message>
+        <source>Please open a profile first.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1555,7 +1763,7 @@
     </message>
     <message>
         <source>SleepyHead is copyright &amp;copy;2011-2016 Mark Watkins</source>
-        <translation>SleepyHeads (c) 2011-2016 par Mark Watkins</translation>
+        <translation type="vanished">SleepyHeads (c) 2011-2016 par Mark Watkins</translation>
     </message>
     <message>
         <source>SleepyHead is copyright &amp;copy;2011-2014 Mark Watkins</source>
@@ -1765,6 +1973,18 @@
         <source>Patient ID</source>
         <translation>Identifiant du Patient</translation>
     </message>
+    <message>
+        <source>It&apos;s totally ok to fib or skip this, but your rough age is needed to enhance accuracy of certain calculations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Biological (birth) gender is sometimes needed to enhance the accuracy of a few calculations, feel free to leave this blank and skip any of them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead is copyright &amp;copy;2011-2018 Mark Watkins</source>
+        <translation type="unfinished">SleepyHeads (c) 2011-2014 par Mark Watkins {2011-2018 ?}</translation>
+    </message>
 </context>
 <context>
     <name>Overview</name>
@@ -1948,7 +2168,7 @@ Corporel</translation>
     </message>
     <message>
         <source>Live Oximetery Stopped</source>
-        <translation>Oximétrie temps-réel stoppé</translation>
+        <translation type="vanished">Oximétrie temps-réel stoppé</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Here you can enter a 7 character pet name for this oximeter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1964,7 +2184,7 @@ Corporel</translation>
     </message>
     <message>
         <source>CMS50 Session %1</source>
-        <translation>Session CMS50 %1</translation>
+        <translation type="vanished">Session CMS50 %1</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option allows you to import from data files created by software that came with your Pulse Oximeter, such as SpO2Review.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2012,7 +2232,7 @@ Corporel</translation>
     </message>
     <message>
         <source>Oximetry Files (*.spo *.spor *.spo2 *.dat)</source>
-        <translation>Fichier d&apos;Oxymètre (*.spo *.spor *.spo2 *.dat)</translation>
+        <translation type="vanished">Fichier d&apos;Oxymètre (*.spo *.spor *.spo2 *.dat)</translation>
     </message>
     <message>
         <source>SleepyHead gives you the ability to track Oximetry data alongside CPAP session data, which can give valuable insight into the effectiveness of CPAP treatment. It will also work standalone with your Pulse Oximeter, allowing you to store, track and review your recorded data.</source>
@@ -2100,7 +2320,7 @@ Corporel</translation>
     </message>
     <message>
         <source>Live Oximetery Mode</source>
-        <translation>Mode Oximétrie temps réel</translation>
+        <translation type="vanished">Mode Oximétrie temps réel</translation>
     </message>
     <message>
         <source>Select Oximeter Type:</source>
@@ -2148,7 +2368,7 @@ Corporel</translation>
     </message>
     <message>
         <source>No Oximetery module could parse the given file:</source>
-        <translation>Impossible de traiter le fichier:</translation>
+        <translation type="vanished">Impossible de traiter le fichier:</translation>
     </message>
     <message>
         <source>Import Completed. When did the recording start?</source>
@@ -2176,7 +2396,7 @@ Corporel</translation>
     </message>
     <message>
         <source>If you are trying to sync oximetery and CPAP data, please make sure you imported your CPAP sessions first before proceeding!</source>
-        <translation>Si vous voulez synchroniser les donnees de de PPC et d&apos;oxymétrie surtout importez celles de PPC avant de procéder! </translation>
+        <translation type="vanished">Si vous voulez synchroniser les donnees de de PPC et d&apos;oxymétrie surtout importez celles de PPC avant de procéder! </translation>
     </message>
     <message>
         <source>Erase session after successful upload</source>
@@ -2284,7 +2504,7 @@ Corporel</translation>
     </message>
     <message>
         <source>Live Oximetery import has been stopped</source>
-        <translation>Import temps-réel de l&apos;Oximétrie stoppé</translation>
+        <translation type="vanished">Import temps-réel de l&apos;Oximétrie stoppé</translation>
     </message>
     <message>
         <source>CMS50D+/E/F, Pulox PO-200/300</source>
@@ -2313,6 +2533,34 @@ Corporel</translation>
     <message>
         <source>ChoiceMMed MD300W1</source>
         <translation>ChoiceMMed MD300W1</translation>
+    </message>
+    <message>
+        <source>Oximetry Files (*.spo *.spor *.spo2 *.SpO2 *.dat)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Oximetry module could parse the given file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live Oximetry Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live Oximetry Stopped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live Oximetry import has been stopped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximeter Session %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you are trying to sync oximetry and CPAP data, please make sure you imported your CPAP sessions first before proceeding!</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2649,7 +2897,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Skip user selection screen</source>
-        <translation>Passer l&apos;écran de sélection d&apos;utilisateur</translation>
+        <translation type="vanished">Passer l&apos;écran de sélection d&apos;utilisateur</translation>
     </message>
     <message>
         <source>This experimental option attempts to use SleepyHead&apos;s event flagging system to improve machine detected event positioning.</source>
@@ -2709,7 +2957,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Oximetery Settings</source>
-        <translation>Réglages de l&apos;oximétrie</translation>
+        <translation type="vanished">Réglages de l&apos;oximétrie</translation>
     </message>
     <message>
         <source>User definable threshold considered large leak</source>
@@ -2724,7 +2972,7 @@ p, li { white-space: pre-wrap; }
 in order for these changes to come into effect.
 
 Would you like do this now?</source>
-        <translation>Ces modfications vont nécésiter un redémarrage de l&apos;application pour etre effectives
+        <translation type="vanished">Ces modfications vont nécésiter un redémarrage de l&apos;application pour etre effectives
 
 Voulez-vous le faire maintenant ?</translation>
     </message>
@@ -2895,7 +3143,7 @@ SleepyHead peut garder ces donnée si vous devez réinstaller.
     </message>
     <message>
         <source>Restart Required</source>
-        <translation>Redémarage nécéssaire</translation>
+        <translation type="vanished">Redémarage nécéssaire</translation>
     </message>
     <message>
         <source>Whether to show the leak redline in the leak graph</source>
@@ -2983,7 +3231,7 @@ Surtout pour l&apos;import.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention ResMed users:&lt;/span&gt; There are some pitfalls you may want to consider before trying to split sessions away from ResMed&apos;s 12:00 noon day model, click &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;here&lt;/a&gt; for more information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention utilisateur ResMed :&lt;/span&gt; Ils y a des inconvénients a connaitre avant de decouper les session pour les ResMed a horaire 12:00 , cliquez &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;ici&lt;/a&gt; pour plus d&apos;information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Attention utilisateur ResMed :&lt;/span&gt; Ils y a des inconvénients a connaitre avant de decouper les session pour les ResMed a horaire 12:00 , cliquez &lt;a href=&quot;http://sleepyhead.sf.net/wiki/index.php/Resmed_Session_Splitting&quot;&gt;ici&lt;/a&gt; pour plus d&apos;information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Double click to change the descriptive name the &apos;%1&apos; channel.</source>
@@ -3052,7 +3300,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;If you start your Oximeters recording mode at &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-style:italic;&quot;&gt;exactly &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;the same time you start your CPAP machine, you can now also achieve sync. &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;The serial import process takes the starting time from last nights first CPAP session. (Remember to import your CPAP data first!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -3404,6 +3652,96 @@ Etes-vous sur de vouloir le faire ?</translation>
         <source>Line Thickness</source>
         <translation>Epaisseur des lignes</translation>
     </message>
+    <message>
+        <source>Auto-Launch CPAP Importer after opening profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically load last used profile on start-up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;Due to summary design limitations, ResMed machines do not support changing these settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximetry Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:600;&quot;&gt;Syncing Oximetry and CPAP Data&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;CMS50 data imported from SpO2Review (from .spoR files) or the serial import method does &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:600; text-decoration: underline;&quot;&gt;not&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt; have the correct timestamp needed to sync.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Live view mode (using a serial cable) is one way to acheive an accurate sync on CMS50 oximeters, but does not counter for CPAP clock drift.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;If you start your Oximeters recording mode at &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-style:italic;&quot;&gt;exactly &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;the same time you start your CPAP machine, you can now also achieve sync. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;The serial import process takes the starting time from last nights first CPAP session. (Remember to import your CPAP data first!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Remove Card reminder notification on SleepyHead shutdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On Opening</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which tab to open on loading a profile. (Note: It will default to Profile if SleepyHead is set to not open a profile on startup)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profil</translation>
+    </message>
+    <message>
+        <source>Welcome</source>
+        <translation type="unfinished">Bienvenue</translation>
+    </message>
+    <message>
+        <source>Daily</source>
+        <translation type="unfinished">Quotidien</translation>
+    </message>
+    <message>
+        <source>Statistics</source>
+        <translation type="unfinished">Statistiques</translation>
+    </message>
+    <message>
+        <source>Switch Tabs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>After Import</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;Please Note:&lt;/b&gt; SleepyHead&apos;s advanced session splitting capabilities are not possible with &lt;b&gt;ResMed&lt;/b&gt; machines due to a limitation in the way their settings and summary data is stored, and therefore they have been disabled for this profile.&lt;/p&gt;&lt;p&gt;On ResMed machines, days will &lt;b&gt;split at noon&lt;/b&gt; like in ResMed&apos;s commercial software.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Processing Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A data re/decompression proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
+
+Are you sure you want to make these changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProfileSelect</name>
@@ -3445,7 +3783,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>You will find it under the following location:</source>
-        <translation>Vous le trouverez à cet endroit:</translation>
+        <translation type="vanished">Vous le trouverez à cet endroit:</translation>
     </message>
     <message>
         <source>Create new profile</source>
@@ -3473,7 +3811,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>Could not open profile.. You will need to delete this profile directory manually</source>
-        <translation>Impossible d&apos;ouvrir ce profil. Effacez son répertoire manuellement</translation>
+        <translation type="vanished">Impossible d&apos;ouvrir ce profil. Effacez son répertoire manuellement</translation>
     </message>
     <message>
         <source>&amp;Different Folder</source>
@@ -3542,6 +3880,176 @@ Etes-vous sur de vouloir le faire ?</translation>
     <message>
         <source>You entered an Incorrect Password too many times. Exiting!</source>
         <translation>Trop d&apos;erreur de mot de passe.Au revoir !</translation>
+    </message>
+</context>
+<context>
+    <name>ProfileSelector</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">Formulaire</translation>
+    </message>
+    <message>
+        <source>Filter:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>...</source>
+        <translation type="unfinished">...</translation>
+    </message>
+    <message>
+        <source>SleepyHead</source>
+        <translation type="unfinished">SleepyHead</translation>
+    </message>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">Version</translation>
+    </message>
+    <message>
+        <source>&amp;Open Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Profile</source>
+        <translation type="unfinished">&amp;Modifier le profil utilisateur</translation>
+    </message>
+    <message>
+        <source>&amp;New Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile: None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please select or create a profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Destroy Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profil</translation>
+    </message>
+    <message>
+        <source>Ventilator Brand</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ventilator Model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nom</translation>
+    </message>
+    <message>
+        <source>%1, %2</source>
+        <translation type="unfinished">%1: %2  {1,?}</translation>
+    </message>
+    <message>
+        <source>Enter Password for %1</source>
+        <translation type="unfinished">Mot de passe pour %1</translation>
+    </message>
+    <message>
+        <source>You entered an incorrect password</source>
+        <translation type="unfinished">Mot de passe incorrect</translation>
+    </message>
+    <message>
+        <source>Forgot your password?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask on the forums how to reset it, it&apos;s actually pretty easy.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a profile first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you&apos;re trying to delete because you forgot the password, you need to either reset it or delete the profile folder manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are about to destroy profile &apos;&lt;b&gt;%1&lt;/b&gt;&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Think carefully, as this will irretrievably delete the profile along with all &lt;b&gt;backup data&lt;/b&gt; stored under&lt;br/&gt;%2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the word &lt;b&gt;DELETE&lt;/b&gt; below (exactly as shown) to confirm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DELETE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sorry</source>
+        <translation type="unfinished">Désolé</translation>
+    </message>
+    <message>
+        <source>You need to enter DELETE in capital letters.</source>
+        <translation type="unfinished">c&apos;est DELETE en majuscule.</translation>
+    </message>
+    <message>
+        <source>There was an error deleting the profile directory, you need to manually remove it.</source>
+        <translation type="unfinished">Erreur lors de l&apos;effacement du répertoire du profil; Vous devez l&apos;effacer à la main.</translation>
+    </message>
+    <message>
+        <source>Profile &apos;%1&apos; was succesfully deleted</source>
+        <translation type="unfinished">Profil &apos;%1&apos; effacé avec succès</translation>
+    </message>
+    <message>
+        <source>Hide disk usage information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show disk usage information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name: %1, %2</source>
+        <translation type="unfinished">Nom: %1, %2</translation>
+    </message>
+    <message>
+        <source>Phone: %1</source>
+        <translation type="unfinished">Téléphone: %1</translation>
+    </message>
+    <message>
+        <source>Email: &lt;a href=&apos;mailto:%1&apos;&gt;%1&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation type="unfinished">Adresse:</translation>
+    </message>
+    <message>
+        <source>No profile information given</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProgressDialog</name>
+    <message>
+        <source>Abort</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3688,7 +4196,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>cm</source>
-        <translation>cm</translation>
+        <translation type="vanished">cm</translation>
     </message>
     <message>
         <source>ft</source>
@@ -3704,7 +4212,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>or</source>
-        <translation>ou</translation>
+        <translation type="vanished">ou</translation>
     </message>
     <message>
         <source>oz</source>
@@ -4024,7 +4532,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>About SleepyHead</source>
-        <translation>Au sujet de SleepyHead</translation>
+        <translation type="vanished">Au sujet de SleepyHead</translation>
     </message>
     <message>
         <source>Launching Windows Explorer failed</source>
@@ -4052,11 +4560,11 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>&lt;p&gt;As a second line of protection, ALWAYS UNMOUNT the data card properly before removing it!&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Comme protection complémentaire, DEMONTEZ TOUJOURS la carte SD avant de l&apos;enlever!&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Comme protection complémentaire, DEMONTEZ TOUJOURS la carte SD avant de l&apos;enlever!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Please close any other instances of SleepyHead running with this profile before proceeding.</source>
-        <translation>S&apos;il vous plaît fermez toutes les autres instances de Sleepyhead fonctionnant avec ce profil avant de poursuivre.</translation>
+        <translation type="vanished">S&apos;il vous plaît fermez toutes les autres instances de Sleepyhead fonctionnant avec ce profil avant de poursuivre.</translation>
     </message>
     <message>
         <source>???: </source>
@@ -4236,7 +4744,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>After four years in the making, this build brings SleepyHead into the final beta phase.</source>
-        <translation>Après quatre ans de développemen, cette version entre dans la phase beta finale.</translation>
+        <translation type="vanished">Après quatre ans de développemen, cette version entre dans la phase beta finale.</translation>
     </message>
     <message>
         <source>Respironics</source>
@@ -4328,11 +4836,11 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>Your IPAP pressure was under %1%2 for %3% of the time.</source>
-        <translation>Votre pression IPAP était en dessous de %1%2 pendant %3% du temps.</translation>
+        <translation type="vanished">Votre pression IPAP était en dessous de %1%2 pendant %3% du temps.</translation>
     </message>
     <message>
         <source>No oximetery data has been imported yet.</source>
-        <translation>Pas de données d&apos;Oximétrie importé pour le moment.</translation>
+        <translation type="vanished">Pas de données d&apos;Oximétrie importé pour le moment.</translation>
     </message>
     <message>
         <source>Disconnected</source>
@@ -4368,7 +4876,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>Your EPAP pressure fixed at %1%2.</source>
-        <translation>Votre pression EPAP s&apos;est fixé %1%2.</translation>
+        <translation type="vanished">Votre pression EPAP s&apos;est fixé %1%2.</translation>
     </message>
     <message>
         <source>VPAP Adapt</source>
@@ -4420,7 +4928,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>SleepyHead has finished sending the job to the printer.</source>
-        <translation>SpleepyHead a terminé d&apos;envoyer l&apos;impression.</translation>
+        <translation type="vanished">SpleepyHead a terminé d&apos;envoyer l&apos;impression.</translation>
     </message>
     <message>
         <source>NRI=%1 LKI=%2 EPI=%3</source>
@@ -4432,7 +4940,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>&amp;Close</source>
-        <translation>&amp;Fermer</translation>
+        <translation type="vanished">&amp;Fermer</translation>
     </message>
     <message>
         <source>Incompatible Graphics Hardware</source>
@@ -4448,7 +4956,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>You had no &lt;i&gt;major&lt;/i&gt; mask leaks (maximum was %1 %2).</source>
-        <translation>Vous n&apos;avez pas de fuites &lt;i&gt;majeur&lt;/i&gt; du masque (maximum %1 %2).</translation>
+        <translation type="vanished">Vous n&apos;avez pas de fuites &lt;i&gt;majeur&lt;/i&gt; du masque (maximum %1 %2).</translation>
     </message>
     <message>
         <source>No PB on record</source>
@@ -4576,7 +5084,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>No CPAP data has been imported yet.</source>
-        <translation>Pas de données de PPC importé pour le moment.</translation>
+        <translation type="vanished">Pas de données de PPC importé pour le moment.</translation>
     </message>
     <message>
         <source>Worst RX Setting</source>
@@ -4640,7 +5148,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>Most recent Oximetery data: &lt;a onclick=&apos;alert(&quot;daily=%2&quot;);&apos;&gt;%1&lt;/a&gt; </source>
-        <translation>Données d&apos;Oximétrie les plus récentes:&lt;a onclick=&apos;alert(&quot;daily=%2&quot;);&apos;&gt;%1&lt;/a&gt; </translation>
+        <translation type="vanished">Données d&apos;Oximétrie les plus récentes:&lt;a onclick=&apos;alert(&quot;daily=%2&quot;);&apos;&gt;%1&lt;/a&gt; </translation>
     </message>
     <message>
         <source>ResMed Mask Setting</source>
@@ -4720,7 +5228,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     </message>
     <message>
         <source>technically &quot;treated&quot;</source>
-        <translation>techniquement &quot;traité&quot;</translation>
+        <translation type="vanished">techniquement &quot;traité&quot;</translation>
     </message>
     <message>
         <source>Pt. Access</source>
@@ -4729,7 +5237,7 @@ Etes-vous sur de vouloir le faire ?</translation>
     <message>
         <source>This make take some time to complete..
 Please don&apos;t touch anything until it&apos;s done.</source>
-        <translation>C&apos;est long, ne touchez a rien en attendant.</translation>
+        <translation type="vanished">C&apos;est long, ne touchez a rien en attendant.</translation>
     </message>
     <message>
         <source>CMS50F</source>
@@ -4753,7 +5261,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     </message>
     <message>
         <source>pretty darn good</source>
-        <translation>très bien</translation>
+        <translation type="vanished">très bien</translation>
     </message>
     <message>
         <source>SleepyHead will now exit, then (attempt to) launch your computers file manager so you can manually back your profile up:</source>
@@ -4773,7 +5281,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     </message>
     <message>
         <source>Change log</source>
-        <translation>Journal des modifications</translation>
+        <translation type="vanished">Journal des modifications</translation>
     </message>
     <message>
         <source>Sys1 Resist. Lock</source>
@@ -4787,7 +5295,7 @@ Ligne %2, colonne %3</translation>
     </message>
     <message>
         <source>View&lt;br/&gt;Statistics</source>
-        <translation>Voir&lt;br/&gt;Les Statistiques</translation>
+        <translation type="vanished">Voir&lt;br/&gt;Les Statistiques</translation>
     </message>
     <message>
         <source>BiPAP autoSV Advanced</source>
@@ -4815,7 +5323,7 @@ Ligne %2, colonne %3</translation>
     </message>
     <message>
         <source>Oximetery&lt;br/&gt;Wizard</source>
-        <translation>Assistant &lt;br/&gt;d&apos;Oxymétrie</translation>
+        <translation type="vanished">Assistant &lt;br/&gt;d&apos;Oxymétrie</translation>
     </message>
     <message>
         <source>No Data</source>
@@ -4827,7 +5335,7 @@ Ligne %2, colonne %3</translation>
     </message>
     <message>
         <source>You had an AHI of %1, which is considered %2</source>
-        <translation>Vous aviez un IAH de %1, qui est considéré %2</translation>
+        <translation type="vanished">Vous aviez un IAH de %1, qui est considéré %2</translation>
     </message>
     <message>
         <source>Litres</source>
@@ -4941,7 +5449,7 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>horrible, please consult your doctor</source>
-        <translation>horrible, consulter votre médecin</translation>
+        <translation type="vanished">horrible, consulter votre médecin</translation>
     </message>
     <message>
         <source>SpO2 %</source>
@@ -4966,7 +5474,7 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>Welcome to SleepyHead</source>
-        <translation>Bienvenue dans SleepyHead</translation>
+        <translation type="vanished">Bienvenue dans SleepyHead</translation>
     </message>
     <message>
         <source>SleepyHead will not touch this folder, and will create a new one instead.</source>
@@ -4982,7 +5490,7 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>Your EPAP pressure was under %1%2 for %3% of the time.</source>
-        <translation>Votre pression EPAP était en dessous de %1%2 pendant %3% du temps.</translation>
+        <translation type="vanished">Votre pression EPAP était en dessous de %1%2 pendant %3% du temps.</translation>
     </message>
     <message>
         <source>PRS1 pressure relief setting.</source>
@@ -5038,7 +5546,7 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>Your mask is leaking way too much.. Talk to your CPAP advisor.</source>
-        <translation>Votre masque fuit beaucoup trop .. Parlez-en à votre conseiller de PPC.</translation>
+        <translation type="vanished">Votre masque fuit beaucoup trop .. Parlez-en à votre conseiller de PPC.</translation>
     </message>
     <message>
         <source>If you are upgrading, don&apos;t panic, you just need to make sure this is pointed at your old SleepyHead data folder.</source>
@@ -5070,11 +5578,11 @@ Merci de reconstruire les données de PPC</translation>
     </message>
     <message>
         <source>SleepyHead Release Notes</source>
-        <translation>Note de publication</translation>
+        <translation type="vanished">Note de publication</translation>
     </message>
     <message>
         <source>&amp;Ok, get on with it..</source>
-        <translation>&amp;Ok, continuons..</translation>
+        <translation type="vanished">&amp;Ok, continuons..</translation>
     </message>
     <message>
         <source>%1
@@ -5086,11 +5594,11 @@ Début: %2</translation>
     </message>
     <message>
         <source>last night</source>
-        <translation>la nuit dernière</translation>
+        <translation type="vanished">la nuit dernière</translation>
     </message>
     <message>
         <source>What would you like to do?</source>
-        <translation>Que souhaitez-vous faire?</translation>
+        <translation type="vanished">Que souhaitez-vous faire?</translation>
     </message>
     <message>
         <source>CMS50F3.7</source>
@@ -5098,7 +5606,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>SleepyHead is free open-source software available from http://sourceforge.net/projects/SleepyHead</source>
-        <translation>SleepyHead est un logiciel ouvert (Open Source) disponible sur http://sourceforge.net/projects/SleepyHead</translation>
+        <translation type="vanished">SleepyHead est un logiciel ouvert (Open Source) disponible sur http://sourceforge.net/projects/SleepyHead</translation>
     </message>
     <message>
         <source>RDI	%1
@@ -5147,7 +5655,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>CPAP&lt;br/&gt;Importer</source>
-        <translation>Import de&lt;br/&gt;PPC</translation>
+        <translation type="vanished">Import de&lt;br/&gt;PPC</translation>
     </message>
     <message>
         <source>An optical Photo-plethysomogram showing heart rhythm</source>
@@ -5163,7 +5671,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>was %1 (on %2)</source>
-        <translation>était %1 (le %2)</translation>
+        <translation type="vanished">était %1 (le %2)</translation>
     </message>
     <message>
         <source>%1
@@ -5204,7 +5712,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>There is a lockfile already present for profile &apos;%1&apos;.</source>
-        <translation>Il y a un fichier de verrouillage déjà présent pour le profil &apos;%1&apos;.</translation>
+        <translation type="vanished">Il y a un fichier de verrouillage déjà présent pour le profil &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>Humidity Level</source>
@@ -5224,7 +5732,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>As this is a pre-release version, it is recommended that you back up your data folder manually before proceding, because attempting to roll back later may break things.</source>
-        <translation>Comme c&apos;est une préversion il est recommandé de sauvegarder vos données avant de continuer. Car tenter un retour arrière plus tard pourrais endomager des données.</translation>
+        <translation type="vanished">Comme c&apos;est une préversion il est recommandé de sauvegarder vos données avant de continuer. Car tenter un retour arrière plus tard pourrais endomager des données.</translation>
     </message>
     <message>
         <source>Name: %1, %2</source>
@@ -5244,7 +5752,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>Your machine blasted you with a constant %1-%2 %3 of air.</source>
-        <translation>Votre appareil vous explose avec une pression d&apos;air constante de %1-%2 %3 .</translation>
+        <translation type="vanished">Votre appareil vous explose avec une pression d&apos;air constante de %1-%2 %3 .</translation>
     </message>
     <message>
         <source>Severity (0-1)</source>
@@ -5272,7 +5780,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>&lt;font color = red&gt;You only had the mask on for %1.&lt;/font&gt;</source>
-        <translation>&lt;font color = red&gt; Vous n&apos;avez porté le masque que %1.&lt;/font&gt;</translation>
+        <translation type="vanished">&lt;font color = red&gt; Vous n&apos;avez porté le masque que %1.&lt;/font&gt;</translation>
     </message>
     <message>
         <source>A pulse of pressure &apos;pinged&apos; to detect a closed airway.</source>
@@ -5312,7 +5820,7 @@ Début: %2</translation>
     </message>
     <message>
         <source>&lt;p&gt;ALWAYS &lt;font size=+1 color=red&gt;&lt;b&gt;write protect&lt;/b&gt;&lt;/font&gt; CPAP SDCards before inserting them into your computer.</source>
-        <translation>&lt;p&gt;TOUJOURS&lt;font size=+1 color=red&gt;&lt;b&gt; protéger en écriture &lt;/b&gt;&lt;/font&gt; votre SDCards avant de l&apos;insérer dans votre ordinateur.</translation>
+        <translation type="vanished">&lt;p&gt;TOUJOURS&lt;font size=+1 color=red&gt;&lt;b&gt; protéger en écriture &lt;/b&gt;&lt;/font&gt; votre SDCards avant de l&apos;insérer dans votre ordinateur.</translation>
     </message>
     <message>
         <source>Usage Statistics</source>
@@ -5352,11 +5860,11 @@ Début: %2</translation>
     </message>
     <message>
         <source>Sleep Well, and good luck!</source>
-        <translation>Dormez bien et bonne chance!</translation>
+        <translation type="vanished">Dormez bien et bonne chance!</translation>
     </message>
     <message>
         <source>First import can take a few minutes.</source>
-        <translation>Le premier import peut prendre quelques minutes.</translation>
+        <translation type="vanished">Le premier import peut prendre quelques minutes.</translation>
     </message>
     <message>
         <source>Bedtime</source>
@@ -5442,7 +5950,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>%2 days ago</source>
-        <translation>il y %2 jours</translation>
+        <translation type="vanished">il y %2 jours</translation>
     </message>
     <message>
         <source>DOB: %1</source>
@@ -5542,7 +6050,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>Your pressure was under %1%2 for %3% of the time.</source>
-        <translation>Votre pression était en dessous de %1%2 pour %3% du temps.</translation>
+        <translation type="vanished">Votre pression était en dessous de %1%2 pour %3% du temps.</translation>
     </message>
     <message>
         <source>Snapshot %1</source>
@@ -5570,7 +6078,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>This version brings support for the new Philips Respironics DreamStation, and older PRS1 1060P models.</source>
-        <translation>Cette version supporte la nouvelle Philips Respironics DreamStation et les anciens models PRS1 1060P.</translation>
+        <translation type="vanished">Cette version supporte la nouvelle Philips Respironics DreamStation et les anciens models PRS1 1060P.</translation>
     </message>
     <message>
         <source>Pressure Max</source>
@@ -5642,7 +6150,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>Things are not perfect yet, but the focus from now is putting on the finishing touches. </source>
-        <translation>Tout n&apos;est pas encore parfait mais l&apos;objectif actuelle est la finition.</translation>
+        <translation type="vanished">Tout n&apos;est pas encore parfait mais l&apos;objectif actuelle est la finition.</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
@@ -5654,7 +6162,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>yesterday</source>
-        <translation>hier</translation>
+        <translation type="vanished">hier</translation>
     </message>
     <message>
         <source>The version of SleepyHead you just ran is OLDER than the one used to create this data (%1).</source>
@@ -5666,7 +6174,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>&amp;Donate</source>
-        <translation>&amp;Donner</translation>
+        <translation type="vanished">&amp;Donner</translation>
     </message>
     <message>
         <source>Address:</source>
@@ -5742,7 +6250,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>reasonably good</source>
-        <translation>assez bien</translation>
+        <translation type="vanished">assez bien</translation>
     </message>
     <message>
         <source>Auto CPAP</source>
@@ -5758,7 +6266,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>Loading %1 data...</source>
-        <translation>Chargement des données %1 en cours...</translation>
+        <translation type="vanished">Chargement des données %1 en cours...</translation>
     </message>
     <message>
         <source>Median rate of detected mask leakage</source>
@@ -5766,7 +6274,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>Your CPAP machine blasted you with a constant %1%2 of air</source>
-        <translation>Votre appareil PPC vous explose avec une pression d&apos;air constante de %1%2</translation>
+        <translation type="vanished">Votre appareil PPC vous explose avec une pression d&apos;air constante de %1%2</translation>
     </message>
     <message>
         <source>PAP Device Mode</source>
@@ -5786,7 +6294,7 @@ TTIA: %1</translation>
     </message>
     <message>
         <source>Click this box to see this in daily view.</source>
-        <translation>Cliquez sur cette case pour visaluser en vue quotidienne.</translation>
+        <translation type="vanished">Cliquez sur cette case pour visaluser en vue quotidienne.</translation>
     </message>
     <message>
         <source>Respiratory Event</source>
@@ -5936,7 +6444,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Greetings!</source>
-        <translation>Salutations!</translation>
+        <translation type="vanished">Salutations!</translation>
     </message>
     <message>
         <source>Auto Off</source>
@@ -5948,7 +6456,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>perfect :)</source>
-        <translation>Parfait :)</translation>
+        <translation type="vanished">Parfait :)</translation>
     </message>
     <message>
         <source>(&lt;a href=&apos;http://intel.com/support&apos;&gt;Intel&apos;s support site&lt;/a&gt;)</source>
@@ -5956,7 +6464,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Please Import Some Data</source>
-        <translation>Merci d&apos;importer des données</translation>
+        <translation type="vanished">Merci d&apos;importer des données</translation>
     </message>
     <message>
         <source>Overview</source>
@@ -5968,7 +6476,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>not very good</source>
-        <translation>pas très bien</translation>
+        <translation type="vanished">pas très bien</translation>
     </message>
     <message>
         <source>Temperature</source>
@@ -6004,7 +6512,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>You had significant periods of &lt;i&gt;major&lt;/i&gt; mask leakage.</source>
-        <translation>Vous avez des périodes significative de fuite &lt;i&gt;majeures&lt;/i&gt;.</translation>
+        <translation type="vanished">Vous avez des périodes significative de fuite &lt;i&gt;majeures&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>%1 Session #%2</source>
@@ -6016,7 +6524,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Your machine was under %1-%2 %3 for %4% of the time.</source>
-        <translation>Votre machine était en dessous de %1-%2 %3 pendant %4% du temps.</translation>
+        <translation type="vanished">Votre machine était en dessous de %1-%2 %3 pendant %4% du temps.</translation>
     </message>
     <message>
         <source>Graph showing severity of flow limitations</source>
@@ -6081,7 +6589,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>You machine was on for %1.</source>
-        <translation>Votre machine était en fonction pendant %1.</translation>
+        <translation type="vanished">Votre machine était en fonction pendant %1.</translation>
     </message>
     <message>
         <source>Total Leak Rate</source>
@@ -6089,7 +6597,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>You had a small but acceptable amount of &lt;i&gt;major&lt;/i&gt; mask leakage.</source>
-        <translation>Vous avez eu une petite, mais acceptable quantié de fuite &lt;i&gt;majeur&lt;/i&gt;.</translation>
+        <translation type="vanished">Vous avez eu une petite, mais acceptable quantié de fuite &lt;i&gt;majeur&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>RemStar Plus</source>
@@ -6101,11 +6609,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>If no other instances of SleepyHead are running, (eg, it crashed last time!), it is safe to ignore this message.</source>
-        <translation>Si aucun autre Sleepyhead ne fonctione (par exemple, il s&apos;est crashé la dernière fois!), ignorez ce message.</translation>
+        <translation type="vanished">Si aucun autre Sleepyhead ne fonctione (par exemple, il s&apos;est crashé la dernière fois!), ignorez ce message.</translation>
     </message>
     <message>
         <source>This report was generated by SleepyHead (%1), &lt;b&gt;and has not been approved in any way for compliance or medical diagnostic purposes&lt;/b&gt;.</source>
-        <translation>Ce rapport a été généré par  SleepyHead (%1),&lt;b&gt;et n&apos;a pas été approuvé en aucune façons conforme ou permettant un diagnotique médical&lt;b&gt;.</translation>
+        <translation type="vanished">Ce rapport a été généré par  SleepyHead (%1),&lt;b&gt;et n&apos;a pas été approuvé en aucune façons conforme ou permettant un diagnotique médical&lt;b&gt;.</translation>
     </message>
     <message>
         <source>Max Pressure</source>
@@ -6237,7 +6745,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;span title=&quot;Mac OSX and Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain operating systems&lt;/font&gt;&lt;/span&gt; write index files to the card without asking, which can render your card unreadable by your cpap machine.</source>
-        <translation>&lt;span title=&quot;Mac OSX et Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain systemes d&apos;exploitation&lt;/font&gt;&lt;/span&gt; écrivent des fichiers d&apos;index sur la carte sans demander, ce qui peut rendre votre carte illisible par votre machine PPC.</translation>
+        <translation type="vanished">&lt;span title=&quot;Mac OSX et Win8.1&quot;  onmouseover=&apos;ChangeColor(this, &quot;#eeeeee&quot;);&apos; onmouseout=&apos;ChangeColor(this, &quot;#ffffff&quot;);&apos;&gt;&lt;font color=blue&gt;Certain systemes d&apos;exploitation&lt;/font&gt;&lt;/span&gt; écrivent des fichiers d&apos;index sur la carte sans demander, ce qui peut rendre votre carte illisible par votre machine PPC.</translation>
     </message>
     <message>
         <source>Maximum Leak</source>
@@ -6261,7 +6769,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
-        <translation>Cela serait un bonne idée de vérifier les préférnces,&lt;/br&gt;en effet il y a des options qui concernent l&apos;import.</translation>
+        <translation type="vanished">Cela serait un bonne idée de vérifier les préférnces,&lt;/br&gt;en effet il y a des options qui concernent l&apos;import.</translation>
     </message>
     <message>
         <source>Oximetry</source>
@@ -6317,7 +6825,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Very Important Warning</source>
-        <translation>Avertissement Très Important</translation>
+        <translation type="vanished">Avertissement Très Important</translation>
     </message>
     <message>
         <source>Show AHI</source>
@@ -6349,7 +6857,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Release Notes</source>
-        <translation>Note de publication</translation>
+        <translation type="vanished">Note de publication</translation>
     </message>
     <message>
         <source>Pressure Pulse</source>
@@ -6397,15 +6905,15 @@ Heures: %1</translation>
     </message>
     <message>
         <source>PLease Wait...</source>
-        <translation>Veuillez patienter...</translation>
+        <translation type="vanished">Veuillez patienter...</translation>
     </message>
     <message>
         <source>%1 hours, %2 minutes and %3 seconds</source>
-        <translation>%1 heures, %2 minutes and %3 secondes</translation>
+        <translation type="vanished">%1 heures, %2 minutes and %3 secondes</translation>
     </message>
     <message>
         <source>The last time you used your %1...</source>
-        <translation>La dernière fois que vous avez utilisé votre %1 ...</translation>
+        <translation type="vanished">La dernière fois que vous avez utilisé votre %1 ...</translation>
     </message>
     <message>
         <source>h</source>
@@ -6563,12 +7071,157 @@ Heures: %1</translation>
         <source>ZEO ZQ</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Pop out Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Daily View :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Popout %1 Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> cm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profil</translation>
+    </message>
+    <message>
+        <source>Getting Ready...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanning Files...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Importing Sessions...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finishing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Breathing Not Detected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A period during a session where the machine could not detect flow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BND</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parsing Identification File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locating STR.edf File(s)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cataloguing EDF Files...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Queueing Import Tasks...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finishing Up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading %1 data for %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanning Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Migrating Summary File Location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading Summaries.xml.gz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading Summary Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please Wait...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>As this is a pre-release version, it is recommended that you &lt;b&gt;back up your data folder manually&lt;/b&gt; before proceding, because attempting to roll back later may break things.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To see if the license text is available in your language, see %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading profile &quot;%1&quot;...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summaries:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Events:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backups:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is for legal reasons. Sorry, not sorry. Without manufacturer support and documentation, SleepyHead is unsuitable as a compliance/medical reporting tool.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(NOT approved for compliance or medical reporting purposes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This report was generated by SleepyHead v%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead is free open-source CPAP research software available from http://sleepyhead.jedimark.net</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Most recent Oximetry data: &lt;a onclick=&apos;alert(&quot;daily=%2&quot;);&apos;&gt;%1&lt;/a&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No oximetry data has been imported yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QuaZipFilePrivate</name>
     <message>
         <source>ZIP/UNZIP API error %1</source>
-        <translation>Erreur de l&apos;API de ZIP/UNZIP : %1</translation>
+        <translation type="vanished">Erreur de l&apos;API de ZIP/UNZIP : %1</translation>
     </message>
 </context>
 <context>
@@ -6621,7 +7274,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>90% %1</source>
-        <translation>90% %1</translation>
+        <translation type="vanished">90% %1</translation>
     </message>
     <message>
         <source>%1 day of %2 Data on %3</source>
@@ -6756,7 +7409,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Saving as </source>
-        <translation>Enregistrer comme</translation>
+        <translation type="vanished">Enregistrer comme</translation>
     </message>
     <message>
         <source>&amp;Finished</source>
@@ -6768,23 +7421,23 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Redirected to </source>
-        <translation>Redirigé vers </translation>
+        <translation type="vanished">Redirigé vers </translation>
     </message>
     <message>
         <source>A new version of SleepyHead is available!</source>
-        <translation>Une nouvelle version est disponible !</translation>
+        <translation type="vanished">Une nouvelle version est disponible !</translation>
     </message>
     <message>
         <source>Download Error. Sorry, try again later.</source>
-        <translation>Erreur de téléchargement. Désolé réessayez plus tard.</translation>
+        <translation type="vanished">Erreur de téléchargement. Désolé réessayez plus tard.</translation>
     </message>
     <message>
         <source>There was an error parsing the XML Update file.</source>
-        <translation>Structure XML de mise à jour analysée avec ERREUR!.</translation>
+        <translation type="vanished">Structure XML de mise à jour analysée avec ERREUR!.</translation>
     </message>
     <message>
         <source>Updates Complete. SleepyHead needs to restart now, click Finished to do so.</source>
-        <translation>Mise à jour terminé. Cliquez Fin pour relancer SleepyHead.</translation>
+        <translation type="vanished">Mise à jour terminé. Cliquez Fin pour relancer SleepyHead.</translation>
     </message>
     <message>
         <source>New SleepyHead Updates are avilable:</source>
@@ -6792,11 +7445,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>XML update structure parsed cleanly</source>
-        <translation>Structure XML de mise à jour analysée correctement</translation>
+        <translation type="vanished">Structure XML de mise à jour analysée correctement</translation>
     </message>
     <message>
         <source>Version &lt;b&gt;%1&lt;/b&gt; is available. You&apos;re currently running v%1</source>
-        <translation>La version  &lt;b&gt;v%1&lt;/b&gt; est disponible. Vous utilisez la v%1</translation>
+        <translation type="vanished">La version  &lt;b&gt;v%1&lt;/b&gt; est disponible. Vous utilisez la v%1</translation>
     </message>
     <message>
         <source>Please wait while updates are downloaded and installed...</source>
@@ -6804,7 +7457,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Shiny new &lt;b&gt;v%1&lt;/b&gt; is available. You&apos;re running old and busted v%2</source>
-        <translation>Une toute nouvelle version  &lt;b&gt;v%1&lt;/b&gt; est disponible. Vous utilisez l&apos;antique version v%2</translation>
+        <translation type="vanished">Une toute nouvelle version  &lt;b&gt;v%1&lt;/b&gt; est disponible. Vous utilisez l&apos;antique version v%2</translation>
     </message>
     <message>
         <source>SleepyHead Updater</source>
@@ -6820,7 +7473,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Failed</source>
-        <translation>Echec</translation>
+        <translation type="vanished">Echec</translation>
     </message>
     <message>
         <source>&amp;Upgrade Now</source>
@@ -6836,11 +7489,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>No new updates were found for your platform.</source>
-        <translation>Aucune nouvelle mise à jour disponible.</translation>
+        <translation type="vanished">Aucune nouvelle mise à jour disponible.</translation>
     </message>
     <message>
         <source>Download Complete</source>
-        <translation>Téléchargement Terminé</translation>
+        <translation type="vanished">Téléchargement Terminé</translation>
     </message>
     <message>
         <source>No updates were found for your platform.</source>
@@ -6856,23 +7509,23 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Extracting </source>
-        <translation>Extraction </translation>
+        <translation type="vanished">Extraction </translation>
     </message>
     <message>
         <source>Update to QtLibs (v%1)</source>
-        <translation>Mettez a jour la Librairie QtLibs en (v%1)</translation>
+        <translation type="vanished">Mettez a jour la Librairie QtLibs en (v%1)</translation>
     </message>
     <message>
         <source>about:blank</source>
-        <translation>ausujet:blanc</translation>
+        <translation type="vanished">ausujet:blanc</translation>
     </message>
     <message>
         <source>Update Failed :(</source>
-        <translation>Echec de la mise à jour :( </translation>
+        <translation type="vanished">Echec de la mise à jour :( </translation>
     </message>
     <message>
         <source>SleepyHead v%1, codename &quot;%2&quot;</source>
-        <translation>SpleepyHead v%1, nom de code &quot;%2&quot;</translation>
+        <translation type="vanished">SpleepyHead v%1, nom de code &quot;%2&quot;</translation>
     </message>
     <message>
         <source>Progress</source>
@@ -6884,11 +7537,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Please wait while downloading and installing updates.</source>
-        <translation>Veuillez patienter pendant le téléchargement et l&apos;installation des mises à jour.</translation>
+        <translation type="vanished">Veuillez patienter pendant le téléchargement et l&apos;installation des mises à jour.</translation>
     </message>
     <message>
         <source>File integrity check failed for %1</source>
-        <translation>Erreur de vérification du fichier %1</translation>
+        <translation type="vanished">Erreur de vérification du fichier %1</translation>
     </message>
     <message>
         <source>%1 bytes received</source>
@@ -6900,7 +7553,7 @@ Heures: %1</translation>
     </message>
     <message>
         <source>You might need to reinstall manually. Sorry :(</source>
-        <translation>Vous allez devoir reinstaller manuellement . Désolé :( </translation>
+        <translation type="vanished">Vous allez devoir reinstaller manuellement . Désolé :( </translation>
     </message>
     <message>
         <source>Updates</source>
@@ -6908,11 +7561,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Would you like t download and install them now?</source>
-        <translation>Voulez vous les télécharger et les installer maintenant ?</translation>
+        <translation type="vanished">Voulez vous les télécharger et les installer maintenant ?</translation>
     </message>
     <message>
         <source>Downloading &amp; Installing Updates...</source>
-        <translation>Téléchargment et Installation en cours...</translation>
+        <translation type="vanished">Téléchargment et Installation en cours...</translation>
     </message>
     <message>
         <source>Version</source>
@@ -6920,11 +7573,11 @@ Heures: %1</translation>
     </message>
     <message>
         <source>Update Complete!</source>
-        <translation>Mise à jour terminée !</translation>
+        <translation type="vanished">Mise à jour terminée !</translation>
     </message>
     <message>
         <source>SleepyHead v%1 build notes</source>
-        <translation>Notes de compilation de la version %1 du logiciel</translation>
+        <translation type="vanished">Notes de compilation de la version %1 du logiciel</translation>
     </message>
     <message>
         <source>Requesting </source>
@@ -6932,31 +7585,178 @@ Heures: %1</translation>
     </message>
     <message>
         <source>platform notes</source>
-        <translation>Note spécifiques à la plateforme</translation>
+        <translation type="vanished">Note spécifiques à la plateforme</translation>
     </message>
     <message>
         <source>Ugh.. Something went wrong with unzipping.</source>
-        <translation>Erreur lors de la décompression.</translation>
+        <translation type="vanished">Erreur lors de la décompression.</translation>
     </message>
     <message>
         <source>An update for SleepyHead is available.</source>
-        <translation>Une mise à jour de SleepyHead est disponible.</translation>
+        <translation type="vanished">Une mise à jour de SleepyHead est disponible.</translation>
     </message>
     <message>
         <source>File size mismatch for %1</source>
-        <translation>Taille du fichier %1 incorrecte</translation>
+        <translation type="vanished">Taille du fichier %1 incorrecte</translation>
     </message>
     <message>
         <source>There was an error completing a network request:
 
 (</source>
-        <translation>Erreur lors d&apos;une requête réseau:
+        <translation type="vanished">Erreur lors d&apos;une requête réseau:
 
 (</translation>
     </message>
     <message>
         <source>Release Notes</source>
         <translation>Note de publication</translation>
+    </message>
+    <message>
+        <source>Version %1 of SleepyHead is available, opening link to download site.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are already running the latest version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Would you like to download and install them now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Welcome</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">Formulaire</translation>
+    </message>
+    <message>
+        <source>Welcome To SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>What would you like to do?</source>
+        <translation type="unfinished">Que souhaitez-vous faire?</translation>
+    </message>
+    <message>
+        <source>CPAP Importer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximetry Wizard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Overview</source>
+        <translation type="unfinished">Aperçus</translation>
+    </message>
+    <message>
+        <source>Statistics</source>
+        <translation type="unfinished">Statistiques</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;ResMed S9 SDCards &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;need &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;to be locked &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;before &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;inserting into your computer&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#000000;&quot;&gt;Some operating systems write cache files which break their special filesystem Journal&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
+        <translation type="unfinished">Cela serait un bonne idée de vérifier les préférnces,&lt;/br&gt;en effet il y a des options qui concernent l&apos;import.</translation>
+    </message>
+    <message>
+        <source>First import can take a few minutes.</source>
+        <translation type="unfinished">Le premier import peut prendre quelques minutes.</translation>
+    </message>
+    <message>
+        <source>The last time you used your %1...</source>
+        <translation type="unfinished">La dernière fois que vous avez utilisé votre %1 ...</translation>
+    </message>
+    <message>
+        <source>last night</source>
+        <translation type="unfinished">la nuit dernière</translation>
+    </message>
+    <message>
+        <source>yesterday</source>
+        <translation type="unfinished">hier</translation>
+    </message>
+    <message>
+        <source>%2 days ago</source>
+        <translation type="unfinished">il y %2 jours</translation>
+    </message>
+    <message>
+        <source>was %1 (on %2)</source>
+        <translation type="unfinished">était %1 (le %2)</translation>
+    </message>
+    <message>
+        <source>%1 hours, %2 minutes and %3 seconds</source>
+        <translation type="unfinished">%1 heures, %2 minutes and %3 secondes</translation>
+    </message>
+    <message>
+        <source>Your machine was on for %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;font color = red&gt;You only had the mask on for %1.&lt;/font&gt;</source>
+        <translation type="unfinished">&lt;font color = red&gt; Vous n&apos;avez porté le masque que %1.&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <source>under</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>over</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reasonably close to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had an AHI of %1, which is %2 your %3 day average of %4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your CPAP machine blasted you with a constant %1%2 of air</source>
+        <translation type="unfinished">Votre appareil PPC vous explose avec une pression d&apos;air constante de %1%2</translation>
+    </message>
+    <message>
+        <source>Your pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished">Votre pression était en dessous de %1%2 pour %3% du temps.</translation>
+    </message>
+    <message>
+        <source>Your machine blasted you with a constant %1-%2 %3 of air.</source>
+        <translation type="unfinished">Votre appareil vous explose avec une pression d&apos;air constante de %1-%2 %3 .</translation>
+    </message>
+    <message>
+        <source>Your machine was under %1-%2 %3 for %4% of the time.</source>
+        <translation type="unfinished">Votre machine était en dessous de %1-%2 %3 pendant %4% du temps.</translation>
+    </message>
+    <message>
+        <source>Your EPAP pressure fixed at %1%2.</source>
+        <translation type="unfinished">Votre pression EPAP s&apos;est fixé %1%2.</translation>
+    </message>
+    <message>
+        <source>Your IPAP pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished">Votre pression IPAP était en dessous de %1%2 pendant %3% du temps.</translation>
+    </message>
+    <message>
+        <source>Your EPAP pressure was under %1%2 for %3% of the time.</source>
+        <translation type="unfinished">Votre pression EPAP était en dessous de %1%2 pendant %3% du temps.</translation>
+    </message>
+    <message>
+        <source>Your average leaks were %1 %2, which is %3 your %4 day average of %5.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No CPAP data has been imported yet.</source>
+        <translation type="unfinished">Pas de données de PPC importé pour le moment.</translation>
     </message>
 </context>
 <context>

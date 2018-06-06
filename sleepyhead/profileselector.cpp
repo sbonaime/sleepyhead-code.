@@ -58,7 +58,7 @@ ProfileSelector::ProfileSelector(QWidget *parent) :
     ui->diskSpaceInfo->setVisible(false);
 
     QItemSelectionModel * sm = ui->profileView->selectionModel();
-    connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
+    if (sm) connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
     ui->buttonEditProfile->setEnabled(false);
 }
 
@@ -73,6 +73,9 @@ const Qt::GlobalColor openProfileHighlightColor = Qt::darkGreen;
 
 void ProfileSelector::updateProfileList()
 {
+    QItemSelectionModel * sm = ui->profileView->selectionModel();
+    if (sm) disconnect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
+
     QString name;
     int w=0;
     if (proxy) delete proxy;
@@ -169,8 +172,7 @@ void ProfileSelector::updateProfileList()
     headerView->setStretchLastSection(true);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
 
-    QItemSelectionModel * sm = ui->profileView->selectionModel();
-    disconnect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
+    sm = ui->profileView->selectionModel();
     connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(on_selectionChanged(QModelIndex,QModelIndex)));
 
 }

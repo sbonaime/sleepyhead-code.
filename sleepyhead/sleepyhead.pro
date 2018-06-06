@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml printsupport serialport widgets
+QT += core gui network xml printsupport serialport widgets help
 
 
 lessThan(QT_MAJOR_VERSION,5) {
@@ -65,6 +65,8 @@ exists(../.git):{
 #Comment out for official builds
 DEFINES += BETA_BUILD
 
+
+system(qcollectiongenerator help/help.qhcp -o help/help.qhc)
 
 unix:!macx:!haiku {
     LIBS            += -lX11 -lz -lGLU
@@ -163,7 +165,8 @@ SOURCES += \
     profileselector.cpp \
     SleepLib/loader_plugins/edfparser.cpp \
     aboutdialog.cpp \
-    welcome.cpp
+    welcome.cpp \
+    help.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -231,7 +234,8 @@ HEADERS  += \
     SleepLib/loader_plugins/edfparser.h \
     aboutdialog.h \
     welcome.h \
-    mytextbrowser.h
+    mytextbrowser.h \
+    help.h
 
 FORMS += \
     daily.ui \
@@ -247,7 +251,8 @@ FORMS += \
     oximeterimport.ui \
     profileselector.ui \
     aboutdialog.ui \
-    welcome.ui
+    welcome.ui \
+    help.ui
 
 RESOURCES += \
     Resources.qrc
@@ -289,12 +294,35 @@ win32 {
         system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
     }
 
+    CONFIG(debug, debug|release) {
+        HELPDIR = $$OUT_PWD/debug/Help
+    }
+    CONFIG(release, debug|release) {
+        HELPDIR = $$OUT_PWD/release/Help
+    }
+    HELPDIR ~= s,/,\\,g
+
+    HELP_FILES += $$PWD/help/*.qch
+    HELP_FILES += $$PWD/help/help.qhc
+    HELP_FILES_WIN = $${HELP_FILES}
+    HELP_FILES_WIN ~= s,/,\\,g
+
+    system(mkdir $$quote($$HELPDIR))
+
+    for(FILE,HELP_FILES_WIN){
+        system(xcopy /y $$quote($$FILE) $$quote($$HELPDIR))
+    }
+
 }
 
 mac {
     TransFiles.files = $$files(../Translations/*.qm)
     TransFiles.path = Contents/Resources/Translations
+    HelpFiles.files = $$files(../Help/*.qch)
+    HelpFiles.files += $$files(../Help/help.qhc)
+    HelpFiles.path = Contents/Resources/Help
     QMAKE_BUNDLE_DATA += TransFiles
+    QMAKE_BUNDLE_DATA += HelpFiles
 }
 
 #include(../3rdparty/quazip/quazip/quazip.pri)
@@ -302,4 +330,20 @@ mac {
 #DEPENDPATH += $$PWD/../3rdparty/quazip
 
 DISTFILES += \
-    ../README
+    ../README \
+    help/compile.sh \
+    help/default.css \
+    help/help_en.qhp \
+    help/help_en/daily.html \
+    help/help_en/doc.html \
+    help/help_en/glossary.html \
+    help/help_en/import.html \
+    help/help_en/index.html \
+    help/help_en/overview.html \
+    help/help_en/oximetry.html \
+    help/help_en/statistics.html \
+    help/help_en/supported.html \
+    help/help_en/gettingstarted.html \
+    help/help_en/tipsntricks.html \
+    help/help_en/faq.html \
+    help/help.qhcp

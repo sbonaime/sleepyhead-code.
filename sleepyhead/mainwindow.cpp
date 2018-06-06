@@ -202,20 +202,11 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 //    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
 
-    QString loadingtxt =
-        "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'>"
-        "<tr><td align=center>"
-        "<img src='qrc:/docs/sheep.png'>"
-        "<h1>" + tr("Under construction...") + "</h1>"
-        "</td></tr></table></body></HTML>";
-    ui->helpBrowser->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
 
 #ifndef REMSTAR_M_SUPPORT
     ui->actionImport_RemStar_MSeries_Data->setVisible(false);
 #endif
-
-    on_homeButton_clicked();
 
     qsrand(QDateTime::currentDateTime().toTime_t());
 
@@ -230,9 +221,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QTimer::singleShot(50, this, SLOT(Startup()));
 
-    ui->backButton->setEnabled(ui->helpBrowser->backwardHistoryCount()>0);
-    ui->forwardButton->setEnabled(ui->helpBrowser->forwardHistoryCount()>0);
 
+    help = new Help(this);
+
+    ui->tabWidget->addTab(help, tr("Help Browser"));
 }
 
 void MainWindow::logMessage(QString msg)
@@ -1109,12 +1101,6 @@ QString MainWindow::getWelcomeHTML()
            ;
 }
 
-void MainWindow::on_homeButton_clicked()
-{
-    if (welcome) ui->tabWidget->setCurrentWidget(welcome);
-
-}
-
 void MainWindow::updateFavourites()
 {
     QDate date = p_profile->LastDay(MT_JOURNAL);
@@ -1177,22 +1163,6 @@ void MainWindow::updateFavourites()
 
     html += "</table></body></html>";
     ui->bookmarkView->setHtml(html);
-}
-
-void MainWindow::on_backButton_clicked()
-{
-    ui->helpBrowser->backward();
-}
-
-void MainWindow::on_forwardButton_clicked()
-{
-    ui->helpBrowser->forward();
-}
-
-void MainWindow::on_urlBar_activated(const QString &arg1)
-{
-    Q_UNUSED(arg1);
-    ui->helpBrowser->setText(QString("This ain't no web browser.. this needs to look up %1 in help index or something").arg(arg1));
 }
 
 void MainWindow::on_dailyButton_clicked()
@@ -1420,9 +1390,8 @@ void MainWindow::on_actionPrint_Report_triggered()
                 b.render(&painter, QPoint(0,0));
                 painter.end();
 
-
-            } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
-                ui->helpBrowser->print(&printer);
+            } else if (ui->tabWidget->currentWidget() == help) {
+              //  help->print(&printer);
             }
 
         }
@@ -2002,7 +1971,7 @@ void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 
 void MainWindow::on_helpButton_clicked()
 {
-    ui->tabWidget->setCurrentWidget(ui->helpTab);
+    ui->tabWidget->setCurrentWidget(help);
 }
 
 void MainWindow::on_actionView_Statistics_triggered()
@@ -2522,25 +2491,7 @@ void MainWindow::on_recordsBox_anchorClicked(const QUrl &linkurl)
     }
 }
 
-void MainWindow::on_helpBrowser_sourceChanged(const QUrl &url)
-{
-    ui->urlBar->setEditText(url.toString());
-}
-
 void MainWindow::on_statisticsView_anchorClicked(const QUrl &url)
 {
     on_recordsBox_anchorClicked(url);
-}
-
-void MainWindow::on_helpBrowser_anchorClicked(const QUrl &url)
-{
-    QString s = url.toString();
-    qDebug() << "Link Clicked" << url;
-
-    if (s.toLower().startsWith("https:")) {
-        QDesktopServices().openUrl(url);
-    } else {
-        ui->helpBrowser->setText(QString("Loading resource %1").arg(url.toString()));
-        //ui->helpBrowser->setUrl(url);
-    }
 }

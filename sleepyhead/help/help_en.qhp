@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>jedimark.net.SleepyHead.1.1</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <filterSection>
+        <toc>
+            <section title="SleepyHead Manual" ref="help_en/index.html">
+                <section title="Introduction" ref="./help_en/index.html#intro"/>
+                <section title="Getting Started" ref="./help_en/gettingstarted.html"/>
+                <section title="Supported Machines" ref="./help_en/supported.html"/>
+                <section title="Importing CPAP Data" ref="./help_en/import.html"/>
+                <section title="Exploring Daily View" ref="./help_en/daily.html"/>
+                <section title="Overview" ref="./help_en/overview.html"/>
+                <section title="Statistics and Trends" ref="./help_en/statistics.html"/>
+                <section title="Using an Oximeter" ref="./help_en/oximetry.html"/>
+                <section title="Tips &amp; Tricks" ref="./help_en/tipsntricks.html"/>
+                <section title="Frequently Asked Questions" ref="./help_en/faq.html"/>
+                <section title="Glossary of terminiology used" ref="./help_en/glossary.html">
+                    <section title="A-Flex" ref="./help_en/glossary.html#A-Flex"/>
+                    <section title="Bi-Flex" ref="./help_en/glossary.html#Bi-Flex"/>
+                    <section title="CPAP" ref="./help_en/glossary.html#CPAP"/>
+                    <section title="DME" ref="./help_en/glossary.html#DME"/>
+                    <section title="EPAP" ref="./help_en/glossary.html#EPAP"/>
+                    <section title="Flow Limitation" ref="./help_en/glossary.html#FL"/>
+                    <section title="Hypopnea" ref="./help_en/glossary.html#Hypopnea"/>
+                    <section title="IPAP" ref="./help_en/glossary.html#IPAP"/>
+                    <section title="Leak" ref="./help_en/glossary.html#Leak"/>
+                    <section title="Minute Vent" ref="./help_en/glossary.html#Minute_Vent"/>
+                    <section title="Obstructive Apnea" ref="./help_en/glossary.html#Obstructive_Apnea"/>
+                    <section title="PB" ref="./help_en/glossary.html#PB"/>
+                    <section title="Ramp" ref="./help_en/glossary.html#Ramp"/>
+                    <section title="Session" ref="./help_en/glossary.html#Session"/>
+                    <section title="Tidal Volume" ref="./help_en/glossary.html#Tidal_Volume"/>
+                    <section title="Vibratory Snore (VS)" ref="./help_en/glossary.html#Vibratory_Snore_.28VS.29_Index"/>
+                </section>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="resmed" ref="./help_en/supported.html#resmed"/>
+            <keyword name="philips" ref="./help_en/supported.html#philips"/>
+            <keyword name="devilbiss" ref="./help_en/supported.html#devilbiss"/>
+            <keyword name="intelipap" ref="./help_en/supported.html#devilbiss"/>
+            <keyword name="fisher" ref="./help_en/supported.html#fishpaykel"/>
+            <keyword name="fisher" ref="./help_en/supported.html#fishpaykel"/>
+            <keyword name="icon" ref="./help_en/supported.html#fishpaykel"/>
+            <keyword name="import" ref="./help_en/import.html"/>
+            <keyword name="A-Flex" ref="./help_en/glossary.html#A-Flex"/>
+            <keyword name="Bi-Flex" ref="./help_en/glossary.html#Bi-Flex"/>
+            <keyword name="CPAP" ref="./help_en/glossary.html#CPAP"/>
+            <keyword name="DME" ref="./help_en/glossary.html#DME"/>
+            <keyword name="EPAP" ref="./help_en/glossary.html#EPAP"/>
+            <keyword name="Flow Limitation" ref="./help_en/glossary.html#FL"/>
+            <keyword name="FL" ref="./help_en/glossary.html#FL"/>
+            <keyword name="Hypopnea" ref="./help_en/glossary.html#Hypopnea"/>
+            <keyword name="HY" ref="./help_en/glossary.html#Hypopnea"/>
+            <keyword name="IPAP" ref="./help_en/glossary.html#IPAP"/>
+            <keyword name="Leak" ref="./help_en/glossary.html#Leak"/>
+            <keyword name="Minute Vent" ref="./help_en/glossary.html#Minute_Vent"/>
+            <keyword name="Obstructive Apnea" ref="./help_en/glossary.html#Obstructive_Apnea"/>
+            <keyword name="OA" ref="./help_en/glossary.html#Obstructive_Apnea"/>
+            <keyword name="PB" ref="./help_en/glossary.html#PB"/>
+            <keyword name="Ramp" ref="./help_en/glossary.html#Ramp"/>
+            <keyword name="Session" ref="./help_en/glossary.html#Session"/>
+            <keyword name="Tidal Volume" ref="./help_en/glossary.html#Tidal_Volume"/>
+            <keyword name="Vibratory Snore" ref="./help_en/glossary.html#Vibratory_Snore_.28VS.29_Index"/>
+            <keyword name="VS" ref="./help_en/glossary.html#Vibratory_Snore_.28VS.29_Index"/>
+        </keywords>
+        <files>
+            <file>default.css</file>
+            <file>help_en/*.html</file>
+            <file>images/*.png</file>
+        </files>
+    </filterSection>
+</QtHelpProject>
