@@ -10,15 +10,14 @@
 #include <QtPrintSupport/qprinter.h>
 #include <QtPrintSupport/qprintdialog.h>
 #include <QTextDocument>
-#include <QProgressBar>
 #include <QApplication>
 #include <cmath>
 
 #include "reports.h"
 #include "mainwindow.h"
 #include "common_gui.h"
+#include "SleepLib/progressdialog.h"
 
-extern QProgressBar *qprogress;
 extern MainWindow *mainwin;
 
 
@@ -93,12 +92,14 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         return;
     }
 
+    QPainter painter(printer);
 
-    mainwin->Notify(
-        QObject::tr("This make take some time to complete..\nPlease don't touch anything until it's done."),
-        QObject::tr("Printing %1 Report").arg(name), 20000);
-    QPainter painter;
-    painter.begin(printer);
+    ProgressDialog progress(mainwin);
+    progress.setMessage(QObject::tr("Printing %1 Report").arg(name));
+    QPixmap icon = QPixmap(":/docs/sheep.png").scaled(64,64);
+    progress.setPixmap(icon);
+    progress.open();
+
 
     GLint gw;
     gw = 2048; // Rough guess.. No GL_MAX_RENDERBUFFER_SIZE in mingw.. :(
@@ -526,11 +527,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
     int pages = ceil(float(graphs.size() + graph_slots) / float(graphs_per_page));
 
-    if (qprogress) {
-        qprogress->setValue(0);
-        qprogress->setMaximum(graphs.size());
-        qprogress->show();
-    }
+    progress.setProgressMax(graphs.size());
 
     int page = 1;
     int gcnt = 0;
@@ -614,17 +611,14 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
         gcnt++;
 
-        if (qprogress) {
-            qprogress->setValue(i);
-            QApplication::processEvents();
-        }
+        progress.setProgressValue(i);
+        QApplication::processEvents();
     }
 
     gv->SetXBounds(savest, saveet);
-    qprogress->hide();
     painter.end();
+    progress.close();
     delete printer;
-    mainwin->Notify(QObject::tr("SleepyHead has finished sending the job to the printer."));
     AppSetting->setLineCursorMode(lineCursorMode);
 }
 

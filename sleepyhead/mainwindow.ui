@@ -1403,8 +1403,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>310</width>
-          <height>676</height>
+          <width>327</width>
+          <height>687</height>
          </rect>
         </property>
         <property name="palette">
@@ -1862,7 +1862,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>327</width>
-          <height>667</height>
+          <height>687</height>
          </rect>
         </property>
         <property name="palette">
@@ -2918,7 +2918,7 @@ p, li { white-space: pre-wrap; }
           <x>0</x>
           <y>0</y>
           <width>327</width>
-          <height>667</height>
+          <height>687</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -3096,23 +3096,6 @@ p, li { white-space: pre-wrap; }
    <addaction name="menu_View"/>
    <addaction name="menu_Data"/>
    <addaction name="menu_Help"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="sizeGripEnabled">
-    <bool>true</bool>
-   </property>
   </widget>
   <action name="action_Import_Data">
    <property name="text">

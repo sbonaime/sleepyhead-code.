@@ -1,4 +1,4 @@
-/* Overview GUI Implementation
+﻿/* Overview GUI Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -26,7 +26,6 @@
 
 #include "mainwindow.h"
 extern MainWindow *mainwin;
-//extern QProgressBar * qprogress;
 
 Overview::Overview(QWidget *parent, gGraphView *shared) :
     QWidget(parent),

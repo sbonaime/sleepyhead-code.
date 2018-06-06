@@ -18,7 +18,6 @@
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
-#include <QProgressBar>
 
 #include <QHash>
 #include <QVector>
@@ -160,19 +159,19 @@ class Machine
     //! \brief Returns the date of the most recent loaded Session
     const QDate &LastDay() { return lastday; }
 
-    //! \brief Add a new task to the multithreaded save code
-    void queSaveList(Session * sess);
+    // //! \brief Add a new task to the multithreaded save code
+    //void queSaveList(Session * sess);
 
     bool hasModifiedSessions();
 
     //! \brief Grab the next task in the multithreaded save code
     Session *popSaveList();
 
-    //! \brief Start the save threads which handle indexing, file storage and waveform processing
-    void StartSaveThreads();
+    // //! \brief Start the save threads which handle indexing, file storage and waveform processing
+    //void StartSaveThreads();
 
-    //! \brief Finish the save threads and safely close them
-    void FinishSaveThreads();
+    // //! \brief Finish the save threads and safely close them
+    //void FinishSaveThreads();
 
     //! \brief The list of sessions that need saving (for multithreaded save code)
     QList<Session *> m_savelist;

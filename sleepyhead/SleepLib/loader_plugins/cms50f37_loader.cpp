@@ -33,8 +33,6 @@ using namespace std;
 #include "SleepLib/machine.h"
 #include "SleepLib/session.h"
 
-extern QProgressBar *qprogress;
-
 CMS50F37Loader::CMS50F37Loader()
 {
     m_type = MT_OXIMETER;

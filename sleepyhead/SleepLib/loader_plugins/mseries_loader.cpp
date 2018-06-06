@@ -10,8 +10,6 @@
 #include <QProgressBar>
 
 #include "mseries_loader.h"
-extern QProgressBar *qprogress;
-
 
 
 MSeries::MSeries(Profile *profile, MachineID id)

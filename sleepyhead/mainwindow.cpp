@@ -29,6 +29,7 @@
 #include <QTextBrowser>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QScreen>
 #include <cmath>
 
 #include "common_gui.h"
@@ -62,10 +63,6 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,4,0)
 #include <QOpenGLFunctions>
 #endif
-
-QProgressBar *qprogress;
-QLabel *qstatus;
-QStatusBar *qstatusbar;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -113,15 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_inRecalculation = false;
     m_restartRequired = false;
     // Initialize Status Bar objects
-    qstatusbar = ui->statusbar;
-    qprogress = new QProgressBar(this);
-    qprogress->setMaximum(100);
-    qstatus = new QLabel("", this);
-    qprogress->hide();
-    //ui->statusbar->setMinimumWidth(200);
-    ui->statusbar->addPermanentWidget(qstatus, 0);
-    ui->statusbar->addPermanentWidget(qprogress, 1);
-
 
     QTextCharFormat format = ui->statStartDate->calendarWidget()->weekdayTextFormat(Qt::Saturday);
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
@@ -217,10 +205,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QString loadingtxt =
         "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'>"
         "<tr><td align=center>"
-        "<img src='qrc:/docs/sheep.png' heigh=300px>"
-        //"<h1>" + tr("Please Wait, Loading...") + "</h1>"
+        "<img src='qrc:/docs/sheep.png'>"
+        "<h1>" + tr("Under construction...") + "</h1>"
         "</td></tr></table></body></HTML>";
-    ui->statisticsView->setHtml(loadingtxt);
+    ui->helpBrowser->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
 
 #ifndef REMSTAR_M_SUPPORT
@@ -322,8 +310,6 @@ void MainWindow::Notify(QString s, QString title, int ms)
 #endif
 
         systray->showMessage(title, msg, QSystemTrayIcon::Information, ms);
-    } else {
-        ui->statusbar->showMessage(s, ms);
     }
 }
 
@@ -427,9 +413,6 @@ bool MainWindow::OpenProfile(QString profileName, bool skippassword)
         prof->removeLock();
     }
 
-//    qstatus->setText(tr("Loading Data"));
-//    qprogress->show();
-
     p_profile = prof;
 
     ProgressDialog * progress = new ProgressDialog(this);
@@ -524,9 +507,6 @@ bool MainWindow::OpenProfile(QString profileName, bool skippassword)
     progress->close();
     delete progress;
 
-
-    //qprogress->hide();
-    //qstatus->setText("");
     return true;
 }
 
@@ -962,10 +942,6 @@ void MainWindow::on_action_Import_Data_triggered()
 
 //    QStringList goodlocations;
 
-//    waitmsg.setText(tr("Please wait, SleepyHead is importing data..."));
-//    qprogress->setVisible(true);
-
-//    popup.show();
     ProgressDialog * prog = new ProgressDialog(this);
     prog->setMessage(tr("Processing import list..."));
     prog->addAbortButton();
@@ -1329,10 +1305,18 @@ void MainWindow::on_action_Screenshot_triggered()
 void MainWindow::DelayedScreenshot()
 {
     // Make sure to scale for high resolution displays (like Retina)
-    qreal pr = devicePixelRatio();
+   // qreal pr = devicePixelRatio();
 
 
-    QPixmap pixmap=grab();
+    QScreen * screen = QApplication::primaryScreen();
+
+
+    int titleBarHeight = -QApplication::style()->pixelMetric(QStyle::PM_TitleBarHeight);
+#ifdef Q_OS_WIN
+    titleBarHeight += 6;
+#endif
+
+    QPixmap pixmap = screen->grabWindow(winId(),0,titleBarHeight);
 
 /*#if defined(Q_OS_WIN) || defined(Q_OS_LINUX) || defined(Q_OS_HAIKU)
      // grab the whole screen
@@ -1369,10 +1353,6 @@ void MainWindow::DelayedScreenshot()
 void MainWindow::on_actionView_Oximetry_triggered()
 {
     on_oximetryButton_clicked();
-}
-void MainWindow::updatestatusBarMessage(const QString &text)
-{
-    ui->statusbar->showMessage(text, 1000);
 }
 
 void MainWindow::on_actionPrint_Report_triggered()
@@ -2030,13 +2010,6 @@ void MainWindow::on_actionView_Statistics_triggered()
     ui->tabWidget->setCurrentWidget(ui->statisticsTab);
 }
 
-void MainWindow::LinkHovered(const QString &link, const QString &title, const QString &textContent)
-{
-    Q_UNUSED(title);
-    Q_UNUSED(textContent);
-    ui->statusbar->showMessage(link);
-}
-
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     Q_UNUSED(index);
@@ -2101,181 +2074,111 @@ void MainWindow::MachineUnsupported(Machine * m)
 
 void MainWindow::doRecompressEvents()
 {
-    if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) == 0) {
-        return;
-    }
-    m_inRecalculation = true;
-    QDate first = p_profile->FirstDay();
-    QDate date = p_profile->LastDay();
-    Session *sess;
-    Day *day;
-    //FlowParser flowparser;
-
-    mainwin->Notify(tr("Performance will be degraded during these recalculations."),
-                    tr("Recalculating Indices"));
-
-    // For each day in history
-    int daycount = first.daysTo(date);
-    int idx = 0;
-
-    qstatus->setText(tr("Re/Decompressing Session Event Data"));
-
-    if (qprogress) {
-        qprogress->setValue(0);
-        qprogress->setVisible(true);
-        qprogress->setMaximum(daycount);
-    }
+    if (!p_profile) return;
+    ProgressDialog progress(this);
+    progress.setMessage("Recompressing Session Files");
+    progress.setProgressMax(p_profile->daylist.size());
+    QPixmap icon = QPixmap(":/docs/sheep.png").scaled(64,64);
+    progress.setPixmap(icon);
+    progress.open();
 
     bool isopen;
+    int idx = 0;
+    for (Day * day : p_profile->daylist) {
+        for (Session * sess : day->sessions) {
+            isopen = sess->eventsLoaded();
+            // Load the events and summary if they aren't loaded already
+            sess->LoadSummary();
+            sess->OpenEvents();
+            sess->SetChanged(true);
+            sess->machine()->SaveSession(sess);
 
-    do {
-        day = p_profile->GetDay(date, MT_CPAP);
-
-        if (day) {
-            for (int i = 0; i < day->size(); i++) {
-                sess = (*day)[i];
-                isopen = sess->eventsLoaded();
-
-                // Load the events if they aren't loaded already
-                sess->OpenEvents();
-                sess->SetChanged(true);
-                sess->machine()->SaveSession(sess);
-
-                if (!isopen) {
-                    sess->TrashEvents();
-                }
+            if (!isopen) {
+                sess->TrashEvents();
             }
         }
-
-        date = date.addDays(-1);
-        qprogress->setValue(idx);
+        progress.setProgressValue(++idx);
         QApplication::processEvents();
-        idx++;
-    } while (date >= first);
-
-    qstatus->setText(tr(""));
-    qprogress->setVisible(false);
-    m_inRecalculation = false;
-
-    Notify(tr("Session re/decompression are now complete."), tr("Task Completed"));
+    }
+    progress.close();
 }
 void MainWindow::doReprocessEvents()
 {
-    if (p_profile->countDays(MT_CPAP, p_profile->FirstDay(), p_profile->LastDay()) == 0) {
-        return;
+    if (!p_profile) return;
+
+    ProgressDialog progress(this);
+    progress.setMessage("Recalculating summaries");
+    progress.setProgressMax(p_profile->daylist.size());
+    QPixmap icon = QPixmap(":/docs/sheep.png").scaled(64,64);
+    progress.setPixmap(icon);
+    progress.open();
+
+    if (daily) {
+        daily->Unload();
+        daily->clearLastDay(); // otherwise Daily will crash
+        delete daily;
+        daily = nullptr;
+    }
+    if (welcome) {
+        delete welcome;
+        welcome = nullptr;
+    }
+    if (overview) {
+        delete overview;
+        overview = nullptr;
     }
 
-    m_inRecalculation = true;
-    QDate first = p_profile->FirstDay();
-    QDate date = p_profile->LastDay();
-    Session *sess;
-    Day *day;
-    //FlowParser flowparser;
+    for (Day * day : p_profile->daylist) {
+        for (Session * sess : day->sessions) {
+            bool isopen = sess->eventsLoaded();
 
-    mainwin->Notify(tr("Performance will be degraded during these recalculations."),
-                    tr("Recompressing Session Data"));
+            // Load the events if they aren't loaded already
+            sess->LoadSummary();
+            sess->OpenEvents();
 
-    // For each day in history
-    int daycount = first.daysTo(date);
-    int idx = 0;
+            // Destroy any current user flags..
+            sess->destroyEvent(CPAP_UserFlag1);
+            sess->destroyEvent(CPAP_UserFlag2);
+            sess->destroyEvent(CPAP_UserFlag3);
 
-    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+            // AHI flags
+            sess->destroyEvent(CPAP_AHI);
+            sess->destroyEvent(CPAP_RDI);
 
+            if (sess->machine()->loaderName() != STR_MACH_PRS1) {
+                sess->destroyEvent(CPAP_LargeLeak);
+            } else {
+                sess->destroyEvent(CPAP_Leak);
+            }
 
-    // Disabling multithreaded save as it appears it's causing problems
-    bool cache_sessions = false; //p_profile->session->cacheSessions();
+            sess->SetChanged(true);
 
-    if (cache_sessions) { // Use multithreaded save to handle reindexing.. (hogs memory like hell)
-        qstatus->setText(tr("Loading Event Data"));
-    } else {
-        qstatus->setText(tr("Recalculating Summaries"));
-    }
+            sess->UpdateSummaries();
+            sess->machine()->SaveSession(sess);
 
-    if (qprogress) {
-        qprogress->setValue(0);
-        qprogress->setVisible(true);
-        qprogress->setMaximum(daycount);
-    }
-
-    bool isopen;
-
-    do {
-        day = p_profile->GetDay(date, MT_CPAP);
-
-        if (day) {
-            for (int i = 0; i < day->size(); i++) {
-                sess = (*day)[i];
-                isopen = sess->eventsLoaded();
-
-                // Load the events if they aren't loaded already
-                sess->OpenEvents();
-
-                //if (!sess->channelDataExists(CPAP_FlowRate)) continue;
-
-                //QVector<EventList *> & flowlist=sess->eventlist[CPAP_FlowRate];
-
-                // Destroy any current user flags..
-                sess->destroyEvent(CPAP_UserFlag1);
-                sess->destroyEvent(CPAP_UserFlag2);
-                sess->destroyEvent(CPAP_UserFlag3);
-
-                // AHI flags
-                sess->destroyEvent(CPAP_AHI);
-                sess->destroyEvent(CPAP_RDI);
-
-                if (sess->machine()->loaderName() != STR_MACH_PRS1) {
-                    sess->destroyEvent(CPAP_LargeLeak);
-                } else {
-                    sess->destroyEvent(CPAP_Leak);
-                }
-
-                sess->SetChanged(true);
-
-                if (!cache_sessions) {
-                    sess->UpdateSummaries();
-                    sess->machine()->SaveSession(sess);
-
-                    if (!isopen) {
-                        sess->TrashEvents();
-                    }
-                }
+            if (!isopen) {
+                sess->TrashEvents();
             }
         }
-
-        date = date.addDays(-1);
-
-        qprogress->setValue(++idx);
-        QApplication::processEvents();
-
-    } while (date >= first);
-
-    if (cache_sessions) {
-        qstatus->setText(tr("Recalculating Summaries"));
-
-        for (int i = 0; i < machines.size(); i++) {
-            machines.at(i)->Save();
-        }
     }
+    progress.close();
 
-    qstatus->setText(tr(""));
-    qprogress->setVisible(false);
-    m_inRecalculation = false;
+    welcome = new Welcome(ui->tabWidget);
+    ui->tabWidget->insertTab(1, welcome, tr("Welcome"));
 
-    if (m_restartRequired) {
-        QMessageBox::information(this, tr("Restart Required"),
-                                 tr("Recalculations are complete, the application now needs to restart to display the changes."),
-                                 QMessageBox::Ok);
-        RestartApplication();
-        return;
-    } else {
-        Notify(tr("Recalculations are now complete."), tr("Task Completed"));
+    daily = new Daily(ui->tabWidget, nullptr);
+    ui->tabWidget->insertTab(2, daily, STR_TR_Daily);
+    daily->ReloadGraphs();
 
-        FreeSessions();
-        QDate current = daily->getDate();
-        daily->LoadDate(current);
+    overview = new Overview(ui->tabWidget, daily->graphView());
+    ui->tabWidget->insertTab(3, overview, STR_TR_Overview);
+    overview->ReloadGraphs();
 
-        if (overview) { overview->ReloadGraphs(); }
-    }
+    // Should really create welcome and statistics here, but they need redoing later anyway to kill off webkit
+    ui->tabWidget->setCurrentIndex(AppSetting->openTabAtStart());
+    GenerateStatistics();
+    PopulatePurgeMenu();
+
 }
 
 void MainWindow::on_actionImport_ZEO_Data_triggered()

@@ -16,7 +16,6 @@
 
 #include "version.h"
 #include "logger.h"
-#include "SleepLib/schema.h"
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 #include "translation.h"
@@ -264,7 +263,6 @@ retry_directory:
     CMS50Loader::Register();
     CMS50F37Loader::Register();
     MD300W1Loader::Register();
-    //ZEOLoader::Register(); // Use outside of directory importer..
 
     schema::setOrders(); // could be called in init...
 

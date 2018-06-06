@@ -40,7 +40,6 @@
 #include "Graphs/gdailysummary.h"
 #include "Graphs/MinutesAtPressure.h"
 
-//extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
 
 // This was Sean Stangl's idea.. but I couldn't apply that patch.

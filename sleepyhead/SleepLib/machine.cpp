@@ -36,7 +36,6 @@
 #include "mainwindow.h"
 
 extern MainWindow * mainwin;
-extern QProgressBar *qprogress;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
@@ -739,13 +738,14 @@ bool Machine::SaveSession(Session *sess)
     return true;
 }
 
-void Machine::queSaveList(Session * sess)
+/*void Machine::queSaveList(Session * sess)
 {
     if (!m_save_threads_running) {
         // Threads aren't being used.. so run the actual immediately...
-        int i = (float(m_donetasks) / float(m_totaltasks) * 100.0);
-        qprogress->setValue(i);
-        QApplication::processEvents();
+
+         int i = (float(m_donetasks) / float(m_totaltasks) * 100.0);
+        //qprogress->setValue(i);
+        //QApplication::processEvents();
 
         sess->UpdateSummaries();
         sess->Store(getDataPath());
@@ -759,7 +759,7 @@ void Machine::queSaveList(Session * sess)
         m_savelist.append(sess);
         listMutex.unlock();
     }
-}
+}*/
 
 Session *Machine::popSaveList()
 {
@@ -776,7 +776,7 @@ Session *Machine::popSaveList()
     return sess;
 }
 
-// Call any time queing starts
+/*// Call any time queing starts
 void Machine::StartSaveThreads()
 {
     m_savelist.clear();
@@ -827,7 +827,7 @@ void Machine::FinishSaveThreads()
     }
 
     delete savelistSem;
-}
+} */
 
 void SaveThread::run()
 {
@@ -898,14 +898,16 @@ void Machine::runTasks()
         return;
 
     QThreadPool * threadpool = QThreadPool::globalInstance();
-    int m_totaltasks=m_tasklist.size();
-    int m_currenttask=0;
-    qprogress->setMaximum(m_totaltasks);
+    //int m_totaltasks=m_tasklist.size();
+    //int m_currenttask=0;
+ //   if (loader()) emit loader()->setProgressMax(m_totaltasks);
     while (!m_tasklist.isEmpty()) {
         if (threadpool->tryStart(m_tasklist.at(0))) {
             m_tasklist.pop_front();
-            qprogress->setValue(m_currenttask++);
-            QApplication::processEvents();
+/*            if (loader()) {
+                emit loader()->setProgressValue(++m_currenttask);
+                QApplication::processEvents();
+            }*/
         }
     }
     QThreadPool::globalInstance()->waitForDone(-1);

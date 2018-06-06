@@ -1135,7 +1135,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
     EDForder.push_back(EDF_SAD);
     QHash<EDFType, QStringList>::iterator gi;
 
-    qprogress->setMaximum(filesbytype[EDF_PLD].size() + filesbytype[EDF_BRP].size() + filesbytype[EDF_SAD].size());
+    emit setProgressMax(filesbytype[EDF_PLD].size() + filesbytype[EDF_BRP].size() + filesbytype[EDF_SAD].size());
     cnt = 0;
 
     for (int i=0; i<3; i++) {
@@ -1146,7 +1146,7 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
         int base_size = LIST.size();
         for (int f=0; f < base_size; ++f) {
             if ((cnt % 50) == 0) {
-                qprogress->setValue(cnt);
+                emit setProgressValue(cnt);
                 QApplication::processEvents();
             }
             cnt++;

@@ -16,8 +16,6 @@
 
 #include "weinmann_loader.h"
 
-extern QProgressBar *qprogress;
-
 Weinmann::Weinmann(Profile *profile, MachineID id)
     : CPAP(profile, id)
 {

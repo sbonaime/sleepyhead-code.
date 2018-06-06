@@ -32,8 +32,6 @@ using namespace std;
 #include "SleepLib/machine.h"
 #include "SleepLib/session.h"
 
-extern QProgressBar *qprogress;
-
 MD300W1Loader::MD300W1Loader()
 {
     m_type = MT_OXIMETER;

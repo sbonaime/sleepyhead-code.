@@ -223,9 +223,6 @@ class MainWindow : public QMainWindow
     //! \brief a slot that calls the real Oximetry tab selector
     void on_actionView_Oximetry_triggered();
 
-    //! \brief Updates the Statusbar message with the QString message contained in Text
-    void updatestatusBarMessage(const QString &text);
-
     //! \brief Passes the Daily, Overview & Oximetry object to Print Report, based on current tab
     void on_actionPrint_Report_triggered();
 
@@ -259,8 +256,6 @@ class MainWindow : public QMainWindow
 
     //void on_favouritesList_itemClicked(QListWidgetItem *item);
 
-    //! \brief Display Help WebView Link in statusbar.
-    void LinkHovered(const QString &link, const QString &title, const QString &textContent);
     void on_tabWidget_currentChanged(int index);
 
     void on_filterBookmarks_editingFinished();
