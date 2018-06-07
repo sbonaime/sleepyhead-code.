@@ -151,13 +151,13 @@ bool Profile::OpenMachines()
     QString filename = p_path+"machines.xml";
     QFile file(filename);
     if (!file.open(QFile::ReadOnly)) {
-        qWarning() << "Could not open" << QDir::toNativeSeparators(filename);
+        qWarning() << "Could not open" << filename.toLocal8Bit().data();
         return false;
     }
     QDomDocument doc("machines.xml");
 
     if (!doc.setContent(&file)) {
-        qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(filename);
+        qWarning() << "Invalid XML Content in" << filename.toLocal8Bit().data();
         return false;
     }
     file.close();
@@ -698,7 +698,7 @@ Machine * Profile::CreateMachine(MachineInfo info, MachineID id)
 
     m->setInfo(info);
 
-    qDebug() << "Added" << info.loadername << "Machine Record" << (info.serial.isEmpty() ? m->hexid() : info.serial);
+  //  qDebug() << "Reading" << info.loadername << "Machine Record" << (info.serial.isEmpty() ? m->hexid() : info.serial);
 
     MachineList[info.loadername][info.serial] = m;
     AddMachine(m);

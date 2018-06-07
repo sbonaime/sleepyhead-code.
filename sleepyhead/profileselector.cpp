@@ -214,8 +214,6 @@ void ProfileSelector::updateProfileHighlight(QString name)
 
 Profile *ProfileSelector::SelectProfile(QString profname, bool skippassword=false)
 {
-    qDebug() << "Selecting new profile" << profname;
-
     auto pit = Profiles::profiles.find(profname);
     if (pit == Profiles::profiles.end()) return nullptr;
 
@@ -286,8 +284,7 @@ void ProfileSelector::on_buttonOpenProfile_clicked()
 {
     if (ui->profileView->currentIndex().isValid()) {
         QString name = proxy->data(proxy->index(ui->profileView->currentIndex().row(), 0, QModelIndex()), Qt::UserRole+2).toString();
-        qDebug() << "Opening" << name;
-        SelectProfile(name);
+        mainwin->OpenProfile(name);
     }
 }
 

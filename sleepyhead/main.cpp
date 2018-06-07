@@ -92,8 +92,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QStringList args = QCoreApplication::arguments();
 
-   // MigrateSettings();
-
     QSettings settings(getDeveloperName(), getAppName());
 
     QString lastlanguage = settings.value(LangSetting, "").toString();
@@ -131,6 +129,11 @@ int main(int argc, char *argv[])
 
     initializeLogger();
 
+    mainwin = new MainWindow;
+    qDebug() << STR_AppName.toLocal8Bit().data() << VersionString.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+#ifdef BROKEN_OPENGL_BUILD
+    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
+#endif
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
@@ -251,21 +254,6 @@ retry_directory:
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    // Register Importer Modules for autoscanner
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    schema::init();
-    PRS1Loader::Register();
-    ResmedLoader::Register();
-    IntellipapLoader::Register();
-    FPIconLoader::Register();
-    WeinmannLoader::Register();
-    CMS50Loader::Register();
-    CMS50F37Loader::Register();
-    MD300W1Loader::Register();
-
-    schema::setOrders(); // could be called in init...
-
     ///////////////////////////////////////////////////////////////////////////////////////////
     // Initialize preferences system (Don't use PREF before this point)
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -356,17 +344,31 @@ retry_directory:
 
     qDebug() << "Selected Font" << QApplication::font().family();
 
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Register Importer Modules for autoscanner
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    schema::init();
+    PRS1Loader::Register();
+    ResmedLoader::Register();
+    IntellipapLoader::Register();
+    FPIconLoader::Register();
+    WeinmannLoader::Register();
+    CMS50Loader::Register();
+    CMS50F37Loader::Register();
+    MD300W1Loader::Register();
+
+    schema::setOrders(); // could be called in init...
+
     // Scan for user profiles
     Profiles::Scan();
 
     Q_UNUSED(changing_language)
 
-    MainWindow w;
-    mainwin = &w;
 
     if (check_updates) { mainwin->CheckForUpdates(); }
 
-    w.show();
+    mainwin->SetupGUI();
+    mainwin->show();
 
     return a.exec();
 }

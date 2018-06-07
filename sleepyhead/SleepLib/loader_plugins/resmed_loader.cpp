@@ -3196,136 +3196,47 @@ void ResInitModelMap()
     resmed_codes.clear();
 
     // BRP file
-    resmed_codes[CPAP_FlowRate].push_back("Flow");
-    resmed_codes[CPAP_FlowRate].push_back("Flow.40ms");
-    resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
-    resmed_codes[CPAP_MaskPressureHi].push_back("Press.40ms");
-
+    resmed_codes[CPAP_FlowRate] = QStringList{ "Flow", "Flow.40ms" };
+    resmed_codes[CPAP_MaskPressureHi] = QStringList{ "Mask Pres", "Press.40ms" };
 
     // PLD File
-    resmed_codes[CPAP_MaskPressure].push_back("Mask Pres");
+    resmed_codes[CPAP_MaskPressure] = QStringList { "Mask Pres", "MaskPress.2s" };
+    resmed_codes[CPAP_RespEvent] = QStringList {"Resp Event" };
+    resmed_codes[CPAP_Pressure] = QStringList { "Therapy Pres", "Press.2s" };   // Un problemo... IPAP also uses Press.2s.. check the mode :/
+    resmed_codes[CPAP_IPAP] = QStringList { "Insp Pres", "IPAP", "S.BL.IPAP" };
+    resmed_codes[CPAP_EPAP] = QStringList { "Exp Pres", "EprPress.2s", "EPAP", "S.BL.EPAP", "EPRPress.2s" };
+    resmed_codes[CPAP_EPAPHi] = QStringList { "Max EPAP" };
+    resmed_codes[CPAP_EPAPLo] = QStringList { "Min EPAP", "S.VA.MinEPAP" };
+    resmed_codes[CPAP_IPAPHi] = QStringList { "Max IPAP", "S.VA.MaxIPAP" };
+    resmed_codes[CPAP_IPAPLo] = QStringList { "Min IPAP" };
+    resmed_codes[CPAP_PS] = QStringList { "PS", "S.VA.PS" };
+    resmed_codes[CPAP_PSMin] = QStringList { "Min PS" };
+    resmed_codes[CPAP_PSMax] = QStringList { "Max PS" };
+    resmed_codes[CPAP_Leak] = QStringList { "Leak", "Leck", "Fuites", "Fuite", "Fuga", "\xE6\xBC\x8F\xE6\xB0\x94", "Lekk", "Läck","LÃ¤ck", "Leak.2s" };
+    resmed_codes[CPAP_RespRate] = QStringList {  "RR", "AF", "FR", "RespRate.2s" };
+    resmed_codes[CPAP_MinuteVent] = QStringList { "MV", "VM", "MinVent.2s" };
+    resmed_codes[CPAP_TidalVolume] = QStringList { "Vt", "VC", "TidVol.2s" };
+    resmed_codes[CPAP_IE] = QStringList { "I:E", "IERatio.2s" };
+    resmed_codes[CPAP_Snore] = QStringList { "Snore", "Snore.2s" };
+    resmed_codes[CPAP_FLG] = QStringList { "FFL Index", "FlowLim.2s" };
+    resmed_codes[CPAP_Ti] = QStringList { "Ti", "B5ITime.2s" };
+    resmed_codes[CPAP_Te] = QStringList { "Te", "B5ETime.2s" };
+    resmed_codes[CPAP_TgMV] = QStringList { "TgMV", "TgtVent.2s" };
+    resmed_codes[OXI_Pulse] = QStringList { "Pulse", "Puls", "Pouls", "Pols", "Pulse.1s" };
+    resmed_codes[OXI_SPO2] = QStringList { "SpO2", "SpO2.1s" };
+    resmed_codes[CPAP_Obstructive] = QStringList { "Obstructive apnea" };
+    resmed_codes[CPAP_Hypopnea] = QStringList { "Hypopnea" };
+    resmed_codes[CPAP_Apnea] = QStringList { "Apnea" };
+    resmed_codes[CPAP_RERA] = QStringList { "Arousal" };
+    resmed_codes[CPAP_ClearAirway] = QStringList { "Central apnea" };
+    resmed_codes[CPAP_Mode] = QStringList { "Mode", "Modus", "Funktion", "\xE6\xA8\xA1\xE5\xBC\x8F" };
+    resmed_codes[RMS9_SetPressure] = QStringList { "Set Pressure", "Eingest. Druck", "Ingestelde druk", "\xE8\xAE\xBE\xE5\xAE\x9A\xE5\x8E\x8B\xE5\x8A\x9B", "Pres. prescrite", "Inställt tryck", "InstÃ¤llt tryck", "S.C.Press" };
+    resmed_codes[RMS9_EPR] = QStringList { "EPR", "\xE5\x91\xBC\xE6\xB0\x94\xE9\x87\x8A\xE5\x8E\x8B\x28\x45\x50" };
+    resmed_codes[RMS9_EPRLevel] = QStringList { "EPR Level", "EPR-Stufe", "EPR-niveau", "\x45\x50\x52\x20\xE6\xB0\xB4\xE5\xB9\xB3", "Niveau EPR", "EPR-nivå", "EPR-nivÃ¥", "S.EPR.Level" };
+    resmed_codes[CPAP_PressureMax] = QStringList { "Max Pressure", "Max. Druck", "Max druk", "\xE6\x9C\x80\xE5\xA4\xA7\xE5\x8E\x8B\xE5\x8A\x9B", "Pression max.", "Max tryck", "S.AS.MaxPress" };
+    resmed_codes[CPAP_PressureMin] = QStringList { "Min Pressure", "Min. Druck", "Min druk", "\xE6\x9C\x80\xE5\xB0\x8F\xE5\x8E\x8B\xE5\x8A\x9B", "Pression min.", "Min tryck", "S.AS.MinPress" };
 
-
-    resmed_codes[CPAP_RespEvent].push_back("Resp Event");
-    resmed_codes[CPAP_Pressure].push_back("Therapy Pres");
-    resmed_codes[CPAP_IPAP].push_back("Insp Pres");
-    resmed_codes[CPAP_IPAP].push_back("IPAP");
-    resmed_codes[CPAP_IPAP].push_back("S.BL.IPAP");
-    resmed_codes[CPAP_EPAP].push_back("Exp Pres");
-    resmed_codes[CPAP_EPAP].push_back("EprPress.2s");
-    resmed_codes[CPAP_EPAP].push_back("EPAP");
-    resmed_codes[CPAP_EPAP].push_back("S.BL.EPAP");
-    resmed_codes[CPAP_EPAPHi].push_back("Max EPAP");
-    resmed_codes[CPAP_EPAPLo].push_back("Min EPAP");
-    resmed_codes[CPAP_EPAPLo].push_back("S.VA.MinEPAP");
-    resmed_codes[CPAP_IPAPHi].push_back("Max IPAP");
-    resmed_codes[CPAP_IPAPHi].push_back("S.VA.MaxIPAP");
-    resmed_codes[CPAP_IPAPLo].push_back("Min IPAP");
-
-    resmed_codes[CPAP_PS].push_back("PS");
-    resmed_codes[CPAP_PS].push_back("S.VA.PS");
-    resmed_codes[CPAP_PSMin].push_back("Min PS");
-    resmed_codes[CPAP_PSMax].push_back("Max PS");
-
-    resmed_codes[CPAP_Leak].push_back("Leak"); // Leak Leck Lekk Läck Fuites
-    resmed_codes[CPAP_Leak].push_back("Leck");
-    resmed_codes[CPAP_Leak].push_back("Fuites");
-    resmed_codes[CPAP_Leak].push_back("Fuite");
-    resmed_codes[CPAP_Leak].push_back("Fuga");
-
-    resmed_codes[CPAP_Leak].push_back("\xE6\xBC\x8F\xE6\xB0\x94");
-    resmed_codes[CPAP_Leak].push_back("Lekk");
-    resmed_codes[CPAP_Leak].push_back("Läck");
-    resmed_codes[CPAP_Leak].push_back("LÃ¤ck");
-    resmed_codes[CPAP_RespRate].push_back("RR");
-    resmed_codes[CPAP_RespRate].push_back("AF");
-    resmed_codes[CPAP_RespRate].push_back("FR");
-    resmed_codes[CPAP_MinuteVent].push_back("MV");
-    resmed_codes[CPAP_MinuteVent].push_back("VM");
-    resmed_codes[CPAP_TidalVolume].push_back("Vt");
-    resmed_codes[CPAP_TidalVolume].push_back("VC");
-    resmed_codes[CPAP_IE].push_back("I:E");
-    resmed_codes[CPAP_IE].push_back("IERatio.2s");
-    resmed_codes[CPAP_Snore].push_back("Snore");
-    resmed_codes[CPAP_FLG].push_back("FFL Index");
-    resmed_codes[CPAP_Ti].push_back("Ti");
-    resmed_codes[CPAP_Ti].push_back("B5ITime.2s");
-    resmed_codes[CPAP_Te].push_back("Te");
-    resmed_codes[CPAP_Te].push_back("B5ETime.2s");
-
-    resmed_codes[CPAP_TgMV].push_back("TgMV");
-    resmed_codes[CPAP_TgMV].push_back("TgtVent.2s");
-    resmed_codes[OXI_Pulse].push_back("Pulse");
-    resmed_codes[OXI_Pulse].push_back("Puls");
-    resmed_codes[OXI_Pulse].push_back("Pouls");
-    resmed_codes[OXI_Pulse].push_back("Pols");
-    resmed_codes[OXI_SPO2].push_back("SpO2");
-    resmed_codes[CPAP_Obstructive].push_back("Obstructive apnea");
-    resmed_codes[CPAP_Hypopnea].push_back("Hypopnea");
-    resmed_codes[CPAP_Apnea].push_back("Apnea");
-    resmed_codes[CPAP_RERA].push_back("Arousal");
-    resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
-    resmed_codes[CPAP_Mode].push_back("Mode");
-    resmed_codes[CPAP_Mode].push_back("Modus");
-    resmed_codes[CPAP_Mode].push_back("Funktion");
-    resmed_codes[CPAP_Mode].push_back("\xE6\xA8\xA1\xE5\xBC\x8F");  // Chinese
-
-    resmed_codes[RMS9_SetPressure].push_back("Set Pressure");
-    resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
-    resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");
-    resmed_codes[RMS9_SetPressure].push_back("\xE8\xAE\xBE\xE5\xAE\x9A\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
-    resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
-    resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");
-    resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
-
-    resmed_codes[RMS9_EPR].push_back("EPR");
     //resmed_codes[RMS9_EPR].push_back("S.EPR.EPRType");
-
-    resmed_codes[RMS9_EPR].push_back("\xE5\x91\xBC\xE6\xB0\x94\xE9\x87\x8A\xE5\x8E\x8B\x28\x45\x50"); // Chinese
-    resmed_codes[RMS9_EPRLevel].push_back("EPR Level");
-    resmed_codes[RMS9_EPRLevel].push_back("EPR-Stufe");
-    resmed_codes[RMS9_EPRLevel].push_back("EPR-niveau");
-    resmed_codes[RMS9_EPRLevel].push_back("\x45\x50\x52\x20\xE6\xB0\xB4\xE5\xB9\xB3"); // Chinese
-
-    resmed_codes[RMS9_EPRLevel].push_back("Niveau EPR");
-    resmed_codes[RMS9_EPRLevel].push_back("EPR-nivå");
-    resmed_codes[RMS9_EPRLevel].push_back("EPR-nivÃ¥");
-    resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
-    resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
-    resmed_codes[CPAP_PressureMax].push_back("Max druk");
-
-    resmed_codes[CPAP_PressureMax].push_back("\xE6\x9C\x80\xE5\xA4\xA7\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
-    resmed_codes[CPAP_PressureMax].push_back("Pression max.");
-    resmed_codes[CPAP_PressureMax].push_back("Max tryck");
-    resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
-    resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
-    resmed_codes[CPAP_PressureMin].push_back("Min druk");
-    resmed_codes[CPAP_PressureMin].push_back("\xE6\x9C\x80\xE5\xB0\x8F\xE5\x8E\x8B\xE5\x8A\x9B"); // Chinese
-    resmed_codes[CPAP_PressureMin].push_back("Pression min.");
-    resmed_codes[CPAP_PressureMin].push_back("Min tryck");
-
-    // SAD file
-    resmed_codes[OXI_Pulse].push_back("Pulse.1s");
-    resmed_codes[OXI_SPO2].push_back("SpO2.1s");
-
-    // PLD file
-    resmed_codes[CPAP_MaskPressure].push_back("MaskPress.2s");
-    resmed_codes[CPAP_Pressure].push_back("Press.2s");   // Un problemo... IPAP also uses this.. :/
-    resmed_codes[CPAP_EPAP].push_back("EPRPress.2s");
-    resmed_codes[CPAP_Leak].push_back("Leak.2s");
-    resmed_codes[CPAP_RespRate].push_back("RespRate.2s");
-    resmed_codes[CPAP_TidalVolume].push_back("TidVol.2s");
-    resmed_codes[CPAP_MinuteVent].push_back("MinVent.2s");
-    resmed_codes[CPAP_Snore].push_back("Snore.2s");
-    resmed_codes[CPAP_FLG].push_back("FlowLim.2s");
-
-    //S.AS.StartPress
-    resmed_codes[CPAP_PressureMin].push_back("S.AS.MinPress");
-    resmed_codes[CPAP_PressureMax].push_back("S.AS.MaxPress");
-
-    resmed_codes[RMS9_SetPressure].push_back("S.C.Press");
-
-    resmed_codes[RMS9_EPRLevel].push_back("S.EPR.Level");
 }
 
 ChannelID ResmedLoader::CPAPModeChannel() { return RMS9_Mode; }

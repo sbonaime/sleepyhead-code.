@@ -180,10 +180,10 @@ bool Preferences::Open(QString filename)
 
     QDomDocument doc(p_name);
     QFile file(p_filename);
-    qDebug() << "Reading " << QDir::toNativeSeparators(p_filename);
+    qDebug() << "Reading " << p_filename.toLocal8Bit().data();
 
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open" << QDir::toNativeSeparators(p_filename);
+        qWarning() << "Could not open" << p_filename.toLocal8Bit().data();
         return false;
     }
 
@@ -191,7 +191,7 @@ bool Preferences::Open(QString filename)
     int errorLine;
     int errorColumn;
     if (!doc.setContent(&file,false, &errorMsg, &errorLine, &errorColumn)) {
-        qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(p_filename);
+        qWarning() << "Invalid XML Content in" << p_filename.toLocal8Bit().data();
         qWarning() << "Error:" << errorMsg << "in line" << errorLine << ":" << errorColumn;
         return false;
     }

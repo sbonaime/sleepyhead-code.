@@ -69,20 +69,43 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->logText->setPlainText("00000: Startup: SleepyHead Logger initialized");
 
     if (logger) {
         connect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
     }
 
+    // Initialise sleepyHead app registry stuff
+    QSettings settings(getDeveloperName(), getAppName());
+
+    // Load previous Window geometry (this is currently broken on Mac as of Qt5.2.1)
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+
+
+    // Nifty Notification popups in System Tray (uses Growl on Mac)
+    if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
+        systray = new QSystemTrayIcon(QIcon(":/icons/bob-v3.0.png"), this);
+        systray->show();
+        systraymenu = new QMenu(this);
+        systray->setContextMenu(systraymenu);
+        QAction *a = systraymenu->addAction(STR_TR_SleepyHead + " v" + VersionString);
+        a->setEnabled(false);
+        systraymenu->addSeparator();
+        systraymenu->addAction(tr("&About"), this, SLOT(on_action_About_triggered()));
+        systraymenu->addAction(tr("Check for &Updates"), this, SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addSeparator();
+        systraymenu->addAction(tr("E&xit"), this, SLOT(close()));
+    } else { // if not available, the messages will popup in the taskbar
+        systray = nullptr;
+        systraymenu = nullptr;
+    }
+
+}
+
+void MainWindow::SetupGUI()
+{
     QString version = getBranchVersion();
-
     setWindowTitle(STR_TR_SleepyHead + QString(" %1").arg(version));
-
-    qDebug() << STR_TR_SleepyHead << VersionString << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
-
-#ifdef BROKEN_OPENGL_BUILD
-    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
-#endif
 
 #ifdef Q_OS_MAC
 
@@ -161,12 +184,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     first_load = true;
 
-    // Initialise sleepyHead app registry stuff
-    QSettings settings(getDeveloperName(), getAppName());
-
-    // Load previous Window geometry (this is currently broken on Mac as of Qt5.2.1)
-    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
-
     profileSelector = new ProfileSelector(ui->tabWidget);
     ui->tabWidget->insertTab(0, profileSelector, STR_TR_Profile);
 
@@ -176,31 +193,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // Start with the new Profile Tab
     ui->tabWidget->setCurrentWidget(profileSelector); // setting this to daily shows the cube during loading..
 
-    // Nifty Notification popups in System Tray (uses Growl on Mac)
-    if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
-        systray = new QSystemTrayIcon(QIcon(":/icons/bob-v3.0.png"), this);
-        systray->show();
-        systraymenu = new QMenu(this);
-        systray->setContextMenu(systraymenu);
-        QAction *a = systraymenu->addAction(STR_TR_SleepyHead + " v" + VersionString);
-        a->setEnabled(false);
-        systraymenu->addSeparator();
-        systraymenu->addAction(tr("&About"), this, SLOT(on_action_About_triggered()));
-        systraymenu->addAction(tr("Check for &Updates"), this, SLOT(on_actionCheck_for_Updates_triggered()));
-        systraymenu->addSeparator();
-        systraymenu->addAction(tr("E&xit"), this, SLOT(close()));
-    } else { // if not available, the messages will popup in the taskbar
-        systray = nullptr;
-        systraymenu = nullptr;
-    }
-
     ui->toolBox->setCurrentIndex(0);
     bool b = AppSetting->rightSidebarVisible();
     ui->action_Sidebar_Toggle->setChecked(b);
     ui->toolBox->setVisible(b);
-
-//    ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-//    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
 
     on_tabWidget_currentChanged(0);
 
@@ -242,6 +238,26 @@ void MainWindow::closeEvent(QCloseEvent * event)
             QThread::msleep(1000);
             QApplication::processEvents();
         }
+        schema::channel.Save();
+        if (p_profile) {
+            CloseProfile();
+        }
+
+        // Shutdown and Save the current User profile
+        Profiles::Done();
+
+        // Save current window position
+        QSettings settings(getDeveloperName(), getAppName());
+        settings.setValue("MainWindow/geometry", saveGeometry());
+
+        // Trash anything allocated by the Graph objects
+        DestroyGraphGlobals();
+
+        if (systraymenu) delete systraymenu;
+
+        disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
+        shutdownLogger();
+
         runonce = true;
     } else {
         qDebug() << "Qt is still calling closevent multiple times";
@@ -249,30 +265,8 @@ void MainWindow::closeEvent(QCloseEvent * event)
     }
 }
 
-extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-    schema::channel.Save();
-    if (p_profile) {
-        CloseProfile();
-    }
-
-    // Shutdown and Save the current User profile
-    Profiles::Done();
-
-    // Save current window position
-    QSettings settings(getDeveloperName(), getAppName());
-    settings.setValue("MainWindow/geometry", saveGeometry());
-
-    // Trash anything allocated by the Graph objects
-    DestroyGraphGlobals();
-
-    if (systraymenu) delete systraymenu;
-
-    disconnect(logger, SIGNAL(outputLog(QString)), this, SLOT(logMessage(QString)));
-    shutdownLogger();
-
-    mainwin = nullptr;
     delete ui;
 }
 
@@ -370,6 +364,8 @@ QString GenerateWelcomeHTML();
 
 bool MainWindow::OpenProfile(QString profileName, bool skippassword)
 {
+    qDebug() << "Opening profile" << profileName;
+
     auto pit = Profiles::profiles.find(profileName);
     if (pit == Profiles::profiles.end()) return false;
 
@@ -488,7 +484,7 @@ bool MainWindow::OpenProfile(QString profileName, bool skippassword)
     PopulatePurgeMenu();
 
     AppSetting->setProfileName(p_profile->user->userName());
-    mainwin->setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(getBranchVersion()).arg(AppSetting->profileName()));
+    setWindowTitle(STR_TR_SleepyHead + QString(" %1 (" + tr("Profile") + ": %2)").arg(getBranchVersion()).arg(AppSetting->profileName()));
 
     ui->oximetryButton->setDisabled(false);
     ui->dailyButton->setDisabled(false);
@@ -720,6 +716,7 @@ QStringList getDriveList()
     return drivelist;
 }
 
+extern MainWindow * mainwin;
 void ImportDialogScan::cancelbutton()
 {
     mainwin->importScanCancelled = true;
@@ -1795,6 +1792,9 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
 
 void MainWindow::on_actionRebuildCPAP(QAction *action)
 {
+    ui->tabWidget->setCurrentWidget(welcome); // Daily view can't run during rebuild
+    QApplication::processEvents();
+
     QString data = action->data().toString();
     QString cls = data.section(":",0,0);
     QString serial = data.section(":", 1);

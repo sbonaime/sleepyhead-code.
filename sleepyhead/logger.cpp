@@ -49,7 +49,7 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QS
     }
 #ifdef ASSERTS_SUCK
 //    else {
-        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
+//        fprintf(stderr, "%s\n", msg.toLocal8Bit().data());
 //    }
 #endif
 

@@ -49,7 +49,7 @@ void initTranslations(QSettings & settings) {
 #endif
 
     QDir dir(transdir);
-    qDebug() << "Scanning \"" << transdir << "\" for translations";
+    qDebug() << "Scanning" << transdir.toLocal8Bit().data();
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList("*.qm"));
 
@@ -64,11 +64,12 @@ void initTranslations(QSettings & settings) {
     langNames[en]="English US";
 
     // Scan through available translations, and add them to the list
+    QStringList availtrans;
     for (const auto & fi : list) {
         QString name = fi.fileName().section('.', 0, 0);
         QString code = fi.fileName().section('.', 1, 1);
 
-        qDebug() << "Detected" << name << "Translation";
+        availtrans.push_back(name);
 
         if (langNames.contains(code)) {
             name = langNames[code];
@@ -79,6 +80,7 @@ void initTranslations(QSettings & settings) {
         langFiles[code]=fi.fileName();
 
     }
+    qDebug() << "Available Translations:" << QString(availtrans.join(", ")).toLocal8Bit().data();
 
     if (language.isEmpty() || !langNames.contains(language)) {
         QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);

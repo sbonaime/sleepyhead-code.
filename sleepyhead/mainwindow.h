@@ -82,6 +82,9 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    //! \brief Setup the rest of the GUI stuff
+    void SetupGUI();
+
     //! \brief Update the list of Favourites (Bookmarks) in the right sidebar.
     void updateFavourites();
 

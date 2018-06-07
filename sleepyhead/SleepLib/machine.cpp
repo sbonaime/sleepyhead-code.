@@ -507,7 +507,7 @@ bool Machine::Purge(int secret)
         ext_s.toInt(&ok, 10);
 
         if (ok) {
-            qDebug() << "Deleting " << QDir::toNativeSeparators(fullpath);
+            qDebug() << "Deleting " << fullpath;
             if (!dir.remove(fullpath)) {
                 qDebug() << "Could not purge file" << fullpath;
                 //success=false;
@@ -598,7 +598,7 @@ bool Machine::Load(ProgressDialog *progress)
     QString path = getDataPath();
 
     QDir dir(path);
-    qDebug() << "Loading Database" << QDir::toNativeSeparators(path);
+    qDebug() << "Loading" << info.loadername.toLocal8Bit().data() << "record:" << path.toLocal8Bit().data();
 
     if (!dir.exists() || !dir.isReadable()) {
         return false;
@@ -712,7 +712,7 @@ bool Machine::Load(ProgressDialog *progress)
         }
 
         SaveSummaryCache();
-        qDebug() << "Loaded" << info.model << "data in" << time.elapsed() << "ms";
+        qDebug() << "Loaded" << info.model.toLocal8Bit().data() << "data in" << time.elapsed() << "ms";
         progress->setProgressValue(size);
     }
     progress->setMessage("Loading Session Info");
@@ -950,13 +950,11 @@ bool Machine::LoadSummary(ProgressDialog * progress)
 {
     QTime time;
     time.start();
-    qDebug() << "Loading Summaries";
-
     QString filename = getDataPath() + summaryFileName + ".gz";
 
     QDomDocument doc;
     QFile file(filename);
-    qDebug() << "Opening " << filename;
+    qDebug() << "Loading" << filename.toLocal8Bit().data();
     progress->setMessage(QObject::tr("Loading Summaries.xml.gz"));
     QApplication::processEvents();
 
@@ -1095,7 +1093,7 @@ bool Machine::LoadSummary(ProgressDialog * progress)
     progress->setProgressValue(sess_order.size());
     QApplication::processEvents();
 
-    qDebug() << "Loaded" << info.series << info.model << "data in" << time.elapsed() << "ms";
+    qDebug() << "Loaded" << info.series.toLocal8Bit().data() << info.model.toLocal8Bit().data() << "data in" << time.elapsed() << "ms";
 
     return true;
 }
