@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QTimer>
 
+#include "common_gui.h"
 #include "help.h"
 #include "ui_help.h"
 
@@ -22,10 +23,8 @@ Help::Help(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    helpEngine = new QHelpEngine(QCoreApplication::applicationDirPath() + "/Help/help.qhc", this);
+    helpEngine = new QHelpEngine(appResourcePath() + "/Help/help.qhc", this);
     helpEngine->setupData();
-
-   // QString helpFile = QCoreApplication::applicationDirPath() + "/Help/help_en.qch";
 
     /*if (!helpEngine->registeredDocumentations().contains(helpFile)) {
         if (helpEngine->registerDocumentation(helpFile)) {

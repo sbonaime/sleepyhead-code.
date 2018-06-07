@@ -9,6 +9,8 @@
 #include <QGLWidget>
 #include <QOpenGLFunctions>
 #include <QDebug>
+#include <QDir>
+#include <QCoreApplication>
 
 #include "SleepLib/common.h"
 #include "common_gui.h"
@@ -86,6 +88,16 @@ QString getBranchVersion()
     return version;
 }
 
+QString appResourcePath()
+{
+#ifdef Q_OS_MAC
+    QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources");
+#else
+    // not sure where it goes on Linux yet
+    QString path = QCoreApplication::applicationDirPath();
+#endif
+    return path;
+}
 
 Qt::DayOfWeek firstDayOfWeekFromLocale()
 {

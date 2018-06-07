@@ -18,6 +18,7 @@ Qt::DayOfWeek firstDayOfWeekFromLocale();
 
 QString getBranchVersion();
 
+QString appResourcePath();
 
 const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";

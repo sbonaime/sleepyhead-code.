@@ -321,14 +321,15 @@ win32 {
 
 }
 
-mac {
+macx {
     TransFiles.files = $$files(../Translations/*.qm)
     TransFiles.path = Contents/Resources/Translations
-    HelpFiles.files = $$files(../Help/*.qch)
-    HelpFiles.files += $$files(../Help/help.qhc)
+    HelpFiles.files = $$files(help/*.qch)
+    HelpFiles.files += $$files(help/help.qhc)
     HelpFiles.path = Contents/Resources/Help
     QMAKE_BUNDLE_DATA += TransFiles
     QMAKE_BUNDLE_DATA += HelpFiles
+    message("Setting up Translations & Help Transfers")
 }
 
 #include(../3rdparty/quazip/quazip/quazip.pri)

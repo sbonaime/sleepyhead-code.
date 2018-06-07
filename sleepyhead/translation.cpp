@@ -20,9 +20,11 @@
 #include <QTranslator>
 #include <QListWidget>
 
-#ifndef nullptr
-#define nullptr NULL
-#endif
+#include "common_gui.h"
+
+//#ifndef nullptr
+//#define nullptr NULL
+//#endif
 
 #include "translation.h"
 
@@ -42,11 +44,7 @@ void initTranslations(QSettings & settings) {
 
     QHash<QString, QString> langFiles;
 
-#ifdef Q_OS_MAC
-    QString transdir = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources/Translations/");
-#else
-    const QString transdir = QCoreApplication::applicationDirPath() + "/Translations/";
-#endif
+    const QString transdir = appResourcePath() +"/Translations";
 
     QDir dir(transdir);
     qDebug() << "Scanning" << transdir.toLocal8Bit().data();
