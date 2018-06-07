@@ -158,7 +158,6 @@ void Overview::RebuildGraphs(bool reset)
         AHI = createGraph("AHIBreakdown", STR_TR_AHI, tr("Apnea\nHypopnea\nIndex"));
     }
 
-
     ahi = new gAHIChart();
     AHI->AddLayer(ahi);
 
@@ -176,27 +175,6 @@ void Overview::RebuildGraphs(bool reset)
     TTIA = createGraph("TTIA", tr("Total Time in Apnea"), tr("Total Time in Apnea\n(Minutes)"));
     ttia = new gTTIAChart();
     TTIA->AddLayer(ttia);
-
-//    LK = createGraph("Leaks", STR_TR_Leaks, STR_TR_UnintentionalLeaks + "\n(" + STR_UNIT_LPM + ")");
-//    LK->AddLayer(new gSummaryChart(CPAP_Leak, MT_CPAP));
-
-//    TOTLK = createGraph("TotalLeaks", STR_TR_TotalLeaks, STR_TR_TotalLeaks + "\n(" + STR_UNIT_LPM + ")");
-//    TOTLK->AddLayer(new gSummaryChart(CPAP_LeakTotal, MT_CPAP));
-
-//    NLL = createGraph("TimeInLL", tr("% in %1").arg(schema::channel[CPAP_LargeLeak].label()), tr("Large Leaks\n(% of night)"));
-//    NLL->AddLayer(nll = new gSummaryChart("TimeInLL", MT_CPAP));
-//    nll->addCalc(CPAP_LargeLeak, ST_SPH);
-
-//    RR = createGraph(schema::channel[CPAP_RespRate].code(), schema::channel[CPAP_RespRate].label(), schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].units());
-//    RR->AddLayer(new gSummaryChart(CPAP_RespRate, MT_CPAP));
-//    TV = createGraph(schema::channel[CPAP_TidalVolume].code(),schema::channel[CPAP_TidalVolume].label(), tr("Tidal\nVolume\n(ml)"));
-//    TV->AddLayer(new gSummaryChart(CPAP_TidalVolume, MT_CPAP));
-//    MV = createGraph(schema::channel[CPAP_MinuteVent].code(), schema::channel[CPAP_MinuteVent].label(), tr("Minute\nVentilation\n(L/min)"));
-//    MV->AddLayer(new gSummaryChart(CPAP_MinuteVent, MT_CPAP));
-//    FL = createGraph(schema::channel[CPAP_FLG].code(), schema::channel[CPAP_FLG].label(), STR_TR_FlowLimit);
-//    FL->AddLayer(new gSummaryChart(CPAP_FLG, MT_CPAP));
-//    SN = createGraph(schema::channel[CPAP_Snore].code(), schema::channel[CPAP_Snore].label(), schema::channel[CPAP_Snore].fullname()+"\n"+schema::channel[CPAP_Snore].units());
-//    SN->AddLayer(new gSummaryChart(CPAP_Snore, MT_CPAP));
 
     QHash<ChannelID, schema::Channel *>::iterator chit;
     QHash<ChannelID, schema::Channel *>::iterator chit_end = schema::channel.channels.end();
@@ -227,25 +205,6 @@ void Overview::RebuildGraphs(bool reset)
 
     }
 
-/*    PULSE = createGraph(schema::channel[OXI_Pulse].code(), schema::channel[OXI_Pulse].label(), STR_TR_PulseRate + "\n(" + STR_UNIT_BPM + ")");
-    PULSE->AddLayer(new gSummaryChart(OXI_Pulse, MT_OXIMETER));
-
-    SPO2 = createGraph(schema::channel[OXI_SPO2].code(), schema::channel[OXI_SPO2].label(), tr("Oxygen Saturation\n(%)"));
-    SPO2->AddLayer(new gSummaryChart(OXI_SPO2, MT_OXIMETER));
-
-
-    NPB = createGraph("TimeInPB", tr("% in %1").arg(schema::channel[CPAP_CSR].label()), tr("%1\n(% of night)").arg(schema::channel[CPAP_LargeLeak].description()));
-    NPB->AddLayer(npb = new gSummaryChart(tr("% PB"), MT_CPAP));
-    npb->addCalc(CPAP_CSR, ST_SPH);
-
-    if (ahicode == CPAP_RDI) {
-        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak RDI"), tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
-        AHIHR->AddLayer(new gSummaryChart(CPAP_RDI, MT_CPAP));
-    } else {
-        AHIHR = createGraph(STR_GRAPH_PeakAHI, tr("Peak AHI"), tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
-        AHIHR->AddLayer(new gSummaryChart(CPAP_AHI, MT_CPAP));
-    } */
-
     WEIGHT = createGraph(STR_GRAPH_Weight, STR_TR_Weight, STR_TR_Weight, YT_Weight);
     BMI = createGraph(STR_GRAPH_BMI, STR_TR_BMI, tr("Body\nMass\nIndex"));
     ZOMBIE = createGraph(STR_GRAPH_Zombie, STR_TR_Zombie, tr("How you felt\n(0-10)"));
@@ -257,8 +216,6 @@ void Overview::RebuildGraphs(bool reset)
         GraphView->resetLayout();
         updateGraphCombo();
     }
-
-
 }
 
 gGraph *Overview::createGraph(QString code, QString name, QString units, YTickerType yttype)
@@ -344,8 +301,6 @@ void Overview::updateGraphCombo()
 
 void Overview::ResetGraphs()
 {
-    //qint64 st,et;
-    //GraphView->GetXBounds(st,et);
     QDate start = ui->dateStart->date();
     QDate end = ui->dateEnd->date();
     GraphView->setDay(nullptr);
@@ -354,8 +309,6 @@ void Overview::ResetGraphs()
     if (start.isValid() && end.isValid()) {
         setRange(start, end);
     }
-
-    //GraphView->SetXBounds(st,et);
 }
 
 void Overview::ResetGraph(QString name)
@@ -448,48 +401,10 @@ void Overview::on_toolButton_clicked()
     GraphView->SetXBounds(d1, d2);
 }
 
-//void Overview::on_printButton_clicked()
-//{
-//    mainwin->PrintReport(GraphView,STR_TR_Overview); // Must be translated the same as PrintReport checks.
-//}
-
 void Overview::ResetGraphLayout()
 {
     GraphView->resetLayout();
 }
-
-
-/*void Overview::on_printDailyButton_clicked()
-{
-    qint64 st,et;
-    GraphView->GetXBounds(st,et);
-
-    QDate s1=QDateTime::fromTime_t(st/1000L).date();
-    QDate s2=QDateTime::fromTime_t(et/1000L).date();
-
-    int len=p_profile->countDays(MT_UNKNOWN,s1,s2);
-    if (len>7) {
-        if (QMessageBox::question(this, "Woah!", "Do you really want to print "+QString::number(len)+" days worth of Daily reports,\n from "+s1.toString(Qt::SystemLocaleShortDate)+" to "+s2.toString(Qt::SystemLocaleShortDate)+"?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-            return;
-        }
-        if (len>14) {
-            int weeks=len/7;
-            if (QMessageBox::question(this, "Hold Up!", "We are talking about over "+QString::number(weeks)+" weeks of information.\n\nThis will likely take a very long time, and a heck of a lot of paper if your not printing to a PDF file.\n\nAre you really sure?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-                return;
-            }
-            if (len>31) {
-                if (QMessageBox::question(this, "Are you serious!!??", "We are talking about printing a lot of information.\n\nIf your not printing to a PDF file, you must really hate trees.\n\nAre you really REALLY sure?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-                    return;
-                }
-            }
-        }
-
-        mainwin->Notify("I'm not going to nag you any more, but it would probably help if I implemented this feature.. ;)");
-
-
-    } else mainwin->Notify("If this was implemented yet, You'd be able to print multiple daily reports right now.");
-
-}*/
 
 void Overview::on_rangeCombo_activated(int index)
 {
@@ -608,7 +523,6 @@ void Overview::on_toggleVisibility_clicked(bool checked)
     QString s;
     QIcon *icon = checked ? icon_off : icon_on;
 
-    //ui->toggleVisibility->setArrowType(checked ? Qt::UpArrow : Qt::DownArrow);
     for (int i = 0; i < ui->graphCombo->count(); i++) {
         s = ui->graphCombo->itemText(i);
         ui->graphCombo->setItemIcon(i, *icon);

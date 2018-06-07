@@ -1102,267 +1102,8 @@ int ResmedLoader::scanFiles(Machine * mach, const QString & datalog_path)
 #endif
 
     return resdayList.size();
-} /*// Check for duplicates
-      if (newfiles.contains(filename)) {
-            // Not sure what to do with it.. delete it? check compress status and delete the other one?
-            // Either way we don't want to process so skip it
-            qDebug() << "Duplicate EDF file detected" << filename;
-            continue;
-        }
+}
 
-        QString fullname = fi.canonicalFilePath();
-
-        // Peek inside the EDF file and get the EDFDuration record for the session matching that follows
-        EDFduration dur = getEDFDuration(fullname);
-        dur.filename = filename;
-
-        if (dur.start != dur.end) { // make sure empty EVE's are skipped
-
-            // Insert into newfiles map for later processing
-            QMap<QString, EDFduration>::iterator it = newfiles.insert(filename, dur);
-
-            // And index in filesbytype for quick lookup by type
-            filesbytype[dur.type].append(&it.value());
-        }
-    }
-#ifdef DEBUG_EFFICIENCY
-    qDebug() << "ResmedLoader::scanFiles() EDF Duration scan took" << time.elapsed() << "ms";
-#endif
-
-    QList<EDFType> EDForder;
-    EDForder.push_back(EDF_PLD);
-    EDForder.push_back(EDF_BRP);
-    EDForder.push_back(EDF_SAD);
-    QHash<EDFType, QStringList>::iterator gi;
-
-    emit setProgressMax(filesbytype[EDF_PLD].size() + filesbytype[EDF_BRP].size() + filesbytype[EDF_SAD].size());
-    cnt = 0;
-
-    for (int i=0; i<3; i++) {
-        EDFType basetype = EDForder.takeFirst();
-
-        // Process PLD files
-        QList<EDFduration *> & LIST = filesbytype[basetype];
-        int base_size = LIST.size();
-        for (int f=0; f < base_size; ++f) {
-            if ((cnt % 50) == 0) {
-                emit setProgressValue(cnt);
-                QApplication::processEvents();
-            }
-            cnt++;
-            const EDFduration * dur = LIST.at(f);
-
-            quint32 start = dur->start;
-            if (start == 0) continue;
-
-            quint32 end = dur->end;
-            QHash<EDFType, QStringList> grp;
-
-//            grp[EDF_PLD] = QStringList();
-//            grp[EDF_SAD] = QStringList();
-//            grp[EDF_BRP] = QStringList();
-//            grp[EDF_EVE] = QStringList();
-//            grp[EDF_CSL] = QStringList();
-
-
-            grp[basetype].append(create_backups ? backup(dur->path, backup_path) : dur->path);
-
-
-            QStringList files;
-            files.append(dur->filename);
-
-            for (int o=0; o<EDForder.size(); ++o) {
-                EDFType type = EDForder.at(o);
-
-                QList<EDFduration *> & EDF_list = filesbytype[type];
-                QList<EDFduration *>::iterator item;
-                QList<EDFduration *>::iterator list_end = EDF_list.end();
-                for (item = EDF_list.begin(); item != list_end; ++item) {
-                    const EDFduration * dur2 = *item;
-                    if (dur2->start == 0) continue;
-
-                    // Do the sessions Overlap?
-                    if ((start < dur2->end) && ( dur2->start < end)) {
-                        start = qMin(start, dur2->start);
-                        end = qMax(end, dur2->end);
-
-                        files.append(dur2->filename);
-
-                        grp[type].append(create_backups ? backup(dur2->path, backup_path) : dur2->path);
-
-                        filesbytype[type].erase(item);
-                    }
-                }
-
-            }
-
-            // EVE annotation files can cover multiple sessions
-            QList<EDFduration *> & EDF_list = filesbytype[EDF_EVE];
-            QList<EDFduration *>::iterator item;
-            QList<EDFduration *>::iterator list_end = EDF_list.end();
-            for (item = EDF_list.begin(); item != list_end; ++item) {
-                const EDFduration * dur2 = *item;
-                if (dur2->start == 0) continue;
-
-                // Do the sessions Overlap?
-                if ((start < dur2->end) && ( dur2->start < end)) {
-//                    start = qMin(start, dur2->start);
-//                    end = qMax(end, dur2->end);
-
-                    files.append(dur2->filename);
-
-                    grp[EDF_EVE].append(create_backups ? backup(dur2->path, backup_path) : dur2->path);
-                }
-            }
-
-            // CSL files contain CSR flags
-            QList<EDFduration *> & CSL_list = filesbytype[EDF_CSL];
-            list_end = CSL_list.end();
-            for (item = CSL_list.begin(); item != list_end; ++item) {
-                const EDFduration * dur2 = *item;
-                if (dur2->start == 0) continue;
-
-                // Do the sessions Overlap?
-                if ((start < dur2->end) && ( dur2->start < end)) {
-//                    start = qMin(start, dur2->start);
-//                    end = qMax(end, dur2->end);
-
-                    files.append(dur2->filename);
-
-                    grp[EDF_CSL].append(create_backups ? backup(dur2->path, backup_path) : dur2->path);
-                }
-            }
-
-
-
-            if (mach->SessionExists(start) == nullptr) {
-                //EDFGroup group(grp[EDF_BRP], grp[EDF_EVE], grp[EDF_PLD], grp[EDF_SAD], grp[EDF_CSL]);
-                if (grp.size() > 0) {
-                    queTask(new ResmedImport(this, start, grp, mach));
-                    for (int i=0; i<files.size(); i++) skipfiles[files.at(i)] = start;
-                }
-            }
-        }
-    }
-
-
-    // No PLD files
-
-    QMap<QString, EDFduration>::iterator it;
-    QMap<QString, EDFduration>::iterator itn;
-    QMap<QString, EDFduration>::iterator it_end = newfiles.end();
-
-    // Now scan through all new files, and group together into sessions
-    for (it = newfiles.begin(); it != it_end; ++it) {
-        quint32 start = it.value().start;
-
-        if (start == 0)
-            continue;
-
-        const QString & file = it.key();
-
-        quint32 end = it.value().end;
-
-
-        QString type = file.section("_", -1).section(".", 0, 0).toUpper();
-
-        QString newpath = create_backups ? backup(it.value().path, backup_path) : it.value().path;
-
-        EDFGroup group;
-
-        if (type == "BRP") group.BRP = newpath;
-        else if (type == "EVE") {
-            if (group.BRP.isEmpty()) {
-                qDebug() << "Jedimark's Order theory was wrong.. EVE's need to be parsed seperately!";
-            }
-            group.EVE = newpath;
-        }
-
-        else if (type == "PLD") group.PLD = newpath;
-        else if (type == "SAD") group.SAD = newpath;
-        else continue;
-
-        QStringList sessfiles;
-        sessfiles.push_back(file);
-
-        for (itn = it+1; itn != it_end; ++itn) {
-            if (itn.value().start == 0) continue;  // already processed
-            const EDFduration & dur2 = itn.value();
-
-            // Do the sessions Overlap?
-            if ((start < dur2.end) && ( dur2.start < end)) {
-
-                start = qMin(start, dur2.start);
-                end = qMax(end, dur2.end);
-
-                type = itn.key().section("_",-1).section(".",0,0).toUpper();
-
-                newpath = create_backups ? backup(dur2.path, backup_path) : dur2.path;
-
-                if (type == "BRP") {
-                    if (!group.BRP.isEmpty()) {
-                        itn.value().start = 0;
-                        continue;
-                    }
-                    group.BRP = newpath;
-                } else if (type == "EVE") {
-                    if (!group.EVE.isEmpty()) {
-                        itn.value().start = 0;
-                        continue;
-                    }
-                    group.EVE = newpath;
-                } else if (type == "PLD") {
-                    if (!group.PLD.isEmpty()) {
-                        itn.value().start = 0;
-                        continue;
-                    }
-                    group.PLD = newpath;
-                } else if (type == "SAD") {
-                    if (!group.SAD.isEmpty()) {
-                        itn.value().start = 0;
-                        continue;
-                    }
-                    group.SAD = newpath;
-                } else {
-                    itn.value().start = 0;
-                    continue;
-                }
-                sessfiles.push_back(itn.key());
-
-                itn.value().start = 0;
-            }
-        }
-
-        if (mach->SessionExists(start) == nullptr) {
-            queTask(new ResmedImport(this, start, group, mach));
-            for (int i=0; i < sessfiles.size(); ++i) {
-                skipfiles[sessfiles.at(i)] = start;
-            }
-        }
-    } */
-
-    // Run the tasks...
-   /* int c = countTasks();
-    runTasks(AppSetting->multithreading());
-
-    newSkipFiles.append(skipfiles.keys());
-    impfile.remove();
-
-    if (impfile.open(QFile::WriteOnly)) {
-        QTextStream out(&impfile);
-        out << mach->serial() << "\n";
-        QHash<QString, SessionID>::iterator skit;
-        QHash<QString, SessionID>::iterator skit_end = skipfiles.end();
-        for (skit = skipfiles.begin(); skit != skit_end; ++skit) {
-            QString a = QString("%1,%2\n").arg(skit.key()).arg(skit.value());;
-            out << a;
-        }
-        out.flush();
-    }
-    impfile.close();
-
-    return c;
-}*/
 void DetectPAPMode(Session *sess)
 {
     if (sess->channelDataExists(CPAP_Pressure)) {
@@ -1388,6 +1129,7 @@ void DetectPAPMode(Session *sess)
     }
 
 }
+
 void StoreSummarySettings(Session * sess, STRRecord & R)
 {
     if (R.mode >= 0) {
@@ -3160,9 +2902,7 @@ bool ResmedLoader::LoadPLD(Session *sess, const QString & path)
     return true;
 }
 
-void ResInitModelMap()
-{
-    // don't really need this anymore
+    // don't really need this anymore, but perhaps it's useful info for reference
 //    Resmed_Model_Map = {
 //        { "S9 Escape",      { 36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301, 36361 } },
 //        { "S9 Escape Auto", { 36002, 36012, 36022, 36302, 36362 } },
@@ -3185,6 +2925,8 @@ void ResInitModelMap()
 //        { "S8 AutoSet II",  { 33129 } },
 //    };
 
+void setupResTransMap()
+{
     ////////////////////////////////////////////////////////////////////////////
     // Translation lookup table for non-english machines
     ////////////////////////////////////////////////////////////////////////////
@@ -3392,10 +3134,8 @@ void ResmedLoader::initChannels()
     chan->addOption(0, STR_TR_Off);
     chan->addOption(1, STR_TR_On);
 
-
-    // Modelmap needs channels initalized above!!!
-    ResInitModelMap();
-
+    // Setup ResMeds signal name translation map
+    setupResTransMap();
 }
 
 bool resmed_initialized = false;
