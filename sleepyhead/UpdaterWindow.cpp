@@ -99,7 +99,7 @@ void UpdaterWindow::checkForUpdates()
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
         QFileInfo fi(filename);
-        QDateTime created = fi.created();
+        QDateTime created = fi.birthTime();
         int age = created.secsTo(QDateTime::currentDateTime());
 
         if (age < 900) {
@@ -525,7 +525,7 @@ void UpdaterWindow::ParseUpdatesXML(QIODevice *dev)
         }
 
         // Um... not optimal.
-        qSort(versions);
+        std::sort(versions.begin(), versions.end());
 
         QString platform = PlatformString.toLower();
         release = nullptr;

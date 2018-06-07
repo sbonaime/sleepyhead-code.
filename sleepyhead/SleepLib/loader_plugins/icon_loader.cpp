@@ -285,7 +285,7 @@ int FPIconLoader::OpenMachine(Machine *mach, const QString & path)
         //            qDebug() << k << "-" <<j << ":" << zz << qRound(dur) << "minutes" << (b ? "*" : "") << (c ? QDateTime::fromTime_t(zz).toString() : "");
         //        }
         //    }
-        //    qSort(chunks);
+        //    std::sort(chunks.begin(), chunks.end());
         //    bool b,c;
         //    for (int i=0;i<chunks.size();i++) {
         //        const FPWaveChunk & chunk=chunks.at(i);

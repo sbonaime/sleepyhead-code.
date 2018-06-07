@@ -1274,7 +1274,7 @@ void zMaskProfile::scanPressure(Session *session)
     scanPressureList(session, CPAP_IPAP);
 
     // Sort by time
-    qSort(Pressure);
+    std::sort(Pressure.begin(), Pressure.end());
 }
 void zMaskProfile::scanLeakList(EventList *el)
 {
@@ -1970,7 +1970,7 @@ int calcSPO2Drop(Session *session)
     EventDataType baseline = 0;
 
     if (med.size() > 0) {
-        qSort(med);
+        std::sort(med.begin(), med.end());
 
         int midx = float(med.size()) * 0.90;
 

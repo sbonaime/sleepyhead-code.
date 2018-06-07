@@ -1751,7 +1751,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     }
 
     // sort by weight, then value
-    qSort(valcnt);
+    std::sort(valcnt.begin(), valcnt.end());
 
     //double SN=100.0/double(N); // 100% / overall sum
     double p = 100.0 * percent;

@@ -475,7 +475,7 @@ void Statistics::updateRXChanges()
         ri.value().highlight = 0;
     }
 
-    qSort(list.begin(), list.end(), rxAHILessThan);
+    std::sort(list.begin(), list.end(), rxAHILessThan);
 
     if (list.size() >= 4) {
         list[0]->highlight = 1; // best
@@ -1440,7 +1440,7 @@ void Statistics::UpdateRecordsBox()
             ri.value().highlight = 0;
         }
 
-        qSort(list.begin(), list.end(), rxAHILessThan);
+        std::sort(list.begin(), list.end(), rxAHILessThan);
 
 
         if (list.size() >= 2) {
