@@ -60,10 +60,8 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
 
     // Connect the signals to update which days have CPAP data when the month is changed
-    connect(ui->dateStart->calendarWidget(), SIGNAL(currentPageChanged(int, int)),
-            SLOT(dateStart_currentPageChanged(int, int)));
-    connect(ui->dateEnd->calendarWidget(), SIGNAL(currentPageChanged(int, int)),
-            SLOT(dateEnd_currentPageChanged(int, int)));
+    connect(ui->dateStart->calendarWidget(), SIGNAL(currentPageChanged(int, int)), this, SLOT(dateStart_currentPageChanged(int, int)));
+    connect(ui->dateEnd->calendarWidget(), SIGNAL(currentPageChanged(int, int)), this, SLOT(dateEnd_currentPageChanged(int, int)));
 
     QVBoxLayout *framelayout = new QVBoxLayout;
     ui->graphArea->setLayout(framelayout);
@@ -113,183 +111,6 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     ui->dateLayout->addWidget(dateLabel,1);
 
-
-
-//    uc = new SummaryChart(STR_UNIT_Hours, GT_BAR);
-//    uc->addSlice(NoChannel, COLOR_Green, ST_HOURS);
-//    UC->AddLayer(uc);
-
-  /*  return;
-
-    // TODO: Automate graph creation process
-
-
-
-
-
-    float percentile = p_profile->general->prefCalcPercentile() / 100.0;
-    int mididx = p_profile->general->prefCalcMiddle();
-    SummaryType ST_mid;
-
-    if (mididx == 0) { ST_mid = ST_PERC; }
-    if (mididx == 1) { ST_mid = ST_WAVG; }
-    if (mididx == 2) { ST_mid = ST_AVG; }
-
-    SummaryType ST_max = p_profile->general->prefCalcMax() ? ST_PERC : ST_MAX;
-    const EventDataType maxperc = 0.995F;
-
-    US = createGraph(STR_GRAPH_SessionTimes, tr("Session Times"), tr("Session Times\n(hours)"), YT_Time);
-    SET = createGraph("Settings", STR_TR_Settings, STR_TR_Settings);
-
-
-    TGMV = createGraph(schema::channel[CPAP_TgMV].code(), schema::channel[CPAP_TgMV].label(), tr("Target\nVentilation\n(L/min)"));
-    PTB = createGraph(schema::channel[CPAP_PTB].code(), schema::channel[CPAP_PTB].label(), tr("Patient\nTriggered\nBreaths\n(%)"));
-    SES = createGraph(STR_GRAPH_Sessions, STR_TR_Sessions, STR_TR_Sessions + tr("\n(count)"));
-
-
-    ahihr = new SummaryChart(STR_UNIT_EventsPerHour, GT_POINTS);
-    ahihr->addSlice(ahicode, COLOR_Blue, ST_MAX);
-    ahihr->addSlice(ahicode, COLOR_Orange, ST_WAVG);
-    AHIHR->AddLayer(ahihr);
-
-    weight = new SummaryChart(STR_TR_Weight, GT_POINTS);
-    weight->setMachineType(MT_JOURNAL);
-    weight->addSlice(Journal_Weight, COLOR_Black, ST_SETAVG);
-    WEIGHT->AddLayer(weight);
-
-    bmi = new SummaryChart(STR_TR_BMI, GT_POINTS);
-    bmi->setMachineType(MT_JOURNAL);
-    bmi->addSlice(Journal_BMI, COLOR_DarkBlue, ST_SETAVG);
-    BMI->AddLayer(bmi);
-
-    zombie = new SummaryChart(tr("Zombie Meter"), GT_POINTS);
-    zombie->setMachineType(MT_JOURNAL);
-    zombie->addSlice(Journal_ZombieMeter, COLOR_DarkRed, ST_SETAVG);
-    ZOMBIE->AddLayer(zombie);
-
-    pulse = new SummaryChart(STR_TR_PulseRate, GT_POINTS);
-    pulse->setMachineType(MT_OXIMETER);
-    pulse->addSlice(OXI_Pulse, COLOR_Red, ST_mid, 0.5);
-    pulse->addSlice(OXI_Pulse, COLOR_Pink, ST_MIN);
-    pulse->addSlice(OXI_Pulse, COLOR_Orange, ST_MAX);
-    PULSE->AddLayer(pulse);
-
-    spo2 = new SummaryChart(STR_TR_SpO2, GT_POINTS);
-    spo2->setMachineType(MT_OXIMETER);
-    spo2->addSlice(OXI_SPO2, COLOR_Cyan, ST_mid, 0.5);
-    spo2->addSlice(OXI_SPO2, COLOR_LightBlue, ST_PERC, percentile);
-    spo2->addSlice(OXI_SPO2, COLOR_Blue, ST_MIN);
-    SPO2->AddLayer(spo2);
-
-
-    fl = new SummaryChart(STR_TR_FL, GT_POINTS);
-    fl->addSlice(CPAP_FlowLimit, COLOR_Brown, ST_CPH);
-    FL->AddLayer(fl);
-
-    sa = new SummaryChart(STR_TR_SA, GT_POINTS);
-    sa->addSlice(CPAP_SensAwake, COLOR_Brown, ST_CNT);
-    SA->AddLayer(sa);
-
-    us = new SummaryChart(STR_UNIT_Hours, GT_SESSIONS);
-    us->addSlice(NoChannel, COLOR_DarkBlue, ST_HOURS);
-    us->addSlice(NoChannel, COLOR_Blue, ST_SESSIONS);
-    US->AddLayer(us);
-
-    ses = new SummaryChart(STR_TR_Sessions, GT_POINTS);
-    ses->addSlice(NoChannel, COLOR_Blue, ST_SESSIONS);
-    SES->AddLayer(ses);
-
-    if (ahicode == CPAP_RDI) {
-        bc = new SummaryChart(STR_TR_RDI, GT_BAR);
-    } else {
-        bc = new SummaryChart(STR_TR_AHI, GT_BAR);
-    }
-
-    bc->addSlice(CPAP_ClearAirway, COLOR_ClearAirway, ST_CPH);
-    bc->addSlice(CPAP_Obstructive, COLOR_Obstructive, ST_CPH);
-    bc->addSlice(CPAP_Apnea, COLOR_Apnea, ST_CPH);
-    bc->addSlice(CPAP_Hypopnea, COLOR_Hypopnea, ST_CPH);
-
-    if (p_profile->general->calculateRDI()) {
-        bc->addSlice(CPAP_RERA, COLOR_RERA, ST_CPH);
-    }
-//    bc->addSlice(CPAP_UserFlag1, COLOR_UserFlag1, ST_CPH);
-//    bc->addSlice(CPAP_UserFlag2, COLOR_UserFlag2, ST_CPH);
-
-
-    AHI->AddLayer(bc);
-
-    set = new SummaryChart("", GT_POINTS);
-    //set->addSlice(PRS1_SysOneResistSet,COLOR_Gray,ST_SETAVG);
-    set->addSlice(CPAP_HumidSetting, COLOR_Blue, ST_SETWAVG);
-    set->addSlice(CPAP_PresReliefLevel, COLOR_Red, ST_SETWAVG);
-    set->addSlice(CPAP_PresReliefMode, COLOR_Red, ST_SETWAVG);
-//    set->addSlice(RMS9_EPRLevel,COLOR_Green,ST_SETWAVG);
-    //set->addSlice(INTP_SmartFlex,COLOR_Purple,ST_SETWAVG);
-    SET->AddLayer(set);
-
-    rr = new SummaryChart(tr("breaths/min"), GT_POINTS);
-    rr->addSlice(CPAP_RespRate, COLOR_LightBlue, ST_MIN);
-    rr->addSlice(CPAP_RespRate, COLOR_Blue, ST_mid, 0.5);
-    rr->addSlice(CPAP_RespRate, COLOR_LightGreen, ST_PERC, percentile);
-    rr->addSlice(CPAP_RespRate, COLOR_Green, ST_max, maxperc);
-    // rr->addSlice(CPAP_RespRate,COLOR_Green,ST_MAX);
-    RR->AddLayer(rr);
-
-    tv = new SummaryChart(tr("L/b"), GT_POINTS);
-    tv->addSlice(CPAP_TidalVolume, COLOR_LightBlue, ST_MIN);
-    tv->addSlice(CPAP_TidalVolume, COLOR_Blue, ST_mid, 0.5);
-    tv->addSlice(CPAP_TidalVolume, COLOR_LightGreen, ST_PERC, percentile);
-    tv->addSlice(CPAP_TidalVolume, COLOR_Green, ST_max, maxperc);
-    TV->AddLayer(tv);
-
-    mv = new SummaryChart(STR_UNIT_LPM, GT_POINTS);
-    mv->addSlice(CPAP_MinuteVent, COLOR_LightBlue, ST_MIN);
-    mv->addSlice(CPAP_MinuteVent, COLOR_Blue, ST_mid, 0.5);
-    mv->addSlice(CPAP_MinuteVent, COLOR_LightGreen, ST_PERC, percentile);
-    mv->addSlice(CPAP_MinuteVent, COLOR_Green, ST_max, maxperc);
-    MV->AddLayer(mv);
-
-    // should merge...
-    tgmv = new SummaryChart(STR_UNIT_LPM, GT_POINTS);
-    tgmv->addSlice(CPAP_TgMV, COLOR_LightBlue, ST_MIN);
-    tgmv->addSlice(CPAP_TgMV, COLOR_Blue, ST_mid, 0.5);
-    tgmv->addSlice(CPAP_TgMV, COLOR_LightGreen, ST_PERC, percentile);
-    tgmv->addSlice(CPAP_TgMV, COLOR_Green, ST_max, maxperc);
-    TGMV->AddLayer(tgmv);
-
-    ptb = new SummaryChart(tr("%PTB"), GT_POINTS);
-    ptb->addSlice(CPAP_PTB, COLOR_Yellow, ST_MIN);
-    ptb->addSlice(CPAP_PTB, COLOR_Blue, ST_mid, 0.5);
-    ptb->addSlice(CPAP_PTB, COLOR_LightGray, ST_PERC, percentile);
-    ptb->addSlice(CPAP_PTB, COLOR_Orange, ST_WAVG);
-    PTB->AddLayer(ptb);
-
-    pr = new SummaryChart(STR_TR_Pressure, GT_POINTS);
-    // Added in summarychart.. Slightly annoying..
-    PR->AddLayer(pr);
-
-
-    totlk = new SummaryChart(STR_TR_TotalLeaks, GT_POINTS);
-    totlk->addSlice(CPAP_LeakTotal, COLOR_LightBlue, ST_mid, 0.5);
-    totlk->addSlice(CPAP_LeakTotal, COLOR_DarkGray, ST_PERC, percentile);
-    totlk->addSlice(CPAP_LeakTotal, COLOR_Gray, ST_max, maxperc);
-    //tot->addSlice(CPAP_Leak, COLOR_DarkBlue, ST_WAVG);
-    //tot->addSlice(CPAP_Leak, COLOR_DarkYellow);
-    TOTLK->AddLayer(totlk);
-
-
-    NLL->AddLayer(nll = new SummaryChart(tr("% %1").arg(schema::channel[CPAP_LargeLeak].fullname()), GT_POINTS));
-    nll->addSlice(CPAP_LargeLeak, schema::channel[CPAP_LargeLeak].defaultColor(), ST_SPH);
-    // <--- The code to the previous marker is crap
-
-    AHI->setPinned(false);
-    SES->setRecMinY(1);
-    SET->setRecMinY(0);
-
-    //SET->setRecMaxY(5);
-
-    */
     RebuildGraphs(false);
 
     ui->rangeCombo->setCurrentIndex(p_profile->general->lastOverviewRange());
@@ -304,14 +125,21 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     connect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
     connect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
-
     connect(GraphView, SIGNAL(GraphsChanged()), this, SLOT(updateGraphCombo()));
 }
+
 Overview::~Overview()
 {
+    disconnect(GraphView, SIGNAL(GraphsChanged()), this, SLOT(updateGraphCombo()));
+    disconnect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
+    disconnect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
+    disconnect(ui->dateEnd->calendarWidget(), SIGNAL(currentPageChanged(int, int)), this, SLOT(dateEnd_currentPageChanged(int, int)));
+    disconnect(ui->dateStart->calendarWidget(), SIGNAL(currentPageChanged(int, int)), this, SLOT(dateStart_currentPageChanged(int, int)));
+
+    // Save graph orders and pin status, etc...
+    GraphView->SaveSettings("Overview");//no trans
+
     delete ui;
-//    delete icon_on;
-//    delete icon_off;
 }
 
 void Overview::RebuildGraphs(bool reset)
@@ -423,24 +251,14 @@ void Overview::RebuildGraphs(bool reset)
     ZOMBIE = createGraph(STR_GRAPH_Zombie, STR_TR_Zombie, tr("How you felt\n(0-10)"));
 
     if (reset) {
-//        GraphView->setDay(nullptr);
         GraphView->resetLayout();
         GraphView->setDay(nullptr);
-//        GraphView->resetLayout();
         GraphView->SetXBounds(minx, maxx, 0, false);
         GraphView->resetLayout();
         updateGraphCombo();
     }
 
 
-}
-
-void Overview::closeEvent(QCloseEvent *event)
-{
-    GraphView->SaveSettings("Overview");//no trans
-    disconnect(this, SLOT(dateStart_currentPageChanged(int, int)));
-    disconnect(this, SLOT(dateEnd_currentPageChanged(int, int)));
-    QWidget::closeEvent(event);
 }
 
 gGraph *Overview::createGraph(QString code, QString name, QString units, YTickerType yttype)

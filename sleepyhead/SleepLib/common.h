@@ -21,7 +21,7 @@
 
 const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";
-const QString CSTR_GFX_BrokenGL = "QWidget";
+const QString CSTR_GFX_BrokenGL = "LegacyGFX";
 
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();

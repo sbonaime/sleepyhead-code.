@@ -11,6 +11,8 @@ lessThan(QT_MAJOR_VERSION,5) {
     error("Sorry, need Qt 5 to build SleepyHead");
 }
 
+DEFINES += QT_DEPRECATED_WARNINGS
+
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
 #provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL)
@@ -53,7 +55,7 @@ gitinfotarget.depends = FORCE
 
 win32 {
     system("$$_PRO_FILE_PWD_/update_gitinfo.bat");
-    gitinfotarget.commands = $$_PRO_FILE_PWD_/update_gitinfo.bat
+    gitinfotarget.commands = "$$_PRO_FILE_PWD_/update_gitinfo.bat"
 } else {
     system("/bin/bash $$_PRO_FILE_PWD_/update_gitinfo.sh");
     gitinfotarget.commands = "/bin/bash $$_PRO_FILE_PWD_/update_gitinfo.sh"
@@ -101,6 +103,58 @@ win32 {
     } else {
         # MingW needs this
         LIBS += -lz
+    }
+}
+
+macx {
+    TransFiles.files = $$files(../Translations/*.qm)
+    TransFiles.path = Contents/Resources/Translations
+    HelpFiles.files = $$files(help/*.qch)
+    HelpFiles.files += $$files(help/help.qhc)
+    HelpFiles.path = Contents/Resources/Help
+    QMAKE_BUNDLE_DATA += TransFiles
+    QMAKE_BUNDLE_DATA += HelpFiles
+    message("Setting up Translations & Help Transfers")
+} else {
+    CONFIG(debug, debug|release) {
+        DDIR = $$OUT_PWD/debug/Translations
+        HELPDIR = $$OUT_PWD/debug/Help
+    }
+    CONFIG(release, debug|release) {
+        DDIR = $$OUT_PWD/release/Translations
+        HELPDIR = $$OUT_PWD/release/Help
+    }
+    TRANS_FILES += $$PWD/../Translations/*.qm
+    HELP_FILES += $$PWD/help/*.qch
+    HELP_FILES += $$PWD/help/help.qhc
+
+    win32 {
+        TRANS_FILES_WIN = $${TRANS_FILES}
+        HELP_FILES_WIN = $${HELP_FILES}
+        TRANS_FILES_WIN ~= s,/,\\,g
+        HELP_FILES_WIN ~= s,/,\\,g
+        DDIR ~= s,/,\\,g
+        HELPDIR ~= s,/,\\,g
+
+        system(mkdir $$quote($$HELPDIR))
+        system(mkdir $$quote($$DDIR))
+
+        for(FILE,TRANS_FILES_WIN) {
+            system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
+        }
+        for(FILE,HELP_FILES_WIN) {
+            system(xcopy /y $$quote($$FILE) $$quote($$HELPDIR))
+        }
+    } else {
+        system(md $$quote($$HELPDIR))
+        system(md $$quote($$DDIR))
+
+        for(FILE,TRANS_FILES_WIN) {
+            system(copy $$quote($$FILE) $$quote($$DDIR))
+        }
+        for(FILE,HELP_FILES_WIN) {
+            system(copy $$quote($$FILE) $$quote($$HELPDIR))
+        }
     }
 }
 
@@ -276,62 +330,9 @@ OTHER_FILES += \
     ../update.xml \
     docs/changelog.txt \
     docs/intro.html \
-    docs/statistics.xml
-
-win32 {
-    CONFIG(debug, debug|release) {
-        DDIR = $$OUT_PWD/debug/Translations
-    }
-    CONFIG(release, debug|release) {
-        DDIR = $$OUT_PWD/release/Translations
-    }
-    DDIR ~= s,/,\\,g
-
-    TRANS_FILES += $$PWD/../Translations/*.qm
-    TRANS_FILES_WIN = $${TRANS_FILES}
-    TRANS_FILES_WIN ~= s,/,\\,g
-
-    system(mkdir $$quote($$DDIR))
-
-    for(FILE,TRANS_FILES_WIN){
-        system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
-    }
-
-    CONFIG(debug, debug|release) {
-        HELPDIR = $$OUT_PWD/debug/Help
-    }
-    CONFIG(release, debug|release) {
-        HELPDIR = $$OUT_PWD/release/Help
-    }
-    HELPDIR ~= s,/,\\,g
-
-    HELP_FILES += $$PWD/help/*.qch
-    HELP_FILES += $$PWD/help/help.qhc
-    HELP_FILES_WIN = $${HELP_FILES}
-    HELP_FILES_WIN ~= s,/,\\,g
-
-    system(mkdir $$quote($$HELPDIR))
-
-    for(FILE,HELP_FILES_WIN){
-        system(xcopy /y $$quote($$FILE) $$quote($$HELPDIR))
-    }
-
-}
-
-macx {
-    TransFiles.files = $$files(../Translations/*.qm)
-    TransFiles.path = Contents/Resources/Translations
-    HelpFiles.files = $$files(help/*.qch)
-    HelpFiles.files += $$files(help/help.qhc)
-    HelpFiles.path = Contents/Resources/Help
-    QMAKE_BUNDLE_DATA += TransFiles
-    QMAKE_BUNDLE_DATA += HelpFiles
-    message("Setting up Translations & Help Transfers")
-}
-
-#include(../3rdparty/quazip/quazip/quazip.pri)
-#INCLUDEPATH += $$PWD/../3rdparty/quazip
-#DEPENDPATH += $$PWD/../3rdparty/quazip
+    docs/statistics.xml \
+    update_gitinfo.bat \
+    update_gitinfo.sh
 
 DISTFILES += \
     ../README \

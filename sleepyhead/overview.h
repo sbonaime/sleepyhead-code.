@@ -1,4 +1,4 @@
-/* Overview GUI Headers
+﻿/* Overview GUI Headers
  *
  * Copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -37,7 +37,6 @@ class Overview : public QWidget
   public:
     explicit Overview(QWidget *parent, gGraphView *shared = nullptr);
     ~Overview();
-    void closeEvent(QCloseEvent *);
 
     //! \brief Returns Overview gGraphView object containing it's graphs
     gGraphView *graphView() { return GraphView; }
@@ -77,17 +76,8 @@ class Overview : public QWidget
 
   public slots:
     void onRebuildGraphs() { RebuildGraphs(true); }
-    // ! \brief Print button down the bottom, does the same as File->Print
-    //void on_printButton_clicked();
 
   private slots:
-    /*    void on_drStart_dateChanged(const QDate &date);
-        void on_drEnd_dateChanged(const QDate &date);
-        void on_rbDateRange_toggled(bool checked);
-        void on_rbLastWeek_clicked();
-        void on_rbLastMonth_clicked();
-        void on_rbEverything_clicked();
-        void on_rbDateRange_clicked(); */
     void updateGraphCombo();
 
     //! \brief Resets the graph view because the Start date has been changed
@@ -116,6 +106,7 @@ class Overview : public QWidget
     void on_LineCursorUpdate(double time);
     void on_RangeUpdate(double minx, double maxx);
 
+
   private:
     Ui::Overview *ui;
     gGraphView *GraphView;
@@ -129,11 +120,6 @@ class Overview : public QWidget
     //! \brief Updates the calendar highlighting for the calendar object for this date.
     void UpdateCalendarDay(QDateEdit *calendar, QDate date);
     void updateCube();
-
-    //SessionTimes *session_times;
-    //,*PRESSURE,*LEAK,*SESSTIMES;
-
-    //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
 
     Day *day; // dummy in this case
 

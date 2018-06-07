@@ -421,13 +421,20 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     GraphView->setEmptyImage(QPixmap(":/docs/sheep.png"));
 }
 
-
 Daily::~Daily()
 {
-    disconnect(sessionbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
-//    disconnect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
+    disconnect(GraphView, SIGNAL(updateCurrentTime(double)), this, SLOT(on_LineCursorUpdate(double)));
+    disconnect(GraphView, SIGNAL(updateRange(double,double)), this, SLOT(on_RangeUpdate(double,double)));
+    disconnect(GraphView, SIGNAL(GraphsChanged()), this, SLOT(updateGraphCombo()));
 
-    // Save any last minute changes..
+    disconnect(sessionbar, SIGNAL(sessionClicked(Session*)), this, SLOT(doToggleSession(Session*)));
+    disconnect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
+
+    if (previous_date.isValid())
+        Unload(previous_date);
+
+    // Save graph orders and pin status, etc...
+    GraphView->SaveSettings("Daily");
 
     delete ui;
     delete icon_on;
@@ -438,20 +445,6 @@ void Daily::showEvent(QShowEvent *)
 {
     RedrawGraphs();
 }
-
-void Daily::closeEvent(QCloseEvent *event)
-{
-
-    disconnect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
-
-    if (previous_date.isValid())
-        Unload(previous_date);
-
-    GraphView->SaveSettings("Daily");
-    QWidget::closeEvent(event);
-    event->accept();
-}
-
 
 void Daily::doToggleSession(Session * sess)
 {

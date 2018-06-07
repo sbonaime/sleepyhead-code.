@@ -217,7 +217,6 @@ void MainWindow::SetupGUI()
 
     QTimer::singleShot(50, this, SLOT(Startup()));
 
-
     help = new Help(this);
 
     ui->tabWidget->addTab(help, tr("Help Browser"));
