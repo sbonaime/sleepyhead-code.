@@ -9,7 +9,11 @@
 #include <QDateTime>
 #include <QDir>
 #include <QThread>
+#ifdef _MSC_VER
+#include <QtZlib/zlib.h>
+#else
 #include <zlib.h>
+#endif
 
 #include "version.h"
 #include "profiles.h"
@@ -603,7 +607,7 @@ QByteArray gUncompress(const QByteArray & data)
     int ret;
     z_stream strm;
     static const int CHUNK_SIZE = 1048576;
-    char out[CHUNK_SIZE];
+    char *out = new char [CHUNK_SIZE];
 
     /* allocate inflate state */
     strm.zalloc = Z_NULL;
@@ -613,8 +617,10 @@ QByteArray gUncompress(const QByteArray & data)
     strm.next_in = (Bytef*)(data.data());
 
     ret = inflateInit2(&strm, 15 +  32); // gzip decoding
-    if (ret != Z_OK)
+    if (ret != Z_OK) {
+        delete [] out;
         return QByteArray();
+    }
 
     // run inflate()
     do {
@@ -624,6 +630,7 @@ QByteArray gUncompress(const QByteArray & data)
         ret = inflate(&strm, Z_NO_FLUSH);
         if (ret == Z_STREAM_ERROR) {
             qWarning() << "ret == Z_STREAM_ERROR in gzUncompress in common.cpp";
+            delete [] out;
             return QByteArray();
         }
 
@@ -634,6 +641,7 @@ QByteArray gUncompress(const QByteArray & data)
         case Z_MEM_ERROR:
             Q_UNUSED(ret)
             (void)inflateEnd(&strm);
+            delete [] out;
             return QByteArray();
         }
 
@@ -642,5 +650,6 @@ QByteArray gUncompress(const QByteArray & data)
 
     // clean up and return
     inflateEnd(&strm);
+    delete [] out;
     return result;
 }

@@ -2,7 +2,13 @@
 <QtHelpProject version="1.0">
     <namespace>jedimark.net.SleepyHead.1.1</namespace>
     <virtualFolder>doc</virtualFolder>
+    <customFilter name="SleepyHead 1.1">
+        <filterAttribute>myapp</filterAttribute>
+        <filterAttribute>1.0</filterAttribute>
+    </customFilter>
     <filterSection>
+        <filterAttribute>myapp</filterAttribute>
+        <filterAttribute>1.0</filterAttribute>
         <toc>
             <section title="SleepyHead Manual" ref="help_en/index.html">
                 <section title="Introduction" ref="./help_en/index.html#intro"/>

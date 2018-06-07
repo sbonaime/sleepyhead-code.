@@ -16,7 +16,11 @@
 
 #include "profiles.h"
 #include "machine.h"
+#ifdef _MSC_VER
+#include "QtZlib/zlib.h"
+#else
 #include "zlib.h"
+#endif
 
 
 class MachineLoader;

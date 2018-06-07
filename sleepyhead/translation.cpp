@@ -33,10 +33,10 @@ void initTranslations(QSettings & settings) {
     //  change it, but Qt4 support is still going to die sooner or later)
     // Add any languages with special character set needs to this list
     QHash<QString, QString> langNames;
-    langNames["zh"] = "漢語繁體字";
-    langNames["es"] = "Español";
-    langNames["bg"] = "български";
-    langNames["fr"] = "Français";
+    langNames["zh"] = "\xe6\xbc\xa2\xe8\xaa\x9e\xe7\xb9\x81\xe9\xab\x94\xe5\xad\x97";
+    langNames["es"] = "Espa\xc3\xb1ol";
+    langNames["bg"] = "\xd0\xb1\xd1\x8a\xd0\xbb\xd0\xb3\xd0\xb0\xd1\x80\xd1\x81\xd0\xba\xd0\xb8";
+    langNames["fr"] = "\x46\x72\x61\x6e\xc3\xa7\x61\x69\x73";
     langNames["en_UK"] = "English UK";
     // CHECK: Will the above break with MS VisualC++ compiler?
 
@@ -85,7 +85,7 @@ void initTranslations(QSettings & settings) {
         QFont font;
         font.setPointSize(20);
         langsel.setFont(font);
-        langsel.setWindowTitle("Language / Taal / Sprache / Langue / 语言 / ... ");
+        langsel.setWindowTitle("Language / Taal / Sprache / Langue / \xe8\xaf\xad\xe8\xa8\x80 / ... ");
         QHBoxLayout lang_layout(&langsel);
 
         QLabel img;

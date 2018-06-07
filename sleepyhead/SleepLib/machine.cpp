@@ -966,7 +966,6 @@ bool Machine::LoadSummary(ProgressDialog * progress)
     }
 
     QByteArray data = file.readAll();
-
     QByteArray uncompressed = gUncompress(data);
 
     QString errorMsg;

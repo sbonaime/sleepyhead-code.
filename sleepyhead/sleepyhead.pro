@@ -49,13 +49,19 @@ TEMPLATE = app
 
 # GIT_VERSION = $$system(git describe --tags --long --abbrev=6 --dirty="*")
 
+
 exists(../.git):{
-
-    GIT_BRANCH=$$system(git rev-parse --abbrev-ref HEAD)
+    GIT_COMMAND = git -C \"$$_PRO_FILE_PWD_\"
+    GIT_BRANCH=$$system($$GIT_COMMAND rev-parse --abbrev-ref HEAD)
+    GIT_REVISION=$$system($$GIT_COMMAND rev-parse --short HEAD)
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-    DEFINES += GIT_REVISION="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
+    DEFINES += GIT_REVISION=\\\"$$GIT_REVISION\\\"
 
-#    contains(GIT_BRANCH,"testing"):
+    message ("Building $$GIT_BRANCH branch $$GIT_REVISION")
+
+#    DEFINES += GIT_BRANC=\\\"$(shell git -C \"$$_PRO_FILE_PWD_\" rev-parse --abbrev-ref HEAD)\\\"
+#    DEFINES += GIT_REVISION="$(shell git -C "$$_PRO_FILE_PWD_\" rev-parse --short HEAD)"
+#    message($$GIT_BRANC)
 
 } else {
     DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
@@ -95,7 +101,7 @@ win32 {
 
     if (*-msvc*):!equals(TEMPLATE_PREFIX, "vc") {
         LIBS += -ladvapi32
-        DEFINES += BUILD_WITH_MSVC=1
+        DEFINES += "BUILD_WITH_MSVC=1"
     } else {
         # MingW needs this
         LIBS += -lz

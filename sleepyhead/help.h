@@ -9,6 +9,7 @@
 #ifndef HELP_H
 #define HELP_H
 
+#include <QPrinter>
 #include <QHelpEngine>
 #include <QTextBrowser>
 #include <QTabWidget>
@@ -35,6 +36,7 @@ public:
     explicit Help(QWidget *parent = 0);
     ~Help();
 
+    void print(QPrinter * printer) { helpBrowser->print(printer); }
 private slots:
     void on_backButton_clicked();
 

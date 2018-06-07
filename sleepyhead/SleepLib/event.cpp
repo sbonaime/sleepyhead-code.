@@ -161,7 +161,7 @@ void EventList::AddWaveform(qint64 start, qint16 *data, int recs, qint64 duratio
 
   //  EventStoreType *edata = m_data.data();
 
-    EventStoreType raw;
+    //EventStoreType raw;
     const qint16 *sp = data;
     const qint16 *ep = data + recs;
     EventStoreType *dp = (EventStoreType *)m_data.data()+r;

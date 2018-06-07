@@ -556,6 +556,8 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
         return 0;
     }
 
+    ui->tabWidget->setCurrentWidget(welcome);
+    QApplication::processEvents();
     ProgressDialog * progdlg = new ProgressDialog(this);
 
     QPixmap image = import.loader->getPixmap(import.loader->PeekInfo(import.path).series);
@@ -567,6 +569,7 @@ int MainWindow::importCPAP(ImportPath import, const QString &message)
     progdlg->setWindowModality(Qt::ApplicationModal);
     progdlg->open();
     progdlg->setMessage(message);
+
 
     connect(import.loader, SIGNAL(updateMessage(QString)), progdlg, SLOT(setMessage(QString)));
     connect(import.loader, SIGNAL(setProgressMax(int)), progdlg, SLOT(setProgressMax(int)));
@@ -812,6 +815,9 @@ void MainWindow::on_action_Import_Data_triggered()
         return;
     }
     in_import=true;
+
+    ui->tabWidget->setCurrentWidget(welcome);
+    QApplication::processEvents();
 
     QList<ImportPath> datacards = detectCPAPCards();
 
@@ -1391,7 +1397,7 @@ void MainWindow::on_actionPrint_Report_triggered()
                 painter.end();
 
             } else if (ui->tabWidget->currentWidget() == help) {
-              //  help->print(&printer);
+                help->print(&printer);
             }
 
         }

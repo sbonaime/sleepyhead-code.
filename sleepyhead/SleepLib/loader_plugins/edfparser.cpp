@@ -10,8 +10,11 @@
 #include <QDebug>
 #include <QFile>
 #include <QMutexLocker>
-#include "zlib.h"
-
+#ifdef _MSC_VER
+#include <QtZlib/zlib.h>
+#else
+#include <zlib.h>
+#endif
 
 #include "edfparser.h"
 

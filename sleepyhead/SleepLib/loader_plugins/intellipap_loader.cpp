@@ -947,8 +947,8 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
             if (ts1 >= R->start_time) {
                 if (!flow && R->sess) {
-                    flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0/60.0, 0.0, 0.0, 0.0, double(2000) / double(50));
-                    pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, double(2000) / double(2));
+                    flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0f/60.0f, 0.0f, 0.0f, 0.0f, double(2000) / double(50));
+                    pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Waveform, 0.1f, 0.0f, 0.0f, 0.0f, double(2000) / double(2));
                     //leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(1));
                     OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     NOA = R->sess->AddEventList(CPAP_NRI, EVL_Event);

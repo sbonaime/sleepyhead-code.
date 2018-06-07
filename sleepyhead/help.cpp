@@ -7,11 +7,7 @@
  * for more details. */
 
 
-#include <QHelpContentWidget>
-#include <QHelpIndexWidget>
-#include <QHelpSearchEngine>
-#include <QHelpSearchResult>
-#include <QHelpSearchResultWidget>
+#include <QtHelp>
 #include <QDebug>
 #include <QTimer>
 
@@ -79,6 +75,7 @@ Help::Help(QWidget *parent) :
 
     searchReady = false;
     helpEngine->searchEngine()->reindexDocumentation();
+    helpEngine->setCurrentFilter("SleepyHead 1.1");
 
 }
 
@@ -140,7 +137,7 @@ void Help::on_homeButton_clicked()
     QByteArray index = helpEngine->fileData(QUrl("qthelp://jedimark.net.sleepyhead.1.1/doc/help_en/index.html"));
     helpBrowser->setHtml(index);
 }
-void Help::on_searchComplete(int count)
+void Help::on_searchComplete(int)
 {
     if (!searchReady) {
         QString html = "<h1>Please wait a bit.. Indexing still in progress</h1>";

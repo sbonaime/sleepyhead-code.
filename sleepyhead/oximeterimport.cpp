@@ -936,7 +936,7 @@ void OximeterImport::on_saveButton_clicked()
             // Perfusion Index
             if (rec->perf > 0) {
                 if (lastperf == 0) {
-                    ELperf = session->AddEventList(OXI_Perf, EVL_Event, 0.01);
+                    ELperf = session->AddEventList(OXI_Perf, EVL_Event, 0.01f);
                 }
                 if (lastperf != rec->perf) {
                     if (lastperf > 0) {

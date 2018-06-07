@@ -1444,12 +1444,12 @@ bool PRS1Import::ParseF3EventsV3()
 
     EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
     EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
-    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10.0);
+    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10.0f);
 
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
     EventList *TMV = session->AddEventList(CPAP_Test1, EVL_Event);
-    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1);
-    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1);
+    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1f);
+    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1f);
     EventList *FLOW = session->AddEventList(CPAP_Test2, EVL_Event);
 
     qint64 t = qint64(event->timestamp) * 1000L; //, tt;
@@ -1462,7 +1462,7 @@ bool PRS1Import::ParseF3EventsV3()
     unsigned short delta;
     bool failed = false;
 
-    unsigned char val, val1, val2;
+    unsigned char val, val2;
     QString dump;
 
     do {
@@ -1601,11 +1601,11 @@ bool PRS1Import::ParseF3Events()
     EventList *ULK = session->AddEventList(CPAP_Leak, EVL_Event);
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
     //EventList *TMV = session->AddEventList(CPAP_TgMV, EVL_Event);
-    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event,10.0);
+    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event,10.0f);
     EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
     EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
-    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event,0.1);
-    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event,0.1);
+    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event,0.1f);
+    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event,0.1f);
     EventList *FLOW = session->AddEventList(CPAP_FlowRate, EVL_Event);
 
     int size = event->m_data.size()/0x10;
@@ -3089,18 +3089,18 @@ bool PRS1Import::ParseWaveforms()
             s2 = data[1].size();
 
             if (s1 > 0) {
-                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(dur) / double(s1));
+                EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0f, 0.0f, 0.0f, 0.0f, double(dur) / double(s1));
                 flow->AddWaveform(ti, (char *)data[0].data(), data[0].size(), dur);
             }
 
             if (s2 > 0) {
-                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 0.1, 0.0, 0.0, 0.0, double(dur) / double(s2));
+                EventList * pres = session->AddEventList(CPAP_MaskPressureHi, EVL_Waveform, 0.1f, 0.0f, 0.0f, 0.0f, double(dur) / double(s2));
                 pres->AddWaveform(ti, (unsigned char *)data[1].data(), data[1].size(), dur);
             }
 
         } else {
             // Non interleaved, so can process it much faster
-            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(dur) / double(waveform->m_data.size()));
+            EventList * flow = session->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0f, 0.0f, 0.0f, 0.0f, double(dur) / double(waveform->m_data.size()));
             flow->AddWaveform(ti, (char *)waveform->m_data.data(), waveform->m_data.size(), dur);
         }
         lastti = dur+ti;
