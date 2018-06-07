@@ -237,7 +237,8 @@ HEADERS  += \
     aboutdialog.h \
     welcome.h \
     mytextbrowser.h \
-    help.h
+    help.h \
+    git_info.h
 
 FORMS += \
     daily.ui \
