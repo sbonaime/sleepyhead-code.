@@ -55,8 +55,8 @@ win32 {
     system("$$_PRO_FILE_PWD_/update_gitinfo.bat");
     gitinfotarget.commands = $$_PRO_FILE_PWD_/update_gitinfo.bat
 } else {
-    system("$$_PRO_FILE_PWD_/update_gitinfo.sh");
-    gitinfotarget.commands = $$_PRO_FILE_PWD_/update_gitinfo.sh
+    system("/bin/bash $$_PRO_FILE_PWD_/update_gitinfo.sh");
+    gitinfotarget.commands = "/bin/bash $$_PRO_FILE_PWD_/update_gitinfo.sh"
 }
 
 PRE_TARGETDEPS += git_info.h
