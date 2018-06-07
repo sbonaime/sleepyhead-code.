@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include "common_gui.h"
+#include "SleepLib/common.h"
 #include "help.h"
 #include "ui_help.h"
 

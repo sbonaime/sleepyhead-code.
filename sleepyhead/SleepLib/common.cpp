@@ -9,6 +9,17 @@
 #include <QDateTime>
 #include <QDir>
 #include <QThread>
+#include <QGLWidget>
+#include <QOpenGLFunctions>
+#include <QDebug>
+#include <QDir>
+#include <QCoreApplication>
+
+#include "SleepLib/common.h"
+
+#ifndef BUILD_WITH_MSVC
+# include <unistd.h>
+#endif
 
 #ifdef _MSC_VER
 #include <QtZlib/zlib.h>
@@ -21,6 +32,16 @@
 #include "profiles.h"
 
 // Used by internal settings
+
+
+const QString & gitRevision()
+{
+    return GIT_REVISION;
+}
+const QString & gitBranch()
+{
+    return GIT_BRANCH;
+}
 
 const QString getDeveloperName()
 {
@@ -40,6 +61,89 @@ const QString getDefaultAppRoot()
 {
     QString approot = STR_AppRoot;
     return approot;
+}
+
+QString getOpenGLVersionString()
+{
+    static QString glversion;
+
+    if (glversion.isEmpty()) {
+        QGLWidget w;
+        w.makeCurrent();
+
+#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+#else
+        QOpenGLFunctions f;
+        f.initializeOpenGLFunctions();
+        glversion = QString(QLatin1String(reinterpret_cast<const char*>(f.glGetString(GL_VERSION))));
+#endif
+        qDebug() << "OpenGL Version:" << glversion;
+    }
+    return glversion;
+}
+
+float getOpenGLVersion()
+{
+    QString glversion = getOpenGLVersionString();
+    glversion = glversion.section(" ",0,0);
+    bool ok;
+    float v = glversion.toFloat(&ok);
+
+    if (!ok) {
+        QString tmp = glversion.section(".",0,1);
+        v = tmp.toFloat(&ok);
+        if (!ok) {
+            // just look at major, we are only interested in whether we have OpenGL 2.0 anyway
+            tmp = glversion.section(".",0,0);
+            v = tmp.toFloat(&ok);
+        }
+    }
+    return v;
+}
+
+QString getGraphicsEngine()
+{
+    QString gfxEngine = QString();
+#ifdef BROKEN_OPENGL_BUILD
+    gfxEngine = CSTR_GFX_BrokenGL;
+#else
+    QString glversion = getOpenGLVersionString();
+    if (glversion.contains(CSTR_GFX_ANGLE)) {
+        gfxEngine = CSTR_GFX_ANGLE;
+    } else {
+        gfxEngine = CSTR_GFX_OpenGL;
+    }
+#endif
+    return gfxEngine;
+}
+QString getBranchVersion()
+{
+    QString version = STR_TR_AppVersion;
+    version += " [";
+    if (GIT_BRANCH != "master") {
+        version += GIT_BRANCH+"-";
+    }
+    version += GIT_REVISION +" ";
+    version += getGraphicsEngine()+"]";
+
+    return version;
+}
+
+QString appResourcePath()
+{
+#ifdef Q_OS_MAC
+    QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources");
+#else
+    // not sure where it goes on Linux yet
+    QString path = QCoreApplication::applicationDirPath();
+#endif
+    return path;
+}
+
+Qt::DayOfWeek firstDayOfWeekFromLocale()
+{
+    return QLocale::system().firstDayOfWeek();
 }
 
 int idealThreads() { return QThread::idealThreadCount(); }

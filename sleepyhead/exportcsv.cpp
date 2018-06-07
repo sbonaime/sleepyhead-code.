@@ -1,4 +1,4 @@
-/* ExportCSV module implementation
+﻿/* ExportCSV module implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -13,7 +13,6 @@
 #include <QTextCharFormat>
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
-#include "common_gui.h"
 #include "exportcsv.h"
 #include "ui_exportcsv.h"
 #include "mainwindow.h"

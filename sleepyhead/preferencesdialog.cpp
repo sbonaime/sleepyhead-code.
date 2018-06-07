@@ -21,7 +21,6 @@
 #include <cmath>
 
 #include "preferencesdialog.h"
-#include "common_gui.h"
 
 #include <Graphs/gGraphView.h>
 #include <mainwindow.h>

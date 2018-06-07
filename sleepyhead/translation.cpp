@@ -20,7 +20,7 @@
 #include <QTranslator>
 #include <QListWidget>
 
-#include "common_gui.h"
+#include "SleepLib/common.h"
 
 //#ifndef nullptr
 //#define nullptr NULL

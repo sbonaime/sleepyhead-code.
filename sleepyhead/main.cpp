@@ -19,8 +19,6 @@
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 #include "translation.h"
-#include "common_gui.h"
-//#include "SleepLib/machine_loader.h"
 
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"

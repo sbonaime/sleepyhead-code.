@@ -29,7 +29,6 @@
 #include "ui_UpdaterWindow.h"
 #include "version.h"
 #include "mainwindow.h"
-#include "common_gui.h"
 
 extern MainWindow *mainwin;
 

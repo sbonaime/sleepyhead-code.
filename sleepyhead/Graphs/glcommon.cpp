@@ -1,4 +1,4 @@
-/* glcommon GL code & font stuff
+﻿/* glcommon GL code & font stuff
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *

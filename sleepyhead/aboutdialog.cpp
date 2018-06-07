@@ -14,8 +14,6 @@
 #include "SleepLib/appsettings.h"
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
-#include "common_gui.h"
-#include "git_info.h"
 
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -28,11 +26,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->relnotesText->setHtml(getRelnotes());
     ui->versionLabel->setText(VersionString);
 
-    QString gitrev = GIT_REVISION;
+    QString gitrev = gitRevision();
 
     if (!gitrev.isEmpty()) {
         gitrev = tr("Revision: %1").arg(QString("<a href='https://gitlab.com/sleepyhead/sleepyhead-code/commit/%1'>%1</a>").arg(gitrev))+"<br/>"
-                +tr("Branch: %1").arg(QString("<a href='https://gitlab.com/sleepyhead/sleepyhead-code/commits/%1'>%1</a>").arg(GIT_BRANCH))+"<br/>"
+                +tr("Branch: %1").arg(QString("<a href='https://gitlab.com/sleepyhead/sleepyhead-code/commits/%1'>%1</a>").arg(gitBranch()))+"<br/>"
                 +tr("Build Date: %1").arg(__DATE__)+"<br/>"
                 +tr("Graphics Engine: %1").arg(getGraphicsEngine());
     }
