@@ -47,26 +47,22 @@ unix:!macx:!haiku {
 
 TEMPLATE = app
 
-# GIT_VERSION = $$system(git describe --tags --long --abbrev=6 --dirty="*")
 
+gitinfotarget.target = git_info.h
+gitinfotarget.depends = FORCE
 
-exists(../.git):{
-    if (*-msvc*):!equals(TEMPLATE_PREFIX, "vc") {
-        GIT_COMMAND = git -C \"$$_PRO_FILE_PWD_\"
-        GIT_BRANCH=$$system($$GIT_COMMAND rev-parse --abbrev-ref HEAD)
-        GIT_REVISION=$$system($$GIT_COMMAND rev-parse --short HEAD)
-        DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-        DEFINES += GIT_REVISION=\\\"$$GIT_REVISION\\\"
-        message ("Building $$GIT_BRANCH branch $$GIT_REVISION")
-    } else {
-        DEFINES += GIT_BRANCH="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --abbrev-ref HEAD)\\\""
-        DEFINES += GIT_REVISION="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
-    }
-
+win32 {
+    system("$$_PRO_FILE_PWD_/update_gitinfo.bat");
+    gitinfotarget.commands = $$_PRO_FILE_PWD_/update_gitinfo.bat
 } else {
-    DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
-    DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
+    system("$$_PRO_FILE_PWD_/update_gitinfo.sh");
+    gitinfotarget.commands = $$_PRO_FILE_PWD_/update_gitinfo.sh
 }
+
+PRE_TARGETDEPS += git_info.h
+QMAKE_EXTRA_TARGETS += gitinfotarget
+
+
 
 #Comment out for official builds
 DEFINES += BETA_BUILD

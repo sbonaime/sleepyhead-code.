@@ -9,12 +9,14 @@
 #include <QDateTime>
 #include <QDir>
 #include <QThread>
+
 #ifdef _MSC_VER
 #include <QtZlib/zlib.h>
 #else
 #include <zlib.h>
 #endif
 
+#include "git_info.h"
 #include "version.h"
 #include "profiles.h"
 
@@ -28,11 +30,9 @@ const QString getDeveloperName()
 const QString getAppName()
 {
     QString name = STR_AppName;
-#ifdef GIT_BRANCH
-    if ((QString(GIT_BRANCH) != "master") || (!((ReleaseStatus.compare("r", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("rc", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("beta", Qt::CaseInsensitive)==0)))) {
-        name += "-"+QString(GIT_BRANCH);
+    if ((GIT_BRANCH != "master") || (!((ReleaseStatus.compare("r", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("rc", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("beta", Qt::CaseInsensitive)==0)))) {
+        name += "-"+GIT_BRANCH;
     }
-#endif
     return name;
 }
 

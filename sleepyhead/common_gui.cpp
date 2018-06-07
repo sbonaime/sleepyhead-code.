@@ -14,6 +14,7 @@
 
 #include "SleepLib/common.h"
 #include "common_gui.h"
+#include "git_info.h"
 
 #ifndef BUILD_WITH_MSVC
 # include <unistd.h>
@@ -77,12 +78,10 @@ QString getBranchVersion()
 {
     QString version = STR_TR_AppVersion;
     version += " [";
-#ifdef GIT_REVISION
-    if (QString(GIT_BRANCH) != "master") {
-        version += QString(GIT_BRANCH)+"-";
+    if (GIT_BRANCH != "master") {
+        version += GIT_BRANCH+"-";
     }
-    version += QString(GIT_REVISION) +" ";
-#endif
+    version += GIT_REVISION +" ";
     version += getGraphicsEngine()+"]";
 
     return version;
