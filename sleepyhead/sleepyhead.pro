@@ -51,17 +51,17 @@ TEMPLATE = app
 
 
 exists(../.git):{
-    GIT_COMMAND = git -C \"$$_PRO_FILE_PWD_\"
-    GIT_BRANCH=$$system($$GIT_COMMAND rev-parse --abbrev-ref HEAD)
-    GIT_REVISION=$$system($$GIT_COMMAND rev-parse --short HEAD)
-    DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-    DEFINES += GIT_REVISION=\\\"$$GIT_REVISION\\\"
-
-    message ("Building $$GIT_BRANCH branch $$GIT_REVISION")
-
-#    DEFINES += GIT_BRANC=\\\"$(shell git -C \"$$_PRO_FILE_PWD_\" rev-parse --abbrev-ref HEAD)\\\"
-#    DEFINES += GIT_REVISION="$(shell git -C "$$_PRO_FILE_PWD_\" rev-parse --short HEAD)"
-#    message($$GIT_BRANC)
+    if (*-msvc*):!equals(TEMPLATE_PREFIX, "vc") {
+        GIT_COMMAND = git -C \"$$_PRO_FILE_PWD_\"
+        GIT_BRANCH=$$system($$GIT_COMMAND rev-parse --abbrev-ref HEAD)
+        GIT_REVISION=$$system($$GIT_COMMAND rev-parse --short HEAD)
+        DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
+        DEFINES += GIT_REVISION=\\\"$$GIT_REVISION\\\"
+        message ("Building $$GIT_BRANCH branch $$GIT_REVISION")
+    } else {
+        DEFINES += GIT_BRANCH="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --abbrev-ref HEAD)\\\""
+        DEFINES += GIT_REVISION="\\\"$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
+    }
 
 } else {
     DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
