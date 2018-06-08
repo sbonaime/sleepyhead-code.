@@ -99,7 +99,11 @@ void UpdaterWindow::checkForUpdates()
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
         QFileInfo fi(filename);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         QDateTime created = fi.birthTime();
+#else
+        QDateTime created = fi.created();
+#endif
         int age = created.secsTo(QDateTime::currentDateTime());
 
         if (age < 900) {
