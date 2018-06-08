@@ -168,7 +168,14 @@ void Help::on_searchBar_returnPressed()
     QHelpSearchEngine * search = helpEngine->searchEngine();
 
     QString str=ui->searchBar->text();
+
+ #if QT_VERSION < QT_VERSION_CHECK(5,10,0)
+    QList<QHelpSearchQuery> query;
+    query.push_back(QHelpSearchQuery(QHelpSearchQuery::FUZZY, QStringList(str)));
+    search->search(query);
+#else
     search->search(str);
+#endif
 }
 
 void Help::indexingFinished()
