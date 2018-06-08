@@ -4,12 +4,11 @@
 #
 #-------------------------------------------------
 
-QT += core gui network xml printsupport serialport widgets help
-
-
 lessThan(QT_MAJOR_VERSION,5) {
     error("Sorry, need Qt 5 to build SleepyHead");
 }
+
+QT += core gui network xml printsupport serialport widgets help
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

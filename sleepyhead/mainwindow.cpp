@@ -1639,7 +1639,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
         m->SaveSummaryCache();
     }
 
-    daily->LoadDate(getDaily()->getDate());
+    daily->LoadDate(daily->getDate());
     overview->ReloadGraphs();
 }
 void MainWindow::reloadProfile()
@@ -1708,8 +1708,9 @@ void MainWindow::RestartApplication(bool force_login, QString cmdline)
 
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
-    QDate date = getDaily()->getDate();
-    getDaily()->Unload(date);
+    if (!daily) return;
+    QDate date = daily->getDate();
+    daily->Unload(date);
     Day *day = p_profile->GetDay(date, MT_CPAP);
     Machine *cpap = nullptr;
     if (day) cpap = day->machine(MT_CPAP);
@@ -1785,8 +1786,8 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     day = p_profile->GetDay(date, MT_CPAP);
     Q_UNUSED(day);
 
-    getDaily()->clearLastDay();
-    getDaily()->LoadDate(date);
+    daily->clearLastDay();
+    daily->LoadDate(date);
 }
 
 void MainWindow::on_actionRebuildCPAP(QAction *action)
@@ -2350,14 +2351,14 @@ void MainWindow::on_reportModeRange_clicked()
 
 void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
 {
-    if (!getDaily())
+    if (!daily)
         return;
-    QDate date = getDaily()->getDate();
+    QDate date = daily->getDate();
     Day * day = p_profile->GetDay(date, MT_OXIMETER);
     if (day) {
         if (QMessageBox::question(this, STR_MessageBox_Warning,
             tr("Are you sure you want to delete oximetry data for %1").
-                arg(getDaily()->getDate().toString(Qt::DefaultLocaleLongDate))+"<br/><br/>"+
+                arg(daily->getDate().toString(Qt::DefaultLocaleLongDate))+"<br/><br/>"+
             tr("<b>Please be aware you can not undo this operation!</b>"),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No) {
             return;
@@ -2393,21 +2394,21 @@ void MainWindow::on_importButton_clicked()
 void MainWindow::on_actionToggle_Line_Cursor_toggled(bool b)
 {
     AppSetting->setLineCursorMode(b);
-    if (ui->tabWidget->currentWidget() == getDaily()) {
-        getDaily()->graphView()->timedRedraw(0);
-    } else if (ui->tabWidget->currentWidget() == getOverview()) {
-        getOverview()->graphView()->timedRedraw(0);
+    if (ui->tabWidget->currentWidget() == daily) {
+        daily->graphView()->timedRedraw(0);
+    } else if (ui->tabWidget->currentWidget() == overview) {
+        overview->graphView()->timedRedraw(0);
     }
 }
 
 void MainWindow::on_actionLeft_Daily_Sidebar_toggled(bool visible)
 {
-    getDaily()->setSidebarVisible(visible);
+    if (daily) daily->setSidebarVisible(visible);
 }
 
 void MainWindow::on_actionDaily_Calendar_toggled(bool visible)
 {
-    getDaily()->setCalendarVisible(visible);
+    if (daily) daily->setCalendarVisible(visible);
 }
 
 #include "SleepLib/journal.h"
