@@ -339,7 +339,6 @@ DISTFILES += \
     help/default.css \
     help/help_en.qhp \
     help/help_en/daily.html \
-    help/help_en/doc.html \
     help/help_en/glossary.html \
     help/help_en/import.html \
     help/help_en/index.html \

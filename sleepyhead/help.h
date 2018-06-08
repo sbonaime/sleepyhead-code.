@@ -14,6 +14,7 @@
 #include <QTextBrowser>
 #include <QTabWidget>
 #include <QWidget>
+#include "mytextbrowser.h"
 
 namespace Ui {
 class Help;
@@ -59,6 +60,7 @@ private:
     QHelpEngine *helpEngine;
     QTabWidget * tabWidget;
     HelpBrowser * helpBrowser;
+    MyTextBrowser * resultWidget;
     bool searchReady;
 };
 

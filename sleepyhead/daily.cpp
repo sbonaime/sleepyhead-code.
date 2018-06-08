@@ -1276,15 +1276,13 @@ QString Daily::getSleepTime(Day * day)
 
 QVariant MyTextBrowser::loadResource(int type, const QUrl &url)
 {
-    if (type == QTextDocument::ImageResource
-         && url.scheme().compare(QLatin1String("data"), Qt::CaseInsensitive) == 0)
-     {
-       static QRegularExpression re("^image/[^;]+;base64,.+={0,2}$");
-       QRegularExpressionMatch match = re.match(url.path());
-       if (match.hasMatch())
-         return QVariant();
-     }
-     return QTextBrowser::loadResource(type, url);
+    if (type == QTextDocument::ImageResource && url.scheme().compare(QLatin1String("data"), Qt::CaseInsensitive) == 0) {
+        static QRegularExpression re("^image/[^;]+;base64,.+={0,2}$");
+        QRegularExpressionMatch match = re.match(url.path());
+        if (match.hasMatch())
+            return QVariant();
+    }
+    return QTextBrowser::loadResource(type, url);
 }
 
 

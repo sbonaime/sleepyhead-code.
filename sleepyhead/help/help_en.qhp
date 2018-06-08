@@ -73,7 +73,17 @@
         </keywords>
         <files>
             <file>default.css</file>
-            <file>help_en/*.html</file>
+            <file>help_en/daily.html</file>
+            <file>help_en/faq.html</file>
+            <file>help_en/gettingstarted.html</file>
+            <file>help_en/glossary.html</file>
+            <file>help_en/import.html</file>
+            <file>help_en/index.html</file>
+            <file>help_en/overview.html</file>
+            <file>help_en/oximetry.html</file>
+            <file>help_en/statistics.html</file>
+            <file>help_en/supported.html</file>
+            <file>help_en/tipsntricks.html</file>
             <file>images/*.png</file>
         </files>
     </filterSection>

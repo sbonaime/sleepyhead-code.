@@ -41,7 +41,13 @@ Help::Help(QWidget *parent) :
 
     tabWidget->addTab(helpEngine->contentWidget(), tr("Contents"));
     tabWidget->addTab(helpEngine->indexWidget(), tr("Index"));
-    tabWidget->addTab(helpEngine->searchEngine()->resultWidget(), tr("Search"));
+
+    resultWidget = new MyTextBrowser(this);
+    resultWidget->setOpenLinks(false);
+    tabWidget->addTab(resultWidget, tr("Search"));
+    resultWidget->setStyleSheet("a:link, a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
+                                "a:hover { background-color: inherit; color: #ff8888; text-decoration:underline; font-weight: normal; }");
+
 
 
     helpBrowser = new HelpBrowser(helpEngine);
@@ -60,13 +66,15 @@ Help::Help(QWidget *parent) :
 
     QTimer::singleShot(50,this, SLOT(startup()));
 
-    connect(helpEngine->contentWidget(), SIGNAL(linkActivated(QUrl)), helpBrowser, SLOT(setSource(QUrl)));
-    connect(helpEngine->indexWidget(), SIGNAL(linkActivated(QUrl, QString)), helpBrowser, SLOT(setSource(QUrl)));
     connect(helpBrowser, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailable(bool)));
     connect(helpBrowser, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailable(bool)));
+    connect(helpEngine->contentWidget(), SIGNAL(linkActivated(QUrl)), helpBrowser, SLOT(setSource(QUrl)));
+    connect(helpEngine->indexWidget(), SIGNAL(linkActivated(QUrl, QString)), helpBrowser, SLOT(setSource(QUrl)));
+
     connect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(on_searchComplete(int)));
     connect(helpEngine->searchEngine(), SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
-    connect(helpEngine->searchEngine()->resultWidget(), SIGNAL(requestShowLink(QUrl)), this, SLOT(requestShowLink(QUrl)));
+
+    connect(resultWidget, SIGNAL(anchorClicked(QUrl)), this, SLOT(requestShowLink(QUrl)));
 
     ui->forwardButton->setEnabled(false);
     ui->backButton->setEnabled(false);
@@ -80,7 +88,7 @@ Help::Help(QWidget *parent) :
 
 Help::~Help()
 {
-    disconnect(helpEngine->searchEngine()->resultWidget(), SIGNAL(requestShowLink(QUrl)), this, SLOT(requestShowLink(QUrl)));
+    disconnect(resultWidget, SIGNAL(anchorClicked(QUrl)), this, SLOT(requestShowLink(QUrl)));
     disconnect(helpEngine->searchEngine(), SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
     disconnect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(on_searchComplete(int)));
 
@@ -111,8 +119,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl &name)
     QByteArray bytes = helpEngine->fileData(urlstr);
     if (bytes.size()>0) return QVariant(bytes);
 
-    if (type == QTextDocument::ImageResource
-         && name.scheme().compare(QLatin1String("data"), Qt::CaseInsensitive) == 0) {
+    if (type == QTextDocument::ImageResource && name.scheme().compare(QLatin1String(""), Qt::CaseInsensitive) == 0) {
        static QRegularExpression re("^image/[^;]+;base64,.+={0,2}$");
        QRegularExpressionMatch match = re.match(name.path());
        if (match.hasMatch())
@@ -136,7 +143,7 @@ void Help::on_homeButton_clicked()
     QByteArray index = helpEngine->fileData(QUrl("qthelp://jedimark.net.sleepyhead.1.1/doc/help_en/index.html"));
     helpBrowser->setHtml(index);
 }
-void Help::on_searchComplete(int)
+void Help::on_searchComplete(int count)
 {
     if (!searchReady) {
         QString html = "<h1>Please wait a bit.. Indexing still in progress</h1>";
@@ -144,23 +151,39 @@ void Help::on_searchComplete(int)
         return;
     }
 
-    tabWidget->setCurrentWidget(helpEngine->searchEngine()->resultWidget());
-    return;
-    /*
     QHelpSearchEngine * search = helpEngine->searchEngine();
     QVector<QHelpSearchResult> results = search->searchResults(0, count);
 
-    QString html = "<h1>Search results: ";
+//    ui->searchBar->blockSignals(true);
+    ui->searchBar->setText(QString());
+//    ui->searchBar->blockSignals(false);
 
-    if (results.size() == 0) html += "none";
-    html+="</h1><br/>";
+    QString html = "<html><head><style type=\"text/css\">"
+                   "a:link, a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
+                   "a:hover { background-color: inherit; color: #ff8888; text-decoration: underline; font-weight: bold; }"
+                   "</style></head><body>";
+
+    QString queryString;
+#if QT_VERSION < QT_VERSION_CHECK(5,9,0)
+    QList<QHelpSearchQuery> results = search->query();
+    if (results.size()>0) {
+        queryString=results[0].wordList.at(0);
+    }
+#else
+    queryString = search->searchInput();
+#endif
+    QString a = (results.size() == 0) ? tr("No") : QString("%1").arg(results.size());
+    html+="<font size=+1><b>"+ tr("%1 result(s) for \"%2\"").arg(a).arg(queryString)+"</b></font>";
+    if (results.size()>0) html += " [<font size=-1><a href='clear'>"+tr("clear")+"</a></font>]";
 
     for (QHelpSearchResult & result : results) {
-        html += QString("<p><a href=\"%1\"><b>Title: %2</b></a><br/>%3<br/>").arg(result.url().toString()).arg(result.title()).arg(result.snippet());
+        QString title = result.url().toString().section("/",-1);
+        html += QString("<p><a href=\"%1\"><b>%2:</b> %3</a></p>").arg(result.url().toString()).arg(title).arg(result.snippet());
     }
 
-    helpBrowser->setText(html);
-    ui->searchBar->setText(QString()); */
+    html += "</body></html>";
+    resultWidget->setText(html);
+    tabWidget->setCurrentWidget(resultWidget);
 }
 
 void Help::on_searchBar_returnPressed()
@@ -169,7 +192,7 @@ void Help::on_searchBar_returnPressed()
 
     QString str=ui->searchBar->text();
 
- #if QT_VERSION < QT_VERSION_CHECK(5,10,0)
+ #if QT_VERSION < QT_VERSION_CHECK(5,9,0)
     QList<QHelpSearchQuery> query;
     query.push_back(QHelpSearchQuery(QHelpSearchQuery::FUZZY, QStringList(str)));
     search->search(query);
@@ -194,5 +217,9 @@ void Help::backwardAvailable(bool b)
 
 void Help::requestShowLink(const QUrl & link)
 {
-    helpBrowser->setSource(link);
+    if (link.toString() == "clear") {
+        resultWidget->clear();
+    } else {
+        helpBrowser->setSource(link);
+    }
 }
