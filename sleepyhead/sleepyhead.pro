@@ -68,7 +68,7 @@ QMAKE_EXTRA_TARGETS += gitinfotarget
 #Comment out for official builds
 DEFINES += BETA_BUILD
 
-
+#Build the help documentation
 system(qcollectiongenerator help/help.qhcp -o help/help.qhc)
 
 unix:!macx:!haiku {
@@ -105,6 +105,7 @@ win32 {
     }
 }
 
+#copy the Translation and Help files to where the test binary wants them
 macx {
     TransFiles.files = $$files(../Translations/*.qm)
     TransFiles.path = Contents/Resources/Translations
@@ -359,4 +360,5 @@ DISTFILES += \
     help/help_nl/supported.html \
     help/help_nl/tipsntricks.html \
     help/help_nl/help_nl.qhp \
-    help/help_en/help_en.qhp
+    help/help_en/help_en.qhp \
+    help/help_en/reportingbugs.html

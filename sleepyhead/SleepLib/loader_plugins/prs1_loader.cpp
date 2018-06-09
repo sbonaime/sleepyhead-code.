@@ -2616,16 +2616,30 @@ bool PRS1Import::ParseSummaryF5V2()
 
 bool PRS1Import::ParseSummaryF5V3()
 {
-    const unsigned char * data = (unsigned char *)summary->m_data.constData();
+    unsigned char * pressureBlock = (unsigned char *)mainblock[0x0a].data();
 
-    if (data[0x00] > 0) {
-        return false;
-    }
+    EventDataType epapHi = pressureBlock[0];
+    EventDataType epapRange = pressureBlock[2];
+    EventDataType epapLo = epapHi - epapRange;
 
-    session->set_first(qint64(summary->timestamp) * 1000L);
+    EventDataType minps = pressureBlock[3] ;
+    EventDataType maxps = pressureBlock[4]+epapLo;
 
-    //CPAPMode cpapmode = MODE_UNKNOWN;
-    summary_duration = data[0x48] | data[0x49] << 8;
+
+
+    CPAPMode cpapmode = MODE_ASV_VARIABLE_EPAP;
+
+    session->settings[CPAP_Mode] = (int)cpapmode;
+
+    session->settings[CPAP_EPAPLo] = epapLo/10.0f;
+    session->settings[CPAP_EPAPHi] = epapHi/10.0f;
+    session->settings[CPAP_IPAPLo] = (epapLo + minps)/10.0f;
+    session->settings[CPAP_IPAPHi] = qMin(25.0f, (epapHi+maxps)/10.0f);
+    session->settings[CPAP_PSMin] = minps/10.0f;
+    session->settings[CPAP_PSMax] = maxps/10.0f;
+
+    unsigned char * durBlock = (unsigned char *)hbdata[4].data();
+    summary_duration = durBlock[0] | durBlock[1] << 8;
 
     return true;
 }
@@ -2796,7 +2810,7 @@ bool PRS1Import::ParseSummary()
     if (summary->m_data.constData()[0] != 0) {
         qDebug() << "Non zero hblock[0] indicator";
         return false;
-    }
+    }    
 
     session->set_first(qint64(summary->timestamp) * 1000L);
 
@@ -2826,10 +2840,12 @@ bool PRS1Import::ParseSummary()
                 break;
             }
             bsize = it.value();
+
             if (val != 1) {
+                // store the data block for later reference
                 hbdata[val] = QByteArray((const char *)(&data[pos]), bsize);
             } else {
-                // Parse nested data structure which contains pressure block
+                // Parse the nested data structure which contains settings
                 int p2 = 0;
                 do {
                     val = data[pos + p2++];
