@@ -418,9 +418,9 @@ border: 2px solid #56789a; border-radius: 10px;
           <item>
            <widget class="QTextBrowser" name="cpapInfo">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+              <verstretch>1</verstretch>
              </sizepolicy>
             </property>
             <property name="maximumSize">
@@ -496,9 +496,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QTextBrowser" name="oxiInfo">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+              <verstretch>1</verstretch>
              </sizepolicy>
             </property>
             <property name="maximumSize">

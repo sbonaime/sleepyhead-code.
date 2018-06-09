@@ -1326,12 +1326,15 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
         SR = summaryList.begin();
 
-        for (int r=0; r<numLrecs; ++r) {
+        unsigned int lastts1 = 0;
+
+        if (SR != summaryList.end()) for (int r=0; r<numLrecs; ++r) {
             ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // session start time
-
-            if (SR == summaryList.end())
+            if (ts1 < lastts1) {
+                qDebug() << "Corruption/Out of sequence data found in L.bin, aborting";
                 break;
-
+            }
+            lastts1=ts1;
             DV6_S_Record *R = &SR.value();
             while (ts1 > R->stop_time) {
                 if (leak && sess) {
