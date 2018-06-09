@@ -3167,9 +3167,9 @@ void PRS1Import::run()
             session->UpdateSummaries();
 
             // Save is not threadsafe
-          //  loader->saveMutex.lock();
+            loader->saveMutex.lock();
             session->Store(mach->getDataPath());
-           // loader->saveMutex.unlock();
+            loader->saveMutex.unlock();
 
             // Unload them from memory
             session->TrashEvents();
