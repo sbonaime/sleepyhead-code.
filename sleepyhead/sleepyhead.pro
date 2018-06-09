@@ -125,7 +125,6 @@ macx {
     }
     TRANS_FILES += $$PWD/../Translations/*.qm
     HELP_FILES += $$PWD/help/*.qch
-    HELP_FILES += $$PWD/help/help.qhc
 
     win32 {
         TRANS_FILES_WIN = $${TRANS_FILES}
@@ -335,9 +334,7 @@ OTHER_FILES += \
 
 DISTFILES += \
     ../README \
-    help/compile.sh \
     help/default.css \
-    help/help_en.qhp \
     help/help_en/daily.html \
     help/help_en/glossary.html \
     help/help_en/import.html \
@@ -349,4 +346,17 @@ DISTFILES += \
     help/help_en/gettingstarted.html \
     help/help_en/tipsntricks.html \
     help/help_en/faq.html \
-    help/help.qhcp
+    help/help.qhcp \
+    help/help_nl/daily.html \
+    help/help_nl/faq.html \
+    help/help_nl/gettingstarted.html \
+    help/help_nl/glossary.html \
+    help/help_nl/import.html \
+    help/help_nl/index.html \
+    help/help_nl/overview.html \
+    help/help_nl/oximetry.html \
+    help/help_nl/statistics.html \
+    help/help_nl/supported.html \
+    help/help_nl/tipsntricks.html \
+    help/help_nl/help_nl.qhp \
+    help/help_en/help_en.qhp

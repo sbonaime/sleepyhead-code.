@@ -139,8 +139,6 @@ void NewProfile::on_nextButton_clicked()
 {
     const QString xmlext = ".xml";
 
-    QSettings settings(getDeveloperName(), getAppName());
-
     int index = ui->stackedWidget->currentIndex();
 
     switch (index) {

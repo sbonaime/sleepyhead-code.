@@ -3,12 +3,17 @@
     <docFiles>
         <generate>
             <file>
-                <input>help_en.qhp</input>
-                <output>help_en.qch</output>
+                <input>help_en/help_en.qhp</input>
+                <output>help.en_US.qch</output>
+            </file>
+            <file>
+                <input>help_nl/help_nl.qhp</input>
+                <output>help.nl.qch</output>
             </file>
         </generate>
         <register>
-            <file>help_en.qch</file>
+            <file>help.nl.qch</file>
+            <file>help.en_US.qch</file>
         </register>
     </docFiles>
 </QHelpCollectionProject>

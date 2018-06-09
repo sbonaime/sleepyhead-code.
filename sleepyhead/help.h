@@ -11,7 +11,6 @@
 
 #include <QPrinter>
 #include <QHelpEngine>
-#include <QTextBrowser>
 #include <QTabWidget>
 #include <QWidget>
 #include "mytextbrowser.h"
@@ -25,6 +24,7 @@ class HelpBrowser : public QTextBrowser
 public:
     HelpBrowser(QHelpEngine* helpEngine, QWidget* parent = 0);
     virtual QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
+    QString helpNamespace;
 private:
     QHelpEngine * helpEngine;
 };
@@ -38,6 +38,7 @@ public:
     ~Help();
 
     void print(QPrinter * printer) { helpBrowser->print(printer); }
+
 private slots:
     void on_backButton_clicked();
 
@@ -55,6 +56,8 @@ private slots:
     void forwardAvailable(bool b);
     void backwardAvailable(bool b);
     void requestShowLink(const QUrl & link);
+    void on_languageWarningCheckbox_clicked(bool checked);
+
 private:
     Ui::Help *ui;
     QHelpEngine *helpEngine;
@@ -62,6 +65,9 @@ private:
     HelpBrowser * helpBrowser;
     MyTextBrowser * resultWidget;
     bool searchReady;
+    QString helpNamespace;
+    bool helpLoaded;
+    QString language;
 };
 
 #endif // HELP_H

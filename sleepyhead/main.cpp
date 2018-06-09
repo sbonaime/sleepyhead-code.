@@ -54,7 +54,7 @@ int compareVersion(QString version);
 
 /*void MigrateSettings()
 {
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
     if (settings.contains("Version")) { return; } // done, we are new
 
     QSettings oldcopy(getDeveloperName(), getAppName()+"-Testing");
@@ -88,9 +88,11 @@ int main(int argc, char *argv[])
     QString load_profile = "";
 
     QApplication a(argc, argv);
-    QStringList args = QCoreApplication::arguments();
+    a.setApplicationName(getAppName());
+    a.setOrganizationName(getDeveloperName());
+    QStringList args = a.arguments();
 
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
 
     QString lastlanguage = settings.value(LangSetting, "").toString();
     if (lastlanguage.isEmpty())
@@ -136,7 +138,7 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
-    initTranslations(settings);
+    initTranslations();
 
     initializeStrings(); // Important, call this AFTER translator is installed.
     a.setApplicationName(STR_TR_SleepyHead);

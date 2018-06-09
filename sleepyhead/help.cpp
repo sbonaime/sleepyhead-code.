@@ -10,12 +10,13 @@
 #include <QtHelp>
 #include <QDebug>
 #include <QTimer>
+#include <QFile>
+#include <QDir>
 
 #include "SleepLib/common.h"
+#include "translation.h"
 #include "help.h"
 #include "ui_help.h"
-
-const QString helpNamespace = "jedimark.net.SleepyHead.1.1";
 
 Help::Help(QWidget *parent) :
     QWidget(parent),
@@ -23,18 +24,60 @@ Help::Help(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    helpEngine = new QHelpEngine(appResourcePath() + "/Help/help.qhc", this);
-    helpEngine->setupData();
+    QString helpRoot = appResourcePath() + "/Help/";
+    QString helpIndex = helpRoot + "help.qhc";
 
-    /*if (!helpEngine->registeredDocumentations().contains(helpFile)) {
-        if (helpEngine->registerDocumentation(helpFile)) {
-            qDebug() << "Registered" << helpFile;
-        } else {
-            qDebug() << "Help Error:" << helpEngine->error();
+    QDir dir(helpRoot);
+    QStringList nameFilters = QStringList("*.qch");
+    QStringList helpfiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable);
+
+    language = currentLanguage();
+    QString helpFile;
+
+    for (const QString & file : helpfiles) {
+        if (file.endsWith(language+".qch")) {
+            helpFile = helpRoot+file;
+            break;
         }
-    } */
+    }
+    if (helpFile.isEmpty() && (language != DefaultLanguage)) {
+        ui->languageWarningMessage->setText(tr("Help Files are not yet available for %1 and will display in %2.").arg(lookupLanguageName(language)).arg(lookupLanguageName(DefaultLanguage)));
+        language = DefaultLanguage;
+        for (const QString & file : helpfiles) {
+            if (file.endsWith(language+".qch")) {
+                helpFile = helpRoot+file;
+            }
+            break;
+        }
+    }
+    if (helpFile.isEmpty()) {
+        ui->languageWarningMessage->setText(tr("Help files could not be located... If you're building from source, try rerunning Qmake."));
+        // Still empty, install is dodgy
+        // Copy en_US out of resource??
+        // For now I just don't care, if the user screws up.. tough
+    }
 
-    QList<QUrl> list = helpEngine->files(helpNamespace, QStringList());
+    helpLoaded = false;
+    // Delete the crappy qhc so we can generate our own.
+    if (QFile::exists(helpIndex)) QFile::remove(helpIndex);
+
+    helpEngine = new QHelpEngine(helpRoot + "help.qhc");
+    helpNamespace = "jedimark.net.SleepyHeadGuide";
+
+    if (!helpFile.isEmpty()) {
+        if (!helpEngine->setupData()) {
+            ui->languageWarningMessage->setText(tr("HelpEngine did not set up correctly"));
+        } else if (helpEngine->registerDocumentation(helpFile)) {
+            qDebug() << "Registered" << helpFile;
+            helpLoaded = true;
+            ui->languageWarning->setVisible(false);
+        } else {
+            ui->languageWarningMessage->setText(tr("HelpEngine could not register documentation correctly."));
+            qDebug() << helpEngine->error();
+        }
+    }
+
+    helpBrowser = new HelpBrowser(helpEngine);
 
     tabWidget = new QTabWidget;
     tabWidget->setMaximumWidth(250);
@@ -45,45 +88,35 @@ Help::Help(QWidget *parent) :
     resultWidget = new MyTextBrowser(this);
     resultWidget->setOpenLinks(false);
     tabWidget->addTab(resultWidget, tr("Search"));
-    resultWidget->setStyleSheet("a:link, a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
-                                "a:hover { background-color: inherit; color: #ff8888; text-decoration:underline; font-weight: normal; }");
-
-
-
-    helpBrowser = new HelpBrowser(helpEngine);
-
-    if (list.size() == 0) {
-        QString msg = tr("<h1>Attention Source Builder</h1><br/><p>No help files detected.. QMake (or you) first need(s) to run <b>qcollectiongenerator</b></p><p>While we are at it, search is broken at the moment, titles are not showing up.</p>");
-        helpBrowser->setHtml(msg);
-    } else {
-        QByteArray index = helpEngine->fileData(QUrl("qthelp://jedimark.net.sleepyhead.1.1/doc/help_en/index.html"));
-        helpBrowser->setHtml(index);
-    }
 
     ui->splitter->insertWidget(0, tabWidget);
     ui->splitter->insertWidget(1, helpBrowser);
-
-
-    QTimer::singleShot(50,this, SLOT(startup()));
-
-    connect(helpBrowser, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailable(bool)));
-    connect(helpBrowser, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailable(bool)));
-    connect(helpEngine->contentWidget(), SIGNAL(linkActivated(QUrl)), helpBrowser, SLOT(setSource(QUrl)));
-    connect(helpEngine->indexWidget(), SIGNAL(linkActivated(QUrl, QString)), helpBrowser, SLOT(setSource(QUrl)));
-
-    connect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(on_searchComplete(int)));
-    connect(helpEngine->searchEngine(), SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
-
-    connect(resultWidget, SIGNAL(anchorClicked(QUrl)), this, SLOT(requestShowLink(QUrl)));
 
     ui->forwardButton->setEnabled(false);
     ui->backButton->setEnabled(false);
 
 
-    searchReady = false;
-    helpEngine->searchEngine()->reindexDocumentation();
-    helpEngine->setCurrentFilter("SleepyHead 1.1");
+    if (!helpLoaded) {
+        QString html = "<html><body><div align=\"center\" valign=\"center\"><img src=\"qrc://docs/sheep.png\"><br/><h2>No documentation available</h2></div></body></html>";
+        helpBrowser->setHtml(html);
+        return;
+    } else {
+        QTimer::singleShot(50,this, SLOT(startup()));
 
+        connect(helpBrowser, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailable(bool)));
+        connect(helpBrowser, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailable(bool)));
+        connect(helpEngine->contentWidget(), SIGNAL(linkActivated(QUrl)), helpBrowser, SLOT(setSource(QUrl)));
+        connect(helpEngine->indexWidget(), SIGNAL(linkActivated(QUrl, QString)), helpBrowser, SLOT(setSource(QUrl)));
+
+        connect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(on_searchComplete(int)));
+        connect(helpEngine->searchEngine(), SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
+
+        connect(resultWidget, SIGNAL(anchorClicked(QUrl)), this, SLOT(requestShowLink(QUrl)));
+
+        searchReady = false;
+        helpEngine->searchEngine()->reindexDocumentation();
+        helpBrowser->setSource(QUrl(QString("qthelp://%1/doc/index.html").arg(helpNamespace)));
+    }
 }
 
 Help::~Help()
@@ -113,11 +146,16 @@ HelpBrowser::HelpBrowser(QHelpEngine* helpEngine, QWidget* parent):
 
 QVariant HelpBrowser::loadResource(int type, const QUrl &name)
 {
-    QString path = name.path(QUrl::FullyEncoded).replace("/./","/");
-    if (!path.startsWith("/doc")) path="/doc"+path;
-    QString urlstr = "qthelp://"+helpNamespace+path;
-    QByteArray bytes = helpEngine->fileData(urlstr);
-    if (bytes.size()>0) return QVariant(bytes);
+    if (name.scheme() == "qthelp") {
+        qDebug() << "Loading" << name.toString();
+        return QVariant(helpEngine->fileData(name));
+    } else
+
+//    QString path = name.path(QUrl::FullyEncoded).replace("/./","/");
+//    if (!path.startsWith("/doc")) path="/doc"+path;
+//    QString urlstr = "qthelp://"+helpNamespace+path;
+//    QByteArray bytes = helpEngine->fileData(urlstr);
+//    if (bytes.size()>0) return QVariant(bytes);
 
     if (type == QTextDocument::ImageResource && name.scheme().compare(QLatin1String(""), Qt::CaseInsensitive) == 0) {
        static QRegularExpression re("^image/[^;]+;base64,.+={0,2}$");
@@ -140,7 +178,8 @@ void Help::on_forwardButton_clicked()
 
 void Help::on_homeButton_clicked()
 {
-    QByteArray index = helpEngine->fileData(QUrl("qthelp://jedimark.net.sleepyhead.1.1/doc/help_en/index.html"));
+    if (!helpLoaded) return;
+    QByteArray index = helpEngine->fileData(QUrl(QString("qthelp://%1/doc/index.html").arg(helpNamespace)));
     helpBrowser->setHtml(index);
 }
 void Help::on_searchComplete(int count)
@@ -188,6 +227,10 @@ void Help::on_searchComplete(int count)
 
 void Help::on_searchBar_returnPressed()
 {
+    if (!helpLoaded) {
+        ui->searchBar->clear();
+        return;
+    }
     QHelpSearchEngine * search = helpEngine->searchEngine();
 
     QString str=ui->searchBar->text();
@@ -222,4 +265,9 @@ void Help::requestShowLink(const QUrl & link)
     } else {
         helpBrowser->setSource(link);
     }
+}
+
+void Help::on_languageWarningCheckbox_clicked(bool checked)
+{
+    ui->languageWarning->setVisible(!checked);
 }

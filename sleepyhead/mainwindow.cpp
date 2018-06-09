@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     // Initialise sleepyHead app registry stuff
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
 
     // Load previous Window geometry (this is currently broken on Mac as of Qt5.2.1)
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
@@ -246,7 +246,7 @@ void MainWindow::closeEvent(QCloseEvent * event)
         Profiles::Done();
 
         // Save current window position
-        QSettings settings(getDeveloperName(), getAppName());
+        QSettings settings;
         settings.setValue("MainWindow/geometry", saveGeometry());
 
         // Trash anything allocated by the Graph objects
@@ -2452,7 +2452,7 @@ void MainWindow::on_mainsplitter_splitterMoved(int, int)
 #include "translation.h"
 void MainWindow::on_actionReport_a_Bug_triggered()
 {
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
     QString language = settings.value(LangSetting).toString();
 
     QDesktopServices::openUrl(QUrl(QString("https://sleepyhead.jedimark.net/report_bugs.php?lang=%1&version=%2&platform=%3").arg(language).arg(VersionString).arg(PlatformString)));

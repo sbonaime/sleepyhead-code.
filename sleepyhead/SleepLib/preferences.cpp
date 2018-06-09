@@ -59,7 +59,7 @@ const QString &getUserName()
 
 QString GetAppRoot()
 {
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
 
     QString HomeAppRoot = settings.value("Settings/AppRoot").toString();
 

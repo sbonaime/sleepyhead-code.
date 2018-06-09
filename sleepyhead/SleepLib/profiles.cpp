@@ -1950,7 +1950,7 @@ void Profile::saveChannels()
     out << (quint32)magic;
     out << (quint16)chandata_version;
 
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
     (*p_profile)[STR_PREF_Language] = settings.value(LangSetting, "").toString();
 
     quint16 size = schema::channel.channels.size();
@@ -2001,7 +2001,7 @@ void Profile::loadChannels()
     quint16 version;
     in >> version;
 
-    QSettings settings(getDeveloperName(), getAppName());
+    QSettings settings;
     QString language = Get(STR_PREF_Language);
     if (settings.value(LangSetting, "").toString() != language) {
         qDebug() << "Language change detected, resetting default channel names";
