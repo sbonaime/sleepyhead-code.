@@ -629,12 +629,6 @@ struct DV6_S_Record
                                  //42-48 unknown
     EventDataType pressureSetMin;   //49
     EventDataType pressureSetMax;   //50
-
-
-
-
-
-
 };
 
 int IntellipapLoader::OpenDV6(const QString & path)
@@ -793,7 +787,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
 
     const int DV6_L_RecLength = 45;
-    const int DV6_E_RecLength = 0x18;
+    const int DV6_E_RecLength = 25;
     const int DV6_S_RecLength = 55;
     unsigned int ts1,ts2;
 
@@ -805,7 +799,6 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
     f.setFileName(newpath+"/S.BIN");
     if (f.open(QIODevice::ReadOnly)) {
-        // Settings is just a binary packed 0 terminated string list
         dataBA = f.readAll();
         f.close();
 
@@ -1311,6 +1304,12 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
     EventList *leak = NULL;
     EventList *maxleak = NULL;
+    EventList * RR  = NULL;
+    EventList * Pressure  = NULL;
+    EventList * TV  = NULL;
+    EventList * MV = NULL;
+
+
     sess = NULL;
     const int DV6_L_HeaderSize = 55;
     // Need to parse L.bin minute table to get graphs
@@ -1326,34 +1325,24 @@ int IntellipapLoader::OpenDV6(const QString & path)
         int numLrecs = (dataBA.size()-DV6_L_HeaderSize) / DV6_L_RecLength;
 
         SR = summaryList.begin();
-        DV6_S_Record *R = &SR.value();
 
         for (int r=0; r<numLrecs; ++r) {
             ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // session start time
 
+            if (SR == summaryList.end())
+                break;
+
+            DV6_S_Record *R = &SR.value();
             while (ts1 > R->stop_time) {
                 if (leak && sess) {
                     // Close the open session and update the min and max
-
-                    EventDataType min = leak->Min();
-                    EventDataType max = leak->Max();
-                    sess->setMin(CPAP_Leak, min);
-                    sess->setMax(CPAP_Leak, max);
-
-                    sess->setPhysMax(CPAP_Leak, min);
-                    sess->setPhysMin(CPAP_Leak, max);
-
-                    min = maxleak->Min();
-                    max = maxleak->Max();
-                    sess->setMin(CPAP_MaxLeak, min);
-                    sess->setMax(CPAP_MaxLeak, max);
-
-                    sess->setPhysMax(CPAP_MaxLeak, min);
-                    sess->setPhysMin(CPAP_MaxLeak, max);
                     sess->set_last(maxleak->last());
 
-                    sess = NULL;
-                    leak = NULL;
+                    sess = nullptr;
+                    leak = nullptr;
+                    maxleak = nullptr;
+                    MV = TV = RR = nullptr;
+                    Pressure = nullptr;
                 }
                 SR++;
                 if (SR == summaryList.end()) break;
@@ -1365,42 +1354,39 @@ int IntellipapLoader::OpenDV6(const QString & path)
             if (ts1 >= R->start_time) {
                 if (!leak && R->sess) {
                     qDebug() << "Adding Leak data for session" << R->sess->session() << "starting at" << ts1;
-                    leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
-                    maxleak = R->sess->AddEventList(CPAP_MaxLeak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
+                    leak = R->sess->AddEventList(CPAP_Leak, EVL_Event); // , 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
+                    maxleak = R->sess->AddEventList(CPAP_MaxLeak, EVL_Event);// , 1.0, 0.0, 0.0, 0.0, double(60000) / double(1));
+                    RR = R->sess->AddEventList(CPAP_RespRate, EVL_Event);
+                    MV = R->sess->AddEventList(CPAP_MinuteVent, EVL_Event);
+                    TV = R->sess->AddEventList(CPAP_TidalVolume, EVL_Event);
+                    Pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Event);
                 }
+                if (leak) {
+                    sess = R->sess;
+
+                    qint64 ti = qint64(ts1) * 1000L;
+
+                    maxleak->AddEvent(ti, data[5]);
+                    leak->AddEvent(ti, data[6]);
+                    RR->AddEvent(ti, data[9]);
+                    Pressure->AddEvent(ti, data[11] / 10.0f);
+
+                    unsigned tv = data[7] | data[8] << 8;
+                    MV->AddEvent(ti, data[10] );
+                    TV->AddEvent(ti, tv);
+
+                    if (!sess->channelExists(CPAP_FlowRate)) {
+                        // No flow rate, so lets grab this data...
+                    }
+                }
+
             } else {
                 //SR
-            }
-            if (leak) {
-                sess = R->sess;
-
-                qint64 ti = qint64(ts1) * 1000;
-
-                maxleak->AddEvent(ti, data[5]);
-                leak->AddEvent(ti, data[6]);
-
-                if (!sess->channelExists(CPAP_FlowRate)) {
-                    // No flow rate, so lets grab this data...
-                }
             }
 
             data += DV6_L_RecLength;
         } // for
         if (sess && leak) {
-            EventDataType min = leak->Min();
-            EventDataType max = leak->Max();
-            sess->setMin(CPAP_Leak, min);
-            sess->setMax(CPAP_Leak, max);
-
-            sess->setPhysMax(CPAP_Leak, min);
-            sess->setPhysMin(CPAP_Leak, max);
-            min = maxleak->Min();
-            max = maxleak->Max();
-            sess->setMin(CPAP_MaxLeak, min);
-            sess->setMax(CPAP_MaxLeak, max);
-
-            sess->setPhysMax(CPAP_MaxLeak, min);
-            sess->setPhysMin(CPAP_MaxLeak, max);
             sess->set_last(maxleak->last());
         }
 
@@ -1413,18 +1399,91 @@ int IntellipapLoader::OpenDV6(const QString & path)
     // Now sessionList is populated with summary data, lets parse the Events list in E.BIN
 
 
+    EventList * OA = nullptr;
+    EventList * CA = nullptr;
+    EventList * H = nullptr;
+    EventList * RE = nullptr;
     f.setFileName(newpath+"/E.BIN");
+    const int DV6_E_HeaderSize = 55;
+
     if (f.open(QIODevice::ReadOnly)) {
         dataBA = f.readAll();
         if (dataBA.size() == 0) {
             return -1;
         }
         f.close();
-        data = (unsigned char *)dataBA.data();
+        data = (unsigned char *)dataBA.data()+DV6_E_HeaderSize;
+        int numErecs = (dataBA.size()-DV6_E_HeaderSize) / DV6_E_RecLength;
+
+        SR = summaryList.begin();
+
+        for (int r=0; r<numErecs; ++r, data += DV6_E_RecLength) {
+            ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // start time
+            ts2 = ((data[8] << 24) | (data[7] << 16) | (data[6] << 8) | data[5])+ep; // end
+
+            if (SR == summaryList.end())
+                break;
+
+            DV6_S_Record *R = &SR.value();
+            while (ts1 > R->stop_time) {
+                if (OA && sess) {
+                    // Close the open session and update the min and max
+                    sess->set_last(OA->last());
+                    sess->set_last(CA->last());
+                    sess->set_last(H->last());
+                    sess->set_last(RE->last());
+
+                    sess = nullptr;
+                    H = CA = RE = OA = nullptr;
+                }
+                SR++;
+                if (SR == summaryList.end()) break;
+                R = &SR.value();
+            }
+            if (SR == summaryList.end())
+                break;
+
+            if (ts1 >= R->start_time) {
+                if (!OA && R->sess) {
+                    qDebug() << "Adding Event data for session" << R->sess->session() << "starting at" << ts1;
+                    OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
+                    H = R->sess->AddEventList(CPAP_Hypopnea, EVL_Event);
+                    RE = R->sess->AddEventList(CPAP_RERA, EVL_Event);
+                    CA = R->sess->AddEventList(CPAP_ClearAirway, EVL_Event);
+                }
+                if (OA) {
+                    sess = R->sess;
+
+                    qint64 ti = qint64(ts1) * 1000L;
+                    int code = data[13];
+                    switch (code) {
+                    case 1:
+                        CA->AddEvent(ti, data[17]);
+                        break;
+                    case 2:
+                        OA->AddEvent(ti, data[17]);
+                        break;
+                    case 4:
+                        H->AddEvent(ti, data[17]);
+                        break;
+                    case 5:
+                        RE->AddEvent(ti, data[17]);
+                        break;
+                    default:
+                        break;
+                    }
+                }
 
 
+            } // for
+        }
+        if (sess && OA) {
+            sess->set_last(OA->last());
+            sess->set_last(CA->last());
+            sess->set_last(H->last());
+            sess->set_last(RE->last());
 
-
+        }
     } else { // if (f.open(...)
         // E.BIN open failed
         return -1;

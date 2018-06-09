@@ -257,7 +257,7 @@ bool Machine::AddSession(Session *s)
 
     if (locksessions) {
         split_time = s->summaryOnly() ? QTime(12,0,0) : profile->session->daySplitTime();
-        combine_sessions = s->summaryOnly() ? 0 : p_profile->session->combineCloseSessions();
+        combine_sessions = s->summaryOnly() ? 0 : profile->session->combineCloseSessions();
     } else {
         split_time = profile->session->daySplitTime();
         combine_sessions = profile->session->combineCloseSessions();
@@ -544,9 +544,10 @@ void Machine::setInfo(MachineInfo inf)
 
 const QString Machine::getDataPath()
 {
-    if (m_dataPath.isEmpty()) {
+
+    //if (m_dataPath.isEmpty()) {
         m_dataPath = profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
-    }
+   // }
     return m_dataPath;
 }
 const QString Machine::getSummariesPath()
