@@ -1189,7 +1189,7 @@ EventDataType Session::SearchValue(ChannelID code, qint64 time, bool square)
 
                     double i = tt / el->rate();
                     if (i> cnt) {
-                        qWarning() << "Session" << session() << "time bounds are broken.. There is a fault in the" << machine()->loaderName().toLocal8Bit.data() << "loader";
+                        qWarning() << "Session" << session() << "time bounds are broken.. There is a fault in the" << machine()->loaderName().toLocal8Bit().data() << "loader";
                         return 0;
                     }
 
