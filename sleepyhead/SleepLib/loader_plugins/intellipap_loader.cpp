@@ -631,6 +631,38 @@ struct DV6_S_Record
     EventDataType pressureSetMax;   //50
 };
 
+#ifdef _MSC_VER
+#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+#else
+#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#endif
+
+
+PACK(struct SET_BIN_REC {
+    char unknown_00;                        // assuming file version
+    char serial[11];                        // null terminated
+    unsigned short cap_flags;               // capability flags
+    unsigned short cpap_pressure;
+    unsigned short max_pressure;
+    unsigned short min_pressure;
+    unsigned char alg_apnea_threshhold;     // always locked at 00
+    unsigned char alg_apnea_duration;
+    unsigned char alg_hypop_threshold;
+    unsigned char alg_hypop_duration;
+    unsigned short ramp_pressure;
+    unsigned short ramp_duration;
+    unsigned char unknown_01[3];
+    unsigned char smartflex;
+    unsigned char unknown_02;
+    unsigned char inspFlowRounding;
+    unsigned char expFlowRounding;
+    unsigned char complianceHours;
+    unsigned char unknown_03[9];
+    unsigned char humidifier_setting;  // 0-5
+    unsigned char unused[83];
+    unsigned char checksum;
+}); // http://digitalvampire.org/blog/index.php/2006/07/31/why-you-shouldnt-use-__attribute__packed/
+
 int IntellipapLoader::OpenDV6(const QString & path)
 {
     QString newpath = path + DV6_DIR;
@@ -639,7 +671,6 @@ int IntellipapLoader::OpenDV6(const QString & path)
     MachineInfo info = newInfo();
     info.series = "DV6";
     info.serial = "Unknown";
-
 
     int vmin=0, vmaj=0;
     EventDataType max_pressure=0, min_pressure=0; //, starting_pressure;
@@ -651,71 +682,14 @@ int IntellipapLoader::OpenDV6(const QString & path)
     /////////////////////////////////////////////////////////////////////////////////
     QFile f(newpath+"/"+SET_BIN);
     if (f.open(QIODevice::ReadOnly)) {
-        // Guessing settings is just a binary packed 0 terminated string list
-        // as in this is a continuation of the old string SET1 settings file, just the value fields.
-        // Each field is zero terminated
-        int cnt = 0;
-
         // Read and parse entire SET.BIN file
         dataBA = f.readAll();
         f.close();
 
-        // Parse it as we go...
-        for (int i=0; i< dataBA.size(); ++i) { // deliberately going one further to catch end condition
-            if ((dataBA.at(i) == 0) || (i >= dataBA.size()-1)) { // if null terminated or last byte
-
-                switch(cnt) {
-                    case 1: // Serial Number
-                        info.serial = QString(str);
-                        break;
-                    case 2: // Firmware version?
-                        vmaj = (unsigned char)str.at(0);
-                        vmin = (unsigned char)str.at(1);
-                        break;
-                    case 3: // ??? 0x64 100 // Starting Pressure?
-                        //starting_pressure = (unsigned char)str.at(0);
-                        // or is it 64, as in BCD coded model number?
-                        break;
-                    case 4: // Max Pressure
-                        max_pressure = (unsigned char)str.at(0);
-                        break;
-                    case 5: // Min Pressure
-                        min_pressure = (unsigned char)str.at(0);
-                        break;
-                    case 6: // The settings that were used to flag OA's and Hyp's...
-                        //OA_min = (unsigned char)str.at(0);    // minimum OA duration
-                        //OA_thresh = (unsigned char)str.at(1); // OA flow restriction threshold
-                        //HY_min = (unsigned char)str.at(2);    // minimum Hyp duration
-                        //HY_thresh = (unsigned char)str.at(3); // Hyp flow restriction threshold
-                        break;
-                    case 7:
-                        //ramp_time = (unsigned char)str.at(0);
-                        // ??? 250 = (unsigned char)str.at(1);  // 25.0 (div 10) is maximum CPAP pressure
-                        break;
-                    case 8: // 0
-                        break;
-                    case 9: // 01
-                        break;
-                    case 10:
-                        //SFFRI = (unsigned char)str.at(0); //Smartflex flow rounding inhalation setting
-                        //SFFRE = (unsigned char)str.at(1); //Smartflex flow rounding exhalation setting
-                        //??? = (unsigned char)str.at(2);   // 0x04
-                        break;
-                    case 11:    // 0
-                        break;
-                    case 12:
-
-                    default:
-                        break;
-                }
-                // Clear and start a new data record
-                str.clear();
-                cnt++;
-            } else {
-                // Add the character to the current string
-                str.append(dataBA[i]);
-            }
-        }
+        SET_BIN_REC *setbin = (SET_BIN_REC *)dataBA.data();
+        info.serial = QString(setbin->serial);
+        max_pressure = setbin->max_pressure;
+        min_pressure = setbin->min_pressure;
 
     } else { // if f.open settings file
         // Settings file open failed, return
