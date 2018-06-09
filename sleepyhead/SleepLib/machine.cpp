@@ -543,10 +543,11 @@ void Machine::setInfo(MachineInfo inf)
 //const quint32 channel_version=1;
 
 const QString Machine::getDataPath()
-{
+{    
+    m_dataPath = PREF.Get("{home}/Profiles/")+profile->user->userName()+"/"+info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial) + "/";
 
     //if (m_dataPath.isEmpty()) {
-        m_dataPath = profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
+ //       m_dataPath = profile->Get("{" + STR_GEN_DataFolder + "}/" + info.loadername + "_" + (info.serial.isEmpty() ? hexid() : info.serial)) + "/";
    // }
     return m_dataPath;
 }
