@@ -63,16 +63,8 @@ QString GetAppRoot()
 
     QString HomeAppRoot = settings.value("Settings/AppRoot").toString();
 
-    const QString desktopFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-
     if (HomeAppRoot.isEmpty()) {
-        HomeAppRoot = desktopFolder + "/" + getDefaultAppRoot();
-
-        const QString testing = "-Testing";
-        QDir dir(HomeAppRoot+testing);
-        if (dir.exists()) {
-            HomeAppRoot += testing;
-        }
+        HomeAppRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)+"/"+getDefaultAppRoot();
     }
 
     return HomeAppRoot;

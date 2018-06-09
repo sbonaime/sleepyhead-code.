@@ -60,6 +60,9 @@ const QString getAppName()
 const QString getDefaultAppRoot()
 {
     QString approot = STR_AppRoot;
+    if ((GIT_BRANCH != "master") || (!((ReleaseStatus.compare("r", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("rc", Qt::CaseInsensitive)==0) || (ReleaseStatus.compare("beta", Qt::CaseInsensitive)==0)))) {
+        approot += "-"+GIT_BRANCH;
+    }
     return approot;
 }
 
