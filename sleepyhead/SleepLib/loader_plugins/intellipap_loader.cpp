@@ -825,9 +825,14 @@ int IntellipapLoader::OpenDV6(const QString & path)
                 R.tidalVolume = float(data[28] | data[29] << 8);
                 R.avgBreathRate = float(data[30] | data[31] << 8);
 
-                R.sess->settings[CPAP_PressureMin] = R.pressureSetMin;
-                R.sess->settings[CPAP_PressureMax] = R.pressureSetMax;
-                R.sess->settings[CPAP_Mode] = MODE_APAP;
+                if (data[49] != data[50]) {
+                    R.sess->settings[CPAP_PressureMin] = R.pressureSetMin;
+                    R.sess->settings[CPAP_PressureMax] = R.pressureSetMax;
+                    R.sess->settings[CPAP_Mode] = MODE_APAP;
+                } else {
+                    R.sess->settings[CPAP_Mode] = MODE_CPAP;
+                    R.sess->settings[CPAP_Pressure] = R.pressureSetMin;
+                }
 
                 summaryList[ts1] = R;
             }
