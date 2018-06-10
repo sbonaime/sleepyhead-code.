@@ -629,6 +629,8 @@ struct DV6_S_Record
                                  //42-48 unknown
     EventDataType pressureSetMin;   //49
     EventDataType pressureSetMax;   //50
+
+    bool hasMaskPressure;
 };
 
 #ifdef _MSC_VER
@@ -833,7 +835,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
                     R.sess->settings[CPAP_Mode] = MODE_CPAP;
                     R.sess->settings[CPAP_Pressure] = R.pressureSetMin;
                 }
-
+                R.hasMaskPressure = false;
                 summaryList[ts1] = R;
             }
         }
@@ -922,7 +924,8 @@ int IntellipapLoader::OpenDV6(const QString & path)
             if (ts1 >= R->start_time) {
                 if (!flow && R->sess) {
                     flow = R->sess->AddEventList(CPAP_FlowRate, EVL_Waveform, 1.0f/60.0f, 0.0f, 0.0f, 0.0f, double(2000) / double(50));
-                    pressure = R->sess->AddEventList(CPAP_MaskPressure, EVL_Waveform, 0.1f, 0.0f, 0.0f, 0.0f, double(2000) / double(2));
+                    pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Waveform, 0.1f, 0.0f, 0.0f, 0.0f, double(2000) / double(2));
+                    R->hasMaskPressure = true;
                     //leak = R->sess->AddEventList(CPAP_Leak, EVL_Waveform, 1.0, 0.0, 0.0, 0.0, double(2000) / double(1));
                     OA = R->sess->AddEventList(CPAP_Obstructive, EVL_Event);
                     NOA = R->sess->AddEventList(CPAP_NRI, EVL_Event);
@@ -1354,10 +1357,10 @@ int IntellipapLoader::OpenDV6(const QString & path)
                     MV = R->sess->AddEventList(CPAP_MinuteVent, EVL_Event);
                     TV = R->sess->AddEventList(CPAP_TidalVolume, EVL_Event);
 
-                    //if (!R->sess->channelDataExists(CPAP_Pressure)) {
+                    if (!R->hasMaskPressure) {
                         // Don't use this pressure if we have higher resolution available
                         Pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Event);
-                    //}
+                    }
                 }
                 if (leak) {
                     sess = R->sess;
