@@ -183,7 +183,7 @@ void gSummaryChart::customCalc(Day *day, QVector<SummaryChartSlice> & slices)
      }
 }
 
-void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRect rect)
+void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRectF rect)
 {
     if (totaldays == nousedays) return;
 
@@ -390,7 +390,9 @@ void gSummaryChart::populate(Day * day, int idx)
 
 void gSummaryChart::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
-    QRect rect = region.boundingRect();
+    QRectF rect = region.boundingRect();
+
+    rect.translate(0.0f, 0.001f);
 
     painter.setPen(QColor(Qt::black));
     painter.drawRect(rect);
@@ -688,7 +690,7 @@ void gUsageChart::customCalc(Day *, QVector<SummaryChartSlice> &list)
     calc.update(slice.value, 1);
 }
 
-void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
+void gUsageChart::afterDraw(QPainter &, gGraph &graph, QRectF rect)
 {
     if (totaldays == nousedays) return;
 
@@ -757,7 +759,7 @@ void gSessionTimesChart::customCalc(Day *, QVector<SummaryChartSlice> & slices) 
     num_days++;
 }
 
-void gSessionTimesChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
+void gSessionTimesChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRectF rect)
 {
     if (totaldays == nousedays) return;
 
@@ -800,7 +802,7 @@ void gSessionTimesChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect
 
 void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
-    QRect rect = region.boundingRect();
+    QRectF rect = region.boundingRect();
 
     painter.setPen(QColor(Qt::black));
     painter.drawRect(rect);
@@ -978,7 +980,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
         //bool hl = false;
 
-        QRect rec2(lastx1, rect.top(), barw, rect.height());
+        QRectF rec2(lastx1, rect.top(), barw, rect.height());
         if (rec2.contains(mouse)) {
             QColor col2(255,0,0,64);
             painter.fillRect(rec2, QBrush(col2));
@@ -1001,7 +1003,7 @@ void gSessionTimesChart::paint(QPainter &painter, gGraph &graph, const QRegion &
 
                 QColor col = slice.color;
 
-                QRect rec(lastx1, rect.bottom() - y1 - y2, barw, y2);
+                QRectF rec(lastx1, rect.bottom() - y1 - y2, barw, y2);
                 rec = rec.intersected(rect);
 
                 if (rec.contains(mouse)) {
@@ -1052,7 +1054,7 @@ void gTTIAChart::customCalc(Day *, QVector<SummaryChartSlice> & slices)
     calcitems[0].update(slice.value, slice.value);
 }
 
-void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
+void gTTIAChart::afterDraw(QPainter &, gGraph &graph, QRectF rect)
 {
     QStringList txtlist;
 
@@ -1161,7 +1163,7 @@ void gAHIChart::customCalc(Day *day, QVector<SummaryChartSlice> &list)
     total_hours += hours;
     total_days++;
 }
-void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRect rect)
+void gAHIChart::afterDraw(QPainter & /*painter */, gGraph &graph, QRectF rect)
 {
     if (totaldays == nousedays) return;
 
@@ -1277,7 +1279,7 @@ gPressureChart::gPressureChart()
     addCalc(CPAP_IPAP, ST_90P, brighten(schema::channel[CPAP_IPAP].defaultColor(),1.33f));         // 12
 }
 
-void gPressureChart::afterDraw(QPainter &, gGraph &graph, QRect rect)
+void gPressureChart::afterDraw(QPainter &, gGraph &graph, QRectF rect)
 {
     int pressure_cnt = calcitems[0].cnt;
     int pressuremin_cnt = calcitems[3].cnt;

@@ -370,7 +370,8 @@ QString gLineChart::getMetaString(qint64 time)
 // Time Domain Line Chart
 void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    QRect rect = region.boundingRect();
+    QRectF rect = region.boundingRect();
+    rect.translate(0.0f, 0.001f);
     // TODO: Just use QRect directly.
     int left = rect.left();
     int top = rect.top();
@@ -473,7 +474,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             int wid, h;
             GetTextExtent(text, wid, h);
-            w.renderText(text, left , top-h+7*w.printScaleY());  //+ width/2 - wid/2
+            w.renderText(text, left , top-6); //(h+(4 * w.printScaleY())));  //+ width/2 - wid/2
         }
     }
 
@@ -488,10 +489,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     // Draw bounding box
     painter.setPen(QColor(Qt::black));
-    painter.drawLine(left, top, left, top + height);
-    painter.drawLine(left, top + height, left + width, top + height);
-    painter.drawLine(left + width, top + height, left + width, top);
-    painter.drawLine(left + width, top, left, top);
+    painter.drawRect(rect);
 
     width--;
     height -= 2;
@@ -988,13 +986,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
             painter.setPen(Qt::black);
             painter.drawText(rec, Qt::AlignBottom | Qt::AlignRight, text);
 
-            float ps = 1 * ratioY;
+            float ps = 2.0 * ratioY;
             ps = qMax(ps, 1.0f);
 
             painter.setPen(QPen(chan.defaultColor(), ps));
             int linewidth = (10 * ratioX);
             int yp = rec.top()+(rec.height()/2);
-            painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+            painter.drawLine(QLineF(rec.left()-linewidth, yp+0.001f , rec.left()-(2 * ratioX), yp));
 
             painter.setClipping(true);
 
@@ -1022,12 +1020,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         QColor color = chan.calc[dot.type].color;
         color.setAlpha(200);
-        float ps = 1 * ratioY;
+        float ps = 2.0 * ratioY;
         ps = qMax(ps, 1.0f);
         painter.setPen(QPen(QBrush(color), ps,Qt::DotLine));
 
         int yp = rec.top()+(rec.height()/2);
-        painter.drawLine(rec.left()-linewidth, yp , rec.left()-(2 * ratioX), yp);
+        painter.drawLine(QLineF(rec.left()-linewidth, yp+0.001f, rec.left()-(2 * ratioX), yp));
         legendx -= linewidth + (2*ratioX);
     }
 
@@ -1115,7 +1113,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
         if (linecursormode) txt+=lasttext;
 
-        w.renderText(txt,left,top-6);
+        w.renderText(txt,left,top-5);
     }
 
 

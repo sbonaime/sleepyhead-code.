@@ -179,7 +179,7 @@ public:
     virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
 
     //! \brief Override to call stuff after draw is complete
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
 
     //! \brief Return any extra data to show beneath the date in the hover over tooltip
     virtual QString tooltipData(Day *, int);
@@ -289,7 +289,7 @@ public:
 
     virtual void preCalc();
     virtual void customCalc(Day *, QVector<SummaryChartSlice> & slices);
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
 
     //! \brief Renders the graph to the QPainter object
     virtual void paint(QPainter &painter, gGraph &graph, const QRegion &region);
@@ -325,7 +325,7 @@ public:
 
     virtual void preCalc();
     virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
     virtual void populate(Day *day, int idx);
 
     virtual QString tooltipData(Day * day, int);
@@ -359,7 +359,7 @@ public:
 
     virtual void preCalc();
     virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
     virtual void populate(Day *day, int idx);
     virtual QString tooltipData(Day * day, int);
 
@@ -392,7 +392,7 @@ public:
 
     virtual void preCalc();
     virtual void customCalc(Day *, QVector<SummaryChartSlice> &);
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
 
     virtual void populate(Day *, int idx);
 
@@ -452,7 +452,7 @@ public:
             calc->update(slice.value, hour);
          }
     }
-    virtual void afterDraw(QPainter &, gGraph &, QRect);
+    virtual void afterDraw(QPainter &, gGraph &, QRectF);
 
     virtual void populate(Day * day, int idx);
 

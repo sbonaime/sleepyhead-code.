@@ -69,13 +69,13 @@ const QString months[] = {
 
 void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    float left = region.boundingRect().left();
+    float top = region.boundingRect().top()-0.999f;
+    float width = region.boundingRect().width();
+    float height = region.boundingRect().height();
 
 
-    QVector<QLine> ticks;
+    QVector<QLineF> ticks;
 
 
     QPainter painter2; // Only need this for pixmap caching
@@ -266,9 +266,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             if (py < start_px) { continue; }
 
             if (usepixmap) {
-                ticks.append(QLine(py - left + 20, 0, py - left + 20, mintop - top));
+                ticks.append(QLineF(py - left + 20, 0, py - left + 20, mintop - top));
             } else {
-                ticks.append(QLine(py, top+2, py, mintop+2));
+                ticks.append(QLineF(py, top+2, py, mintop+2));
             }
         }
 
@@ -280,9 +280,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             px += left;
 
             if (usepixmap) {
-                ticks.append(QLine(px - left + 20, 0, px - left + 20, majtop - top));
+                ticks.append(QLineF(px - left + 20, 0, px - left + 20, majtop - top));
             } else {
-                ticks.append(QLine(px, top+2, px, majtop+2));
+                ticks.append(QLineF(px, top+2, px, majtop+2));
             }
 
             j = i;
@@ -333,9 +333,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 if (py >= left + width) { break; }
 
                 if (usepixmap) {
-                    ticks.append(QLine(py - left + 20, 0, py - left + 20, mintop - top));
+                    ticks.append(QLineF(py - left + 20, 0, py - left + 20, mintop - top));
                 } else {
-                    ticks.append(QLine(py, top+2, py, mintop+2));
+                    ticks.append(QLineF(py, top+2, py, mintop+2));
                 }
             }
         }
@@ -402,7 +402,7 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     maxx = graph.max_x;
 
     QDateTime date2 = QDateTime::fromMSecsSinceEpoch(minx, Qt::UTC);
-    QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx, Qt::UTC);
+ //   QDateTime enddate2 = QDateTime::fromMSecsSinceEpoch(maxx, Qt::UTC);
 
     //qInfo() << "Drawing date axis from " << date2 << " to " << enddate2;
 
@@ -430,7 +430,7 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
     float xpos = (barw / 2.0) - (float(x) / 2.0);
 
     float lastxpos = 0;
-    QVector<QLine> lines;
+    QVector<QLineF> lines;
     for (int i=0; i < days; i++) {
         if ((lastx + barw) > (left + width + 1))
             break;
@@ -442,7 +442,7 @@ void gXAxisDay::paint(QPainter &painter, gGraph &graph, const QRegion &region)
         if (x1 > (lastxpos + x + 8*graph.printScaleX())) {
             graph.renderText(tmpstr, x1, y1 + y + 8);
             lastxpos = x1;
-            lines.append(QLine(lastx+barw/2, top, lastx+barw/2, top+6));
+            lines.append(QLineF(lastx+barw/2, top, lastx+barw/2, top+6));
         }
         lastx = lastx + barw;
         date = date.addDays(1);

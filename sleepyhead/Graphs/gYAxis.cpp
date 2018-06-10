@@ -1,4 +1,4 @@
-/* gYAxis Implementation
+﻿/* gYAxis Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -35,10 +35,10 @@ gXGrid::~gXGrid()
 }
 void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top()+1;
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    float left = region.boundingRect().left();
+    float top = region.boundingRect().top()+0.001f;
+    float width = region.boundingRect().width();
+    float height = region.boundingRect().height();
 
     //int x, y;
 
@@ -71,7 +71,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
     int myt;
     bool fnd = false;
 
-    for (myt = max_yticks; myt >= 1; myt--) {
+    for (myt = max_yticks; myt >= 1.001; myt--) {
         float v = rxy / float(myt);
 
         if (float(v) == int(v)) {
@@ -101,15 +101,15 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
     if (min_ytick >= 1000000) {
         min_ytick = 100;
     }
-    QVector<QLine> majorlines;
-    QVector<QLine> minorlines;
+    QVector<QLineF> majorlines;
+    QVector<QLineF> minorlines;
 
-    for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
+    for (double i = miny; i <= maxy + min_ytick + 0.001; i += min_ytick) {
         ty = (i - miny) * ymult;
         h = top + height - ty;
 
         if (m_show_major_lines && (i > miny)) {
-            majorlines.append(QLine(left, h, left + width, h));
+            majorlines.append(QLineF(left, h, left + width, h));
         }
 
         double z = (min_ytick / 4) * ymult;
@@ -125,7 +125,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
             //                break;
             //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                minorlines.append(QLine(left, g, left + width, g));
+                minorlines.append(QLineF(left, g, left + width, g));
             }
         }
     }
@@ -157,10 +157,10 @@ int gYAxis::minimumWidth()
 
 void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top()+1;
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    float left = region.boundingRect().left();
+    float top = region.boundingRect().top()+0.001;
+    float width = region.boundingRect().width();
+    float height = region.boundingRect().height();
 
     int x, y; //,yh=0;
 
@@ -243,11 +243,11 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             min_ytick = 100;
         }
 
-        QVector<QLine> ticks;
+        QVector<QLineF> ticks;
 
         QRect r2;
         float shorttick = 4.0 * w.printScaleX();
-        for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
+        for (double i = miny; i <= maxy + min_ytick + 0.001; i += min_ytick) {
             ty = (i - miny) * ymult;
 
             if (dy < 5) {
@@ -265,11 +265,11 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
             h = top + height - ty;
 
-            if (h < top) { continue; }
+            if (h < top-0.002) { continue; }
 
             w.renderText(fd, left + width - shorttick*2 - x, (h + (y / 2.0)), 0, m_text_color, defaultfont);
 
-            ticks.append(QLine(left + width - shorttick, h, left + width, h));
+            ticks.append(QLineF(left + width - shorttick, h, left + width, h));
 
             double z = (min_ytick / 4) * ymult;
             double g = h;
@@ -277,12 +277,12 @@ void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
             for (int i = 0; i < 3; i++) {
                 g += z;
 
-                if (g > top + height) { break; }
+                if (g > top + height + 0.002) { break; }
 
-                ticks.append(QLine(left + width - shorttick/2, g, left + width, g));
+                ticks.append(QLineF(left + width - shorttick/2, g, left + width, g));
             }
         }
-        painter.setPen(m_line_color);
+        painter.setPen(Qt::black);
         painter.drawLines(ticks);
         w.graphView()->lines_drawn_this_frame += ticks.size();
 

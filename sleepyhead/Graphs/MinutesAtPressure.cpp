@@ -116,7 +116,8 @@ float pressureMult = 5;
 
 void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &region)
 {
-    QRect rect = region.boundingRect();
+    QRectF rect = region.boundingRect();
+    rect.translate(0.0f, 0.001f);
 
 
     //int cells = m_maxpressure-m_minpressure+1;
@@ -127,7 +128,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
     float height = rect.height();
     float left = rect.left();
     //float pix = width / float(cells);
-    float bottom = rect.bottom()+1;
+    float bottom = rect.bottom();
 
 
     //int numchans = chans.size();
@@ -169,7 +170,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
     painter.setFont(*defaultfont);
     painter.setPen(Qt::black);
-    painter.drawRect(rect.left(),rect.top(), rect.width(), height+1);
+    painter.drawRect(rect);//rect.left(),rect.top(), rect.width(), height+1);
 
 
     int minpressure = qMin((EventStoreType)4, m_minpressure);

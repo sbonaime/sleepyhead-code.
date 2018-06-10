@@ -381,5 +381,5 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &reg
         a += " " + QObject::tr("(% %1 in events)").arg(sph, 0, 'f', 2);
     }
 
-    w.renderText(a, left + m_x, top + m_y);
+    w.renderText(a, left + m_x, top + m_y+2);
 }

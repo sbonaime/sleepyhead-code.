@@ -148,8 +148,11 @@ bool gFlagsGroup::isEmpty()
 
 void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
+    QRectF outline(region.boundingRect());
+    outline.translate(0.0f, 0.001f);
+
+    int left = region.boundingRect().left()+1;
+    int top = region.boundingRect().top()+1;
     int width = region.boundingRect().width();
     int height = region.boundingRect().height();
 
@@ -172,17 +175,11 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
     QColor barcol;
 
     for (int i=0, end=visflags.size(); i < end; i++) {
-        //schema::Channel & chan = schema::channel[visflags.at(i)->code()];
-
         // Alternating box color
         if (i & 1) { barcol = COLOR_ALT_BG1; }
         else { barcol = COLOR_ALT_BG2; }
 
         painter.fillRect(left, floor(linetop), width-1, ceil(m_barh), QBrush(barcol));
-
-//        barcol = chan.defaultColor();
-//        barcol.setAlpha(16);
-//        painter.fillRect(left, floor(linetop), width-1, ceil(m_barh), QBrush(barcol));
 
         // Paint the actual flags
         QRect rect(left, linetop, width, m_barh);
@@ -192,10 +189,7 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
     }
 
     painter.setPen(COLOR_Outline);
-    painter.drawLine(left - 1, top, left - 1, top + height);
-    painter.drawLine(left - 1, top + height, left + width, top + height);
-    painter.drawLine(left + width, top + height, left + width, top);
-    painter.drawLine(left + width, top, left - 1, top);
+    painter.drawRect(outline);
 
     if (m_rebuild_cpap) {
 

@@ -1,4 +1,4 @@
-/* gFooBar Implementation
+﻿/* gFooBar Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -22,10 +22,10 @@ gShadowArea::~gShadowArea()
 }
 void gShadowArea::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    int left = region.boundingRect().left();
-    int top = region.boundingRect().top();
-    int width = region.boundingRect().width();
-    int height = region.boundingRect().height();
+    float left = region.boundingRect().left()+1.0f;
+    float top = region.boundingRect().top()+0.001f;
+    float width = region.boundingRect().width();
+    float height = region.boundingRect().height();
 
     if (!m_visible) { return; }
 
@@ -35,8 +35,8 @@ void gShadowArea::paint(QPainter &painter, gGraph &w, const QRegion &region)
         return;
     }
 
-    int start_px = left - 1;
-    int end_px = left + width;
+    float start_px = left - 1;
+    float end_px = left + width;
 
     double rmx = w.rmax_x - w.rmin_x;
     double px = ((1.0 / rmx) * (w.min_x - w.rmin_x)) * width;
@@ -45,9 +45,10 @@ void gShadowArea::paint(QPainter &painter, gGraph &w, const QRegion &region)
     painter.fillRect(start_px, top, px, height, QBrush(m_shadow_color));
     painter.fillRect(start_px + py, top, end_px-start_px-py, height, QBrush(m_shadow_color));
 
-    painter.setPen(m_line_color);
-    painter.drawLine(start_px + px, top, start_px + py, top);
-    painter.drawLine(start_px + px, top + height + 1, start_px + py, top + height + 1);
+    painter.setPen(QPen(m_line_color,2));
+
+    painter.drawLine(QLineF(start_px + px, top, start_px + py, top));
+    painter.drawLine(QLineF(start_px + px, top + height + 1, start_px + py, top + height + 1));
 }
 
 gFooBar::gFooBar(int offset, QColor handle_color, QColor line_color)
