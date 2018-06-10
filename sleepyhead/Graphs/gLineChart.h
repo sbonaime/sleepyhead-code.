@@ -166,7 +166,7 @@ class gLineChart: public Layer
     static const int max_drawlist_size = 10000;
 
     //! \brief The list of screen points used for accelerated waveform plots..
-    QPoint m_drawlist[max_drawlist_size];
+    QPointF m_drawlist[max_drawlist_size];
 
     int subtract_offset;
 

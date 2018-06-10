@@ -31,7 +31,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     int left = region.boundingRect().left();
     int topp = region.boundingRect().top(); // FIXME: Misspelling intentional.
-    int width = region.boundingRect().width();
+    double width = region.boundingRect().width();
     int height = region.boundingRect().height();
 
     if (!m_visible) { return; }
@@ -42,7 +42,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     double xx = w.max_x - w.min_x;
     //double yy = w.max_y - w.min_y;
-    double jj = double(width) / double(xx);
+    double jj = width / xx;
 
 
     if (xx <= 0) { return; }
@@ -53,8 +53,8 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     float bottom = start_py + height - 25 * w.printScaleY(), top = start_py + 25 * w.printScaleY();
 
-    double X;
-    double Y;
+    qint64 X;
+    qint64 Y;
 
     QPoint mouse=w.graphView()->currentMousePos();
 
@@ -108,22 +108,22 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
             ////////////////////////////////////////////////////////////////////////////
             // Skip data previous to minx bounds
             ////////////////////////////////////////////////////////////////////////////
-            for (; dptr < eptr; dptr++) {
-                X = stime + *tptr;
 
-                if (X >= w.min_x) {
+            for (; dptr < eptr; ++dptr) {
+
+                if ((stime + *tptr) >= w.min_x) {
                     break;
                 }
 
-                tptr++;
+                ++tptr;
             }
 
             if (m_flt == FT_Span) {
                 ////////////////////////////////////////////////////////////////////////////
                 // FT_Span
                 ////////////////////////////////////////////////////////////////////////////
+                QBrush brush(m_flag_color);
                 for (; dptr < eptr; dptr++) {
-                    //hover = false;
 
                     X = stime + *tptr++;
                     raw = *dptr;
@@ -132,31 +132,18 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     if (Y > w.max_x) {
                         break;
                     }
-
-                    x1 = jj * double(X - w.min_x) + left;
-                    m_count++;
                     m_sum += raw;
-                    x2 = jj * double(Y - w.min_x) + left;
+                    ++m_count;
 
-                    if (int(x1) == int(x2)) {
-                        x2 += 1;
-                    }
+                    x1 = jj * double(X - w.min_x);
+                    x2 = jj * double(Y - w.min_x);
 
-                    if (x2 < left) {
-                        x2 = left;
-                    }
+                    x2 += (int(x1)==int(x2)) ? 1 : 0;
 
-                    if (x1 > width + left) {
-                        x1 = width + left;
-                    }
+                    x2 = qMax(0.0, x2)+left;
+                    x1 = qMin(width, x1)+left;
 
-                    QRect rect(x2, start_py, x1-x2, height);
-                    QColor col = m_flag_color;
-//                    if (rect.contains(mouse)) {
-//                        hover = true;
-//                    }
-
-                    painter.fillRect(rect, QBrush(col));
+                    painter.fillRect(QRect(x2, start_py, x1-x2, height), brush);
                 }
             }/* else if (m_flt == FT_Dot) {
                 ////////////////////////////////////////////////////////////////////////////
@@ -192,6 +179,13 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                 ////////////////////////////////////////////////////////////////////////////
                 // FT_Bar
                 ////////////////////////////////////////////////////////////////////////////
+                QColor col = m_flag_color;
+
+                QString lab = QString("%1").arg(m_label);
+                GetTextExtent(lab, x, y);
+
+                //int lx,ly;
+
                 for (; dptr < eptr; dptr++) {
                    // hover = false;
                     X = stime + *tptr++;
@@ -201,7 +195,7 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         break;
                     }
 
-                    x1 = jj * (double(X) - double(w.min_x)) + left;
+                    x1 = jj * double(X - w.min_x) + left;
                     m_count++;
                     m_sum += raw;
                     int z = start_py + height;
@@ -209,17 +203,14 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                     double d1 = jj * double(raw) * 1000.0;
 
 
-                    if ((m_flt == FT_Bar) && (odt == ODT_Bars)) { // || (xx < 3600000)) {
+                    if ((m_flt == FT_Bar) && (odt == ODT_Bars)) {
                         QRect rect(x1-d1, top, d1+4, height);
-                        QColor col = m_flag_color;
-
 
                         painter.setPen(QPen(col,4));
                         painter.drawPoint(x1, top);
 
                         if (!w.selectingArea() && !m_blockhover && rect.contains(mouse) && !m_hover) {
                             m_hover = true;
-
 
                             QColor col2(230,230,230,128);
                             QRect rect((x1-d1), start_py+2, d1, height-2);
@@ -231,31 +222,16 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.setPen(col);
                             painter.drawRect(rect);
 
-                            // Draw text label
-                            QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
-                            GetTextExtent(lab, x, y);
+                            // Queue tooltip
+                            QString lab2 = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
+                            w.ToolTip(lab2, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, AppSetting->tooltipTimeout());
 
-                            w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, AppSetting->tooltipTimeout());
-
-                            //painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
-//                            painter.setPen(QPen(Qt::gray,1));
-//                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
-//                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
-
-//                            painter.drawLine(rect.x(), top, rect.x()+d1, top);
-//                            painter.drawLine(rect.x(), bottom, rect.x()+d1, bottom);
-//                            painter.drawLine(rect.x(), top, rect.x(), bottom);
-
-                           // col = COLOR_Gold;
-//                            hover = true;
                             painter.setPen(QPen(col,3));
                         } else {
                             painter.setPen(QPen(col,1));
                         }
                         painter.drawLine(x1, top, x1, bottom);
                         if (xx < (3600000)) {
-                            QString lab = QString("%1").arg(m_label);
-                            GetTextExtent(lab, x, y);
                             w.renderText(lab, x1 - (x / 2), top - y + (5 * w.printScaleY()),0);
                         }
 
@@ -268,7 +244,6 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         if (!w.selectingArea() && !m_blockhover && QRect(x1-2, topp, 6, height).contains(mouse) && !m_hover) {
                             // only want to draw the highlight/label once per frame
                             m_hover = true;
-                            //b = true;
 
                             // Draw text label
                             QString lab = QString("%1 (%2)").arg(schema::channel[m_code].fullname()).arg(raw);
@@ -276,12 +251,6 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                             w.ToolTip(lab, x1 - 10, start_py + 24 + (3 * w.printScaleY()), TT_AlignRight, tooltipTimeout);
 
-//                            painter.fillRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4, QBrush(QColor(255,255,255,245)));
-//                            painter.setPen(QPen(Qt::gray,1));
-//                            painter.drawRect(x1 - (x / 2) - x, start_py + 14 + (3 * w.printScaleY()), x+4,y+4);
-//                            w.renderText(lab, x1 - (x / 2)+2 - x, start_py + 14 + y + (3 * w.printScaleY()),0);
-
-                            //x1-=1;
                             QColor col = m_flag_color;
                             col.setAlpha(60);
                             painter.setPen(QPen(col, 4));
@@ -297,17 +266,12 @@ void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
                             painter.setPen(QPen(col,1));
                             painter.drawLine(x1, start_py+14, x1, z);
                             painter.setPen(QPen(m_flag_color,1));
-                          //  painter.drawLine(x1, z, x1, z - 12);
                             painter.drawLine(x1, start_py+2, x1, start_py + 14);
                         }
-
-
                     }
                 }
             }
-
         }
-
     }
 }
 bool gLineOverlayBar::mouseMoveEvent(QMouseEvent *event, gGraph *graph)

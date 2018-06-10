@@ -32,6 +32,7 @@ DEFINES += LOCK_RESMED_SESSIONS
 
 CONFIG += c++11
 CONFIG += rtti
+CONFIG-=debug_and_release
 
 #static {
 #    CONFIG += static
@@ -116,14 +117,9 @@ macx {
     QMAKE_BUNDLE_DATA += HelpFiles
     message("Setting up Translations & Help Transfers")
 } else {
-    CONFIG(debug, debug|release) {
-        DDIR = $$OUT_PWD/debug/Translations
-        HELPDIR = $$OUT_PWD/debug/Help
-    }
-    CONFIG(release, debug|release) {
-        DDIR = $$OUT_PWD/release/Translations
-        HELPDIR = $$OUT_PWD/release/Help
-    }
+    DDIR = $$OUT_PWD/Translations
+    HELPDIR = $$OUT_PWD/Help
+
     TRANS_FILES += $$PWD/../Translations/*.qm
     HELP_FILES += $$PWD/help/*.qch
 

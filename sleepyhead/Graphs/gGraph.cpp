@@ -1190,7 +1190,7 @@ void gGraph::ZoomX(double mult, int origin_px)
 
 void gGraph::DrawTextQue(QPainter &painter)
 {
-    m_graphview->DrawTextQue(painter);
+    AppSetting->usePixmapCaching() ? m_graphview->DrawTextQueCached(painter) : m_graphview->DrawTextQue(painter);
 }
 
 // margin recalcs..

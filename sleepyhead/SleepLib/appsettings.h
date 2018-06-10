@@ -67,25 +67,25 @@ public:
   AppWideSetting(Preferences *pref)
     : PrefSettings(pref)
   {
-      initPref(STR_IS_Multithreading, idealThreads() > 1);
+      m_multithreading = initPref(STR_IS_Multithreading, idealThreads() > 1).toBool();
       initPref(STR_US_ShowPerformance, false);
       initPref(STR_US_ShowDebug, false);
       initPref(STR_AS_CalendarVisible, true);
-      initPref(STR_US_ScrollDampening, (int)50);
-      initPref(STR_US_TooltipTimeout, (int)2500);
-      initPref(STR_AS_GraphHeight, 180.0);
+      m_scrollDampening = initPref(STR_US_ScrollDampening, (int)50).toInt();
+      m_tooltipTimeout = initPref(STR_US_TooltipTimeout, (int)2500).toInt();
+      m_graphHeight=initPref(STR_AS_GraphHeight, 180).toInt();
       initPref(STR_AS_DailyPanelWidth, 350.0);
       initPref(STR_AS_RightPanelWidth, 230.0);
-      initPref(STR_AS_AntiAliasing, true);
+      m_antiAliasing=initPref(STR_AS_AntiAliasing, true).toBool();
       initPref(STR_AS_GraphSnapshots, true);
       initPref(STR_AS_Animations, true);
-      initPref(STR_AS_SquareWave, false);
+      m_squareWavePlots = initPref(STR_AS_SquareWave, false).toBool();
       initPref(STR_AS_AllowYAxisScaling, true);
       initPref(STR_AS_GraphTooltips, true);
-      initPref(STR_AS_UsePixmapCaching, false);
+      m_usePixmapCaching = initPref(STR_AS_UsePixmapCaching, false).toBool();
       initPref(STR_AS_OverlayType, ODT_Bars);
       initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
-      initPref(STR_AS_LineThickness, 1.0);
+      m_lineThickness=initPref(STR_AS_LineThickness, 1.0).toFloat();
       initPref(STR_AS_LineCursorMode, true);
       initPref(STR_AS_RightSidebarVisible, true);
       initPref(STR_CS_UserEventPieChart, false);
@@ -107,6 +107,11 @@ public:
       initPref(STR_GEN_ShowAboutDialog, 0);  // default to about screen, set to -1 afterwards
   }
 
+  bool m_usePixmapCaching, m_antiAliasing, m_squareWavePlots;
+  int m_tooltipTimeout, m_graphHeight, m_scrollDampening;
+  bool m_multithreading;
+  float m_lineThickness;
+
   QString versionString() const { return getPref(STR_PREF_VersionString).toString(); }
   bool updatesAutoCheck() const { return getPref(STR_GEN_UpdatesAutoCheck).toBool(); }
   bool allowEarlyUpdates() const { return getPref(STR_PREF_AllowEarlyUpdates).toBool(); }
@@ -118,35 +123,35 @@ public:
   QString profileName() const { return getPref(STR_GEN_Profile).toString(); }
   bool autoLaunchImport() const { return getPref(STR_US_AutoLaunchImport).toBool(); }
   bool cacheSessions() const { return getPref(STR_IS_CacheSessions).toBool(); }
-  bool multithreading() const { return getPref(STR_IS_Multithreading).toBool(); }
+  bool multithreading() const { return m_multithreading; }
   bool showDebug() const { return getPref(STR_US_ShowDebug).toBool(); }
   bool showPerformance() const { return getPref(STR_US_ShowPerformance).toBool(); }
   //! \brief Whether to show the calendar
   bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
-  int scrollDampening() const { return getPref(STR_US_ScrollDampening).toInt(); }
-  int tooltipTimeout() const { return getPref(STR_US_TooltipTimeout).toInt(); }
+  int scrollDampening() const { return m_scrollDampening; }
+  int tooltipTimeout() const { return m_tooltipTimeout; }
   //! \brief Returns the normal (unscaled) height of a graph
-  int graphHeight() const { return getPref(STR_AS_GraphHeight).toInt(); }
+  int graphHeight() const { return m_graphHeight; }
   //! \brief Returns the normal (unscaled) height of a graph
   int dailyPanelWidth() const { return getPref(STR_AS_DailyPanelWidth).toInt(); }
   //! \brief Returns the normal (unscaled) height of a graph
   int rightPanelWidth() const { return getPref(STR_AS_RightPanelWidth).toInt(); }
   //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
-  bool antiAliasing() const { return getPref(STR_AS_AntiAliasing).toBool(); }
+  bool antiAliasing() const { return m_antiAliasing; }
   //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
   bool graphSnapshots() const { return getPref(STR_AS_GraphSnapshots).toBool(); }
   //! \brief Returns true if Graphical animations & Transitions will be drawn
   bool animations() const { return getPref(STR_AS_Animations).toBool(); }
   //! \brief Returns true if PixmapCaching acceleration will be used
-  bool usePixmapCaching() const { return getPref(STR_AS_UsePixmapCaching).toBool(); }
+  inline const bool & usePixmapCaching() const { return m_usePixmapCaching; }
   //! \brief Returns true if Square Wave plots are preferred (where possible)
-  bool squareWavePlots() const { return getPref(STR_AS_SquareWave).toBool(); }
+  bool squareWavePlots() const { return m_squareWavePlots; }
   //! \brief Whether to allow double clicking on Y-Axis labels to change vertical scaling mode
   bool allowYAxisScaling() const { return getPref(STR_AS_AllowYAxisScaling).toBool(); }
   //! \brief Whether to show graph tooltips
   bool graphTooltips() const { return getPref(STR_AS_GraphTooltips).toBool(); }
   //! \brief Pen width of line plots
-  float lineThickness() const { return getPref(STR_AS_LineThickness).toFloat(); }
+  float lineThickness() const { return m_lineThickness; }
   //! \brief Whether to show line cursor
   bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
   //! \brief Whether to show the right sidebar
@@ -170,29 +175,29 @@ public:
   void setProfileName(QString name) { setPref(STR_GEN_Profile, name); }
   void setAutoLaunchImport(bool b) { setPref(STR_US_AutoLaunchImport, b); }
   void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
-  void setMultithreading(bool enabled) { setPref(STR_IS_Multithreading, enabled); }
+  void setMultithreading(bool b) { setPref(STR_IS_Multithreading, m_multithreading = b); }
   void setShowDebug(bool b) { setPref(STR_US_ShowDebug, b); }
   void setShowPerformance(bool b) { setPref(STR_US_ShowPerformance, b); }
   //! \brief Sets whether to display the (Daily View) Calendar
   void setCalendarVisible(bool b) { setPref(STR_AS_CalendarVisible, b); }
-  void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, i); }
-  void setTooltipTimeout(int i) { setPref(STR_US_TooltipTimeout, i); }
+  void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, m_scrollDampening=i); }
+  void setTooltipTimeout(int i) { setPref(STR_US_TooltipTimeout, m_tooltipTimeout=i); }
   //! \brief Set the normal (unscaled) height of a graph.
-  void setGraphHeight(int height) { setPref(STR_AS_GraphHeight, height); }
+  void setGraphHeight(int height) { setPref(STR_AS_GraphHeight, m_graphHeight=height); }
   //! \brief Set the normal (unscaled) height of a graph.
   void setDailyPanelWidth(int width) { setPref(STR_AS_DailyPanelWidth, width); }
   //! \brief Set the normal (unscaled) height of a graph.
   void setRightPanelWidth(int width) { setPref(STR_AS_RightPanelWidth, width); }
   //! \brief Set to true to turn on AntiAliasing (the graphical smoothing method)
-  void setAntiAliasing(bool aa) { setPref(STR_AS_AntiAliasing, aa); }
+  void setAntiAliasing(bool aa) { setPref(STR_AS_AntiAliasing, m_antiAliasing=aa); }
   //! \brief Set to true if renderPixmap functions are in use, which takes snapshots of graphs.
   void setGraphSnapshots(bool gs) { setPref(STR_AS_GraphSnapshots, gs); }
   //! \brief Set to true if Graphical animations & Transitions will be drawn
   void setAnimations(bool anim) { setPref(STR_AS_Animations, anim); }
   //! \brief Set to true to use Pixmap Caching of Text and other graphics caching speedup techniques
-  void setUsePixmapCaching(bool b) { setPref(STR_AS_UsePixmapCaching, b); }
+  void setUsePixmapCaching(bool b) { setPref(STR_AS_UsePixmapCaching, m_usePixmapCaching=b); }
   //! \brief Set whether or not to useSquare Wave plots (where possible)
-  void setSquareWavePlots(bool sw) { setPref(STR_AS_SquareWave, sw); }
+  void setSquareWavePlots(bool sw) { setPref(STR_AS_SquareWave, m_squareWavePlots=sw); }
   //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
   void setOverlayType(OverlayDisplayType od) { setPref(STR_AS_OverlayType, (int)od); }
   //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
@@ -204,7 +209,7 @@ public:
       setPref(STR_AS_OverviewLinechartMode, (int)od);
   }
   //! \brief Set the pen width of line plots.
-  void setLineThickness(float size) { setPref(STR_AS_LineThickness, size); }
+  void setLineThickness(float size) { setPref(STR_AS_LineThickness, m_lineThickness=size); }
   //! \brief Sets whether to display Line Cursor
   void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
   //! \brief Sets whether to display the right sidebar

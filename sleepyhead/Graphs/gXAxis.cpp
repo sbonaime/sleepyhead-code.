@@ -85,7 +85,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
     QFontMetrics fm(*defaultfont);
 
-    bool usepixmap = w.graphView()->usePixmapCache(); // Whether or not to use pixmap caching
+    bool usepixmap = AppSetting->usePixmapCaching(); // Whether or not to use pixmap caching
 
     if (!usepixmap || (usepixmap && w.invalidate_xAxisImage)) {
         // Redraw graph xaxis labels and ticks either to pixmap or directly to screen

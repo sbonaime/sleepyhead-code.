@@ -741,270 +741,183 @@ void gGraphView::dumpInfo()
 //    }
 }
 
-bool gGraphView::usePixmapCache()
-{
-    //use_pixmap_cache is an overide setting
-    return AppSetting->usePixmapCaching();
-}
-
-#define CACHE_DRAWTEXT
-#ifndef CACHE_DRAWTEXT
-// Render all qued text via QPainter method
+// Render graphs with QPainter or pixmap caching, depending on preferences
 void gGraphView::DrawTextQue(QPainter &painter)
 {
-    int w, h;
+    // process the text drawing queue
+    int h,w;
 
-    // not sure if global antialiasing would be better..
-    //painter.setRenderHint(QPainter::TextAntialiasing, AppSetting->antiAliasing());
-    int items = m_textque.size();
-    for (int i = 0; i < items; ++i) {
-        TextQue &q = m_textque[i];
-        painter.setPen(q.color);
-        painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-        QFont font = *q.font;
-        painter.setFont(font);
+    strings_drawn_this_frame += m_textque.size() + m_textqueRect.size();;
 
-        if (q.angle == 0) { // normal text
+    for (const TextQue & q : m_textque) {
+        // can do antialiased text via texture cache fine on mac
+        // Just draw the fonts..
+        painter.setPen(QColor(q.color));
+        painter.setFont(*q.font);
 
+        if (q.angle == 0) {
             painter.drawText(q.x, q.y, q.text);
-        } else { // rotated text
+        } else {
             w = painter.fontMetrics().width(q.text);
             h = painter.fontMetrics().xHeight() + 2;
 
             painter.translate(q.x, q.y);
             painter.rotate(-q.angle);
-            painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
+            painter.drawText(floor(-w / 2.0)-6, floor(-h / 2.0), q.text);
             painter.rotate(+q.angle);
             painter.translate(-q.x, -q.y);
         }
-        strings_drawn_this_frame++;
-        q.text.clear();
     }
-
     m_textque.clear();
 
-    items = m_textqueRect.size();
-    for (int i=0; i< items; ++i) {
-        TextQueRect &q = m_textqueRect[i];
-        painter.setPen(q.color);
-        painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-        QFont font = *q.font;
-        painter.setFont(font);
+    ////////////////////////////////////////////////////////////////////////
+    // Text Rectangle Queues..
+    ////////////////////////////////////////////////////////////////////////
 
-        if (q.angle == 0) { // normal text
+    for (const TextQueRect & q : m_textqueRect) {
+        // Just draw the fonts..
 
+        painter.setPen(QColor(q.color));
+        painter.setFont(*q.font);
+
+        if (q.angle == 0) {
             painter.drawText(q.rect, q.flags, q.text);
-        } else { // rotated text
-
-            int x = q.rect.x();
-            int y = q.rect.y();
+        } else {
             w = painter.fontMetrics().width(q.text);
             h = painter.fontMetrics().xHeight() + 2;
 
-            painter.translate(x, y);
+            painter.translate(q.rect.x(), q.rect.y());
             painter.rotate(-q.angle);
             painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
             painter.rotate(+q.angle);
-            painter.translate(-x, -y);
+            painter.translate(-q.rect.x(), -q.rect.y());
         }
-        strings_drawn_this_frame++;
-        q.text.clear();
 
     }
-
     m_textqueRect.clear();
 }
 
-#else
-// Render graphs with QPainter or pixmap caching, depending on preferences
-void gGraphView::DrawTextQue(QPainter &painter)
+
+const QString z__cacheStr = "%1:%2:%3";
+
+void gGraphView::DrawTextQueCached(QPainter &painter)
 {
-    {
-        // process the text drawing queue
-        int h,w;
+    // process the text drawing queue
+    int h,w;
+    QString hstr;
+    QPixmap pm;
+    float ww, hh, xxx, yyy;
+    const int buf = 8;
+    int fonta = defaultfont->pointSize();
+    int fontb = mediumfont->pointSize();
+    int fontc = bigfont->pointSize();
+    int size;
 
-        for (const auto & q : m_textque) {
-            // can do antialiased text via texture cache fine on mac
-            if (usePixmapCache()) {
-                // Generate the pixmap cache "key"
-                QString hstr = QString("%1:%2:%3").
-                        arg(q.text).
-                        arg(q.color.name()).
-                        arg(q.font->pointSize());
 
-                QPixmap pm;
-                const int buf = 8;
-                if (!QPixmapCache::find(hstr, &pm)) {
+    for (const TextQue & q : m_textque) {
+        // can do antialiased text via texture cache fine on mac
+        // Generate the pixmap cache "key"
+        size = (q.font == defaultfont) ? fonta : (q.font==mediumfont) ? fontb : (q.font == bigfont) ? fontc : q.font->pointSize();
 
-                    QFontMetrics fm(*q.font);
-                   // QRect rect=fm.tightBoundingRect(q.text);
-                    w = fm.width(q.text);
-                    h = fm.height()+buf;
+        hstr = z__cacheStr.arg(q.text).arg(q.color.name()).arg(size);
 
-                    pm=QPixmap(w, h);
-                    pm.fill(Qt::transparent);
+        if (!QPixmapCache::find(hstr, &pm)) {
 
-                    QPainter imgpainter(&pm);
+            QFontMetrics fm(*q.font);
+           // QRect rect=fm.tightBoundingRect(q.text);
+            w = fm.width(q.text);
+            h = fm.height()+buf;
 
-                    imgpainter.setPen(q.color);
+            pm = QPixmap(w, h);
+            pm.fill(Qt::transparent);
 
-                    imgpainter.setFont(*q.font);
+            QPainter imgpainter(&pm);
 
-                    imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-                    imgpainter.drawText(0, h-buf, q.text);
-                    imgpainter.end();
+            imgpainter.setPen(q.color);
 
-                    QPixmapCache::insert(hstr, pm);
-                    strings_drawn_this_frame++;
-                } else {
-                    //cached
-                    strings_cached_this_frame++;
-                }
+            imgpainter.setFont(*q.font);
 
-                h = pm.height();
-                w = pm.width();
-                if (q.angle != 0) {
-                    float xxx = q.x - h - (h / 2);
-                    float yyy = q.y + w / 2; // + buf / 2;
+            imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
+            imgpainter.drawText(0, h-buf, q.text);
+            imgpainter.end();
 
-                    xxx+=4;
-                    yyy+=4;
-
-                    painter.translate(xxx, yyy);
-                    painter.rotate(-q.angle);
-                    painter.drawPixmap(QRect(0, h / 2, w, h), pm);
-                    painter.rotate(+q.angle);
-                    painter.translate(-xxx, -yyy);
-                } else {
-                    QRect r1(q.x - buf / 2 + 4, q.y - h + buf, w, h);
-                    painter.drawPixmap(r1, pm);
-                }
-            } else {
-                // Just draw the fonts..
-                painter.setPen(QColor(q.color));
-                painter.setFont(*q.font);
-
-                if (q.angle == 0) {
-                    painter.drawText(q.x, q.y, q.text);
-                } else {
-                    painter.setFont(*q.font);
-
-                    w = painter.fontMetrics().width(q.text);
-                    h = painter.fontMetrics().xHeight() + 2;
-
-                    painter.translate(q.x, q.y);
-                    painter.rotate(-q.angle);
-                    painter.drawText(floor(-w / 2.0)-6, floor(-h / 2.0), q.text);
-                    painter.rotate(+q.angle);
-                    painter.translate(-q.x, -q.y);
-                }
-                strings_drawn_this_frame++;
-
-            }
-
-            //q.text.clear();
-            //q.text.squeeze();
+            QPixmapCache::insert(hstr, pm);
         }
 
-        m_textque.clear();
+        h = pm.height();
+        w = pm.width();
+        if (q.angle != 0) {
+            xxx = q.x - h - (h / 2);
+            yyy = q.y + w / 2; // + buf / 2;
+
+            xxx += 4;
+            yyy += 4;
+
+            painter.translate(xxx, yyy);
+            painter.rotate(-q.angle);
+            painter.drawPixmap(QRect(0, h / 2, w, h), pm);
+            painter.rotate(+q.angle);
+            painter.translate(-xxx, -yyy);
+        } else {
+            QRect r1(q.x - buf / 2 + 4, q.y - h + buf, w, h);
+            painter.drawPixmap(r1, pm);
+        }
     }
     ////////////////////////////////////////////////////////////////////////
     // Text Rectangle Queues..
     ////////////////////////////////////////////////////////////////////////
 
-    float ww, hh;
-    for (const auto & q : m_textqueRect) {
+    for (const TextQueRect & q : m_textqueRect) {
         // can do antialiased text via texture cache fine on mac
-        if (usePixmapCache()) {
-            // Generate the pixmap cache "key"
-            QString hstr = QString("%1:%2:%3").
-                    arg(q.text).
-                    arg(q.color.name()).
-                    arg(q.font->pointSize());
+        // Generate the pixmap cache "key"
 
-            QPixmap pm;
-            if (!QPixmapCache::find(hstr, &pm)) {
+        size = (q.font == defaultfont) ? fonta : (q.font==mediumfont) ? fontb : (q.font == bigfont) ? fontc : q.font->pointSize();
 
-                ww = q.rect.width();
-                hh = q.rect.height();
+        hstr = z__cacheStr.arg(q.text).arg(q.color.name()).arg(size);
 
-                pm=QPixmap(ww, hh);
+        if (!QPixmapCache::find(hstr, &pm)) {
 
-                //int aaw1 = pm.width();
-                pm.fill(Qt::transparent);
+            w = q.rect.width();
+            h = q.rect.height();
 
-                QPainter imgpainter(&pm);
+            pm = QPixmap(w, h);
 
-                //int aaw2 = pm.width();
-                imgpainter.setPen(q.color);
+            pm.fill(Qt::transparent);
 
-                imgpainter.setFont(*q.font);
+            QPainter imgpainter(&pm);
 
-                imgpainter.setRenderHint(QPainter::Antialiasing, true);
-                imgpainter.setRenderHint(QPainter::TextAntialiasing, true);
-                QRectF rect(0,0, ww, hh);
-                imgpainter.drawText(rect, q.flags, q.text);
-                //int aaw3 = pm.width();
-                imgpainter.end();
+            imgpainter.setPen(q.color);
+            imgpainter.setFont(*q.font);
+            imgpainter.setRenderHint(QPainter::TextAntialiasing, true);
+            imgpainter.drawText(QRect(0,0, w, h), q.flags, q.text);
+            imgpainter.end();
 
-                QPixmapCache::insert(hstr, pm);
-                //int aaw4 = pm.width();
-                strings_drawn_this_frame++;
-            } else {
-                //cached
-                strings_cached_this_frame++;
-            }
-
+            QPixmapCache::insert(hstr, pm);
+        } else {
             hh = pm.height();
             ww = pm.width();
-            if (q.angle != 0) {
-                float xxx = q.rect.x() - hh - (hh / 2);
-                float yyy = q.rect.y() + ww / 2; // + buf / 2;
-
-                xxx+=4;
-                yyy+=4;
-
-                painter.translate(xxx, yyy);
-                painter.rotate(-q.angle);
-                painter.drawPixmap(QRect(0, hh / 2, ww, hh), pm);
-                painter.rotate(+q.angle);
-                painter.translate(-xxx, -yyy);
-            } else {
-                //painter.drawPixmap(QPoint(q.rect.x(), q.rect.y()), pm);
-                painter.drawPixmap(q.rect,pm, QRect(0,0,ww,hh));
-            }
-        } else {
-            // Just draw the fonts..
-
-            painter.setPen(QColor(q.color));
-            painter.setFont(*q.font);
-
-            if (q.angle == 0) {
-                painter.drawText(q.rect, q.flags, q.text);
-            } else {
-                painter.setFont(*q.font);
-
-                ww = painter.fontMetrics().width(q.text);
-                hh = painter.fontMetrics().xHeight() + 2;
-
-                painter.translate(q.rect.x(), q.rect.y());
-                painter.rotate(-q.angle);
-                painter.drawText(floor(-ww / 2.0), floor(-hh / 2.0), q.text);
-                painter.rotate(+q.angle);
-                painter.translate(-q.rect.x(), -q.rect.y());
-            }
-            strings_drawn_this_frame++;
-
         }
+        if (q.angle != 0) {
+            xxx = q.rect.x() - h - (h / 2);
+            yyy = q.rect.y() + w / 2;
 
-        //q.text.clear();
-        //q.text.squeeze();
+            xxx += 4;
+            yyy += 4;
+
+            painter.translate(xxx, yyy);
+            painter.rotate(-q.angle);
+            painter.drawPixmap(QRect(0, hh / 2, w, h), pm);
+            painter.rotate(+q.angle);
+            painter.translate(-xxx, -yyy);
+        } else {
+            painter.drawPixmap(q.rect,pm, QRect(0,0,w,h));
+        }
     }
 
+    strings_drawn_this_frame += m_textque.size() + m_textqueRect.size();;
+    m_textque.clear();
     m_textqueRect.clear();
-
 }
-#endif
 
 void gGraphView::AddTextQue(const QString &text, QRectF rect, quint32 flags, float angle, QColor color, QFont *font, bool antialias)
 {
@@ -1351,7 +1264,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     m_drawlist.clear();
 
     if (m_graphs.size() > 1) {
-        DrawTextQue(painter);
+        AppSetting->usePixmapCaching() ? DrawTextQueCached(painter) :DrawTextQue(painter);
 
         // Draw a gradient behind pinned graphs
         QLinearGradient linearGrad(QPointF(100, 100), QPointF(width() / 2, 100));
@@ -1426,7 +1339,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     //    lines->setSize(linesize);
 
-     DrawTextQue(painter);
+    AppSetting->usePixmapCaching() ? DrawTextQueCached(painter) :DrawTextQue(painter);
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
 
@@ -1518,7 +1431,7 @@ void gGraphView::paintGL()
     } else {
        emit updateRange(graphs_drawn ? m_minx : 0.0F, m_maxx);
     }
-    DrawTextQue(painter);
+    AppSetting->usePixmapCaching() ? DrawTextQueCached(painter) :DrawTextQue(painter);
 
     m_tooltip->paint(painter);
 
@@ -1559,7 +1472,7 @@ void gGraphView::paintGL()
         //   if (usePixmapCache()) xx+=4; else xx-=3;
 #endif
         AddTextQue(ss, width(), w / 2, 90, QColor(Qt::black), defaultfont);
-        DrawTextQue(painter);
+        AppSetting->usePixmapCaching() ? DrawTextQueCached(painter) :DrawTextQue(painter);
     }
 //    painter.setPen(Qt::lightGray);
 //    painter.drawLine(0, 0, 0, height());

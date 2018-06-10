@@ -60,10 +60,12 @@ class Preferences
     }
 
     //! \brief Create a preference and set the default if it doesn't exists
-    void init(QString name, QVariant value) {
-        if (!contains(name)) {
-            p_preferences[name] = value;
+    QVariant & init(QString name, QVariant value) {
+        auto it = p_preferences.find(name);
+        if (it == p_preferences.end()) {
+            return p_preferences[name] = value;
         }
+        return it.value();
     }
 
     //! \brief Returns true if preference 'name' exists, and contains a boolean true value
@@ -142,11 +144,11 @@ class PrefSettings
         (*m_pref)[name] = value;
     }
 
-    inline void initPref(QString name, QVariant value) {
-        m_pref->init(name, value);
+    inline QVariant & initPref(QString name, QVariant value) {
+        return m_pref->init(name, value);
     }
 
-    inline QVariant getPref(QString name) const {
+    inline QVariant & getPref(QString name) const {
         return (*m_pref)[name];
     }
 

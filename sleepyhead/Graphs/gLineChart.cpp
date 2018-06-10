@@ -477,8 +477,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         }
     }
 
-    EventDataType lastpx, lastpy;
-    EventDataType px, py;
+    double lastpx, lastpy;
+    double px, py;
     int idx;
     bool done;
     double x0, xL;
@@ -736,8 +736,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         for (int i = idx; i <= siz; i += sam, ptr += sam) {
                             time += rate;
                             // This is much faster than QVector access.
-                            data = *ptr + el.offset();
-                            data *= gain;
+                            data = *ptr * gain;
 
                             // Scale the time scale X to pixel scale X
                             px = ((time - minx) * xmult);
@@ -747,7 +746,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 
                             // In accel mode, each pixel has a min/max Y value.
                             // m_drawlist's index is the pixel index for the X pixel axis.
-                            int z = round(px); // Hmmm... round may screw this up.
+                            //int z = round(px); // Hmmm... round may screw this up.
+                            int z = (px>=0.5)?(int(px)+1):int(px);
 
                             if (z < minz) {
                                 minz = z;    // minz=First pixel
@@ -790,7 +790,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
                         }
 
                         float ax1, ay1;
-                        QPoint *drl = m_drawlist + minz;
+                        QPointF *drl = m_drawlist + minz;
                         // Don't need to cap VertexBuffer here, as it's limited to max_drawlist_size anyway
 
 

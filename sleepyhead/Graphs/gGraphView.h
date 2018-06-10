@@ -428,6 +428,9 @@ class gGraphView
     //! \brief Draw all text components using QPainter object painter
     void DrawTextQue(QPainter &painter);
 
+    //! \brief Draw all text components using QPainter object painter using Pixmapcache
+    void DrawTextQueCached(QPainter &painter);
+
     //! \brief Returns number of graphs contained (whether they are visible or not)
     int size() const { return m_graphs.size(); }
 
@@ -491,9 +494,6 @@ class gGraphView
 
     //! \brief Enable or disable the Text Pixmap Caching system preference overide
     void setUsePixmapCache(bool b) { use_pixmap_cache = b; }
-
-    //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
-    bool usePixmapCache();
 
     //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
     bool renderGraphs(QPainter &painter);
