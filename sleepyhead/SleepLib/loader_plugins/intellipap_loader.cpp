@@ -883,7 +883,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
         qint64 LLstart =0, LLend = 0;
 
         SR = summaryList.begin();
-        for (int r=0; r<numRrecs; ++r) {
+        for (int r=0; r<numRrecs; data += DV6_R_RecLength, ++r) {
             dataBA=f.read(DV6_R_RecLength);
             data = (unsigned char *)dataBA.data();
             if (dataBA.size() < DV6_R_RecLength) {
@@ -1240,7 +1240,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
                 }
             }
 
-            data += DV6_R_RecLength;
+
         }
         if (flow && sess) {
             // Close event states if they are still open, and write event.
@@ -1341,7 +1341,11 @@ int IntellipapLoader::OpenDV6(const QString & path)
                     RR = R->sess->AddEventList(CPAP_RespRate, EVL_Event);
                     MV = R->sess->AddEventList(CPAP_MinuteVent, EVL_Event);
                     TV = R->sess->AddEventList(CPAP_TidalVolume, EVL_Event);
-                    Pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Event);
+
+                    if (!R->sess->channelDataExists(CPAP_Pressure)) {
+                        // Don't use this pressure if we have higher resolution available
+                        Pressure = R->sess->AddEventList(CPAP_Pressure, EVL_Event);
+                    }
                 }
                 if (leak) {
                     sess = R->sess;
@@ -1351,7 +1355,8 @@ int IntellipapLoader::OpenDV6(const QString & path)
                     maxleak->AddEvent(ti, data[5]);
                     leak->AddEvent(ti, data[6]);
                     RR->AddEvent(ti, data[9]);
-                    Pressure->AddEvent(ti, data[11] / 10.0f);
+
+                    if (Pressure) Pressure->AddEvent(ti, data[11] / 10.0f);
 
                     unsigned tv = data[7] | data[8] << 8;
                     MV->AddEvent(ti, data[10] );
