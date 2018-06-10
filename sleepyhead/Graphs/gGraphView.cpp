@@ -806,7 +806,7 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
     int h,w;
     QString hstr;
     QPixmap pm;
-    float ww, hh, xxx, yyy;
+    float xxx, yyy;
     const int buf = 8;
     int fonta = defaultfont->pointSize();
     int fontb = mediumfont->pointSize();
@@ -824,7 +824,6 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
         if (!QPixmapCache::find(hstr, &pm)) {
 
             QFontMetrics fm(*q.font);
-           // QRect rect=fm.tightBoundingRect(q.text);
             w = fm.width(q.text);
             h = fm.height()+buf;
 
@@ -834,7 +833,6 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
             QPainter imgpainter(&pm);
 
             imgpainter.setPen(q.color);
-
             imgpainter.setFont(*q.font);
 
             imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
@@ -848,7 +846,7 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
         w = pm.width();
         if (q.angle != 0) {
             xxx = q.x - h - (h / 2);
-            yyy = q.y + w / 2; // + buf / 2;
+            yyy = q.y + w / 2;
 
             xxx += 4;
             yyy += 4;
@@ -894,8 +892,8 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
 
             QPixmapCache::insert(hstr, pm);
         } else {
-            hh = pm.height();
-            ww = pm.width();
+            h = pm.height();
+            w = pm.width();
         }
         if (q.angle != 0) {
             xxx = q.rect.x() - h - (h / 2);
@@ -906,7 +904,7 @@ void gGraphView::DrawTextQueCached(QPainter &painter)
 
             painter.translate(xxx, yyy);
             painter.rotate(-q.angle);
-            painter.drawPixmap(QRect(0, hh / 2, w, h), pm);
+            painter.drawPixmap(QRect(0, h / 2, w, h), pm);
             painter.rotate(+q.angle);
             painter.translate(-xxx, -yyy);
         } else {

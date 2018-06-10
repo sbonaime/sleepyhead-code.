@@ -128,43 +128,43 @@ public:
   inline const QString & profileName() const { return m_profileName; }
   bool autoLaunchImport() const { return getPref(STR_US_AutoLaunchImport).toBool(); }
   bool cacheSessions() const { return m_cacheSessions; }
-  inline const bool multithreading() const { return m_multithreading; }
+  inline bool multithreading() const { return m_multithreading; }
   bool showDebug() const { return m_showDebug; }
   bool showPerformance() const { return m_showPerformance; }
   //! \brief Whether to show the calendar
   bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
-  inline const int scrollDampening() const { return m_scrollDampening; }
-  inline const int tooltipTimeout() const { return m_tooltipTimeout; }
+  inline int scrollDampening() const { return m_scrollDampening; }
+  inline int tooltipTimeout() const { return m_tooltipTimeout; }
   //! \brief Returns the normal (unscaled) height of a graph
-  inline const int graphHeight() const { return m_graphHeight; }
+  inline int graphHeight() const { return m_graphHeight; }
   //! \brief Returns the normal (unscaled) height of a graph
   int dailyPanelWidth() const { return getPref(STR_AS_DailyPanelWidth).toInt(); }
   //! \brief Returns the normal (unscaled) height of a graph
   int rightPanelWidth() const { return getPref(STR_AS_RightPanelWidth).toInt(); }
   //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
-  inline const bool antiAliasing() const { return m_antiAliasing; }
+  inline bool antiAliasing() const { return m_antiAliasing; }
   //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
   bool graphSnapshots() const { return getPref(STR_AS_GraphSnapshots).toBool(); }
   //! \brief Returns true if Graphical animations & Transitions will be drawn
   bool animations() const { return m_animations; }
   //! \brief Returns true if PixmapCaching acceleration will be used
-  inline const bool & usePixmapCaching() const { return m_usePixmapCaching; }
+  inline bool usePixmapCaching() const { return m_usePixmapCaching; }
   //! \brief Returns true if Square Wave plots are preferred (where possible)
-  inline const bool squareWavePlots() const { return m_squareWavePlots; }
+  inline bool squareWavePlots() const { return m_squareWavePlots; }
   //! \brief Whether to allow double clicking on Y-Axis labels to change vertical scaling mode
   bool allowYAxisScaling() const { return getPref(STR_AS_AllowYAxisScaling).toBool(); }
   //! \brief Whether to show graph tooltips
-  inline const bool graphTooltips() const { return m_graphTooltips; }
+  inline bool graphTooltips() const { return m_graphTooltips; }
   //! \brief Pen width of line plots
-  inline const float lineThickness() const { return m_lineThickness; }
+  inline float lineThickness() const { return m_lineThickness; }
   //! \brief Whether to show line cursor
-  inline const bool lineCursorMode() const { return m_lineCursorMode; }
+  inline bool lineCursorMode() const { return m_lineCursorMode; }
   //! \brief Whether to show the right sidebar
   bool rightSidebarVisible() const { return getPref(STR_AS_RightSidebarVisible).toBool(); }
   //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
-  inline const OverlayDisplayType overlayType() const { return m_odt; }
+  inline OverlayDisplayType overlayType() const { return m_odt; }
   //! \brief Returns the display type of Overview pages linechart
-  inline const OverviewLinechartModes overviewLinechartMode() const { return m_olm; }
+  inline OverviewLinechartModes overviewLinechartMode() const { return m_olm; }
   bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
   bool showSerialNumbers() const { return getPref(STR_US_ShowSerialNumbers).toBool(); }
   int openTabAtStart() const { return getPref(STR_US_OpenTabAtStart).toInt(); }

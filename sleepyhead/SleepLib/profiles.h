@@ -566,24 +566,24 @@ class CPAPSettings : public PrefSettings
     EventDataType untreatedAHI() const { return getPref(STR_CS_UntreatedAHI).toFloat(); }
     const QString notes() const { return getPref(STR_CS_Notes).toString(); }
     QDate dateDiagnosed() const { return getPref(STR_CS_DateDiagnosed).toDate(); }
-    inline const EventDataType userEventRestriction() const { return m_userEventRestriction1; }
-    inline const EventDataType userEventDuration() const { return m_userEventDuration1; }
-    inline const EventDataType userEventRestriction2() const { return m_userEventRestriction2; }
-    inline const EventDataType userEventDuration2() const { return m_userEventDuration2; }
-    inline const bool userEventDuplicates() const { return m_userEventDuplicates; }
-    inline const EventDataType AHIWindow() const { return m_ahiWindow; }
-    inline const bool AHIReset() const { return m_ahiReset; }
-    inline const bool userEventFlagging() const { return m_userEventFlagging; }
-    inline const int clockDrift() const { return m_clock_drift; }
-    inline const EventDataType leakRedline() const { return m_leakRedLine; }
-    inline const bool showLeakRedline() const { return m_showLeakRedline; }
-    inline const bool resyncFromUserFlagging() const { return m_resyncFromUserFlagging; }
+    inline EventDataType userEventRestriction() const { return m_userEventRestriction1; }
+    inline EventDataType userEventDuration() const { return m_userEventDuration1; }
+    inline EventDataType userEventRestriction2() const { return m_userEventRestriction2; }
+    inline EventDataType userEventDuration2() const { return m_userEventDuration2; }
+    inline bool userEventDuplicates() const { return m_userEventDuplicates; }
+    inline EventDataType AHIWindow() const { return m_ahiWindow; }
+    inline bool AHIReset() const { return m_ahiReset; }
+    inline bool userEventFlagging() const { return m_userEventFlagging; }
+    inline int clockDrift() const { return m_clock_drift; }
+    inline EventDataType leakRedline() const { return m_leakRedLine; }
+    inline bool showLeakRedline() const { return m_showLeakRedline; }
+    inline bool resyncFromUserFlagging() const { return m_resyncFromUserFlagging; }
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
 
-    inline const bool calculateUnintentionalLeaks() const { return m_calcUnintentionalLeaks; }
-    inline const double custom4cmH2OLeaks() const { return m_4cmH2OLeaks; }
-    inline const double custom20cmH2OLeaks() const { return m_20cmH2OLeaks; }
+    inline bool calculateUnintentionalLeaks() const { return m_calcUnintentionalLeaks; }
+    inline double custom4cmH2OLeaks() const { return m_4cmH2OLeaks; }
+    inline double custom20cmH2OLeaks() const { return m_20cmH2OLeaks; }
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
@@ -650,16 +650,16 @@ class SessionSettings : public PrefSettings
         m_lockSummarySessions = initPref(STR_IS_LockSummarySessions, true).toBool();
     }
 
-    inline const QTime daySplitTime() const { return m_daySplitTime; }
-    inline const bool preloadSummaries() const { return m_preloadSummaries; }
-    inline const double combineCloseSessions() const { return m_combineCloseSessions; }
-    inline const double ignoreShortSessions() const { return m_ignoreShortSessions; }
-    inline const bool compressSessionData() const { return m_compressSessionData; }
-    inline const bool compressBackupData() const { return m_compressBackupData; }
-    inline const bool backupCardData() const { return m_backupCardData; }
-    inline const bool ignoreOlderSessions() const { return m_ignoreOlderSessions; }
-    inline const QDateTime ignoreOlderSessionsDate() const { return m_ignoreOlderSessionsDate; }
-    inline const bool lockSummarySessions() const { return m_lockSummarySessions; }
+    inline QTime daySplitTime() const { return m_daySplitTime; }
+    inline bool preloadSummaries() const { return m_preloadSummaries; }
+    inline double combineCloseSessions() const { return m_combineCloseSessions; }
+    inline double ignoreShortSessions() const { return m_ignoreShortSessions; }
+    inline bool compressSessionData() const { return m_compressSessionData; }
+    inline bool compressBackupData() const { return m_compressBackupData; }
+    inline bool backupCardData() const { return m_backupCardData; }
+    inline bool ignoreOlderSessions() const { return m_ignoreOlderSessions; }
+    inline QDateTime ignoreOlderSessionsDate() const { return m_ignoreOlderSessionsDate; }
+    inline bool lockSummarySessions() const { return m_lockSummarySessions; }
 
     void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, m_daySplitTime=time); }
     void setPreloadSummaries(bool b) { setPref(STR_IS_PreloadSummaries, m_preloadSummaries=b); }
@@ -717,14 +717,14 @@ class UserSettings : public PrefSettings
 
     UnitSystem unitSystem() const { return (UnitSystem)getPref(STR_US_UnitSystem).toInt(); }
     double eventWindowSize() const { return getPref(STR_US_EventWindowSize).toDouble(); }
-    inline const bool skipEmptyDays() const { return m_skipEmptyDays; }
+    inline bool skipEmptyDays() const { return m_skipEmptyDays; }
     bool rebuildCache() const { return getPref(STR_US_RebuildCache).toBool(); }
-    inline const bool calculateRDI() const { return m_calculateRDI; }
-    inline const int prefCalcMiddle() const { return m_prefCalcMiddle;  }
-    inline const double prefCalcPercentile() const { return m_prefCalcPercentile; }
-    inline const int prefCalcMax() const { return m_prefCalcMax; }
+    inline bool calculateRDI() const { return m_calculateRDI; }
+    inline int prefCalcMiddle() const { return m_prefCalcMiddle;  }
+    inline double prefCalcPercentile() const { return m_prefCalcPercentile; }
+    inline int prefCalcMax() const { return m_prefCalcMax; }
     int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
-    inline const bool showUnknownFlags() const { return m_showUnownFlags; }
+    inline bool showUnknownFlags() const { return m_showUnownFlags; }
     int lastOverviewRange() const { return getPref(STR_US_LastOverviewRange).toInt(); }
 
     void setUnitSystem(UnitSystem us) { setPref(STR_US_UnitSystem, (int)us); }
