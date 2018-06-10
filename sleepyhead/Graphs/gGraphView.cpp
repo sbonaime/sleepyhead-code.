@@ -2490,6 +2490,9 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                     this->setCursor(Qt::ArrowCursor);
                     pin_action->setText(QObject::tr("Unpin %1 Graph").arg(g->title()));
                     pin_graph = g;
+                    popout_action->setText(QObject::tr("Popout %1 Graph").arg(g->title()));
+                    popout_graph = g;
+
                     populateMenu(g);
                     context_menu->popup(event->globalPos());
                     //done=true;
@@ -2565,7 +2568,6 @@ void gGraphView::mousePressEvent(QMouseEvent *event)
                         popout_action->setText(QObject::tr("Popout %1 Graph").arg(g->title()));
                         popout_graph = g;
                         pin_action->setText(QObject::tr("Pin %1 Graph").arg(g->title()));
-
                         pin_graph = g;
                         populateMenu(g);
 
