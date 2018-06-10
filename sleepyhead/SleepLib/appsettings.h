@@ -68,8 +68,8 @@ public:
     : PrefSettings(pref)
   {
       m_multithreading = initPref(STR_IS_Multithreading, idealThreads() > 1).toBool();
-      initPref(STR_US_ShowPerformance, false);
-      initPref(STR_US_ShowDebug, false);
+      m_showPerformance = initPref(STR_US_ShowPerformance, false).toBool();
+      m_showDebug = initPref(STR_US_ShowDebug, false).toBool();
       initPref(STR_AS_CalendarVisible, true);
       m_scrollDampening = initPref(STR_US_ScrollDampening, (int)50).toInt();
       m_tooltipTimeout = initPref(STR_US_TooltipTimeout, (int)2500).toInt();
@@ -78,24 +78,24 @@ public:
       initPref(STR_AS_RightPanelWidth, 230.0);
       m_antiAliasing=initPref(STR_AS_AntiAliasing, true).toBool();
       initPref(STR_AS_GraphSnapshots, true);
-      initPref(STR_AS_Animations, true);
+      m_animations = initPref(STR_AS_Animations, true).toBool();
       m_squareWavePlots = initPref(STR_AS_SquareWave, false).toBool();
       initPref(STR_AS_AllowYAxisScaling, true);
-      initPref(STR_AS_GraphTooltips, true);
+      m_graphTooltips = initPref(STR_AS_GraphTooltips, true).toBool();
       m_usePixmapCaching = initPref(STR_AS_UsePixmapCaching, false).toBool();
-      initPref(STR_AS_OverlayType, ODT_Bars);
-      initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
+      m_odt = (OverlayDisplayType)initPref(STR_AS_OverlayType, (int)ODT_Bars).toInt();
+      m_olm = (OverviewLinechartModes)initPref(STR_AS_OverviewLinechartMode, (int)OLC_Bartop).toInt();
       m_lineThickness=initPref(STR_AS_LineThickness, 1.0).toFloat();
-      initPref(STR_AS_LineCursorMode, true);
+      m_lineCursorMode = initPref(STR_AS_LineCursorMode, true).toBool();
       initPref(STR_AS_RightSidebarVisible, true);
       initPref(STR_CS_UserEventPieChart, false);
       initPref(STR_US_ShowSerialNumbers, false);
       initPref(STR_US_OpenTabAtStart, 1);
       initPref(STR_US_OpenTabAfterImport, 0);
       initPref(STR_US_AutoLaunchImport, false);
-      initPref(STR_IS_CacheSessions, false);
+      m_cacheSessions = initPref(STR_IS_CacheSessions, false).toBool();
       initPref(STR_US_RemoveCardReminder, true);
-      initPref(STR_GEN_Profile, "");
+      m_profileName = initPref(STR_GEN_Profile, "").toString();
       initPref(STR_GEN_AutoOpenLastUsed, true);
 
       initPref(STR_GEN_UpdatesAutoCheck, true);
@@ -103,14 +103,19 @@ public:
       initPref(STR_PREF_AllowEarlyUpdates, false);
       initPref(STR_GEN_UpdatesLastChecked, QDateTime());
       initPref(STR_PREF_VersionString, VersionString);
-      initPref(STR_GEN_Language, "en_US");
+      m_language = initPref(STR_GEN_Language, "en_US").toString();
       initPref(STR_GEN_ShowAboutDialog, 0);  // default to about screen, set to -1 afterwards
   }
 
-  bool m_usePixmapCaching, m_antiAliasing, m_squareWavePlots;
+  bool m_usePixmapCaching, m_antiAliasing, m_squareWavePlots,m_graphTooltips, m_lineCursorMode, m_animations;
+  bool m_showPerformance, m_showDebug;
   int m_tooltipTimeout, m_graphHeight, m_scrollDampening;
-  bool m_multithreading;
+  bool m_multithreading, m_cacheSessions;
   float m_lineThickness;
+
+  OverlayDisplayType m_odt;
+  OverviewLinechartModes m_olm;
+  QString m_profileName, m_language;
 
   QString versionString() const { return getPref(STR_PREF_VersionString).toString(); }
   bool updatesAutoCheck() const { return getPref(STR_GEN_UpdatesAutoCheck).toBool(); }
@@ -120,64 +125,60 @@ public:
   int showAboutDialog() const { return getPref(STR_GEN_ShowAboutDialog).toInt(); }
   void setShowAboutDialog(int tab) {setPref(STR_GEN_ShowAboutDialog, tab); }
 
-  QString profileName() const { return getPref(STR_GEN_Profile).toString(); }
+  inline const QString & profileName() const { return m_profileName; }
   bool autoLaunchImport() const { return getPref(STR_US_AutoLaunchImport).toBool(); }
-  bool cacheSessions() const { return getPref(STR_IS_CacheSessions).toBool(); }
-  bool multithreading() const { return m_multithreading; }
-  bool showDebug() const { return getPref(STR_US_ShowDebug).toBool(); }
-  bool showPerformance() const { return getPref(STR_US_ShowPerformance).toBool(); }
+  bool cacheSessions() const { return m_cacheSessions; }
+  inline const bool multithreading() const { return m_multithreading; }
+  bool showDebug() const { return m_showDebug; }
+  bool showPerformance() const { return m_showPerformance; }
   //! \brief Whether to show the calendar
   bool calendarVisible() const { return getPref(STR_AS_CalendarVisible).toBool(); }
-  int scrollDampening() const { return m_scrollDampening; }
-  int tooltipTimeout() const { return m_tooltipTimeout; }
+  inline const int scrollDampening() const { return m_scrollDampening; }
+  inline const int tooltipTimeout() const { return m_tooltipTimeout; }
   //! \brief Returns the normal (unscaled) height of a graph
-  int graphHeight() const { return m_graphHeight; }
+  inline const int graphHeight() const { return m_graphHeight; }
   //! \brief Returns the normal (unscaled) height of a graph
   int dailyPanelWidth() const { return getPref(STR_AS_DailyPanelWidth).toInt(); }
   //! \brief Returns the normal (unscaled) height of a graph
   int rightPanelWidth() const { return getPref(STR_AS_RightPanelWidth).toInt(); }
   //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
-  bool antiAliasing() const { return m_antiAliasing; }
+  inline const bool antiAliasing() const { return m_antiAliasing; }
   //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
   bool graphSnapshots() const { return getPref(STR_AS_GraphSnapshots).toBool(); }
   //! \brief Returns true if Graphical animations & Transitions will be drawn
-  bool animations() const { return getPref(STR_AS_Animations).toBool(); }
+  bool animations() const { return m_animations; }
   //! \brief Returns true if PixmapCaching acceleration will be used
   inline const bool & usePixmapCaching() const { return m_usePixmapCaching; }
   //! \brief Returns true if Square Wave plots are preferred (where possible)
-  bool squareWavePlots() const { return m_squareWavePlots; }
+  inline const bool squareWavePlots() const { return m_squareWavePlots; }
   //! \brief Whether to allow double clicking on Y-Axis labels to change vertical scaling mode
   bool allowYAxisScaling() const { return getPref(STR_AS_AllowYAxisScaling).toBool(); }
   //! \brief Whether to show graph tooltips
-  bool graphTooltips() const { return getPref(STR_AS_GraphTooltips).toBool(); }
+  inline const bool graphTooltips() const { return m_graphTooltips; }
   //! \brief Pen width of line plots
-  float lineThickness() const { return m_lineThickness; }
+  inline const float lineThickness() const { return m_lineThickness; }
   //! \brief Whether to show line cursor
-  bool lineCursorMode() const { return getPref(STR_AS_LineCursorMode).toBool(); }
+  inline const bool lineCursorMode() const { return m_lineCursorMode; }
   //! \brief Whether to show the right sidebar
   bool rightSidebarVisible() const { return getPref(STR_AS_RightSidebarVisible).toBool(); }
   //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
-  OverlayDisplayType overlayType() const {
-      return (OverlayDisplayType)getPref(STR_AS_OverlayType).toInt();
-  }
+  inline const OverlayDisplayType overlayType() const { return m_odt; }
   //! \brief Returns the display type of Overview pages linechart
-  OverviewLinechartModes overviewLinechartMode() const {
-      return (OverviewLinechartModes)getPref(STR_AS_OverviewLinechartMode).toInt();
-  }
+  inline const OverviewLinechartModes overviewLinechartMode() const { return m_olm; }
   bool userEventPieChart() const { return getPref(STR_CS_UserEventPieChart).toBool(); }
   bool showSerialNumbers() const { return getPref(STR_US_ShowSerialNumbers).toBool(); }
   int openTabAtStart() const { return getPref(STR_US_OpenTabAtStart).toInt(); }
   int openTabAfterImport() const { return getPref(STR_US_OpenTabAfterImport).toInt(); }
   bool removeCardReminder() const { return getPref(STR_US_RemoveCardReminder).toBool(); }
   bool autoOpenLastUsed() const { return getPref(STR_GEN_AutoOpenLastUsed).toBool(); }
-  QString language() const { return getPref(STR_GEN_Language).toString(); }
+  inline const QString & language() const { return m_language; }
 
-  void setProfileName(QString name) { setPref(STR_GEN_Profile, name); }
+  void setProfileName(QString name) { setPref(STR_GEN_Profile, m_profileName=name); }
   void setAutoLaunchImport(bool b) { setPref(STR_US_AutoLaunchImport, b); }
-  void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, c); }
+  void setCacheSessions(bool c) { setPref(STR_IS_CacheSessions, m_cacheSessions=c); }
   void setMultithreading(bool b) { setPref(STR_IS_Multithreading, m_multithreading = b); }
-  void setShowDebug(bool b) { setPref(STR_US_ShowDebug, b); }
-  void setShowPerformance(bool b) { setPref(STR_US_ShowPerformance, b); }
+  void setShowDebug(bool b) { setPref(STR_US_ShowDebug, m_showDebug=b); }
+  void setShowPerformance(bool b) { setPref(STR_US_ShowPerformance, m_showPerformance=b); }
   //! \brief Sets whether to display the (Daily View) Calendar
   void setCalendarVisible(bool b) { setPref(STR_AS_CalendarVisible, b); }
   void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, m_scrollDampening=i); }
@@ -193,25 +194,23 @@ public:
   //! \brief Set to true if renderPixmap functions are in use, which takes snapshots of graphs.
   void setGraphSnapshots(bool gs) { setPref(STR_AS_GraphSnapshots, gs); }
   //! \brief Set to true if Graphical animations & Transitions will be drawn
-  void setAnimations(bool anim) { setPref(STR_AS_Animations, anim); }
+  void setAnimations(bool anim) { setPref(STR_AS_Animations, m_animations=anim); }
   //! \brief Set to true to use Pixmap Caching of Text and other graphics caching speedup techniques
   void setUsePixmapCaching(bool b) { setPref(STR_AS_UsePixmapCaching, m_usePixmapCaching=b); }
   //! \brief Set whether or not to useSquare Wave plots (where possible)
   void setSquareWavePlots(bool sw) { setPref(STR_AS_SquareWave, m_squareWavePlots=sw); }
   //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
-  void setOverlayType(OverlayDisplayType od) { setPref(STR_AS_OverlayType, (int)od); }
+  void setOverlayType(OverlayDisplayType odt) { setPref(STR_AS_OverlayType, (int)(m_odt=odt)); }
   //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
   void setAllowYAxisScaling(bool b) { setPref(STR_AS_AllowYAxisScaling, b); }
   //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
-  void setGraphTooltips(bool b) { setPref(STR_AS_GraphTooltips, b); }
+  void setGraphTooltips(bool b) { setPref(STR_AS_GraphTooltips, m_graphTooltips=b); }
   //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
-  void setOverviewLinechartMode(OverviewLinechartModes od) {
-      setPref(STR_AS_OverviewLinechartMode, (int)od);
-  }
+  void setOverviewLinechartMode(OverviewLinechartModes olm) { setPref(STR_AS_OverviewLinechartMode, (int)(m_olm=olm)); }
   //! \brief Set the pen width of line plots.
   void setLineThickness(float size) { setPref(STR_AS_LineThickness, m_lineThickness=size); }
   //! \brief Sets whether to display Line Cursor
-  void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, b); }
+  void setLineCursorMode(bool b) { setPref(STR_AS_LineCursorMode, m_lineCursorMode=b); }
   //! \brief Sets whether to display the right sidebar
   void setRightSidebarVisible(bool b) { setPref(STR_AS_RightSidebarVisible, b); }
   void setUserEventPieChart(bool b) { setPref(STR_CS_UserEventPieChart, b); }
@@ -226,7 +225,7 @@ public:
   void setUpdatesLastChecked(QDateTime datetime) { setPref(STR_GEN_UpdatesLastChecked, datetime); }
   void setUpdateCheckFrequency(int freq) { setPref(STR_GEN_UpdateCheckFrequency,freq); }
   void setAutoOpenLastUsed(bool b) { setPref(STR_GEN_AutoOpenLastUsed , b); }
-  void setLanguage(QString language) { setPref(STR_GEN_Language, language); }
+  void setLanguage(QString language) { setPref(STR_GEN_Language, m_language=language); }
 
 };
 

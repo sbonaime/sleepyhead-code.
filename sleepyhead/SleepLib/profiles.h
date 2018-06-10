@@ -520,7 +520,7 @@ class CPAPSettings : public PrefSettings
     CPAPSettings(Profile *profile)
       : PrefSettings(profile)
     {
-        initPref(STR_CS_ComplianceHours, 4);
+        m_complianceHours = initPref(STR_CS_ComplianceHours, 4.0f).toFloat();
         initPref(STR_CS_ShowCompliance, true);
         initPref(STR_CS_ShowLeaksMode, 0);
         // TODO: jedimark: Check if this date is initiliazed yet
@@ -528,103 +528,105 @@ class CPAPSettings : public PrefSettings
         initPref(STR_CS_MaskDescription, QString());
         initPref(STR_CS_MaskType, Mask_Unknown);
         initPref(STR_CS_PrescribedMode, MODE_UNKNOWN);
-        initPref(STR_CS_PrescribedMinPressure, 0.0);
-        initPref(STR_CS_PrescribedMaxPressure, 0.0);
-        initPref(STR_CS_UntreatedAHI, 0.0);
+        initPref(STR_CS_PrescribedMinPressure, 0.0f);
+        initPref(STR_CS_PrescribedMaxPressure, 0.0f);
+        initPref(STR_CS_UntreatedAHI, 0.0f);
         initPref(STR_CS_Notes, QString());
         initPref(STR_CS_DateDiagnosed, QDate());
-        initPref(STR_CS_UserFlowRestriction, 20.0);
-        initPref(STR_CS_UserEventDuration, 8.0);
-        initPref(STR_CS_UserFlowRestriction2, 50.0);
-        initPref(STR_CS_UserEventDuration2, 8.0);
-        initPref(STR_CS_UserEventDuplicates, false);
-        initPref(STR_CS_UserEventFlagging, false);
-        initPref(STR_CS_AHIWindow, 60.0);
-        initPref(STR_CS_AHIReset, false);
-        initPref(STR_CS_LeakRedline, 24.0);
-        initPref(STR_CS_ShowLeakRedline, true);
-        initPref(STR_CS_ResyncFromUserFlagging, false);
+        m_userEventRestriction1 = initPref(STR_CS_UserFlowRestriction, 20.0f).toFloat();
+        m_userEventDuration1 = initPref(STR_CS_UserEventDuration, 8.0f).toFloat();
+        m_userEventRestriction2 = initPref(STR_CS_UserFlowRestriction2, 50.0f).toFloat();
+        m_userEventDuration2 = initPref(STR_CS_UserEventDuration2, 8.0f).toFloat();
+        m_userEventDuplicates = initPref(STR_CS_UserEventDuplicates, false).toBool();
+        m_userEventFlagging = initPref(STR_CS_UserEventFlagging, false).toBool();
+        m_ahiWindow = initPref(STR_CS_AHIWindow, 60.0).toFloat();
+        m_ahiReset = initPref(STR_CS_AHIReset, false).toBool();
+        m_leakRedLine = initPref(STR_CS_LeakRedline, 24.0f).toFloat();
+        m_showLeakRedline = initPref(STR_CS_ShowLeakRedline, true).toBool();
+        m_resyncFromUserFlagging = initPref(STR_CS_ResyncFromUserFlagging, false).toBool();
         initPref(STR_CS_AutoImport, false);
         initPref(STR_CS_BrickWarning, true);
 
-        initPref(STR_CS_CalculateUnintentionalLeaks, true);
-        initPref(STR_CS_4cmH2OLeaks, 20.167);
-        initPref(STR_CS_20cmH2OLeaks, 48.333);
-
-        initPref(STR_CS_ClockDrift, (int)0);
-        m_clock_drift = getPref(STR_CS_ClockDrift).toInt();
+        m_calcUnintentionalLeaks = initPref(STR_CS_CalculateUnintentionalLeaks, true).toBool();
+        m_4cmH2OLeaks = initPref(STR_CS_4cmH2OLeaks, 20.167).toDouble();
+        m_20cmH2OLeaks = initPref(STR_CS_20cmH2OLeaks, 48.333).toDouble();
+        m_clock_drift = initPref(STR_CS_ClockDrift, (int)0).toInt();
     }
 
     //Getters
-    double complianceHours() const { return getPref(STR_CS_ComplianceHours).toDouble(); }
+    double complianceHours() const { return m_complianceHours; }
     bool showComplianceInfo() const { return getPref(STR_CS_ShowCompliance).toBool(); }
     int leakMode() const { return getPref(STR_CS_ShowLeaksMode).toInt(); }
     QDate maskStartDate() const { return getPref(STR_CS_MaskStartDate).toDate(); }
     QString maskDescription() const { return getPref(STR_CS_MaskDescription).toString(); }
     MaskType maskType() const { return (MaskType)getPref(STR_CS_MaskType).toInt(); }
     CPAPMode mode() const { return CPAPMode(getPref(STR_CS_PrescribedMode).toInt()); }
-    double minPressure() const { return getPref(STR_CS_PrescribedMinPressure).toDouble(); }
-    double maxPressure() const { return getPref(STR_CS_PrescribedMaxPressure).toDouble(); }
-    double untreatedAHI() const { return getPref(STR_CS_UntreatedAHI).toDouble(); }
+    EventDataType minPressure() const { return getPref(STR_CS_PrescribedMinPressure).toFloat(); }
+    EventDataType maxPressure() const { return getPref(STR_CS_PrescribedMaxPressure).toFloat(); }
+    EventDataType untreatedAHI() const { return getPref(STR_CS_UntreatedAHI).toFloat(); }
     const QString notes() const { return getPref(STR_CS_Notes).toString(); }
     QDate dateDiagnosed() const { return getPref(STR_CS_DateDiagnosed).toDate(); }
-    double userFlowRestriction() const { return getPref(STR_CS_UserFlowRestriction).toDouble(); }
-    double userEventDuration() const { return getPref(STR_CS_UserEventDuration).toDouble(); }
-    double userFlowRestriction2() const { return getPref(STR_CS_UserFlowRestriction2).toDouble(); }
-    double userEventDuration2() const { return getPref(STR_CS_UserEventDuration2).toDouble(); }
-    bool userEventDuplicates() const { return getPref(STR_CS_UserEventDuplicates).toBool(); }
-    double AHIWindow() const { return getPref(STR_CS_AHIWindow).toDouble(); }
-    bool AHIReset() const { return getPref(STR_CS_AHIReset).toBool(); }
-    bool userEventFlagging() const { return getPref(STR_CS_UserEventFlagging).toBool(); }
-    int clockDrift() const { return m_clock_drift; }
-    EventDataType leakRedline() const { return getPref(STR_CS_LeakRedline).toFloat(); }
-    bool showLeakRedline() const { return getPref(STR_CS_ShowLeakRedline).toBool(); }
-    bool resyncFromUserFlagging() const { return getPref(STR_CS_ResyncFromUserFlagging).toBool(); }
+    inline const EventDataType userEventRestriction() const { return m_userEventRestriction1; }
+    inline const EventDataType userEventDuration() const { return m_userEventDuration1; }
+    inline const EventDataType userEventRestriction2() const { return m_userEventRestriction2; }
+    inline const EventDataType userEventDuration2() const { return m_userEventDuration2; }
+    inline const bool userEventDuplicates() const { return m_userEventDuplicates; }
+    inline const EventDataType AHIWindow() const { return m_ahiWindow; }
+    inline const bool AHIReset() const { return m_ahiReset; }
+    inline const bool userEventFlagging() const { return m_userEventFlagging; }
+    inline const int clockDrift() const { return m_clock_drift; }
+    inline const EventDataType leakRedline() const { return m_leakRedLine; }
+    inline const bool showLeakRedline() const { return m_showLeakRedline; }
+    inline const bool resyncFromUserFlagging() const { return m_resyncFromUserFlagging; }
     bool autoImport() const { return getPref(STR_CS_AutoImport).toBool(); }
     bool brickWarning() const { return getPref(STR_CS_BrickWarning).toBool(); }
 
-    bool calculateUnintentionalLeaks() const { return getPref(STR_CS_CalculateUnintentionalLeaks).toBool(); }
-    double custom4cmH2OLeaks() const { return getPref(STR_CS_4cmH2OLeaks).toDouble(); }
-    double custom20cmH2OLeaks() const { return getPref(STR_CS_20cmH2OLeaks).toDouble(); }
+    inline const bool calculateUnintentionalLeaks() const { return m_calcUnintentionalLeaks; }
+    inline const double custom4cmH2OLeaks() const { return m_4cmH2OLeaks; }
+    inline const double custom20cmH2OLeaks() const { return m_20cmH2OLeaks; }
 
     //Setters
     void setMode(CPAPMode mode) { setPref(STR_CS_PrescribedMode, (int)mode); }
-    void setMinPressure(double pressure) { setPref(STR_CS_PrescribedMinPressure, pressure); }
-    void setMaxPressure(double pressure) { setPref(STR_CS_PrescribedMaxPressure, pressure); }
-    void setUntreatedAHI(double ahi) { setPref(STR_CS_UntreatedAHI, ahi); }
+    void setMinPressure(EventDataType pressure) { setPref(STR_CS_PrescribedMinPressure, pressure); }
+    void setMaxPressure(EventDataType pressure) { setPref(STR_CS_PrescribedMaxPressure, pressure); }
+    void setUntreatedAHI(EventDataType ahi) { setPref(STR_CS_UntreatedAHI, ahi); }
     void setNotes(QString notes) { setPref(STR_CS_Notes, notes); }
     void setDateDiagnosed(QDate date) { setPref(STR_CS_DateDiagnosed, date); }
-    void setComplianceHours(double hours) { setPref(STR_CS_ComplianceHours, hours); }
+    void setComplianceHours(EventDataType hours) { setPref(STR_CS_ComplianceHours, m_complianceHours=hours); }
     void setShowComplianceInfo(bool b) { setPref(STR_CS_ShowCompliance, b); }
     void setLeakMode(int leakmode) { setPref(STR_CS_ShowLeaksMode, (int)leakmode); }
     void setMaskStartDate(QDate date) { setPref(STR_CS_MaskStartDate, date); }
     void setMaskType(MaskType masktype) { setPref(STR_CS_MaskType, (int)masktype); }
-    void setUserFlowRestriction(double flow) { setPref(STR_CS_UserFlowRestriction, flow); }
-    void setUserEventDuration(double duration) { setPref(STR_CS_UserEventDuration, duration); }
-    void setUserFlowRestriction2(double flow) { setPref(STR_CS_UserFlowRestriction2, flow); }
-    void setUserEventDuration2(double duration) { setPref(STR_CS_UserEventDuration2, duration); }
-    void setAHIWindow(double window) { setPref(STR_CS_AHIWindow, window); }
-    void setAHIReset(bool reset) { setPref(STR_CS_AHIReset, reset); }
-    void setUserEventFlagging(bool flagging) { setPref(STR_CS_UserEventFlagging, flagging); }
-    void setUserEventDuplicates(bool dup) { setPref(STR_CS_UserEventDuplicates, dup); }
-    void setMaskDescription(QString description) {
-        setPref(STR_CS_MaskDescription, description);
-    }
-    void setClockDrift(int seconds) {
-        setPref(STR_CS_ClockDrift, m_clock_drift = (int)seconds);
-    }
-    void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, value); }
-    void setShowLeakRedline(bool reset) { setPref(STR_CS_ShowLeakRedline, reset); }
-    void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, b); }
+    void setUserEventRestriction(EventDataType flow) { setPref(STR_CS_UserFlowRestriction, m_userEventRestriction1=flow); }
+    void setUserEventDuration(EventDataType duration) { setPref(STR_CS_UserEventDuration, m_userEventDuration1=duration); }
+    void setUserEventRestriction2(EventDataType flow) { setPref(STR_CS_UserFlowRestriction2, m_userEventRestriction2=flow); }
+    void setUserEventDuration2(EventDataType duration) { setPref(STR_CS_UserEventDuration2, m_userEventDuration2=duration); }
+    void setAHIWindow(EventDataType window) { setPref(STR_CS_AHIWindow, m_ahiWindow=window); }
+    void setAHIReset(bool b) { setPref(STR_CS_AHIReset, m_ahiReset=b); }
+    void setUserEventFlagging(bool flagging) { setPref(STR_CS_UserEventFlagging, m_userEventFlagging=flagging); }
+    void setUserEventDuplicates(bool dup) { setPref(STR_CS_UserEventDuplicates, m_userEventDuplicates=dup); }
+    void setMaskDescription(QString description) { setPref(STR_CS_MaskDescription, description); }
+    void setClockDrift(int seconds) { setPref(STR_CS_ClockDrift, m_clock_drift = seconds); }
+    void setLeakRedline(EventDataType value) { setPref(STR_CS_LeakRedline, m_leakRedLine=value); }
+    void setShowLeakRedline(bool b) { setPref(STR_CS_ShowLeakRedline, m_showLeakRedline=b); }
+    void setResyncFromUserFlagging(bool b) { setPref(STR_CS_ResyncFromUserFlagging, m_resyncFromUserFlagging=b); }
     void setAutoImport(bool b) { setPref(STR_CS_AutoImport, b); }
     void setBrickWarning(bool b) { setPref(STR_CS_BrickWarning, b); }
 
-    void setCalculateUnintentionalLeaks(bool b) { setPref(STR_CS_CalculateUnintentionalLeaks, b); }
-    void setCustom4cmH2OLeaks(double val) { setPref(STR_CS_4cmH2OLeaks, val); }
-    void setCustom20cmH2OLeaks(double val) { setPref(STR_CS_20cmH2OLeaks, val); }
+    void setCalculateUnintentionalLeaks(bool b) { setPref(STR_CS_CalculateUnintentionalLeaks, m_calcUnintentionalLeaks=b); }
+    void setCustom4cmH2OLeaks(double val) { setPref(STR_CS_4cmH2OLeaks, m_4cmH2OLeaks=val); }
+    void setCustom20cmH2OLeaks(double val) { setPref(STR_CS_20cmH2OLeaks, m_20cmH2OLeaks=val); }
 
   public:
     int m_clock_drift;
+    double m_4cmH2OLeaks, m_20cmH2OLeaks;
+    bool m_userEventFlagging, m_userEventDuplicates, m_calcUnintentionalLeaks, m_resyncFromUserFlagging, m_ahiReset;
+    bool m_showLeakRedline;
+
+    EventDataType m_leakRedLine, m_complianceHours, m_ahiWindow;
+
+    EventDataType m_userEventRestriction1, m_userEventRestriction2, m_userEventDuration1, m_userEventDuration2;
+
 };
 
 /*! \class ImportSettings
@@ -636,41 +638,45 @@ class SessionSettings : public PrefSettings
     SessionSettings(Profile *profile)
       : PrefSettings(profile)
     {
-        initPref(STR_IS_DaySplitTime, QTime(12, 0, 0));
-        initPref(STR_IS_PreloadSummaries, false);
-        initPref(STR_IS_CombineCloseSessions, 240);
-        initPref(STR_IS_IgnoreShorterSessions, 5);
-        initPref(STR_IS_BackupCardData, true);
-        initPref(STR_IS_CompressBackupData, false);
-        initPref(STR_IS_CompressSessionData, false);
-        initPref(STR_IS_IgnoreOlderSessions, false);
-        initPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(QDate::currentDate().addYears(-1), daySplitTime()) );
-        initPref(STR_IS_LockSummarySessions, true);
-
+        m_daySplitTime = initPref(STR_IS_DaySplitTime, QTime(12, 0, 0)).toTime();
+        m_preloadSummaries = initPref(STR_IS_PreloadSummaries, false).toBool();
+        m_combineCloseSessions = initPref(STR_IS_CombineCloseSessions, 240.0).toDouble();
+        m_ignoreShortSessions = initPref(STR_IS_IgnoreShorterSessions, 5.0).toDouble();
+        m_backupCardData = initPref(STR_IS_BackupCardData, true).toBool();
+        m_compressBackupData = initPref(STR_IS_CompressBackupData, false).toBool();
+        m_compressSessionData = initPref(STR_IS_CompressSessionData, false).toBool();
+        m_ignoreOlderSessions = initPref(STR_IS_IgnoreOlderSessions, false).toBool();
+        m_ignoreOlderSessionsDate=initPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(QDate::currentDate().addYears(-1), daySplitTime()) ).toDateTime();
+        m_lockSummarySessions = initPref(STR_IS_LockSummarySessions, true).toBool();
     }
 
-    QTime daySplitTime() const { return getPref(STR_IS_DaySplitTime).toTime(); }
-    bool preloadSummaries() const { return getPref(STR_IS_PreloadSummaries).toBool(); }
-    double combineCloseSessions() const { return getPref(STR_IS_CombineCloseSessions).toDouble(); }
-    double ignoreShortSessions() const { return getPref(STR_IS_IgnoreShorterSessions).toDouble(); }
-    bool compressSessionData() const { return getPref(STR_IS_CompressSessionData).toBool(); }
-    bool compressBackupData() const { return getPref(STR_IS_CompressBackupData).toBool(); }
-    bool backupCardData() const { return getPref(STR_IS_BackupCardData).toBool(); }
-    bool ignoreOlderSessions() const { return getPref(STR_IS_IgnoreOlderSessions).toBool(); }
-    QDateTime ignoreOlderSessionsDate() const { return getPref(STR_IS_IgnoreOlderSessionsDate).toDateTime(); }
-    bool lockSummarySessions() const { return getPref(STR_IS_LockSummarySessions).toBool(); }
+    inline const QTime daySplitTime() const { return m_daySplitTime; }
+    inline const bool preloadSummaries() const { return m_preloadSummaries; }
+    inline const double combineCloseSessions() const { return m_combineCloseSessions; }
+    inline const double ignoreShortSessions() const { return m_ignoreShortSessions; }
+    inline const bool compressSessionData() const { return m_compressSessionData; }
+    inline const bool compressBackupData() const { return m_compressBackupData; }
+    inline const bool backupCardData() const { return m_backupCardData; }
+    inline const bool ignoreOlderSessions() const { return m_ignoreOlderSessions; }
+    inline const QDateTime ignoreOlderSessionsDate() const { return m_ignoreOlderSessionsDate; }
+    inline const bool lockSummarySessions() const { return m_lockSummarySessions; }
 
-    void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, time); }
-    void setPreloadSummaries(bool b) { setPref(STR_IS_PreloadSummaries, b); }
-    void setCombineCloseSessions(double val) { setPref(STR_IS_CombineCloseSessions, val); }
-    void setIgnoreShortSessions(double val) { setPref(STR_IS_IgnoreShorterSessions, val); }
-    void setBackupCardData(bool enabled) { setPref(STR_IS_BackupCardData, enabled); }
-    void setCompressBackupData(bool enabled) { setPref(STR_IS_CompressBackupData, enabled); }
-    void setCompressSessionData(bool enabled) { setPref(STR_IS_CompressSessionData, enabled); }
-    void setIgnoreOlderSessions(bool enabled) { setPref(STR_IS_IgnoreOlderSessions, enabled); }
-    void setIgnoreOlderSessionsDate(QDate date) { setPref(STR_IS_IgnoreOlderSessionsDate, QDateTime(date, daySplitTime())); }
-    void setLockSummarySessions(bool b) { setPref(STR_IS_LockSummarySessions, b); }
+    void setDaySplitTime(QTime time) { setPref(STR_IS_DaySplitTime, m_daySplitTime=time); }
+    void setPreloadSummaries(bool b) { setPref(STR_IS_PreloadSummaries, m_preloadSummaries=b); }
+    void setCombineCloseSessions(double val) { setPref(STR_IS_CombineCloseSessions, m_combineCloseSessions=val); }
+    void setIgnoreShortSessions(double val) { setPref(STR_IS_IgnoreShorterSessions, m_ignoreShortSessions=val); }
+    void setBackupCardData(bool b) { setPref(STR_IS_BackupCardData, m_backupCardData=b); }
+    void setCompressBackupData(bool b) { setPref(STR_IS_CompressBackupData, m_compressBackupData=b); }
+    void setCompressSessionData(bool b) { setPref(STR_IS_CompressSessionData, m_compressSessionData=b); }
+    void setIgnoreOlderSessions(bool b) { setPref(STR_IS_IgnoreOlderSessions, m_ignoreOlderSessions=b); }
+    void setIgnoreOlderSessionsDate(QDate date) { setPref(STR_IS_IgnoreOlderSessionsDate, m_ignoreOlderSessionsDate=QDateTime(date, daySplitTime())); }
+    void setLockSummarySessions(bool b) { setPref(STR_IS_LockSummarySessions, m_lockSummarySessions=b); }
 
+
+    QTime m_daySplitTime;
+    QDateTime m_ignoreOlderSessionsDate;
+    bool m_preloadSummaries, m_backupCardData, m_compressBackupData, m_compressSessionData, m_ignoreOlderSessions, m_lockSummarySessions;
+    double m_combineCloseSessions, m_ignoreShortSessions;
 };
 
 /*! \class AppearanceSettings
@@ -685,10 +691,6 @@ class AppearanceSettings : public PrefSettings
     {
 
     }
-
-
-
-
 };
 
 /*! \class UserSettings
@@ -702,40 +704,44 @@ class UserSettings : public PrefSettings
     {
         initPref(STR_US_UnitSystem, US_Metric);
         initPref(STR_US_EventWindowSize, 4.0);
-        initPref(STR_US_SkipEmptyDays, true);
+        m_skipEmptyDays = initPref(STR_US_SkipEmptyDays, true).toBool();
         initPref(STR_US_RebuildCache, false); // FIXME: jedimark: can't remember...
-        initPref(STR_US_CalculateRDI, false);
-        initPref(STR_US_PrefCalcMiddle, (int)0);
-        initPref(STR_US_PrefCalcPercentile, (double)95.0);
-        initPref(STR_US_PrefCalcMax, (int)0);
+        m_calculateRDI = initPref(STR_US_CalculateRDI, false).toBool();
+        m_prefCalcMiddle = initPref(STR_US_PrefCalcMiddle, (int)0).toInt();
+        m_prefCalcPercentile = initPref(STR_US_PrefCalcPercentile, (double)95.0).toDouble();
+        m_prefCalcMax = initPref(STR_US_PrefCalcMax, (int)0).toInt();
         initPref(STR_US_StatReportMode, 0);
-        initPref(STR_US_ShowUnknownFlags, false);
+        m_showUnownFlags = initPref(STR_US_ShowUnknownFlags, false).toBool();
         initPref(STR_US_LastOverviewRange, 4);
     }
 
     UnitSystem unitSystem() const { return (UnitSystem)getPref(STR_US_UnitSystem).toInt(); }
     double eventWindowSize() const { return getPref(STR_US_EventWindowSize).toDouble(); }
-    bool skipEmptyDays() const { return getPref(STR_US_SkipEmptyDays).toBool(); }
+    inline const bool skipEmptyDays() const { return m_skipEmptyDays; }
     bool rebuildCache() const { return getPref(STR_US_RebuildCache).toBool(); }
-    bool calculateRDI() const { return getPref(STR_US_CalculateRDI).toBool(); }
-    int prefCalcMiddle() const { return getPref(STR_US_PrefCalcMiddle).toInt(); }
-    double prefCalcPercentile() const { return getPref(STR_US_PrefCalcPercentile).toDouble(); }
-    int prefCalcMax() const { return getPref(STR_US_PrefCalcMax).toInt(); }
+    inline const bool calculateRDI() const { return m_calculateRDI; }
+    inline const int prefCalcMiddle() const { return m_prefCalcMiddle;  }
+    inline const double prefCalcPercentile() const { return m_prefCalcPercentile; }
+    inline const int prefCalcMax() const { return m_prefCalcMax; }
     int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
-    bool showUnknownFlags() const { return getPref(STR_US_ShowUnknownFlags).toBool(); }
+    inline const bool showUnknownFlags() const { return m_showUnownFlags; }
     int lastOverviewRange() const { return getPref(STR_US_LastOverviewRange).toInt(); }
 
     void setUnitSystem(UnitSystem us) { setPref(STR_US_UnitSystem, (int)us); }
     void setEventWindowSize(double size) { setPref(STR_US_EventWindowSize, size); }
-    void setSkipEmptyDays(bool skip) { setPref(STR_US_SkipEmptyDays, skip); }
+    void setSkipEmptyDays(bool b) { setPref(STR_US_SkipEmptyDays, m_skipEmptyDays=b); }
     void setRebuildCache(bool rebuild) { setPref(STR_US_RebuildCache, rebuild); }
-    void setCalculateRDI(bool rdi) { setPref(STR_US_CalculateRDI, rdi); }
-    void setPrefCalcMiddle(int i) { setPref(STR_US_PrefCalcMiddle, i); }
-    void setPrefCalcPercentile(double p) { setPref(STR_US_PrefCalcPercentile, p); }
-    void setPrefCalcMax(int i) { setPref(STR_US_PrefCalcMax, i); }
+    void setCalculateRDI(bool rdi) { setPref(STR_US_CalculateRDI, m_calculateRDI=rdi); }
+    void setPrefCalcMiddle(int i) { setPref(STR_US_PrefCalcMiddle, m_prefCalcMiddle=i); }
+    void setPrefCalcPercentile(double p) { setPref(STR_US_PrefCalcPercentile, m_prefCalcPercentile=p); }
+    void setPrefCalcMax(int i) { setPref(STR_US_PrefCalcMax, m_prefCalcMax=i); }
     void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
-    void setShowUnknownFlags(bool b) { setPref(STR_US_ShowUnknownFlags, b); }
+    void setShowUnknownFlags(bool b) { setPref(STR_US_ShowUnknownFlags, m_showUnownFlags=b); }
     void setLastOverviewRange(int i) { setPref(STR_US_LastOverviewRange, i); }
+
+    bool m_calculateRDI, m_showUnownFlags,  m_skipEmptyDays;
+    int m_prefCalcMiddle, m_prefCalcMax;
+    double m_prefCalcPercentile;
 };
 
 

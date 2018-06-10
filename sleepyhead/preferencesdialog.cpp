@@ -246,9 +246,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->customEventGroupbox->setChecked(profile->cpap->userEventFlagging());
     ui->apneaDuration->setValue(profile->cpap->userEventDuration());
-    ui->apneaFlowRestriction->setValue(profile->cpap->userFlowRestriction());
+    ui->apneaFlowRestriction->setValue(profile->cpap->userEventRestriction());
     ui->apneaDuration2->setValue(profile->cpap->userEventDuration2());
-    ui->apneaFlowRestriction2->setValue(profile->cpap->userFlowRestriction2());
+    ui->apneaFlowRestriction2->setValue(profile->cpap->userEventRestriction2());
     ui->userEventDuplicates->setChecked(profile->cpap->userEventDuplicates());
     ui->userEventDuplicates->setVisible(false);
 
@@ -707,8 +707,8 @@ bool PreferencesDialog::Save()
             (profile->cpap->userEventDuration() != ui->apneaDuration->value() ||
              profile->cpap->userEventDuration2() != ui->apneaDuration2->value() ||
              profile->cpap->userEventDuplicates() != ui->userEventDuplicates->isChecked() ||
-             profile->cpap->userFlowRestriction2() != ui->apneaFlowRestriction2->value() ||
-             profile->cpap->userFlowRestriction() != ui->apneaFlowRestriction->value())) {
+             profile->cpap->userEventRestriction2() != ui->apneaFlowRestriction2->value() ||
+             profile->cpap->userEventRestriction() != ui->apneaFlowRestriction->value())) {
         recalc_events = true;
     }
 
@@ -832,9 +832,9 @@ bool PreferencesDialog::Save()
 
     profile->cpap->setResyncFromUserFlagging(ui->resyncMachineDetectedEvents->isChecked());
     profile->cpap->setUserEventDuration(ui->apneaDuration->value());
-    profile->cpap->setUserFlowRestriction(ui->apneaFlowRestriction->value());
+    profile->cpap->setUserEventRestriction(ui->apneaFlowRestriction->value());
     profile->cpap->setUserEventDuration2(ui->apneaDuration2->value());
-    profile->cpap->setUserFlowRestriction2(ui->apneaFlowRestriction2->value());
+    profile->cpap->setUserEventRestriction2(ui->apneaFlowRestriction2->value());
 
     profile->cpap->setUserEventDuplicates(ui->userEventDuplicates->isChecked());
 

@@ -857,8 +857,8 @@ void FlowParser::flagEvents()
 
     if (numbreaths < 5) { return; }
 
-    flagUserEvents(CPAP_UserFlag1, p_profile->cpap->userFlowRestriction(), p_profile->cpap->userEventDuration());
-    flagUserEvents(CPAP_UserFlag2, p_profile->cpap->userFlowRestriction2(), p_profile->cpap->userEventDuration2());
+    flagUserEvents(CPAP_UserFlag1, p_profile->cpap->userEventRestriction(), p_profile->cpap->userEventDuration());
+    flagUserEvents(CPAP_UserFlag2, p_profile->cpap->userEventRestriction2(), p_profile->cpap->userEventDuration2());
 }
 
 void calcRespRate(Session *session, FlowParser *flowparser)
