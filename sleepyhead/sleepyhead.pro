@@ -32,6 +32,8 @@ DEFINES += LOCK_RESMED_SESSIONS
 
 CONFIG += c++11
 CONFIG += rtti
+
+# Remove this crap because it sucks
 CONFIG-=debug_and_release
 
 #static {

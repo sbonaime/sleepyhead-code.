@@ -141,8 +141,6 @@ int main(int argc, char *argv[])
     initTranslations();
 
     initializeStrings(); // Important, call this AFTER translator is installed.
-    a.setApplicationName(STR_TR_SleepyHead);
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection

@@ -55,6 +55,7 @@ void initTranslations() {
     langNames["fr"] = "\x46\x72\x61\x6e\xc3\xa7\x61\x69\x73";
     langNames["en_UK"] = "English (UK)";
     langNames["en_US"] = "English (US)";
+    langNames["nl"] = "Nederlands";
     // CHECK: Will the above break with MS VisualC++ compiler?
 
     QHash<QString, QString> langFiles;
