@@ -763,7 +763,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
     const int DV6_L_RecLength = 45;
     const int DV6_E_RecLength = 25;
     const int DV6_S_RecLength = 55;
-    unsigned int ts1,ts2;
+    unsigned int ts1,ts2, lastts1;
 
     QMap<quint32, DV6_S_Record> summaryList;  // QHash is faster, but QMap keeps order
 
@@ -881,6 +881,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
         qint64 PBstart = 0, PBend = 0;
         qint64 REstart =0, REend = 0;
         qint64 LLstart =0, LLend = 0;
+        lastts1 = 0;
 
         SR = summaryList.begin();
         for (int r=0; r<numRrecs; data += DV6_R_RecLength, ++r) {
@@ -894,21 +895,22 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
             ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1]) + ep;
 
+            if (flow && ((ts1 - lastts1) > 2)) {
+                sess->set_last(flow->last());
+
+                sess = nullptr;
+                flow = nullptr;
+                pressure = nullptr;
+            }
+            lastts1=ts1;
+
             while (ts1 > R->stop_time) {
                 if (flow && sess) {
                     // update min and max
                     // then add to machine
-                    EventDataType min = flow->Min();
-                    EventDataType max = flow->Max();
-
-                    sess->setMin(CPAP_FlowRate, min);
-                    sess->setMax(CPAP_FlowRate, max);
-
-                    sess->setPhysMax(CPAP_FlowRate, min);
-                    sess->setPhysMin(CPAP_FlowRate, max);
-
-                    sess = NULL;
-                    flow = NULL;
+                    sess = nullptr;
+                    flow = nullptr;
+                    pressure = nullptr;
                 }
                 SR++;
                 if (SR == summaryList.end()) break;
@@ -1305,16 +1307,26 @@ int IntellipapLoader::OpenDV6(const QString & path)
 
         SR = summaryList.begin();
 
-        unsigned int lastts1 = 0;
+        lastts1 = 0;
 
-        if (SR != summaryList.end()) for (int r=0; r<numLrecs; ++r) {
+
+        if (SR != summaryList.end()) for (int r=0; r<numLrecs; data += DV6_L_RecLength, ++r) {
             ts1 = ((data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1])+ep; // session start time
             if (ts1 < lastts1) {
                 qDebug() << "Corruption/Out of sequence data found in L.bin, aborting";
                 break;
             }
-            lastts1=ts1;
             DV6_S_Record *R = &SR.value();
+            if (leak && ((ts1 - lastts1) > 60)) {
+                sess->set_last(maxleak->last());
+
+                sess = nullptr;
+                leak = nullptr;
+                maxleak = nullptr;
+                MV = TV = RR = nullptr;
+                Pressure = nullptr;
+            }
+            lastts1=ts1;
             while (ts1 > R->stop_time) {
                 if (leak && sess) {
                     // Close the open session and update the min and max
@@ -1367,11 +1379,7 @@ int IntellipapLoader::OpenDV6(const QString & path)
                     }
                 }
 
-            } else {
-                //SR
             }
-
-            data += DV6_L_RecLength;
         } // for
         if (sess && leak) {
             sess->set_last(maxleak->last());
