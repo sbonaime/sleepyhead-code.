@@ -51,31 +51,6 @@ void sDelay(int s)
 
 int compareVersion(QString version);
 
-
-/*void MigrateSettings()
-{
-    QSettings settings;
-    if (settings.contains("Version")) { return; } // done, we are new
-
-    QSettings oldcopy(getDeveloperName(), getAppName()+"-Testing");
-    if (oldcopy.contains("Migrated")) { return; }
-
-    QStringList keys = oldcopy.allKeys();
-
-
-    for (int i=0; i<keys.size(); ++i) {
-        const QString & key = keys[i];
-        settings.setValue(key, oldcopy.value(key));
-    }
-
-    oldcopy.setValue("Migrated", true);
-    settings.setValue("Version", VersionString);
-
-    qDebug() << keys;
-
-} */
-
-
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
