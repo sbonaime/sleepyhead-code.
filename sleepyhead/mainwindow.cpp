@@ -2364,8 +2364,7 @@ void MainWindow::on_actionPurgeCurrentDaysOximetry_triggered()
             return;
         }
 
-        QList<Session *> sessionlist;
-        sessionlist.append(day->sessions);
+        QList<Session *> sessionlist=day->getSessions(MT_OXIMETER);
 
         for (auto & sess : sessionlist) {
             sess->Destroy();
