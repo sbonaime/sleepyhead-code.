@@ -15,7 +15,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
 #provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL)
-#contains(DEFINES, BrokenGL) {
+contains(DEFINES, BrokenGL) {
+    message("BrokgenGL has been disabled to test the Dynamic GFX Engine selection")
+    DEFINES-=BrokenGL
+}
 #    message("Building with QWidget gGraphView")
 #    DEFINES += BROKEN_OPENGL_BUILD
 #} else:contains(DEFINES, NoGL) {
@@ -26,7 +29,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #    message("Building with QGLWidget gGraphView")
 #}
 
-DEFINES -= BrokenGL
 QT += opengl
 
 DEFINES += LOCK_RESMED_SESSIONS
@@ -37,13 +39,14 @@ CONFIG += rtti
 # Remove this crap because it sucks
 CONFIG-=debug_and_release
 
-#static {
-#    CONFIG += static
-#    QTPLUGIN += qsvg qgif qpng
+contains(DEFINES, STATIC) {
+static {
+    CONFIG += static
+    QTPLUGIN += qsvg qgif qpng
 
-#    DEFINES += STATIC // Equivalent to "#define STATIC" in source code
-#    message("Static build.")
-#}
+    message("Static build.")
+}
+}
 
 TARGET = SleepyHead
 unix:!macx:!haiku {
@@ -51,7 +54,6 @@ unix:!macx:!haiku {
 }
 
 TEMPLATE = app
-
 
 gitinfotarget.target = git_info.h
 gitinfotarget.depends = FORCE
@@ -96,18 +98,18 @@ haiku {
 }
 
 CONFIG(release, debug|release) {
-    contains(RELEASE, 1) {
-        win32:QMAKE_POST_LINK += upx -k --best --overlay=strip --strip-relocs=0 --compress-icons=2 $(DESTDIR_TARGET)
+    contains(DEFINES, UPX_PACK_EXE) {
+       DEFINES-=UPX_PACK_EXE
+       win32:QMAKE_POST_LINK += upx -k --best --overlay=strip --strip-relocs=0 $(DESTDIR_TARGET)
     }
 }
 win32 {
     DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
-#    RC_FILE          += win_icon.rc
     LIBS             += -lsetupapi
 
     QMAKE_TARGET_PRODUCT = SleepyHead
     QMAKE_TARGET_COMPANY = Jedimark
-    QMAKE_TARGET_COPYRIGHT = Copyright (c)2018 Mark Watkins
+    QMAKE_TARGET_COPYRIGHT = Copyright (c)2011-2018 Mark Watkins
     QMAKE_TARGET_DESCRIPTION = "OpenSource CPAP Research & Review"
     VERSION = 1.1.0.0
 
@@ -124,6 +126,11 @@ win32 {
         # MingW needs this
         LIBS += -lz
     }
+
+    CONFIG += precompile_header
+    PRECOMPILED_HEADER = pch.h
+    HEADERS += pch.h
+
 }
 
 TRANSLATIONS = $$files($$PWD/../Translations/*.ts)

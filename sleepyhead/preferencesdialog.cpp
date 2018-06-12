@@ -689,7 +689,7 @@ bool PreferencesDialog::Save()
         needs_reload = true;
     }
 
-    if (ui->gfxEngineCombo->currentIndex() != currentGFXEngine()) {
+    if ((unsigned int)ui->gfxEngineCombo->currentIndex() != currentGFXEngine()) {
         setCurrentGFXEngine(ui->gfxEngineCombo->currentIndex());
         needs_restart = true;
     }
@@ -752,7 +752,7 @@ bool PreferencesDialog::Save()
         } else { recalc_events = false; }
     } else if (needs_restart) {
         if (QMessageBox::question(this, tr("Restart Required"),
-                                  tr("One or more of the changes you have made will require this application to be restarted,\nin order for these changes to come into effect.\n\nWould you like do this now?"),
+                                  tr("One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\n\nWould you like do this now?"),
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
             return false;
         }
