@@ -1653,7 +1653,8 @@ void MainWindow::reloadProfile()
 
 void MainWindow::RestartApplication(bool force_login, QString cmdline)
 {
-    if (p_profile) p_profile->removeLock();
+    CloseProfile();
+    PREF.Save();
 
     QString apppath;
 #ifdef Q_OS_MAC
@@ -2225,10 +2226,10 @@ void MainWindow::on_actionChange_Language_triggered()
         return;
     }
 
-    p_profile->Save();
+    CloseProfile();
     PREF.Save();
 
-    RestartApplication(true, "-language");
+    RestartApplication(true, "--language");
 }
 
 void MainWindow::on_actionChange_Data_Folder_triggered()

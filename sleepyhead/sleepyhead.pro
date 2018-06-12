@@ -15,16 +15,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
 #provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL)
-contains(DEFINES, BrokenGL) {
-    message("Building with QWidget gGraphView")
-    DEFINES += BROKEN_OPENGL_BUILD
-} else:contains(DEFINES, NoGL) {
-    message("Building with QWidget gGraphView (No GL at all)")
-    DEFINES += BROKEN_OPENGL_BUILD
-    DEFINES += NO_OPENGL_BUILD
-} else {
-    message("Building with QGLWidget gGraphView")
-}
+#contains(DEFINES, BrokenGL) {
+#    message("Building with QWidget gGraphView")
+#    DEFINES += BROKEN_OPENGL_BUILD
+#} else:contains(DEFINES, NoGL) {
+#    message("Building with QWidget gGraphView (No GL at all)")
+#    DEFINES += BROKEN_OPENGL_BUILD
+#    DEFINES += NO_OPENGL_BUILD
+#} else {
+#    message("Building with QGLWidget gGraphView")
+#}
+
+DEFINES -= BrokenGL
 QT += opengl
 
 DEFINES += LOCK_RESMED_SESSIONS
@@ -65,12 +67,16 @@ win32 {
 PRE_TARGETDEPS += git_info.h
 QMAKE_EXTRA_TARGETS += gitinfotarget
 
-
 #Comment out for official builds
 DEFINES += BETA_BUILD
 
 #Build the help documentation
-system(qcollectiongenerator help/help.qhcp -o help/help.qhc)
+message("Generating help files");
+qtPrepareTool(QCOLGENERATOR, qcollectiongenerator)
+
+command=$$QCOLGENERATOR $$PWD/help/index.qhcp -o $$PWD/help/index.qhc
+system($$command)|error("Failed to run: $$command")
+message("Finished generating help files");
 
 unix:!macx:!haiku {
     LIBS            += -lX11 -lz -lGLU
@@ -141,10 +147,7 @@ for(file, TRANSLATIONS) {
 
 #copy the Translation and Help files to where the test binary wants them
 macx {
-    TransFiles.files = $$files(../Translations/*.qm)
-    TransFiles.path = Contents/Resources/Translations
-    HelpFiles.files = $$files(help/*.qch)
-    HelpFiles.files += $$files(help/help.qhc)
+    HelpFiles.files = $$files($$PWD/help/*.qch)
     HelpFiles.path = Contents/Resources/Help
     QMAKE_BUNDLE_DATA += TransFiles
     QMAKE_BUNDLE_DATA += HelpFiles
@@ -153,7 +156,7 @@ macx {
     DDIR = $$OUT_PWD/Translations
     HELPDIR = $$OUT_PWD/Help
 
-    TRANS_FILES += $$PWD/../Translations/*.qm
+    TRANS_FILES += $$PWD/translations/*.qm
     HELP_FILES += $$PWD/help/*.qch
 
     win32 {
@@ -164,8 +167,8 @@ macx {
         DDIR ~= s,/,\\,g
         HELPDIR ~= s,/,\\,g
 
-        system(mkdir $$quote($$HELPDIR))
-        system(mkdir $$quote($$DDIR))
+        !exists($$quote($$HELPDIR)): system(mkdir $$quote($$HELPDIR))
+        !exists($$quote($$DDIR)): system(mkdir $$quote($$DDIR))
 
         for(FILE,TRANS_FILES_WIN) {
             system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
@@ -375,7 +378,6 @@ DISTFILES += \
     help/help_en/gettingstarted.html \
     help/help_en/tipsntricks.html \
     help/help_en/faq.html \
-    help/help.qhcp \
     help/help_nl/daily.html \
     help/help_nl/faq.html \
     help/help_nl/gettingstarted.html \
@@ -390,4 +392,5 @@ DISTFILES += \
     help/help_en/reportingbugs.html \
     win_icon.rc \
     help/help_nl/SleepyHeadGuide_nl.qhp \
-    help/help_en/SleepyHeadGuide_en.qhp
+    help/help_en/SleepyHeadGuide_en.qhp \
+    help/index.qhcp

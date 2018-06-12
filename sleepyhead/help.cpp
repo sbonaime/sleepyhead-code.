@@ -25,7 +25,7 @@ Help::Help(QWidget *parent) :
     ui->setupUi(this);
 
     QString helpRoot = appResourcePath() + "/Help/";
-    QString helpIndex = helpRoot + "help.qhc";
+    QString helpIndex = helpRoot + "index.qhc";
 
     QDir dir(helpRoot);
     QStringList nameFilters = QStringList("*.qch");
@@ -61,7 +61,7 @@ Help::Help(QWidget *parent) :
     // Delete the crappy qhc so we can generate our own.
     if (QFile::exists(helpIndex)) QFile::remove(helpIndex);
 
-    helpEngine = new QHelpEngine(helpRoot + "help.qhc");
+    helpEngine = new QHelpEngine(helpIndex);
     helpNamespace = "jedimark.net.SleepyHeadGuide";
 
     if (!helpFile.isEmpty()) {

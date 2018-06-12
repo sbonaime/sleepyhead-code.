@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QCoreApplication>
+#include <QSettings>
 
 #include "SleepLib/common.h"
 
@@ -65,6 +66,35 @@ const QString getDefaultAppRoot()
     }
     return approot;
 }
+
+
+unsigned int currentGFXEngine()
+{
+    QSettings settings;
+
+    return qMin(settings.value(GFXEngineSetting, 2).toUInt(), (unsigned int) 2);
+}
+void setCurrentGFXEngine(unsigned int r)
+{
+    QSettings settings;
+
+    settings.setValue(GFXEngineSetting, qMin(r, (unsigned int)2));
+}
+
+QString GFXEngineName(unsigned int r)
+{
+    switch (r) {
+    case 0:
+        return STR_GFXEngine_Software;
+    case 1:
+        return STR_GFXEngine_ANGLE;
+    case 2:
+    default:
+        return STR_GFXEngine_OpenGL;
+    }
+}
+
+
 
 QString getOpenGLVersionString()
 {
@@ -237,6 +267,9 @@ void copyPath(QString src, QString dst)
     }
 }
 
+QString STR_GFXEngine_Software;
+QString STR_GFXEngine_ANGLE;
+QString STR_GFXEngine_OpenGL;
 
 QString STR_UNIT_M;
 QString STR_UNIT_CM;
@@ -440,6 +473,10 @@ QString STR_TR_WAvg;   // Short form of Weighted Average
 
 void initializeStrings()
 {
+    STR_GFXEngine_Software = QObject::tr("Software Engine");
+    STR_GFXEngine_ANGLE = QObject::tr("ANGLE / OpenGLES");
+    STR_GFXEngine_OpenGL = QObject::tr("Desktop OpenGL");
+
     STR_UNIT_M = QObject::tr(" m");
     STR_UNIT_CM = QObject::tr(" cm");
     STR_UNIT_INCH = QObject::tr("\"");

@@ -41,11 +41,33 @@ MainWindow *mainwin = nullptr;
 
 int compareVersion(QString version);
 
+
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
     XInitThreads();
 #endif
+
+    QCoreApplication::setApplicationName(getAppName());
+    QCoreApplication::setOrganizationName(getDeveloperName());
+
+    QSettings settings;
+    unsigned int gfxEngine = qMin(settings.value(GFXEngineSetting, 0).toUInt(), (unsigned int)2);
+
+    switch (gfxEngine) {
+    case 0:
+        QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+        break;
+    case 1:
+        QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+        break;
+    case 2:
+    default:
+        QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    }
+
+    QString lastlanguage = settings.value(LangSetting, "").toString();
 
     bool dont_load_profile = false;
     bool force_data_dir = false;
@@ -53,20 +75,16 @@ int main(int argc, char *argv[])
     QString load_profile = "";
 
     QApplication a(argc, argv);
-    a.setApplicationName(getAppName());
-    a.setOrganizationName(getDeveloperName());
     QStringList args = a.arguments();
 
-    QSettings settings;
 
-    QString lastlanguage = settings.value(LangSetting, "").toString();
     if (lastlanguage.isEmpty())
         changing_language = true;
 
     for (int i = 1; i < args.size(); i++) {
         if (args[i] == "-l") { dont_load_profile = true; }
         else if (args[i] == "-d") { force_data_dir = true; }
-        else if (args[i] == "-language") {
+        else if (args[i] == "--language") {
             changing_language = true;
 
             // reset to force language dialog
@@ -127,10 +145,12 @@ int main(int argc, char *argv[])
     bool opengl2supported = glversion >= 2.0;
     bool bad_graphics = !opengl2supported;
     bool intel_graphics = false;
-#ifndef NO_OPENGL_BUILD
-    getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
-#endif
+//#ifndef NO_OPENGL_BUILD
 
+    getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
+//#endif
+
+    /*
 #ifdef BROKEN_OPENGL_BUILD
     Q_UNUSED(bad_graphics)
     Q_UNUSED(intel_graphics)
@@ -159,7 +179,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 #endif
-
+*/
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Datafolder location Selection
     ////////////////////////////////////////////////////////////////////////////////////////////

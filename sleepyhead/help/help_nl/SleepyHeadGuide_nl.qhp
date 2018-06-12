@@ -66,9 +66,8 @@
             <keyword name="VS" ref="glossary.html#Vibratory_Snore_.28VS.29_Index"/>
         </keywords>
         <files>
-            <file>../default.css</file>
+            <file>default.css</file>
             <file>*.html</file>
-            <file>*.png</file>
         </files>
     </filterSection>
 </QtHelpProject>

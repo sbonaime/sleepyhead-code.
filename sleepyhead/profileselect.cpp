@@ -24,6 +24,8 @@
 #include "newprofile.h"
 #include "mainwindow.h"
 
+extern MainWindow * mainwin;
+
 ProfileSelect::ProfileSelect(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ProfileSelect)
@@ -356,7 +358,7 @@ void ProfileSelect::on_listView_customContextMenuRequested(const QPoint &pos)
 
 void ProfileSelect::on_pushButton_clicked()
 {
-    MainWindow::RestartApplication(false, "-d");
+    mainwin->RestartApplication(false, "-d");
 }
 
 void ProfileSelect::on_filter_textChanged(const QString &arg1)

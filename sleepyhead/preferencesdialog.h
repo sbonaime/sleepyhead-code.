@@ -1,4 +1,4 @@
-/* SleepyHead Preferences Dialog Headers
+﻿/* SleepyHead Preferences Dialog Headers
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -34,7 +34,6 @@ class MySortFilterProxyModel: public QSortFilterProxyModel
   protected:
     //! \brief Simply extends filterAcceptRow to scan children as well
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
-
 };
 
 /*! \class PreferencesDialog

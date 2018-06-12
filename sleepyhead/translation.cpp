@@ -98,6 +98,8 @@ void initTranslations()
         langFiles[code] = fi.fileName();
         langPaths[code] = externalPath;
     }
+    std::sort(replaced.begin(), replaced.end());
+    std::sort(extratrans.begin(), extratrans.end());
     if (replaced.size()>0) qDebug() << "Overridden Tranlsations:" << QString(replaced.join(", ")).toLocal8Bit().data();
     if (extratrans.size()>0) qDebug() << "Extra Translations:" << QString(extratrans.join(", ")).toLocal8Bit().data();
 

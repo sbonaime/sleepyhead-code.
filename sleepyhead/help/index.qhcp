@@ -11,5 +11,8 @@
                 <output>SleepyHeadGuide.nl.qch</output>
             </file>
         </generate>
+        <register>
+          <file>SleepyHeadGuide.en_US.qch</file>
+        </register>
     </docFiles>
 </QHelpCollectionProject>

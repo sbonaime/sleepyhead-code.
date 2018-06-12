@@ -87,6 +87,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->resmedPrefCalcsNotice->setVisible(haveResMed);
 #endif
 
+    ui->gfxEngineCombo->setCurrentIndex(currentGFXEngine());
+
     ui->culminativeIndices->setEnabled(false);
 
     QLocale locale = QLocale::system();
@@ -664,42 +666,48 @@ bool PreferencesDialog::Save()
     bool recompress_events = false;
     bool recalc_events = false;
     bool needs_restart = false;
+    bool needs_reload = false;
 
     if (ui->ahiGraphZeroReset->isChecked() != profile->cpap->AHIReset()) { recalc_events = true; }
 
     if (ui->useSquareWavePlots->isChecked() != AppSetting->squareWavePlots()) {
-        needs_restart = true;
+        needs_reload  = true;
     }
 
     if ((profile->session->daySplitTime() != ui->timeEdit->time()) ||
             (profile->session->combineCloseSessions() != ui->combineSlider->value()) ||
             (profile->session->ignoreShortSessions() != ui->IgnoreSlider->value())) {
-        needs_restart = true;
+        needs_reload = true;
     }
 
     if (profile->session->lockSummarySessions() != ui->LockSummarySessionSplitting->isChecked()) {
-        needs_restart = true;
+        needs_reload = true;
     }
 
     if (AppSetting->userEventPieChart() != ui->showUserFlagsInPie->isChecked()) {
         // lazy.. fix me
+        needs_reload = true;
+    }
+
+    if (ui->gfxEngineCombo->currentIndex() != currentGFXEngine()) {
+        setCurrentGFXEngine(ui->gfxEngineCombo->currentIndex());
         needs_restart = true;
     }
 
     int rdi_set = profile->general->calculateRDI() ? 1 : 0;
     if (rdi_set != ui->eventIndexCombo->currentIndex()) {
         //recalc_events=true;
-        needs_restart = true;
+        needs_reload  = true;
     }
 
     if ((profile->general->prefCalcMiddle() != ui->prefCalcMiddle->currentIndex())
             || (profile->general->prefCalcMax() != ui->prefCalcMax->currentIndex())
             || (profile->general->prefCalcPercentile() != ui->prefCalcPercentile->value())) {
-        needs_restart = true;
+        needs_reload = true;
     }
 
     if (profile->cpap->leakRedline() != ui->leakRedlineSpinbox->value()) {
-        recalc_events = true;
+        needs_reload = true;
     }
 
 
@@ -716,7 +724,7 @@ bool PreferencesDialog::Save()
     if (profile->cpap->userEventFlagging() != ui->customEventGroupbox->isChecked()) {
         // if (profile->cpap->userEventFlagging()) {
         // Don't bother recalculating, just switch off
-        needs_restart = true;
+        needs_reload = true;
         //} else
         recalc_events = true;
     }
@@ -742,13 +750,13 @@ bool PreferencesDialog::Save()
                 return false;
             }
         } else { recalc_events = false; }
-    } /*else if (needs_restart) {
+    } else if (needs_restart) {
         if (QMessageBox::question(this, tr("Restart Required"),
                                   tr("One or more of the changes you have made will require this application to be restarted,\nin order for these changes to come into effect.\n\nWould you like do this now?"),
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
             return false;
         }
-    }*/
+    }
 
     schema::channel[OXI_SPO2].setLowerThreshold(ui->oxiDesaturationThreshold->value());
     schema::channel[OXI_Pulse].setLowerThreshold(ui->flagPulseBelow->value());
@@ -913,10 +921,10 @@ bool PreferencesDialog::Save()
     } else if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
-    } else if (needs_restart) {
+    } else if (needs_reload) {
         QTimer::singleShot(0, mainwin, SLOT(reloadProfile()));
-//        profile->removeLock();
-//        mainwin->RestartApplication();
+    } else if (needs_restart) {
+        mainwin->RestartApplication();
     } else {
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
         // Save early.. just in case..
