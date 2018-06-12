@@ -39,16 +39,6 @@
 
 MainWindow *mainwin = nullptr;
 
-void sDelay(int s)
-{
-    // QThread::msleep() is exposed in Qt5
-#ifdef Q_OS_WIN
-    Sleep(s * 1000);
-#else
-    sleep(s);
-#endif
-}
-
 int compareVersion(QString version);
 
 int main(int argc, char *argv[])
@@ -82,7 +72,7 @@ int main(int argc, char *argv[])
             // reset to force language dialog
             settings.setValue(LangSetting,"");
         } else if (args[i] == "-p") {
-            sDelay(1);
+            QThread::msleep(1000);
         } else if (args[i] == "--profile") {
             if ((i+1) < args.size()) {
                 load_profile = args[++i];
@@ -102,20 +92,29 @@ int main(int argc, char *argv[])
           }
     }
 
-    initializeLogger();
 
-    mainwin = new MainWindow;
-    qDebug() << STR_AppName.toLocal8Bit().data() << VersionString.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
-#ifdef BROKEN_OPENGL_BUILD
-    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
+    initializeLogger();
+    QThread::msleep(50); // Logger takes a little bit to catch up
+#ifdef QT_DEBUG
+    QString relinfo = " debug";
+#else
+    QString relinfo = "";
 #endif
+    relinfo = "("+QSysInfo::kernelType()+" "+QSysInfo::currentCpuArchitecture()+relinfo+")";
+    qDebug() << STR_AppName.toLocal8Bit().data() << VersionString.toLocal8Bit().data() << relinfo.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR << "on" << __DATE__ << __TIME__;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
     initTranslations();
 
-    initializeStrings(); // Important, call this AFTER translator is installed.
+    initializeStrings(); // This must be called AFTER translator is installed, but before mainwindow is setup
+
+    mainwin = new MainWindow;
+
+#ifdef BROKEN_OPENGL_BUILD
+    qDebug() << "This build has been created especially for computers with older graphics hardware.\n";
+#endif
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection

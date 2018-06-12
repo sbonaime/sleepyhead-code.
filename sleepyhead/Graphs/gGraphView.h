@@ -287,6 +287,7 @@ public:
 };
 
 
+
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 

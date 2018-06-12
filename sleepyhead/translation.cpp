@@ -21,12 +21,8 @@
 #include <QListWidget>
 
 #include "SleepLib/common.h"
-
-//#ifndef nullptr
-//#define nullptr NULL
-//#endif
-
 #include "translation.h"
+
 QHash<QString, QString> langNames;
 
 QString currentLanguage()
@@ -43,60 +39,67 @@ QString lookupLanguageName(QString language)
     return language;
 }
 
-void initTranslations() {
-
-    // (Ordinary character sets will just use the name before the first '.' in the filename.)
-    // (This u8 stuff deliberately kills Qt4.x build support - if you know another way feel free to
-    //  change it, but Qt4 support is still going to die sooner or later)
+void initTranslations()
+{
     // Add any languages with special character set needs to this list
     langNames["zh"] = "\xe6\xbc\xa2\xe8\xaa\x9e\xe7\xb9\x81\xe9\xab\x94\xe5\xad\x97";
     langNames["es"] = "Espa\xc3\xb1ol";
     langNames["bg"] = "\xd0\xb1\xd1\x8a\xd0\xbb\xd0\xb3\xd0\xb0\xd1\x80\xd1\x81\xd0\xba\xd0\xb8";
     langNames["fr"] = "\x46\x72\x61\x6e\xc3\xa7\x61\x69\x73";
     langNames["en_UK"] = "English (UK)";
-    langNames["en_US"] = "English (US)";
     langNames["nl"] = "Nederlands";
-    // CHECK: Will the above break with MS VisualC++ compiler?
+
+    langNames[DefaultLanguage]="English (US)";
 
     QHash<QString, QString> langFiles;
+    QHash<QString, QString> langPaths;
 
-    const QString transdir = appResourcePath() +"/Translations";
-
-    QDir dir(transdir);
-    qDebug() << "Scanning" << transdir.toLocal8Bit().data();
-    dir.setFilter(QDir::Files);
-    dir.setNameFilters(QStringList("*.qm"));
-
-    QFileInfoList list = dir.entryInfoList();
+    langFiles[DefaultLanguage] = "English (US).en_US.qm";
 
     QSettings settings;
     QString language = settings.value(LangSetting).toString();
 
-    QString langfile, langname;
 
-    // Add default language (English)
-    const QString en="en_US";
-    langFiles[en]="English.en_US.qm";
-    langNames[en]="English US";
+    QString inbuiltPath = ":/translations";
+    QStringList inbuilt(DefaultLanguage);
 
-    // Scan through available translations, and add them to the list
-    QStringList availtrans;
+    QDir dir(inbuiltPath);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList("*.qm"));
+
+    QFileInfoList list = dir.entryInfoList();
     for (const auto & fi : list) {
-        QString name = fi.fileName().section('.', 0, 0);
         QString code = fi.fileName().section('.', 1, 1);
 
-        availtrans.push_back(name);
+        if (!langNames.contains(code)) langNames[code]=fi.fileName().section('.', 0, 0);
 
-        if (langNames.contains(code)) {
-            name = langNames[code];
-        } else {
-            langNames[code]=name;
-        }
+        inbuilt.push_back(code);
 
-        langFiles[code]=fi.fileName();
-
+        langFiles[code] = fi.fileName();
+        langPaths[code] = inbuiltPath;
     }
-    qDebug() << "Available Translations:" << QString(availtrans.join(", ")).toLocal8Bit().data();
+    std::sort(inbuilt.begin(), inbuilt.end());
+    qDebug() << "Inbuilt Translations:" << QString(inbuilt.join(", ")).toLocal8Bit().data();;
+
+    QString externalPath = appResourcePath() +"/Translations";
+    dir.setPath(externalPath);
+    list = dir.entryInfoList();
+
+    // Add default language (English)
+
+    // Scan through available translations, and add them to the list
+    QStringList extratrans, replaced;
+    for (const auto & fi : list) {
+        QString code = fi.fileName().section('.', 1, 1);
+
+        if(!langNames.contains(code)) langNames[code] = fi.fileName().section('.', 0, 0);
+        if (inbuilt.contains(code)) replaced.push_back(code); else extratrans.push_back(code);
+
+        langFiles[code] = fi.fileName();
+        langPaths[code] = externalPath;
+    }
+    if (replaced.size()>0) qDebug() << "Overridden Tranlsations:" << QString(replaced.join(", ")).toLocal8Bit().data();
+    if (extratrans.size()>0) qDebug() << "Extra Translations:" << QString(extratrans.join(", ")).toLocal8Bit().data();
 
     if (language.isEmpty() || !langNames.contains(language)) {
         QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
@@ -109,9 +112,7 @@ void initTranslations() {
         QLabel img;
         img.setPixmap(QPixmap(":/docs/sheep.png"));
 
-        // hard coded non translatable
-
-        QPushButton lang_okbtn("->", &langsel);
+        QPushButton lang_okbtn("->", &langsel); // hard coded non translatable
 
         QVBoxLayout layout1;
         QVBoxLayout layout2;
@@ -139,8 +140,8 @@ void initTranslations() {
             QListWidgetItem *item = new QListWidgetItem(name);
             item->setData(Qt::UserRole, code);
             langlist.insertItem(row++, item);
-            // Todo: Use base system language code
-            if (code.compare(en) == 0) {
+            // Todo: Use base system language code if available.
+            if (code.compare(DefaultLanguage) == 0) {
                 langlist.setCurrentItem(item);
             }
         }
@@ -153,24 +154,24 @@ void initTranslations() {
         langsel.exec();
         langsel.disconnect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
         langsel.disconnect(&langlist, SIGNAL(itemDoubleClicked(QListWidgetItem*)), &langsel, SLOT(close()));
-        langname = langlist.currentItem()->text();
         language = langlist.currentItem()->data(Qt::UserRole).toString();
         settings.setValue(LangSetting, language);
     }
 
-    langname=langNames[language];
-    langfile=langFiles[language];
+    QString langname=langNames[language];
+    QString langfile=langFiles[language];
+    QString langpath=langPaths[language];
 
-    if (language.compare(en) != 0) {
-        qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
+    if (language.compare(DefaultLanguage) != 0) {
+        qDebug() << "Loading" << langname << "translation" << langfile.toLocal8Bit().data() << "from" << langpath.toLocal8Bit().data();
         QTranslator * translator = new QTranslator();
 
-        if (!langfile.isEmpty() && !translator->load(langfile, transdir)) {
+        if (!langfile.isEmpty() && !translator->load(langfile, langpath)) {
             qWarning() << "Could not load translation" << langfile << "reverting to english :(";
         }
 
         qApp->installTranslator(translator);
     } else {
-        qDebug() << "Using in-built english Translation";
+        qDebug() << "Using default language" << language.toLocal8Bit().data();
     }
 }

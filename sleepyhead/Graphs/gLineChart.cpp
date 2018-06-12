@@ -1118,5 +1118,5 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
     }
 
 
-    painter.setRenderHint(QPainter::Antialiasing, false);
+   // painter.setRenderHint(QPainter::Antialiasing, false);
 }

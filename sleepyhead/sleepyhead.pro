@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-lessThan(QT_MAJOR_VERSION,5) {
-    error("Sorry, need Qt 5 to build SleepyHead");
+lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,9) {
+    error("You need to Qt 5.9 or newer to build SleepyHead");
 }
 
 QT += core gui network xml printsupport serialport widgets help
@@ -27,7 +27,6 @@ contains(DEFINES, BrokenGL) {
 }
 QT += opengl
 
-#ResMed summary data design is SHIT... SleepyHead *MUST* follow ResMed's idiocy.
 DEFINES += LOCK_RESMED_SESSIONS
 
 CONFIG += c++11
@@ -67,7 +66,6 @@ PRE_TARGETDEPS += git_info.h
 QMAKE_EXTRA_TARGETS += gitinfotarget
 
 
-
 #Comment out for official builds
 DEFINES += BETA_BUILD
 
@@ -91,10 +89,24 @@ haiku {
     DEFINES         += _TTY_POSIX_
 }
 
+CONFIG(release, debug|release) {
+    contains(RELEASE, 1) {
+        win32:QMAKE_POST_LINK += upx -k --best --overlay=strip --strip-relocs=0 --compress-icons=2 $(DESTDIR_TARGET)
+    }
+}
 win32 {
     DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
-    RC_FILE          += win_icon.rc
+#    RC_FILE          += win_icon.rc
     LIBS             += -lsetupapi
+
+    QMAKE_TARGET_PRODUCT = SleepyHead
+    QMAKE_TARGET_COMPANY = Jedimark
+    QMAKE_TARGET_COPYRIGHT = Copyright (c)2018 Mark Watkins
+    QMAKE_TARGET_DESCRIPTION = "OpenSource CPAP Research & Review"
+    VERSION = 1.1.0.0
+
+    RC_ICONS = ./icons/bob-v3.0.ico
+
 
     INCLUDEPATH += $$PWD
     INCLUDEPATH += $$[QT_INSTALL_PREFIX]/../src/qtbase/src/3rdparty/zlib
@@ -106,6 +118,25 @@ win32 {
         # MingW needs this
         LIBS += -lz
     }
+}
+
+TRANSLATIONS = $$files($$PWD/../Translations/*.ts)
+qtPrepareTool(LRELEASE, lrelease)
+
+for(file, TRANSLATIONS) {
+
+ qmfile = $$absolute_path($$basename(file), $$PWD/translations/)
+ qmfile ~= s,.ts$,.qm,
+
+ qmdir = $$PWD/translations
+
+ !exists($$qmdir) {
+     mkpath($$qmdir)|error("Aborting.")
+ }
+ qmout = $$qmfile
+ command = $$LRELEASE -removeidentical $$file -qm $$qmfile
+ system($$command)|error("Failed to run: $$command")
+ TRANSLATIONS_FILES += $$qmfile
 }
 
 #copy the Translation and Help files to where the test binary wants them
@@ -313,7 +344,6 @@ RESOURCES += \
 
 OTHER_FILES += \
     docs/index.html \
-    docs/usage.html \
     docs/schema.xml \
     docs/graphs.xml \
     docs/channels.xml \
@@ -357,6 +387,7 @@ DISTFILES += \
     help/help_nl/statistics.html \
     help/help_nl/supported.html \
     help/help_nl/tipsntricks.html \
-    help/help_nl/help_nl.qhp \
-    help/help_en/help_en.qhp \
-    help/help_en/reportingbugs.html
+    help/help_en/reportingbugs.html \
+    win_icon.rc \
+    help/help_nl/SleepyHeadGuide_nl.qhp \
+    help/help_en/SleepyHeadGuide_en.qhp

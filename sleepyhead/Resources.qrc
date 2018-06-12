@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/">
         <file>icons/sdcard.png</file>
         <file>icons/preferences.png</file>
@@ -10,7 +10,6 @@
         <file>icons/back.png</file>
         <file>fonts/FreeSans.ttf</file>
         <file>icons/refresh.png</file>
-        <file>docs/usage.html</file>
         <file>icons/oximeter.png</file>
         <file>docs/0.0.gif</file>
         <file>docs/schema.xml</file>
@@ -37,7 +36,6 @@
         <file>docs/script.js</file>
         <file>docs/sheep.png</file>
         <file>icons/Jedimark.png</file>
-        <file>COPYING</file>
         <file>icons/sdcard-lock.png</file>
         <file>icons/statistics.png</file>
         <file>icons/prs1.png</file>
@@ -56,5 +54,19 @@
         <file>icons/overview-page.png</file>
         <file>docs/GPLv3-en_US</file>
         <file>icons/fp_icon.png</file>
+        <file>translations/Afrikaans.af.qm</file>
+        <file>translations/Arabic.ar.qm</file>
+        <file>translations/Bulgarian.bg.qm</file>
+        <file>translations/Chinese.zh.qm</file>
+        <file>translations/Deutsch.de.qm</file>
+        <file>translations/English.en_UK.qm</file>
+        <file>translations/Espaniol.es.qm</file>
+        <file>translations/Francais.fr.qm</file>
+        <file>translations/Greek.el.qm</file>
+        <file>translations/Italiano.it.qm</file>
+        <file>translations/Nederlands.nl.qm</file>
+        <file>translations/Portugues.pt.qm</file>
+        <file>translations/Suomi.fi.qm</file>
+        <file>translations/Svenska.se.qm</file>
     </qresource>
 </RCC>

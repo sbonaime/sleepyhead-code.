@@ -3,17 +3,13 @@
     <docFiles>
         <generate>
             <file>
-                <input>help_en/help_en.qhp</input>
-                <output>help.en_US.qch</output>
+                <input>help_en/SleepyHeadGuide_en.qhp</input>
+                <output>SleepyHeadGuide.en_US.qch</output>
             </file>
             <file>
-                <input>help_nl/help_nl.qhp</input>
-                <output>help.nl.qch</output>
+                <input>help_nl/SleepyHeadGuide_nl.qhp</input>
+                <output>SleepyHeadGuide.nl.qch</output>
             </file>
         </generate>
-        <register>
-            <file>help.nl.qch</file>
-            <file>help.en_US.qch</file>
-        </register>
     </docFiles>
 </QHelpCollectionProject>
