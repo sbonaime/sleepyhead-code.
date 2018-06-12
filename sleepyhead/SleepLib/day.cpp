@@ -379,7 +379,7 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     }
 
     // sort by weight, then value
-    qSort(valcnt); //(valcnt.begin(), valcnt.end());
+    qSort(valcnt); //std::sort(valcnt.begin(), valcnt.end());
 
     //double SN=100.0/double(N); // 100% / overall sum
     double p = 100.0 * percentile;

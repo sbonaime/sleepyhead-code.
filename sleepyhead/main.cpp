@@ -137,17 +137,14 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // OpenGL Detection
     ////////////////////////////////////////////////////////////////////////////////////////////
-    float glversion = 0.0;
-#ifndef NO_OPENGL_BUILD
-    glversion = getOpenGLVersion();
-#endif
+    getOpenGLVersion();
+    getOpenGLVersionString();
 
-    bool opengl2supported = glversion >= 2.0;
-    bool bad_graphics = !opengl2supported;
-    bool intel_graphics = false;
+    //bool opengl2supported = glversion >= 2.0;
+    //bool bad_graphics = !opengl2supported;
+    //bool intel_graphics = false;
 //#ifndef NO_OPENGL_BUILD
 
-    getOpenGLVersionString().contains("INTEL", Qt::CaseInsensitive);
 //#endif
 
     /*
@@ -355,6 +352,7 @@ retry_directory:
     Profiles::Scan();
 
     Q_UNUSED(changing_language)
+    Q_UNUSED(dont_load_profile)
 
 
     if (check_updates) { mainwin->CheckForUpdates(); }

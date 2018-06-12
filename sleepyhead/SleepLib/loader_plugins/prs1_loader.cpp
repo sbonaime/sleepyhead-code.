@@ -786,6 +786,7 @@ int PRS1Loader::OpenMachine(const QString & path)
 bool PRS1Import::ParseF5EventsFV3()
 {
     EventDataType data0, data1, data2, data3, data4, data5;
+    Q_UNUSED(data3)
 
     EventDataType currentPressure=0, leak; //, p;
 
@@ -1739,6 +1740,7 @@ bool PRS1Import::ParseF0Events()
     EventList *Code[0x20] = {0};
 
     EventDataType data0, data1, data2;
+    Q_UNUSED(data2)
     int cnt = 0;
     short delta;
     int pos;
