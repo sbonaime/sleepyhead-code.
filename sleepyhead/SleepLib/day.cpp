@@ -1,4 +1,4 @@
-﻿/* SleepLib Day Class Implementation
+/* SleepLib Day Class Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -379,7 +379,8 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     }
 
     // sort by weight, then value
-    qSort(valcnt); //std::sort(valcnt.begin(), valcnt.end());
+    //qSort(valcnt);
+    std::sort(valcnt.begin(), valcnt.end());
 
     //double SN=100.0/double(N); // 100% / overall sum
     double p = 100.0 * percentile;
@@ -550,7 +551,8 @@ EventDataType Day::rangePercentile(ChannelID code, float p, qint64 st, qint64 et
     }
 
     // TODO: use nth_element instead..
-    qSort(list); //std::sort(list.begin(), list.end());
+    //qSort(list);
+    std::sort(list.begin(), list.end());
 
     float b = float(idx) * p;
     int a = floor(b);

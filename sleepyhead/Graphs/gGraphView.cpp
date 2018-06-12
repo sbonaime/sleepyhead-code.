@@ -1,4 +1,4 @@
-﻿/* gGraphView Implementation
+/* gGraphView Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -1434,7 +1434,7 @@ void gGraphView::paintGL()
     m_tooltip->paint(painter);
 
 #ifdef DEBUG_EFFICIENCY
-    const int rs = 10;
+    const int rs = 20;
     static double ring[rs] = {0};
     static int rp = 0;
 

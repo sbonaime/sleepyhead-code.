@@ -1,4 +1,4 @@
-﻿/* SleepLib RemStar M-Series Loader Implementation
+/* SleepLib RemStar M-Series Loader Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -175,7 +175,7 @@ int MSeriesLoader::Open(const QString & path)
 
     QList<quint16> head, tail;
     controlblock += 3;
-    quint16 datastarts, dataends, h16, t16;//, tmp16,
+    quint16 datastarts=0, dataends=0, h16, t16;//, tmp16,
 
     if (controlblock[0]) {
         datastarts = controlblock[1] | (controlblock[2] << 8);
