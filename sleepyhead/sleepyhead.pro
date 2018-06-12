@@ -127,6 +127,11 @@ win32 {
         LIBS += -lz
     }
 
+    MY_LIB_FILES += $${DESTDIR}/opengl32sw.dll
+    extra_libs.files = MY_LIB_FILES
+    extra_libs.path = $$DESTDIR
+    INSTALLS += extra_libs
+
     CONFIG += precompile_header
     PRECOMPILED_HEADER = pch.h
     HEADERS += pch.h

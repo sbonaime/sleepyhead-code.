@@ -514,12 +514,14 @@ void MainWindow::CloseProfile()
         overview = nullptr;
     }
 
-    p_profile->StoreMachines();
-    p_profile->UnloadMachineData();
-    p_profile->saveChannels();
-    p_profile->Save();
-    p_profile->removeLock();
-    p_profile = nullptr;
+    if (p_profile) {
+        p_profile->StoreMachines();
+        p_profile->UnloadMachineData();
+        p_profile->saveChannels();
+        p_profile->Save();
+        p_profile->removeLock();
+        p_profile = nullptr;
+    }
 }
 
 
@@ -2220,14 +2222,9 @@ void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 
 void MainWindow::on_actionChange_Language_triggered()
 {
-    // Pop up a message box asking if you would like to reset Channel event/waveform names
-    // Sorry Translators who frequently language hop, this is an extra step, but this one is for the users. :/
-    if (QMessageBox::question(this,STR_MessageBox_Warning,tr("Changing the language will reset custom Event and Waveform names/labels/descriptions.")+"\n\n"+tr("Are you sure you want to do this?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
-        return;
-    }
-
-    CloseProfile();
-    PREF.Save();
+//    if (QMessageBox::question(this,STR_MessageBox_Warning,tr("Changing the language will reset custom Event and Waveform names/labels/descriptions.")+"\n\n"+tr("Are you sure you want to do this?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
+//        return;
+//    }
 
     RestartApplication(true, "--language");
 }
