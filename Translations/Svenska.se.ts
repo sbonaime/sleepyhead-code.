@@ -8424,12 +8424,12 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation>CMS50F</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>Fisher &amp; Paykel</source>
         <translation>Fisher &amp; Paykel</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>ICON</source>
         <translation>ICON</translation>
     </message>
@@ -8503,13 +8503,13 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation>M-Series</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>Philips Respironics</source>
         <translation>Philips Respironics</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="272"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>System One</source>
         <translation>System One</translation>
     </message>

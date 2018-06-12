@@ -184,6 +184,7 @@ protected:
     */
 class PRS1Loader : public CPAPLoader
 {
+    Q_OBJECT
   public:
     PRS1Loader();
     virtual ~PRS1Loader();

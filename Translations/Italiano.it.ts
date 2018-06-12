@@ -6010,12 +6010,12 @@ TTIA: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>Fisher &amp; Paykel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>ICON</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6136,7 +6136,7 @@ TTIA: %1</source>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="272"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>System One</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6527,7 +6527,7 @@ TTIA: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>Philips Respironics</source>
         <translation type="unfinished"></translation>
     </message>

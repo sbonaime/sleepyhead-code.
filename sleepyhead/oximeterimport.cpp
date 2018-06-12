@@ -1,4 +1,4 @@
-﻿/* Oximeter Import Wizard Implementation
+/* Oximeter Import Wizard Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -170,16 +170,16 @@ SerialOximeter * OximeterImport::detectOximeter()
 	qDebug() << "Attempt to detect Oximeter";
     ui->retryButton->setVisible(false);
 
-    QList<SerialOximeter *> loaders; //= GetOxiLoaders();
+    QList<SerialOximeter *> loaders; // GetOxiLoaders();
 
     if (ui->oximeterType->currentIndex() == 0) { // CMS50F3.7
-        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50f37_class_name));
+        SerialOximeter * oxi = qobject_cast<SerialOximeter*>(lookupLoader(cms50f37_class_name));
         loaders.push_back(oxi);
     } else if (ui->oximeterType->currentIndex() == 1) { // CMS50D+/E/F
-        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(cms50_class_name));
+        SerialOximeter * oxi = qobject_cast<SerialOximeter*>(lookupLoader(cms50_class_name));
         loaders.push_back(oxi);
     } else if (ui->oximeterType->currentIndex() == 2) { // ChoiceMed
-        SerialOximeter * oxi = qobject_cast<SerialOximeter *>(lookupLoader(md300w1_class_name));
+        SerialOximeter * oxi = qobject_cast<SerialOximeter*>(lookupLoader(md300w1_class_name));
         loaders.push_back(oxi);
     } else return nullptr;
 

@@ -8362,12 +8362,12 @@ Por favor no toque nada hasta que finalize.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>Fisher &amp; Paykel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="76"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/icon_loader.h" line="77"/>
         <source>ICON</source>
         <translation></translation>
     </message>
@@ -8407,13 +8407,13 @@ Por favor no toque nada hasta que finalize.</translation>
         <translation>Serie-M</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>Philips Respironics</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="272"/>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.h" line="221"/>
         <source>System One</source>
         <translation></translation>
     </message>

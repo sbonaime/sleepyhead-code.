@@ -1,4 +1,4 @@
-﻿<RCC>
+<RCC>
     <qresource prefix="/">
         <file>icons/sdcard.png</file>
         <file>icons/preferences.png</file>

@@ -12,6 +12,26 @@
         <translation type="unfinished">&amp;Schließen</translation>
     </message>
     <message>
+        <source>Release Notes</source>
+        <translation type="unfinished">Versionshinweise</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Beenden</translation>
+    </message>
+    <message>
+        <source>Build Date: %1</source>
+        <translation type="unfinished">Erstellungsdatum: %1</translation>
+    </message>
+    <message>
+        <source>Graphics Engine: %1</source>
+        <translation type="unfinished">Grafikfunktion: %1</translation>
+    </message>
+    <message>
+        <source>About SleepyHead</source>
+        <translation type="unfinished">Über SleepyHead</translation>
+    </message>
+    <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -41,55 +61,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Release Notes</source>
-        <translation type="unfinished">Versionshinweise</translation>
-    </message>
-    <message>
         <source>Credits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>GPL License</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Support SleepyHead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Donate via Paypal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished">Beenden</translation>
-    </message>
-    <message>
-        <source>Revision: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Branch: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Build Date: %1</source>
-        <translation type="unfinished">Erstellungsdatum: %1</translation>
-    </message>
-    <message>
-        <source>Graphics Engine: %1</source>
-        <translation type="unfinished">Grafikfunktion: %1</translation>
-    </message>
-    <message>
-        <source>Show data folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About SleepyHead</source>
-        <translation type="unfinished">Über SleepyHead</translation>
-    </message>
-    <message>
-        <source>SleepyHead v%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -118,6 +90,14 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>GPL License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -133,6 +113,26 @@ p, li { white-space: pre-wrap; }
 &lt;hr /&gt;
 &lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Donate via Paypal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Revision: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Branch: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show data folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SleepyHead v%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -703,23 +703,19 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">...</translation>
     </message>
     <message>
-        <source>Search Topic:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Contents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search</source>
         <translation type="unfinished">Suche</translation>
     </message>
     <message>
+        <source>No</source>
+        <translation type="unfinished">Nein</translation>
+    </message>
+    <message>
         <source>Hide this message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search Topic:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -739,8 +735,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No</source>
-        <translation type="unfinished">Nein</translation>
+        <source>Contents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1 result(s) for &quot;%2&quot;</source>
@@ -1675,6 +1675,10 @@ p, li { white-space: pre-wrap; }
         <translation>Melde einen technischen Fehler</translation>
     </message>
     <message>
+        <source>&amp;copy;2011-2018</source>
+        <translation type="unfinished">&amp;copy;2011-2018</translation>
+    </message>
+    <message>
         <source>Profiles</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1693,10 +1697,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Processing import list...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;copy;2011-2018</source>
-        <translation type="unfinished">&amp;copy;2011-2018</translation>
     </message>
     <message>
         <source>Please open a profile first.</source>
@@ -1989,16 +1989,16 @@ p, li { white-space: pre-wrap; }
         <translation type="vanished">SleepyHead ist copyright &amp;copy;2011-2015 Mark Watkins {2011-2016 ?}</translation>
     </message>
     <message>
+        <source>SleepyHead is copyright &amp;copy;2011-2018 Mark Watkins</source>
+        <translation type="unfinished">SleepyHead ist copyright &amp;copy;2011-2015 Mark Watkins {2011-2016 ?} {2011-2018 ?}</translation>
+    </message>
+    <message>
         <source>It&apos;s totally ok to fib or skip this, but your rough age is needed to enhance accuracy of certain calculations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Biological (birth) gender is sometimes needed to enhance the accuracy of a few calculations, feel free to leave this blank and skip any of them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SleepyHead is copyright &amp;copy;2011-2018 Mark Watkins</source>
-        <translation type="unfinished">SleepyHead ist copyright &amp;copy;2011-2015 Mark Watkins {2011-2016 ?} {2011-2018 ?}</translation>
     </message>
 </context>
 <context>
@@ -3662,6 +3662,22 @@ Wenn Sie ein verschiedene Masken verwenden, wählen Sie die Mittelwerte . Es sol
         <translation>Hinweis:Hier wird ein lineares Berechnungsverfahren verwendet. Ändern dieser Werte erfordert eine Neuberechnung.</translation>
     </message>
     <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profile</translation>
+    </message>
+    <message>
+        <source>Welcome</source>
+        <translation type="unfinished">Willkommen</translation>
+    </message>
+    <message>
+        <source>Daily</source>
+        <translation type="unfinished">Täglich</translation>
+    </message>
+    <message>
+        <source>Statistics</source>
+        <translation type="unfinished">Statistiken</translation>
+    </message>
+    <message>
         <source>Auto-Launch CPAP Importer after opening profile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3706,22 +3722,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Profile</source>
-        <translation type="unfinished">Profile</translation>
-    </message>
-    <message>
-        <source>Welcome</source>
-        <translation type="unfinished">Willkommen</translation>
-    </message>
-    <message>
-        <source>Daily</source>
-        <translation type="unfinished">Täglich</translation>
-    </message>
-    <message>
-        <source>Statistics</source>
-        <translation type="unfinished">Statistiken</translation>
-    </message>
-    <message>
         <source>Switch Tabs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3731,24 +3731,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>After Import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;&lt;b&gt;Please Note:&lt;/b&gt; SleepyHead&apos;s advanced session splitting capabilities are not possible with &lt;b&gt;ResMed&lt;/b&gt; machines due to a limitation in the way their settings and summary data is stored, and therefore they have been disabled for this profile.&lt;/p&gt;&lt;p&gt;On ResMed machines, days will &lt;b&gt;split at noon&lt;/b&gt; like in ResMed&apos;s commercial software.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Never</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Data Processing Required</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A data re/decompression proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
-
-Are you sure you want to make these changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3769,6 +3751,24 @@ Are you sure you want to make these changes?</source>
     </message>
     <message>
         <source>MESA (Software Renderer)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;Please Note:&lt;/b&gt; SleepyHead&apos;s advanced session splitting capabilities are not possible with &lt;b&gt;ResMed&lt;/b&gt; machines due to a limitation in the way their settings and summary data is stored, and therefore they have been disabled for this profile.&lt;/p&gt;&lt;p&gt;On ResMed machines, days will &lt;b&gt;split at noon&lt;/b&gt; like in ResMed&apos;s commercial software.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Processing Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A data re/decompression proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
+
+Are you sure you want to make these changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3924,10 +3924,6 @@ Would you like do this now?</source>
         <translation type="unfinished">Form</translation>
     </message>
     <message>
-        <source>Filter:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>...</source>
         <translation type="unfinished">...</translation>
     </message>
@@ -3940,12 +3936,64 @@ Would you like do this now?</source>
         <translation type="unfinished">Version</translation>
     </message>
     <message>
-        <source>&amp;Open Profile</source>
+        <source>&amp;Edit Profile</source>
+        <translation type="unfinished">&amp;Profil bearbeiten</translation>
+    </message>
+    <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profile</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Name</translation>
+    </message>
+    <message>
+        <source>%1, %2</source>
+        <translation type="unfinished">%1: %2 {1,?}</translation>
+    </message>
+    <message>
+        <source>Enter Password for %1</source>
+        <translation type="unfinished">Passwort eingeben für %1</translation>
+    </message>
+    <message>
+        <source>You entered an incorrect password</source>
+        <translation type="unfinished">Sie haben ein falsches Passwort eingegeben</translation>
+    </message>
+    <message>
+        <source>Sorry</source>
+        <translation type="unfinished">Entschuldigung</translation>
+    </message>
+    <message>
+        <source>You need to enter DELETE in capital letters.</source>
+        <translation type="unfinished">Sie müssen DELETE in Großbuchstaben eingeben.</translation>
+    </message>
+    <message>
+        <source>There was an error deleting the profile directory, you need to manually remove it.</source>
+        <translation type="unfinished">Es gab einen Fehler beim Löschen des Profil-Verzeichnisses. Sie müssen es manuell entfernen.</translation>
+    </message>
+    <message>
+        <source>Profile &apos;%1&apos; was succesfully deleted</source>
+        <translation type="unfinished">Profil &apos;%1&apos; wurde erfolgreich gelöscht</translation>
+    </message>
+    <message>
+        <source>Name: %1, %2</source>
+        <translation type="unfinished">Name: %1, %2</translation>
+    </message>
+    <message>
+        <source>Phone: %1</source>
+        <translation type="unfinished">Telefon: %1</translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation type="unfinished">Adresse:</translation>
+    </message>
+    <message>
+        <source>Filter:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit Profile</source>
-        <translation type="unfinished">&amp;Profil bearbeiten</translation>
+        <source>&amp;Open Profile</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;New Profile</source>
@@ -3964,10 +4012,6 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Profile</source>
-        <translation type="unfinished">Profile</translation>
-    </message>
-    <message>
         <source>Ventilator Brand</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3982,22 +4026,6 @@ Would you like do this now?</source>
     <message>
         <source>Last Imported</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished">Name</translation>
-    </message>
-    <message>
-        <source>%1, %2</source>
-        <translation type="unfinished">%1: %2 {1,?}</translation>
-    </message>
-    <message>
-        <source>Enter Password for %1</source>
-        <translation type="unfinished">Passwort eingeben für %1</translation>
-    </message>
-    <message>
-        <source>You entered an incorrect password</source>
-        <translation type="unfinished">Sie haben ein falsches Passwort eingegeben</translation>
     </message>
     <message>
         <source>Forgot your password?</source>
@@ -4032,22 +4060,6 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sorry</source>
-        <translation type="unfinished">Entschuldigung</translation>
-    </message>
-    <message>
-        <source>You need to enter DELETE in capital letters.</source>
-        <translation type="unfinished">Sie müssen DELETE in Großbuchstaben eingeben.</translation>
-    </message>
-    <message>
-        <source>There was an error deleting the profile directory, you need to manually remove it.</source>
-        <translation type="unfinished">Es gab einen Fehler beim Löschen des Profil-Verzeichnisses. Sie müssen es manuell entfernen.</translation>
-    </message>
-    <message>
-        <source>Profile &apos;%1&apos; was succesfully deleted</source>
-        <translation type="unfinished">Profil &apos;%1&apos; wurde erfolgreich gelöscht</translation>
-    </message>
-    <message>
         <source>Hide disk usage information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4056,20 +4068,8 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name: %1, %2</source>
-        <translation type="unfinished">Name: %1, %2</translation>
-    </message>
-    <message>
-        <source>Phone: %1</source>
-        <translation type="unfinished">Telefon: %1</translation>
-    </message>
-    <message>
         <source>Email: &lt;a href=&apos;mailto:%1&apos;&gt;%1&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Address:</source>
-        <translation type="unfinished">Adresse:</translation>
     </message>
     <message>
         <source>No profile information given</source>
@@ -7105,6 +7105,10 @@ Morgen erwartet Sie</translation>
         <translation>Schlafqualitätsmessung</translation>
     </message>
     <message>
+        <source>Profile</source>
+        <translation type="unfinished">Profile</translation>
+    </message>
+    <message>
         <source>Pop out Graph</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7118,16 +7122,24 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Software Engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ANGLE / OpenGLES</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Desktop OpenGL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> cm</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profile</source>
-        <translation type="unfinished">Profile</translation>
     </message>
     <message>
         <source>Getting Ready...</source>
@@ -7202,6 +7214,26 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Debugging channel #1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top secret internal stuff you&apos;re not supposed to see ;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test #1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debugging channel #2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test #2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>As this is a pre-release version, it is recommended that you &lt;b&gt;back up your data folder manually&lt;/b&gt; before proceding, because attempting to roll back later may break things.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7247,38 +7279,6 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
     </message>
     <message>
         <source>No oximetry data has been imported yet.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Software Engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ANGLE / OpenGLES</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Desktop OpenGL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Debugging channel #1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Top secret internal stuff you&apos;re not supposed to see ;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Test #1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Debugging channel #2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Test #2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7696,36 +7696,12 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation type="unfinished">Form</translation>
     </message>
     <message>
-        <source>Welcome To SleepyHead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>What would you like to do?</source>
         <translation type="unfinished">Was möchten Sie tun?</translation>
     </message>
     <message>
-        <source>CPAP Importer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Oximetry Wizard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Overview</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Statistics</source>
         <translation type="unfinished">Statistiken</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;ResMed S9 SDCards &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;need &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;to be locked &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;before &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;inserting into your computer&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#000000;&quot;&gt;Some operating systems write cache files which break their special filesystem Journal&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
@@ -7760,32 +7736,8 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation type="unfinished">%1 Stunden, %2 Minuten und %3 Sekunden</translation>
     </message>
     <message>
-        <source>Your machine was on for %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;font color = red&gt;You only had the mask on for %1.&lt;/font&gt;</source>
         <translation type="unfinished">&lt;font color = red&gt;Sie benutzten die Maske nur %1.&lt;/font&gt;</translation>
-    </message>
-    <message>
-        <source>under</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>over</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>reasonably close to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>equal to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You had an AHI of %1, which is %2 your %3 day average of %4.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Your CPAP machine blasted you with a constant %1%2 of air</source>
@@ -7816,12 +7768,60 @@ I&apos;m very sorry your machine doesn&apos;t record useful data to graph in Dai
         <translation type="unfinished">Ihre EPAP- Druck war unter %1%2 für %3% diese Zeit.</translation>
     </message>
     <message>
-        <source>Your average leaks were %1 %2, which is %3 your %4 day average of %5.</source>
+        <source>No CPAP data has been imported yet.</source>
+        <translation type="unfinished">Es wurden noch keine CPAP-Daten importiert.</translation>
+    </message>
+    <message>
+        <source>Welcome To SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No CPAP data has been imported yet.</source>
-        <translation type="unfinished">Es wurden noch keine CPAP-Daten importiert.</translation>
+        <source>CPAP Importer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oximetry Wizard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Overview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;ResMed S9 SDCards &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;need &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;to be locked &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#ff0000;&quot;&gt;before &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#ff0000;&quot;&gt;inserting into your computer&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#000000;&quot;&gt;Some operating systems write cache files which break their special filesystem Journal&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your machine was on for %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>under</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>over</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reasonably close to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>equal to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You had an AHI of %1, which is %2 your %3 day average of %4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your average leaks were %1 %2, which is %3 your %4 day average of %5.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

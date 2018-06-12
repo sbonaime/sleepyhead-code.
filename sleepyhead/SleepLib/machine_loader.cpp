@@ -55,10 +55,6 @@ MachineLoader * lookupLoader(QString loaderName)
     return nullptr;
 }
 
-
-
-
-
 void RegisterLoader(MachineLoader *loader)
 {
     loader->initChannels();

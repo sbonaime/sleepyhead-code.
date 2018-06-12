@@ -47,6 +47,7 @@ const QString fpicon_class_name = STR_MACH_FPIcon;
 
 class FPIconLoader : public CPAPLoader
 {
+  Q_OBJECT
   public:
     FPIconLoader();
     virtual ~FPIconLoader();
