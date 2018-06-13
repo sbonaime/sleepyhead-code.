@@ -1,4 +1,4 @@
-﻿/* SleepLib Common Functions
+/* SleepLib Common Functions
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -69,7 +69,7 @@ const QString getDefaultAppRoot()
 
 bool gfxEgnineIsSupported(GFXEngine e)
 {
-#if Q_OS_WIN32
+#if defined(Q_OS_WIN32)
     return true;
 #else
     switch(e) {

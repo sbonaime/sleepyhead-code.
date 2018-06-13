@@ -1,6 +1,6 @@
 SleepyHead v1.1 branch
 
-*Warning*, backup your SleepyHeadData directory before using this branch as there will be no going backwards
+*Warning*: Backup your SleepyHeadData directory before using this branch or start a new profile
 
 SleepyHead is cross platform, opensource sleep tracking program for reviewing CPAP and Oximetry data, 
 which are devices used in the treatment of Sleep Disorders like Obstructive Sleep Apnea.
@@ -11,12 +11,12 @@ SleepyHead is copyright (C) 2011-2018 Mark Watkins <mark@jedimark.net>
 
 Requirements:
 -------------
-Qt5 SDK with webkit (Qt5.5 from http://qt.io/download-open-source recommended)
+Qt5.9 SDK with webkit (Qt5.9 from http://qt.io/download-open-source recommended, and please ONLY use that if you wish to submit bug reports)
 Linux needs libudev-dev for qserialport to compile
 
-OSX needs Xcode and commandline tools from AppStore
+OSX needs Xcode and commandline tools from AppStore,
 
-Windows needs MinGW (in Qt5 SDK) or VC++2013 Express (and matching Qt libraries)
+Windows needs MinGW (in Qt5 SDK) or VC++2015 Community, and a matching set of Qt libraries.
 
 Building:
 --------
@@ -30,14 +30,14 @@ qmake ../sleepyhead-code/SleepyHeadQT.pro
 make
 
 You may need to add a -spec option to qmake to suit your platform. 
-Adding -j3 speeds up the make command on a dual core or greater system.
+Adding -j4 speeds up the make command on a dual core or greater system.
 
 Building on OSX:
 ---------------
 Build as above. If qmake fails with the error:
 Project ERROR: Xcode not set up properly. You may need to confirm the license agreement by running /usr/bin/xcodebuild
 edit the file: 
-QT_INSTALL_DIR/5.5/clang_64/mkspecs/features/mac/default_pre.prf
+QT_INSTALL_DIR/5.9/clang_64/mkspecs/features/mac/default_pre.prf
 
 and replace
 /usr/bin/xcrun -find xcrun 2>/dev/null
