@@ -87,7 +87,20 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->resmedPrefCalcsNotice->setVisible(haveResMed);
 #endif
 
-    ui->gfxEngineCombo->setCurrentIndex(currentGFXEngine());
+    int gfxEngine=(int)currentGFXEngine();
+
+    int selIdx = 0;
+    for (int j=0, i=0; i<=(int)MaxGFXEngine; ++i) {
+        if (gfxEgnineIsSupported((GFXEngine) i)) {
+            ui->gfxEngineCombo->addItem(GFXEngineNames[i], i);
+            if (i==gfxEngine) {
+                 selIdx = j;
+            }
+            ++j;
+        }
+    }
+    ui->gfxEngineCombo->setCurrentIndex(selIdx);
+
 
     ui->culminativeIndices->setEnabled(false);
 
@@ -689,8 +702,8 @@ bool PreferencesDialog::Save()
         needs_reload = true;
     }
 
-    if ((unsigned int)ui->gfxEngineCombo->currentIndex() != currentGFXEngine()) {
-        setCurrentGFXEngine(ui->gfxEngineCombo->currentIndex());
+    if ((GFXEngine)ui->gfxEngineCombo->currentData().toUInt() != currentGFXEngine()) {
+        setCurrentGFXEngine((GFXEngine)ui->gfxEngineCombo->currentData().toUInt());
         needs_restart = true;
     }
 

@@ -67,34 +67,33 @@ const QString getDefaultAppRoot()
     return approot;
 }
 
-
-unsigned int currentGFXEngine()
+bool gfxEgnineIsSupported(GFXEngine e)
 {
-    QSettings settings;
-
-    return qMin(settings.value(GFXEngineSetting, 2).toUInt(), (unsigned int) 2);
-}
-void setCurrentGFXEngine(unsigned int r)
-{
-    QSettings settings;
-
-    settings.setValue(GFXEngineSetting, qMin(r, (unsigned int)2));
-}
-
-QString GFXEngineName(unsigned int r)
-{
-    switch (r) {
-    case 0:
-        return STR_GFXEngine_Software;
-    case 1:
-        return STR_GFXEngine_ANGLE;
-    case 2:
+#if Q_OS_WIN32
+    return true;
+#else
+    switch(e) {
+    case GFX_OpenGL:
+    case GFX_Software:
+       return true;
+    case GFX_ANGLE:
     default:
-        return STR_GFXEngine_OpenGL;
+       return false;
     }
+#endif
 }
+GFXEngine currentGFXEngine()
+{
+    QSettings settings;
 
+    return (GFXEngine)qMin(settings.value(GFXEngineSetting, GFX_OpenGL).toUInt(), (unsigned int)MaxGFXEngine);
+}
+void setCurrentGFXEngine(GFXEngine e)
+{
+    QSettings settings;
 
+    settings.setValue(GFXEngineSetting, qMin((unsigned int)e, (unsigned int)MaxGFXEngine));
+}
 
 QString getOpenGLVersionString()
 {
@@ -267,9 +266,7 @@ void copyPath(QString src, QString dst)
     }
 }
 
-QString STR_GFXEngine_Software;
-QString STR_GFXEngine_ANGLE;
-QString STR_GFXEngine_OpenGL;
+QString GFXEngineNames[MaxGFXEngine+1]; // Set by initializeStrings()
 
 QString STR_UNIT_M;
 QString STR_UNIT_CM;
@@ -473,9 +470,9 @@ QString STR_TR_WAvg;   // Short form of Weighted Average
 
 void initializeStrings()
 {
-    STR_GFXEngine_Software = QObject::tr("Software Engine");
-    STR_GFXEngine_ANGLE = QObject::tr("ANGLE / OpenGLES");
-    STR_GFXEngine_OpenGL = QObject::tr("Desktop OpenGL");
+    GFXEngineNames[GFX_Software] = QObject::tr("Software Engine");
+    GFXEngineNames[GFX_ANGLE] = QObject::tr("ANGLE / OpenGLES");
+    GFXEngineNames[GFX_OpenGL] = QObject::tr("Desktop OpenGL");
 
     STR_UNIT_M = QObject::tr(" m");
     STR_UNIT_CM = QObject::tr(" cm");

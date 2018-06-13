@@ -19,12 +19,13 @@
 #include <QLocale>
 #include "Graphs/glcommon.h"
 
+enum GFXEngine { GFX_OpenGL=0, GFX_ANGLE, GFX_Software, MaxGFXEngine=GFX_Software};
 const QString GFXEngineSetting = "GFXEngine";
+extern QString GFXEngineNames[MaxGFXEngine+1]; // Set by initializeStrings()
 
 const QString CSTR_GFX_ANGLE = "ANGLE";
 const QString CSTR_GFX_OpenGL = "OpenGL";
 const QString CSTR_GFX_BrokenGL = "LegacyGFX";
-
 
 
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
@@ -33,10 +34,9 @@ Qt::DayOfWeek firstDayOfWeekFromLocale();
 QString getBranchVersion();
 QString getGFXEngine();
 
-unsigned int currentGFXEngine();
-void setCurrentGFXEngine(unsigned int r);
-QString GFXEngineName(unsigned int r);
-
+bool gfxEgnineIsSupported(GFXEngine e);
+GFXEngine currentGFXEngine();
+void setCurrentGFXEngine(GFXEngine e);
 
 QString appResourcePath();
 QString getGraphicsEngine();
@@ -171,11 +171,6 @@ const QString STR_AppRoot = "SleepyHeadData";
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Commonly used translatable text strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
-extern QString STR_GFXEngine_Software;
-extern QString STR_GFXEngine_ANGLE;
-extern QString STR_GFXEngine_OpenGL;
-
 
 extern QString STR_UNIT_M;
 extern QString STR_UNIT_CM;

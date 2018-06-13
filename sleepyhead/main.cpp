@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName(getDeveloperName());
 
     QSettings settings;
-    unsigned int gfxEngine = qMin(settings.value(GFXEngineSetting, 0).toUInt(), (unsigned int)2);
+    GFXEngine gfxEngine = (GFXEngine)qMin((unsigned int)settings.value(GFXEngineSetting, (unsigned int)GFX_OpenGL).toUInt(), (unsigned int)MaxGFXEngine);
 
     switch (gfxEngine) {
     case 0:
@@ -128,6 +128,8 @@ int main(int argc, char *argv[])
 
     initializeStrings(); // This must be called AFTER translator is installed, but before mainwindow is setup
 
+    QFontDatabase::addApplicationFont("://fonts/FreeSans.ttf");
+    a.setFont(QFont("FreeSans", 11, QFont::Normal, false));
     mainwin = new MainWindow;
 
 #ifdef BROKEN_OPENGL_BUILD

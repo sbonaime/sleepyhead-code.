@@ -668,8 +668,9 @@ void CMS50F37Loader::eraseSession(int user, int session)
 }
 
 
-void CMS50F37Loader::setDeviceID(QString str)
+void CMS50F37Loader::setDeviceID(const QString & newid)
 {
+    QString str = newid;
     str.truncate(7);
     if (str.length() < 7) {
         str = QString(" ").repeated(7-str.length()) + str;

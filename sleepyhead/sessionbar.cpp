@@ -225,7 +225,7 @@ void SessionBar::paintEvent(QPaintEvent *)
 
     double sx, ex;
     QVector<SBSeg>::iterator i;
-    QRect selectRect;
+    //QRect selectRect;
 
     int cnt = 0;
     for (i = segments.begin(); i != segments.end(); ++i) {

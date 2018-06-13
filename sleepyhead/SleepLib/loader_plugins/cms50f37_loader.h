@@ -61,7 +61,7 @@ Q_OBJECT
 
     virtual void syncClock();
     virtual QString getDeviceID();
-    virtual void setDeviceID(QString);
+    virtual void setDeviceID(const QString &);
 
 
     virtual void setDuration(int d) { duration=d; }
