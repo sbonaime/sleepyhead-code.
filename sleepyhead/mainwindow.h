@@ -10,7 +10,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#ifndef BROKEN_OPENGL_BUILD
 #include <QGLContext>
+#endif
 #include <QSystemTrayIcon>
 #include <QTimer>
 

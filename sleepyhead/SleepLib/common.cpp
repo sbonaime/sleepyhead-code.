@@ -9,7 +9,9 @@
 #include <QDateTime>
 #include <QDir>
 #include <QThread>
+#ifndef BROKEN_OPENGL_BUILD
 #include <QGLWidget>
+#endif
 #include <QOpenGLFunctions>
 #include <QDebug>
 #include <QDir>
@@ -96,25 +98,30 @@ void setCurrentGFXEngine(GFXEngine e)
 QString getOpenGLVersionString()
 {
     static QString glversion;
+   if (glversion.isEmpty()) {
 
-    if (glversion.isEmpty()) {
+#ifdef BROKEN_OPENGL_BUILD
+        glversion="LegacyGFX";
+        qDebug() << "This LegacyGFX build has been created without the need for OpenGL";
+#else
+
         QGLWidget w;
         w.makeCurrent();
 
-#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
-        glversion = QString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-#else
         QOpenGLFunctions f;
         f.initializeOpenGLFunctions();
         glversion = QString(QLatin1String(reinterpret_cast<const char*>(f.glGetString(GL_VERSION))));
-#endif
         qDebug() << "OpenGL Version:" << glversion;
-    }
-    return glversion;
+#endif
+   }
+   return glversion;
 }
 
 float getOpenGLVersion()
 {
+#ifdef BROKEN_OPENGL_BUILD
+    return 0;
+#else
     QString glversion = getOpenGLVersionString();
     glversion = glversion.section(" ",0,0);
     bool ok;
@@ -130,6 +137,7 @@ float getOpenGLVersion()
         }
     }
     return v;
+#endif
 }
 
 QString getGraphicsEngine()

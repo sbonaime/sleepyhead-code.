@@ -10,7 +10,9 @@
 #define OVERVIEW_H
 
 #include <QWidget>
+#ifndef BROKEN_OPENGL_BUILD
 #include <QGLContext>
+#endif
 #include <QHBoxLayout>
 #include <QDateEdit>
 #include "SleepLib/profiles.h"
