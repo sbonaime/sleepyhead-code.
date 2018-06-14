@@ -1201,7 +1201,7 @@ QToolBox::tab:selected  {
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -2687,11 +2687,14 @@ border-radius: 10px;
 </string>
               </property>
               <property name="text">
-               <string>...</string>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="Resources.qrc">
                 <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+              </property>
+              <property name="shortcut">
+               <string notr="true"/>
               </property>
               <property name="autoRaise">
                <bool>true</bool>
@@ -2910,7 +2913,7 @@ p, li { white-space: pre-wrap; }
     <string>&amp;Import Data</string>
    </property>
    <property name="shortcut">
-    <string>Shift+F2</string>
+    <string notr="true">Shift+F2</string>
    </property>
   </action>
   <action name="action_Preferences">
@@ -2933,7 +2936,7 @@ p, li { white-space: pre-wrap; }
     <string>View &amp;Daily</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string notr="true">F5</string>
    </property>
   </action>
   <action name="actionView_Overview">
@@ -2941,7 +2944,7 @@ p, li { white-space: pre-wrap; }
     <string>View &amp;Overview</string>
    </property>
    <property name="shortcut">
-    <string>F6</string>
+    <string notr="true">F6</string>
    </property>
   </action>
   <action name="actionView_Welcome">
@@ -2949,7 +2952,7 @@ p, li { white-space: pre-wrap; }
     <string>View &amp;Welcome</string>
    </property>
    <property name="shortcut">
-    <string>F4</string>
+    <string notr="true">F4</string>
    </property>
   </action>
   <action name="action_CycleTabs">
@@ -2957,7 +2960,7 @@ p, li { white-space: pre-wrap; }
     <string>-</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Tab</string>
+    <string notr="true">Ctrl+Tab</string>
    </property>
   </action>
   <action name="actionUse_AntiAliasing">
@@ -2981,7 +2984,7 @@ p, li { white-space: pre-wrap; }
     <string>&amp;Fullscreen Toggle</string>
    </property>
    <property name="shortcut">
-    <string>F11</string>
+    <string notr="true">F11</string>
    </property>
   </action>
   <action name="actionDebug">
@@ -2990,6 +2993,9 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Show Debug Pane</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="action_Reset_Graph_Layout">
@@ -3007,7 +3013,7 @@ p, li { white-space: pre-wrap; }
     <string>Take &amp;Screenshot</string>
    </property>
    <property name="shortcut">
-    <string>F12</string>
+    <string notr="true">F12</string>
    </property>
   </action>
   <action name="actionView_Oximetry">
@@ -3015,7 +3021,7 @@ p, li { white-space: pre-wrap; }
     <string>O&amp;ximetry Wizard</string>
    </property>
    <property name="shortcut">
-    <string>F7</string>
+    <string notr="true">F7</string>
    </property>
   </action>
   <action name="actionPrint_Report">
@@ -3064,7 +3070,7 @@ p, li { white-space: pre-wrap; }
     <string>Right &amp;Sidebar</string>
    </property>
    <property name="shortcut">
-    <string>F10</string>
+    <string notr="true">F10</string>
    </property>
   </action>
   <action name="actionView_Statistics">
@@ -3078,7 +3084,7 @@ p, li { white-space: pre-wrap; }
     <string>View Statistics</string>
    </property>
    <property name="shortcut">
-    <string>F4</string>
+    <string notr="true">F4</string>
    </property>
   </action>
   <action name="actionImport_ZEO_Data">
@@ -3129,7 +3135,7 @@ p, li { white-space: pre-wrap; }
     <string>Toggle &amp;Line Cursor</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+L</string>
+    <string notr="true">Ctrl+L</string>
    </property>
   </action>
   <action name="action">
@@ -3148,7 +3154,7 @@ p, li { white-space: pre-wrap; }
     <string>Daily Sidebar</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string notr="true">F8</string>
    </property>
   </action>
   <action name="actionDaily_Calendar">
@@ -3162,7 +3168,7 @@ p, li { white-space: pre-wrap; }
     <string>Daily Calendar</string>
    </property>
    <property name="shortcut">
-    <string>F9</string>
+    <string notr="true">F9</string>
    </property>
   </action>
   <action name="actionExport_Journal">

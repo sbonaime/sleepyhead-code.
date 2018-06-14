@@ -114,38 +114,38 @@ void gDailySummary::SetDay(Day *day)
 
         if (mode == MODE_CPAP) {
             EventDataType p = round(day->settings_max(CPAP_Pressure));
-            settings.append(QString("Fixed %1%2").arg(p,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Fixed %1 %2").arg(p,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         } else if (mode == MODE_APAP) {
             EventDataType min = round(day->settings_min(CPAP_PressureMin));
             EventDataType max = round(day->settings_max(CPAP_PressureMax));
-            settings.append(QString("Min Pressure %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("Max Pressure %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Min Pressure %1 %2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max Pressure %1 %2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         } else if (mode == MODE_BILEVEL_AUTO_FIXED_PS) {
             EventDataType min = round(day->settings_min(CPAP_EPAPLo));
             EventDataType max = round(day->settings_max(CPAP_IPAPHi));
             EventDataType ps = round(day->settings_max(CPAP_PS));
-            settings.append(QString("Min EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("Max IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("PS %1%2").arg(ps,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Min EPAP %1 %2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max IPAP %1 %2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1 %2").arg(ps,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         } else if (mode == MODE_BILEVEL_FIXED) {
             EventDataType min = round(day->settings_min(CPAP_EPAP));
             EventDataType max = round(day->settings_max(CPAP_IPAP));
-            settings.append(QString("EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("EPAP %1 %2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("IPAP %1 %2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         } else if (mode == MODE_BILEVEL_AUTO_VARIABLE_PS) {
             EventDataType min = round(day->settings_min(CPAP_EPAPLo));
             EventDataType max = round(day->settings_max(CPAP_IPAPHi));
             EventDataType ps = round(day->settings_max(CPAP_PSMin));
             EventDataType pshi = round(day->settings_max(CPAP_PSMax));
-            settings.append(QString("Min EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("Max IPAP %1%2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("PS %1-%2%3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Min EPAP %1 %2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("Max IPAP %1 %2").arg(max,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1-%2 %3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         } else if (mode == MODE_ASV) {
             EventDataType min = round(day->settings_min(CPAP_EPAP));
             EventDataType ps = round(day->settings_max(CPAP_PSMin));
             EventDataType pshi = round(day->settings_max(CPAP_PSMax));
-            settings.append(QString("EPAP %1%2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
-            settings.append(QString("PS %1-%2%3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("EPAP %1 %2").arg(min,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
+            settings.append(QString("PS %1-%2 %3").arg(ps,0,'f',2).arg(pshi,0,'f',2).arg(schema::channel[CPAP_Pressure].units()));
         }
         settings.append(QObject::tr("Relief: %1").arg(day->getPressureRelief()));
 

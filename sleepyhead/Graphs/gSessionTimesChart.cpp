@@ -1,4 +1,4 @@
-﻿/* gSessionTimesChart Implementation
+/* gSessionTimesChart Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -204,7 +204,7 @@ void gSummaryChart::afterDraw(QPainter &painter, gGraph &graph, QRectF rect)
 
 
     float perc = p_profile->general->prefCalcPercentile();
-    QString percstr = QObject::tr("%1%").arg(perc, 0, 'f',0);
+    QString percstr = QString("%1%").arg(perc, 0, 'f',0);
 
     schema::Channel & chan = schema::channel[calcitems.at(0).code];
 

@@ -903,7 +903,7 @@ QString Daily::getSessionInformation(Day * day)
     }
 
     if (corrupted_waveform) {
-        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
+        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record(s) for this session had faulty source data. Some waveform overlay points may not match up correctly."));
     }
     html+="</table>";
     return html;
@@ -1072,7 +1072,7 @@ QString Daily::getCPAPInformation(Day * day)
     html+="<tr><td align=center><p title=\""+tooltip+"\">"+info.brand + " "+ info.series+"<br/> "+info.model+"</p></td></tr>\n";
     html+="<tr><td align=center>";
 
-    html+=tr("PAP Mode: %1<br/>").arg(day->getCPAPMode());
+    html+=tr("PAP Mode: %1").arg(day->getCPAPMode())+"<br/>";
     html+= day->getPressureSettings();
     html+="</td></tr>\n";
     if (day->noSettings(cpap)) {
@@ -1194,8 +1194,7 @@ QString Daily::getStatisticsInfo(Day * day)
             int m = ttia / 60 % 60;
             int s = ttia % 60;
             if (ttia > 0) {
-                html+="<tr><td colspan=3 align='left' bgcolor='white'><b>"+tr("Total time in apnea")+
-                    QString("</b></td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
+                html+="<tr><td colspan=3 align='left' bgcolor='white'><b title="+tr("Total time in apnea")+">"+tr("TTIA")+QString("</b></td><td colspan=2 bgcolor='white'>%1</td></tr>").arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
             }
 
         }
@@ -1255,7 +1254,7 @@ QString Daily::getSleepTime(Day * day)
         return html;
 
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-    html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
+    html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Start")+"</b></td><td align='center'><b>"+tr("End")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
     int tt=qint64(day->total_time())/1000L;
     QDateTime date=QDateTime::fromTime_t(day->first()/1000L);
     QDateTime date2=QDateTime::fromTime_t(day->last()/1000L);
@@ -1489,7 +1488,7 @@ void Daily::Load(QDate date)
                 }
             } else { // machine is a brick
                 html+="<tr><td colspan=5 align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-                html+="<tr><td colspan=5 align='center'><i>"+tr("Sorry, your machine only provides compliance data.")+"</i></td></tr>\n";
+                html+="<tr><td colspan=5 align='center'><i>"+tr("Sorry, this machine only provides compliance data.")+"</i></td></tr>\n";
                 html+="<tr><td colspan=5 align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
             }
             html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";

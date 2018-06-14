@@ -51,7 +51,7 @@ Help::Help(QWidget *parent) :
         }
     }
     if (helpFile.isEmpty()) {
-        ui->languageWarningMessage->setText(tr("Help files could not be located... If you're building from source, try rerunning Qmake."));
+        ui->languageWarningMessage->setText(tr("Help files do not appear to be present."));
         // Still empty, install is dodgy
         // Copy en_US out of resource??
         // For now I just don't care, if the user screws up.. tough

@@ -262,7 +262,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
 
             float ipap_minutes = ipap.times[mouseOverKey] / 60.0;
             float epap_minutes = epap.times[mouseOverKey] / 60.0;
-            QString str = QString("%1%2").arg(mouseOverKey / pressureMult,3,'f',1).arg(STR_UNIT_CMH2O)+"\n";
+            QString str = QString("%1 %2").arg(mouseOverKey / pressureMult,3,'f',1).arg(STR_UNIT_CMH2O)+"\n";
             bool good = false;
 
             if (ipap_minutes > 0) {
