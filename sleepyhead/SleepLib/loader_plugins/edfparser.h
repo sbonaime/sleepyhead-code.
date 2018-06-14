@@ -1,4 +1,4 @@
-﻿/* EDF Parser Header
+/* EDF Parser Header
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -35,7 +35,7 @@ struct EDFHeader {
     char dur_data_records[8];
     char num_signals[4];
 }
-#ifndef BUILD_WITH_MSVC
+#ifndef _MSC_VER
 __attribute__((packed))
 #endif
 ;

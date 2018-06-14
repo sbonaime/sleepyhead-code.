@@ -1,4 +1,4 @@
-﻿/* gGraph Implemntation
+/* gGraph Implemntation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -790,7 +790,7 @@ void gGraph::mouseMoveEvent(QMouseEvent *event)
             int ms(a % 1000);
 
             if (d > 1) {
-                m_selDurString.sprintf("%1.0f days", d);
+                m_selDurString = tr("%1 days").arg(floor(d));
             } else {
 
                 m_selDurString.sprintf("%02i:%02i:%02i:%03i", h, m, s, ms);

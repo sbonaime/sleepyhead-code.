@@ -1,4 +1,4 @@
-﻿/* Profile Selector Header
+/* Profile Selector Header
  *
  * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
  *
@@ -58,6 +58,9 @@ private slots:
     void on_selectionChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
+    QString getProfileDiskInfo(Profile *profile);
+    QString formatSize(qint64 size);
+
     Ui::ProfileSelector *ui;
     QStandardItemModel *model;
     MySortFilterProxyModel2 *proxy;

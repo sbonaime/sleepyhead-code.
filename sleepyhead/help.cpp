@@ -1,4 +1,4 @@
-﻿/* SleepyHead Help Implementation
+/* SleepyHead Help Implementation
  *
  * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
  *
@@ -97,7 +97,7 @@ Help::Help(QWidget *parent) :
 
 
     if (!helpLoaded) {
-        QString html = "<html><body><div align=\"center\" valign=\"center\"><img src=\"qrc://docs/sheep.png\"><br/><h2>No documentation available</h2></div></body></html>";
+        QString html = "<html><body><div align=\"center\" valign=\"center\"><img src=\"qrc://docs/sheep.png\"><br/><h2>"+tr("No documentation available")+"</h2></div></body></html>";
         helpBrowser->setHtml(html);
         return;
     } else {
@@ -185,7 +185,7 @@ void Help::on_homeButton_clicked()
 void Help::on_searchComplete(int count)
 {
     if (!searchReady) {
-        QString html = "<h1>Please wait a bit.. Indexing still in progress</h1>";
+        QString html = "<h1>"+tr("Please wait a bit.. Indexing still in progress")+"</h1>";
         helpBrowser->setText(html);
         return;
     }

@@ -1,4 +1,4 @@
-﻿/* glcommon GL code & font stuff
+/* glcommon GL code & font stuff
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -42,14 +42,11 @@ QColor brighten(QColor color, float mult)
 
 }
 
-#ifdef BUILD_WITH_MSVC
-
-#if (_MSC_VER < 1800)
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
 double round(double number)
 {
     return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
-#endif
 #endif
 
 

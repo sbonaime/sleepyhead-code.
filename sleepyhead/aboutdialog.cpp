@@ -1,4 +1,4 @@
-﻿/* SleepyHead AboutDialog Implementation
+/* SleepyHead AboutDialog Implementation
  *
  * Date created: 7/5/2018
  *
@@ -63,7 +63,7 @@ void AboutDialog::on_donateButton_clicked()
 QString AboutDialog::getRelnotes()
 {
     QFile clfile(":/docs/release_notes.html");
-    QString changeLog = QObject::tr("Sorry, could not locate changelog.");
+    QString changeLog = tr("Sorry, could not locate changelog.");
     if (clfile.open(QIODevice::ReadOnly)) {
         //Todo, write XML parser and only show the latest..
         //QTextStream ts(&clfile);
@@ -76,8 +76,8 @@ QString AboutDialog::getRelnotes()
     "<span style=\" font-size:14pt;\">"+tr("SleepyHead v%1").arg(VersionString)+"</span>"
     "<hr/>";
     if (ReleaseStatus != "r") {
-        text += "<p><font color='red' size=+1><b>"+QObject::tr("Important:")+"</b></font> "
-        "<font size=+1><i>"+QObject::tr("As this is a pre-release version, it is recommended that you <b>back up your data folder manually</b> before proceding, because attempting to roll back later may break things.")+"</i></font></p><hr/>";
+        text += "<p><font color='red' size=+1><b>"+tr("Important:")+"</b></font> "
+        "<font size=+1><i>"+tr("As this is a pre-release version, it is recommended that you <b>back up your data folder manually</b> before proceding, because attempting to roll back later may break things.")+"</i></font></p><hr/>";
     }
     text += changeLog;
     text += "</body></html>";
@@ -89,7 +89,7 @@ QString AboutDialog::getLicense()
     QString text;
     QString licenseFile = ":/docs/GPLv3-"+AppSetting->language();
     if (!QFile::exists(licenseFile)) {
-        ui->licenceLabel->setText(QObject::tr("To see if the license text is available in your language, see %1.").arg("<a href=\"https://www.gnu.org/licenses/translations.en.html\">https://www.gnu.org/licenses/translations.en.html</a>\""));
+        ui->licenceLabel->setText(tr("To see if the license text is available in your language, see %1.").arg("<a href=\"https://www.gnu.org/licenses/translations.en.html\">https://www.gnu.org/licenses/translations.en.html</a>"));
         ui->licenceLabel->setVisible(true);
         licenseFile = ":/docs/GPLv3-en_US";
     } else {

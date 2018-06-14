@@ -164,6 +164,9 @@ class Statistics : public QObject
 
 
   protected:
+    QString htmlHeader(bool showheader);
+    QString htmlFooter(bool showinfo=true);
+
     // Using a map to maintain order
     QList<StatisticsRow> rows;
     QMap<StatCalcType, QString> calcnames;

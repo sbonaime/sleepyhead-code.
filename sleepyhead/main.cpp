@@ -1,4 +1,4 @@
-﻿/* SleepyHead Main
+/* SleepyHead Main
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -128,8 +128,9 @@ int main(int argc, char *argv[])
 
     initializeStrings(); // This must be called AFTER translator is installed, but before mainwindow is setup
 
-    QFontDatabase::addApplicationFont("://fonts/FreeSans.ttf");
-    a.setFont(QFont("FreeSans", 11, QFont::Normal, false));
+//    QFontDatabase::addApplicationFont("://fonts/FreeSans.ttf");
+//    a.setFont(QFont("FreeSans", 11, QFont::Normal, false));
+
     mainwin = new MainWindow;
 
 #ifdef BROKEN_OPENGL_BUILD

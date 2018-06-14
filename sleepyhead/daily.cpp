@@ -1,4 +1,4 @@
-﻿/* Daily Panel
+/* Daily Panel
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -123,7 +123,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout2->insertWidget(1,sessionbar,0);
     // add the sessionbar after it.
 
-    ui->tabWidget->insertTab(0,widget,QIcon(),"Details");
+    ui->tabWidget->insertTab(0, widget, QIcon(), tr("Details"));
 
     ui->graphFrame->setLayout(layout);
     //ui->graphMainArea->setLayout(layout);
@@ -163,7 +163,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     const QString STR_GRAPH_TAP = "TimeAtPressure";
 
 //    gGraph * SG;
-//    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, QObject::tr("Summary"), QObject::tr("Summary of this daily information"), default_height);
+//    graphlist[STR_GRAPH_DailySummary] = SG = new gGraph(STR_GRAPH_DailySummary, GraphView, tr("Summary"), tr("Summary of this daily information"), default_height);
 //    SG->AddLayer(new gLabelArea(nullptr),LayerLeft,gYAxis::Margin);
 //    SG->AddLayer(new gDailySummary());
 
@@ -274,7 +274,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     pc->addPlot(CPAP_IPAPHi, square);
 
     gGraph * TAP2;
-    graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, QObject::tr("Time at Pressure"), QObject::tr("Time at Pressure"), default_height);
+    graphlist[STR_GRAPH_TAP] = TAP2 = new gGraph(STR_GRAPH_TAP, GraphView, tr("Time at Pressure"), tr("Time at Pressure"), default_height);
     MinutesAtPressure * map;
     TAP2->AddLayer(map = new MinutesAtPressure());
     TAP2->AddLayer(new gLabelArea(map),LayerLeft,gYAxis::Margin);
@@ -872,7 +872,7 @@ QString Daily::getSessionInformation(Day * day)
 
             Session *sess=*s;
 
-            QString tooltip = QObject::tr("Click to %1 this session.").arg(sess->enabled() ? QObject::tr("disable") : QObject::tr("enable"));
+            QString tooltip = tr("Click to %1 this session.").arg(sess->enabled() ? tr("disable") : tr("enable"));
             html+=QString("<tr><td colspan=5 align=center>%2</td></tr>"
                           "<tr>"
                           "<td width=26>"
@@ -888,8 +888,8 @@ QString Daily::getSessionInformation(Day * day)
                           "<td align=left>%3</td></tr>"
                           )
                     .arg((*s)->session())
-                    .arg(QObject::tr("%1 Session #%2").arg((*s)->machine()->loaderName()).arg((*s)->session(),8,10,QChar('0')))
-                    .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
+                    .arg(tr("%1 Session #%2").arg((*s)->machine()->loaderName()).arg((*s)->session(),8,10,QChar('0')))
+                    .arg(tr("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
                     .arg((sess->enabled() ? "on" : "off"))
                     .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                     .arg(fd.toString("HH:mm:ss"))
@@ -1457,7 +1457,7 @@ void Daily::Load(QDate date)
                         pixmap.save(&buffer, "PNG");
                         html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
                     } else {
-                        html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
+                        html += "<tr><td align=center>"+tr("Unable to display Pie Chart on this system")+"</td></tr>\n";
                     }
                 } else if (day->channelHasData(CPAP_Obstructive)
                            || day->channelHasData(CPAP_Hypopnea)
@@ -1532,7 +1532,6 @@ void Daily::Load(QDate date)
     const int maxcolors=sizeof(cols)/sizeof(QColor);
     QList<Session *>::iterator i;
 
-    // WebView trashes it without asking.. :(
     if (cpap) {
         int c=0;
 

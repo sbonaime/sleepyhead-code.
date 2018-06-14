@@ -18,13 +18,10 @@
 
 #include "SleepLib/common.h"
 
-#ifndef BUILD_WITH_MSVC
-# include <unistd.h>
-#endif
-
 #ifdef _MSC_VER
 #include <QtZlib/zlib.h>
 #else
+#include <unistd.h>
 #include <zlib.h>
 #endif
 
@@ -70,6 +67,7 @@ const QString getDefaultAppRoot()
 bool gfxEgnineIsSupported(GFXEngine e)
 {
 #if defined(Q_OS_WIN32)
+    Q_UNUSED(e)
     return true;
 #else
     switch(e) {

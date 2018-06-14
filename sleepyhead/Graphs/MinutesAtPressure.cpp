@@ -1,4 +1,4 @@
-﻿/* MinutesAtPressure Graph Implementation
+/* MinutesAtPressure Graph Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -309,7 +309,7 @@ void MinutesAtPressure::paint(QPainter &painter, gGraph &graph, const QRegion &r
             graph.renderText(label, left-8-w,  bot+h/2-2 );
             bot -= peakmult;
         }
-        label = QString("Peak %1").arg(qMax(ipap.peaktime, epap.peaktime)/60.0);
+        label = QObject::tr("Peak %1").arg(qMax(ipap.peaktime, epap.peaktime)/60.0);
         graph.renderText(label, left,  top+5 );
 
         xstep /= 5.0;

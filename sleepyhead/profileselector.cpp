@@ -1,4 +1,4 @@
-﻿/* Profile Selector Implementation
+/* Profile Selector Implementation
  *
  * Copyright (c) 2018 Mark Watkins <mark@jedimark.net>
  *
@@ -423,7 +423,7 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
                                          QMessageBox::Ok);
             }
             qDebug() << "Delete" << path;
-            QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
+            QMessageBox::information(this, STR_MessageBox_Information, tr("Profile '%1' was succesfully deleted").arg(name),QMessageBox::Ok);
         }
 
         updateProfileList();
@@ -431,8 +431,9 @@ void ProfileSelector::on_buttonDestroyProfile_clicked()
     }
 }
 
-QString formatSize(qint64 size) {
-    QStringList units = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
+QString ProfileSelector::formatSize(qint64 size)
+{
+    QStringList units = { tr("Bytes"), tr("KB"), tr("MB"), tr("GB"), tr("TB"), tr("PB") };
     int i;
     double outputSize = size;
     for (i=0; i<units.size()-1; i++) {
@@ -443,7 +444,7 @@ QString formatSize(qint64 size) {
 }
 
 
-QString getProfileDiskInfo(Profile *profile)
+QString ProfileSelector::getProfileDiskInfo(Profile *profile)
 {
     QString html;
     if (profile) {
@@ -452,9 +453,9 @@ QString getProfileDiskInfo(Profile *profile)
         qint64 sizeBackups = profile->diskSpaceBackups();
 
         html += "<table>"
-                "<tr><td align=right>"+QObject::tr("Summaries:")+"</td><td>"+formatSize(sizeSummaries)+"</td></tr>"
-                "<tr><td align=right>"+QObject::tr("Events:")+"</td><td>"+formatSize(sizeEvents)+"</td></tr>"
-                "<tr><td align=right>"+QObject::tr("Backups:")+"</td><td>"+formatSize(sizeBackups)+"</td></tr>"
+                "<tr><td align=right>"+tr("Summaries:")+"</td><td>"+formatSize(sizeSummaries)+"</td></tr>"
+                "<tr><td align=right>"+tr("Events:")+"</td><td>"+formatSize(sizeEvents)+"</td></tr>"
+                "<tr><td align=right>"+tr("Backups:")+"</td><td>"+formatSize(sizeBackups)+"</td></tr>"
                 "</table>";
     }
     return html;

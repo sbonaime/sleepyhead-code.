@@ -1,4 +1,4 @@
-﻿/* SessionBar Graph Implementation
+/* SessionBar Graph Implementation
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -243,8 +243,7 @@ void SessionBar::paintEvent(QPaintEvent *)
         int m = (len / 60) % 60;
         //int s=len % 60;
 
-        QString msg = QString("%1h %2m").arg((short)h, 1, 10, QChar('0')).arg((short)m, 1, 10,
-                      QChar('0')); //.arg((short)s,2,10,QChar('0'));
+        QString msg = tr("%1h %2m").arg((short)h, 1, 10, QChar('0')).arg((short)m, 1, 10, QChar('0'));
         //painter.setBrush(QBrush((*i).color);
         QRect segrect(3 + sx, 3, ex, height() - 6);
 

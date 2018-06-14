@@ -14,38 +14,33 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 #SleepyHead requires OpenGL 2.0 support to run smoothly
 #On platforms where it's not available, it can still be built to work
-#provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL)
-contains(DEFINES, BrokenGL) {
-    message("BrokgenGL has been disabled to test the Dynamic GFX Engine selection")
+#provided the BrokenGL DEFINES flag is passed to qmake (eg, qmake [specs] /path/to/SleepyHeadQT.pro DEFINES+=BrokenGL) (hint, Projects button on the left)
+contains(DEFINES, NoGL) {
+    message("Building with QWidget gGraphView to support systems without ANY OpenGL")
+    DEFINES += BROKEN_OPENGL_BUILD
+    DEFINES += NO_OPENGL_BUILD
+} else:contains(DEFINES, BrokenGL) {
+    DEFINES += BROKEN_OPENGL_BUILD
+    message("Building with QWidget gGraphView to support systems with legacy graphics")
     DEFINES-=BrokenGL
+} else {
+    QT += opengl
+    message("Building with regular OpenGL gGraphView")
 }
-#    message("Building with QWidget gGraphView")
-#    DEFINES += BROKEN_OPENGL_BUILD
-#} else:contains(DEFINES, NoGL) {
-#    message("Building with QWidget gGraphView (No GL at all)")
-#    DEFINES += BROKEN_OPENGL_BUILD
-#    DEFINES += NO_OPENGL_BUILD
-#} else {
-#    message("Building with QGLWidget gGraphView")
-#}
-
-QT += opengl
 
 DEFINES += LOCK_RESMED_SESSIONS
 
 CONFIG += c++11
 CONFIG += rtti
-
-# Remove this crap because it sucks
-CONFIG-=debug_and_release
+CONFIG -= debug_and_release
 
 contains(DEFINES, STATIC) {
-static {
-    CONFIG += static
-    QTPLUGIN += qsvg qgif qpng
+    static {
+        CONFIG += static
+        QTPLUGIN += qgif qpng
 
-    message("Static build.")
-}
+        message("Static build.")
+    }
 }
 
 TARGET = SleepyHead
@@ -69,9 +64,6 @@ win32 {
 PRE_TARGETDEPS += git_info.h
 QMAKE_EXTRA_TARGETS += gitinfotarget
 
-#Comment out for official builds
-DEFINES += BETA_BUILD
-
 #Build the help documentation
 message("Generating help files");
 qtPrepareTool(QCOLGENERATOR, qcollectiongenerator)
@@ -80,30 +72,17 @@ command=$$QCOLGENERATOR $$PWD/help/index.qhcp -o $$PWD/help/index.qhc
 system($$command)|error("Failed to run: $$command")
 message("Finished generating help files");
 
-unix:!macx:!haiku {
-    LIBS            += -lX11 -lz -lGLU
-    DEFINES         += _TTY_POSIX_
-}
-
 macx {
   QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
-
   LIBS             += -lz
   ICON              = icons/iconfile.icns
-}
-
-haiku {
+} else:haiku {
     LIBS            += -lz -lGLU
     DEFINES         += _TTY_POSIX_
-}
-
-CONFIG(release, debug|release) {
-    contains(DEFINES, UPX_PACK_EXE) {
-       DEFINES-=UPX_PACK_EXE
-       win32:QMAKE_POST_LINK += upx -k --best --overlay=strip --strip-relocs=0 $(DESTDIR_TARGET)
-    }
-}
-win32 {
+} else:unix {
+    LIBS            += -lX11 -lz -lGLU
+    DEFINES         += _TTY_POSIX_
+} else:win32 {
     DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
     LIBS             += -lsetupapi
 
@@ -112,28 +91,30 @@ win32 {
     QMAKE_TARGET_COPYRIGHT = Copyright (c)2011-2018 Mark Watkins
     QMAKE_TARGET_DESCRIPTION = "OpenSource CPAP Research & Review"
     VERSION = 1.1.0.0
-
     RC_ICONS = ./icons/bob-v3.0.ico
-
 
     INCLUDEPATH += $$PWD
     INCLUDEPATH += $$[QT_INSTALL_PREFIX]/../src/qtbase/src/3rdparty/zlib
 
     if (*-msvc*):!equals(TEMPLATE_PREFIX, "vc") {
         LIBS += -ladvapi32
-        DEFINES += "BUILD_WITH_MSVC=1"
     } else {
         # MingW needs this
         LIBS += -lz
     }
 
-
     if (*-msvc*) {
         CONFIG += precompile_header
         PRECOMPILED_HEADER = pch.h
         HEADERS += pch.h
+
     }
 
+    CONFIG(release, debug|release) {
+        contains(DEFINES, OfficialBuild) {
+           QMAKE_POST_LINK += "$$PWD/../../scripts/release_tool.sh --testing --source \"$$PWD/..\" --binary \"$${OUT_PWD}/$${TARGET}.exe\""
+        }
+    }
 }
 
 TRANSLATIONS = $$files($$PWD/../Translations/*.ts)

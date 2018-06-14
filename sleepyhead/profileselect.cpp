@@ -1,4 +1,4 @@
-﻿/* Profile Select Implementation (Login Screen)
+/* Profile Select Implementation (Login Screen)
  *
  * Copyright (c) 2011-2018 Mark Watkins <mark@jedimark.net>
  *
@@ -256,7 +256,7 @@ void ProfileSelect::deleteProfile()
                                          QMessageBox::Ok);
             }
             qDebug() << "Delete" << path;
-            QMessageBox::information(this, STR_MessageBox_Information, QString(tr("Profile '%1' was succesfully deleted").arg(name)),QMessageBox::Ok);
+            QMessageBox::information(this, STR_MessageBox_Information, tr("Profile '%1' was succesfully deleted").arg(name),QMessageBox::Ok);
         }
 
         int row = ui->listView->currentIndex().row();
